@@ -1,0 +1,13 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+/FXServer/**/*.*
+!/FXServer/**/*.gitkeep
+/FXServer-Data/resources/fivepd
+/build-public
+/build-insider
+FXServer-Data/db
+FXServer-Data/imgui.ini
+txData/
