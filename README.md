@@ -6,7 +6,7 @@
 
 1. Insert the latest recommended build of FXServer into the `FXServer` directory
 2. Select the Debug solution configuration
-3. Start the "Run CFX Server" run configuration
+3. Start the "Run FXServer" run configuration
 4. After changes are made, build the solution WHILE the run configuration is still running, this will hot reload all changes
 
 ### Building for Production
