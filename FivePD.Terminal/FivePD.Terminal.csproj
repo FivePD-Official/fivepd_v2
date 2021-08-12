@@ -30,8 +30,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="LibSassBuilder" Version="1.6.4" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0-preview.6.21355.2" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-preview.6.21355.2" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Pages\Counter.razor.sass" />
     </ItemGroup>
 
     <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />

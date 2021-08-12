@@ -11,3 +11,5 @@ riderModule.iml
 FXServer-Data/db
 FXServer-Data/imgui.ini
 txData/
+/*.bat
+/**/Pages/*.css
