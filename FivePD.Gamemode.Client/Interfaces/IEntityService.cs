@@ -1,12 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
+//
+// All code and assets contained in this file are STRICTLY
+// the intellectual property of GTAPoliceMods unless otherwise
+// noted by a license provided. Do not copy or redistribute.
+
+using System.Threading.Tasks;
 using CitizenFX.Core;
 
 namespace FivePD.Gamemode.Client.Interfaces
 {
-    public interface IEntityService
+    /**
+     * <summary>Responsible for various entity management related tasks.</summary>
+     */
+    internal interface IEntityService
     {
         /**
-         * Requests that the server spawn a ped.
+         * <summary>Requests that the server spawn a ped.</summary>
          * <param name="model">A ped model for the ped to use.</param>
          * <param name="location">A location where the ped will spawn.</param>
          * <param name="heading">The heading the ped will use.</param>
@@ -15,7 +24,7 @@ namespace FivePD.Gamemode.Client.Interfaces
         Task<Ped> SpawnPed(PedHash model, Vector3 location, float heading);
 
         /**
-         * Requests that the server spawn a vehicle.
+         * <summary>Requests that the server spawn a vehicle.</summary>
          * <param name="model">A ped model for the ped to use.</param>
          * <param name="location">A location where the ped will spawn.</param>
          * <param name="heading">The heading the ped will use.</param>
@@ -24,7 +33,7 @@ namespace FivePD.Gamemode.Client.Interfaces
         Task<Vehicle> SpawnVehicle(VehicleHash model, Vector3 location, float heading);
 
         /**
-         * Requests that the server spawn a prop (object).
+         * <summary>Requests that the server spawn a prop (object).</summary>
          * <param name="model">A model for the prop to use.</param>
          * <param name="location">A location where the prop will spawn.</param>
          * <returns>The spawned prop.</returns>

@@ -1,70 +1,99 @@
-﻿using System;
+﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
+//
+// All code and assets contained in this file are STRICTLY
+// the intellectual property of GTAPoliceMods unless otherwise
+// noted by a license provided. Do not copy or redistribute.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace FivePD.Gamemode.Client.Injection
 {
-	public class ServiceProvider
-	{
-		private readonly List<Registration> _registrations;
-		private readonly Dictionary<string, object> _instances = new Dictionary<string, object>();
+    /**
+     * <summary>Provides an interface to resolve registered services. Built using an <see cref="ServiceProviderBuilder"/>.</summary>
+     */
+    internal class ServiceProvider
+    {
+        private readonly Dictionary<string, object> _instances = new Dictionary<string, object>();
+        private readonly List<Registration> _registrations;
 
-		internal ServiceProvider(List<Registration> registrations)
-		{
-			_registrations = registrations;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServiceProvider"/> class.
+        /// </summary>
+        /// <param name="registrations">The registrations to use in creation.</param>
+        internal ServiceProvider(List<Registration> registrations)
+        {
+            this._registrations = registrations;
+        }
 
-		private object ResolveSingleInstance(Registration registration)
-		{
-			var assemblyQualifiedName = registration.InstanceType.AssemblyQualifiedName;
+        /**
+         * <summary>Resolves a matching instance of the given <paramref name="type"/>.</summary>
+         * <param name="type">The type to search for and return.</param>
+         * <returns>A constructed instance of the given <paramref name="type"/>.</returns>
+         */
+        internal object Resolve(Type type)
+        {
+            var matchingRegistration = this._registrations.SingleOrDefault(r => r.Types.Any(t => t == type));
 
-			if (_instances.ContainsKey(assemblyQualifiedName))
-			{
-				return _instances[assemblyQualifiedName];
-			}
+            if (matchingRegistration == null)
+            {
+                throw new ArgumentException("Could not resolve type " + type.AssemblyQualifiedName);
+            }
 
-			var instance = CreateInstance(registration);
-			_instances.Add(assemblyQualifiedName, instance);
+            if (matchingRegistration.IsSingleton)
+            {
+                return this.ResolveSingleInstance(matchingRegistration);
+            }
 
-			return instance;
-		}
+            return this.CreateInstance(matchingRegistration);
+        }
 
-		private object CreateInstance(Registration registration)
-		{
-			if (registration.Factory != null)
-				return registration.Factory();
+        /**
+         * <summary>Resolves a matching instance of the given <typeparamref name="T"/>.</summary>
+         * <typeparam name="T">The type to search for and return.</typeparam>
+         * <returns>A constructed instance of the given <typeparamref name="T"/>.</returns>
+         */
+        internal T Resolve<T>()
+        {
+            var resolveType = typeof(T);
+            return (T)this.Resolve(resolveType);
+        }
 
-			var constructor = registration.InstanceType.GetConstructors().FirstOrDefault();
-			var parameters = constructor.GetParameters().Select(ResolveConstructorParameter).ToArray();
+        private object ResolveSingleInstance(Registration registration)
+        {
+            var assemblyQualifiedName = registration.InstanceType.AssemblyQualifiedName;
 
-			var instance = Activator.CreateInstance(registration.InstanceType, parameters);
-			
-			return instance;
-		}
+            if (this._instances.ContainsKey(assemblyQualifiedName ?? throw new InvalidOperationException()))
+            {
+                return this._instances[assemblyQualifiedName];
+            }
 
-		private object ResolveConstructorParameter(ParameterInfo parameterInfo)
-		{
-			return Resolve(parameterInfo.ParameterType);
-		}
+            var instance = this.CreateInstance(registration);
+            this._instances.Add(assemblyQualifiedName, instance);
 
-		public object Resolve(Type type)
-		{
-			var matchingRegistration = _registrations.SingleOrDefault(r => r.Types.Any(t => t == type));
+            return instance;
+        }
 
-			if (matchingRegistration == null)
-				throw new Exception("Could not resolve type " + type.AssemblyQualifiedName);
+        private object CreateInstance(Registration registration)
+        {
+            if (registration.Factory != null)
+            {
+                return registration.Factory();
+            }
 
-			if (matchingRegistration.IsSingleton)
-				return ResolveSingleInstance(matchingRegistration);
+            var constructor = registration.InstanceType.GetConstructors().FirstOrDefault();
+            var parameters = constructor?.GetParameters().Select(this.ResolveConstructorParameter).ToArray();
 
-			return CreateInstance(matchingRegistration);
-		}
+            var instance = Activator.CreateInstance(registration.InstanceType, parameters);
 
-		public T Resolve<T>()
-		{
-			var resolveType = typeof(T);
-			return (T) Resolve(resolveType);
-		}
-	}
+            return instance;
+        }
+
+        private object ResolveConstructorParameter(ParameterInfo parameterInfo)
+        {
+            return this.Resolve(parameterInfo.ParameterType);
+        }
+    }
 }

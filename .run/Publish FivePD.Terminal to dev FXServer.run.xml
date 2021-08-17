@@ -1,6 +1,9 @@
 ﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Publish FivePD.Terminal to dev FXServer" type="DotNetFolderPublish" factoryName="Publish to folder">
-    <riderPublish configuration="Debug" platform="Any CPU" runtime="blazor-wasm" self_contained="true" target_folder="$PROJECT_DIR$/FXServer-Data/resources/fivepd/Libraries/FivePD.Terminal" target_framework="net6.0" uuid_high="-578014937808942592" uuid_low="-8895369096437020333" />
-    <method v="2" />
-  </configuration>
+    <configuration default="false" name="Publish FivePD.Terminal to dev FXServer" type="DotNetFolderPublish"
+                   factoryName="Publish to folder">
+        <riderPublish configuration="Debug" platform="Any CPU" runtime="blazor-wasm" self_contained="true"
+                      target_folder="$PROJECT_DIR$/FXServer-Data/resources/fivepd/Libraries/FivePD.Terminal"
+                      target_framework="net6.0" uuid_high="-578014937808942592" uuid_low="-8895369096437020333"/>
+        <method v="2"/>
+    </configuration>
 </component>

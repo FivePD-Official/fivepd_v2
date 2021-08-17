@@ -13,3 +13,4 @@ FXServer-Data/imgui.ini
 txData/
 /*.bat
 /**/Pages/*.css
+/**/Documentation.xml

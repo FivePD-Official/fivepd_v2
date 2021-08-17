@@ -1,45 +1,73 @@
-﻿using System;
+﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
+//
+// All code and assets contained in this file are STRICTLY
+// the intellectual property of GTAPoliceMods unless otherwise
+// noted by a license provided. Do not copy or redistribute.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace FivePD.Gamemode.Client.Injection
 {
-	public class ServiceProviderBuilder
-	{
-		private readonly List<Registration> _registration = new List<Registration>();
+    /**
+     * <summary>A simple builder for <see cref="ServiceProvider"/>.</summary>
+     */
+    internal class ServiceProviderBuilder
+    {
+        private readonly List<Registration> _registration = new List<Registration>();
 
-		public Registration<T> RegisterType<T>()
-		{
-			var type = typeof(T);
-			var registration = new Registration<T>();
+        /**
+         * <summary>Registers type <typeparamref name="T"/> to this <see cref="ServiceProviderBuilder"/>.</summary>
+         * <typeparam name="T">The type to register.</typeparam>
+         * <returns>A created registration for the provided type.</returns>
+         */
+        internal Registration<T> RegisterType<T>()
+        {
+            var type = typeof(T);
+            var registration = new Registration<T>();
 
-			if (_registration.Any(r => r.Types.Any(t => t == type)))
-				throw new Exception($"Type {type.AssemblyQualifiedName} already registered.");
+            if (this._registration.Any(r => r.Types.Any(t => t == type)))
+            {
+                throw new ArgumentException($"Type {type.AssemblyQualifiedName} already registered.");
+            }
 
-			_registration.Add(registration);
+            this._registration.Add(registration);
 
-			return registration;
-		}
+            return registration;
+        }
 
-		public Registration<T> Register<T>(Func<T> factory)
-		{
-			var type = typeof(T);
-			var registration = new Registration<T>
-			{
-				Factory = () => factory()
-			};
+        /**
+         * <summary>Registers type <see cref="Func{T}"/> to this <see cref="ServiceProviderBuilder"/> through a <typeparamref name="T"/>.</summary>
+         * <typeparam name="T">The type to register.</typeparam>
+         * <param name="factory">The factory to use in creation.</param>
+         * <returns>A created registration for the provided type.</returns>
+         */
+        internal Registration<T> Register<T>(Func<T> factory)
+        {
+            var type = typeof(T);
+            var registration = new Registration<T>
+            {
+                Factory = () => factory(),
+            };
 
-			if (_registration.Any(r => r.Types.Any(t => t == type)))
-				throw new Exception($"Type {type.AssemblyQualifiedName} already registered.");
+            if (this._registration.Any(r => r.Types.Any(t => t == type)))
+            {
+                throw new ArgumentException($"Type {type.AssemblyQualifiedName} already registered.");
+            }
 
-			_registration.Add(registration);
+            this._registration.Add(registration);
 
-			return registration;
-		}
+            return registration;
+        }
 
-		public ServiceProvider Build()
-		{
-			return new ServiceProvider(_registration);
-		}
-	}
+        /**
+         * <summary>Creates a new <see cref="ServiceProvider"/> from this <see cref="ServiceProviderBuilder" />.</summary>
+         * <returns>The built <see cref="ServiceProvider"/>.</returns>
+         */
+        internal ServiceProvider Build()
+        {
+            return new ServiceProvider(this._registration);
+        }
+    }
 }
