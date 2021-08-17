@@ -10,6 +10,11 @@
         <EnableDefaultContentItems>true</EnableDefaultContentItems>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <BlazorEnableCompression>false</BlazorEnableCompression>
+        <BlazorCacheBootResources>false</BlazorCacheBootResources> <!-- This should be TRUE when building for a standard web browser -->
+        <Authors>GTAPoliceMods</Authors>
+        <Company>GTAPoliceMods</Company>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <FileVersion>2.0.0.0</FileVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>

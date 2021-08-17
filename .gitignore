@@ -6,8 +6,8 @@ riderModule.iml
 /FXServer/**/*.*
 !/FXServer/**/*.gitkeep
 /FXServer-Data/resources/fivepd
-/build-public
-/build-insider
+build-public/
+build-insider/
 FXServer-Data/db
 FXServer-Data/imgui.ini
 txData/
