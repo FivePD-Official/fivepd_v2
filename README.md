@@ -1,4 +1,5 @@
 # GPMDS' FivePD
+[![Lines of Code](https://sc.i.gdns.ca/api/project_badges/measure?project=GTAPoliceMods_FivePD&metric=ncloc)](https://sc.i.gdns.ca/dashboard?id=GTAPoliceMods_FivePD) [![Maintainability Rating](https://sc.i.gdns.ca/api/project_badges/measure?project=GTAPoliceMods_FivePD&metric=sqale_rating)](https://sc.i.gdns.ca/dashboard?id=GTAPoliceMods_FivePD) [![Code Smells](https://sc.i.gdns.ca/api/project_badges/measure?project=GTAPoliceMods_FivePD&metric=code_smells)](https://sc.i.gdns.ca/dashboard?id=GTAPoliceMods_FivePD)
 
 *All code and assets contained in this repository are STRICTLY the intellectual property of GTAPoliceMods unless otherwise noted by a license provided. Do not copy or redistribute.*
 
