@@ -36,7 +36,8 @@ namespace FivePD.Gamemode.Server
                     .MinimumLevel.Verbose()
             );
 
-            services.AddSingleton<ISpawnService, SpawnService>();
+            services.AddSingleton<IEntityService, EntityService>();
+            services.AddSingleton(EventHandlers);
             
             var provider = services.BuildServiceProvider();
             
@@ -46,6 +47,10 @@ namespace FivePD.Gamemode.Server
                 "Bootstrapping gamemode server version {@Version}",
                 Assembly.GetExecutingAssembly().GetName().Version.ToString()
             );
+
+            var spawnService = provider.GetService<IEntityService>();
+            
+            spawnService.RegisterEventHandlers();;
             
             LogDiagnostics(log);
         }

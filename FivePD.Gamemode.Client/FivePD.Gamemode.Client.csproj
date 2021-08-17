@@ -51,11 +51,9 @@
         <Compile Include="Injection\ServiceProvider.cs" />
         <Compile Include="Injection\ServiceProviderBuilder.cs" />
         <Compile Include="Injection\Registration.cs" />
-        <Compile Include="Interfaces\IAnotherFakeService.cs" />
-        <Compile Include="Interfaces\IFakeService.cs" />
+        <Compile Include="Interfaces\IEntityService.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Services\AnotherFakeService.cs" />
-        <Compile Include="Services\FakeService.cs" />
+        <Compile Include="Services\EntityService.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

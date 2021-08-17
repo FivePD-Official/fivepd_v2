@@ -1,4 +1,6 @@
-﻿using CitizenFX.Core;
+﻿using System;
+using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
@@ -18,26 +20,23 @@ namespace FivePD.Gamemode.Client
                 .As<EventHandlerDictionary>();
 
             services
-                .RegisterType<FakeService>()
+                .RegisterType<EntityService>()
                 .IsSingleton()
-                .As<IFakeService>();
-            
-            services
-                .RegisterType<AnotherFakeService>()
-                .IsSingleton()
-                .As<IAnotherFakeService>();
+                .As<IEntityService>();
 
             var provider = services.Build();
 
-            var fakeService = provider.Resolve<IFakeService>();
-            var anotherFakeService = provider.Resolve<IAnotherFakeService>();
+            var spawnService = provider.Resolve<IEntityService>();
             
-            Debug.WriteLine("Hello from FivePD (Client)!");
-            
-            Debug.WriteLine($"Response from IFakeService: {fakeService.ReturnAString()}");
-            Debug.WriteLine($"Response from IAnotherFakeService: {anotherFakeService.ReturnAnotherString()}");
+            // TODO: Remove. Only for demo purposes.
+            API.RegisterCommand("spawn", new Action<int, List<object>, string>(async (source, args, rawCommand) =>
+            {
+                await spawnService.SpawnPed(PedHash.Cop01SMY, Game.PlayerPed.Position + 5f, Game.PlayerPed.Heading);
+                await spawnService.SpawnVehicle(VehicleHash.Police, Game.PlayerPed.Position + 3f, Game.PlayerPed.Heading);
+            }), false);
         }
         
+        // TODO: Remove. Only for demo purposes.
         [Command("open")]
         public void MenuOpen()
         {
@@ -45,6 +44,7 @@ namespace FivePD.Gamemode.Client
             API.SetNuiFocus(true, true);
         }
 
+        // TODO: Remove. Only for demo purposes.
         [Command("close")]
         public void MenuClose()
         {
