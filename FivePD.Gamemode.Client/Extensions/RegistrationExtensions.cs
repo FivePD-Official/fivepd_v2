@@ -11,14 +11,14 @@ namespace FivePD.Gamemode.Client.Extensions
     /**
      * <summary>Holds extension methods for <see cref="Registration"/>.</summary>
      */
-    internal static class RegistrationExtensions
+    public static class RegistrationExtensions
     {
         /**
          * <summary>Marks a registration as a singleton. Marked classes will likely only be instantiated once.</summary>
          * <param name="registration">The registration to modify.</param>
          * <returns>The updated registration.</returns>
          */
-        internal static Registration IsSingleton(this Registration registration)
+        public static Registration IsSingleton(this Registration registration)
         {
             registration.IsSingleton = true;
 
@@ -31,7 +31,7 @@ namespace FivePD.Gamemode.Client.Extensions
          * <param name="registration">The registration to modify.</param>
          * <returns>The updated registration.</returns>
          */
-        internal static Registration As<T>(this Registration registration)
+        public static Registration As<T>(this Registration registration)
         {
             var type = typeof(T);
             if (!registration.Types.Contains(type))

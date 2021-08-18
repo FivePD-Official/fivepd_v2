@@ -12,7 +12,7 @@ namespace FivePD.Gamemode.Server.Interfaces
      /**
      * <summary>Responsible for various entity management related tasks.</summary>
      */
-    internal interface IEntityService
+    public interface IEntityService
     {
         /**
          * <summary>Registers event handlers for entity functions.</summary>

@@ -16,7 +16,7 @@ namespace FivePD.Gamemode.Server.Services
     /**
      * <inheritdoc />
      */
-    internal class EntityService : IEntityService
+    public class EntityService : IEntityService
     {
         private static readonly Hash CreateAutomobile = (Hash)API.GetHashKey("CREATE_AUTOMOBILE");
 
@@ -27,7 +27,7 @@ namespace FivePD.Gamemode.Server.Services
         * </summary>
         * <param name="eventHandlerDictionary">An event handler dictionary to use.</param>
         */
-        internal EntityService(EventHandlerDictionary eventHandlerDictionary)
+        public EntityService(EventHandlerDictionary eventHandlerDictionary)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
         }
@@ -101,7 +101,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /**
-         * Used as an internal event handler.
+         * Used as an public event handler.
          */
         private async void OnSpawnPedAction(uint model, Vector3 location, float heading, NetworkCallbackDelegate networkCallbackDelegate)
         {
@@ -111,7 +111,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /**
-         * Used as an internal event handler.
+         * Used as an public event handler.
          */
         private async void OnSpawnVehicleAction(uint model, Vector3 location, float heading, NetworkCallbackDelegate networkCallbackDelegate)
         {
@@ -121,7 +121,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /**
-         * Used as an internal event handler.
+         * Used as an public event handler.
          */
         private async void OnSpawnPropAction(int model, Vector3 location, NetworkCallbackDelegate networkCallbackDelegate)
         {

@@ -12,7 +12,7 @@ namespace FivePD.Gamemode.Client.Interfaces
     /**
      * <summary>Responsible for various entity management related tasks.</summary>
      */
-    internal interface IEntityService
+    public interface IEntityService
     {
         /**
          * <summary>Requests that the server spawn a ped.</summary>

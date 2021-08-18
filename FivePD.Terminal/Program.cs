@@ -15,14 +15,14 @@ namespace FivePD.Terminal
     /**
      * <summary>The entrypoint to the project.</summary>
      */
-    internal static class Program
+    public static class Program
     {
         /**
          * <summary>The entrypoint to the project.</summary>
          * <param name="args">Optional arguments to pass to the application.</param>
          * <returns>A task which runs indefinitely to service application requests.</returns>
          */
-        internal static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");

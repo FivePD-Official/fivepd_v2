@@ -14,7 +14,7 @@ namespace FivePD.Gamemode.Client.Injection
     /**
      * <summary>Provides an interface to resolve registered services. Built using an <see cref="ServiceProviderBuilder"/>.</summary>
      */
-    internal class ServiceProvider
+    public class ServiceProvider
     {
         private readonly Dictionary<string, object> _instances = new Dictionary<string, object>();
         private readonly List<Registration> _registrations;
@@ -23,7 +23,7 @@ namespace FivePD.Gamemode.Client.Injection
         /// Initializes a new instance of the <see cref="ServiceProvider"/> class.
         /// </summary>
         /// <param name="registrations">The registrations to use in creation.</param>
-        internal ServiceProvider(List<Registration> registrations)
+        public ServiceProvider(List<Registration> registrations)
         {
             this._registrations = registrations;
         }
@@ -33,7 +33,7 @@ namespace FivePD.Gamemode.Client.Injection
          * <param name="type">The type to search for and return.</param>
          * <returns>A constructed instance of the given <paramref name="type"/>.</returns>
          */
-        internal object Resolve(Type type)
+        public object Resolve(Type type)
         {
             var matchingRegistration = this._registrations.SingleOrDefault(r => r.Types.Any(t => t == type));
 
@@ -55,7 +55,7 @@ namespace FivePD.Gamemode.Client.Injection
          * <typeparam name="T">The type to search for and return.</typeparam>
          * <returns>A constructed instance of the given <typeparamref name="T"/>.</returns>
          */
-        internal T Resolve<T>()
+        public T Resolve<T>()
         {
             var resolveType = typeof(T);
             return (T)this.Resolve(resolveType);

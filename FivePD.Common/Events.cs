@@ -9,7 +9,7 @@ namespace FivePD.Common
     /**
      * <summary>Contains constant definitions for event handler names.</summary>
      */
-    internal abstract class Events
+    public abstract class Events
     {
         // Follows naming convention "{resource}:{area}:{id}" OR "{resource}:{area}:{id}:{type}" where,
         // {resource} is "fivepd"

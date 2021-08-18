@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
 	Babel Obfuscator MSBuild Project File
-	Version 9.3.3.1
+	Version 9.7.5.0
 -->
 <Project DefaultTargets="FivePDGamemodeClientnet;FivePDGamemodeServernet;FivePDTerminal" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask TaskName="Babel" AssemblyName="Babel.Build, Version=9.3.3.0, Culture=neutral, PublicKeyToken=138d17b5bd621ab7" />
+  <UsingTask TaskName="Babel" AssemblyName="Babel.Build, Version=9.7.5.0, Culture=neutral, PublicKeyToken=138d17b5bd621ab7" />
   <Target Name="FivePDGamemodeClientnet">
     <PropertyGroup>
       <BabelInputFile>..\..\build-public\Libraries\FivePD.Gamemode.Client\FivePD.Gamemode.Client.net.dll</BabelInputFile>
@@ -196,7 +196,7 @@
       <VirtualFunctions>true</VirtualFunctions>
       <XmlRules>
         <Rules targetAssembly="FivePD.Terminal">
-          <Rule name="Default" feature="all" exclude="false" applyToMembers="true">
+          <Rule name="Default" feature="all" exclude="true" applyToMembers="true">
             <Pattern>*</Pattern>
           </Rule>
         </Rules>

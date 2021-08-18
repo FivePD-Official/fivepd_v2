@@ -19,7 +19,7 @@ namespace FivePD.Gamemode.Client
      * <summary>The gamemode client entrypoint. Handles the creation and management of all tasks on the client.</summary>
      */
     // ReSharper disable once UnusedType.Global
-    internal class Bootstrapper : BaseScript
+    public class Bootstrapper : BaseScript
     {
         /**
          * <summary>
@@ -27,7 +27,7 @@ namespace FivePD.Gamemode.Client
          *     runtime.
          * </summary>
          */
-        internal Bootstrapper()
+        public Bootstrapper()
         {
             var services = new ServiceProviderBuilder();
 
@@ -59,7 +59,7 @@ namespace FivePD.Gamemode.Client
         #pragma warning disable 1591
         #pragma warning disable SA1600
         [Command("open")]
-        internal void MenuOpen()
+        public void MenuOpen()
         {
             API.SendNuiMessage("{\"type\":\"open\"}");
             API.SetNuiFocus(true, true);
@@ -67,7 +67,7 @@ namespace FivePD.Gamemode.Client
 
         // TODO: Remove. Only for demo purposes.
         [Command("close")]
-        internal void MenuClose()
+        public void MenuClose()
         {
             API.SetNuiFocus(false, false);
             API.SendNuiMessage("{\"type\":\"close\"}");

@@ -13,7 +13,7 @@ namespace FivePD.Gamemode.Server.Extensions
     /**
      * <summary>Holds extension methods for <see cref="IServiceCollection"/>.</summary>
      */
-    internal static class Services
+    public static class Services
     {
         /**
          * <summary>Adds a new Serilog logger to the provided <see cref="IServiceCollection"/>.</summary>
@@ -21,7 +21,7 @@ namespace FivePD.Gamemode.Server.Extensions
          * <param name="configuration">A <see cref="LoggerConfiguration"/> that will be used to create the new logger.</param>
          * <returns>The service collection with added logger.</returns>
          */
-        internal static IServiceCollection AddSerilogServices(this IServiceCollection services, LoggerConfiguration configuration)
+        public static IServiceCollection AddSerilogServices(this IServiceCollection services, LoggerConfiguration configuration)
         {
             Log.Logger = configuration.CreateLogger();
             AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();

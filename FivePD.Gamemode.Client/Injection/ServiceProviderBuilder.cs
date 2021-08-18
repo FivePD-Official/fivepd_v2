@@ -13,7 +13,7 @@ namespace FivePD.Gamemode.Client.Injection
     /**
      * <summary>A simple builder for <see cref="ServiceProvider"/>.</summary>
      */
-    internal class ServiceProviderBuilder
+    public class ServiceProviderBuilder
     {
         private readonly List<Registration> _registration = new List<Registration>();
 
@@ -22,7 +22,7 @@ namespace FivePD.Gamemode.Client.Injection
          * <typeparam name="T">The type to register.</typeparam>
          * <returns>A created registration for the provided type.</returns>
          */
-        internal Registration<T> RegisterType<T>()
+        public Registration<T> RegisterType<T>()
         {
             var type = typeof(T);
             var registration = new Registration<T>();
@@ -43,7 +43,7 @@ namespace FivePD.Gamemode.Client.Injection
          * <param name="factory">The factory to use in creation.</param>
          * <returns>A created registration for the provided type.</returns>
          */
-        internal Registration<T> Register<T>(Func<T> factory)
+        public Registration<T> Register<T>(Func<T> factory)
         {
             var type = typeof(T);
             var registration = new Registration<T>
@@ -65,7 +65,7 @@ namespace FivePD.Gamemode.Client.Injection
          * <summary>Creates a new <see cref="ServiceProvider"/> from this <see cref="ServiceProviderBuilder" />.</summary>
          * <returns>The built <see cref="ServiceProvider"/>.</returns>
          */
-        internal ServiceProvider Build()
+        public ServiceProvider Build()
         {
             return new ServiceProvider(this._registration);
         }

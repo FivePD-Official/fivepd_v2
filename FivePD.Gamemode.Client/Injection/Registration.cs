@@ -12,27 +12,27 @@ namespace FivePD.Gamemode.Client.Injection
     /**
      * <summary>Represents a registration for a <see cref="ServiceProvider"/>.</summary>
      */
-    internal abstract class Registration
+    public abstract class Registration
     {
         /**
          * <summary>Gets or sets the <see cref="Type" /> that this registration should represent.</summary>
          */
-        internal Type InstanceType { get; set; }
+        public Type InstanceType { get; set; }
 
         /**
          * <summary>Gets the <see cref="List{Type}" /> that this registration represents.</summary>
          */
-        internal List<Type> Types { get; } = new List<Type>();
+        public List<Type> Types { get; } = new List<Type>();
 
         /**
          * <summary>Gets or sets a value indicating whether or not this is a singleton registration, which should only be instantiated once.</summary>
          */
-        internal bool IsSingleton { get; set; }
+        public bool IsSingleton { get; set; }
 
         /**
          * <summary>Gets or sets a <see cref="Factory" /> that this registration uses.</summary>
          */
-        internal Func<object> Factory { get; set; }
+        public Func<object> Factory { get; set; }
     }
 
     #pragma warning disable SA1402
@@ -40,12 +40,12 @@ namespace FivePD.Gamemode.Client.Injection
      * <summary>Represents a registration for a <see cref="ServiceProvider"/> of type <typeparamref name="T"/>.</summary>
      * <typeparam name="T">The type to use.</typeparam>
      */
-    internal class Registration<T> : Registration
+    public class Registration<T> : Registration
     {
         /**
          * <summary>Initializes a new instance of the <see cref="Registration{T}"/> class.</summary>
          */
-        internal Registration()
+        public Registration()
         {
             this.InstanceType = typeof(T);
             this.Types.Add(this.InstanceType);

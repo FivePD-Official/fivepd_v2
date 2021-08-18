@@ -22,7 +22,7 @@ namespace FivePD.Gamemode.Server
      * <summary>The gamemode server entrypoint. Handles the creation and management of all tasks on the server.</summary>
      */
     // ReSharper disable once UnusedType.Global
-    internal class Bootstrapper : BaseScript
+    public class Bootstrapper : BaseScript
     {
         /**
          * <summary>
@@ -30,7 +30,7 @@ namespace FivePD.Gamemode.Server
          *     runtime.
          * </summary>
          */
-        internal Bootstrapper()
+        public Bootstrapper()
         {
             var services = new ServiceCollection();
 

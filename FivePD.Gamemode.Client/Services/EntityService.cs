@@ -16,7 +16,7 @@ namespace FivePD.Gamemode.Client.Services
     /**
      * <inheritdoc />
      */
-    internal class EntityService : IEntityService
+    public class EntityService : IEntityService
     {
         /**
          * <inheritdoc />
