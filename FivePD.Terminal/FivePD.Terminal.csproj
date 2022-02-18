@@ -1,53 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <Configurations>Debug;Release</Configurations>
-        <Platforms>AnyCPU</Platforms>
-        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-        <EnableDefaultItems>true</EnableDefaultItems>
-        <EnableDefaultContentItems>true</EnableDefaultContentItems>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <BlazorEnableCompression>false</BlazorEnableCompression>
-        <BlazorCacheBootResources>false</BlazorCacheBootResources> <!-- This should be TRUE when building for a standard web browser -->
-        <Authors>GTAPoliceMods</Authors>
-        <Company>GTAPoliceMods</Company>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-        <FileVersion>2.0.0.0</FileVersion>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>none</DebugType>
-        <Optimize>false</Optimize>
-        <PublishDirectory>../FXServer-Data/resources/fivepd/Libraries/FivePD.Terminal</PublishDirectory>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>none</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>../build-public/Libraries/FivePD.Terminal</OutputPath>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="LibSassBuilder" Version="1.6.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0-preview.7.21378.6" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-preview.7.21378.6" PrivateAssets="all" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="Pages\Counter.razor.sass" />
-    </ItemGroup>
-
-    <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />
-
-    <Target Name="AfterBuild">
-        <Delete Files="$(OutDir)null.xml" />
-    </Target>
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <EnableDefaultItems>true</EnableDefaultItems>
+    <EnableDefaultContentItems>true</EnableDefaultContentItems>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <BlazorEnableCompression>false</BlazorEnableCompression>
+    <BlazorCacheBootResources>false</BlazorCacheBootResources>
+    <!-- This should be TRUE when building for a standard web browser -->
+    <Authors>GTAPoliceMods</Authors>
+    <Company>GTAPoliceMods</Company>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PublishDirectory>../FXServer-Data/resources/fivepd/Libraries/FivePD.Terminal</PublishDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>../build-public/Libraries/FivePD.Terminal</OutputPath>
+  </PropertyGroup>
+  <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />
+  <Target Name="AfterBuild">
+    <Delete Files="$(OutDir)null.xml" />
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="LibSassBuilder" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0-preview.7.21378.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-preview.7.21378.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Pages\Counter.razor.sass" />
+  </ItemGroup>
 </Project>

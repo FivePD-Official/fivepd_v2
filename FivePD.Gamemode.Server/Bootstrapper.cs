@@ -5,16 +5,17 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using CitizenFX.Core;
-using CitizenFX.Core.Native;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using Debug = System.Diagnostics.Debug;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server
 {
@@ -46,6 +47,7 @@ namespace FivePD.Gamemode.Server
                         retainedFileCountLimit: 7)
                     .MinimumLevel.Verbose());
 
+            services.AddSingleton<IAddonLocator, FsAddonLocator>();
             services.AddSingleton<IEntityService, EntityService>();
             services.AddSingleton(this.EventHandlers);
 
@@ -62,6 +64,32 @@ namespace FivePD.Gamemode.Server
             spawnService?.RegisterEventHandlers();
 
             LogDiagnostics(log);
+
+            var addonLocator = provider.GetService<IAddonLocator>();
+
+            var allAddons = addonLocator?.GetAddons().ToList();
+
+            log?.Information("Found {@Count} addons, passing to addon loader", allAddons?.Count());
+
+            // Load internal addons. MUST COMPLETE prior to loading public addons.
+            foreach (var addon in allAddons?.Where(x => x.IsInternal)!)
+            {
+                log?.Information(
+                    "Loading addon {@AddonName}",
+                    addon.FriendlyName);
+
+                foreach (var assembly in addon.Assemblies)
+                {
+                    var asm = Assembly.Load(assembly);
+
+                    foreach (var type in asm.GetTypes())
+                    {
+                        log?.Information("Found type {@Type}", type.FullName);
+                    }
+                }
+            }
+
+            // Load public addons.
         }
 
         /**
@@ -73,12 +101,12 @@ namespace FivePD.Gamemode.Server
             // Logs the current Cfx artifacts version
             log.Debug(
                 "Running Cfx version {@Version}",
-                API.GetConvar("version", "Unknown"));
+                Cfx.API.GetConvar("version", "Unknown"));
 
             // Logs the current OneSync status
             log.Debug(
                 "OneSync status is {@Status}",
-                API.GetConvar("onesync", "Unknown"));
+                Cfx.API.GetConvar("onesync", "Unknown"));
         }
     }
 }

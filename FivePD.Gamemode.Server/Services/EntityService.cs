@@ -7,9 +7,9 @@
 using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using CitizenFX.Core.Native;
 using FivePD.Common;
 using FivePD.Gamemode.Server.Interfaces;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services
 {
@@ -18,7 +18,7 @@ namespace FivePD.Gamemode.Server.Services
      */
     public class EntityService : IEntityService
     {
-        private static readonly Hash CreateAutomobile = (Hash)API.GetHashKey("CREATE_AUTOMOBILE");
+        private static readonly Cfx.Hash CreateAutomobile = (Cfx.Hash)Cfx.API.GetHashKey("CREATE_AUTOMOBILE");
 
         private readonly EventHandlerDictionary _eventHandlerDictionary;
 
@@ -59,9 +59,9 @@ namespace FivePD.Gamemode.Server.Services
          */
         public async Task<Ped> SpawnPed(uint model, Vector3 location, float heading)
         {
-            var handle = API.CreatePed(26, model, location.X, location.Y, location.Z, heading, true, false);
+            var handle = Cfx.API.CreatePed(26, model, location.X, location.Y, location.Z, heading, true, false);
 
-            while (!API.DoesEntityExist(handle))
+            while (!Cfx.API.DoesEntityExist(handle))
             {
                 await BaseScript.Delay(100);
             }
@@ -74,10 +74,10 @@ namespace FivePD.Gamemode.Server.Services
          */
         public async Task<Vehicle> SpawnVehicle(uint model, Vector3 location, float heading)
         {
-            var handle = Function.Call<int>(CreateAutomobile, model, location.X, location.Y, location.Z, heading);
+            var handle = Cfx.Function.Call<int>(CreateAutomobile, model, location.X, location.Y, location.Z, heading);
 
             // TODO: Check if we really need this delay. The server should own the vehicle immediately, anyways.
-            while (!API.DoesEntityExist(handle))
+            while (!Cfx.API.DoesEntityExist(handle))
             {
                 await BaseScript.Delay(100);
             }
@@ -90,9 +90,9 @@ namespace FivePD.Gamemode.Server.Services
          */
         public async Task<Prop> SpawnProp(int model, Vector3 location)
         {
-            var handle = API.CreateObject(model, location.X, location.Y, location.Z, true, false, false);
+            var handle = Cfx.API.CreateObject(model, location.X, location.Y, location.Z, true, false, false);
 
-            while (!API.DoesEntityExist(handle))
+            while (!Cfx.API.DoesEntityExist(handle))
             {
                 await BaseScript.Delay(100);
             }
