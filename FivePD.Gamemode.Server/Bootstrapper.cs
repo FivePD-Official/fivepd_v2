@@ -51,6 +51,7 @@ namespace FivePD.Gamemode.Server
                         retainedFileCountLimit: 7)
                     .MinimumLevel.Verbose());
 
+            services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonLocator, FsAddonLocator>();
             services.AddSingleton<IEntityService, EntityService>();
             services.AddSingleton<IStateService, StateService>();
@@ -75,6 +76,9 @@ namespace FivePD.Gamemode.Server
 
                 devUtilsService?.RegisterDevelopmentCommands();
             }
+
+            var tickQueueService = provider.GetService<ITickQueueService>();
+            this.Tick += tickQueueService!.OnTick;
 
             var addonLocator = provider.GetService<IAddonLocator>();
 
@@ -139,8 +143,8 @@ namespace FivePD.Gamemode.Server
          */
         private static void ConfigureForDevelopment()
         {
-            // Disables client-side entity spawning. Population will be disabled
-            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "strict");
+            // Disables client-side script entity spawning
+            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
         }
         #endif
     }
