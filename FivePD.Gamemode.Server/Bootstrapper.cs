@@ -49,6 +49,7 @@ namespace FivePD.Gamemode.Server
 
             services.AddSingleton<IAddonLocator, FsAddonLocator>();
             services.AddSingleton<IEntityService, EntityService>();
+            services.AddSingleton<IStateService, StateService>();
             services.AddSingleton(this.EventHandlers);
 
             var provider = services.BuildServiceProvider();
