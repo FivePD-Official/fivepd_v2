@@ -33,6 +33,10 @@ namespace FivePD.Gamemode.Server
          */
         public Bootstrapper()
         {
+            #if DEBUG
+            ConfigureForDevelopment();
+            #endif
+
             var services = new ServiceCollection();
 
             services.AddSerilogServices(
@@ -59,10 +63,6 @@ namespace FivePD.Gamemode.Server
             log?.Information(
                 "Bootstrapping gamemode server version {@Version}",
                 Assembly.GetExecutingAssembly().GetName().Version.ToString());
-
-            var spawnService = provider.GetService<IEntityService>();
-
-            spawnService?.RegisterEventHandlers();
 
             LogDiagnostics(log);
 
@@ -109,5 +109,16 @@ namespace FivePD.Gamemode.Server
                 "OneSync status is {@Status}",
                 Cfx.API.GetConvar("onesync", "Unknown"));
         }
+
+        #if DEBUG
+        /**
+         * Sets up some Cfx settings for development only
+         */
+        private static void ConfigureForDevelopment()
+        {
+            // Disables client-side entity spawning. Population will be disabled
+            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "strict");
+        }
+        #endif
     }
 }

@@ -10,8 +10,6 @@ using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
-using FivePD.Gamemode.Client.Interfaces;
-using FivePD.Gamemode.Client.Services;
 
 namespace FivePD.Gamemode.Client
 {
@@ -34,25 +32,6 @@ namespace FivePD.Gamemode.Client
             services
                 .Register(() => this.EventHandlers)
                 .As<EventHandlerDictionary>();
-
-            services
-                .RegisterType<EntityService>()
-                .IsSingleton()
-                .As<IEntityService>();
-
-            var provider = services.Build();
-
-            var spawnService = provider.Resolve<IEntityService>();
-
-            // TODO: Remove. Only for demo purposes.
-            API.RegisterCommand(
-                "spawn",
-                new Action<int, List<object>, string>(async (source, args, rawCommand) =>
-                {
-                    await spawnService.SpawnPed(PedHash.Cop01SMY, Game.PlayerPed.Position + 5f, Game.PlayerPed.Heading);
-                    await spawnService.SpawnVehicle(VehicleHash.Police, Game.PlayerPed.Position + 3f, Game.PlayerPed.Heading);
-                }),
-                false);
         }
 
         // TODO: Remove. Only for demo purposes.

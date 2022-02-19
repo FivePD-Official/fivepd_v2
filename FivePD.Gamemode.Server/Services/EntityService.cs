@@ -20,38 +20,12 @@ namespace FivePD.Gamemode.Server.Services
     {
         private static readonly Cfx.Hash CreateAutomobile = (Cfx.Hash)Cfx.API.GetHashKey("CREATE_AUTOMOBILE");
 
-        private readonly EventHandlerDictionary _eventHandlerDictionary;
-
         /** <summary>
         * Initializes a new instance of the <see cref="EntityService"/> class.
         * </summary>
-        * <param name="eventHandlerDictionary">An event handler dictionary to use.</param>
         */
-        public EntityService(EventHandlerDictionary eventHandlerDictionary)
+        public EntityService()
         {
-            this._eventHandlerDictionary = eventHandlerDictionary;
-        }
-
-        /**
-         * <inheritdoc />
-         * This implementation uses local functions to "redirect" the normal task-returning methods to voids.
-         */
-        public void RegisterEventHandlers()
-        {
-            this._eventHandlerDictionary.Add(
-                Events.EntityManagement.RequestPed,
-                new Action<uint, Vector3, float, NetworkCallbackDelegate>(
-                    this.OnSpawnPedAction));
-
-            this._eventHandlerDictionary.Add(
-                Events.EntityManagement.RequestVehicle,
-                new Action<uint, Vector3, float, NetworkCallbackDelegate>(
-                    this.OnSpawnVehicleAction));
-
-            this._eventHandlerDictionary.Add(
-                Events.EntityManagement.RequestProp,
-                new Action<int, Vector3, NetworkCallbackDelegate>(
-                    this.OnSpawnPropAction));
         }
 
         /**
@@ -98,36 +72,6 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             return new Prop(handle);
-        }
-
-        /**
-         * Used as an public event handler.
-         */
-        private async void OnSpawnPedAction(uint model, Vector3 location, float heading, NetworkCallbackDelegate networkCallbackDelegate)
-        {
-            var task = await this.SpawnPed(model, location, heading);
-
-            await networkCallbackDelegate.Invoke(task.NetworkId);
-        }
-
-        /**
-         * Used as an public event handler.
-         */
-        private async void OnSpawnVehicleAction(uint model, Vector3 location, float heading, NetworkCallbackDelegate networkCallbackDelegate)
-        {
-            var task = await this.SpawnVehicle(model, location, heading);
-
-            await networkCallbackDelegate.Invoke(task.NetworkId);
-        }
-
-        /**
-         * Used as an public event handler.
-         */
-        private async void OnSpawnPropAction(int model, Vector3 location, NetworkCallbackDelegate networkCallbackDelegate)
-        {
-            var task = await this.SpawnProp(model, location);
-
-            await networkCallbackDelegate.Invoke(task.NetworkId);
         }
     }
 }
