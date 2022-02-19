@@ -54,6 +54,8 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IAddonLocator, FsAddonLocator>();
             services.AddSingleton<IEntityService, EntityService>();
             services.AddSingleton<IStateService, StateService>();
+            services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
+
             services.AddSingleton(this.EventHandlers);
 
             var provider = services.BuildServiceProvider();
@@ -65,6 +67,14 @@ namespace FivePD.Gamemode.Server
                 Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
             LogDiagnostics(log);
+
+            // Check for dev mode. If enabled, register the utilities
+            if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
+            {
+                var devUtilsService = provider.GetService<IDevUtilitiesService>();
+
+                devUtilsService?.RegisterDevelopmentCommands();
+            }
 
             var addonLocator = provider.GetService<IAddonLocator>();
 
@@ -106,8 +116,21 @@ namespace FivePD.Gamemode.Server
 
             // Logs the current OneSync status
             log.Debug(
-                "OneSync status is {@Status}",
+                "OneSync is {@Status}",
                 Cfx.API.GetConvar("onesync", "Unknown"));
+
+            // Logs dev mode status
+            var devModeEnabled = Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true";
+
+            log.Debug(
+                "Development mode is {@Status}",
+                devModeEnabled ? "on" : "off");
+
+            if (devModeEnabled)
+            {
+                log.Warning(
+                    "Do not enable development mode on public servers. Only enable development mode when developing addons for FivePD. Development mode allows bad actors to exploit FivePD. This is VERY dangerous");
+            }
         }
 
         #if DEBUG
