@@ -35,8 +35,4 @@
   <ItemGroup>
     <PackageReference Include="CitizenFX.Core.Client" Version="1.0.5181" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces" />
-    <Folder Include="Services" />
-  </ItemGroup>
 </Project>

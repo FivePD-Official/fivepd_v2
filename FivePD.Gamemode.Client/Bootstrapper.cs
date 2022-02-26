@@ -6,10 +6,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CitizenFX.Core;
-using CitizenFX.Core.Native;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
+using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Client.Services;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client
 {
@@ -32,6 +35,25 @@ namespace FivePD.Gamemode.Client
             services
                 .Register(() => this.EventHandlers)
                 .As<EventHandlerDictionary>();
+
+            services
+                .Register<AddTickHandler>(() => this.OnTickAdd);
+            services
+                .Register<RemoveTickHandler>(() => this.OnTickRemove);
+
+            services
+                .RegisterType<TickService>()
+                .As<ITickService>();
+
+            services
+                .RegisterType<ScreenDecorService>()
+                .As<IScreenDecorService>();
+
+            var provider = services.Build();
+
+            var screenDecorService = provider.Resolve<IScreenDecorService>();
+            screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
+            screenDecorService.BeginTextDraw();
         }
 
         // TODO: Remove. Only for demo purposes.
@@ -40,18 +62,28 @@ namespace FivePD.Gamemode.Client
         [Command("open")]
         public void MenuOpen()
         {
-            API.SendNuiMessage("{\"type\":\"open\"}");
-            API.SetNuiFocus(true, true);
+            Cfx.API.SendNuiMessage("{\"type\":\"open\"}");
+            Cfx.API.SetNuiFocus(true, true);
         }
 
         // TODO: Remove. Only for demo purposes.
         [Command("close")]
         public void MenuClose()
         {
-            API.SetNuiFocus(false, false);
-            API.SendNuiMessage("{\"type\":\"close\"}");
+            Cfx.API.SetNuiFocus(false, false);
+            Cfx.API.SendNuiMessage("{\"type\":\"close\"}");
         }
         #pragma warning restore 1591
         #pragma warning restore SA1600
+
+        private void OnTickAdd(Func<Task> task)
+        {
+            this.Tick += task;
+        }
+
+        private void OnTickRemove(Func<Task> task)
+        {
+            this.Tick -= task;
+        }
     }
 }
