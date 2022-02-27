@@ -49,32 +49,16 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<ScreenDecorService>()
                 .As<IScreenDecorService>();
 
+            services
+                .RegisterType<NuiService>()
+                .As<INuiService>();
+
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();
             screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
             screenDecorService.BeginTextDraw();
         }
-
-        // TODO: Remove. Only for demo purposes.
-        #pragma warning disable 1591
-        #pragma warning disable SA1600
-        [Command("open")]
-        public void MenuOpen()
-        {
-            Cfx.API.SendNuiMessage("{\"type\":\"open\"}");
-            Cfx.API.SetNuiFocus(true, true);
-        }
-
-        // TODO: Remove. Only for demo purposes.
-        [Command("close")]
-        public void MenuClose()
-        {
-            Cfx.API.SetNuiFocus(false, false);
-            Cfx.API.SendNuiMessage("{\"type\":\"close\"}");
-        }
-        #pragma warning restore 1591
-        #pragma warning restore SA1600
 
         private void OnTickAdd(Func<Task> task)
         {
