@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FivePD.Gamemode.Client", "F
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FivePD.Common", "FivePD.Common\FivePD.Common.shproj", "{63ECCE32-17F2-4B76-91AE-FAFD2E080610}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FivePD.Terminal", "FivePD.Terminal\FivePD.Terminal.csproj", "{F7FA7A79-FD07-4A00-848D-4CEFBCE24953}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FivePD.Gamemode.Server", "FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj", "{87DAAE85-FEB5-4860-9E51-31DCB2B30820}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FivePD.Gamemode.IA.AmbientEvents", "FivePD.Gamemode.IA.AmbientEvents\FivePD.Gamemode.IA.AmbientEvents.csproj", "{4509990C-E190-4355-9F88-D06FCABD86D8}"
@@ -26,10 +24,6 @@ Global
 		{4CF57E85-1599-4CF0-9794-3137B126C666}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4CF57E85-1599-4CF0-9794-3137B126C666}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4CF57E85-1599-4CF0-9794-3137B126C666}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F7FA7A79-FD07-4A00-848D-4CEFBCE24953}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F7FA7A79-FD07-4A00-848D-4CEFBCE24953}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F7FA7A79-FD07-4A00-848D-4CEFBCE24953}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7FA7A79-FD07-4A00-848D-4CEFBCE24953}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87DAAE85-FEB5-4860-9E51-31DCB2B30820}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{87DAAE85-FEB5-4860-9E51-31DCB2B30820}.Debug|Any CPU.Build.0 = Debug|x64
 		{87DAAE85-FEB5-4860-9E51-31DCB2B30820}.Release|Any CPU.ActiveCfg = Release|x64
