@@ -53,11 +53,18 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<NuiService>()
                 .As<INuiService>();
 
+            services
+                .RegisterType<KeybindService>()
+                .As<IKeybindService>();
+
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();
             screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
             screenDecorService.BeginTextDraw();
+
+            var keybindService = provider.Resolve<KeybindService>();
+            keybindService.Register(provider);
 
             var nuiService = provider.Resolve<NuiService>();
             nuiService.RegisterEventHandlers();
