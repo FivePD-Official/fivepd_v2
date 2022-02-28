@@ -7,21 +7,32 @@
 using System;
 using System.Dynamic;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Gamemode.Client.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
 {
     /// <inheritdoc cref="INuiService" />
-    internal class NuiService : BaseScript, INuiService
+    public class NuiService : INuiService
     {
-        /**
-         * <summary>Initializes a new instance of the <see cref="NuiService"/> class.</summary>
-         */
-        public NuiService()
+        private readonly EventHandlerDictionary _eventHandlerDictionary;
+
+        /// <summary>Initializes a new instance of the <see cref="NuiService"/> class.</summary>
+        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>>
+        public NuiService(EventHandlerDictionary eventHandlerDictionary)
         {
-            Cfx.API.RegisterNuiCallbackType("closeMdt");
-            this.EventHandlers["__cfx_nui:closeMdt"] += new Action<ExpandoObject, CallbackDelegate>((body, resultCallback) =>
+            this._eventHandlerDictionary = eventHandlerDictionary;
+        }
+
+        /// <summary>
+        /// Registers all necessary NUI events for the MDT and menus.
+        /// </summary>
+        public void RegisterEventHandlers()
+        {
+            Cfx.API.RegisterCommand("open", new Action(this.Show), false);
+            Cfx.API.RegisterNuiCallbackType(Events.Nui.Close);
+            this._eventHandlerDictionary[$"__cfx_nui:{Events.Nui.Close}"] += new Action<ExpandoObject, CallbackDelegate>((body, resultCallback) =>
             {
                 this.Hide();
             });
@@ -30,7 +41,6 @@ namespace FivePD.Gamemode.Client.Services
         /**
          * <inheritdoc />
          */
-        [Command("open")]
         public void Show()
         {
             Cfx.API.SendNuiMessage("{\"type\":\"open\"}");

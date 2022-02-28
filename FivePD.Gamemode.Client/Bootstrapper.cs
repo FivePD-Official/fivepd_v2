@@ -58,6 +58,9 @@ namespace FivePD.Gamemode.Client
             var screenDecorService = provider.Resolve<IScreenDecorService>();
             screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
             screenDecorService.BeginTextDraw();
+
+            var nuiService = provider.Resolve<NuiService>();
+            nuiService.RegisterEventHandlers();
         }
 
         private void OnTickAdd(Func<Task> task)

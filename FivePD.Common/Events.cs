@@ -42,5 +42,16 @@ namespace FivePD.Common
              */
             public const string RequestProp = "fivepd:entityManagement:requestProp";
         }
+
+        /**
+         * <summary>Contains definitions for events related to the NUI.</summary>
+         */
+        public abstract class Nui
+        {
+            /**
+            * <summary>Closes the NUI.</summary>
+            */
+            public const string Close = "fivepd:nui:close";
+        }
     }
 }
