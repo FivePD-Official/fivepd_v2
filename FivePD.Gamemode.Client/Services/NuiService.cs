@@ -8,6 +8,7 @@ using System;
 using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
@@ -30,7 +31,6 @@ namespace FivePD.Gamemode.Client.Services
         /// </summary>
         public void RegisterEventHandlers()
         {
-            Cfx.API.RegisterCommand("open", new Action(this.Show), false);
             Cfx.API.RegisterNuiCallbackType(Events.Nui.Close);
             this._eventHandlerDictionary[$"__cfx_nui:{Events.Nui.Close}"] += new Action<ExpandoObject, CallbackDelegate>((body, resultCallback) =>
             {
@@ -41,6 +41,7 @@ namespace FivePD.Gamemode.Client.Services
         /**
          * <inheritdoc />
          */
+        [Keybind("fivepd_open_mdt", "B")]
         public void Show()
         {
             Cfx.API.SendNuiMessage("{\"type\":\"open\"}");
