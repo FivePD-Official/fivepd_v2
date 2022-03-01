@@ -4,7 +4,9 @@ export const showNui = () => {
 
 export const hideNui = () => {
   document.body.style.display = "none";
-  fetch(`https://fivepd/fivepd:nui:close`,{
-    method: 'POST'
-  });
+  try {
+    fetch('https://fivepd/fivepd:nui:close',{
+      method: 'POST'
+    });
+  } catch(_) {}
 }

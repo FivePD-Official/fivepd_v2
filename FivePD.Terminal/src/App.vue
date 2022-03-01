@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { hideNui, showNui } from './utils';
 import { useRouter } from 'vue-router';
+import { Ref, ref } from 'vue';
+import { useStore } from 'vuex';
 
+type ViewType = 'mdt' | 'duty_menu';
+
+const store = useStore();
 const router = useRouter();
+const viewType: Ref<ViewType> = ref<ViewType>('mdt');
+const viewTypes: string[] = ['mdt', 'duty_menu'];
 
 window.onload = function () {
 
@@ -14,7 +21,26 @@ window.onload = function () {
     document.body.style.display = "none";
 
     window.addEventListener('message', (event) => {
-      if (event.data.type === 'open') showNui();
+
+      if (event.data.type === 'close') {
+        document.body.style.display = "none";
+        return;
+      }
+
+      showNui();
+
+      if (viewTypes.includes(event.data.type)) {
+        viewType.value = event.data.type;
+      } else {
+        if (event.data.type === 'control_up') {
+          store.commit('moveUp');
+        } else if (event.data.type === 'control_down') {
+          store.commit('moveDown');
+        } else if (event.data.type === 'control_select') {
+          store.commit('select');
+        }
+      }
+
     });
 
     window.addEventListener('keydown', (event) => {
@@ -40,7 +66,8 @@ window.onload = function () {
 </script>
 
 <template>
-  <Main />
+  <Main v-if="viewType === 'mdt'" />
+  <DutyMenu v-else-if="viewType === 'duty_menu'" />
 </template>
 
 <style lang="sass">

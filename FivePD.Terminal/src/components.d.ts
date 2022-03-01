@@ -4,8 +4,10 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    DutyMenu: typeof import('./components/DutyMenu.vue')['default']
     Header: typeof import('./components/Header.vue')['default']
     Main: typeof import('./components/Main.vue')['default']
+    Menu: typeof import('./components/Menu.vue')['default']
     PageHeader: typeof import('./components/PageHeader.vue')['default']
     SearchPanel: typeof import('./components/SearchPanel.vue')['default']
     Sidebar: typeof import('./components/Sidebar.vue')['default']

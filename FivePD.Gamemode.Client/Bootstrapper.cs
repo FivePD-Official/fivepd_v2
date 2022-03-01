@@ -51,7 +51,8 @@ namespace FivePD.Gamemode.Client
 
             services
                 .RegisterType<NuiService>()
-                .As<INuiService>();
+                .As<INuiService>()
+                .IsSingleton();
 
             services
                 .RegisterType<KeybindService>()

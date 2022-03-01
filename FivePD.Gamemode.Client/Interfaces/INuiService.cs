@@ -13,15 +13,13 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface INuiService
     {
         /// <summary>
-        /// Shows NUI.
+        /// Registers all necessary NUI events for the MDT and menus.
         /// </summary>
-        public void Show();
+        public void RegisterEventHandlers();
 
         /// <summary>
         /// Hides NUI.
         /// </summary>
         public void Hide();
-
-        // TODO: switch between MDT and menu view
     }
 }
