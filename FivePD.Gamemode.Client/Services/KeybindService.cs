@@ -32,7 +32,7 @@ namespace FivePD.Gamemode.Client.Services
 
                 var attr = method.GetCustomAttribute<KeybindAttribute>();
 
-                Cfx.API.RegisterKeyMapping($"+{attr.Id}", "description", "keyboard", attr.Key);
+                Cfx.API.RegisterKeyMapping($"+{attr.Id}", attr.Description, "keyboard", attr.Key);
                 Cfx.API.RegisterCommand(
                     $"+{attr.Id}",
                     new Action(() =>
