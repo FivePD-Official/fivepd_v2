@@ -76,7 +76,6 @@ onMounted(() => {
     background: var(--clr-bg)
     min-width: 300px
     border-radius: var(--radius)
-    padding: 0 15px
     padding-bottom: 20px
 
     .menu-header
@@ -84,7 +83,7 @@ onMounted(() => {
       flex-direction: row
       align-items: center
       justify-content: flex-start
-      padding: 20px 0
+      padding: 20px 15px
 
       p
         font-weight: 600
@@ -96,19 +95,37 @@ onMounted(() => {
       display: flex
       flex-direction: column
       align-items: flex-start
+      padding: 0 5px
 
       .selector
         position: absolute
+        z-index: 1
         top: 0
         left: 0
         width: 100%
         height: 40px
-        border: 2px solid var(--clr-gray)
-        border-radius: var(--radius)
+        border-left: 3px solid var(--clr-gray)
+        border-right: 3px solid var(--clr-gray)
+        transition: var(--transition), border-color 0.1s cubic-bezier(0.33, 1, 0.68, 1)
+        &::before
+          content: ''
+          position: absolute
+          z-index: 1
+          top: 0
+          left: 0
+          width: 100%
+          height: 100%
+          background: white
+          opacity: 0.05
+          transition: var(--transition)
         &.selector--focused
           border-color: var(--clr-blue)
+          &::before
+            background: var(--clr-blue)
 
       .menu-item
+        position: relative
+        z-index: 2
         width: 100%
         height: 40px
         display: flex
@@ -116,7 +133,7 @@ onMounted(() => {
         align-items: center
         transition: var(--transition)
         margin-bottom: 5px
-        padding: 0 15px
+        padding: 0 10px
 
         .title
           color: var(--clr-text-secondary)

@@ -21,5 +21,40 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Hides NUI.
         /// </summary>
         public void Hide();
+
+        /// <summary>
+        /// Opens the MDT.
+        /// </summary>
+        public void OpenMdt();
+
+        /// <summary>
+        /// Opens the duty menu.
+        /// </summary>
+        public void OpenDutyMenu();
+
+        /// <summary>
+        /// Moves up by one item in the currently opened menu.
+        /// </summary>
+        public void MenuControlUp();
+
+        /// <summary>
+        /// Moves down by one item in the currently opened menu.
+        /// </summary>
+        public void MenuControlDown();
+
+        /// <summary>
+        /// Moves left by one item in the currently opened menu.
+        /// </summary>
+        public void MenuControlLeft();
+
+        /// <summary>
+        /// Moves right by one item in the currently opened menu.
+        /// </summary>
+        public void MenuControlRight();
+
+        /// <summary>
+        /// Selects the current item in the menu.
+        /// </summary>
+        public void MenuControlSelect();
     }
 }

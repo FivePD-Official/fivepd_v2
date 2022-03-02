@@ -3,6 +3,17 @@ import { DateFormat, IDateInput } from '../interfaces';
 export { themes } from './colors';
 export { hideNui, showNui } from './nui';
 
+export const NuiEventType = Object.freeze({
+  Close: 'close',
+  Mdt: 'view:mdt',
+  DutyMenu: 'view:duty_menu',
+  MenuUp: 'menu:control_up',
+  MenuDown: 'menu:control_down',
+  MenuLeft: 'menu:control_left',
+  MenuRight: 'menu:control_right',
+  MenuSelect: 'menu:control_select',
+});
+
 export const createBirthdateInputList = (dateFormat: DateFormat): IDateInput[] => {
   let inputs: IDateInput[] = [];
   switch (dateFormat as DateFormat) {

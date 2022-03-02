@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { hideNui, showNui } from './utils';
+import { hideNui, showNui, NuiEventType } from './utils';
 import { useRouter } from 'vue-router';
 import { Ref, ref } from 'vue';
 import { useStore } from 'vuex';
 
-type ViewType = 'mdt' | 'duty_menu';
-
 const store = useStore();
 const router = useRouter();
-const viewType: Ref<ViewType> = ref<ViewType>('mdt');
-const viewTypes: string[] = ['mdt', 'duty_menu'];
+const viewType: Ref<string> = ref<string>(NuiEventType.Mdt);
 
 window.onload = function () {
 
@@ -22,22 +19,41 @@ window.onload = function () {
 
     window.addEventListener('message', (event) => {
 
-      if (event.data.type === 'close') {
+      if (!event.data.hasOwnProperty('type')) return;
+
+      const type: string = event.data.type;
+
+      if (type === NuiEventType.Close) {
         document.body.style.display = "none";
         return;
       }
 
-      showNui();
+      if ([NuiEventType.Mdt, NuiEventType.DutyMenu].includes(type)) {
+        viewType.value = type;
+        showNui();
+        return;
+      }
 
-      if (viewTypes.includes(event.data.type)) {
-        viewType.value = event.data.type;
-      } else {
-        if (event.data.type === 'control_up') {
+      switch (type) {
+        case NuiEventType.MenuUp: {
           store.commit('moveUp');
-        } else if (event.data.type === 'control_down') {
+          break;
+        }
+        case NuiEventType.MenuDown: {
           store.commit('moveDown');
-        } else if (event.data.type === 'control_select') {
+          break;
+        }
+        case NuiEventType.MenuLeft: {
+          store.commit('moveLeft');
+          break;
+        }
+        case NuiEventType.MenuRight: {
+          store.commit('moveRight');
+          break;
+        }
+        case NuiEventType.MenuSelect: {
           store.commit('select');
+          break;
         }
       }
 
@@ -66,8 +82,8 @@ window.onload = function () {
 </script>
 
 <template>
-  <Main v-if="viewType === 'mdt'" />
-  <DutyMenu v-else-if="viewType === 'duty_menu'" />
+  <Main v-if="viewType === NuiEventType.Mdt" />
+  <DutyMenu v-else-if="viewType === NuiEventType.DutyMenu" />
 </template>
 
 <style lang="sass">

@@ -37,71 +37,74 @@ namespace FivePD.Gamemode.Client.Services
             });
         }
 
-        /**
-         * <inheritdoc />
-         */
+        /// <inheritdoc />
         [Keybind("fivepd_close_all", "BACK", "Close menu")]
         public void Hide()
         {
-            this.SendMessage("close");
+            this.SendMessage(NuiEventType.Close);
             Cfx.API.SetNuiFocus(false, false);
             this._isNuiOpened = false;
         }
 
-        /// <summary>
-        /// Opens the MDT.
-        /// </summary>
+        /// <inheritdoc />
         [Keybind("fivepd_open_mdt", "B", "Open MDT")]
         public void OpenMdt()
         {
-            this.Show("mdt");
+            this.Show(NuiEventType.Mdt);
         }
 
-        /// <summary>
-        /// Opens the duty menu.
-        /// </summary>
+        /// <inheritdoc />
         [Keybind("fivepd_open_dutyMenu", "G", "Open duty menu")]
         public void OpenDutyMenu()
         {
-            this.Show("duty_menu", false, false);
+            this.Show(NuiEventType.DutyMenu, false, false);
         }
 
-        /// <summary>
-        /// Moves up by one item in the currently opened menu.
-        /// </summary>
+        /// <inheritdoc />
         [Keybind("fivepd_menu_up", "UP", "Move up in menu")]
         public void MenuControlUp()
         {
-            this.SendMessage("control_up");
+            this.SendMessage(NuiEventType.MenuUp);
         }
 
-        /// <summary>
-        /// Moves down by one item in the currently opened menu.
-        /// </summary>
+        /// <inheritdoc />
         [Keybind("fivepd_menu_down", "DOWN", "Move down in menu")]
         public void MenuControlDown()
         {
-            this.SendMessage("control_down");
+            this.SendMessage(NuiEventType.MenuDown);
         }
 
-        /// <summary>
-        /// Selects the currently selected item in the menu.
-        /// </summary>
-        [Keybind("fivepd_menu_select", "RETURN", "Selects item in menu")]
-        public void MenuSelect()
+        /// <inheritdoc />
+        [Keybind("fivepd_menu_left", "LEFT", "Move left in menu")]
+        public void MenuControlLeft()
         {
-            this.SendMessage("control_select");
+            this.SendMessage(NuiEventType.MenuLeft);
+        }
+
+        /// <inheritdoc />
+        [Keybind("fivepd_menu_right", "RIGHT", "Move right in menu")]
+        public void MenuControlRight()
+        {
+            this.SendMessage(NuiEventType.MenuRight);
+        }
+
+        /// <inheritdoc />
+        [Keybind("fivepd_menu_select", "RETURN", "Selects item in menu")]
+        public void MenuControlSelect()
+        {
+            this.SendMessage(NuiEventType.MenuSelect);
         }
 
         /// <summary>
-        /// Shows NUI.
+        /// Shows NUI. If the MDT has been opened while any menu is open,
+        /// the NUI view will be switched to the MDT.
         /// </summary>
         /// <param name="type">Switches to the given type after showing NUI.</param>
         /// <param name="hasFocus">If NUI has focus.</param>
         /// <param name="hasCursor">If NUI has cursor usage.</param>
         private void Show(string type, bool hasFocus = true, bool hasCursor = true)
         {
-            if (this._isNuiOpened && type != "mdt")
+            if (this._isNuiOpened && type != NuiEventType.Mdt)
             {
                 this.Hide();
                 return;
@@ -120,6 +123,24 @@ namespace FivePD.Gamemode.Client.Services
         private void SendMessage(string type)
         {
             Cfx.API.SendNuiMessage("{\"type\":\"" + type + "\"}");
+        }
+
+        /// <summary>
+        /// The necessary event types used for communicating with the Nui.
+        /// Should contains the same types as the Terminal project has.
+        /// </summary>
+        private abstract class NuiEventType
+        {
+            public const string Close = "close";
+
+            public const string Mdt = "view:mdt";
+            public const string DutyMenu = "view:duty_menu";
+
+            public const string MenuUp = "menu:control_up";
+            public const string MenuDown = "menu:control_down";
+            public const string MenuLeft = "menu:control_left";
+            public const string MenuRight = "menu:control_right";
+            public const string MenuSelect = "menu:control_select";
         }
     }
 }
