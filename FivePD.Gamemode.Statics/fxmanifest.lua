@@ -16,11 +16,11 @@ author 'GTAPoliceMods Development Studios'
 description 'The FivePD Gamemode'
 version '2.0.0'
 
-ui_page 'Libraries/FivePD.Terminal/wwwroot/index.html'
+ui_page 'Libraries/FivePD.Terminal/index.html'
 client_script 'Libraries/FivePD.Gamemode.Client/FivePD.Gamemode.Client.net.dll'
 server_script 'Libraries/FivePD.Gamemode.Server/FivePD.Gamemode.Server.net.dll'
 
 files {
     'Libraries/FivePD.Gamemode.Client/**/*',
-    'Libraries/FivePD.Terminal/wwwroot/**/*'
+    'Libraries/FivePD.Terminal/**/*'
 }
