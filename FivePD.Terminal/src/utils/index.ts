@@ -1,6 +1,5 @@
 import { DateFormat, IDateInput } from '../interfaces';
 
-export { themes } from './colors';
 export { hideNui, showNui } from './nui';
 export * from './MenuItem';
 
