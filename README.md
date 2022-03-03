@@ -12,13 +12,14 @@
 ### Developing
 
 1. Insert the latest recommended build of FXServer into the `FXServer` directory
-2. Select the Debug solution configuration
-3. Start the "Run FXServer" run configuration
-4. If changes are made to the FivePD.Terminal project, run `npm run build` inside it (will output to `VITE_OUTDIR`). Restart the *fivepd* resource manually
+1. Select the Debug solution configuration
+1. Start the "Run FXServer" run configuration
+1. If you want to make changes to FivePD.Terminal, change the `ui_page` value to `http://localhost:3000` in your `fxmanifest.lua`.
 
 ### Building for Production
 
 1. Select the Release solution configuration
-2. Build the solution (will output to `build-public`)
-3. Run `npm run build` in FivePD.Terminal (will output to `VITE_OUTDIR`).
-4. Obfuscate and do your magic, Daniel
+1. Build the solution (will output to `build-public`)
+1. Run `npm run build` in FivePD.Terminal (will output to `VITE_OUTDIR`).
+1. In the `fxmanifest.lua` change the `ui_page` value to `Libraries/FivePD.Terminal/index.html`
+1. Obfuscate and do your magic, Daniel

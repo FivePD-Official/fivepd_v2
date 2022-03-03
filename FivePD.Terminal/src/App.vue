@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { hideNui, showNui, NuiEventType } from './utils';
 import { useRouter } from 'vue-router';
-import { Ref, ref } from 'vue';
-import { useStore } from 'vuex';
+import { type Ref, ref } from 'vue';
+import useEmitter from './hooks/useEmitter';
 
-const store = useStore();
+const emitter = useEmitter();
 const router = useRouter();
 const viewType: Ref<string> = ref<string>(NuiEventType.Mdt);
 
@@ -13,56 +13,31 @@ window.onload = function () {
   const isDev = import.meta.env.MODE === 'development';
 
   document.head.innerHTML = document.head.innerHTML + '<base href=' + (isDev ? '' : '/Libraries/FivePD.Terminal/') + '/>';
+  document.body.style.display = "none";
 
-  if (!isDev) {
-    document.body.style.display = "none";
+  window.addEventListener('message', (event) => {
+    if (!event.data.hasOwnProperty('type')) return;
 
-    window.addEventListener('message', (event) => {
+    // Type should always hold the same values as in FivePD.Gamemod.Client.Services.NuiService.NuiEventType
+    const type: string = event.data.type;
 
-      if (!event.data.hasOwnProperty('type')) return;
+    if (type === NuiEventType.Close) {
+      document.body.style.display = "none";
+      return;
+    }
 
-      const type: string = event.data.type;
+    if ([NuiEventType.Mdt, NuiEventType.DutyMenu].includes(type)) {
+      viewType.value = type;
+      showNui();
+      return;
+    }
 
-      if (type === NuiEventType.Close) {
-        document.body.style.display = "none";
-        return;
-      }
+    emitter.emit(type);
+  });
 
-      if ([NuiEventType.Mdt, NuiEventType.DutyMenu].includes(type)) {
-        viewType.value = type;
-        showNui();
-        return;
-      }
-
-      switch (type) {
-        case NuiEventType.MenuUp: {
-          store.commit('moveUp');
-          break;
-        }
-        case NuiEventType.MenuDown: {
-          store.commit('moveDown');
-          break;
-        }
-        case NuiEventType.MenuLeft: {
-          store.commit('moveLeft');
-          break;
-        }
-        case NuiEventType.MenuRight: {
-          store.commit('moveRight');
-          break;
-        }
-        case NuiEventType.MenuSelect: {
-          store.commit('select');
-          break;
-        }
-      }
-
-    });
-
-    window.addEventListener('keydown', (event) => {
-      if (event.code === 'Escape') hideNui();
-    });
-  }
+  window.addEventListener('keydown', (event) => {
+    if (event.code === 'Escape') hideNui();
+  });
 
   const style = document.createElement('style');
   style.appendChild(document.createTextNode(`\
