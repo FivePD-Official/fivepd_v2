@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { IRoute } from '../interfaces';
+import type { IRoute } from '@interfaces';
 import { useStore } from 'vuex';
 
 const store = useStore();

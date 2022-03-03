@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ISearchSubmitField } from '../../interfaces';
+import { ISearchSubmitField } from '@interfaces';
 
 const onSearchSubmit = (fields: ISearchSubmitField[]) => {
   console.log(fields)

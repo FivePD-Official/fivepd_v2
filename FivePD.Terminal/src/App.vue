@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { hideNui, showNui, NuiEventType } from './utils';
+import { hideNui, showNui, NuiEventType } from '@utils';
 import { useRouter } from 'vue-router';
 import { type Ref, ref } from 'vue';
-import useEmitter from './hooks/useEmitter';
+import { useEmitter } from '@hooks';
 
 const emitter = useEmitter();
 const router = useRouter();

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { DateFormat, IDateInput, ISearchSubmitField } from '../interfaces';
-import { createBirthdateInputList } from '../utils';
+import { DateFormat, IDateInput, ISearchSubmitField } from '@interfaces';
+import { createBirthdateInputList } from '@utils';
 
 const emit = defineEmits(['onSubmit']);
 

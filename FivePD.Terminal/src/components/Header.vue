@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Ref, ref } from 'vue';
-import { hideNui } from '../utils';
+import { hideNui } from '@utils';
 
 const username: string = 'John Doe';
 const currentStatus: Ref<string> = ref('10-0');

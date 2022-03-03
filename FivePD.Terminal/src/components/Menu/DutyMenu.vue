@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MenuItem, MenuItemToggle } from '../../utils/MenuItem';
+import { MenuItem, MenuItemToggle } from '@utils';
 
 const onDutyToggle = () => {
   console.log('toggled on duty');

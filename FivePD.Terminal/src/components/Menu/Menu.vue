@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted } from 'vue';
-import useEmitter from '../../hooks/useEmitter';
-import { MenuItem } from '../../utils/MenuItem';
-import { MenuItemType } from '../../enums';
-import { NuiEventType } from '../../utils';
+import { useEmitter } from '@hooks';
+import { MenuItem } from '@utils';
+import { MenuItemType } from '@enums';
+import { NuiEventType } from '@utils';
 
 const props = defineProps<{
   title: string,
