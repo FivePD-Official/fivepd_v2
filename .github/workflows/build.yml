@@ -16,7 +16,7 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       - name: Restore packages
-        run: dotnet restore FivePD.sln
+        run: dotnet restore ${GITHUB_WORKSPACE}/FivePD.sln
       - uses: actions/checkout@master
       - name: SonarQube Scan
         uses: kitabisa/sonarqube-action@v1.1.0
