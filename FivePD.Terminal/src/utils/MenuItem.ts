@@ -1,18 +1,34 @@
-import { MenuItemType } from '../enums';
+import { MenuItemType } from '@enums';
 
 export class MenuItem {
 
-  type: MenuItemType;
-  title: string;
-  description: string;
-  onPress: () => void | Promise<void> = () => {};
+  private _type: MenuItemType;
+  private _title: string;
+  private _description: string;
+  private _onPress: (obj: MenuItem) => void | Promise<void> = () => {};
 
   constructor(title: string, description: string, type: MenuItemType, onPress?: () => void | Promise<void>) {
-    this.title = title;
-    this.description = description;
-    this.type = type;
+    this._title = title;
+    this._description = description;
+    this._type = type;
 
-    if (onPress) this.onPress = onPress;
+    if (onPress) this._onPress = onPress;
+  }
+
+  get type(): MenuItemType {
+    return this._type;
+  }
+
+  get title(): string {
+    return this._title;
+  }
+
+  get description(): string {
+    return this._description;
+  }
+
+  onPress(): void {
+    this._onPress(this);
   }
 
 }
@@ -33,7 +49,7 @@ export class MenuItemToggle extends MenuItem {
     super(title, description, MenuItemType.Toggle, onPress);
   }
 
-  get checked() {
+  get checked(): boolean {
     return this._isChecked;
   }
 
@@ -45,23 +61,33 @@ export class MenuItemToggle extends MenuItem {
 
 export class MenuItemList extends MenuItem {
 
-  private _items: any[] = [];
+  private _items: string[] | number[] = [];
   private _currentIndex: number = 0;
 
   constructor(title: string, description: string, onPress?: () => void | Promise<void>) {
     super(title, description, MenuItemType.List, onPress);
   }
 
-  get currentIndex() {
-    return this._currentIndex;
-  }
-
-  get items() {
+  get items(): string[] | number[] {
     return this._items;
   }
 
-  set setItems(items: any[]) {
+  get currentIndex(): number {
+    return this._currentIndex;
+  }
+
+  set setItems(items: string[] | number[]) {
     this._items = items;
+  }
+
+  next(): void {
+    if (this._currentIndex === this._items.length-1) return;
+    this._currentIndex++;
+  }
+
+  prev(): void {
+    if (this._currentIndex === 0) return;
+    this._currentIndex--;
   }
 
 }

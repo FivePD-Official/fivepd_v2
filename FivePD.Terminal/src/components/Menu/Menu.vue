@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { type Ref, ref, onMounted } from 'vue';
+import { type Ref, ref, onMounted, onBeforeMount } from 'vue';
 import { useEmitter } from '@hooks';
-import { MenuItem } from '@utils';
+import type { MenuItem, MenuItemList } from '@utils';
 import { MenuItemType } from '@enums';
 import { NuiEventType } from '@utils';
 
@@ -15,6 +15,16 @@ const emitter = useEmitter();
 const currentItemIndex: Ref<number> = ref(0);
 const itemNodes: Ref<HTMLElement[] | null> = ref(null);
 const selectorNode: Ref<HTMLElement | null> = ref(null);
+const menuItems: Ref<MenuItem[]> = ref([]);
+
+onBeforeMount(() => {
+  menuItems.value = props.items;
+});
+
+onMounted(() => {
+  itemNodes.value = Array.from(document.querySelectorAll('.menu-item'));
+  selectorNode.value = document.querySelector('.selector');
+});
 
 emitter.on(NuiEventType.MenuUp, () => {
   if (!selectorNode.value || !itemNodes.value || !props.items) return;
@@ -36,13 +46,16 @@ emitter.on(NuiEventType.MenuDown, () => {
   selectorNode.value.style.top = `${currentItemNode.offsetTop}px`;
 });
 
+emitter.on(NuiEventType.MenuLeft, () => onListSlide(NuiEventType.MenuLeft));
+emitter.on(NuiEventType.MenuRight, () => onListSlide(NuiEventType.MenuRight));
+
 emitter.on(NuiEventType.MenuSelect, () => {
   if (!selectorNode.value || !itemNodes.value || !props.items) return;
 
   // Change DOM state
-  selectorNode.value.classList.add('selector--on-enter');
+  selectorNode.value.classList.add('selector--on-select');
   setTimeout(() => {
-    selectorNode.value!.classList.remove('selector--on-enter');
+    selectorNode.value!.classList.remove('selector--on-select');
   }, 100);
 
   // Change actual item state
@@ -50,16 +63,42 @@ emitter.on(NuiEventType.MenuSelect, () => {
   currentItem.onPress();
 });
 
-onMounted(() => {
-  itemNodes.value = Array.from(document.querySelectorAll('.menu-item'));
-  selectorNode.value = document.querySelector('.selector');
-});
-
 const getItemClass = (type: MenuItemType) => {
   switch (type) {
-    case MenuItemType.List: return 'menu-item--list';
-    case MenuItemType.Toggle: return 'menu-item--toggle';
+    case MenuItemType.List: return 'menu-item__list';
+    case MenuItemType.Toggle: return 'menu-item__toggle';
   }
+}
+
+const getMarqueeClass = (item: MenuItemList, listItem: string | number, listIndex: number) => {
+  if (typeof(listItem) !== 'string') return '';
+  if (listItem.length <= 10) return '';
+  return item.currentIndex === listIndex ? 'marquee' : '';
+}
+
+const onListSlide = (dir: string) => {
+  if (!selectorNode.value || !itemNodes.value || !menuItems.value) return;
+
+  const currentItemNode = itemNodes.value[currentItemIndex.value];
+  const leftArrow = currentItemNode.querySelector('.left-arrow');
+  const rightArrow = currentItemNode.querySelector('.right-arrow');
+  const wrapper = currentItemNode.querySelector('.list-wrapper .list-wrapper-inner');
+
+  const arrow = dir === NuiEventType.MenuLeft ? leftArrow : rightArrow;
+  arrow!.classList.add('on-press');
+  setTimeout(() => {
+    arrow!.classList.remove('on-press');
+  }, 100);
+
+  const currentItem: MenuItemList = menuItems.value[currentItemIndex.value] as MenuItemList;
+  if (dir === NuiEventType.MenuLeft) {
+    wrapper!.scrollLeft -= 100;
+    currentItem.prev();
+  } else {
+    wrapper!.scrollLeft += 100;
+    currentItem.next();
+  }
+
 }
 </script>
 
@@ -73,8 +112,28 @@ const getItemClass = (type: MenuItemType) => {
 
         <div class="selector"></div>
 
-        <div v-for="item in items || []" :key="item.title" :class="`menu-item ${getItemClass(item.type)}`">
+        <div v-for="(item, index) in menuItems || []" :key="index" :class="`menu-item ${getItemClass(item.type)}`">
+
           <p class="title">{{ item.title }}</p>
+
+          <div v-if="item.type === MenuItemType.List" class="menu-item-list">
+            <svg xmlns="http://www.w3.org/2000/svg" :class="`left-arrow ${(item as MenuItemList).currentIndex === 0 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            <div class="list-wrapper">
+              <div class="list-wrapper-inner">
+                <div v-for="(listItem, listIndex) in (item as (MenuItemList)).items" :key="listIndex" class="list-wrapper-item">
+                  <div :class="`list-wrapper-item-inner ${getMarqueeClass(item as MenuItemList, listItem, listIndex)}`">
+                    <p>{{ listItem }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" :class="`right-arrow ${(item as MenuItemList).currentIndex === (item as MenuItemList).items.length-1 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+
         </div>
 
       </div>
@@ -140,7 +199,7 @@ const getItemClass = (type: MenuItemType) => {
           background: white
           opacity: 0.05
           transition: var(--transition)
-        &.selector--on-enter
+        &.selector--on-select
           border-color: var(--clr-blue)
           &::before
             background: var(--clr-blue)
@@ -153,11 +212,81 @@ const getItemClass = (type: MenuItemType) => {
         display: flex
         flex-direction: row
         align-items: center
+        justify-content: space-between
+        gap: 10px
         transition: var(--transition)
         margin-bottom: 5px
         padding: 0 10px
 
         .title
           color: var(--clr-text-secondary)
+
+      .menu-item__list
+        .menu-item-list
+          position: relative
+          height: 100%
+          width: calc(30px + 100px + 30px)
+          display: grid
+          grid: 1fr / 30px 1fr 30px
+          align-items: center
+          justify-items: center
+
+          svg
+            height: 22px
+            color: var(--clr-text-secondary)
+            transition: none
+            &.arrow-disabled
+              opacity: 0.5
+            &:not(.arrow-disabled).on-press
+              color: var(--clr-blue)
+
+          .list-wrapper
+            width: 100%
+            height: 100%
+            overflow: hidden
+
+            .list-wrapper-inner
+              width: 100%
+              height: 100%
+              overflow: hidden
+              display: flex
+              flex-direction: row
+              align-items: center
+              overflow-y: hidden
+
+              .list-wrapper-item
+                position: relative
+                width: 100px
+                min-width: 100px
+                height: 100%
+                display: flex
+                align-items: center
+                justify-content: center
+                overflow: hidden
+
+                .list-wrapper-item-inner
+                  position: absolute
+                  z-index: 1
+                  top: 50%
+                  left: 50%
+                  transform: translate(-50%, -50%)
+                  display: flex
+                  flex-direction: row
+                  align-items: center
+                  &.marquee
+                    left: 0
+                    transform: translateY(-50%)
+                    animation: marquee 4s linear infinite
+                    animation-delay: 1s
+
+                  p
+                    color: var(--clr-text-secondary)
+                    white-space: nowrap
+
+@keyframes marquee
+  0%
+    transform: translate(0, -50%)
+  100%
+    transform: translate(-50%, -50%)
 
 </style>
