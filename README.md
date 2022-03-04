@@ -14,7 +14,7 @@
 1. Insert the latest recommended build of FXServer into the `FXServer` directory
 1. Select the Debug solution configuration
 1. Start the "Run FXServer" run configuration
-1. If you want to make changes to FivePD.Terminal, change the `ui_page` value to `http://localhost:3000` in your `fxmanifest.lua`.
+1. If you want to make changes to FivePD.Terminal, change the `ui_page` value to `http://localhost:3000` in your `fxmanifest.lua`. You might need to restart the resource sometimes, because the old UI and events could be cached.
 
 ### Building for Production
 
