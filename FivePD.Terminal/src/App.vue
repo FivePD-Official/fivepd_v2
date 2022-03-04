@@ -18,7 +18,7 @@ window.onload = function () {
   window.addEventListener('message', (event) => {
     if (!event.data.hasOwnProperty('type')) return;
 
-    // Type should always hold the same values as in FivePD.Gamemod.Client.Services.NuiService.NuiEventType
+    // Type should always hold the same values as in FivePD.Gamemode.Client.Services.NuiService.NuiEventType
     const type: string = event.data.type;
 
     if (type === NuiEventType.Close) {

@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { type MenuItem, MenuItemList, MenuItemToggle } from '@utils';
+import { MenuItemList, MenuItemToggle } from '@utils';
 
-const onDutyToggle = () => {
-  console.log('toggled on duty');
+const onDutyToggle = (obj?: MenuItemToggle) => {
+  if (!obj) return;
 }
-const getLoadout = (obj?: MenuItem) => {
-  console.log(obj)
+const getLoadout = (obj?: MenuItemList) => {
+  if (!obj) return;
 }
 
+const dutyToggle = new MenuItemToggle('On duty', 'Toggles your duty status.', onDutyToggle);
 const loadoutItem = new MenuItemList('Get loadout', 'Loadout.', getLoadout);
 loadoutItem.setItems = ['really long item title test', 'item 2', 'item 3', 'item 4'];
-
-const items: MenuItem[] = [
-  new MenuItemToggle('On duty', 'Toggles your duty status.', onDutyToggle),
-  loadoutItem
-];
 </script>
 
 <template>
-  <Menu title="Duty menu" :items="items" />
+  <Menu title="Duty menu" :items="[dutyToggle, loadoutItem]" />
 </template>
 
 <style lang="sass">
