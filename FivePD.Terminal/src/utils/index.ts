@@ -1,6 +1,7 @@
 import { DateFormat, IDateInput } from '../interfaces';
 
 export { hideNui, showNui } from './nui';
+export * from './request';
 export * from './MenuItem';
 
 export const NuiEventType = Object.freeze({
@@ -12,6 +13,10 @@ export const NuiEventType = Object.freeze({
   MenuLeft: 'menu:control_left',
   MenuRight: 'menu:control_right',
   MenuSelect: 'menu:control_select',
+});
+
+export const NuiEvents = Object.freeze({
+  GetLoadout: 'fivepd:nui:getLoadout'
 });
 
 export const createBirthdateInputList = (dateFormat: DateFormat): IDateInput[] => {

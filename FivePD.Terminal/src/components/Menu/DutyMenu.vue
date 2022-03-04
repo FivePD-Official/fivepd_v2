@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { MenuItemList, MenuItemToggle } from '@utils';
+import { MenuItemList, MenuItemToggle, NuiEvents, Post } from '@utils';
 
 const onDutyToggle = (obj?: MenuItemToggle) => {
   if (!obj) return;
 }
-const getLoadout = (obj?: MenuItemList) => {
+const getLoadout = async (obj?: MenuItemList) => {
   if (!obj) return;
+
+  const res = await Post(NuiEvents.GetLoadout).catch(() => {});
+  console.log(res);
 }
 
 const dutyToggle = new MenuItemToggle('On duty', 'Toggles your duty status.', onDutyToggle);

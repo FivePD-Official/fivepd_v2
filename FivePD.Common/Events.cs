@@ -48,10 +48,15 @@ namespace FivePD.Common
          */
         public abstract class Nui
         {
-            /**
-            * <summary>Closes the NUI.</summary>
-            */
-            public const string Close = "fivepd:nui:close";
+            /// <summary>
+            /// Toggles the player's duty state.
+            /// </summary>
+            public const string ToggleDuty = "fivepd:nui:toggleDuty";
+
+            /// <summary>
+            /// Adds the selected loadout's weapons to the player.
+            /// </summary>
+            public const string GetLoadout = "fivepd:nui:getLoadout";
         }
     }
 }
