@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CitizenFX.Core;
@@ -87,9 +89,10 @@ namespace FivePD.Gamemode.Client.Services
         public void LoadLocalization(string locale)
         {
             string data = Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(),  $"/Localization/{locale}.json");
-            if (data is null)
+            if (string.IsNullOrEmpty(data))
             {
-                Debug.WriteLine("Error while loading the default localization.");
+                Debug.WriteLine("Error while loading the localization.");
+                data = "{}";
             }
 
             this._currentLocalization = JsonConvert.DeserializeObject<Localization>(data);

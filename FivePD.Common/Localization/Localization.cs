@@ -4,8 +4,6 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-#pragma warning disable S1104
-#pragma warning disable SA1401
 namespace FivePD.Common.Schemas
 {
     /// <summary>
@@ -13,12 +11,18 @@ namespace FivePD.Common.Schemas
     /// </summary>
     public class Localization
     {
-        /// <summary>Gets title of the localization.</summary>
-        public string Title;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Localization"/> class.
+        /// </summary>
+        public Localization()
+        {
+            this.DutyMenu = new DutyMenuLocalization();
+        }
 
-        /// <summary>Gets localization of the duty menu.</summary>
-        public DutyMenuLocalization DutyMenu;
+        /// <summary>Gets or sets title of the localization.</summary>
+        public string Title { get; set; } = "English";
+
+        /// <summary>Gets or sets localization of the duty menu.</summary>
+        public DutyMenuLocalization DutyMenu { get; set; }
     }
 }
-#pragma warning restore SA1401
-#pragma warning restore S1104

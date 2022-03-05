@@ -58,6 +58,11 @@ namespace FivePD.Gamemode.Server.Services
                     var fileName = Path.GetFileName(file).Split(".");
                     this._locales.Add(new Locale(fileName[0], string.Empty));
                 }
+
+                if (this._locales.Count == 0)
+                {
+                    this._locales.Add(new Locale("en", "English"));
+                }
             }
             catch (Exception ex)
             {
@@ -73,12 +78,11 @@ namespace FivePD.Gamemode.Server.Services
                 try
                 {
                     string data = Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(),  $"/Localization/{locale.Key}.json");
+
                     if (data is null)
                     {
                         Debug.WriteLine("Error while loading the localizations.");
-
-                        // TODO: If there are any errors terminate FivePD.
-                        return;
+                        data = "{}";
                     }
 
                     var localeData = JsonSchema.FromType<Localization>();
