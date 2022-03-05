@@ -43,6 +43,32 @@ namespace FivePD.Common
             public const string RequestProp = "fivepd:entityManagement:requestProp";
         }
 
+        /// <summary>
+        /// Contains definitions for events related to localization.
+        /// </summary>
+        public abstract class Localization
+        {
+            /// <summary>
+            /// C->S: Used when a client wants to request all available locales.
+            /// </summary>
+            public const string GetAvailableLocalesFromServer = "fivepd:localization:getAllAvaibleLocalesFromServer";
+
+            /// <summary>
+            /// Used when the Nui requests all available locales.
+            /// </summary>
+            public const string GetAvailableLocalesFromNui = "fivepd:nui:getAvailableLocalesFromNui";
+
+            /// <summary>
+            /// Used to request localization from Nui.
+            /// </summary>
+            public const string GetLocalization = "fivepd:nui:getLocalization";
+
+            /// <summary>
+            /// Changes the current localization.
+            /// </summary>
+            public const string ChangeLocalization = "fivepd:nui:changeLocalization";
+        }
+
         /**
          * <summary>Contains definitions for events related to the NUI.</summary>
          */
@@ -51,7 +77,7 @@ namespace FivePD.Common
             /// <summary>
             /// Toggles the player's duty state.
             /// </summary>
-            public const string ToggleDuty = "fivepd:nui:toggleDuty";
+            /// public const string ToggleDuty = "fivepd:nui:toggleDuty";
 
             /// <summary>
             /// Adds the selected loadout's weapons to the player.

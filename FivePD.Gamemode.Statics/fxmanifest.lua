@@ -22,5 +22,6 @@ server_script 'Libraries/FivePD.Gamemode.Server/FivePD.Gamemode.Server.net.dll'
 
 files {
     'Libraries/FivePD.Gamemode.Client/**/*',
-    'Libraries/FivePD.Terminal/**/*'
+    'Libraries/FivePD.Terminal/**/*',
+    'Localization/**/*'
 }

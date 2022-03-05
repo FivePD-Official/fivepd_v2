@@ -5,7 +5,6 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.Extensions;
@@ -58,6 +57,10 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<KeybindService>()
                 .As<IKeybindService>();
 
+            services
+                .RegisterType<LocalizationService>()
+                .As<ILocalizationService>();
+
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();
@@ -69,6 +72,11 @@ namespace FivePD.Gamemode.Client
 
             var nuiService = provider.Resolve<NuiService>();
             nuiService.RegisterEventHandlers();
+
+            var localizationService = provider.Resolve<LocalizationService>();
+            localizationService.RegisterEventHandlers();
+            localizationService.LoadAvailableLocales();
+            localizationService.LoadDefaultLocalization();
         }
 
         private void OnTickAdd(Func<Task> task)

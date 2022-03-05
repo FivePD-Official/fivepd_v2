@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { hideNui, showNui, NuiEventType } from '@utils';
+import { hideNui, showNui, NuiEventType, Post, NuiEvents } from '@utils';
 import { useRouter } from 'vue-router';
 import { type Ref, ref } from 'vue';
 import { useEmitter } from '@hooks';
+import { store } from '@store';
 
 const emitter = useEmitter();
 const router = useRouter();
@@ -53,6 +54,20 @@ window.onload = function () {
   document.head.appendChild(style);
 
   router.push('/');
+
+  loadAvailableLocales();
+  loadLocalization();
+}
+
+const loadAvailableLocales = async () => {
+  const locales: any = await Post(NuiEvents.GetAvailableLocalesFromNui).catch(() => {});
+  console.log(JSON.parse(locales));
+  store.commit('setAvailableLocales', JSON.parse(locales));
+}
+
+const loadLocalization = async () => {
+  const localization: any = await Post(NuiEvents.GetLocalization).catch(() => {});
+  store.commit('setLocalization', JSON.parse(localization));
 }
 </script>
 

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Services;
@@ -56,10 +57,16 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IEntityService, EntityService>();
             services.AddSingleton<IStateService, StateService>();
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
+            services.AddSingleton<ILocalizationService, LocalizationService>();
 
             services.AddSingleton(this.EventHandlers);
 
             var provider = services.BuildServiceProvider();
+
+            var localizationService = provider.GetService<ILocalizationService>();
+            localizationService?.RegisterEventHandlers();
+            localizationService?.LoadAvailableLocales();
+            localizationService?.ValidateLocalizationFiles();
 
             var log = provider.GetService<ILogger>();
 

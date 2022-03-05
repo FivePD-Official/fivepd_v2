@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted, onBeforeMount } from 'vue';
 import { useEmitter } from '@hooks';
-import type { MenuItem, MenuItemList, MenuItemToggle } from '@utils';
+import { MenuItem, MenuItemList, MenuItemToggle } from '@utils';
 import { MenuItemType } from '@enums';
 import { NuiEventType } from '@utils';
+import { IListItem } from '@interfaces';
 
 const props = defineProps<{
   title: string,
@@ -64,14 +65,16 @@ emitter.on(NuiEventType.MenuSelect, () => {
   currentItem.onPress();
 });
 
-const getMarqueeClass = (item: MenuItemList, listItem: string | number, listIndex: number) => {
-  if (typeof(listItem) !== 'string') return '';
-  if (listItem.length <= 10) return '';
+const getMarqueeClass = (item: MenuItemList, listItem: IListItem, listIndex: number) => {
+  if (listItem.Title.length <= 10) return '';
   return item.currentIndex === listIndex ? 'marquee' : '';
 }
 
 const onListSlide = (dir: string) => {
   if (!selectorNode.value || !itemNodes.value || !menuItems.value) return;
+
+  const currentItem: MenuItemList = menuItems.value[currentItemIndex.value] as MenuItemList;
+  if (currentItem.type !== MenuItemType.List) return;
 
   const currentItemNode = itemNodes.value[currentItemIndex.value];
   const leftArrow = currentItemNode.querySelector('.left-arrow');
@@ -84,7 +87,6 @@ const onListSlide = (dir: string) => {
     arrow!.classList.remove('on-press');
   }, 100);
 
-  const currentItem: MenuItemList = menuItems.value[currentItemIndex.value] as MenuItemList;
   if (dir === NuiEventType.MenuLeft) {
     wrapper!.scrollLeft -= 100;
     currentItem.prev();
@@ -124,7 +126,7 @@ const onListSlide = (dir: string) => {
               <div class="list-wrapper-inner">
                 <div v-for="(listItem, listIndex) in (item as (MenuItemList)).items" :key="listIndex" class="list-wrapper-item">
                   <div :class="`list-wrapper-item-inner ${getMarqueeClass(item as MenuItemList, listItem, listIndex)}`">
-                    <p>{{ listItem }}</p>
+                    <p>{{ listItem.Title }}</p>
                   </div>
                 </div>
               </div>

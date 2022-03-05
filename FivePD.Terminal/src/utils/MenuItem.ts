@@ -61,14 +61,14 @@ export class MenuItemToggle extends MenuItem {
 
 export class MenuItemList extends MenuItem {
 
-  private _items: string[] | number[] = [];
+  private _items: any[] = [];
   private _currentIndex: number = 0;
 
   constructor(title: string, description: string, onPress?: () => void | Promise<void>) {
     super(title, description, MenuItemType.List, onPress);
   }
 
-  get items(): string[] | number[] {
+  get items(): any[] {
     return this._items;
   }
 
@@ -76,7 +76,7 @@ export class MenuItemList extends MenuItem {
     return this._currentIndex;
   }
 
-  set setItems(items: string[] | number[]) {
+  set setItems(items: any[]) {
     this._items = items;
   }
 
