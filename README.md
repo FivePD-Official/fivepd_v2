@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-- Before making changes to FivePD.Terminal, run `npm install` in the project's root directory
+- Before making changes to FivePD.Terminal, run `npm install` in the `FivePD.Terminal` directory
 - Make sure you have created a `.env.production` file in FivePD.Terminal and it contains the following value(s):
 
   `VITE_OUTDIR`=<your_path_to_the_fivem_server>\\resources\\fivepd\\Libraries\\FivePD.Terminal

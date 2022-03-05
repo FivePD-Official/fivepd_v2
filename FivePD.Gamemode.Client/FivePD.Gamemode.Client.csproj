@@ -24,9 +24,15 @@
     <OutputPath>../build-public/Libraries/FivePD.Gamemode.Client</OutputPath>
   </PropertyGroup>
   <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />
-  <Target Name="AfterBuildMigrated">
-    <Delete Files="$(OutDir)null.xml" />
+
+  <!-- Remove automatically generated files -->
+  <Target Name="RemoveGeneratedFiles" AfterTargets="Build">
+    <ItemGroup>
+      <RemovableGeneratedFiles Include="$(OutDir)*.json;$(OutDir)*.xml"/>
+    </ItemGroup>
+    <Delete Files="@(RemovableGeneratedFiles)" />
   </Target>
+
   <ItemGroup>
     <Reference Include="CitizenFX.Core.Client, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <Private>True</Private>

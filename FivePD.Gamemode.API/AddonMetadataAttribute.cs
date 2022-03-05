@@ -15,8 +15,8 @@ namespace FivePD.Gamemode.API
         /**
         * <summary>Initializes a new instance of the <see cref="AddonMetadataAttribute"/> class.</summary>
         * <param name="name">The <see cref="Name"/> to use.</param>
-        * <param name="friendlyVersion">The <see cref="friendlyVersion"/> to use.</param>
-        * <param name="version">The <see cref="version"/> to use.</param>
+        * <param name="friendlyVersion">The <see cref="FriendlyVersion"/> to use.</param>
+        * <param name="version">The <see cref="Version"/> to use.</param>
         */
         public AddonMetadataAttribute(string name, string friendlyVersion, int version)
         {
