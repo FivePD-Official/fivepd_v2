@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
         <AssemblyName>FivePD.Gamemode.Server.net</AssemblyName>
         <TargetFramework>netstandard2.1</TargetFramework>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
