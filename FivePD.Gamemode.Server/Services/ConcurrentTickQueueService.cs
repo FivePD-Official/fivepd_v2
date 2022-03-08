@@ -73,7 +73,7 @@ namespace FivePD.Gamemode.Server.Services
             return refHolder.Value;
         }
 
-        private class ReferenceHolder<T>
+        private sealed class ReferenceHolder<T>
         {
             public T Value { get; set; }
         }

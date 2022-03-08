@@ -12,4 +12,8 @@
         <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\Scripts\RestartLocalFXServer.ps1</PostBuildEvent>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
+    </ItemGroup>
+
 </Project>

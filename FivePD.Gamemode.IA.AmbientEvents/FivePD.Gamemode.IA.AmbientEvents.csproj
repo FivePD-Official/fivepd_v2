@@ -15,4 +15,8 @@
       <ProjectReference Include="..\FivePD.Gamemode.API\FivePD.Gamemode.API.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
+    </ItemGroup>
+
 </Project>

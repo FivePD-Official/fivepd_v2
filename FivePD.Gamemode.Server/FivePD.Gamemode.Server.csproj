@@ -49,7 +49,7 @@
     </Target>
 
     <ItemGroup>
-        <PackageReference Include="CitizenFX.Core.Server" Version="1.0.5181" />
+        <PackageReference Include="CitizenFX.Core.Server" Version="1.0.5375" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
@@ -57,8 +57,9 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" Cop="false" />
         <PackageReference Include="NJsonSchema" Version="10.6.10" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01343" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1-dev-00876" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+        <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CitizenFX.Core.Server, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
