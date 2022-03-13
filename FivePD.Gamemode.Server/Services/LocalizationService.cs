@@ -55,7 +55,7 @@ namespace FivePD.Gamemode.Server.Services
                 var files = Directory.GetFiles(path, "*.json");
                 foreach (var file in files)
                 {
-                    var fileName = Path.GetFileName(file).Split(".");
+                    var fileName = Path.GetFileName(file).Split('.');
                     this._locales.Add(new Locale(fileName[0], string.Empty));
                 }
 

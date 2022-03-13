@@ -15,20 +15,20 @@ namespace FivePD.Gamemode.Server.Services
     /**
      * <inheritdoc />
      **/
-    public class StateService : IStateService
+    public class ReplicatedStateService : IReplicatedStateService
     {
         /**
          * <inheritdoc />
          */
-        public dynamic GetData(string container, string key)
+        public T Get<T>(string container, string key)
         {
-            return CreateInstance<StateBag>(container).Get(key);
+            return (T)this.Get(container, key);
         }
 
         /**
          * <inheritdoc />
          */
-        public void SetData(string container, string key, object data)
+        public void Set(string container, string key, object data)
         {
             CreateInstance<StateBag>(container).Set(key, data, true);
         }
@@ -64,5 +64,10 @@ namespace FivePD.Gamemode.Server.Services
             return (T)instance;
         }
         #pragma warning restore S3011
+
+        private dynamic Get(string container, string key)
+        {
+            return CreateInstance<StateBag>(container).Get(key);
+        }
     }
 }

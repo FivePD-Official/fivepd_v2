@@ -17,12 +17,12 @@ namespace FivePD.Gamemode.API
          * <summary>Executed when the addon is loaded by the GAR.</summary>
          * <returns>A task which should complete when the addon is ready.</returns>
          */
-        public Task OnStarted();
+        Task OnStarted();
 
         /**
          * <summary>Executed when the GAR has requested the addon to stop.</summary>
          * <returns>A task which should complete when the addon is ready.</returns>
          */
-        public Task OnStopped();
+        Task OnStopped();
     }
 }

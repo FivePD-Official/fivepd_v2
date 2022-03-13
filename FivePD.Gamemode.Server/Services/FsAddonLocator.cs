@@ -30,7 +30,7 @@ namespace FivePD.Gamemode.Server.Services
 
         private static readonly string[] AddonDirectories =
         {
-            Path.Join(ResourcePath, "Libraries/IA"),
+            Path.Combine(ResourcePath, "Libraries/IA"),
         };
 
         private readonly ILogger _logger;
@@ -82,7 +82,7 @@ namespace FivePD.Gamemode.Server.Services
                         foreach (var assembly in metadata.Assemblies)
                         {
                             // todo: path validation and security
-                            var assemblyPath = Path.Join(addonDirectory, assembly);
+                            var assemblyPath = Path.Combine(addonDirectory, assembly);
 
                             if (!File.Exists(assemblyPath))
                             {
@@ -120,7 +120,7 @@ namespace FivePD.Gamemode.Server.Services
             var addons = new List<string>();
             foreach (var subdirectory in directory.GetDirectories())
             {
-                var metadataLocation = Path.Join(subdirectory.ToString(), MetadataFileName);
+                var metadataLocation = Path.Combine(subdirectory.ToString(), MetadataFileName);
 
                 if (!File.Exists(metadataLocation))
                 {

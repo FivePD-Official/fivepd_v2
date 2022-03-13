@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Services;
@@ -55,9 +56,12 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonLocator, FsAddonLocator>();
             services.AddSingleton<IEntityService, EntityService>();
-            services.AddSingleton<IStateService, StateService>();
+            services.AddSingleton<IServerStateService, ServerStateService>();
+            services.AddSingleton<IReplicatedStateService, ReplicatedStateService>();
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
+
+            services.AddSingleton<IPlayerDataService, PlayerDataService>();
 
             services.AddSingleton(this.EventHandlers);
 
@@ -112,6 +116,16 @@ namespace FivePD.Gamemode.Server
             }
 
             // Load public addons.
+
+            // Demonstrate player data service
+            var playerDataService = provider.GetService<IPlayerDataService>()!;
+            var demoPlayer = new FPlayer("1");
+
+            playerDataService.DutyStatusChanged += (sender, args) => log.Information("A duty status changed! ({@Player})", args);
+
+            log?.Information("Before duty status is {@Status}", playerDataService.GetDutyStatus(demoPlayer));
+            playerDataService.SetDutyStatus(demoPlayer, FDutyStatus.OnDutyAndReceiving);
+            log?.Information("After duty status is {@Status}", playerDataService.GetDutyStatus(demoPlayer));
         }
 
         /**

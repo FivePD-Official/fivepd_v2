@@ -7,17 +7,22 @@
 namespace FivePD.Gamemode.Server.Interfaces
 {
     /**
-     * <summary>Persists volatile data for usage between modules.</summary>
+     * <summary>Handles data which should be replicated
+     * automatically across both clients and servers.
+     * Any data stored via this state service should
+     * not be sensitive to reads by clients, and may
+     * be exposed at any time.</summary>
      */
-    public interface IStateService
+    public interface IReplicatedStateService
     {
         /**
          * <summary>Gets the data associated with a given key.</summary>
          * <param name="container">The state container to target.</param>
          * <param name="key">The specific key associated with the data.</param>
+         * <typeparam name="T">The type of value to return.</typeparam>
          * <returns>Previously set data.</returns>
          */
-        public dynamic GetData(string container, string key);
+        public T Get<T>(string container, string key);
 
         /**
          * <summary>Gets the data associated with a given key.</summary>
@@ -25,6 +30,6 @@ namespace FivePD.Gamemode.Server.Interfaces
          * <param name="key">The specific key associated with the data.</param>
          * <param name="data">The data to store.</param>
          */
-        public void SetData(string container, string key, object data);
+        public void Set(string container, string key, object data);
     }
 }
