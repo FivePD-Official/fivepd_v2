@@ -65,7 +65,7 @@ namespace FivePD.Gamemode.Client.Services
         [Keybind("fivepd_open_dutyMenu", "G", "Open duty menu")]
         public void OpenDutyMenu()
         {
-            this.Show(NuiEventType.DutyMenu, false, false);
+            this.Show(NuiEventType.DutyMenu, "#", false, false);
         }
 
         /// <inheritdoc />
@@ -104,13 +104,23 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <summary>
+        /// Opens the test radial menu.
+        /// </summary>
+        /// <param name="menuHashcode">Hashcode of the menu.</param>
+        public void ShowRadialMenu(string menuHashcode)
+        {
+            this.Show(NuiEventType.RadialMenu, menuHashcode);
+        }
+
+        /// <summary>
         /// Shows NUI. If the MDT has been opened while any menu is open,
         /// the NUI view will be switched to the MDT.
         /// </summary>
         /// <param name="type">Switches to the given type after showing NUI.</param>
+        /// <param name="subtype">The subtype of the event. If left as # it'll be ignore in the Nui.</param>
         /// <param name="hasFocus">If NUI has focus.</param>
         /// <param name="hasCursor">If NUI has cursor usage.</param>
-        private void Show(string type, bool hasFocus = true, bool hasCursor = true)
+        private void Show(string type, string subtype = "#", bool hasFocus = true, bool hasCursor = true)
         {
             if (this._isNuiOpened && type != NuiEventType.Mdt)
             {
@@ -120,7 +130,7 @@ namespace FivePD.Gamemode.Client.Services
 
             this._isNuiOpened = true;
 
-            this.SendMessage(type);
+            this.SendMessage(type, subtype);
             Cfx.API.SetNuiFocus(hasFocus, hasCursor);
         }
 
@@ -134,6 +144,16 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <summary>
+        /// Send control event to the NUI.
+        /// </summary>
+        /// <param name="type">The event's type.</param>
+        /// <param name="subtype">The event's subtype. (used only for radial menus).</param>
+        private void SendMessage(string type, string subtype)
+        {
+            Cfx.API.SendNuiMessage("{\"type\":\"" + type + "\", \"subtype\":\"" + subtype + "\"}");
+        }
+
+        /// <summary>
         /// The necessary event types used for communicating with the Nui.
         /// Should contains the same types as the Terminal project has.
         /// </summary>
@@ -143,6 +163,7 @@ namespace FivePD.Gamemode.Client.Services
 
             public const string Mdt = "view:mdt";
             public const string DutyMenu = "view:duty_menu";
+            public const string RadialMenu = "view:radial_menu";
 
             public const string MenuUp = "menu:control_up";
             public const string MenuDown = "menu:control_down";

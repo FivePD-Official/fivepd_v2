@@ -61,6 +61,10 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<LocalizationService>()
                 .As<ILocalizationService>();
 
+            services
+                .RegisterType<RadialMenuService>()
+                .As<IRadialMenuService>();
+
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();
@@ -77,6 +81,10 @@ namespace FivePD.Gamemode.Client
             localizationService.RegisterEventHandlers();
             localizationService.LoadAvailableLocales();
             localizationService.LoadDefaultLocalization();
+
+            var radialMenuService = provider.Resolve<RadialMenuService>();
+            radialMenuService.RegisterMenus();
+            radialMenuService.RegisterMenuKeybinds();
         }
 
         private void OnTickAdd(Func<Task> task)

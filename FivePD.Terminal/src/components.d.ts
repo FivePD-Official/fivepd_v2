@@ -9,6 +9,7 @@ declare module 'vue' {
     Main: typeof import('./components/Main.vue')['default']
     Menu: typeof import('./components/Menu/Menu.vue')['default']
     PageHeader: typeof import('./components/PageHeader.vue')['default']
+    RadialMenu: typeof import('./components/RadialMenu.vue')['default']
     SearchPanel: typeof import('./components/SearchPanel.vue')['default']
     Sidebar: typeof import('./components/Sidebar.vue')['default']
   }

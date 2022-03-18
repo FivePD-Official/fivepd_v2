@@ -8,6 +8,7 @@ export const NuiEventType = Object.freeze({
   Close: 'close',
   Mdt: 'view:mdt',
   DutyMenu: 'view:duty_menu',
+  RadialMenu: 'view:radial_menu',
   MenuUp: 'menu:control_up',
   MenuDown: 'menu:control_down',
   MenuLeft: 'menu:control_left',
@@ -20,6 +21,7 @@ export const NuiEvents = Object.freeze({
   GetLoadout: 'fivepd:nui:getLoadout',
   GetAvailableLocalesFromNui: 'fivepd:nui:getAvailableLocalesFromNui',
   ChangeLocalization: 'fivepd:nui:changeLocalization',
+  GetRadialMenus: 'fivepd:nui:getRadialMenus',
 });
 
 export const createBirthdateInputList = (dateFormat: DateFormat): IDateInput[] => {

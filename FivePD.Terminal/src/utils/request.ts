@@ -4,9 +4,9 @@ export const Post = (path: string, body?: object) => {
       method: 'POST',
       body: JSON.stringify(body)
     });
-    if (!res) reject();
+    if (!res) return reject();
     const json = await res.json();
-    if (!json) reject();
-    resolve(json);
+    if (!json) return reject();
+    return resolve(json);
   });
 }

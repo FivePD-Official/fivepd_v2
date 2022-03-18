@@ -8,6 +8,7 @@ import { store } from '@store';
 const emitter = useEmitter();
 const router = useRouter();
 const viewType: Ref<string> = ref<string>(NuiEventType.Mdt);
+const subtype: Ref<string> = ref<string>('#');
 
 window.onload = function () {
 
@@ -21,13 +22,20 @@ window.onload = function () {
 
     // Type should always hold the same values as in FivePD.Gamemode.Client.Services.NuiService.NuiEventType
     const type: string = event.data.type;
+    subtype.value = event.data.hasOwnProperty('subtype') ? event.data.subtype : '#';
+
+    if (isDev) console.log({ type, subtype });
 
     if (type === NuiEventType.Close) {
       document.body.style.display = "none";
       return;
     }
 
-    if ([NuiEventType.Mdt, NuiEventType.DutyMenu].includes(type)) {
+    if (subtype.value !== '#') {
+      emitter.emit('showRadialMenu', subtype.value);
+    }
+
+    if ([NuiEventType.Mdt, NuiEventType.DutyMenu, NuiEventType.RadialMenu].includes(type)) {
       viewType.value = type;
       showNui();
       return;
@@ -57,6 +65,7 @@ window.onload = function () {
 
   loadAvailableLocales();
   loadLocalization();
+  loadRadialMenus();
 }
 
 const loadAvailableLocales = async () => {
@@ -69,11 +78,17 @@ const loadLocalization = async () => {
   const localization: any = await Post(NuiEvents.GetLocalization).catch(() => {});
   store.commit('setLocalization', JSON.parse(localization));
 }
+
+const loadRadialMenus = async () => {
+  const res: any = await Post(NuiEvents.GetRadialMenus).catch(() => {});
+  store.commit('setRadialMenus', JSON.parse(res));
+}
 </script>
 
 <template>
   <Main v-if="viewType === NuiEventType.Mdt" />
   <DutyMenu v-else-if="viewType === NuiEventType.DutyMenu" />
+  <RadialMenu v-else-if="viewType === NuiEventType.RadialMenu" :menuHashcode="subtype" />
 </template>
 
 <style lang="sass">

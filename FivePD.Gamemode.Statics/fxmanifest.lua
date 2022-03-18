@@ -16,7 +16,7 @@ author 'GTAPoliceMods Development Studios'
 description 'The FivePD Gamemode'
 version '2.0.0'
 
-ui_page 'Libraries/FivePD.Terminal/index.html'
+ui_page 'http://localhost:3000'
 client_script 'Libraries/FivePD.Gamemode.Client/FivePD.Gamemode.Client.net.dll'
 server_script 'Libraries/FivePD.Gamemode.Server/FivePD.Gamemode.Server.net.dll'
 

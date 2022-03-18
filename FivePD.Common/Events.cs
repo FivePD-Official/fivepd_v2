@@ -83,6 +83,11 @@ namespace FivePD.Common
             /// Adds the selected loadout's weapons to the player.
             /// </summary>
             public const string GetLoadout = "fivepd:nui:getLoadout";
+
+            /// <summary>
+            /// Used to load all radial menu info.
+            /// </summary>
+            public const string GetRadialMenus = "fivepd:nui:getRadialMenus";
         }
     }
 }

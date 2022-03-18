@@ -32,23 +32,29 @@ namespace FivePD.Gamemode.Client.Services
 
                 var attr = method.GetCustomAttribute<KeybindAttribute>();
 
-                Cfx.API.RegisterKeyMapping($"+{attr.Id}", attr.Description, "keyboard", attr.Key);
-                Cfx.API.RegisterCommand(
-                    $"+{attr.Id}",
-                    new Action(() =>
-                    {
-                        Cfx.API.CancelEvent();
-                        method.Invoke(obj, null);
-                    }),
-                    false);
-                Cfx.API.RegisterCommand(
-                    $"-{attr.Id}",
-                    new Action(() =>
-                    {
-                        Cfx.API.CancelEvent();
-                    }),
-                    false);
+                this.RegisterKeybind(attr.Id, attr.Description, attr.Key, () => method.Invoke(obj, null));
             }
+        }
+
+        /// <inheritdoc />
+        public void RegisterKeybind(string id, string description, string key, Action onPress)
+        {
+            Cfx.API.RegisterKeyMapping($"+{id}", description, "keyboard", key);
+            Cfx.API.RegisterCommand(
+                $"+{id}",
+                new Action(() =>
+                {
+                    Cfx.API.CancelEvent();
+                    onPress.Invoke();
+                }),
+                false);
+            Cfx.API.RegisterCommand(
+                $"-{id}",
+                new Action(() =>
+                {
+                    Cfx.API.CancelEvent();
+                }),
+                false);
         }
     }
 }
