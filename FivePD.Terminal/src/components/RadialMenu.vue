@@ -125,9 +125,6 @@ const drawCanvas = () => {
     // Calculate angle of section middle
     const middle = arcLength * (i + 0.5);
 
-    // Draw demo text in middle(ish) of each box
-    ctx.fillText(menu.Items[i].Title, midRadius * Math.cos(middle), midRadius * Math.sin(middle));
-
     // Show the selected item as being special
     if (lastSelectAngle.value >= start && lastSelectAngle.value < stop) {
       ctx.fillStyle = 'red';
@@ -136,15 +133,26 @@ const drawCanvas = () => {
       ctx.fillStyle = 'black';
     }
 
+    // Draw demo text in middle(ish) of each box
+    ctx.fillText(menu.Items[i].Title, midRadius * Math.cos(middle), midRadius * Math.sin(middle));
   }
 }
 </script>
 
 <template>
-  <canvas width="600" height="600" ref="canvas"></canvas>
+  <div>
+    <canvas width="600" height="600" ref="canvas"></canvas>
+  </div>
 </template>
 
 <style lang="sass" scoped>
+div
+  position: absolute
+  top: 0
+  left: 0
+  height: 100%
+  width: 100%
+  background: rgba(50, 50, 50, 0.3)
 canvas
   position: absolute
   top: 50%

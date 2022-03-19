@@ -109,6 +109,9 @@ namespace FivePD.Gamemode.Client.Services
         /// <param name="menuHashcode">Hashcode of the menu.</param>
         public void ShowRadialMenu(string menuHashcode)
         {
+            // Centers cursor
+            Cfx.API.SetCursorLocation(0.5f, 0.5f);
+
             this.Show(NuiEventType.RadialMenu, menuHashcode);
         }
 
