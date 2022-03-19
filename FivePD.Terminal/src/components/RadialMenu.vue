@@ -26,7 +26,6 @@ const lastMousePosition = ref<MousePosition>({ x: 0, y: 0 });
 const lastSelectAngle = ref<number>(-1);
 
 onMounted(() => {
-  lastSelectAngle.value = -1;
   findSelectedMenu(props.menuHashcode);
   drawCanvas();
   window.addEventListener('message', onNuiEvent);
@@ -37,16 +36,24 @@ onBeforeUnmount(() => {
 });
 
 emitter.on('showRadialMenu', (hashcode: string) => {
-  lastSelectAngle.value = -1;
+  resetValues();
   findSelectedMenu(hashcode);
   drawCanvas();
 });
+
+const resetValues = () => {
+  lastSelectAngle.value = -1;
+  selectedItemIndex.value = -1;
+  currentMousePosition.value = { x: 0, y: 0 };
+  lastMousePosition.value = { x: 0, y: 0 };
+}
 
 const findSelectedMenu = (hashcode: string) => {
   selectedMenu.value = menus.find((x: IMenu) => x.Hashcode === hashcode)!;
 }
 
 const onNuiEvent = (event: any) => {
+
   if (!event.data.hasOwnProperty('RadialMenuEventType')) return;
   const type = event.data.RadialMenuEventType;
 
@@ -63,6 +70,7 @@ const onNuiEvent = (event: any) => {
   if (type === 'trigger_selected') {
     if (selectedItemIndex.value !== -1) {
       Post(`fivepd:radialMenu:trigger_item_${selectedMenu.value?.Items[selectedItemIndex.value].Hashcode}`).catch(() => {});
+      resetValues();
     }
   }
 }
@@ -137,9 +145,6 @@ const drawCanvas = () => {
     // Calculate angle of section middle
     const middle = arcLength * (i + 0.5);
 
-    // Draw demo text in middle(ish) of each box
-    ctx.fillText(menu.Items[i].Title, midRadius * Math.cos(middle), midRadius * Math.sin(middle));
-
     // Show the selected item as being special
     if (lastSelectAngle.value >= start && lastSelectAngle.value < stop) {
       ctx.fillStyle = 'red';
@@ -147,15 +152,28 @@ const drawCanvas = () => {
     } else {
       ctx.fillStyle = 'black';
     }
+
+    // Draw demo text in middle(ish) of each box
+    ctx.fillText(menu.Items[i].Title, midRadius * Math.cos(middle), midRadius * Math.sin(middle));
   }
 }
 </script>
 
 <template>
-  <canvas width="600" height="600" ref="canvas"></canvas>
+  <div>
+    <canvas width="600" height="600" ref="canvas"></canvas>
+  </div>
 </template>
 
 <style lang="sass" scoped>
+div
+  position: absolute
+  top: 0
+  left: 0
+  height: 100%
+  width: 100%
+  background: rgba(50, 50, 50, 0.3)
+
 canvas
   position: absolute
   top: 50%

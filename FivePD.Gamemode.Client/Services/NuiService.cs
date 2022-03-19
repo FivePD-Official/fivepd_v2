@@ -119,6 +119,9 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void ShowRadialMenu(string menuId)
         {
+            // Centers cursor
+            Cfx.API.SetCursorLocation(0.5f, 0.5f);
+
             this.Show(Events.NuiEventType.RadialMenu, menuId, false, false);
         }
 

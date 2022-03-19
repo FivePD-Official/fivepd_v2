@@ -24,7 +24,7 @@ window.onload = function () {
     const type: string = event.data.type;
     subtype.value = event.data.hasOwnProperty('subtype') ? event.data.subtype : '#';
 
-    if (isDev) console.log({ type, subtype });
+    if (isDev) console.table(event.data);
 
     if (type === NuiEventType.Close) {
       document.body.style.display = "none";
