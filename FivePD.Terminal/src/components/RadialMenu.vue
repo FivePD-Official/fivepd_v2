@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useEmitter } from '@hooks';
 import type { IMenu } from '@interfaces';
-import { hideNui, Post } from '@utils';
+import { Post } from '@utils';
 import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 
@@ -20,23 +20,24 @@ const emitter = useEmitter();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const selectedMenu = ref<IMenu | null>(null);
-const selectedItemIndex = ref<number>(0);
+const selectedItemIndex = ref<number>(-1);
+const currentMousePosition = ref<MousePosition>({ x: 0, y: 0 });
 const lastMousePosition = ref<MousePosition>({ x: 0, y: 0 });
-const lastSelectAngle = ref<number>(0);
+const lastSelectAngle = ref<number>(-1);
 
 onMounted(() => {
+  lastSelectAngle.value = -1;
   findSelectedMenu(props.menuHashcode);
   drawCanvas();
-  window.addEventListener('mousemove', onMouseMove);
-  window.addEventListener('click', onMouseClick);
+  window.addEventListener('message', onNuiEvent);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('mousemove', onMouseMove);
-  window.removeEventListener('click', onMouseClick);
+  window.removeEventListener('message', onNuiEvent);
 });
 
 emitter.on('showRadialMenu', (hashcode: string) => {
+  lastSelectAngle.value = -1;
   findSelectedMenu(hashcode);
   drawCanvas();
 });
@@ -45,21 +46,32 @@ const findSelectedMenu = (hashcode: string) => {
   selectedMenu.value = menus.find((x: IMenu) => x.Hashcode === hashcode)!;
 }
 
-const onMouseClick = async () => {
-  Post(`fivepd:radialMenu:trigger_item_${selectedMenu.value?.Items[selectedItemIndex.value].Hashcode}`).catch(() => {});
-  hideNui();
+const onNuiEvent = (event: any) => {
+  if (!event.data.hasOwnProperty('RadialMenuEventType')) return;
+  const type = event.data.RadialMenuEventType;
+
+  if (type === 'mouse_up' || type === 'mouse_down') {
+    if (event.data.hasOwnProperty('X') && event.data.hasOwnProperty('Y')) {
+      currentMousePosition.value = {
+        x: event.data.X,
+        y: event.data.Y,
+      };
+      onMouseMove();
+    }
+  }
+
+  if (type === 'trigger_selected') {
+    if (selectedItemIndex.value !== -1) {
+      Post(`fivepd:radialMenu:trigger_item_${selectedMenu.value?.Items[selectedItemIndex.value].Hashcode}`).catch(() => {});
+    }
+  }
 }
 
-const onMouseMove = (event: any) => {
-   // Obtain the latest mouse coordinates
-	const newMousePosition: MousePosition = {
-    x: event.pageX,
-    y: event.pageY
-  };
+const onMouseMove = () => {
 
   // Compute the change from last time around
-  const deltaX = newMousePosition.x - lastMousePosition.value.x;
-  const deltaY = newMousePosition.y - lastMousePosition.value.y;
+  const deltaX = currentMousePosition.value.x - lastMousePosition.value.x;
+  const deltaY = currentMousePosition.value.y - lastMousePosition.value.y;
 
   // Take the inverse tangent of the movement
   let angle = Math.atan2(deltaY, deltaX);
@@ -72,7 +84,7 @@ const onMouseMove = (event: any) => {
   // Check if this was a deliberate movement. Small changes can be ignored for now
   if (deltaX > 20 || deltaX < -20 || deltaY > 20 || deltaY < -20) {
     // Update the angles and redraw!
-    lastMousePosition.value = newMousePosition;
+    lastMousePosition.value = currentMousePosition.value;
     lastSelectAngle.value = angle;
     drawCanvas();
   }
@@ -135,7 +147,6 @@ const drawCanvas = () => {
     } else {
       ctx.fillStyle = 'black';
     }
-
   }
 }
 </script>

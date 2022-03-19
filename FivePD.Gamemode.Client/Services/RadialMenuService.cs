@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Interfaces;
@@ -23,19 +24,27 @@ namespace FivePD.Gamemode.Client.Services
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly NuiService _nuiService;
         private readonly KeybindService _keybindService;
+        private readonly ITickService _tickService;
         private readonly List<RadialMenu> _menus = new List<RadialMenu>();
+        private bool _isAnyMenuVisible;
+        private MouseCoordinate _lastMousePosition;
 
         /// <summary>Initializes a new instance of the <see cref="RadialMenuService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
         /// <param name="nuiService">The <see cref="NuiService" /> to use.</param>
         /// <param name="keybindService">The <see cref="KeybindService" /> to use.</param>
-        /// >
-        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, NuiService nuiService, KeybindService keybindService)
+        /// <param name="tickService">The <see cref="TickService" /> to use.</param>
+        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, NuiService nuiService, KeybindService keybindService, TickService tickService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._nuiService = nuiService;
             this._keybindService = keybindService;
+            this._tickService = tickService;
+        }
 
+        /// <inheritdoc />
+        public void RegisterEvents()
+        {
             Cfx.API.RegisterNuiCallbackType(Events.Nui.GetRadialMenus);
             this._eventHandlerDictionary[$"__cfx_nui:{Events.Nui.GetRadialMenus}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
@@ -55,19 +64,59 @@ namespace FivePD.Gamemode.Client.Services
                     radialMenus.Add(new JObject
                     {
                         { "Title", menu.Title },
-                        { "Hashcode", menu.GetHashCode().ToString() },
+                        { "Hashcode", menu.Id },
                         { "Items", items },
                     });
                 }
 
                 cb.Invoke(JsonConvert.SerializeObject(radialMenus));
             });
+
+            this._nuiService.OnNuiHide += () =>
+            {
+                this._isAnyMenuVisible = false;
+                this._tickService.OnTick -= this.DisableMouseMovement;
+                this._tickService.OnTick -= this.OnMouseMove;
+            };
         }
 
         /// <inheritdoc />
-        public void RegisterMenus()
+        public void RegisterMenuKeybinds()
         {
-            var menu = new RadialMenu("Test radial menu", "H", new List<RadialMenuItem>
+            foreach (var menu in this._menus)
+            {
+                void OnPress()
+                {
+                    this._isAnyMenuVisible = true;
+                    this._tickService.OnTick += this.DisableMouseMovement;
+                    this._tickService.OnTick += this.OnMouseMove;
+                    this._nuiService.ShowRadialMenu(menu.Id);
+                }
+
+                void OnRelease()
+                {
+                    this._nuiService.Hide();
+                    this._nuiService.SendMessage(new JObject
+                    {
+                        { "RadialMenuEventType", "trigger_selected" },
+                    });
+                }
+
+                this._keybindService.RegisterKeybind($"fivepd_radial_menu_${menu.Id}", "-", menu.Key, OnPress, OnRelease);
+
+                foreach (var item in menu.Items)
+                {
+                    var eventName = $"fivepd:radialMenu:trigger_item_{item.GetHashCode()}";
+                    Cfx.API.RegisterNuiCallbackType(eventName);
+                    this._eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, callback) => item.OnPress(callback));
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public void CreateMenus()
+        {
+            var menu = new RadialMenu("8fb0e291-dec2-44bd-b3c0-fc33b882838c", "Test radial menu", "H", new List<RadialMenuItem>
             {
                 new RadialMenuItem("Item 1/1", cb =>
                 {
@@ -82,7 +131,7 @@ namespace FivePD.Gamemode.Client.Services
             });
             this._menus.Add(menu);
 
-            var menu2 = new RadialMenu("Test radial menu 2", "J", new List<RadialMenuItem>
+            var menu2 = new RadialMenu("4142429d-3ed1-437e-8b7c-91b4b2a628b9", "Test radial menu 2", "J", new List<RadialMenuItem>
             {
                 new RadialMenuItem("Item 2/1", cb =>
                 {
@@ -98,24 +147,82 @@ namespace FivePD.Gamemode.Client.Services
             this._menus.Add(menu2);
         }
 
-        /// <summary>
-        /// Registers all menus' keybind and its items' actions.
-        /// </summary>
-        public void RegisterMenuKeybinds()
+        private Task DisableMouseMovement()
         {
-            foreach (var menu in this._menus)
-            {
-                this._keybindService.RegisterKeybind($"fivepd_radial_menu_${menu.GetHashCode()}", "-", menu.Key, () =>
-                {
-                    this._nuiService.ShowRadialMenu(menu.GetHashCode().ToString());
-                });
+            Cfx.API.DisableControlAction(0, 24, true); // Disable attack
+            Cfx.API.DisableControlAction(0, 25, true); // Disable aim
+            Cfx.API.DisableControlAction(0, 1, true); // LookLeftRight
+            Cfx.API.DisableControlAction(0, 2, true); // LookUpDown
 
-                foreach (var item in menu.Items)
+            return Task.FromResult(0);
+        }
+
+        private MouseCoordinate GetMouseCoordinates()
+        {
+            int screenWidth = 0;
+            int screenHeight = 0;
+            Cfx.API.GetActiveScreenResolution(ref screenWidth, ref screenHeight);
+            float x = Cfx.API.GetDisabledControlNormal(2, 239);
+            float y = Cfx.API.GetDisabledControlNormal(2, 240);
+            return new MouseCoordinate(screenWidth * x, screenHeight * y);
+        }
+
+        private Task OnMouseMove()
+        {
+            if (!this._isAnyMenuVisible)
+            {
+                return Task.FromResult(0);
+            }
+
+            var coordinates = this.GetMouseCoordinates();
+            if (Cfx.API.IsDisabledControlJustPressed(2, 237))
+            {
+                this._nuiService.SendMessage(new JObject
                 {
-                    var eventName = $"fivepd:radialMenu:trigger_item_{item.GetHashCode()}";
-                    Cfx.API.RegisterNuiCallbackType(eventName);
-                    this._eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, callback) => item.OnPress(callback));
-                }
+                    { "RadialMenuEventType", "mouse_down" },
+                    { "X", coordinates.X },
+                    { "Y", coordinates.Y },
+                });
+            }
+            else if (Cfx.API.IsDisabledControlJustReleased(2, 237))
+            {
+                this._nuiService.SendMessage(new JObject
+                {
+                    { "RadialMenuEventType", "mouse_up" },
+                    { "X", coordinates.X },
+                    { "Y", coordinates.Y },
+                });
+            }
+
+            if (Math.Abs(coordinates.X - this._lastMousePosition.X) > 1 && Math.Abs(coordinates.Y - this._lastMousePosition.Y) > 1)
+            {
+                this._nuiService.SendMessage(new JObject
+                {
+                    { "RadialMenuEventType", "mouse_up" },
+                    { "X", coordinates.X },
+                    { "Y", coordinates.Y },
+                });
+                this._lastMousePosition = new MouseCoordinate(coordinates.X, coordinates.Y);
+            }
+
+            return Task.FromResult(0);
+        }
+
+        private readonly struct MouseCoordinate
+        {
+            public MouseCoordinate(float x, float y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+
+            public float X { get; }
+
+            public float Y { get; }
+
+            public override string ToString()
+            {
+                return $"X: {this.X} Y: {this.Y}";
             }
         }
     }

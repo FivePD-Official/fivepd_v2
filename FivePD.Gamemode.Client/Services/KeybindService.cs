@@ -37,15 +37,26 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void RegisterKeybind(string id, string description, string key, Action onPress)
+        public void RegisterKeybind(string id, string description, string key, Action onPress = null, Action onRelease = null)
         {
-            Cfx.API.RegisterKeyMapping($"+{id}", description, "keyboard", key);
+            this.InternalRegisterKeybind(id, description, key, "KEYBOARD", onPress, onRelease);
+        }
+
+        /// <inheritdoc />
+        public void RegisterMouseKeybind(string id, string description, string key, Action onPress = null, Action onRelease = null)
+        {
+            this.InternalRegisterKeybind(id, description, key, "MOUSE_BUTTON", onPress, onRelease);
+        }
+
+        private void InternalRegisterKeybind(string id, string description, string key, string keyMapper, Action onPress = null, Action onRelease = null)
+        {
+            Cfx.API.RegisterKeyMapping($"+{id}", description, keyMapper, key);
             Cfx.API.RegisterCommand(
                 $"+{id}",
                 new Action(() =>
                 {
                     Cfx.API.CancelEvent();
-                    onPress.Invoke();
+                    onPress?.Invoke();
                 }),
                 false);
             Cfx.API.RegisterCommand(
@@ -53,6 +64,7 @@ namespace FivePD.Gamemode.Client.Services
                 new Action(() =>
                 {
                     Cfx.API.CancelEvent();
+                    onRelease?.Invoke();
                 }),
                 false);
         }

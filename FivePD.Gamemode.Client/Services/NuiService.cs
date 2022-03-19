@@ -10,6 +10,8 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Interfaces;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
@@ -27,11 +29,21 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary = eventHandlerDictionary;
         }
 
+        /// <summary>
+        /// Delegate for event <see cref="OnNuiHide"/>.
+        /// </summary>
+        public delegate void OnHide();
+
+        /// <summary>
+        /// Triggers when the Nui has been hidden.
+        /// </summary>
+        public event OnHide OnNuiHide;
+
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
-            Cfx.API.RegisterNuiCallbackType(NuiEventType.Close);
-            this._eventHandlerDictionary[$"__cfx_nui:{NuiEventType.Close}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            Cfx.API.RegisterNuiCallbackType(Events.NuiEventType.Close);
+            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEventType.Close}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 this.Hide();
                 cb.Invoke(string.Empty);
@@ -49,67 +61,77 @@ namespace FivePD.Gamemode.Client.Services
         [Keybind("fivepd_close_all", "BACK", "Close menu")]
         public void Hide()
         {
-            this.SendMessage(NuiEventType.Close);
+            this.SendMessage("{\"type\": \"" + Events.NuiEventType.Close + "\"}");
             Cfx.API.SetNuiFocus(false, false);
             this._isNuiOpened = false;
+            this.OnNuiHide?.Invoke();
         }
 
         /// <inheritdoc />
         [Keybind("fivepd_open_mdt", "B", "Open MDT")]
         public void OpenMdt()
         {
-            this.Show(NuiEventType.Mdt);
+            this.Show(Events.NuiEventType.Mdt);
         }
 
         /// <inheritdoc />
         [Keybind("fivepd_open_dutyMenu", "G", "Open duty menu")]
         public void OpenDutyMenu()
         {
-            this.Show(NuiEventType.DutyMenu, "#", false, false);
+            this.Show(Events.NuiEventType.DutyMenu, "#", false, false);
         }
 
         /// <inheritdoc />
         [Keybind("fivepd_menu_up", "UP", "Move up in menu")]
         public void MenuControlUp()
         {
-            this.SendMessage(NuiEventType.MenuUp);
+            this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuUp + "\"}");
         }
 
         /// <inheritdoc />
         [Keybind("fivepd_menu_down", "DOWN", "Move down in menu")]
         public void MenuControlDown()
         {
-            this.SendMessage(NuiEventType.MenuDown);
+            this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuDown + "\"}");
         }
 
         /// <inheritdoc />
         [Keybind("fivepd_menu_left", "LEFT", "Move left in menu")]
         public void MenuControlLeft()
         {
-            this.SendMessage(NuiEventType.MenuLeft);
+            this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuLeft + "\"}");
         }
 
         /// <inheritdoc />
         [Keybind("fivepd_menu_right", "RIGHT", "Move right in menu")]
         public void MenuControlRight()
         {
-            this.SendMessage(NuiEventType.MenuRight);
+            this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuRight + "\"}");
         }
 
         /// <inheritdoc />
         [Keybind("fivepd_menu_select", "RETURN", "Selects item in menu")]
         public void MenuControlSelect()
         {
-            this.SendMessage(NuiEventType.MenuSelect);
+            this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuSelect + "\"}");
         }
 
-        /// <summary>
-        /// Opens the test radial menu.
-        /// </summary>
-        /// <param name="menuHashcode">Hashcode of the menu.</param>
-        public void ShowRadialMenu(string menuHashcode)
+        /// <inheritdoc />
+        public void ShowRadialMenu(string menuId)
         {
-            this.Show(NuiEventType.RadialMenu, menuHashcode);
+            this.Show(Events.NuiEventType.RadialMenu, menuId, false, false);
+        }
+
+        /// <inheritdoc />
+        public void SendMessage(string data)
+        {
+            Cfx.API.SendNuiMessage(data);
+        }
+
+        /// <inheritdoc />
+        public void SendMessage(JObject data)
+        {
+            Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(data));
         }
 
         /// <summary>
@@ -122,7 +144,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <param name="hasCursor">If NUI has cursor usage.</param>
         private void Show(string type, string subtype = "#", bool hasFocus = true, bool hasCursor = true)
         {
-            if (this._isNuiOpened && type != NuiEventType.Mdt)
+            if (this._isNuiOpened && type != Events.NuiEventType.Mdt)
             {
                 this.Hide();
                 return;
@@ -130,46 +152,12 @@ namespace FivePD.Gamemode.Client.Services
 
             this._isNuiOpened = true;
 
-            this.SendMessage(type, subtype);
+            this.SendMessage(new JObject
+            {
+                { "type", type },
+                { "subtype", subtype },
+            });
             Cfx.API.SetNuiFocus(hasFocus, hasCursor);
-        }
-
-        /// <summary>
-        /// Send control event to the NUI.
-        /// </summary>
-        /// <param name="type">The event's type.</param>
-        private void SendMessage(string type)
-        {
-            Cfx.API.SendNuiMessage("{\"type\":\"" + type + "\"}");
-        }
-
-        /// <summary>
-        /// Send control event to the NUI.
-        /// </summary>
-        /// <param name="type">The event's type.</param>
-        /// <param name="subtype">The event's subtype. (used only for radial menus).</param>
-        private void SendMessage(string type, string subtype)
-        {
-            Cfx.API.SendNuiMessage("{\"type\":\"" + type + "\", \"subtype\":\"" + subtype + "\"}");
-        }
-
-        /// <summary>
-        /// The necessary event types used for communicating with the Nui.
-        /// Should contains the same types as the Terminal project has.
-        /// </summary>
-        private abstract class NuiEventType
-        {
-            public const string Close = "close";
-
-            public const string Mdt = "view:mdt";
-            public const string DutyMenu = "view:duty_menu";
-            public const string RadialMenu = "view:radial_menu";
-
-            public const string MenuUp = "menu:control_up";
-            public const string MenuDown = "menu:control_down";
-            public const string MenuLeft = "menu:control_left";
-            public const string MenuRight = "menu:control_right";
-            public const string MenuSelect = "menu:control_select";
         }
     }
 }

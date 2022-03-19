@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
+using FivePD.Gamemode.Client.Attributes;
 
 namespace FivePD.Gamemode.Client.Menu
 {
@@ -16,15 +17,22 @@ namespace FivePD.Gamemode.Client.Menu
         /// <summary>
         /// Initializes a new instance of the <see cref="RadialMenu"/> class.
         /// </summary>
+        /// <param name="id">The unique id of this menu.</param>
         /// <param name="title">The name of this menu, just as an identifier.</param>
         /// <param name="key">The keybind of this menu.</param>
         /// <param name="items">The items of this menu.</param>
-        public RadialMenu(string title, string key, List<RadialMenuItem> items)
+        public RadialMenu(string id, string title, string key, List<RadialMenuItem> items)
         {
+            this.Id = id;
             this.Title = title;
             this.Key = key;
             this.Items = items;
         }
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the title.

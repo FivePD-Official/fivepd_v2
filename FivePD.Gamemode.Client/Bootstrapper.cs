@@ -83,7 +83,8 @@ namespace FivePD.Gamemode.Client
             localizationService.LoadDefaultLocalization();
 
             var radialMenuService = provider.Resolve<RadialMenuService>();
-            radialMenuService.RegisterMenus();
+            radialMenuService.RegisterEvents();
+            radialMenuService.CreateMenus();
             radialMenuService.RegisterMenuKeybinds();
         }
 

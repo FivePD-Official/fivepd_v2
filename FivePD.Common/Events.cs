@@ -89,5 +89,39 @@ namespace FivePD.Common
             /// </summary>
             public const string GetRadialMenus = "fivepd:nui:getRadialMenus";
         }
+
+        /// <summary>
+        /// The necessary event types used for communicating with the Nui.
+        /// Should contains the same types as the Terminal project has.
+        /// </summary>
+        public abstract class NuiEventType
+        {
+            /// <summary>Closes the Nui.</summary>
+            public const string Close = "close";
+
+            /// <summary>Opens the Nui and displays the MDT view.</summary>
+            public const string Mdt = "view:mdt";
+
+            /// <summary>Opens the Nui and displays the duty menu.</summary>
+            public const string DutyMenu = "view:duty_menu";
+
+            /// <summary>Opens the Nui and displays a radial menu.</summary>
+            public const string RadialMenu = "view:radial_menu";
+
+            /// <summary>Moves up by one item in normal menus.</summary>
+            public const string MenuUp = "menu:control_up";
+
+            /// <summary>Moves down by one item in normal menus.</summary>
+            public const string MenuDown = "menu:control_down";
+
+            /// <summary>Moves left by one item in normal menus.</summary>
+            public const string MenuLeft = "menu:control_left";
+
+            /// <summary>Moves right by one item in normal menus.</summary>
+            public const string MenuRight = "menu:control_right";
+
+            /// <summary>Selects the current item.</summary>
+            public const string MenuSelect = "menu:control_select";
+        }
     }
 }

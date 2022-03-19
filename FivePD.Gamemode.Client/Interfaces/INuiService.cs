@@ -4,6 +4,8 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using Newtonsoft.Json.Linq;
+
 namespace FivePD.Gamemode.Client.Interfaces
 {
     /// <summary>
@@ -16,6 +18,24 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Registers all necessary NUI events for the MDT and menus.
         /// </summary>
         public void RegisterEventHandlers();
+
+        /// <summary>
+        /// Opens the test radial menu.
+        /// </summary>
+        /// <param name="menuId">Identifier of the menu.</param>
+        public void ShowRadialMenu(string menuId);
+
+        /// <summary>
+        /// Send control event to the NUI.
+        /// </summary>
+        /// <param name="data">The data to send.</param>
+        public void SendMessage(string data);
+
+        /// <summary>
+        /// Send control event to the NUI.
+        /// </summary>
+        /// <param name="data">The data to send.</param>
+        public void SendMessage(JObject data);
 
         /// <summary>
         /// Hides NUI.

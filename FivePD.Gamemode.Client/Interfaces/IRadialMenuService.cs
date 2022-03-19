@@ -12,8 +12,18 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface IRadialMenuService
     {
         /// <summary>
+        /// Registers the necessary events for the radial menus.
+        /// </summary>
+        public void RegisterEvents();
+
+        /// <summary>
         /// Registers the official menus.
         /// </summary>
-        public void RegisterMenus();
+        public void CreateMenus();
+
+        /// <summary>
+        /// Registers all menus' keybind and its items' actions.
+        /// </summary>
+        public void RegisterMenuKeybinds();
     }
 }
