@@ -54,11 +54,6 @@ namespace FivePD.Common
             public const string GetAvailableLocalesFromServer = "fivepd:localization:getAllAvaibleLocalesFromServer";
 
             /// <summary>
-            /// Used when the Nui requests all available locales.
-            /// </summary>
-            public const string GetAvailableLocalesFromNui = "fivepd:nui:getAvailableLocalesFromNui";
-
-            /// <summary>
             /// Used to request localization from Nui.
             /// </summary>
             public const string GetLocalization = "fivepd:nui:getLocalization";
@@ -88,6 +83,11 @@ namespace FivePD.Common
             /// Used to load all radial menu info.
             /// </summary>
             public const string GetRadialMenus = "fivepd:nui:getRadialMenus";
+
+            /// <summary>
+            /// Used to load all menu info.
+            /// </summary>
+            public const string GetMenus = "fivepd:nui:getMenus";
         }
 
         /// <summary>
@@ -102,8 +102,8 @@ namespace FivePD.Common
             /// <summary>Opens the Nui and displays the MDT view.</summary>
             public const string Mdt = "view:mdt";
 
-            /// <summary>Opens the Nui and displays the duty menu.</summary>
-            public const string DutyMenu = "view:duty_menu";
+            /// <summary>Opens the Nui and displays a menu.</summary>
+            public const string MenuView = "view:menu";
 
             /// <summary>Opens the Nui and displays a radial menu.</summary>
             public const string RadialMenu = "view:radial_menu";
@@ -122,6 +122,9 @@ namespace FivePD.Common
 
             /// <summary>Selects the current item.</summary>
             public const string MenuSelect = "menu:control_select";
+
+            /// <summary>Sends the current localization to the Nui.</summary>
+            public const string LocalizationChange = "localization:change";
         }
     }
 }

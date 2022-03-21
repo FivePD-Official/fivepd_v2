@@ -27,7 +27,6 @@ namespace FivePD.Gamemode.Client.Services
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly string _defaultLocale = "en";
         private readonly List<Locale> _locales;
-        private Localization _currentLocalization;
 #pragma warning disable S1450
         private string _currentLocale = "en";
 #pragma warning restore S1450
@@ -42,19 +41,24 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary = eventHandlerDictionary;
         }
 
+        /// <summary>
+        /// Gets the currently set localization.
+        /// </summary>
+        public Localization CurrentLocalization { get; private set; }
+
+        /// <summary>
+        /// Gets all available locales.
+        /// </summary>
+        /// <returns>An array of locales.</returns>
+        public List<Locale> Locales => this._locales;
+
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
             Cfx.API.RegisterNuiCallbackType(Events.Localization.GetLocalization);
             this._eventHandlerDictionary[$"__cfx_nui:{Events.Localization.GetLocalization}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
-                cb.Invoke(JsonConvert.SerializeObject(this._currentLocalization));
-            });
-
-            Cfx.API.RegisterNuiCallbackType(Events.Localization.GetAvailableLocalesFromNui);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.Localization.GetAvailableLocalesFromNui}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                cb.Invoke(JsonConvert.SerializeObject(this._locales));
+                cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
             });
 
             Cfx.API.RegisterNuiCallbackType(Events.Localization.ChangeLocalization);
@@ -63,12 +67,12 @@ namespace FivePD.Gamemode.Client.Services
                 dynamic d = body;
                 this._currentLocale = d.locale;
                 this.LoadLocalization(this._currentLocale);
-                cb.Invoke(JsonConvert.SerializeObject(this._currentLocalization));
+                cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
             });
         }
 
         /// <inheritdoc />
-        public void LoadAvailableLocales()
+        public void LoadAvailableLocales(RadialMenuService radialMenuService, MenuService menuService)
         {
             BaseScript.TriggerServerEvent(Events.Localization.GetAvailableLocalesFromServer, new Action<string>((locales) =>
             {
@@ -76,6 +80,14 @@ namespace FivePD.Gamemode.Client.Services
                 {
                     this._locales.Add(new Locale(item["Key"].ToString(), item["Title"].ToString()));
                 }
+
+                radialMenuService.CreateMenus();
+                radialMenuService.RegisterEvents();
+                radialMenuService.RegisterMenuKeybinds();
+
+                menuService.CreateMenus();
+                menuService.RegisterEvents();
+                menuService.RegisterMenuKeybinds();
             }));
         }
 
@@ -95,7 +107,7 @@ namespace FivePD.Gamemode.Client.Services
                 data = "{}";
             }
 
-            this._currentLocalization = JsonConvert.DeserializeObject<Localization>(data);
+            this.CurrentLocalization = JsonConvert.DeserializeObject<Localization>(data);
         }
     }
 }

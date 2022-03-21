@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted, onBeforeMount } from 'vue';
-import { useEmitter } from '@hooks';
-import { MenuItem, MenuItemList, MenuItemToggle } from '@utils';
+import { useEmitter, useT } from '@hooks';
+import { type Menu, MenuItem, MenuItemList, MenuItemToggle } from '@utils';
 import { MenuItemType } from '@enums';
 import { NuiEventType } from '@utils';
-import { IListItem } from '@interfaces';
 
 const props = defineProps<{
-  title: string,
-  items: MenuItem[]
+  menu: Menu
 }>();
 
 const emitter = useEmitter();
+const t = useT();
 
 const currentItemIndex: Ref<number> = ref(0);
 const itemNodes: Ref<HTMLElement[] | null> = ref(null);
@@ -19,12 +18,14 @@ const selectorNode: Ref<HTMLElement | null> = ref(null);
 const menuItems: Ref<MenuItem[]> = ref([]);
 
 onBeforeMount(() => {
-  menuItems.value = props.items;
+  menuItems.value = props.menu.items;
 });
 
 onMounted(() => {
   itemNodes.value = Array.from(document.querySelectorAll('.menu-item'));
   selectorNode.value = document.querySelector('.selector');
+
+  console.log(props.menu)
 });
 
 emitter.on(NuiEventType.MenuUp, () => {
@@ -65,8 +66,8 @@ emitter.on(NuiEventType.MenuSelect, () => {
   currentItem.onPress();
 });
 
-const getMarqueeClass = (item: MenuItemList, listItem: IListItem, listIndex: number) => {
-  if (listItem.Title.length <= 10) return '';
+const getMarqueeClass = (item: MenuItemList, title: string, listIndex: number) => {
+  if (title.length <= 10) return '';
   return item.currentIndex === listIndex ? 'marquee' : '';
 }
 
@@ -102,7 +103,7 @@ const onListSlide = (dir: string) => {
   <div id="main">
     <div class="menu">
       <div class="menu-header">
-        <p>{{ title }}</p>
+        <p>{{ menu.useLocalization ? t(menu.title) : menu.title }}</p>
       </div>
       <div class="menu-items">
 
@@ -110,7 +111,7 @@ const onListSlide = (dir: string) => {
 
         <div v-for="(item, index) in menuItems || []" :key="index" class="menu-item">
 
-          <p class="title">{{ item.title }}</p>
+          <p class="title">{{ menu.useLocalization ? t(item.title) : item.title }}</p>
 
           <div v-if="item.type === MenuItemType.Toggle" :class="`menu-item-toggle ${(item as MenuItemToggle).checked ? 'checked' : ''}`">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -126,7 +127,7 @@ const onListSlide = (dir: string) => {
               <div class="list-wrapper-inner">
                 <div v-for="(listItem, listIndex) in (item as (MenuItemList)).items" :key="listIndex" class="list-wrapper-item">
                   <div :class="`list-wrapper-item-inner ${getMarqueeClass(item as MenuItemList, listItem, listIndex)}`">
-                    <p>{{ listItem.Title }}</p>
+                    <p>{{ listItem }}</p>
                   </div>
                 </div>
               </div>

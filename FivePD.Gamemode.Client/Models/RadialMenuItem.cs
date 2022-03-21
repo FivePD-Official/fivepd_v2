@@ -7,7 +7,7 @@
 using System;
 using CitizenFX.Core;
 
-namespace FivePD.Gamemode.Client.Menu
+namespace FivePD.Gamemode.Client.Models
 {
     /// <summary>
     /// A radial menu item.

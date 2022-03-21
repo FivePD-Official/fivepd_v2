@@ -5,9 +5,8 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
-using FivePD.Gamemode.Client.Attributes;
 
-namespace FivePD.Gamemode.Client.Menu
+namespace FivePD.Gamemode.Client.Models
 {
     /// <summary>
     /// A radial menu.

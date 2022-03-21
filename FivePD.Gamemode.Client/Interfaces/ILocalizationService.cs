@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Threading.Tasks;
+using FivePD.Gamemode.Client.Services;
 
 namespace FivePD.Gamemode.Client.Interfaces
 {
@@ -21,7 +22,9 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// <summary>
         /// Finds and loads all translation files located in fivepd/Localization.
         /// </summary>
-        public void LoadAvailableLocales();
+        /// <param name="radialMenuService">The localization's key.</param>
+        /// <param name="menuService">The localization's keyasd.</param>
+        public void LoadAvailableLocales(RadialMenuService radialMenuService, MenuService menuService);
 
         /// <summary>
         /// Loads the default localization file.

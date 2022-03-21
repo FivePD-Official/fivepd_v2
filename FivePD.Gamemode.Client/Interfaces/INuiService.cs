@@ -48,11 +48,6 @@ namespace FivePD.Gamemode.Client.Interfaces
         public void OpenMdt();
 
         /// <summary>
-        /// Opens the duty menu.
-        /// </summary>
-        public void OpenDutyMenu();
-
-        /// <summary>
         /// Moves up by one item in the currently opened menu.
         /// </summary>
         public void MenuControlUp();

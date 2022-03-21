@@ -17,6 +17,7 @@ using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
+using NJsonSchema.Generation;
 using NJsonSchema.Validation;
 using Cfx = CitizenFX.Core.Native;
 
@@ -78,6 +79,7 @@ namespace FivePD.Gamemode.Server.Services
                 try
                 {
                     string data = Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(),  $"/Localization/{locale.Key}.json");
+                    string copyOfData = data;
 
                     if (data is null)
                     {
@@ -85,7 +87,10 @@ namespace FivePD.Gamemode.Server.Services
                         data = "{}";
                     }
 
-                    var localeData = JsonSchema.FromType<Localization>();
+                    var localeData = JsonSchema.FromType(typeof(Localization), new JsonSchemaGeneratorSettings
+                    {
+                        DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull,
+                    });
                     var validator = new JsonSchemaValidator();
                     var errors = validator.Validate(data, localeData);
 
@@ -100,8 +105,8 @@ namespace FivePD.Gamemode.Server.Services
                         return;
                     }
 
-                    var localization = JsonConvert.DeserializeObject<Localization>(data);
-                    locale.Title = localization?.Title ?? "???";
+                    var localization = JsonConvert.DeserializeObject<Localization>(copyOfData);
+                    locale.Title = localization!.Title;
                 }
                 catch (Exception e)
                 {

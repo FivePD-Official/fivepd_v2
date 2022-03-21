@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { hideNui, showNui, NuiEventType, Post, NuiEvents } from '@utils';
+import { hideNui, showNui, NuiEventType, Post, NuiEvents, Menu, MenuItem, MenuItemButton, MenuItemList, MenuItemToggle } from '@utils';
 import { useRouter } from 'vue-router';
 import { type Ref, ref } from 'vue';
 import { useEmitter } from '@hooks';
-import { store } from '@store';
+import { MenuItemType } from '@enums';
+import { useStore } from 'vuex';
 
+const store = useStore();
 const emitter = useEmitter();
 const router = useRouter();
 const viewType: Ref<string> = ref<string>(NuiEventType.Mdt);
@@ -22,7 +24,15 @@ window.onload = function () {
 
     // Type should always hold the same values as in FivePD.Gamemode.Client.Services.NuiService.NuiEventType
     const type: string = event.data.type;
-    subtype.value = event.data.hasOwnProperty('subtype') ? event.data.subtype : '#';
+
+    if (type === NuiEventType.LocalizationChange) {
+      store.commit('setLocalization', JSON.parse(event.data.data));
+      return;
+    }
+
+    if (![NuiEventType.MenuDown, NuiEventType.MenuUp, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect].includes(type)) {
+      subtype.value = event.data.hasOwnProperty('subtype') ? event.data.subtype : '#';
+    }
 
     if (isDev) console.table(event.data);
 
@@ -35,7 +45,9 @@ window.onload = function () {
       emitter.emit('showRadialMenu', subtype.value);
     }
 
-    if ([NuiEventType.Mdt, NuiEventType.DutyMenu, NuiEventType.RadialMenu].includes(type)) {
+    console.log(type, subtype.value)
+
+    if ([NuiEventType.Mdt, NuiEventType.MenuView, NuiEventType.RadialMenu].includes(type)) {
       viewType.value = type;
       showNui();
       return;
@@ -63,20 +75,40 @@ window.onload = function () {
 
   router.push('/');
 
-  loadAvailableLocales();
   loadLocalization();
+  loadMenus();
   loadRadialMenus();
-}
-
-const loadAvailableLocales = async () => {
-  const locales: any = await Post(NuiEvents.GetAvailableLocalesFromNui).catch(() => {});
-  console.log(JSON.parse(locales));
-  store.commit('setAvailableLocales', JSON.parse(locales));
 }
 
 const loadLocalization = async () => {
   const localization: any = await Post(NuiEvents.GetLocalization).catch(() => {});
   store.commit('setLocalization', JSON.parse(localization));
+  console.log('Localization', JSON.parse(localization));
+}
+
+const loadMenus = async () => {
+  const res: any = await Post(NuiEvents.GetMenus).catch(() => {});
+  const menusJson: any = JSON.parse(res);
+  const menus: Menu[] = [];
+  for (const menu of menusJson) {
+    const menuItems: MenuItem[] = [];
+    for (const item of menu.Items) {
+      let _item: any;
+      switch (item.Type) {
+        case MenuItemType.Button: _item = new MenuItemButton(item.Title, item.Description, item.Hashcode); break;
+        case MenuItemType.List: {
+          _item = new MenuItemList(item.Title, item.Description, item.Hashcode);
+          _item.setItems = JSON.parse(item.Items);
+          break;
+        }
+        case MenuItemType.Toggle: _item = new MenuItemToggle(item.Title, item.Description, item.Hashcode); break;
+      }
+      menuItems.push(_item);
+    }
+    menus.push(new Menu(menu.Hashcode, menu.Title, menu.UseLocalization, menuItems));
+  }
+  console.log(menus);
+  store.commit('setMenus', menus);
 }
 
 const loadRadialMenus = async () => {
@@ -87,8 +119,10 @@ const loadRadialMenus = async () => {
 
 <template>
   <Main v-if="viewType === NuiEventType.Mdt" />
-  <DutyMenu v-else-if="viewType === NuiEventType.DutyMenu" />
-  <RadialMenu v-else-if="viewType === NuiEventType.RadialMenu" :menuHashcode="subtype" />
+  <template v-if="viewType === NuiEventType.MenuView" v-for="item in store.state.global.menus">
+    <MenuView :menu="(item as Menu)" v-if="subtype === (item as Menu).id" />
+  </template>
+  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuHashcode="subtype" />
 </template>
 
 <style lang="sass">
