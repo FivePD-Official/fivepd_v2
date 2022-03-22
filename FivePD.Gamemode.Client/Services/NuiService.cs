@@ -123,15 +123,8 @@ namespace FivePD.Gamemode.Client.Services
             Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(data));
         }
 
-        /// <summary>
-        /// Shows NUI. If the MDT has been opened while any menu is open,
-        /// the NUI view will be switched to the MDT.
-        /// </summary>
-        /// <param name="type">Switches to the given type after showing NUI.</param>
-        /// <param name="subtype">The subtype of the event. If left as # it'll be ignored in the Nui.</param>
-        /// <param name="hasFocus">If NUI has focus.</param>
-        /// <param name="hasCursor">If NUI has cursor usage.</param>
-        public void Show(string type, string subtype = "#", bool hasFocus = true, bool hasCursor = true)
+        /// <inheritdoc />
+        public void Show(string type, string menuId = "#", bool hasFocus = true, bool hasCursor = true)
         {
             if (this._isNuiOpened && type != Events.NuiEventType.Mdt)
             {
@@ -144,7 +137,7 @@ namespace FivePD.Gamemode.Client.Services
             this.SendMessage(new JObject
             {
                 { "type", type },
-                { "subtype", subtype },
+                { "menuId", menuId },
             });
             Cfx.API.SetNuiFocus(hasFocus, hasCursor);
         }

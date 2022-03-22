@@ -72,7 +72,7 @@ const handleEvents = (event: any, isDev: boolean) => {
     case NuiEventType.MenuView:
     case NuiEventType.RadialMenu: {
       viewType.value = type;
-      currentMenuId.value = event.data.hasOwnProperty('subtype') ? event.data.subtype : '#';
+      currentMenuId.value = event.data.hasOwnProperty('menuId') ? event.data.menuId : '#';
       if (currentMenuId.value !== '#') {
         emitter.emit('showRadialMenu', currentMenuId.value);
       }
