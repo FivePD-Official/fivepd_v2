@@ -82,7 +82,7 @@ namespace FivePD.Gamemode.Client.Services
                 {
                     { "Title", menu.Title },
                     { "UseLocalization", menu.UseLocalization },
-                    { "Hashcode", menu.Id },
+                    { "Id", menu.Id },
                     { "Items", items },
                 });
             }

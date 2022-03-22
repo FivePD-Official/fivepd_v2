@@ -72,7 +72,7 @@ namespace FivePD.Gamemode.Client.Services
                 radialMenus.Add(new JObject
                 {
                     { "Title", menu.Title },
-                    { "Hashcode", menu.Id },
+                    { "Id", menu.Id },
                     { "Items", items },
                 });
             }

@@ -11,7 +11,7 @@ interface MousePosition {
 }
 
 const props = defineProps<{
-  menuHashcode: string
+  menuId: string
 }>();
 
 const store = useStore();
@@ -26,7 +26,7 @@ const lastMousePosition = ref<MousePosition>({ x: 0, y: 0 });
 const lastSelectAngle = ref<number>(-1);
 
 onMounted(() => {
-  findSelectedMenu(props.menuHashcode);
+  findSelectedMenu(props.menuId);
   drawCanvas();
   window.addEventListener('message', onNuiEvent);
 });
@@ -35,9 +35,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('message', onNuiEvent);
 });
 
-emitter.on('showRadialMenu', (hashcode: string) => {
+emitter.on('showRadialMenu', (menuId: string) => {
   resetValues();
-  findSelectedMenu(hashcode);
+  findSelectedMenu(menuId);
   drawCanvas();
 });
 
@@ -48,8 +48,8 @@ const resetValues = () => {
   lastMousePosition.value = { x: 0, y: 0 };
 }
 
-const findSelectedMenu = (hashcode: string) => {
-  selectedMenu.value = menus.find((x: IMenu) => x.Hashcode === hashcode)!;
+const findSelectedMenu = (id: string) => {
+  selectedMenu.value = menus.find((x: IMenu) => x.Id === id)!;
 }
 
 const onNuiEvent = (event: any) => {

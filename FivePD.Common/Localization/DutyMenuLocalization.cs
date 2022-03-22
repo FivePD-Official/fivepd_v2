@@ -20,7 +20,7 @@ namespace FivePD.Common.Localization
         {
             this.OnDuty = new OnDutyLocalization();
             this.GetLoadout = new GetLoadoutLocalization();
-            this.ChangeLanguage = new ChangeLanguateLocalization();
+            this.ChangeLanguage = new ChangeLanguageLocalization();
         }
 
         /// <summary>Gets or sets the Title.</summary>
@@ -39,7 +39,7 @@ namespace FivePD.Common.Localization
         /// <summary>
         /// Gets or sets the ChangeLanguageItem.
         /// </summary>
-        public ChangeLanguateLocalization ChangeLanguage { get; set; }
+        public ChangeLanguageLocalization ChangeLanguage { get; set; }
 
         /// <summary>
         /// Contains all keys that are used for the On duty item.
@@ -76,7 +76,7 @@ namespace FivePD.Common.Localization
         /// <summary>
         /// Contains all keys that are used for the Change language item.
         /// </summary>
-        public class ChangeLanguateLocalization
+        public class ChangeLanguageLocalization
         {
             /// <summary>
             /// Gets or sets the Title.

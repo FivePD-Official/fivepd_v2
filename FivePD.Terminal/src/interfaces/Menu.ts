@@ -5,6 +5,6 @@ export interface IMenuItem {
 
 export interface IMenu {
   Title: string,
-  Hashcode: string,
+  Id: string,
   Items: IMenuItem[]
 }

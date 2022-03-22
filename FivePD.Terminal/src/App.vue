@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { hideNui, showNui, NuiEventType, Post, NuiEvents, Menu, MenuItem, MenuItemButton, MenuItemList, MenuItemToggle } from '@utils';
 import { useRouter } from 'vue-router';
-import { type Ref, ref } from 'vue';
+import { ref } from 'vue';
 import { useEmitter } from '@hooks';
 import { MenuItemType } from '@enums';
 import { useStore } from 'vuex';
@@ -9,8 +9,8 @@ import { useStore } from 'vuex';
 const store = useStore();
 const emitter = useEmitter();
 const router = useRouter();
-const viewType = ref<string>(NuiEventType.Mdt);
-const subtype = ref<string>('#');
+const viewType = ref<string>('');
+const currentMenuId = ref<string>('#');
 
 window.onload = function () {
 
@@ -19,53 +19,7 @@ window.onload = function () {
   document.head.innerHTML = document.head.innerHTML + '<base href=' + (isDev ? '' : '/Libraries/FivePD.Terminal/') + '/>';
   document.body.style.display = "none";
 
-  window.addEventListener('message', (event) => {
-    if (!event.data.hasOwnProperty('type')) return;
-
-    // Type should always hold the same values as in FivePD.Gamemode.Client.Services.NuiService.NuiEventType
-    const type: string = event.data.type;
-
-    if (type === NuiEventType.SendMenuObjects) {
-      loadMenus(event.data.data);
-      return;
-    }
-
-    if (type === NuiEventType.SendRadialMenuObjects) {
-      loadRadialMenus(event.data.data);
-      return;
-    }
-
-    if (type === NuiEventType.LocalizationChange) {
-      store.commit('setLocalization', JSON.parse(event.data.data));
-      return;
-    }
-
-    if (![NuiEventType.MenuDown, NuiEventType.MenuUp, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect].includes(type)) {
-      subtype.value = event.data.hasOwnProperty('subtype') ? event.data.subtype : '#';
-    }
-
-    if (isDev) console.table(event.data);
-
-    if (type === NuiEventType.Close) {
-      document.body.style.display = "none";
-      return;
-    }
-
-    if (subtype.value !== '#') {
-      emitter.emit('showRadialMenu', subtype.value);
-    }
-
-    console.log(type, subtype.value)
-
-    if ([NuiEventType.Mdt, NuiEventType.MenuView, NuiEventType.RadialMenu].includes(type)) {
-      viewType.value = type;
-      showNui();
-      return;
-    }
-
-    emitter.emit(type);
-  });
-
+  window.addEventListener('message', event => handleEvents(event, isDev));
   window.addEventListener('keydown', (event) => {
     if (event.code === 'Escape') hideNui();
   });
@@ -80,18 +34,63 @@ window.onload = function () {
       font-style: normal;
     }
   `));
-
   document.head.appendChild(style);
 
   router.push('/');
 
-  loadLocalization();;
+  loadLocalization();
+}
+
+const handleEvents = (event: any, isDev: boolean) => {
+  if (!event.data.hasOwnProperty('type')) return;
+
+  // Type should always hold the same values as in FivePD.Common.Events.NuiEventType
+  const type: string = event.data.type;
+
+  switch (type) {
+    case NuiEventType.SendMenuObjects: {
+      loadMenus(event.data.data);
+      break;
+    }
+    case NuiEventType.SendRadialMenuObjects: {
+      loadRadialMenus(event.data.data);
+      break;
+    }
+    case NuiEventType.LocalizationChange: {
+      store.commit('setLocalization', JSON.parse(event.data.data));
+      break;
+    }
+    case NuiEventType.MenuUp:
+    case NuiEventType.MenuDown:
+    case NuiEventType.MenuLeft:
+    case NuiEventType.MenuRight:
+    case NuiEventType.MenuSelect: {
+      emitter.emit(type);
+      break;
+    }
+    case NuiEventType.Mdt:
+    case NuiEventType.MenuView:
+    case NuiEventType.RadialMenu: {
+      viewType.value = type;
+      currentMenuId.value = event.data.hasOwnProperty('subtype') ? event.data.subtype : '#';
+      if (currentMenuId.value !== '#') {
+        emitter.emit('showRadialMenu', currentMenuId.value);
+      }
+      showNui();
+      break;
+    }
+    case NuiEventType.Close: {
+      document.body.style.display = "none";
+      break;
+    }
+  }
+
+  if (isDev) console.table(event.data);
 }
 
 const loadLocalization = async () => {
   const localization: any = await Post(NuiEvents.GetLocalization).catch(() => {});
   store.commit('setLocalization', JSON.parse(localization));
-  console.log('Localization', JSON.parse(localization));
 }
 
 const loadMenus = async (data: string) => {
@@ -102,17 +101,23 @@ const loadMenus = async (data: string) => {
     for (const item of menu.Items) {
       let _item: any;
       switch (item.Type) {
-        case MenuItemType.Button: _item = new MenuItemButton(item.Title, item.Description, item.Hashcode); break;
+        case MenuItemType.Button: {
+          _item = new MenuItemButton(item.Title, item.Description, item.Hashcode);
+          break;
+        }
         case MenuItemType.List: {
           _item = new MenuItemList(item.Title, item.Description, item.Hashcode);
           _item.setItems = JSON.parse(item.Items);
           break;
         }
-        case MenuItemType.Toggle: _item = new MenuItemToggle(item.Title, item.Description, item.Hashcode); break;
+        case MenuItemType.Toggle: {
+          _item = new MenuItemToggle(item.Title, item.Description, item.Hashcode);
+          break;
+        }
       }
       menuItems.push(_item);
     }
-    menus.push(new Menu(menu.Hashcode, menu.Title, menu.UseLocalization, menuItems));
+    menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
   }
   console.log(menus);
   store.commit('setMenus', menus);
@@ -125,10 +130,10 @@ const loadRadialMenus = async (data: string) => {
 
 <template>
   <Main v-if="viewType === NuiEventType.Mdt" />
-  <template v-if="viewType === NuiEventType.MenuView" v-for="item in store.state.global.menus">
-    <MenuView :menu="(item as Menu)" v-if="subtype === (item as Menu).id" />
+  <template v-if="viewType === NuiEventType.MenuView" v-for="item in (store.state.global.menus as Menu[])">
+    <MenuView :menu="item" v-if="currentMenuId === item.id" />
   </template>
-  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuHashcode="subtype" />
+  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuId="currentMenuId" />
 </template>
 
 <style lang="sass">
