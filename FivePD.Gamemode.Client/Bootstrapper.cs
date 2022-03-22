@@ -13,6 +13,8 @@ using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Services;
 using Cfx = CitizenFX.Core.Native;
 
+#pragma warning disable S3241
+#pragma warning disable CS4014
 namespace FivePD.Gamemode.Client
 {
     /**
@@ -72,7 +74,7 @@ namespace FivePD.Gamemode.Client
 
             var provider = services.Build();
 
-            var screenDecorService = provider.Resolve<IScreenDecorService>();
+            var screenDecorService = provider.Resolve<ScreenDecorService>();
             screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
             screenDecorService.BeginTextDraw();
 
@@ -88,7 +90,33 @@ namespace FivePD.Gamemode.Client
 
             var radialMenuService = provider.Resolve<RadialMenuService>();
             var menuService = provider.Resolve<MenuService>();
-            localizationService.LoadAvailableLocales(radialMenuService, menuService);
+
+            this.CreateMenus(localizationService, radialMenuService, menuService, screenDecorService);
+        }
+
+        private async Task CreateMenus(LocalizationService localizationService, RadialMenuService radialMenuService, MenuService menuService, ScreenDecorService screenDecorService)
+        {
+            screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE ~w~- ~y~Loading...";
+
+            // TODO: wait for server config file validation as well
+            var availableLocales = await localizationService.LoadAvailableLocales();
+
+            if (!availableLocales)
+            {
+                screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE ~w~- ~r~An unknown error occured, contact the server owner.";
+                return;
+            }
+
+            radialMenuService.CreateMenus();
+            radialMenuService.RegisterEvents();
+            radialMenuService.SendToNui();
+            radialMenuService.RegisterMenuKeybinds();
+
+            menuService.CreateMenus();
+            menuService.SendToNui();
+            menuService.RegisterMenuKeybinds();
+
+            screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
         }
 
         private void OnTickAdd(Func<Task> task)

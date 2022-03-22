@@ -45,39 +45,43 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            Cfx.API.RegisterNuiCallbackType(Events.Nui.GetRadialMenus);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.Nui.GetRadialMenus}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                var radialMenus = new JArray();
-                foreach (var menu in this._menus)
-                {
-                    var items = new JArray();
-                    foreach (var item in menu.Items)
-                    {
-                        items.Add(new JObject
-                        {
-                            { "Title", item.Title },
-                            { "Hashcode", item.GetHashCode().ToString() },
-                        });
-                    }
-
-                    radialMenus.Add(new JObject
-                    {
-                        { "Title", menu.Title },
-                        { "Hashcode", menu.Id },
-                        { "Items", items },
-                    });
-                }
-
-                cb.Invoke(JsonConvert.SerializeObject(radialMenus));
-            });
-
             this._nuiService.OnNuiHide += () =>
             {
                 this._isAnyMenuVisible = false;
                 this._tickService.OnTick -= this.DisableMouseMovement;
                 this._tickService.OnTick -= this.OnMouseMove;
             };
+        }
+
+        /// <inheritdoc />
+        public void SendToNui()
+        {
+            var radialMenus = new JArray();
+            foreach (var menu in this._menus)
+            {
+                var items = new JArray();
+                foreach (var item in menu.Items)
+                {
+                    items.Add(new JObject
+                    {
+                        { "Title", item.Title },
+                        { "Hashcode", item.GetHashCode().ToString() },
+                    });
+                }
+
+                radialMenus.Add(new JObject
+                {
+                    { "Title", menu.Title },
+                    { "Hashcode", menu.Id },
+                    { "Items", items },
+                });
+            }
+
+            this._nuiService.SendMessage(new JObject
+            {
+                { "type", Events.NuiEventType.SendRadialMenuObjects },
+                { "data", JsonConvert.SerializeObject(radialMenus) },
+            });
         }
 
         /// <inheritdoc />

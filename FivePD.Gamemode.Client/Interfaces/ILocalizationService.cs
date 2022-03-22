@@ -4,6 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System;
 using System.Threading.Tasks;
 using FivePD.Gamemode.Client.Services;
 
@@ -22,9 +23,8 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// <summary>
         /// Finds and loads all translation files located in fivepd/Localization.
         /// </summary>
-        /// <param name="radialMenuService">The localization's key.</param>
-        /// <param name="menuService">The localization's keyasd.</param>
-        public void LoadAvailableLocales(RadialMenuService radialMenuService, MenuService menuService);
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public Task<bool> LoadAvailableLocales();
 
         /// <summary>
         /// Loads the default localization file.

@@ -48,13 +48,6 @@ namespace FivePD.Gamemode.Client.Services
                 this.Hide();
                 cb.Invoke(string.Empty);
             });
-
-            Cfx.API.RegisterNuiCallbackType(Events.Nui.GetLoadout);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.Nui.GetLoadout}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                Debug.WriteLine("Get loadout event from Nui.");
-                cb.Invoke("Test response");
-            });
         }
 
         /// <inheritdoc />

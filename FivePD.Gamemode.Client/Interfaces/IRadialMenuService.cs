@@ -25,5 +25,10 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Registers all menus' keybind and its items' actions.
         /// </summary>
         public void RegisterMenuKeybinds();
+
+        /// <summary>
+        /// Sends all radial menus to the Nui.
+        /// </summary>
+        public void SendToNui();
     }
 }

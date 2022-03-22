@@ -64,32 +64,6 @@ namespace FivePD.Common
             public const string ChangeLocalization = "fivepd:nui:changeLocalization";
         }
 
-        /**
-         * <summary>Contains definitions for events related to the NUI.</summary>
-         */
-        public abstract class Nui
-        {
-            /// <summary>
-            /// Toggles the player's duty state.
-            /// </summary>
-            /// public const string ToggleDuty = "fivepd:nui:toggleDuty";
-
-            /// <summary>
-            /// Adds the selected loadout's weapons to the player.
-            /// </summary>
-            public const string GetLoadout = "fivepd:nui:getLoadout";
-
-            /// <summary>
-            /// Used to load all radial menu info.
-            /// </summary>
-            public const string GetRadialMenus = "fivepd:nui:getRadialMenus";
-
-            /// <summary>
-            /// Used to load all menu info.
-            /// </summary>
-            public const string GetMenus = "fivepd:nui:getMenus";
-        }
-
         /// <summary>
         /// The necessary event types used for communicating with the Nui.
         /// Should contains the same types as the Terminal project has.
@@ -125,6 +99,12 @@ namespace FivePD.Common
 
             /// <summary>Sends the current localization to the Nui.</summary>
             public const string LocalizationChange = "localization:change";
+
+            /// <summary>Sends all menus to the Nui.</summary>
+            public const string SendMenuObjects = "send:menus";
+
+            /// <summary>Sends all radial menus to the Nui.</summary>
+            public const string SendRadialMenuObjects = "send:radialMenus";
         }
     }
 }

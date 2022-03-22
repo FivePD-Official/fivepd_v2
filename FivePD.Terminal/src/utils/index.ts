@@ -14,7 +14,9 @@ export const NuiEventType = Object.freeze({
   MenuLeft: 'menu:control_left',
   MenuRight: 'menu:control_right',
   MenuSelect: 'menu:control_select',
-  LocalizationChange: 'localization:change'
+  LocalizationChange: 'localization:change',
+  SendMenuObjects: 'send:menus',
+  SendRadialMenuObjects: 'send:radialMenus',
 });
 
 export const NuiEvents = Object.freeze({

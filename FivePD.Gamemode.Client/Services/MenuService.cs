@@ -53,44 +53,44 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void RegisterEvents()
+        public void SendToNui()
         {
-            Cfx.API.RegisterNuiCallbackType(Events.Nui.GetMenus);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.Nui.GetMenus}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            var menus = new JArray();
+            foreach (var menu in this._menus)
             {
-                var menus = new JArray();
-                foreach (var menu in this._menus)
+                var items = new JArray();
+                foreach (var item in menu.Items)
                 {
-                    var items = new JArray();
-                    foreach (var item in menu.Items)
+                    var itemData = new JObject
                     {
-                        var itemData = new JObject
-                        {
-                            { "Title", item.Title },
-                            { "Description", item.Description },
-                            { "Hashcode", item.GetHashCode().ToString() },
-                            { "Type", (int)item.Type },
-                        };
+                        { "Title", item.Title },
+                        { "Description", item.Description },
+                        { "Hashcode", item.GetHashCode().ToString() },
+                        { "Type", (int)item.Type },
+                    };
 
-                        if (item.Type == MenuItem.MenuItemType.List)
-                        {
-                            var casted = item as MenuItemList;
-                            itemData.Add("Items", JsonConvert.SerializeObject(casted?.Items));
-                        }
-
-                        items.Add(itemData);
+                    if (item.Type == MenuItem.MenuItemType.List)
+                    {
+                        var casted = item as MenuItemList;
+                        itemData.Add("Items", JsonConvert.SerializeObject(casted?.Items));
                     }
 
-                    menus.Add(new JObject
-                    {
-                        { "Title", menu.Title },
-                        { "UseLocalization", menu.UseLocalization },
-                        { "Hashcode", menu.Id },
-                        { "Items", items },
-                    });
+                    items.Add(itemData);
                 }
 
-                cb.Invoke(JsonConvert.SerializeObject(menus));
+                menus.Add(new JObject
+                {
+                    { "Title", menu.Title },
+                    { "UseLocalization", menu.UseLocalization },
+                    { "Hashcode", menu.Id },
+                    { "Items", items },
+                });
+            }
+
+            this._nuiService.SendMessage(new JObject
+            {
+                { "type", Events.NuiEventType.SendMenuObjects },
+                { "data", JsonConvert.SerializeObject(menus) },
             });
         }
 

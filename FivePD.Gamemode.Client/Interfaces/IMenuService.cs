@@ -17,9 +17,9 @@ namespace FivePD.Gamemode.Client.Interfaces
         public void CreateMenus();
 
         /// <summary>
-        /// Registers the necessary events for the menus.
+        /// Sends all menus to the Nui.
         /// </summary>
-        public void RegisterEvents();
+        public void SendToNui();
 
         /// <summary>
         /// Registers all menus' keybind and its items' actions.

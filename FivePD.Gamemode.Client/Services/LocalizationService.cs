@@ -7,9 +7,11 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -72,23 +74,33 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void LoadAvailableLocales(RadialMenuService radialMenuService, MenuService menuService)
+        public async Task<bool> LoadAvailableLocales()
         {
-            BaseScript.TriggerServerEvent(Events.Localization.GetAvailableLocalesFromServer, new Action<string>((locales) =>
+            int hasServerResponded = 0;
+            var now = DateTime.Now;
+            var timeUntilFinishWait = now.AddMinutes(1);
+
+            BaseScript.TriggerServerEvent(Events.Localization.GetAvailableLocalesFromServer, new Action<string>(locales =>
             {
+                hasServerResponded = 1;
                 foreach (var item in JArray.Parse(locales))
                 {
                     this._locales.Add(new Locale(item["Key"].ToString(), item["Title"].ToString()));
                 }
-
-                radialMenuService.CreateMenus();
-                radialMenuService.RegisterEvents();
-                radialMenuService.RegisterMenuKeybinds();
-
-                menuService.CreateMenus();
-                menuService.RegisterEvents();
-                menuService.RegisterMenuKeybinds();
             }));
+
+            do
+            {
+                if (DateTime.Compare(DateTime.Now, timeUntilFinishWait) > 0)
+                {
+                    return false;
+                }
+
+                await BaseScript.Delay(1);
+            }
+            while (hasServerResponded == 0);
+
+            return true;
         }
 
         /// <inheritdoc />

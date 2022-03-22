@@ -9,8 +9,8 @@ import { useStore } from 'vuex';
 const store = useStore();
 const emitter = useEmitter();
 const router = useRouter();
-const viewType: Ref<string> = ref<string>(NuiEventType.Mdt);
-const subtype: Ref<string> = ref<string>('#');
+const viewType = ref<string>(NuiEventType.Mdt);
+const subtype = ref<string>('#');
 
 window.onload = function () {
 
@@ -24,6 +24,16 @@ window.onload = function () {
 
     // Type should always hold the same values as in FivePD.Gamemode.Client.Services.NuiService.NuiEventType
     const type: string = event.data.type;
+
+    if (type === NuiEventType.SendMenuObjects) {
+      loadMenus(event.data.data);
+      return;
+    }
+
+    if (type === NuiEventType.SendRadialMenuObjects) {
+      loadRadialMenus(event.data.data);
+      return;
+    }
 
     if (type === NuiEventType.LocalizationChange) {
       store.commit('setLocalization', JSON.parse(event.data.data));
@@ -75,9 +85,7 @@ window.onload = function () {
 
   router.push('/');
 
-  loadLocalization();
-  loadMenus();
-  loadRadialMenus();
+  loadLocalization();;
 }
 
 const loadLocalization = async () => {
@@ -86,9 +94,8 @@ const loadLocalization = async () => {
   console.log('Localization', JSON.parse(localization));
 }
 
-const loadMenus = async () => {
-  const res: any = await Post(NuiEvents.GetMenus).catch(() => {});
-  const menusJson: any = JSON.parse(res);
+const loadMenus = async (data: string) => {
+  const menusJson: any = JSON.parse(data);
   const menus: Menu[] = [];
   for (const menu of menusJson) {
     const menuItems: MenuItem[] = [];
@@ -111,9 +118,8 @@ const loadMenus = async () => {
   store.commit('setMenus', menus);
 }
 
-const loadRadialMenus = async () => {
-  const res: any = await Post(NuiEvents.GetRadialMenus).catch(() => {});
-  store.commit('setRadialMenus', JSON.parse(res));
+const loadRadialMenus = async (data: string) => {
+  store.commit('setRadialMenus', JSON.parse(data));
 }
 </script>
 
