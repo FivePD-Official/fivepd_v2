@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Schemas;
+using FivePD.Common.Localization;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

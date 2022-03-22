@@ -6,7 +6,7 @@
 
 using Newtonsoft.Json;
 
-namespace FivePD.Common.Schemas
+namespace FivePD.Common.Localization
 {
     /// <summary>
     /// Contains all keys that are used within Duty menu.

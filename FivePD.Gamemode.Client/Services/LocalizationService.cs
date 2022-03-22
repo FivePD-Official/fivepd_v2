@@ -15,7 +15,7 @@ using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Schemas;
+using FivePD.Common.Localization;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

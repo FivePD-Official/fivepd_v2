@@ -1,18 +1,18 @@
 {
-	"Title": "English",
-	"DutyMenu": {
-		"Title": "Duty menu",
-		"OnDuty": {
-			"Title": "On duty",
-			"Description": "Toggles your duty status.",
-		},
-		"GetLoadout": {
-			"Title": "Get loadout",
-			"Description": "Get a loadout.",
-		},
-		"ChangeLanguage": {
-			"Title": "Change language",
-			"Description": "Change language.",
-		},
-	}
+  "Title": "English",
+  "DutyMenu": {
+    "Title": "Duty menu",
+    "OnDuty": {
+      "Title": "On duty",
+      "Description": "Description of on duty."
+    },
+    "GetLoadout": {
+      "Title": "Get loadout",
+      "Description": "Description of get loadout"
+    },
+    "ChangeLanguage": {
+      "Title": "Change language",
+      "Description": "Description of change language"
+    }
+  }
 }

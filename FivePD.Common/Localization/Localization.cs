@@ -4,7 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-namespace FivePD.Common.Schemas
+namespace FivePD.Common.Localization
 {
     /// <summary>
     /// Contains all keys that are used within the whole project for translations.
