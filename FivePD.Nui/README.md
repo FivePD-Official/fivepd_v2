@@ -1,4 +1,4 @@
-# FivePD MDT
+# FivePD NUI
 
 |Command|Description|
 |---|---|
@@ -6,6 +6,6 @@
 |`npm run build`|Builds the app and copies the files to _VITE_OUTDIR_|
 
 ## .env.production
-VITE_OUTDIR=<your_path_to_the_fivem_server>\\resources\\fivepd\\Libraries\\FivePD.Terminal
+VITE_OUTDIR=<your_path_to_the_fivem_server>\\resources\\fivepd\\Libraries\\FivePD.Nui
 
 
