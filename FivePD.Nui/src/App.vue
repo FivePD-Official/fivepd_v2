@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { hideNui, showNui, NuiEventType, Post, NuiEvents, Menu, MenuItem, MenuItemButton, MenuItemList, MenuItemToggle } from '@utils';
+import { hideNui, showNui, Post, Menu, MenuItem, MenuItemButton, MenuItemList, MenuItemToggle } from '@utils';
+import { NuiEventType, NuiEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useEmitter } from '@hooks';
@@ -44,8 +45,7 @@ window.onload = function () {
 const handleEvents = (event: any, isDev: boolean) => {
   if (!event.data.hasOwnProperty('type')) return;
 
-  // Type should always hold the same values as in FivePD.Common.Events.NuiEventType
-  const type: string = event.data.type;
+  const type: NuiEventType = event.data.type;
 
   switch (type) {
     case NuiEventType.SendMenuObjects: {
@@ -119,7 +119,6 @@ const loadMenus = async (data: string) => {
     }
     menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
   }
-  console.log(menus);
   store.commit('setMenus', menus);
 }
 

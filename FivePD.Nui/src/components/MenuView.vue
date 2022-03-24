@@ -2,8 +2,7 @@
 import { type Ref, ref, onMounted, onBeforeMount } from 'vue';
 import { useEmitter, useT } from '@hooks';
 import { type Menu, MenuItem, MenuItemList, MenuItemToggle } from '@utils';
-import { MenuItemType } from '@enums';
-import { NuiEventType } from '@utils';
+import { MenuItemType, NuiEventType } from '@enums';
 
 const props = defineProps<{
   menu: Menu

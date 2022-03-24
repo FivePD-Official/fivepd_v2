@@ -1,4 +1,5 @@
-import { NuiEventType, Post } from "@utils";
+import { Post } from "@utils";
+import { NuiEventType } from '@enums';
 
 export const showNui = () => {
   document.body.style.display = "block";
