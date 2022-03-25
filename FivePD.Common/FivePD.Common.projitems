@@ -9,6 +9,8 @@
     <Import_RootNamespace>FivePD.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Loadout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\DutyMenuLocalization.cs" />
