@@ -51,15 +51,14 @@ namespace FivePD.Gamemode.Client.Menus
         {
             var items = new List<MenuItem>
             {
-                new MenuItemToggle("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", (body, cb) =>
+                new MenuItemToggle("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", (index, cb) =>
                 {
                     Debug.WriteLine("Duty status toggle");
                     cb.Invoke(string.Empty);
                 }),
-                new MenuItemList("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), (body, cb) =>
+                new MenuItemList("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), (index, cb) =>
                 {
-                    dynamic d = body;
-                    var loadout = this._loadouts.ElementAt((int)d.index);
+                    var loadout = this._loadouts.ElementAt(index);
 
                     foreach (var weaponItem in loadout.Weapons)
                     {
@@ -81,10 +80,9 @@ namespace FivePD.Gamemode.Client.Menus
 
                     cb.Invoke(string.Empty);
                 }),
-                new MenuItemList("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList(), (body, cb) =>
+                new MenuItemList("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList(), (index, cb) =>
                 {
-                    dynamic d = body;
-                    var locale = this._localizationService.Locales.ElementAt((int)d.index);
+                    var locale = this._localizationService.Locales.ElementAt(index);
                     this._localizationService.LoadLocalization(locale.Key);
                     this._nuiService.SendMessage(new JObject
                     {

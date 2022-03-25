@@ -113,7 +113,7 @@ namespace FivePD.Gamemode.Client.Services
                 {
                     var eventName = $"fivepd:menu:trigger_item_{item.GetHashCode()}";
                     Cfx.API.RegisterNuiCallbackType(eventName);
-                    this._eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, callback) => item.OnPress(body, callback));
+                    this._eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<int, CallbackDelegate>((body, callback) => item.OnPress(body, callback));
                 }
             }
         }

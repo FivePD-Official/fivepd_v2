@@ -65,9 +65,7 @@ export class MenuItem {
 
   onPress(): void {
     if (this._type === MenuItemType.List) {
-      Post(`fivepd:menu:trigger_item_${this._hashcode}`, {
-        index: ((this as unknown) as MenuItemList).currentIndex
-      }).catch(() => {});
+      Post(`fivepd:menu:trigger_item_${this._hashcode}`, ((this as unknown) as MenuItemList).currentIndex).catch(() => {});
     } else {
       Post(`fivepd:menu:trigger_item_${this._hashcode}`).catch(() => {});
     }

@@ -22,7 +22,7 @@ namespace FivePD.Gamemode.Client.Models
         /// <param name="description">The description of this item.</param>
         /// <param name="type">The type of this item.</param>
         /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
-        public MenuItem(string title, string description, MenuItemType type, Action<ExpandoObject, CallbackDelegate> onPress)
+        public MenuItem(string title, string description, MenuItemType type, Action<int, CallbackDelegate> onPress)
         {
             this.Title = title;
             this.Description = description;
@@ -69,6 +69,6 @@ namespace FivePD.Gamemode.Client.Models
         /// <summary>
         /// Gets the action that will be invoked on press.
         /// </summary>
-        public Action<ExpandoObject, CallbackDelegate> OnPress { get; }
+        public Action<int, CallbackDelegate> OnPress { get; }
     }
 }
