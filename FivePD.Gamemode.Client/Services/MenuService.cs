@@ -25,6 +25,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly NuiService _nuiService;
         private readonly KeybindService _keybindService;
         private readonly LocalizationService _localizationService;
+        private readonly ResourceService _resourceService;
         private readonly List<Menu> _menus;
 
         /// <summary>
@@ -34,12 +35,14 @@ namespace FivePD.Gamemode.Client.Services
         /// <param name="nuiService">The <see cref="NuiService" /> to use.</param>
         /// <param name="keybindService">The <see cref="KeybindService" /> to use.</param>
         /// <param name="localizationService">The <see cref="LocalizationService" /> to use.</param>
-        public MenuService(EventHandlerDictionary eventHandlerDictionary, NuiService nuiService, KeybindService keybindService, LocalizationService localizationService)
+        /// <param name="resourceService">The <see cref="ResourceService"/> to use.</param>
+        public MenuService(EventHandlerDictionary eventHandlerDictionary, NuiService nuiService, KeybindService keybindService, LocalizationService localizationService, ResourceService resourceService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._nuiService = nuiService;
             this._keybindService = keybindService;
             this._localizationService = localizationService;
+            this._resourceService = resourceService;
             this._menus = new List<Menu>();
         }
 
@@ -48,7 +51,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._menus.AddRange(new[]
             {
-                new DutyMenu(this._localizationService, this._nuiService),
+                new DutyMenu(this._localizationService, this._nuiService, this._resourceService),
             });
         }
 

@@ -23,5 +23,6 @@ server_script 'Libraries/FivePD.Gamemode.Server/FivePD.Gamemode.Server.net.dll'
 files {
     'Libraries/FivePD.Gamemode.Client/**/*',
     'Libraries/FivePD.Nui/**/*',
-    'Localization/**/*'
+    'Localization/**/*',
+	'Config/**/*'
 }

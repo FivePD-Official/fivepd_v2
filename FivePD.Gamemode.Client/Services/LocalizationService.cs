@@ -16,6 +16,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
+#pragma warning disable S1450
+
 namespace FivePD.Gamemode.Client.Services
 {
     /// <inheritdoc />
@@ -25,9 +27,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly ResourceService _resourceService;
         private readonly string _defaultLocale = "en";
         private readonly List<Locale> _locales;
-#pragma warning disable S1450
         private string _currentLocale = "en";
-#pragma warning restore S1450
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizationService"/> class.
