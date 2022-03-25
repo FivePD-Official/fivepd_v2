@@ -6,19 +6,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Localization;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NJsonSchema;
-using NJsonSchema.Generation;
-using NJsonSchema.Validation;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services
@@ -27,13 +20,16 @@ namespace FivePD.Gamemode.Server.Services
     public class LocalizationService : ILocalizationService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
+        private readonly IResourceService _resourceService;
         private List<Locale> _locales;
 
         /// <summary>Initializes a new instance of the <see cref="LocalizationService"/> class.</summary>
-        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>>
-        public LocalizationService(EventHandlerDictionary eventHandlerDictionary)
+        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
+        /// <param name="resourceService">The <see cref="ResourceService" /> to use.</param>
+        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IResourceService resourceService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
+            this._resourceService = resourceService;
         }
 
         /// <inheritdoc />
@@ -76,42 +72,8 @@ namespace FivePD.Gamemode.Server.Services
         {
             foreach (var locale in this._locales)
             {
-                try
-                {
-                    string data = Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(),  $"/Localization/{locale.Key}.json");
-                    string copyOfData = data;
-
-                    if (data is null)
-                    {
-                        Debug.WriteLine("Error while loading the localizations.");
-                        data = "{}";
-                    }
-
-                    var localeData = JsonSchema.FromType(typeof(Localization), new JsonSchemaGeneratorSettings
-                    {
-                        DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull,
-                    });
-                    var validator = new JsonSchemaValidator();
-                    var errors = validator.Validate(data, localeData);
-
-                    if (errors.Count > 0)
-                    {
-                        foreach (var error in errors)
-                        {
-                            Debug.WriteLine("Localization error: " + error.Path + ": " + error.Kind);
-                        }
-
-                        // TODO: If there are any errors terminate FivePD.
-                        return;
-                    }
-
-                    var localization = JsonConvert.DeserializeObject<Localization>(copyOfData);
-                    locale.Title = localization!.Title;
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.Message);
-                }
+                var localization = this._resourceService.LoadFile<Localization>($"/Localization/{locale.Key}.json");
+                locale.Title = localization!.Title;
             }
         }
     }

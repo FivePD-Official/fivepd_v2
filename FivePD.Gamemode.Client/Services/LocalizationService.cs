@@ -7,11 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -27,6 +22,7 @@ namespace FivePD.Gamemode.Client.Services
     public class LocalizationService : ILocalizationService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
+        private readonly ResourceService _resourceService;
         private readonly string _defaultLocale = "en";
         private readonly List<Locale> _locales;
 #pragma warning disable S1450
@@ -36,11 +32,13 @@ namespace FivePD.Gamemode.Client.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizationService"/> class.
         /// </summary>
-        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>>
-        public LocalizationService(EventHandlerDictionary eventHandlerDictionary)
+        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
+        /// <param name="resourceService">The <see cref="ResourceService" /> to use.</param>
+        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, ResourceService resourceService)
         {
             this._locales = new List<Locale>();
             this._eventHandlerDictionary = eventHandlerDictionary;
+            this._resourceService = resourceService;
         }
 
         /// <summary>
@@ -112,14 +110,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void LoadLocalization(string locale)
         {
-            string data = Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(),  $"/Localization/{locale}.json");
-            if (string.IsNullOrEmpty(data))
-            {
-                Debug.WriteLine("Error while loading the localization.");
-                data = "{}";
-            }
-
-            this.CurrentLocalization = JsonConvert.DeserializeObject<Localization>(data);
+            this.CurrentLocalization = this._resourceService.LoadFile<Localization>($"/Localization/{locale}.json");
         }
     }
 }

@@ -53,6 +53,7 @@ namespace FivePD.Gamemode.Server
                         retainedFileCountLimit: 7)
                     .MinimumLevel.Verbose());
 
+            services.AddSingleton<IResourceService, ResourceService>();
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonLocator, FsAddonLocator>();
             services.AddSingleton<IEntityService, EntityService>();
