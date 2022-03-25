@@ -45,6 +45,5 @@
     <PackageReference Include="CitizenFX.Core.Client" Version="1.0.5375" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
-    <PackageReference Include="NJsonSchema" Version="10.6.10" />
   </ItemGroup>
 </Project>
