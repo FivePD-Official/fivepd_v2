@@ -4,6 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using FivePD.Gamemode.Client.Services;
 using Newtonsoft.Json.Linq;
 
 namespace FivePD.Gamemode.Client.Interfaces
@@ -14,6 +15,11 @@ namespace FivePD.Gamemode.Client.Interfaces
     /// </summary>
     public interface INuiService
     {
+        /// <summary>
+        /// Triggers when the Nui has been hidden.
+        /// </summary>
+        public event NuiService.OnHide OnNuiHide;
+
         /// <summary>
         /// Registers all necessary NUI events for the MDT and menus.
         /// </summary>

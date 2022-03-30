@@ -24,33 +24,27 @@ namespace FivePD.Gamemode.Client.Services
     public class LocalizationService : ILocalizationService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly ResourceService _resourceService;
+        private readonly IResourceService _resourceService;
         private readonly string _defaultLocale = "en";
-        private readonly List<Locale> _locales;
         private string _currentLocale = "en";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizationService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="resourceService">The <see cref="ResourceService" /> to use.</param>
-        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, ResourceService resourceService)
+        /// <param name="resourceService">The <see cref="IResourceService" /> to use.</param>
+        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IResourceService resourceService)
         {
-            this._locales = new List<Locale>();
+            this.Locales = new List<Locale>();
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._resourceService = resourceService;
         }
 
-        /// <summary>
-        /// Gets the currently set localization.
-        /// </summary>
-        public Localization CurrentLocalization { get; private set; }
+        /// <inheritdoc />
+        public List<Locale> Locales { get; }
 
-        /// <summary>
-        /// Gets all available locales.
-        /// </summary>
-        /// <returns>An array of locales.</returns>
-        public List<Locale> Locales => this._locales;
+        /// <inheritdoc />
+        public Localization CurrentLocalization { get; private set; }
 
         /// <inheritdoc />
         public void RegisterEventHandlers()
@@ -83,7 +77,7 @@ namespace FivePD.Gamemode.Client.Services
                 hasServerResponded = 1;
                 foreach (var item in JArray.Parse(locales))
                 {
-                    this._locales.Add(new Locale(item["Key"].ToString(), item["Title"].ToString()));
+                    this.Locales.Add(new Locale(item["Key"].ToString(), item["Title"].ToString()));
                 }
             }));
 

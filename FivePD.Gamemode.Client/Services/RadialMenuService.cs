@@ -22,8 +22,8 @@ namespace FivePD.Gamemode.Client.Services
     public class RadialMenuService : IRadialMenuService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly NuiService _nuiService;
-        private readonly KeybindService _keybindService;
+        private readonly INuiService _nuiService;
+        private readonly IKeybindService _keybindService;
         private readonly ITickService _tickService;
         private readonly List<RadialMenu> _menus = new List<RadialMenu>();
         private bool _isAnyMenuVisible;
@@ -31,10 +31,10 @@ namespace FivePD.Gamemode.Client.Services
 
         /// <summary>Initializes a new instance of the <see cref="RadialMenuService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="nuiService">The <see cref="NuiService" /> to use.</param>
-        /// <param name="keybindService">The <see cref="KeybindService" /> to use.</param>
-        /// <param name="tickService">The <see cref="TickService" /> to use.</param>
-        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, NuiService nuiService, KeybindService keybindService, TickService tickService)
+        /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
+        /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
+        /// <param name="tickService">The <see cref="ITickService" /> to use.</param>
+        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService, IKeybindService keybindService, ITickService tickService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._nuiService = nuiService;

@@ -6,7 +6,6 @@
 
 using System;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 
 namespace FivePD.Gamemode.Client.Interfaces
 {

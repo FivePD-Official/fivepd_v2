@@ -22,21 +22,21 @@ namespace FivePD.Gamemode.Client.Services
     public class MenuService : IMenuService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly NuiService _nuiService;
-        private readonly KeybindService _keybindService;
-        private readonly LocalizationService _localizationService;
-        private readonly ResourceService _resourceService;
+        private readonly INuiService _nuiService;
+        private readonly IKeybindService _keybindService;
+        private readonly ILocalizationService _localizationService;
+        private readonly IResourceService _resourceService;
         private readonly List<Menu> _menus;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="nuiService">The <see cref="NuiService" /> to use.</param>
-        /// <param name="keybindService">The <see cref="KeybindService" /> to use.</param>
-        /// <param name="localizationService">The <see cref="LocalizationService" /> to use.</param>
-        /// <param name="resourceService">The <see cref="ResourceService"/> to use.</param>
-        public MenuService(EventHandlerDictionary eventHandlerDictionary, NuiService nuiService, KeybindService keybindService, LocalizationService localizationService, ResourceService resourceService)
+        /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
+        /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
+        /// <param name="localizationService">The <see cref="ILocalizationService" /> to use.</param>
+        /// <param name="resourceService">The <see cref="IResourceService"/> to use.</param>
+        public MenuService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService, IKeybindService keybindService, ILocalizationService localizationService, IResourceService resourceService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._nuiService = nuiService;

@@ -78,27 +78,27 @@ namespace FivePD.Gamemode.Client
 
             var provider = services.Build();
 
-            var screenDecorService = provider.Resolve<ScreenDecorService>();
+            var screenDecorService = provider.Resolve<IScreenDecorService>();
             screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
             screenDecorService.BeginTextDraw();
 
-            var keybindService = provider.Resolve<KeybindService>();
+            var keybindService = provider.Resolve<IKeybindService>();
             keybindService.Register(provider);
 
-            var nuiService = provider.Resolve<NuiService>();
+            var nuiService = provider.Resolve<INuiService>();
             nuiService.RegisterEventHandlers();
 
-            var localizationService = provider.Resolve<LocalizationService>();
+            var localizationService = provider.Resolve<ILocalizationService>();
             localizationService.RegisterEventHandlers();
             localizationService.LoadDefaultLocalization();
 
-            var radialMenuService = provider.Resolve<RadialMenuService>();
-            var menuService = provider.Resolve<MenuService>();
+            var radialMenuService = provider.Resolve<IRadialMenuService>();
+            var menuService = provider.Resolve<IMenuService>();
 
             this.CreateMenus(localizationService, radialMenuService, menuService, screenDecorService);
         }
 
-        private async Task CreateMenus(LocalizationService localizationService, RadialMenuService radialMenuService, MenuService menuService, ScreenDecorService screenDecorService)
+        private async Task CreateMenus(ILocalizationService localizationService, IRadialMenuService radialMenuService, IMenuService menuService, IScreenDecorService screenDecorService)
         {
             screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE ~w~- ~y~Loading...";
 

@@ -34,9 +34,7 @@ namespace FivePD.Gamemode.Client.Services
         /// </summary>
         public delegate void OnHide();
 
-        /// <summary>
-        /// Triggers when the Nui has been hidden.
-        /// </summary>
+        /// <inheritdoc />
         public event OnHide OnNuiHide;
 
         /// <inheritdoc />

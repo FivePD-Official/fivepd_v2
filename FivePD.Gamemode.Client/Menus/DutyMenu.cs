@@ -4,14 +4,13 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels;
+using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Models;
-using FivePD.Gamemode.Client.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
@@ -23,19 +22,19 @@ namespace FivePD.Gamemode.Client.Menus
     /// <inheritdoc />
     public class DutyMenu : Menu
     {
-        private readonly LocalizationService _localizationService;
-        private readonly NuiService _nuiService;
-        private readonly ResourceService _resourceService;
+        private readonly ILocalizationService _localizationService;
+        private readonly INuiService _nuiService;
+        private readonly IResourceService _resourceService;
         private readonly List<Loadout> _loadouts;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DutyMenu"/> class.
         /// </summary>
-        /// <param name="localizationService">The <see cref="LocalizationService"/> to use.</param>
-        /// <param name="nuiService">The <see cref="NuiService"/> to use.</param>
-        /// <param name="resourceService">The <see cref="ResourceService"/> to use.</param>
+        /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
+        /// <param name="nuiService">The <see cref="INuiService"/> to use.</param>
+        /// <param name="resourceService">The <see cref="IResourceService"/> to use.</param>
         /// >
-        public DutyMenu(LocalizationService localizationService, NuiService nuiService, ResourceService resourceService)
+        public DutyMenu(ILocalizationService localizationService, INuiService nuiService, IResourceService resourceService)
             : base("duty_menu", "DutyMenu.Title", "F10", true)
         {
             this._localizationService = localizationService;
