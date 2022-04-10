@@ -7,6 +7,7 @@
 using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.Builders;
 using FivePD.Gamemode.Client.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
@@ -47,6 +48,33 @@ namespace FivePD.Gamemode.Client.Services
         public void EndTextDraw()
         {
             this._tickService.OnTick -= this.DrawOnScreen;
+        }
+
+        /**
+         * <inheritdoc />
+         */
+        public void SetTextToDraw(bool isLoading, bool hasError)
+        {
+            var cTextBuilder = new CTextBuilder()
+                .White("FivePD")
+                .Blue("PD")
+                .White(" - v2.0.0 - ");
+
+#if DEBUG
+            cTextBuilder = cTextBuilder.White("Development Build - ").Red("DO NOT DISTRIBUTE");
+#endif
+
+            if (isLoading)
+            {
+                cTextBuilder.White(" - ").Yellow("Loading...");
+            }
+
+            if (hasError)
+            {
+                cTextBuilder.White(" - ").Red("An unknown error occured, contact the server owner.");
+            }
+
+            this.TextToDraw = cTextBuilder.Build();
         }
 
         private Task DrawOnScreen()

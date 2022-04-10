@@ -7,6 +7,7 @@
 using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.Builders;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
@@ -83,7 +84,7 @@ namespace FivePD.Gamemode.Client
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();
-            screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
+            screenDecorService.SetTextToDraw(false, false);
             screenDecorService.BeginTextDraw();
 
             var keybindService = provider.Resolve<IKeybindService>();
@@ -104,14 +105,14 @@ namespace FivePD.Gamemode.Client
 
         private async Task CreateMenus(ILocalizationService localizationService, IRadialMenuService radialMenuService, IMenuService menuService, IScreenDecorService screenDecorService)
         {
-            screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE ~w~- ~y~Loading...";
+            screenDecorService.SetTextToDraw(true, false);
 
             // TODO: wait for server config file validation as well
             var availableLocales = await localizationService.LoadAvailableLocales();
 
             if (!availableLocales)
             {
-                screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE ~w~- ~r~An unknown error occured, contact the server owner.";
+                screenDecorService.SetTextToDraw(false, true);
                 return;
             }
 
@@ -124,7 +125,7 @@ namespace FivePD.Gamemode.Client
             menuService.SendToNui();
             menuService.RegisterMenuKeybinds();
 
-            screenDecorService.TextToDraw = "Five~b~PD~s~ - v2.0.0 - Development Build - ~r~DO NOT DISTRIBUTE";
+            screenDecorService.SetTextToDraw(false, false);
         }
 
         private void OnTickAdd(Func<Task> task)

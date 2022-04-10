@@ -27,5 +27,12 @@ namespace FivePD.Gamemode.Client.Interfaces
          * <summary>Ends drawing text on the screen.</summary>
          */
         public void EndTextDraw();
+
+        /// <summary>
+        /// Sets the text to draw on the screen with formatting.
+        /// </summary>
+        /// <param name="isLoading">If set to true a loading text will be added to the string.</param>
+        /// <param name="hasError">If set to true an error message will be added to the string.</param>
+        public void SetTextToDraw(bool isLoading, bool hasError);
     }
 }

@@ -9,6 +9,7 @@
     <Import_RootNamespace>FivePD.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Builders\CTextBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\FPedBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Loadout.cs" />
