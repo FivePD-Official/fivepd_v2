@@ -5,8 +5,11 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
@@ -17,16 +20,31 @@ namespace FivePD.Gamemode.Client.Services
     /// <inheritdoc />
     public class KeybindService : IKeybindService
     {
+        private readonly ITickService _tickService;
+        private readonly List<HoldableKeybind> _actions = new List<HoldableKeybind>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeybindService"/> class.
+        /// </summary>
+        /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
+        public KeybindService(ITickService tickService)
+        {
+            this._tickService = tickService;
+        }
+
         /// <inheritdoc />
         public void Register(ServiceProvider provider)
         {
-            var methods = Assembly
+            var methodInfos = Assembly
                 .GetExecutingAssembly()
                 .GetTypes()
                 .SelectMany(x => x.GetMethods())
-                .Where(x => x.GetCustomAttributes(typeof(KeybindAttribute), false).FirstOrDefault() != null);
+                .ToList();
 
-            foreach (var method in methods)
+            var normalKeybinds = methodInfos.Where(x => x.GetCustomAttributes(typeof(KeybindAttribute), false).FirstOrDefault() != null);
+            var holdableKeybinds = methodInfos.Where(x => x.GetCustomAttributes(typeof(HoldableKeybindAttribute), false).FirstOrDefault() != null);
+
+            foreach (var method in normalKeybinds)
             {
                 var obj = provider.Resolve(method.DeclaringType);
 
@@ -34,12 +52,42 @@ namespace FivePD.Gamemode.Client.Services
 
                 this.RegisterKeybind(attr.Id, attr.Description, attr.Key, () => method.Invoke(obj, null));
             }
+
+            foreach (var method in holdableKeybinds)
+            {
+                var obj = provider.Resolve(method.DeclaringType);
+
+                var attr = method.GetCustomAttribute<HoldableKeybindAttribute>();
+
+                this.RegisterHoldableKeybind(attr.Id, attr.Description, attr.Key, attr.TimeToHold, () => method.Invoke(obj, null));
+            }
+
+            this._tickService.OnTick += this.WaitForHold;
         }
 
         /// <inheritdoc />
         public void RegisterKeybind(string id, string description, string key, Action onPress = null, Action onRelease = null)
         {
             this.InternalRegisterKeybind(id, description, key, "KEYBOARD", onPress, onRelease);
+        }
+
+        /// <inheritdoc />
+        public void RegisterHoldableKeybind(string id, string description, string key, int timeToHold, Action onPress = null, Action onRelease = null)
+        {
+            HoldableKeybind holdableKeybind = new HoldableKeybind(onPress, timeToHold);
+
+            void HoldableOnPress()
+            {
+                this._actions.Add(holdableKeybind);
+            }
+
+            void HoldableOnRelease()
+            {
+                holdableKeybind.ClearTimer();
+                this._actions.Remove(holdableKeybind);
+            }
+
+            this.InternalRegisterKeybind(id, description, key, "KEYBOARD", HoldableOnPress, HoldableOnRelease);
         }
 
         /// <inheritdoc />
@@ -67,6 +115,53 @@ namespace FivePD.Gamemode.Client.Services
                     onRelease?.Invoke();
                 }),
                 false);
+        }
+
+        private Task WaitForHold()
+        {
+            var toBeRemoved = new List<HoldableKeybind>();
+            foreach (var item in this._actions)
+            {
+                item.IncrementTimer();
+                if (item.Timer == item.TimeToHold)
+                {
+                    item.OnPress?.Invoke();
+                    toBeRemoved.Add(item);
+                }
+            }
+
+            foreach (var item in toBeRemoved)
+            {
+                item.ClearTimer();
+                this._actions.Remove(item);
+            }
+
+            return Task.FromResult(0);
+        }
+
+        private sealed class HoldableKeybind
+        {
+            public HoldableKeybind(Action onPress, int timeToHold)
+            {
+                this.OnPress = onPress;
+                this.TimeToHold = timeToHold;
+            }
+
+            public Action OnPress { get; }
+
+            public int TimeToHold { get; }
+
+            public int Timer { get; private set; }
+
+            public void IncrementTimer()
+            {
+                this.Timer++;
+            }
+
+            public void ClearTimer()
+            {
+                this.Timer = 0;
+            }
         }
     }
 }
