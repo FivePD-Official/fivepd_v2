@@ -9,13 +9,17 @@
     <Import_RootNamespace>FivePD.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Builders\FPedBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Loadout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\DutyMenuLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Localization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FDutyStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FGender.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FPed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPlayer.cs" />
   </ItemGroup>
 </Project>

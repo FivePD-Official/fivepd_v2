@@ -61,12 +61,16 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IReplicatedStateService, ReplicatedStateService>();
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
+            services.AddSingleton<IPedService, PedService>();
 
             services.AddSingleton<IPlayerDataService, PlayerDataService>();
 
             services.AddSingleton(this.EventHandlers);
 
             var provider = services.BuildServiceProvider();
+
+            var pedService = provider.GetService<IPedService>();
+            pedService?.RegisterEvents();
 
             var localizationService = provider.GetService<ILocalizationService>();
             localizationService?.RegisterEventHandlers();

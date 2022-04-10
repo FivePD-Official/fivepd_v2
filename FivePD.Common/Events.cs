@@ -4,6 +4,8 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using FivePD.Common.Models;
+
 namespace FivePD.Common
 {
     /**
@@ -41,6 +43,17 @@ namespace FivePD.Common
              * <summary>C->S: Used when a client wants to request that the server creates a prop (object).</summary>
              */
             public const string RequestProp = "fivepd:entityManagement:requestProp";
+        }
+
+        /// <summary>
+        /// Contains definitions for <see cref="FPed"/> related to events.
+        /// </summary>
+        public abstract class Ped
+        {
+            /// <summary>
+            /// Used to generate a <see cref="FPed"/> on the server.
+            /// </summary>
+            public const string Generate = "fivepd:ped:generate";
         }
 
         /// <summary>

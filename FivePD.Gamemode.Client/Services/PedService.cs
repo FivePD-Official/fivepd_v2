@@ -6,6 +6,7 @@
 
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
@@ -41,6 +42,8 @@ namespace FivePD.Gamemode.Client.Services
                 hasPlayerAimed = true;
             }
 
+            this.GeneratePedOnServer(ped);
+
             ped.KeepTask(true);
             ped.CreateBlip(BlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
             ped.SetRelationShip(Relationship.Companion);
@@ -58,6 +61,11 @@ namespace FivePD.Gamemode.Client.Services
             {
                 // TODO: If the ped is in a vehicle exit and hands up.
             }
+        }
+
+        private void GeneratePedOnServer(Ped ped)
+        {
+            BaseScript.TriggerServerEvent(Events.Ped.Generate, ped.NetworkId, ped.Gender);
         }
 
         private Ped FindClosestAlivePed(Entity entity, float withinRange = 0)
