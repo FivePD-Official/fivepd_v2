@@ -5,7 +5,12 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.Localization;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 using NJsonSchema;
@@ -18,9 +23,37 @@ namespace FivePD.Gamemode.Server.Services
     /// <inheritdoc />
     public class ResourceService : IResourceService
     {
+        private readonly ConcurrentDictionary<Type, object> _cache = new ConcurrentDictionary<Type, object>();
+
         /// <inheritdoc />
-        public T LoadFile<T>(string path)
+        public Localization GetLocalization(string locale)
         {
+            return this.LoadFile<Localization>($"/Localization/{locale}.json", false);
+        }
+
+        /// <inheritdoc />
+        public List<Item> GetItems()
+        {
+            return this.LoadFile<List<Item>>("/Config/items.json");
+        }
+
+        /// <summary>
+        /// Loads a file's content, validates it,
+        /// If empty, returns T with its default values.
+        /// Otherwise returns the data converted to the given type.
+        /// </summary>
+        /// <param name="path">The path of the file.</param>
+        /// <param name="useCache">Determines if the data should be cached.</param>
+        /// <returns>The data converted to T.</returns>
+        private T LoadFile<T>(string path, bool useCache = true)
+        {
+            var type = typeof(T);
+
+            if (this._cache.ContainsKey(type) && useCache)
+            {
+                return (T)this._cache[type];
+            }
+
             string data = this.InternalLoadFile(path);
 
             if (string.IsNullOrEmpty(data))
@@ -28,7 +61,7 @@ namespace FivePD.Gamemode.Server.Services
                 data = "{}";
             }
 
-            var localeData = JsonSchema.FromType(typeof(T), new JsonSchemaGeneratorSettings
+            var localeData = JsonSchema.FromType(type, new JsonSchemaGeneratorSettings
             {
                 DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull,
             });
@@ -46,7 +79,13 @@ namespace FivePD.Gamemode.Server.Services
                 return Activator.CreateInstance<T>();
             }
 
-            return JsonConvert.DeserializeObject<T>(data);
+            var deserializedObject = JsonConvert.DeserializeObject<T>(data);
+            if (useCache)
+            {
+                this._cache[type] = deserializedObject;
+            }
+
+            return deserializedObject;
         }
 
         /// <summary>

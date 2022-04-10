@@ -4,6 +4,10 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System.Collections.Generic;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.Localization;
+
 #pragma warning disable SA1618
 
 namespace FivePD.Gamemode.Server.Interfaces
@@ -14,12 +18,16 @@ namespace FivePD.Gamemode.Server.Interfaces
     public interface IResourceService
     {
         /// <summary>
-        /// Loads a file's content, validates it,
-        /// If empty, returns T with its default values.
-        /// Otherwise returns the data converted to the given type.
+        /// Loads and returns the /Localization/{locale}.json file's content.
         /// </summary>
-        /// <param name="path">The path of the file.</param>
-        /// <returns>The data converted to T.</returns>
-        public T LoadFile<T>(string path);
+        /// <param name="locale">The localization's key.</param>
+        /// <returns>Returns a deserialized <see cref="Localization"/> object.</returns>
+        public Localization GetLocalization(string locale);
+
+        /// <summary>
+        /// Loads and returns the /Config/items.json file's content.
+        /// </summary>
+        /// <returns>Returns all items from the config file.</returns>
+        public List<Item> GetItems();
     }
 }

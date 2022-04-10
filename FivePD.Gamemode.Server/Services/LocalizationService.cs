@@ -72,7 +72,7 @@ namespace FivePD.Gamemode.Server.Services
         {
             foreach (var locale in this._locales)
             {
-                var localization = this._resourceService.LoadFile<Localization>($"/Localization/{locale.Key}.json");
+                var localization = this._resourceService.GetLocalization(locale.Key);
                 locale.Title = localization!.Title;
             }
         }
