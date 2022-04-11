@@ -11,19 +11,19 @@ using System.Text;
 #pragma warning disable SA1611
 #pragma warning disable SA1615
 
-namespace FivePD.Common.Builders
+namespace FivePD.Gamemode.Client.Utilities
 {
     /// <summary>
-    /// asd.
+    /// A string builder wrapper to easily create multicolored texts.
     /// </summary>
-    public class CTextBuilder
+    public class FormattedText
     {
         private readonly StringBuilder _stringBuilder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CTextBuilder"/> class.
+        /// Initializes a new instance of the <see cref="FormattedText"/> class.
         /// </summary>
-        public CTextBuilder()
+        public FormattedText()
         {
             this._stringBuilder = new StringBuilder();
         }
@@ -31,7 +31,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to red.
         /// </summary>
-        public CTextBuilder Red(string text)
+        public FormattedText Red(string text)
         {
             return this.Append(Formats.Red, text);
         }
@@ -39,7 +39,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to green.
         /// </summary>
-        public CTextBuilder Green(string text)
+        public FormattedText Green(string text)
         {
             return this.Append(Formats.Green, text);
         }
@@ -47,7 +47,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to blue.
         /// </summary>
-        public CTextBuilder Blue(string text)
+        public FormattedText Blue(string text)
         {
             return this.Append(Formats.Blue, text);
         }
@@ -55,7 +55,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to yellow.
         /// </summary>
-        public CTextBuilder Yellow(string text)
+        public FormattedText Yellow(string text)
         {
             return this.Append(Formats.Yellow, text);
         }
@@ -63,7 +63,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to grey.
         /// </summary>
-        public CTextBuilder Grey(string text)
+        public FormattedText Grey(string text)
         {
             return this.Append(Formats.Grey, text);
         }
@@ -71,7 +71,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to orange.
         /// </summary>
-        public CTextBuilder Orange(string text)
+        public FormattedText Orange(string text)
         {
             return this.Append(Formats.Orange, text);
         }
@@ -79,7 +79,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to purple.
         /// </summary>
-        public CTextBuilder Purple(string text)
+        public FormattedText Purple(string text)
         {
             return this.Append(Formats.Purple, text);
         }
@@ -87,7 +87,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to pink.
         /// </summary>
-        public CTextBuilder Pink(string text)
+        public FormattedText Pink(string text)
         {
             return this.Append(Formats.Pink, text);
         }
@@ -95,7 +95,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to black.
         /// </summary>
-        public CTextBuilder Black(string text)
+        public FormattedText Black(string text)
         {
             return this.Append(Formats.Black, text);
         }
@@ -103,7 +103,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to dark blue.
         /// </summary>
-        public CTextBuilder DarkBlue(string text)
+        public FormattedText DarkBlue(string text)
         {
             return this.Append(Formats.DarkBlue, text);
         }
@@ -111,7 +111,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Sets the text color to white.
         /// </summary>
-        public CTextBuilder White(string text)
+        public FormattedText White(string text)
         {
             return this.Append(Formats.White, text);
         }
@@ -119,7 +119,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Adds a new line to the text.
         /// </summary>
-        public CTextBuilder NewLine(string text)
+        public FormattedText NewLine(string text)
         {
             this._stringBuilder.Append(Formats.NewLine);
             return this;
@@ -128,7 +128,7 @@ namespace FivePD.Common.Builders
         /// <summary>
         /// Removes all text formatting.
         /// </summary>
-        public CTextBuilder Reset(string text)
+        public FormattedText Reset(string text)
         {
             return this.Append(Formats.Reset, text);
         }
@@ -141,7 +141,7 @@ namespace FivePD.Common.Builders
             return this._stringBuilder.ToString();
         }
 
-        private CTextBuilder Append(string color, string text)
+        private FormattedText Append(string color, string text)
         {
             this._stringBuilder.Append(color);
             this._stringBuilder.Append(text);

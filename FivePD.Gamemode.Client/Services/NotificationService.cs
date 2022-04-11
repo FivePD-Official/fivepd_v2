@@ -6,6 +6,7 @@
 
 using FivePD.Common.Builders;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Client.Utilities;
 using Cfx = CitizenFX.Core.Native;
 using CfxUI = CitizenFX.Core.UI;
 
@@ -23,7 +24,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void ShowTooltip(CTextBuilder content, bool withBeep = false)
+        public void ShowTooltip(FormattedText content, bool withBeep = false)
         {
             this.ShowTooltip(content.Build(), withBeep);
         }
@@ -35,7 +36,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void ShowNotification(CTextBuilder content)
+        public void ShowNotification(FormattedText content)
         {
             this.ShowNotification(content.Build());
         }
@@ -52,7 +53,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void ShowNotificationWithTexture(string texture, string sender, string subject, CTextBuilder content)
+        public void ShowNotificationWithTexture(string texture, string sender, string subject, FormattedText content)
         {
             this.ShowNotificationWithTexture(texture, sender, subject, content.Build());
         }
