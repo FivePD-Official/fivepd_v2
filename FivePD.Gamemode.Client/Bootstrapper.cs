@@ -81,6 +81,10 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<PedService>()
                 .As<IPedService>();
 
+            services
+                .RegisterType<NotificationService>()
+                .As<INotificationService>();
+
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();
