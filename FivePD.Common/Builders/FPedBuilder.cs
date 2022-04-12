@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Models;
+using Newtonsoft.Json;
 
 #pragma warning disable CS1591
 #pragma warning disable SA1600
@@ -26,15 +27,14 @@ namespace FivePD.Common.Builders
         /// Initializes a new instance of the <see cref="FPedBuilder"/> class.
         /// </summary>
         /// <param name="networkId">The network identifier of the ped.</param>
-        /// <param name="gender">The gender of the ped.</param>
-        public FPedBuilder(int networkId, FGender gender)
+        public FPedBuilder(int networkId)
         {
             this.NetworkId = networkId;
-            this.Gender = gender;
         }
 
         public int NetworkId { get; private set; }
 
+        [JsonProperty]
         public FGender Gender { get; private set; }
 
         public string Firstname { get; private set; }
@@ -54,6 +54,12 @@ namespace FivePD.Common.Builders
         public FPedBuilder WithLastname(string name)
         {
             this.Lastname = name;
+            return this;
+        }
+
+        public FPedBuilder WithGender(FGender gender)
+        {
+            this.Gender = gender;
             return this;
         }
 

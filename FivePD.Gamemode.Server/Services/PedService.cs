@@ -13,6 +13,7 @@ using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Interfaces;
+using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
 {
@@ -37,24 +38,25 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._eventHandlerDictionary[Events.Ped.Generate] += new Action<int, int>(this.GeneratePed);
+            this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
         }
 
-        private void GeneratePed(int networkId, int gender)
+        private void GeneratePed(string serializedFped)
         {
-            if (this._peds.ContainsKey(networkId))
+            var fped = JsonConvert.DeserializeObject<FPedBuilder>(serializedFped);
+            if (fped is null || this._peds.ContainsKey(fped.NetworkId))
             {
                 return;
             }
 
-            var ped = new FPedBuilder(networkId, (FGender)gender)
+            var ped = fped
                 .WithFirstname("John")
                 .WithLastname("Doe")
                 .WithBirthdate()
                 .WithItems(this._resourceService.GetItems())
                 .Build();
 
-            this._peds[networkId] = ped;
+            this._peds[fped.NetworkId] = ped;
         }
     }
 }

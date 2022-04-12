@@ -7,10 +7,13 @@
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Builders;
+using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
@@ -42,7 +45,7 @@ namespace FivePD.Gamemode.Client.Services
                 hasPlayerAimed = true;
             }
 
-            this.GeneratePedOnServer(ped);
+            this.GeneratePed(ped);
 
             ped.KeepTask(true);
             ped.CreateBlip(BlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
@@ -63,9 +66,11 @@ namespace FivePD.Gamemode.Client.Services
             }
         }
 
-        private void GeneratePedOnServer(Ped ped)
+        private void GeneratePed(Ped ped)
         {
-            BaseScript.TriggerServerEvent(Events.Ped.Generate, ped.NetworkId, ped.Gender);
+            var fped = new FPedBuilder(ped.NetworkId)
+                .WithGender((FGender)ped.Gender);
+            BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fped));
         }
 
         private Ped FindClosestAlivePed(Entity entity, float withinRange = 0)
