@@ -88,6 +88,14 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<NotificationService>()
                 .As<INotificationService>();
 
+            services
+                .RegisterType<PoliceEventService>()
+                .As<IPoliceEventService>();
+
+            services
+                .RegisterType<TrafficStopService>()
+                .As<ITrafficStopService>();
+
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();

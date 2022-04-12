@@ -15,5 +15,10 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Initiate a traffic stop.
         /// </summary>
         public void Initiate();
+
+        /// <summary>
+        /// Cancel the current traffic stop.
+        /// </summary>
+        public void Cancel();
     }
 }
