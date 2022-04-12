@@ -4,6 +4,8 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System.Threading.Tasks;
+
 namespace FivePD.Gamemode.Client.Interfaces
 {
     /// <summary>
@@ -14,7 +16,8 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// <summary>
         /// Initiate a traffic stop.
         /// </summary>
-        public void Initiate();
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public Task Initiate();
 
         /// <summary>
         /// Cancel the current traffic stop.

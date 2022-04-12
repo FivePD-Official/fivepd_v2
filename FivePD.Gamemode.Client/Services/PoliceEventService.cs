@@ -7,7 +7,6 @@
 using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Interfaces;
-using Newtonsoft.Json;
 
 #pragma warning disable S2292
 
@@ -17,19 +16,6 @@ namespace FivePD.Gamemode.Client.Services
     public class PoliceEventService : IPoliceEventService
     {
         private BasePoliceEvent _currentlyAttachedEvent;
-
-        /// <inheritdoc />
-        public void Initiate(BasePoliceEvent policeEvent)
-        {
-            BaseScript.TriggerServerEvent("todo", JsonConvert.SerializeObject(policeEvent));
-        }
-
-        /// <inheritdoc />
-        public void Cancel()
-        {
-            BaseScript.TriggerServerEvent("todo cancel", this._currentlyAttachedEvent.Id);
-            this._currentlyAttachedEvent = null;
-        }
 
         /// <inheritdoc />
         public bool IsAttachedToEvent()

@@ -66,7 +66,8 @@ namespace FivePD.Gamemode.Client.Services
             }
         }
 
-        private void GeneratePed(Ped ped)
+        /// <inheritdoc />
+        public void GeneratePed(Ped ped)
         {
             var fPedBuilder = new FPedBuilder(ped.NetworkId)
                 .WithGender((FGender)ped.Gender);

@@ -103,5 +103,15 @@ namespace FivePD.Gamemode.Client.Extensions
         {
             return Array.IndexOf(UnsupportedPedHashes, (uint)entity.Model.Hash) == -1;
         }
+
+        /// <summary>
+        /// Can be used to toggle the SetEntityAsMissionEntity() state of the given entity.
+        /// </summary>
+        /// <param name="entity">The entity to set its persistency for.</param>
+        /// <param name="state">The state it should be set to. If set to true it won't be deleted by GTA ? .</param>
+        public static void IsPersistence(this Entity entity, bool state)
+        {
+            Cfx.API.SetEntityAsMissionEntity(entity.Handle, state, state);
+        }
     }
 }

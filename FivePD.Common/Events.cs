@@ -130,5 +130,21 @@ namespace FivePD.Common
             /// <summary>Sends all radial menus to the Nui.</summary>
             public const string SendRadialMenuObjects = "send:radialMenus";
         }
+
+        /// <summary>
+        /// Contains definitions for <see cref="BasePoliceEvent"/> related events.
+        /// </summary>
+        public abstract class TrafficStop
+        {
+            /// <summary>
+            /// Used to store an event on the server.
+            /// </summary>
+            public const string Initiate = "fivepd:policeEvent:initiate";
+
+            /// <summary>
+            /// Used to remove an event from the server and it also detaches all attached players from it.
+            /// </summary>
+            public const string Cancel = "fivepd:policeEvent:cancel";
+        }
     }
 }

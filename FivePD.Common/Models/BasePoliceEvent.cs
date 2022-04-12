@@ -17,6 +17,7 @@ namespace FivePD.Common.Models
     /// </summary>
     public class BasePoliceEvent
     {
+        private string _title;
         private FPoliceEventPriority _priority = FPoliceEventPriority.Code1;
         private string _address;
 
@@ -46,6 +47,21 @@ namespace FivePD.Common.Models
         /// Gets all players' network identifier who were attached to this event after initialization.
         /// </summary>
         public List<int> AttachedPlayers { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the title of this event.
+        /// </summary>
+        public string Title
+        {
+            get => this._title;
+
+            set
+            {
+                this._title = value;
+
+                // TODO: Update title in the NUI callout view and other places for all players.
+            }
+        }
 
         /// <summary>
         /// Gets or sets the address of this event.

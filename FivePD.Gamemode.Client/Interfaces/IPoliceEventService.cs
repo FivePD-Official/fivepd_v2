@@ -14,18 +14,6 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface IPoliceEventService
     {
         /// <summary>
-        /// Stores the event on the server.
-        /// </summary>
-        /// <param name="policeEvent">The event to store.</param>
-        public void Initiate(BasePoliceEvent policeEvent);
-
-        /// <summary>
-        /// Cancels the currently attached event, it'll also be deleted on the server,
-        /// and canceled for all attached players as well.
-        /// </summary>
-        public void Cancel();
-
-        /// <summary>
         /// Gets if the player is attached to an event.
         /// </summary>
         /// <returns>A boolean whether the player is attached to an event.</returns>
