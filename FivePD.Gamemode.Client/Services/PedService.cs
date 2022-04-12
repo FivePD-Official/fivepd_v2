@@ -68,9 +68,9 @@ namespace FivePD.Gamemode.Client.Services
 
         private void GeneratePed(Ped ped)
         {
-            var fped = new FPedBuilder(ped.NetworkId)
+            var fPedBuilder = new FPedBuilder(ped.NetworkId)
                 .WithGender((FGender)ped.Gender);
-            BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fped));
+            BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
         }
 
         private Ped FindClosestAlivePed(Entity entity, float withinRange = 0)

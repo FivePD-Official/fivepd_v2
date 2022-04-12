@@ -46,7 +46,7 @@ namespace FivePD.Common
         }
 
         /// <summary>
-        /// Contains definitions for <see cref="FPed"/> related to events.
+        /// Contains definitions for <see cref="FPed"/> related events.
         /// </summary>
         public abstract class Ped
         {

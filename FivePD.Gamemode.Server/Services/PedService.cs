@@ -41,22 +41,22 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
         }
 
-        private void GeneratePed(string serializedFped)
+        private void GeneratePed(string serializedFPedBuilder)
         {
-            var fped = JsonConvert.DeserializeObject<FPedBuilder>(serializedFped);
-            if (fped is null || this._peds.ContainsKey(fped.NetworkId))
+            var fPedBuilder = JsonConvert.DeserializeObject<FPedBuilder>(serializedFPedBuilder);
+            if (fPedBuilder is null || this._peds.ContainsKey(fPedBuilder.NetworkId))
             {
                 return;
             }
 
-            var ped = fped
+            var fPed = fPedBuilder
                 .WithFirstname("John")
                 .WithLastname("Doe")
                 .WithBirthdate()
                 .WithItems(this._resourceService.GetItems())
                 .Build();
 
-            this._peds[fped.NetworkId] = ped;
+            this._peds[fPed.NetworkId] = fPed;
         }
     }
 }
