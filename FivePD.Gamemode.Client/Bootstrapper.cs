@@ -81,6 +81,10 @@ namespace FivePD.Gamemode.Client
                 .As<IPedService>();
 
             services
+                .RegisterType<VehicleService>()
+                .As<IVehicleService>();
+
+            services
                 .RegisterType<NotificationService>()
                 .As<INotificationService>();
 

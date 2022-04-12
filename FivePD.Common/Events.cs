@@ -57,6 +57,17 @@ namespace FivePD.Common
         }
 
         /// <summary>
+        /// Contains definitions for <see cref="FVehicle"/> related events.
+        /// </summary>
+        public abstract class Vehicle
+        {
+            /// <summary>
+            /// Used to generate a <see cref="FVehicle"/> on the server.
+            /// </summary>
+            public const string Generate = "fivepd:vehicle:generate";
+        }
+
+        /// <summary>
         /// Contains definitions for events related to localization.
         /// </summary>
         public abstract class Localization

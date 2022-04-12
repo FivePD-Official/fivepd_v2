@@ -62,6 +62,7 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IPedService, PedService>();
+            services.AddSingleton<IVehicleService, VehicleService>();
 
             services.AddSingleton<IPlayerDataService, PlayerDataService>();
 
@@ -71,6 +72,9 @@ namespace FivePD.Gamemode.Server
 
             var pedService = provider.GetService<IPedService>();
             pedService?.RegisterEvents();
+
+            var vehicleService = provider.GetService<IVehicleService>();
+            vehicleService?.RegisterEvents();
 
             var localizationService = provider.GetService<ILocalizationService>();
             localizationService?.RegisterEventHandlers();
