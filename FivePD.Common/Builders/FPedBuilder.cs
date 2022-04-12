@@ -99,7 +99,7 @@ namespace FivePD.Common.Builders
         public FPedBuilder WithItems(List<Item> items)
         {
             this.Items = items
-                .Where(item => item.Location == Item.ItemLocation.Ped)
+                .Where(item => item.Location == Item.ItemLocation.Ped || item.Location == Item.ItemLocation.Everywhere)
                 .OrderBy(item => Guid.NewGuid())
                 .Take(this._random.Next(0, 6))
                 .ToList();
