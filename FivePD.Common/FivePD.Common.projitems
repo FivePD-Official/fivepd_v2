@@ -19,9 +19,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Localization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FDutyStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FPoliceEventPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FGender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FVehicle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\BasePoliceEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />
   </ItemGroup>
 </Project>
