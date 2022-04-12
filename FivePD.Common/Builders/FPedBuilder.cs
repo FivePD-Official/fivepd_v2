@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 namespace FivePD.Common.Builders
 {
     /// <summary>
-    /// asd.
+    /// Used for the construction of <see cref="FPed"/> objects.
     /// </summary>
     public class FPedBuilder
     {

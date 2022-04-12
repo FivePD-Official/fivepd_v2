@@ -7,7 +7,6 @@
 using System.Collections.Generic;
 using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
-using Newtonsoft.Json;
 
 namespace FivePD.Common.Models
 {
