@@ -41,25 +41,51 @@ namespace FivePD.Gamemode.Client.Services
                 .SelectMany(x => x.GetMethods())
                 .ToList();
 
-            var normalKeybinds = methodInfos.Where(x => x.GetCustomAttributes(typeof(KeybindAttribute), false).FirstOrDefault() != null);
-            var holdableKeybinds = methodInfos.Where(x => x.GetCustomAttributes(typeof(HoldableKeybindAttribute), false).FirstOrDefault() != null);
+            var normalKeybinds = methodInfos
+                .Where(x => x.GetCustomAttributes(typeof(KeybindAttribute), false).FirstOrDefault() != null)
+                .GroupBy(x => x.GetCustomAttribute<KeybindAttribute>().Key);
+            var holdableKeybinds = methodInfos
+                .Where(x => x.GetCustomAttributes(typeof(HoldableKeybindAttribute), false).FirstOrDefault() != null)
+                .GroupBy(x => x.GetCustomAttribute<HoldableKeybindAttribute>().Key);
 
-            foreach (var method in normalKeybinds)
+            foreach (var methodInfoGroup in normalKeybinds)
             {
-                var obj = provider.Resolve(method.DeclaringType);
+                var attribute = methodInfoGroup.ElementAt(0).GetCustomAttribute<KeybindAttribute>();
+                var keybindActions = new List<Action>();
 
-                var attr = method.GetCustomAttribute<KeybindAttribute>();
+                foreach (var methodInfo in methodInfoGroup)
+                {
+                    var obj = provider.Resolve(methodInfo.DeclaringType);
+                    keybindActions.Add(() => methodInfo.Invoke(obj, null));
+                }
 
-                this.RegisterKeybind(attr.Id, attr.Description, attr.Key, () => method.Invoke(obj, null));
+                this.RegisterKeybind(attribute.Id, attribute.Description, attribute.Key, () =>
+                {
+                    foreach (var action in keybindActions)
+                    {
+                        action.Invoke();
+                    }
+                });
             }
 
-            foreach (var method in holdableKeybinds)
+            foreach (var methodInfoGroup in holdableKeybinds)
             {
-                var obj = provider.Resolve(method.DeclaringType);
+                var attribute = methodInfoGroup.ElementAt(0).GetCustomAttribute<HoldableKeybindAttribute>();
+                var keybindActions = new List<Action>();
 
-                var attr = method.GetCustomAttribute<HoldableKeybindAttribute>();
+                foreach (var methodInfo in methodInfoGroup)
+                {
+                    var obj = provider.Resolve(methodInfo.DeclaringType);
+                    keybindActions.Add(() => methodInfo.Invoke(obj, null));
+                }
 
-                this.RegisterHoldableKeybind(attr.Id, attr.Description, attr.Key, attr.TimeToHold, () => method.Invoke(obj, null));
+                this.RegisterHoldableKeybind(attribute.Id, attribute.Description, attribute.Key, attribute.TimeToHold, () =>
+                {
+                    foreach (var action in keybindActions)
+                    {
+                        action.Invoke();
+                    }
+                });
             }
 
             this._tickService.OnTick += this.WaitForHold;
