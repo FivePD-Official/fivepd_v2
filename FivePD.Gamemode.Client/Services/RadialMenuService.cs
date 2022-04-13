@@ -106,7 +106,7 @@ namespace FivePD.Gamemode.Client.Services
                     });
                 }
 
-                this._keybindService.RegisterKeybind($"fivepd_radial_menu_${menu.Id}", "-", menu.Key, OnPress, OnRelease);
+                this._keybindService.RegisterKeybind($"fivepd:openRadialMenu_${menu.Id}", "-", menu.Key, OnPress, OnRelease);
 
                 foreach (var item in menu.Items)
                 {

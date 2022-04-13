@@ -107,7 +107,7 @@ namespace FivePD.Gamemode.Client.Services
                     this._nuiService.Show(Events.NuiEventType.MenuView, menu.Id, false, false);
                 }
 
-                this._keybindService.RegisterKeybind($"fivepd_menu_${menu.Id}", "-", menu.Key, OnPress);
+                this._keybindService.RegisterKeybind($"fivepd:openMenu_${menu.Id}", "-", menu.Key, OnPress);
 
                 foreach (var item in menu.Items)
                 {

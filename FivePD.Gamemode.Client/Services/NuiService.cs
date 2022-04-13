@@ -10,6 +10,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Client.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
@@ -49,7 +50,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        [Keybind("fivepd_close_all", "BACK", "Close menu")]
+        [Keybind(KeybindIdentifiers.MenuClose, "BACK", "Close menu")]
         public void Hide()
         {
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.Close + "\"}");
@@ -59,42 +60,42 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        [Keybind("fivepd_open_mdt", "B", "Open MDT")]
+        [Keybind(KeybindIdentifiers.OpenMDT, "B", "Open MDT")]
         public void OpenMdt()
         {
             this.Show(Events.NuiEventType.Mdt);
         }
 
         /// <inheritdoc />
-        [Keybind("fivepd_menu_up", "UP", "Move up in menu")]
+        [Keybind(KeybindIdentifiers.MenuMoveUp, "UP", "Move up in menu")]
         public void MenuControlUp()
         {
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuUp + "\"}");
         }
 
         /// <inheritdoc />
-        [Keybind("fivepd_menu_down", "DOWN", "Move down in menu")]
+        [Keybind(KeybindIdentifiers.MenuMoveDown, "DOWN", "Move down in menu")]
         public void MenuControlDown()
         {
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuDown + "\"}");
         }
 
         /// <inheritdoc />
-        [Keybind("fivepd_menu_left", "LEFT", "Move left in menu")]
+        [Keybind(KeybindIdentifiers.MenuMoveLeft, "LEFT", "Move left in menu")]
         public void MenuControlLeft()
         {
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuLeft + "\"}");
         }
 
         /// <inheritdoc />
-        [Keybind("fivepd_menu_right", "RIGHT", "Move right in menu")]
+        [Keybind(KeybindIdentifiers.MenuMoveRight, "RIGHT", "Move right in menu")]
         public void MenuControlRight()
         {
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuRight + "\"}");
         }
 
         /// <inheritdoc />
-        [Keybind("fivepd_menu_select", "RETURN", "Selects item in menu")]
+        [Keybind(KeybindIdentifiers.MenuItemSelect, "RETURN", "Selects item in menu")]
         public void MenuControlSelect()
         {
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuSelect + "\"}");
