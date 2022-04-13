@@ -37,10 +37,11 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// <param name="id">The id of this keybind.</param>
         /// <param name="description">The description of this keybind.</param>
         /// <param name="key">The key of this keybind.</param>
-        /// <param name="timeToHold">Determines for how long the key should be pressed to trigger the action.</param>
+        /// <param name="timeToHoldInMs">Determines for how long the key should be pressed to trigger the action.</param>
         /// <param name="onPress">The method that'll be invoked on press.</param>
         /// <param name="onRelease">The method that'll be invoked on release.</param>
-        public void RegisterHoldableKeybind(string id, string description, string key, int timeToHold, Action onPress = null, Action onRelease = null);
+        /// <param name="canInvokeOnPress">The onPress method will only be invoked if this method returns true.</param>
+        public void RegisterHoldableKeybind(string id, string description, string key, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null);
 
         /// <summary>
         /// Registers a mouse keybind and the given method to be invoked on press.

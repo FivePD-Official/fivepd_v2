@@ -13,6 +13,7 @@ using CitizenFX.Core;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
+using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
@@ -21,15 +22,18 @@ namespace FivePD.Gamemode.Client.Services
     public class KeybindService : IKeybindService
     {
         private readonly ITickService _tickService;
+        private readonly INuiService _nuiService;
         private readonly List<HoldableKeybind> _actions = new List<HoldableKeybind>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeybindService"/> class.
         /// </summary>
         /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-        public KeybindService(ITickService tickService)
+        /// <param name="nuiService">The <see cref="INuiService"/> to use.</param>
+        public KeybindService(ITickService tickService, INuiService nuiService)
         {
             this._tickService = tickService;
+            this._nuiService = nuiService;
         }
 
         /// <inheritdoc />
@@ -44,9 +48,6 @@ namespace FivePD.Gamemode.Client.Services
             var normalKeybinds = methodInfos
                 .Where(x => x.GetCustomAttributes(typeof(KeybindAttribute), false).FirstOrDefault() != null)
                 .GroupBy(x => x.GetCustomAttribute<KeybindAttribute>().Key);
-            var holdableKeybinds = methodInfos
-                .Where(x => x.GetCustomAttributes(typeof(HoldableKeybindAttribute), false).FirstOrDefault() != null)
-                .GroupBy(x => x.GetCustomAttribute<HoldableKeybindAttribute>().Key);
 
             foreach (var methodInfoGroup in normalKeybinds)
             {
@@ -68,26 +69,6 @@ namespace FivePD.Gamemode.Client.Services
                 });
             }
 
-            foreach (var methodInfoGroup in holdableKeybinds)
-            {
-                var attribute = methodInfoGroup.ElementAt(0).GetCustomAttribute<HoldableKeybindAttribute>();
-                var keybindActions = new List<Action>();
-
-                foreach (var methodInfo in methodInfoGroup)
-                {
-                    var obj = provider.Resolve(methodInfo.DeclaringType);
-                    keybindActions.Add(() => methodInfo.Invoke(obj, null));
-                }
-
-                this.RegisterHoldableKeybind(attribute.Id, attribute.Description, attribute.Key, attribute.TimeToHold, () =>
-                {
-                    foreach (var action in keybindActions)
-                    {
-                        action.Invoke();
-                    }
-                });
-            }
-
             this._tickService.OnTick += this.WaitForHold;
         }
 
@@ -98,18 +79,35 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void RegisterHoldableKeybind(string id, string description, string key, int timeToHold, Action onPress = null, Action onRelease = null)
+        public void RegisterHoldableKeybind(string id, string description, string key, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
         {
-            HoldableKeybind holdableKeybind = new HoldableKeybind(onPress, timeToHold);
+            var holdableKeybind = new HoldableKeybind(onPress, (int)Math.Floor(timeToHoldInMs * 0.05));
+            var isInvokable = false;
 
             void HoldableOnPress()
             {
+                isInvokable = canInvokeOnPress?.Invoke() ?? true;
+                if (!isInvokable)
+                {
+                    return;
+                }
+
+                this._nuiService.ShowTimerBar();
                 this._actions.Add(holdableKeybind);
             }
 
             void HoldableOnRelease()
             {
+                if (!isInvokable)
+                {
+                    return;
+                }
+
                 holdableKeybind.ClearTimer();
+                this._nuiService.SendMessage(new JObject
+                {
+                    { "showTimerBar", false },
+                });
                 this._actions.Remove(holdableKeybind);
             }
 
@@ -149,7 +147,7 @@ namespace FivePD.Gamemode.Client.Services
             foreach (var item in this._actions)
             {
                 item.IncrementTimer();
-                if (item.Timer == item.TimeToHold)
+                if (item.Timer == item.TimeToHoldInMs)
                 {
                     item.OnPress?.Invoke();
                     toBeRemoved.Add(item);
@@ -159,6 +157,10 @@ namespace FivePD.Gamemode.Client.Services
             foreach (var item in toBeRemoved)
             {
                 item.ClearTimer();
+                this._nuiService.SendMessage(new JObject
+                {
+                    { "showTimerBar", false },
+                });
                 this._actions.Remove(item);
             }
 
@@ -167,15 +169,15 @@ namespace FivePD.Gamemode.Client.Services
 
         private sealed class HoldableKeybind
         {
-            public HoldableKeybind(Action onPress, int timeToHold)
+            public HoldableKeybind(Action onPress, int timeToHoldInMs)
             {
                 this.OnPress = onPress;
-                this.TimeToHold = timeToHold;
+                this.TimeToHoldInMs = timeToHoldInMs;
             }
 
             public Action OnPress { get; }
 
-            public int TimeToHold { get; }
+            public int TimeToHoldInMs { get; }
 
             public int Timer { get; private set; }
 

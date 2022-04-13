@@ -22,7 +22,6 @@ namespace FivePD.Gamemode.Client.Services
     public class PedService : IPedService
     {
         /// <inheritdoc />
-        [HoldableKeybind("fivepd_stop_ped", "E", "Stop ped")]
         public void StopPed()
         {
             var ped = Game.Player.GetTargetedEntity() as Ped;
