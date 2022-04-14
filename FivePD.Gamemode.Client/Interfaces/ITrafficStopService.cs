@@ -4,8 +4,6 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System.Threading.Tasks;
-
 namespace FivePD.Gamemode.Client.Interfaces
 {
     /// <summary>
@@ -14,14 +12,8 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface ITrafficStopService
     {
         /// <summary>
-        /// Initiate a traffic stop.
+        /// Registers all traffic stop related keybinds.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public Task Initiate();
-
-        /// <summary>
-        /// Cancel the current traffic stop.
-        /// </summary>
-        public void Cancel();
+        public void RegisterKeybinds();
     }
 }

@@ -32,6 +32,12 @@ namespace FivePD.Gamemode.Client.Interfaces
         public void ShowRadialMenu(string menuId);
 
         /// <summary>
+        /// Displays a timer bar.
+        /// </summary>
+        /// <param name="timeToHoldInMs">Determines for how long the key should be pressed to trigger the action.</param>
+        public void ShowTimerBar(int timeToHoldInMs);
+
+        /// <summary>
         /// Send control event to the NUI.
         /// </summary>
         /// <param name="data">The data to send.</param>

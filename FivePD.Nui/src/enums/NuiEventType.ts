@@ -3,6 +3,7 @@ export enum NuiEventType {
   Mdt = 'view:mdt',
   MenuView = 'view:menu',
   RadialMenu = 'view:radial_menu',
+  TimerBar = 'view:timer_bar',
   MenuUp = 'menu:control_up',
   MenuDown = 'menu:control_down',
   MenuLeft = 'menu:control_left',

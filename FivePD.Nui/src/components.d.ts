@@ -11,6 +11,7 @@ declare module 'vue' {
     RadialMenu: typeof import('./components/RadialMenu.vue')['default']
     SearchPanel: typeof import('./components/SearchPanel.vue')['default']
     Sidebar: typeof import('./components/Sidebar.vue')['default']
+    TimerBar: typeof import('./components/TimerBar.vue')['default']
   }
 }
 

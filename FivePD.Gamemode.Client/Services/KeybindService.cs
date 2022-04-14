@@ -92,7 +92,7 @@ namespace FivePD.Gamemode.Client.Services
                     return;
                 }
 
-                this._nuiService.ShowTimerBar();
+                this._nuiService.ShowTimerBar(timeToHoldInMs);
                 this._actions.Add(holdableKeybind);
             }
 

@@ -135,6 +135,19 @@ namespace FivePD.Gamemode.Client.Services
             this.Show(Events.NuiEventType.RadialMenu, menuId, false, false);
         }
 
+        /// <param name="timeToHoldInMs"></param>
+        /// <inheritdoc />
+        public void ShowTimerBar(int timeToHoldInMs)
+        {
+            Cfx.API.SetNuiFocus(false, false);
+            this.SendMessage(new JObject
+            {
+                { "showTimerBar", true },
+                { "timerBarTitle", "test" },
+                { "timerBarTimeToHold", timeToHoldInMs },
+            });
+        }
+
         /// <inheritdoc />
         public void SendMessage(string data)
         {

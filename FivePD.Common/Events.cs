@@ -106,6 +106,9 @@ namespace FivePD.Common
             /// <summary>Opens the Nui and displays a radial menu.</summary>
             public const string RadialMenu = "view:radial_menu";
 
+            /// <summary>Opens the Nui and displays a timer bar.</summary>
+            public const string TimerBar = "view:timer_bar";
+
             /// <summary>Moves up by one item in normal menus.</summary>
             public const string MenuUp = "menu:control_up";
 

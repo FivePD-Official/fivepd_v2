@@ -57,7 +57,8 @@ namespace FivePD.Gamemode.Client
 
             services
                 .RegisterType<KeybindService>()
-                .As<IKeybindService>();
+                .As<IKeybindService>()
+                .IsSingleton();
 
             services
                 .RegisterType<LocalizationService>()
@@ -107,6 +108,9 @@ namespace FivePD.Gamemode.Client
 
             var nuiService = provider.Resolve<INuiService>();
             nuiService.RegisterEventHandlers();
+
+            var trafficStopService = provider.Resolve<ITrafficStopService>();
+            trafficStopService.RegisterKeybinds();
 
             var localizationService = provider.Resolve<ILocalizationService>();
             localizationService.RegisterEventHandlers();

@@ -22,7 +22,10 @@ window.onload = function () {
 
   window.addEventListener('message', event => handleEvents(event, isDev));
   window.addEventListener('keydown', (event) => {
-    if (event.code === 'Escape') hideNui();
+    if (event.code === 'Escape') {
+      hideNui();
+      viewType.value = '';
+    }
   });
 
   const style = document.createElement('style');
@@ -77,10 +80,12 @@ const handleEvents = (event: any, isDev: boolean) => {
         emitter.emit('showRadialMenu', currentMenuId.value);
       }
       showNui();
+      console.log({type})
       break;
     }
     case NuiEventType.Close: {
       document.body.style.display = "none";
+      viewType.value = '';
       break;
     }
   }
@@ -128,11 +133,14 @@ const loadRadialMenus = async (data: string) => {
 </script>
 
 <template>
-  <Main v-if="viewType === NuiEventType.Mdt" />
-  <template v-if="viewType === NuiEventType.MenuView" v-for="item in (store.state.global.menus as Menu[])">
-    <MenuView :menu="item" v-if="currentMenuId === item.id" />
-  </template>
-  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuId="currentMenuId" />
+  <div class="main-container">
+    <Main v-if="viewType === NuiEventType.Mdt" />
+    <template v-if="viewType === NuiEventType.MenuView" v-for="item in (store.state.global.menus as Menu[])">
+      <MenuView :menu="item" v-if="currentMenuId === item.id" />
+    </template>
+    <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuId="currentMenuId" />
+    <TimerBar />
+  </div>
 </template>
 
 <style lang="sass">
@@ -186,5 +194,14 @@ const loadRadialMenus = async (data: string) => {
   justify-content: center
   width: 100vw
   height: 100vh
+
+  .main-container
+    position: relative
+    z-index: 10
+    max-width: 1900px
+    width: 100%
+    height: 100%
+    @media (max-width: 1920px)
+      width: 95vw
 
 </style>

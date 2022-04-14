@@ -9,18 +9,22 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
-using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
+#pragma warning disable CS0162
+
+#pragma warning disable CS4014
+#pragma warning disable S3241
 
 namespace FivePD.Gamemode.Client.Services
 {
     /// <inheritdoc />
     public class TrafficStopService : ITrafficStopService
     {
+        private readonly IKeybindService _keybindService;
         private readonly IPoliceEventService _policeEventService;
         private readonly INotificationService _notificationService;
         private readonly IVehicleService _vehicleService;
@@ -28,40 +32,62 @@ namespace FivePD.Gamemode.Client.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="TrafficStopService"/> class.
         /// </summary>
+        /// <param name="keybindService">The <see cref="IKeybindService"/> to use.</param>
         /// <param name="policeEventService">The <see cref="IPoliceEventService"/> to use.</param>
         /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
         /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
-        public TrafficStopService(IPoliceEventService policeEventService, INotificationService notificationService, IVehicleService vehicleService)
+        public TrafficStopService(IKeybindService keybindService, IPoliceEventService policeEventService, INotificationService notificationService, IVehicleService vehicleService)
         {
+            this._keybindService = keybindService;
             this._policeEventService = policeEventService;
             this._notificationService = notificationService;
             this._vehicleService = vehicleService;
         }
 
         /// <inheritdoc />
-        [Keybind("fivepd_traffic_stop", "LSHIFT")]
-        public async Task Initiate()
+        public void RegisterKeybinds()
         {
-            // TODO: return if the vehicle is attached to a traffic stop
-            if (this._policeEventService.IsAttachedToEvent() && this._policeEventService.GetCurrentEvent() is TrafficStop)
-            {
-                return;
-            }
+            this._keybindService.RegisterHoldableKeybind(
+                KeybindIdentifiers.TrafficStopToggle,
+                string.Empty,
+                "LSHIFT",
+                1000,
+                () =>
+                {
+                    if (this._policeEventService.IsAttachedToEvent() && this._policeEventService.GetCurrentEvent() is TrafficStop && this._policeEventService.IsEventMainPlayerEqualsToPlayer())
+                    {
+                        this.Cancel();
+                    }
+                    else
+                    {
+                        // TODO: return if the vehicle is attached to a traffic stop
+                        this.Initiate();
+                    }
+                },
+                null,
+                () =>
+                {
+                    // TODO: check if player is sitting in a police vehicle
+                    return Game.PlayerPed.IsInVehicle() && Game.PlayerPed.CurrentVehicle.Driver == Game.PlayerPed;
+                });
+        }
 
-            if (!Game.PlayerPed.IsInVehicle() || Game.PlayerPed.CurrentVehicle.Driver != Game.PlayerPed)
-            {
-                return;
-            }
-
+        /// <summary>
+        /// Initiate a traffic stop.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        private async Task Initiate()
+        {
             var stoppedVehicle = this.FindClosestVehicleInFrontOfPlayer();
-            stoppedVehicle.CreateBlip(BlipSprite.PersonalVehicleCar, FBlipColor.LemonGreen, "Pulled over vehicle");
-            this._vehicleService.GenerateVehicle(stoppedVehicle);
 
             // TODO: Is this range check needed?
             if (stoppedVehicle is null || !stoppedVehicle.IsInRangeOf(Game.PlayerPed.Position, 25f))
             {
                 return;
             }
+
+            stoppedVehicle.CreateBlip(BlipSprite.PersonalVehicleCar, FBlipColor.LemonGreen, "Stopped vehicle");
+            this._vehicleService.GenerateVehicle(stoppedVehicle);
 
             var trafficStop = new TrafficStop(Game.PlayerPed.NetworkId, Game.PlayerPed.Position, stoppedVehicle)
             {
@@ -110,15 +136,19 @@ namespace FivePD.Gamemode.Client.Services
             this._notificationService.ShowNotification("The vehicle has stopped. Proceed with the traffic stop.");
         }
 
-        /// <inheritdoc />
-        [Keybind("fivepd_traffic_stop", "LSHIFT")]
-        public void Cancel()
+        /// <summary>
+        /// Cancels the traffic stop of the player.
+        /// </summary>
+        private void Cancel()
         {
-            if (!this._policeEventService.IsAttachedToEvent() || (!this._policeEventService.IsEventMainPlayerEqualsToPlayer() && this._policeEventService.GetCurrentEvent() is TrafficStop))
+            var trafficStop = this._policeEventService.GetCurrentEvent() as TrafficStop;
+            if (trafficStop is null)
             {
                 return;
             }
 
+            this._notificationService.ShowTooltip("You've canceled the traffic stop.", true);
+            trafficStop.StoppedVehicle.RemoveBlips();
             BaseScript.TriggerServerEvent(Events.TrafficStop.Cancel, this._policeEventService.GetCurrentEvent().Id.ToString());
             this._policeEventService.SetCurrentEvent(null);
         }
@@ -128,6 +158,7 @@ namespace FivePD.Gamemode.Client.Services
             var playerPedForwardVector = Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 12f);
             var closestVehicleInFrontOfPlayer = World
                 .GetAllVehicles()
+                .Where(vehicle => vehicle.Driver.Exists())
                 .Where(vehicle => !vehicle.Driver.IsPlayer)
                 .Where(vehicle => vehicle.IsInRangeOf(playerPedForwardVector, 8f))
                 .OrderBy(vehicle => World.GetDistance(playerPedForwardVector, vehicle.Position))

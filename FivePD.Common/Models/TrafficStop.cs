@@ -5,14 +5,13 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using CitizenFX.Core;
+using Newtonsoft.Json;
 
 namespace FivePD.Common.Models
 {
     /// <inheritdoc />
     public class TrafficStop : BasePoliceEvent
     {
-        private readonly Vehicle _stoppedVehicle;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TrafficStop"/> class.
         /// </summary>
@@ -22,7 +21,13 @@ namespace FivePD.Common.Models
         public TrafficStop(int mainPlayerNetworkId, Vector3 coordinate, Vehicle stoppedVehicle)
             : base(mainPlayerNetworkId, coordinate)
         {
-            this._stoppedVehicle = stoppedVehicle;
+            this.StoppedVehicle = stoppedVehicle;
         }
+
+        /// <summary>
+        /// Gets the stopped vehicle.
+        /// </summary>
+        [JsonIgnore]
+        public Vehicle StoppedVehicle { get; private set; }
     }
 }

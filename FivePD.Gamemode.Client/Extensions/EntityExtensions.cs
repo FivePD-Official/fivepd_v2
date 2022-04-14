@@ -94,6 +94,18 @@ namespace FivePD.Gamemode.Client.Extensions
         }
 
         /// <summary>
+        /// Deletes all blips that are attached to the given entity.
+        /// </summary>
+        /// /// <param name="entity">The entity whose blips need to be deleted.</param>
+        public static void RemoveBlips(this Entity entity)
+        {
+            foreach (var blip in entity.AttachedBlips)
+            {
+                blip.Delete();
+            }
+        }
+
+        /// <summary>
         /// Used to determine if the given entity has a human hash.
         /// Should exclude all animal and mission peds.
         /// </summary>

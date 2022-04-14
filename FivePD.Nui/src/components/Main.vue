@@ -7,7 +7,7 @@ const store = useStore();
 
 <template>
   <div id="main-overlay"></div>
-  <div id="main">
+  <div class="mdt-view">
     <Header />
     <div :class="`main-subgrid ${store.state.user.isSidebarCollapsed ? 'collapsed' : ''}`">
       <Sidebar />
@@ -28,18 +28,16 @@ const store = useStore();
   background: var(--clr-overlay)
   opacity: .5
 
-#main
-  position: relative
-  z-index: 10
-  max-width: 1900px
+.mdt-view
+  position: absolute
+  top: 50%
+  transform: translateY(-50%)
   width: 100%
   height: 90vh
   background: var(--clr-bg)
   border-radius: var(--radius-lg)
   display: grid
   grid: 80px 1fr / 1fr
-  @media (max-width: 1920px)
-    width: 95vw
 
   .main-subgrid
     display: grid
