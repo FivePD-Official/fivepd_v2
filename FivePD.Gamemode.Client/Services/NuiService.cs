@@ -70,6 +70,11 @@ namespace FivePD.Gamemode.Client.Services
         [Keybind(KeybindIdentifiers.MenuMoveUp, "UP", "Move up in menu")]
         public void MenuControlUp()
         {
+            if (!this._isNuiOpened)
+            {
+                return;
+            }
+
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuUp + "\"}");
         }
 
@@ -77,6 +82,11 @@ namespace FivePD.Gamemode.Client.Services
         [Keybind(KeybindIdentifiers.MenuMoveDown, "DOWN", "Move down in menu")]
         public void MenuControlDown()
         {
+            if (!this._isNuiOpened)
+            {
+                return;
+            }
+
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuDown + "\"}");
         }
 
@@ -84,6 +94,11 @@ namespace FivePD.Gamemode.Client.Services
         [Keybind(KeybindIdentifiers.MenuMoveLeft, "LEFT", "Move left in menu")]
         public void MenuControlLeft()
         {
+            if (!this._isNuiOpened)
+            {
+                return;
+            }
+
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuLeft + "\"}");
         }
 
@@ -91,6 +106,11 @@ namespace FivePD.Gamemode.Client.Services
         [Keybind(KeybindIdentifiers.MenuMoveRight, "RIGHT", "Move right in menu")]
         public void MenuControlRight()
         {
+            if (!this._isNuiOpened)
+            {
+                return;
+            }
+
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuRight + "\"}");
         }
 
@@ -98,6 +118,11 @@ namespace FivePD.Gamemode.Client.Services
         [Keybind(KeybindIdentifiers.MenuItemSelect, "RETURN", "Selects item in menu")]
         public void MenuControlSelect()
         {
+            if (!this._isNuiOpened)
+            {
+                return;
+            }
+
             this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuSelect + "\"}");
         }
 
