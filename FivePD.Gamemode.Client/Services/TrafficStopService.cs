@@ -28,6 +28,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly IPoliceEventService _policeEventService;
         private readonly INotificationService _notificationService;
         private readonly IVehicleService _vehicleService;
+        private readonly ILocalizationService _localizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrafficStopService"/> class.
@@ -36,12 +37,14 @@ namespace FivePD.Gamemode.Client.Services
         /// <param name="policeEventService">The <see cref="IPoliceEventService"/> to use.</param>
         /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
         /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
-        public TrafficStopService(IKeybindService keybindService, IPoliceEventService policeEventService, INotificationService notificationService, IVehicleService vehicleService)
+        /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
+        public TrafficStopService(IKeybindService keybindService, IPoliceEventService policeEventService, INotificationService notificationService, IVehicleService vehicleService, ILocalizationService localizationService)
         {
             this._keybindService = keybindService;
             this._policeEventService = policeEventService;
             this._notificationService = notificationService;
             this._vehicleService = vehicleService;
+            this._localizationService = localizationService;
         }
 
         /// <inheritdoc />
@@ -86,7 +89,7 @@ namespace FivePD.Gamemode.Client.Services
                 return;
             }
 
-            stoppedVehicle.CreateBlip(BlipSprite.PersonalVehicleCar, FBlipColor.LemonGreen, "Stopped vehicle");
+            stoppedVehicle.CreateBlip(BlipSprite.PersonalVehicleCar, FBlipColor.LemonGreen, this._localizationService.CurrentLocalization.TrafficStop.StoppedVehicle);
             this._vehicleService.GenerateVehicle(stoppedVehicle);
 
             var trafficStop = new TrafficStop(Game.PlayerPed.NetworkId, Game.PlayerPed.Position, stoppedVehicle)
@@ -97,8 +100,7 @@ namespace FivePD.Gamemode.Client.Services
             this._policeEventService.SetCurrentEvent(trafficStop);
             BaseScript.TriggerServerEvent(Events.TrafficStop.Initiate, JsonConvert.SerializeObject(trafficStop));
 
-            // TODO: Use localization.
-            this._notificationService.ShowTooltip("Turn on your sirens to initiate the traffic stop.", true);
+            this._notificationService.ShowTooltip(this._localizationService.CurrentLocalization.TrafficStop.Initiate, true);
             while (Game.PlayerPed.IsInVehicle() && !Game.PlayerPed.CurrentVehicle.IsSirenActive)
             {
                 if (!this._policeEventService.IsAttachedToEvent())
@@ -109,8 +111,7 @@ namespace FivePD.Gamemode.Client.Services
                 await BaseScript.Delay(50);
             }
 
-            // TODO: Use localization.
-            this._notificationService.ShowNotification("Wait until the vehicle has come to a stop, then proceed with the traffic stop.");
+            this._notificationService.ShowNotification(this._localizationService.CurrentLocalization.TrafficStop.WaitUntilStop);
 
             // TODO: Is this persistency thing needed with OneSync?
             stoppedVehicle.Driver.IsPersistence(true);
@@ -133,7 +134,7 @@ namespace FivePD.Gamemode.Client.Services
             }
 
             stoppedVehicle.Driver.Task.StandStill(-1);
-            this._notificationService.ShowNotification("The vehicle has stopped. Proceed with the traffic stop.");
+            this._notificationService.ShowNotification(this._localizationService.CurrentLocalization.TrafficStop.Proceed);
         }
 
         /// <summary>
@@ -141,13 +142,13 @@ namespace FivePD.Gamemode.Client.Services
         /// </summary>
         private void Cancel()
         {
-            var trafficStop = this._policeEventService.GetCurrentEvent() as TrafficStop;
+            var trafficStop = this.GetCurrentTrafficStop();
             if (trafficStop is null)
             {
                 return;
             }
 
-            this._notificationService.ShowTooltip("You've canceled the traffic stop.", true);
+            this._notificationService.ShowTooltip(this._localizationService.CurrentLocalization.TrafficStop.Canceled, true);
             trafficStop.StoppedVehicle.RemoveBlips();
             BaseScript.TriggerServerEvent(Events.TrafficStop.Cancel, this._policeEventService.GetCurrentEvent().Id.ToString());
             this._policeEventService.SetCurrentEvent(null);

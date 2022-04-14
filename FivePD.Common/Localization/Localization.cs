@@ -17,6 +17,7 @@ namespace FivePD.Common.Localization
         public Localization()
         {
             this.DutyMenu = new DutyMenuLocalization();
+            this.TrafficStop = new TrafficStopLocalization();
         }
 
         /// <summary>Gets or sets title of the localization.</summary>
@@ -24,5 +25,8 @@ namespace FivePD.Common.Localization
 
         /// <summary>Gets or sets localization of the duty menu.</summary>
         public DutyMenuLocalization DutyMenu { get; set; }
+
+        /// <summary>Gets or sets localization of traffic stop.</summary>
+        public TrafficStopLocalization TrafficStop { get; set; }
     }
 }

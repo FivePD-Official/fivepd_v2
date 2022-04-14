@@ -4,7 +4,8 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using Newtonsoft.Json;
+#pragma warning disable CS1591
+#pragma warning disable SA1600
 
 namespace FivePD.Common.Localization
 {
@@ -13,9 +14,6 @@ namespace FivePD.Common.Localization
     /// </summary>
     public class DutyMenuLocalization
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DutyMenuLocalization"/> class.
-        /// </summary>
         public DutyMenuLocalization()
         {
             this.OnDuty = new OnDutyLocalization();
@@ -23,69 +21,32 @@ namespace FivePD.Common.Localization
             this.ChangeLanguage = new ChangeLanguageLocalization();
         }
 
-        /// <summary>Gets or sets the Title.</summary>
         public string Title { get; set; } = "Duty menu";
 
-        /// <summary>
-        /// Gets or sets the OnDutyItem.
-        /// </summary>
         public OnDutyLocalization OnDuty { get; set; }
 
-        /// <summary>
-        /// Gets or sets the GetLoadoutItem.
-        /// </summary>
         public GetLoadoutLocalization GetLoadout { get; set; }
 
-        /// <summary>
-        /// Gets or sets the ChangeLanguageItem.
-        /// </summary>
         public ChangeLanguageLocalization ChangeLanguage { get; set; }
 
-        /// <summary>
-        /// Contains all keys that are used for the On duty item.
-        /// </summary>
         public class OnDutyLocalization
         {
-            /// <summary>
-            /// Gets or sets the Title.
-            /// </summary>
             public string Title { get; set; } = "On duty";
 
-            /// <summary>
-            /// Gets or sets the Description.
-            /// </summary>
             public string Description { get; set; } = "Description of on duty.";
         }
 
-        /// <summary>
-        /// Contains all keys that are used for the Get loadout item.
-        /// </summary>
         public class GetLoadoutLocalization
         {
-            /// <summary>
-            /// Gets or sets the Title.
-            /// </summary>
             public string Title { get; set; } = "Get loadout";
 
-            /// <summary>
-            /// Gets or sets the Description.
-            /// </summary>
             public string Description { get; set; } = "Description of get loadout";
         }
 
-        /// <summary>
-        /// Contains all keys that are used for the Change language item.
-        /// </summary>
         public class ChangeLanguageLocalization
         {
-            /// <summary>
-            /// Gets or sets the Title.
-            /// </summary>
             public string Title { get; set; } = "Change language";
 
-            /// <summary>
-            /// Gets or sets the Description.
-            /// </summary>
             public string Description { get; set; } = "Description of change language";
         }
     }
