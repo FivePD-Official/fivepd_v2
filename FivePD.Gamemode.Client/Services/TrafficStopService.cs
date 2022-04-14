@@ -4,6 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
@@ -14,7 +15,6 @@ using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
-#pragma warning disable CS0162
 
 #pragma warning disable CS4014
 #pragma warning disable S3241
@@ -63,8 +63,13 @@ namespace FivePD.Gamemode.Client.Services
                     }
                     else
                     {
-                        // TODO: return if the vehicle is attached to a traffic stop
-                        this.Initiate();
+                        BaseScript.TriggerServerEvent(Events.TrafficStop.IsVehicleAttached, this.GetCurrentTrafficStop()?.StoppedVehicleNetworkId ?? 0, new Action<bool>(isAttached =>
+                        {
+                            if (!isAttached)
+                            {
+                                this.Initiate();
+                            }
+                        }));
                     }
                 },
                 null,
@@ -183,6 +188,11 @@ namespace FivePD.Gamemode.Client.Services
 
             var towingVehicle = (Vehicle)entityAttachedTo;
             return towingVehicle.Driver.IsPlayer ? null : towingVehicle;
+        }
+
+        private TrafficStop GetCurrentTrafficStop()
+        {
+            return (TrafficStop)this._policeEventService.GetCurrentEvent();
         }
     }
 }

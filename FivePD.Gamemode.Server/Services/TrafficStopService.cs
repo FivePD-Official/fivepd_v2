@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
@@ -18,7 +19,7 @@ namespace FivePD.Gamemode.Server.Services
     public class TrafficStopService : ITrafficStopService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly ConcurrentDictionary<Guid, TrafficStop> _trafficStops = new ConcurrentDictionary<Guid, TrafficStop>();
+        private readonly ConcurrentDictionary<string, TrafficStop> _trafficStops = new ConcurrentDictionary<string, TrafficStop>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrafficStopService"/> class.
@@ -34,6 +35,7 @@ namespace FivePD.Gamemode.Server.Services
         {
             this._eventHandlerDictionary[Events.TrafficStop.Initiate] += new Action<string>(this.Initiate);
             this._eventHandlerDictionary[Events.TrafficStop.Cancel] += new Action<string>(this.Cancel);
+            this._eventHandlerDictionary[Events.TrafficStop.IsVehicleAttached] += new Action<int, NetworkCallbackDelegate>(this.IsVehicleAttached);
         }
 
         private void Initiate(string deserializedTrafficStop)
@@ -44,14 +46,19 @@ namespace FivePD.Gamemode.Server.Services
                 return;
             }
 
-            this._trafficStops[trafficStop.Id] = trafficStop;
+            this._trafficStops.TryAdd(trafficStop.Id, trafficStop);
         }
 
         private void Cancel(string stringGuid)
         {
-            this._trafficStops.TryRemove(Guid.Parse(stringGuid), out _);
+            this._trafficStops.TryRemove(stringGuid, out _);
 
             // TODO: detach attached players, etc
+        }
+
+        private void IsVehicleAttached(int vehicleNetworkId, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            networkCallbackDelegate.Invoke(this._trafficStops.Any(trafficStop => trafficStop.Value.StoppedVehicleNetworkId == vehicleNetworkId));
         }
     }
 }

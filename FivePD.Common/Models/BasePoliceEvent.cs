@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
+using Newtonsoft.Json;
 
 #pragma warning disable S2292
 
@@ -24,28 +25,38 @@ namespace FivePD.Common.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="BasePoliceEvent"/> class.
         /// </summary>
+        public BasePoliceEvent()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BasePoliceEvent"/> class.
+        /// </summary>
         /// <param name="mainPlayerNetworkId">The network identifier of the firstly attached player.</param>
         /// <param name="coordinate">The position of this event.</param>
         public BasePoliceEvent(int mainPlayerNetworkId, Vector3 coordinate)
         {
             this.MainPlayer = mainPlayerNetworkId;
             this.Coordinate = coordinate;
-            this.Id = Guid.NewGuid();
+            this.Id = Guid.NewGuid().ToString();
         }
 
         /// <summary>
         /// Gets the identifier of this event.
         /// </summary>
-        public Guid Id { get; private set; }
+        [JsonProperty]
+        public string Id { get; private set; }
 
         /// <summary>
         /// Gets the first player's network identifier who was attached to this event.
         /// </summary>
+        [JsonProperty]
         public int MainPlayer { get; private set; }
 
         /// <summary>
         /// Gets all players' network identifier who were attached to this event after initialization.
         /// </summary>
+        [JsonProperty]
         public List<int> AttachedPlayers { get; private set; }
 
         /// <summary>
@@ -81,6 +92,7 @@ namespace FivePD.Common.Models
         /// <summary>
         /// Gets the coordinate of this event.
         /// </summary>
+        [JsonProperty]
         public Vector3 Coordinate { get; private set; }
 
         /// <summary>

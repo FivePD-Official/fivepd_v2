@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\DutyMenuLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Localization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\TrafficStopLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FDutyStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPoliceEventPriority.cs" />

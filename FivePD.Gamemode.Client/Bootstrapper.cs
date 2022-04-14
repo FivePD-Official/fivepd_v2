@@ -91,7 +91,8 @@ namespace FivePD.Gamemode.Client
 
             services
                 .RegisterType<PoliceEventService>()
-                .As<IPoliceEventService>();
+                .As<IPoliceEventService>()
+                .IsSingleton();
 
             services
                 .RegisterType<TrafficStopService>()

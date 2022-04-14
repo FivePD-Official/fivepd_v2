@@ -12,6 +12,17 @@ namespace FivePD.Common.Models
     /// <inheritdoc />
     public class TrafficStop : BasePoliceEvent
     {
+        [JsonIgnore]
+        private Vehicle _stoppedVehicle;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TrafficStop"/> class.
+        /// </summary>
+        public TrafficStop()
+            : base()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TrafficStop"/> class.
         /// </summary>
@@ -25,9 +36,22 @@ namespace FivePD.Common.Models
         }
 
         /// <summary>
+        /// Gets the network identifier of the stopped vehicle.
+        /// </summary>
+        public int StoppedVehicleNetworkId { get; private set; }
+
+        /// <summary>
         /// Gets the stopped vehicle.
         /// </summary>
         [JsonIgnore]
-        public Vehicle StoppedVehicle { get; private set; }
+        public Vehicle StoppedVehicle
+        {
+            get => this._stoppedVehicle;
+            private set
+            {
+                this._stoppedVehicle = value;
+                this.StoppedVehicleNetworkId = value.NetworkId;
+            }
+        }
     }
 }

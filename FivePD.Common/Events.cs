@@ -142,12 +142,17 @@ namespace FivePD.Common
             /// <summary>
             /// Used to store an event on the server.
             /// </summary>
-            public const string Initiate = "fivepd:policeEvent:initiate";
+            public const string Initiate = "fivepd:trafficStop:initiate";
 
             /// <summary>
             /// Used to remove an event from the server and it also detaches all attached players from it.
             /// </summary>
-            public const string Cancel = "fivepd:policeEvent:cancel";
+            public const string Cancel = "fivepd:trafficStop:cancel";
+
+            /// <summary>
+            /// Used to get if a vehicle is attached to a vehicle or not.
+            /// </summary>
+            public const string IsVehicleAttached = "fivepd:trafficStop:isVehicleAttached";
         }
     }
 }
