@@ -29,5 +29,23 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <returns>Returns all items from the config file.</returns>
         public List<Item> GetItems();
+
+        /// <summary>
+        /// Loads the /Config/FemaleFirstnames.txt and returns a list from its content.
+        /// </summary>
+        /// <returns>A list containing each line of the file.</returns>
+        public List<string> GetFemaleFirstnames();
+
+        /// <summary>
+        /// Loads the /Config/MaleFirstnames.txt and returns a list from its content.
+        /// </summary>
+        /// <returns>A list containing each line of the file.</returns>
+        public List<string> GetMaleFirstnames();
+
+        /// <summary>
+        /// Loads the /Config/Lastnames.txt and returns a list from its content.
+        /// </summary>
+        /// <returns>A list containing each line of the file.</returns>
+        public List<string> GetLastnames();
     }
 }

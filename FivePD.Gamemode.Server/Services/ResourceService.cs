@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.ConfigModels;
@@ -23,7 +24,7 @@ namespace FivePD.Gamemode.Server.Services
     /// <inheritdoc />
     public class ResourceService : IResourceService
     {
-        private readonly ConcurrentDictionary<Type, object> _cache = new ConcurrentDictionary<Type, object>();
+        private readonly ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
 
         /// <inheritdoc />
         public Localization GetLocalization(string locale)
@@ -35,6 +36,49 @@ namespace FivePD.Gamemode.Server.Services
         public List<Item> GetItems()
         {
             return this.LoadFile<List<Item>>("/Config/items.json");
+        }
+
+        /// <inheritdoc />
+        public List<string> GetFemaleFirstnames()
+        {
+            return this.LoadStringList("/Config/FemaleFirstnames.txt");
+        }
+
+        /// <inheritdoc />
+        public List<string> GetMaleFirstnames()
+        {
+            return this.LoadStringList("/Config/MaleFirstnames.txt");
+        }
+
+        /// <inheritdoc />
+        public List<string> GetLastnames()
+        {
+            return this.LoadStringList("/Config/Lastnames.txt");
+        }
+
+        /// <summary>
+        /// Loads a file's content, splits it by new lines and creates a list from them.
+        /// </summary>
+        /// <param name="path">The path of the file.</param>
+        /// <returns>A string list, containing each line of the file.</returns>
+        private List<string> LoadStringList(string path)
+        {
+            string data = this.InternalLoadFile(path);
+
+            if (this._cache.ContainsKey(path))
+            {
+                return (List<string>)this._cache[path];
+            }
+
+            if (string.IsNullOrEmpty(data))
+            {
+                return new List<string>();
+            }
+
+            var list = data.Split('\n').ToList();
+            this._cache[path] = list;
+
+            return list;
         }
 
         /// <summary>
@@ -49,9 +93,9 @@ namespace FivePD.Gamemode.Server.Services
         {
             var type = typeof(T);
 
-            if (this._cache.ContainsKey(type) && useCache)
+            if (this._cache.ContainsKey(path) && useCache)
             {
-                return (T)this._cache[type];
+                return (T)this._cache[path];
             }
 
             string data = this.InternalLoadFile(path);
@@ -82,7 +126,7 @@ namespace FivePD.Gamemode.Server.Services
             var deserializedObject = JsonConvert.DeserializeObject<T>(data);
             if (useCache)
             {
-                this._cache[type] = deserializedObject;
+                this._cache[path] = deserializedObject;
             }
 
             return deserializedObject;

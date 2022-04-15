@@ -50,13 +50,14 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             var fPed = fPedBuilder
-                .WithFirstname("John")
-                .WithLastname("Doe")
+                .WithFirstname(fPedBuilder.Gender == FGender.Female ? this._resourceService.GetFemaleFirstnames() : this._resourceService.GetMaleFirstnames())
+                .WithLastname(this._resourceService.GetLastnames())
                 .WithBirthdate()
                 .WithItems(this._resourceService.GetItems())
                 .Build();
 
             this._peds[fPed.NetworkId] = fPed;
+            Debug.WriteLine($"{fPed}");
         }
     }
 }
