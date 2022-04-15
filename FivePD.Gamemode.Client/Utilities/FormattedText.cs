@@ -31,7 +31,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to red.
         /// </summary>
-        public FormattedText Red(string text)
+        public FormattedText Red(string text = "")
         {
             return this.Append(Formats.Red, text);
         }
@@ -39,7 +39,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to green.
         /// </summary>
-        public FormattedText Green(string text)
+        public FormattedText Green(string text = "")
         {
             return this.Append(Formats.Green, text);
         }
@@ -47,7 +47,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to blue.
         /// </summary>
-        public FormattedText Blue(string text)
+        public FormattedText Blue(string text = "")
         {
             return this.Append(Formats.Blue, text);
         }
@@ -55,7 +55,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to yellow.
         /// </summary>
-        public FormattedText Yellow(string text)
+        public FormattedText Yellow(string text = "")
         {
             return this.Append(Formats.Yellow, text);
         }
@@ -63,7 +63,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to grey.
         /// </summary>
-        public FormattedText Grey(string text)
+        public FormattedText Grey(string text = "")
         {
             return this.Append(Formats.Grey, text);
         }
@@ -71,7 +71,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to orange.
         /// </summary>
-        public FormattedText Orange(string text)
+        public FormattedText Orange(string text = "")
         {
             return this.Append(Formats.Orange, text);
         }
@@ -79,7 +79,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to purple.
         /// </summary>
-        public FormattedText Purple(string text)
+        public FormattedText Purple(string text = "")
         {
             return this.Append(Formats.Purple, text);
         }
@@ -87,7 +87,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to pink.
         /// </summary>
-        public FormattedText Pink(string text)
+        public FormattedText Pink(string text = "")
         {
             return this.Append(Formats.Pink, text);
         }
@@ -95,7 +95,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to black.
         /// </summary>
-        public FormattedText Black(string text)
+        public FormattedText Black(string text = "")
         {
             return this.Append(Formats.Black, text);
         }
@@ -103,7 +103,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to dark blue.
         /// </summary>
-        public FormattedText DarkBlue(string text)
+        public FormattedText DarkBlue(string text = "")
         {
             return this.Append(Formats.DarkBlue, text);
         }
@@ -111,7 +111,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to white.
         /// </summary>
-        public FormattedText White(string text)
+        public FormattedText White(string text = "")
         {
             return this.Append(Formats.White, text);
         }
@@ -119,7 +119,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Adds a new line to the text.
         /// </summary>
-        public FormattedText NewLine(string text)
+        public FormattedText NewLine()
         {
             this._stringBuilder.Append(Formats.NewLine);
             return this;
@@ -128,7 +128,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Removes all text formatting.
         /// </summary>
-        public FormattedText Reset(string text)
+        public FormattedText Reset(string text = "")
         {
             return this.Append(Formats.Reset, text);
         }
@@ -144,7 +144,11 @@ namespace FivePD.Gamemode.Client.Utilities
         private FormattedText Append(string color, string text)
         {
             this._stringBuilder.Append(color);
-            this._stringBuilder.Append(text);
+            if (!string.IsNullOrEmpty(text))
+            {
+                this._stringBuilder.Append(text);
+            }
+
             return this;
         }
 

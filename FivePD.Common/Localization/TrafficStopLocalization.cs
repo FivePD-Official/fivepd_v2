@@ -14,7 +14,7 @@ namespace FivePD.Common.Localization
     /// </summary>
     public class TrafficStopLocalization
     {
-        public string Initiate { get; set; } = "Turn on your sirens to initiate the traffic stop.";
+        public string Initiate { get; set; } = "Turn on your sirens to {{initiate(initiate)}} the traffic stop.";
 
         public string WaitUntilStop { get; set; } = "Wait until the vehicle has come to a stop, then proceed with the traffic stop.";
 

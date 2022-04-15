@@ -8,8 +8,6 @@ using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Interfaces;
 
-#pragma warning disable S2292
-
 namespace FivePD.Gamemode.Client.Services
 {
     /// <inheritdoc />

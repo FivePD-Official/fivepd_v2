@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
@@ -105,7 +106,12 @@ namespace FivePD.Gamemode.Client.Services
             this._policeEventService.SetCurrentEvent(trafficStop);
             BaseScript.TriggerServerEvent(Events.TrafficStop.Initiate, JsonConvert.SerializeObject(trafficStop));
 
-            this._notificationService.ShowTooltip(this._localizationService.CurrentLocalization.TrafficStop.Initiate, true);
+            this._notificationService.ShowTooltip(
+                this._localizationService.CurrentLocalization.TrafficStop.Initiate.ReplaceParams(new Dictionary<string, string>
+                {
+                    { "initiate", new FormattedText().Green().Build() },
+                }),
+                true);
             while (Game.PlayerPed.IsInVehicle() && !Game.PlayerPed.CurrentVehicle.IsSirenActive)
             {
                 if (!this._policeEventService.IsAttachedToEvent())
