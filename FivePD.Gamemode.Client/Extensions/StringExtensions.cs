@@ -6,8 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using FivePD.Common.Localization;
-using FivePD.Gamemode.Client.Services;
 using FivePD.Gamemode.Client.Utilities;
 
 namespace FivePD.Gamemode.Client.Extensions
@@ -21,7 +19,7 @@ namespace FivePD.Gamemode.Client.Extensions
         /// Replaces parameter identifiers with their values depending on its template.
         /// The template {{key}} will be converted to formatting + key.
         /// The template {{key(value)}} will be converted to formatting + value.
-        /// For example see <see cref="TrafficStopLocalization.Initiate"/> and <see cref="TrafficStopService.Initiate"/>
+        /// More in-depth example: https://github.com/GTAPoliceMods/FivePD/issues/46#issuecomment-1100093724.
         /// </summary>
         /// <param name="text">The text that's parameters needs to be replaced.</param>
         /// <param name="parameters">A dictionary containing the key + formatting pairs.</param>
