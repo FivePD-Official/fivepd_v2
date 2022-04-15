@@ -21,6 +21,28 @@ namespace FivePD.Gamemode.Client.Services
     /// <inheritdoc />
     public class PedService : IPedService
     {
+        private readonly IKeybindService _keybindService;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PedService"/> class.
+        /// </summary>
+        /// <param name="keybindService">The <see cref="IKeybindService"/> to use.</param>
+        public PedService(IKeybindService keybindService)
+        {
+            this._keybindService = keybindService;
+        }
+
+        /// <inheritdoc />
+        public void RegisterKeybinds()
+        {
+            this._keybindService.RegisterHoldableKeybind(
+                KeybindIdentifiers.StopPed,
+                "sd",
+                "E",
+                1500,
+                this.StopPed);
+        }
+
         /// <inheritdoc />
         public void StopPed()
         {

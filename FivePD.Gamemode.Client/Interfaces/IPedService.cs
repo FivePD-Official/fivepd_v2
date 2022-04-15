@@ -15,6 +15,11 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface IPedService
     {
         /// <summary>
+        /// Registers all ped related keybinds.
+        /// </summary>
+        public void RegisterKeybinds();
+
+        /// <summary>
         /// If the player is aiming stops the targeted ped, otherwise the closest one to the player.
         /// </summary>
         public void StopPed();

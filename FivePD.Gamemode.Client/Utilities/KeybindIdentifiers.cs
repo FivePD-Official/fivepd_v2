@@ -17,6 +17,11 @@ namespace FivePD.Gamemode.Client.Utilities
         public const string TrafficStopToggle = "fivepd:trafficStopToggle";
 
         /// <summary>
+        /// Stops the closest or the targeted ped.
+        /// </summary>
+        public const string StopPed = "fivepd:stopPed";
+
+        /// <summary>
         /// Closes any opened menu.
         /// </summary>
         public const string MenuClose = "fivepd:menuClose";

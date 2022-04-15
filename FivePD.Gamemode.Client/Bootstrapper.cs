@@ -110,6 +110,9 @@ namespace FivePD.Gamemode.Client
             var nuiService = provider.Resolve<INuiService>();
             nuiService.RegisterEventHandlers();
 
+            var pedService = provider.Resolve<IPedService>();
+            pedService.RegisterKeybinds();
+
             var trafficStopService = provider.Resolve<ITrafficStopService>();
             trafficStopService.RegisterKeybinds();
 
