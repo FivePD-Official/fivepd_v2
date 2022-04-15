@@ -90,8 +90,6 @@ const handleEvents = (event: any, isDev: boolean) => {
       break;
     }
   }
-
-  if (isDev) console.table(event.data);
 }
 
 const loadLocalization = async () => {
@@ -126,7 +124,6 @@ const loadMenus = async (data: string) => {
     menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
   }
   store.commit('setMenus', menus);
-  console.log({menus})
 }
 
 const loadRadialMenus = async (data: string) => {
