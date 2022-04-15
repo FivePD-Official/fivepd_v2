@@ -27,6 +27,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly ILocalizationService _localizationService;
         private readonly IResourceService _resourceService;
         private readonly List<Menu> _menus;
+        private bool _isLocalizationReady;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuService"/> class.
@@ -44,6 +45,23 @@ namespace FivePD.Gamemode.Client.Services
             this._localizationService = localizationService;
             this._resourceService = resourceService;
             this._menus = new List<Menu>();
+        }
+
+        /// <inheritdoc />
+        public void RegisterEvents()
+        {
+            this._isLocalizationReady = true;
+            Cfx.API.RegisterNuiCallbackType(Events.NuiEventType.IsNuiReady);
+            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEventType.IsNuiReady}"] += new Action<ExpandoObject, CallbackDelegate>(async (body, cb) =>
+            {
+                while (!this._isLocalizationReady)
+                {
+                    await BaseScript.Delay(10);
+                }
+
+                this.SendToNui();
+                cb.Invoke(string.Empty);
+            });
         }
 
         /// <inheritdoc />

@@ -42,6 +42,7 @@ window.onload = function () {
 
   router.push('/');
 
+  sendAvailabilityToClient();
   loadLocalization();
 }
 
@@ -125,10 +126,15 @@ const loadMenus = async (data: string) => {
     menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
   }
   store.commit('setMenus', menus);
+  console.log({menus})
 }
 
 const loadRadialMenus = async (data: string) => {
   store.commit('setRadialMenus', JSON.parse(data));
+}
+
+const sendAvailabilityToClient = () => {
+  Post(NuiEventType.IsNuiReady).catch(() => {})
 }
 </script>
 
@@ -138,9 +144,9 @@ const loadRadialMenus = async (data: string) => {
     <template v-if="viewType === NuiEventType.MenuView" v-for="item in (store.state.global.menus as Menu[])">
       <MenuView :menu="item" v-if="currentMenuId === item.id" />
     </template>
-    <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuId="currentMenuId" />
     <TimerBar />
   </div>
+  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuId="currentMenuId" />
 </template>
 
 <style lang="sass">

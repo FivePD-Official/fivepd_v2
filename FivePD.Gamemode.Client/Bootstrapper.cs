@@ -127,6 +127,9 @@ namespace FivePD.Gamemode.Client
         {
             screenDecorService.SetTextToDraw(true, false);
 
+            radialMenuService.RegisterEvents();
+            menuService.RegisterEvents();
+
             // TODO: wait for server config file validation as well
             var availableLocales = await localizationService.LoadAvailableLocales();
 
@@ -137,12 +140,9 @@ namespace FivePD.Gamemode.Client
             }
 
             radialMenuService.CreateMenus();
-            radialMenuService.RegisterEvents();
-            radialMenuService.SendToNui();
             radialMenuService.RegisterMenuKeybinds();
 
             menuService.CreateMenus();
-            menuService.SendToNui();
             menuService.RegisterMenuKeybinds();
 
             screenDecorService.SetTextToDraw(false, false);

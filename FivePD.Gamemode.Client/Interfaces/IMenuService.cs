@@ -12,6 +12,11 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface IMenuService
     {
         /// <summary>
+        /// Registers the necessary events for the menus.
+        /// </summary>
+        public void RegisterEvents();
+
+        /// <summary>
         /// Creates all menu objects.
         /// </summary>
         public void CreateMenus();

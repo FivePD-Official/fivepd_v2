@@ -1,4 +1,5 @@
 export enum NuiEventType {
+  IsNuiReady = 'fivepd:nui:isNuiReady',
   Close = 'close',
   Mdt = 'view:mdt',
   MenuView = 'view:menu',

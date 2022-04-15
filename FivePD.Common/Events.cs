@@ -94,6 +94,11 @@ namespace FivePD.Common
         /// </summary>
         public abstract class NuiEventType
         {
+            /// <summary>
+            /// Invoked from the Nui when it's initialized..
+            /// </summary>
+            public const string IsNuiReady = "fivepd:nui:isNuiReady";
+
             /// <summary>Closes the Nui.</summary>
             public const string Close = "close";
 
