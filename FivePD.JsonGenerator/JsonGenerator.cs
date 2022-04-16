@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Localization;
 using Newtonsoft.Json;
@@ -26,6 +27,7 @@ namespace FivePD.JsonGenerator
             Write(typeof(Localization), "Localization/en.json");
             Write(CreateDefaultLoadouts(), "Config/loadouts.json");
             Write(CreateDefaultItems(), "Config/items.json");
+            Write(CreateDefaultVehicles(), "Config/vehicles.json");
         }
 
         private static void Write(Type typeOfObject, string path)
@@ -89,6 +91,30 @@ namespace FivePD.JsonGenerator
                 item2,
                 item3,
             };
+        }
+
+        private static Vehicles CreateDefaultVehicles()
+        {
+            var vehicles = new Vehicles
+            {
+                Police = new List<Vehicles.PoliceVehicle>
+                {
+                    new Vehicles.PoliceVehicle
+                    {
+                        Name = "Police 1",
+                        Model = "police",
+                    },
+                },
+                Ambulance = new List<Vehicles.ServiceVehicle>
+                {
+                    new Vehicles.ServiceVehicle
+                    {
+                        Model = "ambulance",
+                    },
+                },
+            };
+
+            return vehicles;
         }
     }
 }

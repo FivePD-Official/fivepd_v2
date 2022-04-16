@@ -43,6 +43,10 @@ namespace FivePD.Gamemode.Client
                 .Register<RemoveTickHandler>(() => this.OnTickRemove);
 
             services
+                .RegisterType<EntityService>()
+                .As<IEntityService>();
+
+            services
                 .RegisterType<TickService>()
                 .As<ITickService>();
 

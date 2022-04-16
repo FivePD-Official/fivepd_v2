@@ -71,6 +71,9 @@ namespace FivePD.Gamemode.Server
 
             var provider = services.BuildServiceProvider();
 
+            var entityService = provider.GetService<IEntityService>();
+            entityService?.RegisterEvents();
+
             var pedService = provider.GetService<IPedService>();
             pedService?.RegisterEvents();
 

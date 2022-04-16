@@ -25,7 +25,9 @@ namespace FivePD.Gamemode.Client.Menus
         private readonly ILocalizationService _localizationService;
         private readonly INuiService _nuiService;
         private readonly IResourceService _resourceService;
+        private readonly IEntityService _entityService;
         private readonly List<Loadout> _loadouts;
+        private readonly List<Vehicles.PoliceVehicle> _policeVehicles;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DutyMenu"/> class.
@@ -33,15 +35,18 @@ namespace FivePD.Gamemode.Client.Menus
         /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
         /// <param name="nuiService">The <see cref="INuiService"/> to use.</param>
         /// <param name="resourceService">The <see cref="IResourceService"/> to use.</param>
+        /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
         /// >
-        public DutyMenu(ILocalizationService localizationService, INuiService nuiService, IResourceService resourceService)
+        public DutyMenu(ILocalizationService localizationService, INuiService nuiService, IResourceService resourceService, IEntityService entityService)
             : base("duty_menu", "DutyMenu.Title", "F10", true)
         {
             this._localizationService = localizationService;
             this._nuiService = nuiService;
             this._resourceService = resourceService;
+            this._entityService = entityService;
 
             this._loadouts = this._resourceService.LoadFile<List<Loadout>>("/Config/loadouts.json");
+            this._policeVehicles = this._resourceService.LoadFile<Vehicles>("/Config/vehicles.json").Police;
             this.CreateAndSetItems();
         }
 
@@ -53,6 +58,12 @@ namespace FivePD.Gamemode.Client.Menus
                 new MenuItemToggle("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", (index, cb) =>
                 {
                     Debug.WriteLine("Duty status toggle");
+                    cb.Invoke(string.Empty);
+                }),
+                new MenuItemList("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList(), async (index, cb) =>
+                {
+                    var policeVehicle = this._policeVehicles.ElementAt(index);
+                    await this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
                     cb.Invoke(string.Empty);
                 }),
                 new MenuItemList("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), (index, cb) =>

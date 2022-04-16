@@ -19,6 +19,7 @@ namespace FivePD.Common.Localization
             this.OnDuty = new OnDutyLocalization();
             this.GetLoadout = new GetLoadoutLocalization();
             this.ChangeLanguage = new ChangeLanguageLocalization();
+            this.SpawnVehicle = new SpawnVehicleLocalization();
         }
 
         public string Title { get; set; } = "Duty menu";
@@ -29,11 +30,20 @@ namespace FivePD.Common.Localization
 
         public ChangeLanguageLocalization ChangeLanguage { get; set; }
 
+        public SpawnVehicleLocalization SpawnVehicle { get; set; }
+
         public class OnDutyLocalization
         {
             public string Title { get; set; } = "On duty";
 
             public string Description { get; set; } = "Description of on duty.";
+        }
+
+        public class SpawnVehicleLocalization
+        {
+            public string Title { get; set; } = "Spawn vehicle";
+
+            public string Description { get; set; } = "Description of spawn vehicle";
         }
 
         public class GetLoadoutLocalization

@@ -13,6 +13,10 @@
     "ChangeLanguage": {
       "Title": "Change language",
       "Description": "Description of change language"
+    },
+    "SpawnVehicle": {
+      "Title": "Spawn vehicle",
+      "Description": "Description of spawn vehicle"
     }
   },
   "TrafficStop": {

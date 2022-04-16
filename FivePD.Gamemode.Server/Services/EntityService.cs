@@ -11,6 +11,8 @@ using FivePD.Common;
 using FivePD.Gamemode.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
+#pragma warning disable CS4014
+
 namespace FivePD.Gamemode.Server.Services
 {
     /**
@@ -19,13 +21,25 @@ namespace FivePD.Gamemode.Server.Services
     public class EntityService : IEntityService
     {
         private static readonly Cfx.Hash CreateAutomobile = (Cfx.Hash)Cfx.API.GetHashKey("CREATE_AUTOMOBILE");
+        private readonly EventHandlerDictionary _eventHandlerDictionary;
 
         /** <summary>
         * Initializes a new instance of the <see cref="EntityService"/> class.
         * </summary>
+        * <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>>
         */
-        public EntityService()
+        public EntityService(EventHandlerDictionary eventHandlerDictionary)
         {
+            this._eventHandlerDictionary = eventHandlerDictionary;
+        }
+
+        /// <inheritdoc />
+        public void RegisterEvents()
+        {
+            this._eventHandlerDictionary[Events.EntityManagement.RequestVehicle] += new Action<uint, Vector3, float, NetworkCallbackDelegate>((model, location, heading, networkCallbackDelegate) =>
+            {
+                this.SpawnVehicle(model, location, heading, networkCallbackDelegate);
+            });
         }
 
         /**
@@ -46,7 +60,7 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public async Task<Vehicle> SpawnVehicle(uint model, Vector3 location, float heading)
+        public async Task SpawnVehicle(uint model, Vector3 location, float heading, NetworkCallbackDelegate networkCallbackDelegate)
         {
             var handle = Cfx.Function.Call<int>(CreateAutomobile, model, location.X, location.Y, location.Z, heading);
 
@@ -56,7 +70,8 @@ namespace FivePD.Gamemode.Server.Services
                 await BaseScript.Delay(100);
             }
 
-            return new Vehicle(handle);
+            var vehicle = new Vehicle(handle);
+            networkCallbackDelegate.Invoke(vehicle.NetworkId);
         }
 
         /**

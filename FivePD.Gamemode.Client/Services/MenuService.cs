@@ -26,6 +26,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly IKeybindService _keybindService;
         private readonly ILocalizationService _localizationService;
         private readonly IResourceService _resourceService;
+        private readonly IEntityService _entityService;
         private readonly List<Menu> _menus;
         private bool _isLocalizationReady;
 
@@ -37,13 +38,15 @@ namespace FivePD.Gamemode.Client.Services
         /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
         /// <param name="localizationService">The <see cref="ILocalizationService" /> to use.</param>
         /// <param name="resourceService">The <see cref="IResourceService"/> to use.</param>
-        public MenuService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService, IKeybindService keybindService, ILocalizationService localizationService, IResourceService resourceService)
+        /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
+        public MenuService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService, IKeybindService keybindService, ILocalizationService localizationService, IResourceService resourceService, IEntityService entityService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._nuiService = nuiService;
             this._keybindService = keybindService;
             this._localizationService = localizationService;
             this._resourceService = resourceService;
+            this._entityService = entityService;
             this._menus = new List<Menu>();
         }
 
@@ -69,7 +72,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._menus.AddRange(new[]
             {
-                new DutyMenu(this._localizationService, this._nuiService, this._resourceService),
+                new DutyMenu(this._localizationService, this._nuiService, this._resourceService, this._entityService),
             });
         }
 
