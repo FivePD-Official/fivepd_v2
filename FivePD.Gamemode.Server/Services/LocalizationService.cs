@@ -35,7 +35,7 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
-            this._eventHandlerDictionary[Events.Localization.GetAvailableLocalesFromServer] += new Action<NetworkCallbackDelegate>(cb =>
+            this._eventHandlerDictionary[Events.NuiEvents.GetAvailableLocalesFromServer] += new Action<NetworkCallbackDelegate>(cb =>
             {
                 cb.Invoke(JsonConvert.SerializeObject(this._locales));
             });

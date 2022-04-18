@@ -4,12 +4,13 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System;
+using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
-using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
@@ -21,15 +22,31 @@ namespace FivePD.Gamemode.Client.Services
     /// <inheritdoc />
     public class PedService : IPedService
     {
+        private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IKeybindService _keybindService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PedService"/> class.
         /// </summary>
+        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
         /// <param name="keybindService">The <see cref="IKeybindService"/> to use.</param>
-        public PedService(IKeybindService keybindService)
+        public PedService(EventHandlerDictionary eventHandlerDictionary, IKeybindService keybindService)
         {
+            this._eventHandlerDictionary = eventHandlerDictionary;
             this._keybindService = keybindService;
+        }
+
+        /// <inheritdoc />
+        public void RegisterEvents()
+        {
+            Cfx.API.RegisterNuiCallbackType(Events.NuiEvents.PedSearch);
+            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEvents.PedSearch}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            {
+                BaseScript.TriggerServerEvent(Events.Ped.Search, body, new Action<string>((data) =>
+                {
+                    cb.Invoke(data);
+                }));
+            });
         }
 
         /// <inheritdoc />

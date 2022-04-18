@@ -1,32 +1,34 @@
 <script setup lang="ts">
+import { NuiEvents, NuiEventType } from '@enums';
 import { ISearchSubmitField } from '@interfaces';
+import { Post } from '@utils';
+import { ref } from 'vue';
 
-const onSearchSubmit = (fields: ISearchSubmitField[]) => {
-  console.log(fields)
+const onSearchSubmit = async (fields: ISearchSubmitField[]) => {
+  const res: any = await Post(NuiEvents.PedSearch, {...fields})
+  citizens.value = JSON.parse(res);
 }
 
 const fields= [
   {
     type: 'text',
-    name: 'lastname',
-    label: 'Lastname',
+    name: 'Firstname',
+    label: 'Firstname',
     placeholder: 'John'
   },
   {
     type: 'text',
-    name: 'firstname',
-    label: 'Firstname',
+    name: 'Lastname',
+    label: 'Lastname',
     placeholder: 'Doe'
   },
   {
     type: 'date',
-    name: 'birthdate',
+    name: 'Birthdate',
     label: 'Birthdate'
   }
 ];
-const citizens: any[] = [];
-for (let i = 0; i < 100; i++)
-  citizens.push({ id: i, firstname: 'John', lastname: 'Doe', birthdate: '12 / 03 / 1998', wanted: false });
+const citizens = ref<any>([]);
 </script>
 
 <template>
@@ -48,14 +50,14 @@ for (let i = 0; i < 100; i++)
         <p>Birthdate</p>
         <p>Wanted</p>
       </div>
-      <router-link v-for="citizen in citizens" :to="`/citizen-database/${citizen.id}`" class="list-item">
-        <p>{{ citizen.firstname }}</p>
-        <p>{{ citizen.lastname }}</p>
-        <p>{{ citizen.birthdate }}</p>
+      <router-link v-for="citizen in citizens" :key="citizens.NetworkId" :to="`/citizen-database/${citizen.id}`" class="list-item">
+        <p>{{ citizen.Firstname }}</p>
+        <p>{{ citizen.Lastname }}</p>
+        <p>{{ citizen.Birthdate.Month }} / {{ citizen.Birthdate.Day }} / {{ citizen.Birthdate.Year }}</p>
         <p :class="citizen.wanted ? 'text-danger' : ''">{{ citizen.wanted ? 'WANTED' : 'Not wanted' }}</p>
       </router-link>
     </div>
-    <p v-else>There are no citizens in the system.</p>
+    <p v-else class="list--empty">There are no citizens in the system.</p>
 
   </div>
 </template>
@@ -68,9 +70,8 @@ for (let i = 0; i < 100; i++)
   z-index: var(--layer-0)
 
   .list
-    display: grid
-    grid-template-columns: 1fr
-    grid-auto-flow: row
+    display: flex
+    flex-direction: column
     gap: 5px
     width: 100%
 
@@ -103,5 +104,9 @@ for (let i = 0; i < 100; i++)
         &.text-danger
           color: var(--clr-red)
           font-weight: 700
+
+  .list--empty
+    font-size: 18px
+    color: var(--clr-text-primary)
 
 </style>

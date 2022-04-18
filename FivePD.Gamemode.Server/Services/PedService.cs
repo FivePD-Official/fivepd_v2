@@ -6,13 +6,14 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.NuiModels;
 using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
@@ -39,6 +40,7 @@ namespace FivePD.Gamemode.Server.Services
         public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
+            this._eventHandlerDictionary[Events.Ped.Search] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.Search);
         }
 
         private void GeneratePed(string serializedFPedBuilder)
@@ -58,6 +60,45 @@ namespace FivePD.Gamemode.Server.Services
 
             this._peds[fPed.NetworkId] = fPed;
             Debug.WriteLine($"{fPed}");
+        }
+
+        private void Search(ExpandoObject searchFieldsObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            var searchFields = JsonConvert.DeserializeObject<PedSearchFields>(JsonConvert.SerializeObject(searchFieldsObject));
+            if (searchFields is null)
+            {
+                networkCallbackDelegate.Invoke(string.Empty);
+                return;
+            }
+
+            var peds = this._peds.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchFields.Firstname))
+            {
+                peds = peds.Where(ped => ped.Value.Firstname.ToLower().Contains(searchFields.Firstname.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(searchFields.Lastname))
+            {
+                peds = peds.Where(ped => ped.Value.Lastname.ToLower().Contains(searchFields.Lastname.ToLower()));
+            }
+
+            if (searchFields.Birthdate.Day != 0)
+            {
+                peds = peds.Where(ped => ped.Value.Birthdate.Day == searchFields.Birthdate.Day);
+            }
+
+            if (searchFields.Birthdate.Month != 0)
+            {
+                peds = peds.Where(ped => ped.Value.Birthdate.Month == searchFields.Birthdate.Month);
+            }
+
+            if (searchFields.Birthdate.Year != 0)
+            {
+                peds = peds.Where(ped => ped.Value.Birthdate.Year == searchFields.Birthdate.Year);
+            }
+
+            networkCallbackDelegate.Invoke(JsonConvert.SerializeObject(peds.Select(ped => ped.Value)));
         }
     }
 }

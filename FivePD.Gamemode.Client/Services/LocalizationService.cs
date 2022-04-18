@@ -49,14 +49,14 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
-            Cfx.API.RegisterNuiCallbackType(Events.Localization.GetLocalization);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.Localization.GetLocalization}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            Cfx.API.RegisterNuiCallbackType(Events.NuiEvents.GetLocalization);
+            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEvents.GetLocalization}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
             });
 
-            Cfx.API.RegisterNuiCallbackType(Events.Localization.ChangeLocalization);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.Localization.ChangeLocalization}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            Cfx.API.RegisterNuiCallbackType(Events.NuiEvents.ChangeLocalization);
+            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEvents.ChangeLocalization}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 dynamic d = body;
                 this._currentLocale = d.locale;
@@ -72,7 +72,7 @@ namespace FivePD.Gamemode.Client.Services
             var now = DateTime.Now;
             var timeUntilFinishWait = now.AddMinutes(1);
 
-            BaseScript.TriggerServerEvent(Events.Localization.GetAvailableLocalesFromServer, new Action<string>(locales =>
+            BaseScript.TriggerServerEvent(Events.NuiEvents.GetAvailableLocalesFromServer, new Action<string>(locales =>
             {
                 hasServerResponded = 1;
                 foreach (var item in JArray.Parse(locales))

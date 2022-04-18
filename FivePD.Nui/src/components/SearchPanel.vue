@@ -14,12 +14,18 @@ const props = defineProps<{
 
 const onSearchSubmit = (event: any) => {
 
-  const fields: ISearchSubmitField[] = [];
+  const fields: any = {};
+
   for (const e of event.target.elements) {
-    fields.push({
-      name: e.name,
-      value: e.value
-    });
+    if (!e.name || !e.value) continue;
+    if (['Day', 'Month', 'Year'].includes(e.name)) {
+      if (!fields.hasOwnProperty('Birthdate')) {
+        fields['Birthdate'] = {};
+      }
+      fields['Birthdate'][e.name] = e.value;
+    } else {
+      fields[e.name] = e.value;
+    }
   }
 
   emit('onSubmit', fields);
@@ -44,7 +50,7 @@ const birthdateInputList: IDateInput[] = createBirthdateInputList(DateFormat.MDY
         v-if="field.type !== 'date'"
       >
       <div class="inputs" v-else>
-        <input type="number" min="0" :name="`birthdate_${input.name}`" id="birthdate" :placeholder="input.placeholder" v-for="input in birthdateInputList">
+        <input type="number" min="0" :name="input.name" id="birthdate" :placeholder="input.placeholder" v-for="input in birthdateInputList">
       </div>
     </div>
 

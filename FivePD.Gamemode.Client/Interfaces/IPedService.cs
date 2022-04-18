@@ -15,6 +15,11 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface IPedService
     {
         /// <summary>
+        /// Registers all ped related events.
+        /// </summary>
+        public void RegisterEvents();
+
+        /// <summary>
         /// Registers all ped related keybinds.
         /// </summary>
         public void RegisterKeybinds();

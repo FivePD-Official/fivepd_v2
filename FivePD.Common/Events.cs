@@ -54,6 +54,11 @@ namespace FivePD.Common
             /// Used to generate a <see cref="FPed"/> on the server.
             /// </summary>
             public const string Generate = "fivepd:ped:generate";
+
+            /// <summary>
+            /// Used when a player searches for a ped in the Nui.
+            /// </summary>
+            public const string Search = "fivepd:ped:search";
         }
 
         /// <summary>
@@ -70,7 +75,7 @@ namespace FivePD.Common
         /// <summary>
         /// Contains definitions for events related to localization.
         /// </summary>
-        public abstract class Localization
+        public abstract class NuiEvents
         {
             /// <summary>
             /// C->S: Used when a client wants to request all available locales.
@@ -86,6 +91,11 @@ namespace FivePD.Common
             /// Changes the current localization.
             /// </summary>
             public const string ChangeLocalization = "fivepd:nui:changeLocalization";
+
+            /// <summary>
+            /// Used when a player searches for a ped in the Nui.
+            /// </summary>
+            public const string PedSearch = "fivepd:nui:pedSearch";
         }
 
         /// <summary>

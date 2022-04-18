@@ -53,7 +53,7 @@ namespace FivePD.Common.Builders
 
         public FPedBuilder WithFirstname(List<string> names)
         {
-            this.Firstname = names[this._random.Next(names.Count)];
+            this.Firstname = names[this._random.Next(names.Count)].Trim();
             return this;
         }
 
@@ -65,7 +65,7 @@ namespace FivePD.Common.Builders
 
         public FPedBuilder WithLastname(List<string> names)
         {
-            this.Lastname = names[this._random.Next(names.Count)];
+            this.Lastname = names[this._random.Next(names.Count)].Trim();
             return this;
         }
 
