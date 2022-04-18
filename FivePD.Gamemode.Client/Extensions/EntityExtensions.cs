@@ -84,13 +84,13 @@ namespace FivePD.Gamemode.Client.Extensions
         /// <returns>Returns the created blip.</returns>
         public static Blip CreateBlip(this Entity entity, BlipSprite sprite, FBlipColor color, string text)
         {
-            var b = entity.AttachBlip();
-            b.Sprite = sprite;
-            b.Color = (BlipColor)color;
+            var blip = entity.AttachBlip();
+            blip.Sprite = sprite;
+            blip.Color = (BlipColor)color;
             Cfx.API.BeginTextCommandSetBlipName("STRING");
             Cfx.API.AddTextComponentString(text);
-            Cfx.API.EndTextCommandSetBlipName(b.Handle);
-            return b;
+            Cfx.API.EndTextCommandSetBlipName(blip.Handle);
+            return blip;
         }
 
         /// <summary>

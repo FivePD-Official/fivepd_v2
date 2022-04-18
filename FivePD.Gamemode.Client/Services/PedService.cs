@@ -40,7 +40,9 @@ namespace FivePD.Gamemode.Client.Services
                 "sd",
                 "E",
                 1500,
-                this.StopPed);
+                this.StopPed,
+                null,
+                () => !Game.PlayerPed.IsInVehicle());
         }
 
         /// <inheritdoc />
