@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Menus;
 using FivePD.Gamemode.Client.Models;
@@ -54,8 +55,7 @@ namespace FivePD.Gamemode.Client.Services
         public void RegisterEvents()
         {
             this._isLocalizationReady = true;
-            Cfx.API.RegisterNuiCallbackType(Events.NuiEventType.IsNuiReady);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEventType.IsNuiReady}"] += new Action<ExpandoObject, CallbackDelegate>(async (body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.IsNuiReady, new Action<ExpandoObject, CallbackDelegate>(async (body, cb) =>
             {
                 while (!this._isLocalizationReady)
                 {
@@ -64,7 +64,7 @@ namespace FivePD.Gamemode.Client.Services
 
                 this.SendToNui();
                 cb.Invoke(string.Empty);
-            });
+            }));
         }
 
         /// <inheritdoc />
@@ -133,8 +133,7 @@ namespace FivePD.Gamemode.Client.Services
                 foreach (var item in menu.Items)
                 {
                     var eventName = $"fivepd:menu:trigger_item_{item.GetHashCode()}";
-                    Cfx.API.RegisterNuiCallbackType(eventName);
-                    this._eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<int, CallbackDelegate>((body, callback) => item.OnPress(body, callback));
+                    this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<int, CallbackDelegate>((body, callback) => item.OnPress(body, callback)));
                 }
             }
         }

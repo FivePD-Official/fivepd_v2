@@ -9,6 +9,7 @@ using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
+using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
 using Newtonsoft.Json;
@@ -41,12 +42,11 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
-            Cfx.API.RegisterNuiCallbackType(Events.NuiEventType.Close);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEventType.Close}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.Close, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 this.Hide();
                 cb.Invoke(string.Empty);
-            });
+            }));
         }
 
         /// <inheritdoc />

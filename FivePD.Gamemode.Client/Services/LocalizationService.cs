@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Localization;
+using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -49,20 +50,18 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
-            Cfx.API.RegisterNuiCallbackType(Events.NuiEvents.GetLocalization);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEvents.GetLocalization}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEvents.GetLocalization, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
-            });
+            }));
 
-            Cfx.API.RegisterNuiCallbackType(Events.NuiEvents.ChangeLocalization);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEvents.ChangeLocalization}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEvents.ChangeLocalization, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 dynamic d = body;
                 this._currentLocale = d.locale;
                 this.LoadLocalization(this._currentLocale);
                 cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
-            });
+            }));
         }
 
         /// <inheritdoc />

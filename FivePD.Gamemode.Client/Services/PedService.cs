@@ -39,14 +39,13 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            Cfx.API.RegisterNuiCallbackType(Events.NuiEvents.PedSearch);
-            this._eventHandlerDictionary[$"__cfx_nui:{Events.NuiEvents.PedSearch}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEvents.PedSearch, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 BaseScript.TriggerServerEvent(Events.Ped.Search, body, new Action<string>((data) =>
                 {
                     cb.Invoke(data);
                 }));
-            });
+            }));
         }
 
         /// <inheritdoc />
