@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.Interfaces;

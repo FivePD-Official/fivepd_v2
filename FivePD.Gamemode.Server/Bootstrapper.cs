@@ -12,6 +12,7 @@ using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -68,7 +69,7 @@ namespace FivePD.Gamemode.Server
 
             var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
 
-            var assemblies = new List<Assembly>();
+            var assembliesWithDefinitions = new Dictionary<Assembly, AddonDefinition>();
 
             var allAddons = addonLocator.GetAddons().ToList();
 
@@ -80,7 +81,11 @@ namespace FivePD.Gamemode.Server
                     addon.FriendlyName,
                     addon.FriendlyVersion);
 
-                assemblies.AddRange(addon.Assemblies.Select(Assembly.Load));
+                foreach (var assembly in addon.Assemblies)
+                {
+                    var asm = Assembly.Load(assembly);
+                    assembliesWithDefinitions.Add(asm, addon);
+                }
             }
 
             var services = new ServiceCollection();
@@ -88,6 +93,7 @@ namespace FivePD.Gamemode.Server
             // Find and register core services
             services.AddSingleton(Log.Logger);
 
+            services.AddSingleton<IAddonMetadataService, AddonMetadataService>();
             services.AddTransient<IAddonLoggerService, AddonLoggerService>();
             services.AddSingleton<IResourceService, ResourceService>();
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
@@ -107,12 +113,18 @@ namespace FivePD.Gamemode.Server
 
             // Find and register addons
             services.Scan(scan => scan
-                .FromAssemblies(assemblies)
+                .FromAssemblies(assembliesWithDefinitions.Keys)
                 .AddClasses(classes => classes.AssignableTo<IGamemodeAddon>())
                 .AsSelfWithInterfaces()
                 .WithSingletonLifetime());
 
             var provider = services.BuildServiceProvider();
+
+            var addonMetadataService = provider.GetService<IAddonMetadataService>();
+            foreach (var assembly in assembliesWithDefinitions)
+            {
+                addonMetadataService?.RegisterAddonAssemblyWithDefinition(assembly.Key, assembly.Value);
+            }
 
             var entityService = provider.GetService<IEntityService>();
             entityService?.RegisterEvents();
