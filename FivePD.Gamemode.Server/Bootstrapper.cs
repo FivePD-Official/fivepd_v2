@@ -28,6 +28,8 @@ namespace FivePD.Gamemode.Server
     // ReSharper disable once UnusedType.Global
     public class Bootstrapper : BaseScript
     {
+        private readonly ServiceProvider _provider;
+
         /**
          * <summary>
          *     Initializes a new instance of the <see cref="Bootstrapper" /> class. Used as the entrypoint for the Cfx
@@ -54,7 +56,7 @@ namespace FivePD.Gamemode.Server
             /*
              * Gamemode addons have full(ish) access to the complete suite of services
              * made available to core gamemode services. Thus, we need to find our addons
-             * prior to actually assembling a service provider. The addon locator takes one
+             * prior to actually assembling a service this._provider. The addon locator takes one
              * parameter, a logger, so we create it early.
              */
 
@@ -118,48 +120,48 @@ namespace FivePD.Gamemode.Server
                 .AsSelfWithInterfaces()
                 .WithSingletonLifetime());
 
-            var provider = services.BuildServiceProvider();
+            this._provider = services.BuildServiceProvider();
 
-            var addonMetadataService = provider.GetService<IAddonMetadataService>();
+            var addonMetadataService = this._provider.GetService<IAddonMetadataService>();
             foreach (var assembly in assembliesWithDefinitions)
             {
                 addonMetadataService?.RegisterAddonAssemblyWithDefinition(assembly.Key, assembly.Value);
             }
 
-            var entityService = provider.GetService<IEntityService>();
+            var entityService = this._provider.GetService<IEntityService>();
             entityService?.RegisterEvents();
 
-            var pedService = provider.GetService<IPedService>();
+            var pedService = this._provider.GetService<IPedService>();
             pedService?.RegisterEvents();
 
-            var vehicleService = provider.GetService<IVehicleService>();
+            var vehicleService = this._provider.GetService<IVehicleService>();
             vehicleService?.RegisterEvents();
 
-            var trafficStopService = provider.GetService<ITrafficStopService>();
+            var trafficStopService = this._provider.GetService<ITrafficStopService>();
             trafficStopService?.RegisterEvents();
 
-            var localizationService = provider.GetService<ILocalizationService>();
+            var localizationService = this._provider.GetService<ILocalizationService>();
             localizationService?.RegisterEventHandlers();
             localizationService?.LoadAvailableLocales();
             localizationService?.ValidateLocalizationFiles();
 
-            var log = provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
+            var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
 
             LogDiagnostics(log);
 
             // Check for dev mode. If enabled, register the utilities
             if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
             {
-                var devUtilsService = provider.GetService<IDevUtilitiesService>();
+                var devUtilsService = this._provider.GetService<IDevUtilitiesService>();
 
                 devUtilsService?.RegisterDevelopmentCommands();
             }
 
-            var tickQueueService = provider.GetService<ITickQueueService>();
+            var tickQueueService = this._provider.GetService<ITickQueueService>();
             this.Tick += tickQueueService!.OnTick;
 
             // Grab an instance of every addon entrypoint
-            foreach (var addon in provider.GetServices<IGamemodeAddon>())
+            foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
             {
                 // Lazy load it
                 tickQueueService.Enqueue(() => addon.OnStarted());
@@ -168,7 +170,7 @@ namespace FivePD.Gamemode.Server
             // Being that the thread is about to be free for the first time, enqueued addon starts will run here
             log?.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
 
-            var playerDataService = provider.GetService<IPlayerDataService>()!;
+            var playerDataService = this._provider.GetService<IPlayerDataService>()!;
             var demoPlayer = new FPlayer("1");
 
             playerDataService.DutyStatusChanged += (sender, args) => log.Information("A duty status changed! ({@Player})", args);
@@ -176,6 +178,29 @@ namespace FivePD.Gamemode.Server
             log?.Information("Before duty status is {@Status}", playerDataService.GetDutyStatus(demoPlayer));
             playerDataService.SetDutyStatus(demoPlayer, FDutyStatus.OnDutyAndReceiving);
             log?.Information("After duty status is {@Status}", playerDataService.GetDutyStatus(demoPlayer));
+        }
+
+        /// <summary>
+        /// Called when the gamemode is being stopped. Handles cleanup.
+        /// </summary>
+        [EventHandler("onResourceStop")]
+        internal void OnStopped()
+        {
+            var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
+
+            log?.Information("Stopping FivePD");
+
+            log?.Debug("Running addon shutdown routine");
+
+            // Grab an instance of every addon entrypoint and "stop" it
+            foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
+            {
+                addon.OnStopped();
+            }
+
+            log?.Debug("Addon shutdown complete. Running gamemode disposal routine");
+
+            this._provider.Dispose();
         }
 
         /**

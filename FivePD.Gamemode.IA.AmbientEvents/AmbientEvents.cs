@@ -42,9 +42,9 @@ namespace FivePD.Gamemode.IA.AmbientEvents
          */
         public Task OnStopped()
         {
-            Console.WriteLine("I started!");
+            this._logger.Information("I stopped!");
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }
