@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FivePD.Gamemode.API\FivePD.Gamemode.API.csproj" />
+      <ProjectReference Include="..\FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj" />
     </ItemGroup>
 
     <ItemGroup>

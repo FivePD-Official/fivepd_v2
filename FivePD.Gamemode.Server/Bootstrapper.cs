@@ -5,17 +5,17 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common;
 using FivePD.Common.Models;
-using FivePD.Gamemode.Server.Extensions;
+using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Serilog.Core;
 using Serilog.Sinks.SystemConsole.Themes;
 using Cfx = CitizenFX.Core.Native;
 
@@ -39,23 +39,59 @@ namespace FivePD.Gamemode.Server
             ConfigureForDevelopment();
             #endif
 
+            var globalLoggerConfig = new LoggerConfiguration()
+                .WriteTo.Console(
+                    theme: AnsiConsoleTheme.Code,
+                    outputTemplate: "[{Timestamp:HH:mm:ss} FivePD:{SourceIdentifier} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.File(
+                    $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/Server-.txt",
+                    rollingInterval: RollingInterval.Day,
+                    rollOnFileSizeLimit: true,
+                    retainedFileCountLimit: 7)
+                .MinimumLevel.Verbose();
+
+            /*
+             * Gamemode addons have full(ish) access to the complete suite of services
+             * made available to core gamemode services. Thus, we need to find our addons
+             * prior to actually assembling a service provider. The addon locator takes one
+             * parameter, a logger, so we create it early.
+             */
+
+            Log.Logger = globalLoggerConfig.CreateLogger();
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();
+
+            var preInitLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
+
+            preInitLogger.Information(
+                "Bootstrapping gamemode server version {@Version}",
+                Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+            var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
+
+            var assemblies = new List<Assembly>();
+
+            var allAddons = addonLocator.GetAddons().ToList();
+
+            // Load addon assemblies
+            foreach (var addon in allAddons)
+            {
+                preInitLogger.Information(
+                    "Registering addon {@AddonName} version {@AddonVersion}",
+                    addon.FriendlyName,
+                    addon.FriendlyVersion);
+
+                assemblies.AddRange(addon.Assemblies.Select(Assembly.Load));
+            }
+
             var services = new ServiceCollection();
 
-            services.AddSerilogServices(
-                new LoggerConfiguration()
-                    .WriteTo.Console(
-                        theme: AnsiConsoleTheme.Code,
-                        outputTemplate: "[{Timestamp:HH:mm:ss} FivePD {Level:u3}] {Message:lj}{NewLine}{Exception}")
-                    .WriteTo.File(
-                        $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/Server-.txt",
-                        rollingInterval: RollingInterval.Day,
-                        rollOnFileSizeLimit: true,
-                        retainedFileCountLimit: 7)
-                    .MinimumLevel.Verbose());
+            // Find and register core services
+            services.AddSingleton(Log.Logger);
 
+            services.AddTransient<IAddonLoggerService, AddonLoggerService>();
             services.AddSingleton<IResourceService, ResourceService>();
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
-            services.AddSingleton<IAddonLocator, FsAddonLocator>();
+            services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
             services.AddSingleton<IEntityService, EntityService>();
             services.AddSingleton<IServerStateService, ServerStateService>();
             services.AddSingleton<IReplicatedStateService, ReplicatedStateService>();
@@ -68,6 +104,13 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IPlayerDataService, PlayerDataService>();
 
             services.AddSingleton(this.EventHandlers);
+
+            // Find and register addons
+            services.Scan(scan => scan
+                .FromAssemblies(assemblies)
+                .AddClasses(classes => classes.AssignableTo<IGamemodeAddon>())
+                .AsSelfWithInterfaces()
+                .WithSingletonLifetime());
 
             var provider = services.BuildServiceProvider();
 
@@ -88,11 +131,7 @@ namespace FivePD.Gamemode.Server
             localizationService?.LoadAvailableLocales();
             localizationService?.ValidateLocalizationFiles();
 
-            var log = provider.GetService<ILogger>();
-
-            log?.Information(
-                "Bootstrapping gamemode server version {@Version}",
-                Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            var log = provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
 
             LogDiagnostics(log);
 
@@ -107,33 +146,16 @@ namespace FivePD.Gamemode.Server
             var tickQueueService = provider.GetService<ITickQueueService>();
             this.Tick += tickQueueService!.OnTick;
 
-            var addonLocator = provider.GetService<IAddonLocator>();
-
-            var allAddons = addonLocator?.GetAddons().ToList();
-
-            log?.Information("Found {@Count} addons, passing to addon loader", allAddons?.Count());
-
-            // Load internal addons. MUST COMPLETE prior to loading public addons.
-            foreach (var addon in allAddons?.Where(x => x.IsInternal)!)
+            // Grab an instance of every addon entrypoint
+            foreach (var addon in provider.GetServices<IGamemodeAddon>())
             {
-                log?.Information(
-                    "Loading addon {@AddonName}",
-                    addon.FriendlyName);
-
-                foreach (var assembly in addon.Assemblies)
-                {
-                    var asm = Assembly.Load(assembly);
-
-                    foreach (var type in asm.GetTypes())
-                    {
-                        log?.Information("Found type {@Type}", type.FullName);
-                    }
-                }
+                // Lazy load it
+                tickQueueService.Enqueue(() => addon.OnStarted());
             }
 
-            // Load public addons.
+            // Being that the thread is about to be free for the first time, enqueued addon starts will run here
+            log?.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
 
-            // Demonstrate player data service
             var playerDataService = provider.GetService<IPlayerDataService>()!;
             var demoPlayer = new FPlayer("1");
 

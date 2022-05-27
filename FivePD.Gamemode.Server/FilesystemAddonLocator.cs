@@ -7,11 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using CitizenFX.Core;
-using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using Newtonsoft.Json;
 using Serilog;
@@ -20,9 +15,9 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Server.Services
 {
     /**
-     * <inheritdoc />
+     * <summary>Responsible for locating addon definitions. Loading of addons should be.</summary>
      */
-    public class FsAddonLocator : IAddonLocator
+    public class FilesystemAddonLocator
     {
         private const string MetadataFileName = "addon.fpd.json";
 
@@ -36,18 +31,18 @@ namespace FivePD.Gamemode.Server.Services
         private readonly ILogger _logger;
 
         /**
-         * <summary>Initializes a new instance of the <see cref="FsAddonLocator"/> class,
-         * an implementation of <see cref="IAddonLocator"/>,
+         * <summary>Initializes a new instance of the <see cref="FilesystemAddonLocator"/> class
          * powered by the attached file system.</summary>
          * <param name="logger">A logger instance to use.</param>
          */
-        public FsAddonLocator(ILogger logger)
+        public FilesystemAddonLocator(ILogger logger)
         {
             this._logger = logger;
         }
 
         /**
-         * <inheritdoc />
+         * <summary>Returns all found addon definitions.</summary>
+         * <returns>An enumerable of all addon definitions located.</returns>
          */
         public IEnumerable<AddonDefinition> GetAddons()
         {
@@ -86,12 +81,12 @@ namespace FivePD.Gamemode.Server.Services
 
                             if (!File.Exists(assemblyPath))
                             {
-                                this._logger.Warning("Tried to find an assembly that doesn't exist ({Assembly}). Is the {MetadataFileName} up-to-date?", assembly, MetadataFileName);
+                                this._logger.Warning("Tried to find an addon assembly that doesn't exist ({Assembly}). Is the {MetadataFileName} up-to-date?", assembly, MetadataFileName);
 
                                 continue;
                             }
 
-                            this._logger.Debug("Located assembly {Assembly}", assembly);
+                            this._logger.Debug("Located addon assembly {Assembly}", assembly);
 
                             try
                             {
@@ -99,7 +94,7 @@ namespace FivePD.Gamemode.Server.Services
                             }
                             catch (Exception e)
                             {
-                                this._logger.Warning("Failed to read assembly file {Assembly}. {Message}", assembly, e.Message);
+                                this._logger.Warning("Failed to read addon assembly file {Assembly}. {Message}", assembly, e.Message);
                             }
                         }
 
@@ -111,6 +106,8 @@ namespace FivePD.Gamemode.Server.Services
                     }
                 }
             }
+
+            this._logger.Information("Found {@Count} addons, passing back to bootstrapper", definitions.Count);
 
             return definitions;
         }

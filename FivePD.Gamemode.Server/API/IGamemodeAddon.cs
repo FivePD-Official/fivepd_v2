@@ -6,7 +6,7 @@
 
 using System.Threading.Tasks;
 
-namespace FivePD.Gamemode.API
+namespace FivePD.Gamemode.Server.API
 {
     /**
      * <summary>Represents a server-sided gamemode addon.</summary>

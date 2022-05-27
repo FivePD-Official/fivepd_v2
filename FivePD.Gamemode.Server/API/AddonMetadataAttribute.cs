@@ -4,7 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-namespace FivePD.Gamemode.API
+namespace FivePD.Gamemode.Server.API
 {
     /**
      * <summary>Defines basic addon metadata that shouldn't

@@ -6,7 +6,9 @@
 
 using System;
 using System.Threading.Tasks;
-using FivePD.Gamemode.API;
+using FivePD.Gamemode.Server.API;
+using FivePD.Gamemode.Server.Interfaces;
+using Serilog.Core;
 
 namespace FivePD.Gamemode.IA.AmbientEvents
 {
@@ -17,12 +19,19 @@ namespace FivePD.Gamemode.IA.AmbientEvents
     [AddonMetadata("AmbientEventProvider", "1.0.0", 100)]
     public class AmbientEvents : IGamemodeAddon
     {
+        private readonly IAddonLoggerService _logger;
+
+        public AmbientEvents(IAddonLoggerService logger)
+        {
+            this._logger = logger;
+        }
+
         /**
          * <inheritdoc />
          */
         public Task OnStarted()
         {
-            Console.WriteLine("I started!");
+            this._logger.Information("I started!");
 
             return Task.CompletedTask;
         }
