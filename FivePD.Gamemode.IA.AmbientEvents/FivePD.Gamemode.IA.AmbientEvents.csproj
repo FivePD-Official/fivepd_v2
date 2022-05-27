@@ -20,4 +20,9 @@
       <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="addon.fpd.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 </Project>
