@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Gamemode.Server.Services
+namespace FivePD.Gamemode.Server
 {
     /**
      * <summary>Responsible for locating addon definitions. Loading of addons should be.</summary>

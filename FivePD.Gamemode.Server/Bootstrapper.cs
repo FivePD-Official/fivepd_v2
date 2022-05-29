@@ -16,7 +16,6 @@ using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Serilog.Core;
 using Serilog.Sinks.SystemConsole.Themes;
 using Cfx = CitizenFX.Core.Native;
 
