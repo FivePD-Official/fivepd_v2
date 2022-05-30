@@ -21,20 +21,19 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server
 {
-    /**
-     * <summary>The gamemode server entrypoint. Handles the creation and management of all tasks on the server.</summary>
-     */
+    /// <summary>
+    /// The gamemode server entrypoint. Handles the
+    /// creation and management of all tasks on the server.
+    /// </summary>
     // ReSharper disable once UnusedType.Global
     public class Bootstrapper : BaseScript
     {
         private readonly ServiceProvider _provider;
 
-        /**
-         * <summary>
-         *     Initializes a new instance of the <see cref="Bootstrapper" /> class. Used as the entrypoint for the Cfx
-         *     runtime.
-         * </summary>
-         */
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
+        /// Used as the entrypoint for the Cfx server runtime.
+        /// </summary>
         public Bootstrapper()
         {
             #if DEBUG
@@ -147,7 +146,14 @@ namespace FivePD.Gamemode.Server
 
             var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
 
-            LogDiagnostics(log);
+            this.LogDiagnostics();
+
+            if (!this.IsSafeToRun())
+            {
+                log?.Fatal("FivePD cannot run in this environment. Verify all prerequisites have been met and try again");
+                this.OnStopped();
+                return;
+            }
 
             // Check for dev mode. If enabled, register the utilities
             if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
@@ -203,21 +209,52 @@ namespace FivePD.Gamemode.Server
             this._provider.Dispose();
         }
 
-        /**
-         * Logs common diagnostic properties
-         * <param name="log">The logger to use.</param>
-         */
-        private static void LogDiagnostics(ILogger log)
+        /// <summary>
+        /// Terminates the gamemode.
+        /// </summary>
+        internal void StopGamemode()
         {
+            this.OnStopped();
+        }
+
+        #if DEBUG
+        /// <summary>
+        /// Configures pre-run settings for development mode.
+        /// This logic runs before the gamemode has been initialized.
+        /// </summary>
+        private static void ConfigureForDevelopment()
+        {
+            // Disables client-side script entity spawning
+            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
+        }
+        #endif
+
+        /// <summary>
+        /// Determines if the gamemode can run in the current environment.
+        /// <returns>A boolean representing the safety of the environment.</returns>
+        /// </summary>
+        private bool IsSafeToRun()
+        {
+            // Verifies OneSync is enabled
+            if (Cfx.API.GetConvar("onesync", "off") != "on")
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Logs common diagnostic properties.
+        /// </summary>
+        private void LogDiagnostics()
+        {
+            var log = this._provider.GetService<ILogger>()!.ForContext("SourceIdentifier", "Bootstrapper");
+
             // Logs the current Cfx artifacts version
             log.Debug(
                 "Running Cfx version {@Version}",
                 Cfx.API.GetConvar("version", "Unknown"));
-
-            // Logs the current OneSync status
-            log.Debug(
-                "OneSync is {@Status}",
-                Cfx.API.GetConvar("onesync", "Unknown"));
 
             // Logs dev mode status
             var devModeEnabled = Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true";
@@ -232,16 +269,5 @@ namespace FivePD.Gamemode.Server
                     "Do not enable development mode on public servers. Only enable development mode when developing addons for FivePD. Development mode allows bad actors to exploit FivePD. This is VERY dangerous");
             }
         }
-
-        #if DEBUG
-        /**
-         * Sets up some Cfx settings for development only
-         */
-        private static void ConfigureForDevelopment()
-        {
-            // Disables client-side script entity spawning
-            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
-        }
-        #endif
     }
 }
