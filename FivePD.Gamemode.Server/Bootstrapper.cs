@@ -94,6 +94,7 @@ namespace FivePD.Gamemode.Server
             // Find and register core services
             services.AddSingleton(Log.Logger);
 
+            services.AddSingleton<ICommandService, CommandService>();
             services.AddSingleton<IAddonMetadataService, AddonMetadataService>();
             services.AddTransient<IAddonLoggerService, AddonLoggerService>();
             services.AddSingleton<IResourceService, ResourceService>();
