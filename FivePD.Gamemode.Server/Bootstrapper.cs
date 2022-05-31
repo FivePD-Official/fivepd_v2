@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common.Models;
@@ -15,6 +17,8 @@ using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
+using Sentry.Infrastructure;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using Cfx = CitizenFX.Core.Native;
@@ -28,7 +32,10 @@ namespace FivePD.Gamemode.Server
     // ReSharper disable once UnusedType.Global
     public class Bootstrapper : BaseScript
     {
+        private const string SentryDsn = "https://a304ee75321740359328f5f3b3fbb98c@o983555.ingest.sentry.io/6455831";
+
         private readonly ServiceProvider _provider;
+        private readonly IDisposable _sentryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
@@ -51,6 +58,39 @@ namespace FivePD.Gamemode.Server
                     retainedFileCountLimit: 7)
                 .MinimumLevel.Verbose();
 
+            // todo: validate certs for sentry and our in-house api
+            #pragma warning disable S4830
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            #pragma warning restore S4830
+
+            // Register Sentry for error logging
+            this._sentryClient = SentrySdk.Init(o =>
+            {
+                o.Dsn = SentryDsn;
+                o.TracesSampleRate = 1.0;
+                #if DEBUG
+                o.Debug = true;
+                o.DiagnosticLogger = new SerilogSentryDiagnosticLogger();
+                o.Environment = "development";
+                #endif
+            });
+
+            SentrySdk.ConfigureScope(scope =>
+            {
+                scope.Contexts["cfx"] = new
+                {
+                    Version = Cfx.API.GetConvar("version", "Unknown"),
+                };
+            });
+
+            // Begin startup Sentry transaction
+            var transaction = SentrySdk.StartTransaction(
+                "bootstrap",
+                "bootstrap-gamemode",
+                "Gamemode Bootstrapping");
+
+            var addonLoadSpan = transaction.StartChild("bootstrap-addons", "Bootstrapping for addon subsystem");
+
             /*
              * Gamemode addons have full(ish) access to the complete suite of services
              * made available to core gamemode services. Thus, we need to find our addons
@@ -59,7 +99,6 @@ namespace FivePD.Gamemode.Server
              */
 
             Log.Logger = globalLoggerConfig.CreateLogger();
-            AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();
 
             var preInitLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
 
@@ -87,6 +126,9 @@ namespace FivePD.Gamemode.Server
                     assembliesWithDefinitions.Add(asm, addon);
                 }
             }
+
+            addonLoadSpan.Finish();
+            var serviceInitSpan = transaction.StartChild("bootstrap-services", "Bootstrapping for services");
 
             var services = new ServiceCollection();
 
@@ -173,6 +215,9 @@ namespace FivePD.Gamemode.Server
                 tickQueueService.Enqueue(() => addon.OnStarted());
             }
 
+            serviceInitSpan.Finish();
+            transaction.Finish();
+
             // Being that the thread is about to be free for the first time, enqueued addon starts will run here
             log?.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
 
@@ -207,6 +252,8 @@ namespace FivePD.Gamemode.Server
             log?.Debug("Addon shutdown complete. Running gamemode disposal routine");
 
             this._provider.Dispose();
+            Log.CloseAndFlush();
+            this._sentryClient.Dispose();
         }
 
         /// <summary>
