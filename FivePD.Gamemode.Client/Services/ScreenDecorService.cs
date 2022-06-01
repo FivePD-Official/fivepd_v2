@@ -56,7 +56,7 @@ namespace FivePD.Gamemode.Client.Services
          */
         public void SetTextToDraw(bool isLoading, bool hasError)
         {
-            var formattedTextBuilder = new FormattedText()
+            var formattedTextBuilder = new GtaStyleText()
                 .White("FivePD")
                 .Blue("PD")
                 .White(" - v2.0.0 - ");

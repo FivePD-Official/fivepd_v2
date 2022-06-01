@@ -24,7 +24,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void ShowTooltip(FormattedText content, bool withBeep = false)
+        public void ShowTooltip(GtaStyleText content, bool withBeep = false)
         {
             this.ShowTooltip(content.Build(), withBeep);
         }
@@ -36,7 +36,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void ShowNotification(FormattedText content)
+        public void ShowNotification(GtaStyleText content)
         {
             this.ShowNotification(content.Build());
         }
@@ -53,7 +53,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void ShowNotificationWithTexture(string texture, string sender, string subject, FormattedText content)
+        public void ShowNotificationWithTexture(string texture, string sender, string subject, GtaStyleText content)
         {
             this.ShowNotificationWithTexture(texture, sender, subject, content.Build());
         }

@@ -16,14 +16,14 @@ namespace FivePD.Gamemode.Client.Utilities
     /// <summary>
     /// A string builder wrapper to easily create multicolored texts.
     /// </summary>
-    public class FormattedText
+    public class GtaStyleText
     {
         private readonly StringBuilder _stringBuilder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FormattedText"/> class.
+        /// Initializes a new instance of the <see cref="GtaStyleText"/> class.
         /// </summary>
-        public FormattedText()
+        public GtaStyleText()
         {
             this._stringBuilder = new StringBuilder();
         }
@@ -31,7 +31,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to red.
         /// </summary>
-        public FormattedText Red(string text = "")
+        public GtaStyleText Red(string text = "")
         {
             return this.Append(Formats.Red, text);
         }
@@ -39,7 +39,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to green.
         /// </summary>
-        public FormattedText Green(string text = "")
+        public GtaStyleText Green(string text = "")
         {
             return this.Append(Formats.Green, text);
         }
@@ -47,7 +47,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to blue.
         /// </summary>
-        public FormattedText Blue(string text = "")
+        public GtaStyleText Blue(string text = "")
         {
             return this.Append(Formats.Blue, text);
         }
@@ -55,7 +55,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to yellow.
         /// </summary>
-        public FormattedText Yellow(string text = "")
+        public GtaStyleText Yellow(string text = "")
         {
             return this.Append(Formats.Yellow, text);
         }
@@ -63,7 +63,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to grey.
         /// </summary>
-        public FormattedText Grey(string text = "")
+        public GtaStyleText Grey(string text = "")
         {
             return this.Append(Formats.Grey, text);
         }
@@ -71,7 +71,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to orange.
         /// </summary>
-        public FormattedText Orange(string text = "")
+        public GtaStyleText Orange(string text = "")
         {
             return this.Append(Formats.Orange, text);
         }
@@ -79,7 +79,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to purple.
         /// </summary>
-        public FormattedText Purple(string text = "")
+        public GtaStyleText Purple(string text = "")
         {
             return this.Append(Formats.Purple, text);
         }
@@ -87,7 +87,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to pink.
         /// </summary>
-        public FormattedText Pink(string text = "")
+        public GtaStyleText Pink(string text = "")
         {
             return this.Append(Formats.Pink, text);
         }
@@ -95,7 +95,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to black.
         /// </summary>
-        public FormattedText Black(string text = "")
+        public GtaStyleText Black(string text = "")
         {
             return this.Append(Formats.Black, text);
         }
@@ -103,7 +103,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to dark blue.
         /// </summary>
-        public FormattedText DarkBlue(string text = "")
+        public GtaStyleText DarkBlue(string text = "")
         {
             return this.Append(Formats.DarkBlue, text);
         }
@@ -111,7 +111,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Sets the text color to white.
         /// </summary>
-        public FormattedText White(string text = "")
+        public GtaStyleText White(string text = "")
         {
             return this.Append(Formats.White, text);
         }
@@ -119,7 +119,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Adds a new line to the text.
         /// </summary>
-        public FormattedText NewLine()
+        public GtaStyleText NewLine()
         {
             this._stringBuilder.Append(Formats.NewLine);
             return this;
@@ -128,7 +128,7 @@ namespace FivePD.Gamemode.Client.Utilities
         /// <summary>
         /// Removes all text formatting.
         /// </summary>
-        public FormattedText Reset(string text = "")
+        public GtaStyleText Reset(string text = "")
         {
             return this.Append(Formats.Reset, text);
         }
@@ -141,7 +141,13 @@ namespace FivePD.Gamemode.Client.Utilities
             return this._stringBuilder.ToString();
         }
 
-        private FormattedText Append(string color, string text)
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return this.Build();
+        }
+
+        private GtaStyleText Append(string color, string text)
         {
             this._stringBuilder.Append(color);
             if (!string.IsNullOrEmpty(text))
