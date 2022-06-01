@@ -1,4 +1,4 @@
-import { Post } from "@utils";
+import { post } from "@utils";
 import { NuiEventType } from '@enums';
 
 export const showNui = () => {
@@ -8,5 +8,5 @@ export const showNui = () => {
 export const hideNui = () => {
   document.body.style.display = "none";
 
-  Post(NuiEventType.Close).catch(() => {});
+  post(NuiEventType.Close).subscribe();
 }

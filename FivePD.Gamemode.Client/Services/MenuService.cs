@@ -96,7 +96,7 @@ namespace FivePD.Gamemode.Client.Services
                     if (item.Type == MenuItem.MenuItemType.List)
                     {
                         var casted = item as MenuItemList;
-                        itemData.Add("Items", JsonConvert.SerializeObject(casted?.Items));
+                        itemData.Add("Items", JArray.FromObject(casted?.Items));
                     }
 
                     items.Add(itemData);
@@ -114,7 +114,7 @@ namespace FivePD.Gamemode.Client.Services
             this._nuiService.SendMessage(new JObject
             {
                 { "type", Events.NuiEventType.SendMenuObjects },
-                { "data", JsonConvert.SerializeObject(menus) },
+                { "data", menus },
             });
         }
 

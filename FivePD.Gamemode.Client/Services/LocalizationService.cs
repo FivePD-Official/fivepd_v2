@@ -52,7 +52,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._eventHandlerDictionary.AddNuiEvent(Events.NuiEvents.GetLocalization, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
-                cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
+                cb.Invoke(this.CurrentLocalization);
             }));
 
             this._eventHandlerDictionary.AddNuiEvent(Events.NuiEvents.ChangeLocalization, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
@@ -60,7 +60,7 @@ namespace FivePD.Gamemode.Client.Services
                 dynamic d = body;
                 this._currentLocale = d.locale;
                 this.LoadLocalization(this._currentLocale);
-                cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
+                cb.Invoke(this.CurrentLocalization);
             }));
         }
 

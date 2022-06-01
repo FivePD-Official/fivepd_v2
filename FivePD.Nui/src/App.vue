@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { hideNui, showNui, Post, Menu, MenuItem, MenuItemButton, MenuItemList, MenuItemToggle } from '@utils';
-import { NuiEventType, NuiEvents } from '@enums';
+import { hideNui, showNui, post, Menu, MenuItem, MenuItemButton, MenuItemList, MenuItemToggle, nuiEventNext, onNuiEvent } from '@utils';
+import { MenuItemType, NuiEventType, NuiEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useEmitter } from '@hooks';
-import { MenuItemType } from '@enums';
 import { useStore } from 'vuex';
+import type { IBaseNuiEvent, ILocalization, LocalizationChangeResponse, MenuObjectsResponse, RadialMenuObjectsResponse, ViewEventResponse } from '@interfaces';
 
 const store = useStore();
 const emitter = useEmitter();
@@ -13,14 +13,14 @@ const router = useRouter();
 const viewType = ref<string>('');
 const currentMenuId = ref<string>('#');
 
-window.onload = function () {
+window.addEventListener('load', () => {
 
   const isDev = import.meta.env.MODE === 'development';
 
   document.head.innerHTML = document.head.innerHTML + '<base href=' + (isDev ? '' : '/Libraries/FivePD.Terminal/') + '/>';
   document.body.style.display = "none";
 
-  window.addEventListener('message', event => handleEvents(event, isDev));
+  window.addEventListener('message', event => nuiEventNext(event.data));
   window.addEventListener('keydown', (event) => {
     if (event.code === 'Escape') {
       hideNui();
@@ -44,63 +44,11 @@ window.onload = function () {
 
   sendAvailabilityToClient();
   loadLocalization();
-}
+});
 
-const handleEvents = (event: any, isDev: boolean) => {
-  if (!event.data.hasOwnProperty('type')) return;
-
-  const type: NuiEventType = event.data.type;
-
-  switch (type) {
-    case NuiEventType.SendMenuObjects: {
-      loadMenus(event.data.data);
-      break;
-    }
-    case NuiEventType.SendRadialMenuObjects: {
-      loadRadialMenus(event.data.data);
-      break;
-    }
-    case NuiEventType.LocalizationChange: {
-      store.commit('setLocalization', JSON.parse(event.data.data));
-      break;
-    }
-    case NuiEventType.MenuUp:
-    case NuiEventType.MenuDown:
-    case NuiEventType.MenuLeft:
-    case NuiEventType.MenuRight:
-    case NuiEventType.MenuSelect: {
-      emitter.emit(type);
-      break;
-    }
-    case NuiEventType.Mdt:
-    case NuiEventType.MenuView:
-    case NuiEventType.RadialMenu: {
-      viewType.value = type;
-      currentMenuId.value = event.data.hasOwnProperty('menuId') ? event.data.menuId : '#';
-      if (currentMenuId.value !== '#') {
-        emitter.emit('showRadialMenu', currentMenuId.value);
-      }
-      showNui();
-      console.log({type})
-      break;
-    }
-    case NuiEventType.Close: {
-      document.body.style.display = "none";
-      viewType.value = '';
-      break;
-    }
-  }
-}
-
-const loadLocalization = async () => {
-  const localization: any = await Post(NuiEvents.GetLocalization).catch(() => {});
-  store.commit('setLocalization', JSON.parse(localization));
-}
-
-const loadMenus = async (data: string) => {
-  const menusJson: any = JSON.parse(data);
+onNuiEvent<MenuObjectsResponse>(NuiEventType.SendMenuObjects).subscribe(event => {
   const menus: Menu[] = [];
-  for (const menu of menusJson) {
+  for (const menu of event.data) {
     const menuItems: MenuItem[] = [];
     for (const item of menu.Items) {
       let _item: any;
@@ -111,7 +59,7 @@ const loadMenus = async (data: string) => {
         }
         case MenuItemType.List: {
           _item = new MenuItemList(item.Title, item.Description, item.Hashcode);
-          _item.setItems = JSON.parse(item.Items);
+          _item.setItems = item.Items;
           break;
         }
         case MenuItemType.Toggle: {
@@ -124,14 +72,39 @@ const loadMenus = async (data: string) => {
     menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
   }
   store.commit('setMenus', menus);
+});
+
+onNuiEvent<RadialMenuObjectsResponse>(NuiEventType.SendRadialMenuObjects).subscribe(event => {
+  store.commit('setRadialMenus', event.data);
+});
+
+onNuiEvent<LocalizationChangeResponse>(NuiEventType.LocalizationChange).subscribe(event => {
+  store.commit('setLocalization', event.data);
+});
+
+// TODO: Move RadialMenu event to its component and completely remove the emitter package and useEmitter hook
+onNuiEvent<ViewEventResponse>(NuiEventType.Mdt, NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {
+  viewType.value = event.type;
+  currentMenuId.value = event.menuId ?? '#';
+  if (currentMenuId.value !== '#') {
+    emitter.emit('showRadialMenu', currentMenuId.value);
+  }
+  showNui();
+});
+
+onNuiEvent<IBaseNuiEvent>(NuiEventType.Close).subscribe(() => {
+  document.body.style.display = 'none';
+  viewType.value = '';
+});
+
+function loadLocalization() {
+  post<ILocalization>(NuiEvents.GetLocalization).subscribe(localization => {
+    store.commit('setLocalization', localization);
+  });
 }
 
-const loadRadialMenus = async (data: string) => {
-  store.commit('setRadialMenus', JSON.parse(data));
-}
-
-const sendAvailabilityToClient = () => {
-  Post(NuiEventType.IsNuiReady).catch(() => {})
+function sendAvailabilityToClient() {
+  post(NuiEventType.IsNuiReady).subscribe();
 }
 </script>
 

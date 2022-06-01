@@ -1,10 +1,10 @@
-import { IListItem } from "@interfaces";
+import { IListItem, ILocalization } from "@interfaces";
 
 export interface UserState {
   isSidebarCollapsed: boolean,
   isPanicModeActive: boolean,
   availableLocales: IListItem[],
-  localization: any,
+  localization: ILocalization | undefined,
 }
 
 export const userState = {
@@ -13,7 +13,7 @@ export const userState = {
       isSidebarCollapsed: false,
       isPanicModeActive: false,
       availableLocales: [],
-      localization: {}
+      localization: undefined,
     }
   },
   mutations: {
@@ -26,7 +26,7 @@ export const userState = {
     setAvailableLocales(state: UserState, availableLocales: IListItem[]) {
       state.availableLocales = availableLocales;
     },
-    setLocalization(state: UserState, localization: any) {
+    setLocalization(state: UserState, localization: ILocalization) {
       state.localization = localization;
     }
   },

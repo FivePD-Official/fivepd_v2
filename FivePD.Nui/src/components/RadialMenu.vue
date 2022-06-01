@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useEmitter } from '@hooks';
 import type { IMenu } from '@interfaces';
-import { Post } from '@utils';
+import { post } from '@utils';
 import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 
@@ -69,7 +69,7 @@ const onNuiEvent = (event: any) => {
 
   if (type === 'trigger_selected') {
     if (selectedItemIndex.value !== -1) {
-      Post(`fivepd:radialMenu:trigger_item_${selectedMenu.value?.Items[selectedItemIndex.value].Hashcode}`).catch(() => {});
+      post(`fivepd:radialMenu:trigger_item_${selectedMenu.value?.Items[selectedItemIndex.value].Hashcode}`).subscribe();
       resetValues();
     }
   }

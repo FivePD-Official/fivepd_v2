@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
-import { useEmitter, useT } from '@hooks';
-import { type Menu, MenuItem, MenuItemList, MenuItemToggle } from '@utils';
+import { useT } from '@hooks';
+import { type Menu, MenuItem, MenuItemList, MenuItemToggle, onNuiEvent } from '@utils';
 import { MenuItemType, NuiEventType } from '@enums';
+import { IBaseNuiEvent } from '@interfaces';
+import { Subscription } from 'rxjs';
 
 const props = defineProps<{
   menu: Menu
 }>();
 
-const emitter = useEmitter();
 const t = useT();
+const menuEvents$ = ref<Subscription>();
 
 const currentItemIndex: Ref<number> = ref(0);
 const itemNodes: Ref<HTMLElement[] | null> = ref(null);
@@ -24,19 +26,34 @@ onMounted(() => {
   itemNodes.value = Array.from(document.querySelectorAll('.menu-item'));
   selectorNode.value = document.querySelector('.selector');
 
-  emitter.on(NuiEventType.MenuUp, onMenuUp);
-  emitter.on(NuiEventType.MenuDown, onMenuDown);
-  emitter.on(NuiEventType.MenuLeft, onMenuLeft);
-  emitter.on(NuiEventType.MenuRight, onMenuRight);
-  emitter.on(NuiEventType.MenuSelect, onMenuSelect);
+  menuEvents$.value = onNuiEvent<IBaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
+    switch (event.type) {
+      case NuiEventType.MenuUp: {
+        onMenuUp();
+        break;
+      }
+      case NuiEventType.MenuDown: {
+        onMenuDown();
+        break;
+      }
+      case NuiEventType.MenuLeft: {
+        onMenuLeft();
+        break;
+      }
+      case NuiEventType.MenuRight: {
+        onMenuRight();
+        break;
+      }
+      case NuiEventType.MenuSelect: {
+        onMenuSelect();
+        break;
+      }
+    }
+  });
 });
 
 onBeforeUnmount(() => {
-  emitter.off(NuiEventType.MenuUp, onMenuUp);
-  emitter.off(NuiEventType.MenuDown, onMenuDown);
-  emitter.off(NuiEventType.MenuLeft, onMenuLeft);
-  emitter.off(NuiEventType.MenuRight, onMenuRight);
-  emitter.off(NuiEventType.MenuSelect, onMenuSelect);
+  menuEvents$.value?.unsubscribe();
 });
 
 const onMenuUp = () => {

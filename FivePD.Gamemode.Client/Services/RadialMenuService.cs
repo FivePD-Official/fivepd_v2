@@ -94,7 +94,7 @@ namespace FivePD.Gamemode.Client.Services
             this._nuiService.SendMessage(new JObject
             {
                 { "type", Events.NuiEventType.SendRadialMenuObjects },
-                { "data", JsonConvert.SerializeObject(radialMenus) },
+                { "data", radialMenus },
             });
         }
 

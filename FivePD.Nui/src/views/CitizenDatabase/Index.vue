@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { NuiEvents, NuiEventType } from '@enums';
-import { ISearchSubmitField } from '@interfaces';
-import { Post } from '@utils';
+import { NuiEvents } from '@enums';
+import { ISearchSubmitField, PedSearchResponse } from '@interfaces';
+import { post } from '@utils';
 import { ref } from 'vue';
 
 const onSearchSubmit = async (fields: ISearchSubmitField[]) => {
-  const res: any = await Post(NuiEvents.PedSearch, {...fields})
-  citizens.value = JSON.parse(res);
+  post<PedSearchResponse>(NuiEvents.PedSearch, {...fields}).subscribe(res => {
+    citizens.value = res;
+  });
 }
 
 const fields= [
@@ -28,7 +29,7 @@ const fields= [
     label: 'Birthdate'
   }
 ];
-const citizens = ref<any>([]);
+const citizens = ref<PedSearchResponse>([]);
 </script>
 
 <template>
@@ -50,11 +51,11 @@ const citizens = ref<any>([]);
         <p>Birthdate</p>
         <p>Wanted</p>
       </div>
-      <router-link v-for="citizen in citizens" :key="citizens.NetworkId" :to="`/citizen-database/${citizen.id}`" class="list-item">
+      <router-link v-for="citizen in citizens" :key="citizen.NetworkId" :to="`/citizen-database/${citizen.NetworkId}`" class="list-item">
         <p>{{ citizen.Firstname }}</p>
         <p>{{ citizen.Lastname }}</p>
         <p>{{ citizen.Birthdate.Month }} / {{ citizen.Birthdate.Day }} / {{ citizen.Birthdate.Year }}</p>
-        <p :class="citizen.wanted ? 'text-danger' : ''">{{ citizen.wanted ? 'WANTED' : 'Not wanted' }}</p>
+        <!-- <p :class="citizen.wanted ? 'text-danger' : ''">{{ citizen.wanted ? 'WANTED' : 'Not wanted' }}</p> -->
       </router-link>
     </div>
     <p v-else class="list--empty">There are no citizens in the system.</p>

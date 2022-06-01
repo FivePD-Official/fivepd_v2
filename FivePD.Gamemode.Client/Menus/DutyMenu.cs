@@ -97,7 +97,7 @@ namespace FivePD.Gamemode.Client.Menus
                     this._nuiService.SendMessage(new JObject
                     {
                         { "type", Events.NuiEventType.LocalizationChange },
-                        { "data", JsonConvert.SerializeObject(this._localizationService.CurrentLocalization) },
+                        { "data", JObject.FromObject(this._localizationService.CurrentLocalization) },
                     });
                     cb.Invoke(string.Empty);
                 }),
