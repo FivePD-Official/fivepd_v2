@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common.Models;
@@ -15,26 +17,30 @@ using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
+using Sentry.Infrastructure;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server
 {
-    /**
-     * <summary>The gamemode server entrypoint. Handles the creation and management of all tasks on the server.</summary>
-     */
+    /// <summary>
+    /// The gamemode server entrypoint. Handles the
+    /// creation and management of all tasks on the server.
+    /// </summary>
     // ReSharper disable once UnusedType.Global
     public class Bootstrapper : BaseScript
     {
-        private readonly ServiceProvider _provider;
+        private const string SentryDsn = "https://a304ee75321740359328f5f3b3fbb98c@o983555.ingest.sentry.io/6455831";
 
-        /**
-         * <summary>
-         *     Initializes a new instance of the <see cref="Bootstrapper" /> class. Used as the entrypoint for the Cfx
-         *     runtime.
-         * </summary>
-         */
+        private readonly ServiceProvider _provider;
+        private readonly IDisposable _sentryClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
+        /// Used as the entrypoint for the Cfx server runtime.
+        /// </summary>
         public Bootstrapper()
         {
             #if DEBUG
@@ -52,6 +58,39 @@ namespace FivePD.Gamemode.Server
                     retainedFileCountLimit: 7)
                 .MinimumLevel.Verbose();
 
+            // todo: validate certs for sentry and our in-house api
+            #pragma warning disable S4830
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            #pragma warning restore S4830
+
+            // Register Sentry for error logging
+            this._sentryClient = SentrySdk.Init(o =>
+            {
+                o.Dsn = SentryDsn;
+                o.TracesSampleRate = 1.0;
+                #if DEBUG
+                o.Debug = true;
+                o.DiagnosticLogger = new SerilogSentryDiagnosticLogger();
+                o.Environment = "development";
+                #endif
+            });
+
+            SentrySdk.ConfigureScope(scope =>
+            {
+                scope.Contexts["cfx"] = new
+                {
+                    Version = Cfx.API.GetConvar("version", "Unknown"),
+                };
+            });
+
+            // Begin startup Sentry transaction
+            var transaction = SentrySdk.StartTransaction(
+                "bootstrap",
+                "bootstrap-gamemode",
+                "Gamemode Bootstrapping");
+
+            var addonLoadSpan = transaction.StartChild("bootstrap-addons", "Bootstrapping for addon subsystem");
+
             /*
              * Gamemode addons have full(ish) access to the complete suite of services
              * made available to core gamemode services. Thus, we need to find our addons
@@ -60,7 +99,6 @@ namespace FivePD.Gamemode.Server
              */
 
             Log.Logger = globalLoggerConfig.CreateLogger();
-            AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();
 
             var preInitLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
 
@@ -88,6 +126,9 @@ namespace FivePD.Gamemode.Server
                     assembliesWithDefinitions.Add(asm, addon);
                 }
             }
+
+            addonLoadSpan.Finish();
+            var serviceInitSpan = transaction.StartChild("bootstrap-services", "Bootstrapping for services");
 
             var services = new ServiceCollection();
 
@@ -147,7 +188,14 @@ namespace FivePD.Gamemode.Server
 
             var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
 
-            LogDiagnostics(log);
+            this.LogDiagnostics();
+
+            if (!this.IsSafeToRun())
+            {
+                log?.Fatal("FivePD cannot run in this environment. Verify all prerequisites have been met and try again");
+                this.OnStopped();
+                return;
+            }
 
             // Check for dev mode. If enabled, register the utilities
             if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
@@ -166,6 +214,9 @@ namespace FivePD.Gamemode.Server
                 // Lazy load it
                 tickQueueService.Enqueue(() => addon.OnStarted());
             }
+
+            serviceInitSpan.Finish();
+            transaction.Finish();
 
             // Being that the thread is about to be free for the first time, enqueued addon starts will run here
             log?.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
@@ -201,23 +252,56 @@ namespace FivePD.Gamemode.Server
             log?.Debug("Addon shutdown complete. Running gamemode disposal routine");
 
             this._provider.Dispose();
+            Log.CloseAndFlush();
+            this._sentryClient.Dispose();
         }
 
-        /**
-         * Logs common diagnostic properties
-         * <param name="log">The logger to use.</param>
-         */
-        private static void LogDiagnostics(ILogger log)
+        /// <summary>
+        /// Terminates the gamemode.
+        /// </summary>
+        internal void StopGamemode()
         {
+            this.OnStopped();
+        }
+
+        #if DEBUG
+        /// <summary>
+        /// Configures pre-run settings for development mode.
+        /// This logic runs before the gamemode has been initialized.
+        /// </summary>
+        private static void ConfigureForDevelopment()
+        {
+            // Disables client-side script entity spawning
+            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
+        }
+        #endif
+
+        /// <summary>
+        /// Determines if the gamemode can run in the current environment.
+        /// <returns>A boolean representing the safety of the environment.</returns>
+        /// </summary>
+        private bool IsSafeToRun()
+        {
+            // Verifies OneSync is enabled
+            if (Cfx.API.GetConvar("onesync", "off") != "on")
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Logs common diagnostic properties.
+        /// </summary>
+        private void LogDiagnostics()
+        {
+            var log = this._provider.GetService<ILogger>()!.ForContext("SourceIdentifier", "Bootstrapper");
+
             // Logs the current Cfx artifacts version
             log.Debug(
                 "Running Cfx version {@Version}",
                 Cfx.API.GetConvar("version", "Unknown"));
-
-            // Logs the current OneSync status
-            log.Debug(
-                "OneSync is {@Status}",
-                Cfx.API.GetConvar("onesync", "Unknown"));
 
             // Logs dev mode status
             var devModeEnabled = Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true";
@@ -232,16 +316,5 @@ namespace FivePD.Gamemode.Server
                     "Do not enable development mode on public servers. Only enable development mode when developing addons for FivePD. Development mode allows bad actors to exploit FivePD. This is VERY dangerous");
             }
         }
-
-        #if DEBUG
-        /**
-         * Sets up some Cfx settings for development only
-         */
-        private static void ConfigureForDevelopment()
-        {
-            // Disables client-side script entity spawning
-            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
-        }
-        #endif
     }
 }
