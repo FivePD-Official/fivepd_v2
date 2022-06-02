@@ -16,7 +16,7 @@ namespace FivePD.Gamemode.Client.Models
     /// <summary>
     /// Represents a normal menu item in the Nui.
     /// </summary>
-    public class MenuItem
+    public abstract class MenuItem
     {
         private string _title;
         private bool _enabled;
@@ -28,7 +28,7 @@ namespace FivePD.Gamemode.Client.Models
         /// <param name="description">The description of this item.</param>
         /// <param name="type">The type of this item.</param>
         /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
-        public MenuItem(string title, string description, MenuItemType type, Action<int, CallbackDelegate> onPress)
+        protected MenuItem(string title, string description, MenuItemType type, Action<int> onPress)
         {
             this._title = title;
             this._enabled = true;
@@ -107,9 +107,9 @@ namespace FivePD.Gamemode.Client.Models
         public MenuItemType Type { get; }
 
         /// <summary>
-        /// Gets the action that will be invoked on press.
+        /// Gets or sets the action that will be invoked on press.
         /// </summary>
-        public Action<int, CallbackDelegate> OnPress { get; }
+        public Action<int> OnPress { get; protected set; }
 
         private void UpdateItem(JObject data)
         {

@@ -133,7 +133,12 @@ namespace FivePD.Gamemode.Client.Services
                 foreach (var item in menu.Items)
                 {
                     var eventName = $"fivepd:menu:trigger_item_{item.GetHashCode()}";
-                    this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<int, CallbackDelegate>((body, callback) => item.OnPress(body, callback)));
+                    this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<int, CallbackDelegate>(
+                        (body, cb) =>
+                        {
+                            item.OnPress(body);
+                            cb.Invoke(string.Empty);
+                        }));
                 }
             }
         }

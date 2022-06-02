@@ -6,16 +6,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using CitizenFX.Core;
 
 namespace FivePD.Gamemode.Client.Models
 {
     /// <inheritdoc />
     public class MenuItemList : MenuItem
     {
-        private readonly List<string> _items;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuItemList"/> class.
         /// </summary>
@@ -23,15 +19,15 @@ namespace FivePD.Gamemode.Client.Models
         /// <param name="description">The description of this item.</param>
         /// <param name="items">The items of this list.</param>
         /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
-        public MenuItemList(string title, string description, List<string> items, Action<int, CallbackDelegate> onPress)
+        public MenuItemList(string title, string description, List<string> items, Action<int> onPress)
             : base(title, description, MenuItemType.List, onPress)
         {
-            this._items = items;
+            this.Items = items;
         }
 
         /// <summary>
         /// Gets the items.
         /// </summary>
-        public List<string> Items => this._items;
+        public List<string> Items { get; }
     }
 }

@@ -55,20 +55,18 @@ namespace FivePD.Gamemode.Client.Menus
 
         private void CreateAndSetItems()
         {
-            this._dutyToggleItem = new MenuItemToggle("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", (index, cb) =>
+            this._dutyToggleItem = new MenuItemToggle("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", () =>
             {
-                Debug.WriteLine("Duty status toggle");
-                cb.Invoke(string.Empty);
+                Debug.WriteLine($"Duty status toggle - {this._dutyToggleItem.Checked}");
             });
 
-            this._spawnVehicleItem = new MenuItemList("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList(), async (index, cb) =>
+            this._spawnVehicleItem = new MenuItemList("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList(), index =>
             {
                 var policeVehicle = this._policeVehicles.ElementAt(index);
-                await this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
-                cb.Invoke(string.Empty);
+                this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
             });
 
-            this._getLoadoutItem = new MenuItemList("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), (index, cb) =>
+            this._getLoadoutItem = new MenuItemList("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), index =>
             {
                 var loadout = this._loadouts.ElementAt(index);
 
@@ -89,11 +87,9 @@ namespace FivePD.Gamemode.Client.Menus
                         Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHash, componentHash);
                     }
                 }
-
-                cb.Invoke(string.Empty);
             });
 
-            this._changeLanguageItem = new MenuItemList("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList(), (index, cb) =>
+            this._changeLanguageItem = new MenuItemList("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList(), index =>
             {
                 var locale = this._localizationService.Locales.ElementAt(index);
                 this._localizationService.LoadLocalization(locale.Key);
@@ -102,7 +98,6 @@ namespace FivePD.Gamemode.Client.Menus
                     { "type", Events.NuiEventType.LocalizationChange },
                     { "data", JObject.FromObject(this._localizationService.CurrentLocalization) },
                 });
-                cb.Invoke(string.Empty);
             });
 
             this.SetItems(new List<MenuItem>

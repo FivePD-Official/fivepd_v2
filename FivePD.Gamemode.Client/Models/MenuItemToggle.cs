@@ -5,8 +5,6 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
-using System.Dynamic;
-using CitizenFX.Core;
 
 namespace FivePD.Gamemode.Client.Models
 {
@@ -14,24 +12,24 @@ namespace FivePD.Gamemode.Client.Models
     public class MenuItemToggle : MenuItem
     {
         /// <summary>
-        /// The value indicating whether this checkbox is checked.
-        /// </summary>
-        private bool _isChecked;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="MenuItemToggle"/> class.
         /// </summary>
         /// <param name="title">The title of this item.</param>
         /// <param name="description">The description of this item.</param>
         /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
-        public MenuItemToggle(string title, string description, Action<int, CallbackDelegate> onPress)
-            : base(title, description, MenuItemType.Toggle, onPress)
+        public MenuItemToggle(string title, string description, Action onPress)
+            : base(title, description, MenuItemType.Toggle, null)
         {
+            this.OnPress = _ =>
+            {
+                this.Checked = !this.Checked;
+                onPress();
+            };
         }
 
-        private void Toggle()
-        {
-            this._isChecked = !this._isChecked;
-        }
+        /// <summary>
+        /// Gets a value indicating whether this checkbox is checked.
+        /// </summary>
+        public bool Checked { get; private set; }
     }
 }
