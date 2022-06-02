@@ -5,8 +5,11 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
-using System.Dynamic;
 using CitizenFX.Core;
+using FivePD.Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Models
 {
@@ -15,6 +18,9 @@ namespace FivePD.Gamemode.Client.Models
     /// </summary>
     public class MenuItem
     {
+        private string _title;
+        private bool _enabled;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuItem"/> class.
         /// </summary>
@@ -24,7 +30,8 @@ namespace FivePD.Gamemode.Client.Models
         /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
         public MenuItem(string title, string description, MenuItemType type, Action<int, CallbackDelegate> onPress)
         {
-            this.Title = title;
+            this._title = title;
+            this._enabled = true;
             this.Description = description;
             this.Type = type;
             this.OnPress = onPress;
@@ -52,14 +59,47 @@ namespace FivePD.Gamemode.Client.Models
         }
 
         /// <summary>
-        /// Gets the title.
+        /// Gets or sets the title the item.
         /// </summary>
-        public string Title { get; }
+        public string Title
+        {
+            get => this._title;
+            set
+            {
+                this._title = value;
+                this.UpdateItem(new JObject
+                {
+                    { "type", Events.NuiEventType.UpdateMenuItem },
+                    { "hashcode", this.GetHashCode().ToString() },
+                    { "fieldname", "title" },
+                    { "value", this._title },
+                });
+            }
+        }
 
         /// <summary>
         /// Gets the description.
         /// </summary>
         public string Description { get; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the item is clickable.
+        /// </summary>
+        public bool Enabled
+        {
+            get => this._enabled;
+            set
+            {
+                this._enabled = value;
+                this.UpdateItem(new JObject
+                {
+                    { "type", Events.NuiEventType.UpdateMenuItem },
+                    { "hashcode", this.GetHashCode().ToString() },
+                    { "fieldname", "enabled" },
+                    { "value", this._enabled },
+                });
+            }
+        }
 
         /// <summary>
         /// Gets the type.
@@ -70,5 +110,10 @@ namespace FivePD.Gamemode.Client.Models
         /// Gets the action that will be invoked on press.
         /// </summary>
         public Action<int, CallbackDelegate> OnPress { get; }
+
+        private void UpdateItem(JObject data)
+        {
+            Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(data));
+        }
     }
 }

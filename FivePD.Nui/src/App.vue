@@ -4,7 +4,7 @@ import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
-import type { IBaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent } from '@interfaces';
+import { BaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent } from '@interfaces';
 
 const store = useStore();
 const router = useRouter();
@@ -80,7 +80,7 @@ onNuiEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(e
   store.commit('setLocalization', event.data);
 });
 
-onNuiEvent<IBaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
+onNuiEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
   viewType.value = event.type;
   showNui();
 });
@@ -91,9 +91,22 @@ onNuiEvent<MenuShowEvent>(NuiEventType.MenuView, NuiEventType.RadialMenu).subscr
   showNui();
 });
 
-onNuiEvent<IBaseNuiEvent>(NuiEventType.Close).subscribe(() => {
+onNuiEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => {
   document.body.style.display = 'none';
   viewType.value = '';
+});
+
+onNuiEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(event => {
+  for (const menu of (store.state.global.menus as Menu[])) {
+    for (const item of menu.items) {
+      if (item.hashcode === event.hashcode) {
+        if (Reflect.has(item, event.fieldname)) {
+          Reflect.set(item, event.fieldname, event.value);
+        }
+        break;
+      }
+    }
+  }
 });
 
 function loadLocalization() {

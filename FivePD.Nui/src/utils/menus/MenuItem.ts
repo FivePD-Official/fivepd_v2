@@ -4,13 +4,15 @@ import { MenuItemList } from "./MenuItemList";
 
 export class MenuItem {
 
+  public title: string;
+  public enabled = true;
+
   private _type: MenuItemType;
-  private _title: string;
   private _description: string;
   private _hashcode: string;
 
   constructor(title: string, description: string, hashcode: string, type: MenuItemType) {
-    this._title = title;
+    this.title = title;
     this._description = description;
     this._hashcode = hashcode;
     this._type = type;
@@ -18,10 +20,6 @@ export class MenuItem {
 
   get type(): MenuItemType {
     return this._type;
-  }
-
-  get title(): string {
-    return this._title;
   }
 
   get description(): string {

@@ -24,10 +24,14 @@ namespace FivePD.Gamemode.Client.Menus
     {
         private readonly ILocalizationService _localizationService;
         private readonly INuiService _nuiService;
-        private readonly IResourceService _resourceService;
         private readonly IEntityService _entityService;
         private readonly List<Loadout> _loadouts;
         private readonly List<Vehicles.PoliceVehicle> _policeVehicles;
+
+        private MenuItemToggle _dutyToggleItem;
+        private MenuItemList _spawnVehicleItem;
+        private MenuItemList _getLoadoutItem;
+        private MenuItemList _changeLanguageItem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DutyMenu"/> class.
@@ -42,67 +46,72 @@ namespace FivePD.Gamemode.Client.Menus
         {
             this._localizationService = localizationService;
             this._nuiService = nuiService;
-            this._resourceService = resourceService;
             this._entityService = entityService;
 
-            this._loadouts = this._resourceService.LoadFile<List<Loadout>>("/Config/loadouts.json");
-            this._policeVehicles = this._resourceService.LoadFile<Vehicles>("/Config/vehicles.json").Police;
+            this._loadouts = resourceService.LoadFile<List<Loadout>>("/Config/loadouts.json");
+            this._policeVehicles = resourceService.LoadFile<Vehicles>("/Config/vehicles.json").Police;
             this.CreateAndSetItems();
         }
 
-        /// <inheritdoc />
-        protected sealed override void CreateAndSetItems()
+        private void CreateAndSetItems()
         {
-            var items = new List<MenuItem>
+            this._dutyToggleItem = new MenuItemToggle("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", (index, cb) =>
             {
-                new MenuItemToggle("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", (index, cb) =>
-                {
-                    Debug.WriteLine("Duty status toggle");
-                    cb.Invoke(string.Empty);
-                }),
-                new MenuItemList("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList(), async (index, cb) =>
-                {
-                    var policeVehicle = this._policeVehicles.ElementAt(index);
-                    await this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
-                    cb.Invoke(string.Empty);
-                }),
-                new MenuItemList("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), (index, cb) =>
-                {
-                    var loadout = this._loadouts.ElementAt(index);
+                Debug.WriteLine("Duty status toggle");
+                cb.Invoke(string.Empty);
+            });
 
-                    foreach (var weaponItem in loadout.Weapons)
+            this._spawnVehicleItem = new MenuItemList("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList(), async (index, cb) =>
+            {
+                var policeVehicle = this._policeVehicles.ElementAt(index);
+                await this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
+                cb.Invoke(string.Empty);
+            });
+
+            this._getLoadoutItem = new MenuItemList("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), (index, cb) =>
+            {
+                var loadout = this._loadouts.ElementAt(index);
+
+                foreach (var weaponItem in loadout.Weapons)
+                {
+                    var weapon = (WeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
+                    Game.PlayerPed.Weapons.Give(weapon, weaponItem.Ammunition, false, true);
+
+                    foreach (var componentKey in weaponItem.ComponentKeys)
                     {
-                        var weapon = (WeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
-                        Game.PlayerPed.Weapons.Give(weapon, weaponItem.Ammunition, false, true);
-
-                        foreach (var componentKey in weaponItem.ComponentKeys)
+                        var componentHash = (uint)Cfx.API.GetHashKey(componentKey);
+                        var weaponHash = (uint)weapon;
+                        if (!Cfx.API.DoesWeaponTakeWeaponComponent(weaponHash, componentHash))
                         {
-                            var componentHash = (uint)Cfx.API.GetHashKey(componentKey);
-                            var weaponHash = (uint)weapon;
-                            if (!Cfx.API.DoesWeaponTakeWeaponComponent(weaponHash, componentHash))
-                            {
-                                continue;
-                            }
-
-                            Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHash, componentHash);
+                            continue;
                         }
-                    }
 
-                    cb.Invoke(string.Empty);
-                }),
-                new MenuItemList("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList(), (index, cb) =>
+                        Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHash, componentHash);
+                    }
+                }
+
+                cb.Invoke(string.Empty);
+            });
+
+            this._changeLanguageItem = new MenuItemList("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList(), (index, cb) =>
+            {
+                var locale = this._localizationService.Locales.ElementAt(index);
+                this._localizationService.LoadLocalization(locale.Key);
+                this._nuiService.SendMessage(new JObject
                 {
-                    var locale = this._localizationService.Locales.ElementAt(index);
-                    this._localizationService.LoadLocalization(locale.Key);
-                    this._nuiService.SendMessage(new JObject
-                    {
-                        { "type", Events.NuiEventType.LocalizationChange },
-                        { "data", JObject.FromObject(this._localizationService.CurrentLocalization) },
-                    });
-                    cb.Invoke(string.Empty);
-                }),
-            };
-            this.SetItems(items);
+                    { "type", Events.NuiEventType.LocalizationChange },
+                    { "data", JObject.FromObject(this._localizationService.CurrentLocalization) },
+                });
+                cb.Invoke(string.Empty);
+            });
+
+            this.SetItems(new List<MenuItem>
+            {
+                this._dutyToggleItem,
+                this._spawnVehicleItem,
+                this._getLoadoutItem,
+                this._changeLanguageItem,
+            });
         }
     }
 }

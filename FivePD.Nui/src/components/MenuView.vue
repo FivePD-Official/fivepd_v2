@@ -3,7 +3,7 @@ import { type Ref, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
 import { useT } from '@hooks';
 import { type Menu, MenuItem, MenuItemList, MenuItemToggle, onNuiEvent } from '@utils';
 import { MenuItemType, NuiEventType } from '@enums';
-import { IBaseNuiEvent } from '@interfaces';
+import { BaseNuiEvent } from '@interfaces';
 import { Subscription } from 'rxjs';
 
 const props = defineProps<{
@@ -26,7 +26,7 @@ onMounted(() => {
   itemNodes.value = Array.from(document.querySelectorAll('.menu-item'));
   selectorNode.value = document.querySelector('.selector');
 
-  menuEvents$.value = onNuiEvent<IBaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
+  menuEvents$.value = onNuiEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
     switch (event.type) {
       case NuiEventType.MenuUp: {
         onMenuUp();
@@ -62,6 +62,12 @@ const onMenuUp = () => {
   if (currentItemIndex.value > 0) currentItemIndex.value = currentItemIndex.value - 1;
   else currentItemIndex.value = menuItems.value.length - 1;
 
+  const currentItem = menuItems.value[currentItemIndex.value];
+  if (!currentItem.enabled) {
+    onMenuUp();
+    return;
+  }
+
   const currentItemNode = itemNodes.value[currentItemIndex.value];
   selectorNode.value.style.top = `${currentItemNode.offsetTop}px`;
 }
@@ -71,6 +77,12 @@ const onMenuDown = () => {
 
   if (currentItemIndex.value < menuItems.value.length - 1) currentItemIndex.value = currentItemIndex.value + 1;
   else currentItemIndex.value = 0;
+
+  const currentItem = menuItems.value[currentItemIndex.value];
+  if (!currentItem.enabled) {
+    onMenuDown();
+    return;
+  }
 
   const currentItemNode = itemNodes.value[currentItemIndex.value];
   selectorNode.value.style.top = `${currentItemNode.offsetTop}px`;
@@ -87,6 +99,9 @@ const onMenuRight = () => {
 const onMenuSelect = () => {
   if (!selectorNode.value || !itemNodes.value || !menuItems.value) return;
 
+  const currentItem = menuItems.value[currentItemIndex.value];
+  if (!currentItem.enabled) return;
+
   // Change DOM state
   selectorNode.value.classList.add('selector--on-select');
   setTimeout(() => {
@@ -94,7 +109,6 @@ const onMenuSelect = () => {
   }, 100);
 
   // Change actual item state
-  const currentItem = menuItems.value[currentItemIndex.value];
   if (currentItem.type === MenuItemType.Toggle) (currentItem as MenuItemToggle).toggle();
   currentItem.onPress();
 }
@@ -137,7 +151,7 @@ const onListSlide = (dir: string) => {
 
       <div class="selector"></div>
 
-      <div v-for="(item, index) in menuItems || []" :key="index" class="menu-item">
+      <div v-for="(item, index) in menuItems || []" :key="index" :class="`menu-item ${item.enabled ? '' : 'menu-item--disabled'}`">
 
         <p class="title">{{ menu.useLocalization ? t(item.title) : item.title }}</p>
 
@@ -234,6 +248,8 @@ const onListSlide = (dir: string) => {
       transition: var(--transition)
       margin-bottom: 5px
       padding: 0 10px
+      &.menu-item--disabled
+        opacity: 0.5
 
       .title
         color: var(--clr-text-secondary)

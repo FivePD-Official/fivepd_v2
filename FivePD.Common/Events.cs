@@ -129,6 +129,9 @@ namespace FivePD.Common
             /// <summary>Selects the current item.</summary>
             public const string MenuSelect = "menu:control_select";
 
+            /// <summary>Updates a menu item's specific value.</summary>
+            public const string UpdateMenuItem = "menu:update_item";
+
             /// <summary>Sends the current localization to the Nui.</summary>
             public const string LocalizationChange = "localization:change";
 
