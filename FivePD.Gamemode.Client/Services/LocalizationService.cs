@@ -27,7 +27,6 @@ namespace FivePD.Gamemode.Client.Services
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IResourceService _resourceService;
         private readonly string _defaultLocale = "en";
-        private string _currentLocale = "en";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizationService"/> class.
@@ -50,16 +49,8 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEvents.GetLocalization, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.Localization.GetLocalizationFromNui, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
-                cb.Invoke(this.CurrentLocalization);
-            }));
-
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEvents.ChangeLocalization, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                dynamic d = body;
-                this._currentLocale = d.locale;
-                this.LoadLocalization(this._currentLocale);
                 cb.Invoke(this.CurrentLocalization);
             }));
         }
@@ -71,7 +62,7 @@ namespace FivePD.Gamemode.Client.Services
             var now = DateTime.Now;
             var timeUntilFinishWait = now.AddMinutes(1);
 
-            BaseScript.TriggerServerEvent(Events.NuiEvents.GetAvailableLocalesFromServer, new Action<string>(locales =>
+            BaseScript.TriggerServerEvent(Events.Localization.GetAvailableLocalesFromServer, new Action<string>(locales =>
             {
                 hasServerResponded = 1;
                 foreach (var item in JArray.Parse(locales))

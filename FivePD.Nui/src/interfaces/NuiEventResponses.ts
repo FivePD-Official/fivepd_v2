@@ -4,7 +4,7 @@ export interface IBaseNuiEvent {
   type: string;
 }
 
-export interface MenuObjectsResponse extends IBaseNuiEvent {
+export interface MenuObjectsEvent extends IBaseNuiEvent {
   data: {
     Title: string;
     UseLocalization: boolean;
@@ -19,7 +19,7 @@ export interface MenuObjectsResponse extends IBaseNuiEvent {
   }[];
 }
 
-export interface RadialMenuObjectsResponse extends IBaseNuiEvent {
+export interface RadialMenuObjectsEvent extends IBaseNuiEvent {
   data: {
     Title: string;
     Id: string;
@@ -30,10 +30,16 @@ export interface RadialMenuObjectsResponse extends IBaseNuiEvent {
   }[];
 }
 
-export interface LocalizationChangeResponse extends IBaseNuiEvent {
+export interface LocalizationChangeEvent extends IBaseNuiEvent {
   data: ILocalization;
 }
 
-export interface ViewEventResponse extends IBaseNuiEvent {
-  menuId?: string;
+export interface MenuShowEvent extends IBaseNuiEvent {
+  menuId: string;
+}
+
+export interface RadialMenuControlEvent extends IBaseNuiEvent {
+  control: 'select' | 'up' | 'down';
+  x?: number;
+  y: number;
 }

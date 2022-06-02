@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { NuiEvents } from '@enums';
+import { ClientEvents } from '@enums';
 import { ISearchSubmitField, PedSearchResponse } from '@interfaces';
 import { post } from '@utils';
 import { ref } from 'vue';
 
 const onSearchSubmit = async (fields: ISearchSubmitField[]) => {
-  post<PedSearchResponse>(NuiEvents.PedSearch, {...fields}).subscribe(res => {
+  post<PedSearchResponse>(ClientEvents.PedSearch, {...fields}).subscribe(res => {
     citizens.value = res;
   });
 }

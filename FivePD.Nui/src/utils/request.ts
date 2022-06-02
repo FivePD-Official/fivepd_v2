@@ -31,7 +31,15 @@ function request(method: string, path: string, body: object | number = {}) {
       });
     }),
     map(res => {
-      return typeof res === 'string' ? JSON.parse(res) : res;
+      if (typeof res === 'string') {
+        try {
+          return JSON.parse(res);
+        } catch(_) {
+          return res;
+        }
+      }
+
+      return res;
     })
   );
 }

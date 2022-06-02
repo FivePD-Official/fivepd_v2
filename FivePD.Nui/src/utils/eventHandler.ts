@@ -5,12 +5,12 @@ import { Subject, filter, Observable } from 'rxjs';
 const eventHandler = new Subject<IBaseNuiEvent>();
 
 export function nuiEventNext(data: IBaseNuiEvent) {
-    eventHandler.next(data);
+  eventHandler.next(data);
 }
 
 export function onNuiEvent<T>(...events: NuiEventType[]): Observable<T> {
-    return eventHandler
-      .pipe(
-        filter((event: IBaseNuiEvent) => (events as string[]).includes(event.type))
-      ) as any as Observable<T>;
+  return eventHandler
+    .pipe(
+      filter((event: IBaseNuiEvent) => (events as string[]).includes(event.type))
+    ) as any as Observable<T>;
 }

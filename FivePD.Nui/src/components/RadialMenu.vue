@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { useEmitter } from '@hooks';
-import type { IMenu } from '@interfaces';
-import { post } from '@utils';
+import { NuiEventType } from '@enums';
+import type { IMenu, MenuShowEvent, RadialMenuControlEvent } from '@interfaces';
+import { onNuiEvent, post } from '@utils';
+import { Subscription } from 'rxjs';
 import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 
@@ -14,9 +15,11 @@ const props = defineProps<{
   menuId: string
 }>();
 
+const menuShowEvent$ = ref<Subscription>();
+const menuControlEvent$ = ref<Subscription>();
+
 const store = useStore();
 const menus: IMenu[] = store.state.global.radialMenus;
-const emitter = useEmitter();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const selectedMenu = ref<IMenu | null>(null);
@@ -28,17 +31,35 @@ const lastSelectAngle = ref<number>(-1);
 onMounted(() => {
   findSelectedMenu(props.menuId);
   drawCanvas();
-  window.addEventListener('message', onNuiEvent);
+
+  menuShowEvent$.value = onNuiEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(event => {
+    resetValues();
+    findSelectedMenu(event.menuId);
+    drawCanvas();
+  });
+
+  menuControlEvent$.value = onNuiEvent<RadialMenuControlEvent>(NuiEventType.RadialMenuControl).subscribe(event => {
+    if (event.control === 'up' || event.control === 'down') {
+      if (event.x && event.y) {
+        currentMousePosition.value = {
+          x: event.x,
+          y: event.y,
+        };
+        onMouseMove();
+      }
+    } else if (event.control === 'select') {
+      if (selectedItemIndex.value !== -1) {
+        post(`fivepd:radialMenu:trigger_item_${selectedMenu.value?.Items[selectedItemIndex.value].Hashcode}`).subscribe();
+        resetValues();
+      }
+    }
+  });
+
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('message', onNuiEvent);
-});
-
-emitter.on('showRadialMenu', (menuId: string) => {
-  resetValues();
-  findSelectedMenu(menuId);
-  drawCanvas();
+  menuShowEvent$.value?.unsubscribe();
+  menuControlEvent$.value?.unsubscribe();
 });
 
 const resetValues = () => {
@@ -50,29 +71,6 @@ const resetValues = () => {
 
 const findSelectedMenu = (id: string) => {
   selectedMenu.value = menus.find((x: IMenu) => x.Id === id)!;
-}
-
-const onNuiEvent = (event: any) => {
-
-  if (!event.data.hasOwnProperty('RadialMenuEventType')) return;
-  const type = event.data.RadialMenuEventType;
-
-  if (type === 'mouse_up' || type === 'mouse_down') {
-    if (event.data.hasOwnProperty('X') && event.data.hasOwnProperty('Y')) {
-      currentMousePosition.value = {
-        x: event.data.X,
-        y: event.data.Y,
-      };
-      onMouseMove();
-    }
-  }
-
-  if (type === 'trigger_selected') {
-    if (selectedItemIndex.value !== -1) {
-      post(`fivepd:radialMenu:trigger_item_${selectedMenu.value?.Items[selectedItemIndex.value].Hashcode}`).subscribe();
-      resetValues();
-    }
-  }
 }
 
 const onMouseMove = () => {

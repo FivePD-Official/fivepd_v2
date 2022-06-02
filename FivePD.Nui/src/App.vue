@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { hideNui, showNui, post, Menu, MenuItem, MenuItemButton, MenuItemList, MenuItemToggle, nuiEventNext, onNuiEvent } from '@utils';
-import { MenuItemType, NuiEventType, NuiEvents } from '@enums';
+import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
-import { useEmitter } from '@hooks';
 import { useStore } from 'vuex';
-import type { IBaseNuiEvent, ILocalization, LocalizationChangeResponse, MenuObjectsResponse, RadialMenuObjectsResponse, ViewEventResponse } from '@interfaces';
+import type { IBaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent } from '@interfaces';
 
 const store = useStore();
-const emitter = useEmitter();
 const router = useRouter();
 const viewType = ref<string>('');
 const currentMenuId = ref<string>('#');
@@ -46,7 +44,7 @@ window.addEventListener('load', () => {
   loadLocalization();
 });
 
-onNuiEvent<MenuObjectsResponse>(NuiEventType.SendMenuObjects).subscribe(event => {
+onNuiEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
   const menus: Menu[] = [];
   for (const menu of event.data) {
     const menuItems: MenuItem[] = [];
@@ -74,21 +72,22 @@ onNuiEvent<MenuObjectsResponse>(NuiEventType.SendMenuObjects).subscribe(event =>
   store.commit('setMenus', menus);
 });
 
-onNuiEvent<RadialMenuObjectsResponse>(NuiEventType.SendRadialMenuObjects).subscribe(event => {
+onNuiEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(event => {
   store.commit('setRadialMenus', event.data);
 });
 
-onNuiEvent<LocalizationChangeResponse>(NuiEventType.LocalizationChange).subscribe(event => {
+onNuiEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(event => {
   store.commit('setLocalization', event.data);
 });
 
-// TODO: Move RadialMenu event to its component and completely remove the emitter package and useEmitter hook
-onNuiEvent<ViewEventResponse>(NuiEventType.Mdt, NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {
+onNuiEvent<IBaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
   viewType.value = event.type;
-  currentMenuId.value = event.menuId ?? '#';
-  if (currentMenuId.value !== '#') {
-    emitter.emit('showRadialMenu', currentMenuId.value);
-  }
+  showNui();
+});
+
+onNuiEvent<MenuShowEvent>(NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {
+  viewType.value = event.type;
+  currentMenuId.value = event.menuId;
   showNui();
 });
 
@@ -98,7 +97,7 @@ onNuiEvent<IBaseNuiEvent>(NuiEventType.Close).subscribe(() => {
 });
 
 function loadLocalization() {
-  post<ILocalization>(NuiEvents.GetLocalization).subscribe(localization => {
+  post<ILocalization>(ClientEvents.GetLocalizationFromNui).subscribe(localization => {
     store.commit('setLocalization', localization);
   });
 }

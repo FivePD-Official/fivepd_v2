@@ -13,4 +13,5 @@ export enum NuiEventType {
   LocalizationChange = 'localization:change',
   SendMenuObjects = 'send:menus',
   SendRadialMenuObjects = 'send:radialMenus',
+  RadialMenuControl = 'radial_menu:control',
 }
