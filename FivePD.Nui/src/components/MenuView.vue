@@ -114,6 +114,11 @@ const onMenuSelect = () => {
 }
 
 const getMarqueeClass = (item: MenuListItem) => {
+
+  if (item.items.length <= item.currentIndex) {
+    return '';
+  }
+
   return item.items[item.currentIndex].length > 10 ? 'marquee' : '';
 }
 

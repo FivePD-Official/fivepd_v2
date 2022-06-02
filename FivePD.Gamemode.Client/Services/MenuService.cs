@@ -7,15 +7,17 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Menus;
 using FivePD.Gamemode.Client.Models;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
+
+#pragma warning disable S3011
 
 namespace FivePD.Gamemode.Client.Services
 {
@@ -29,7 +31,6 @@ namespace FivePD.Gamemode.Client.Services
         private readonly IResourceService _resourceService;
         private readonly IEntityService _entityService;
         private readonly List<Menu> _menus;
-        private bool _isLocalizationReady;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuService"/> class.
@@ -54,14 +55,8 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._isLocalizationReady = true;
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.IsNuiReady, new Action<ExpandoObject, CallbackDelegate>(async (body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.IsNuiReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
-                while (!this._isLocalizationReady)
-                {
-                    await BaseScript.Delay(10);
-                }
-
                 this.SendToNui();
                 cb.Invoke(string.Empty);
             }));
@@ -133,14 +128,38 @@ namespace FivePD.Gamemode.Client.Services
                 foreach (var item in menu.Items)
                 {
                     var eventName = $"fivepd:menu:trigger_item_{item.GetHashCode()}";
-                    this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<int, CallbackDelegate>(
-                        (body, cb) =>
-                        {
-                            item.OnPress(body);
-                            cb.Invoke(string.Empty);
-                        }));
+                    if (item.Type == MenuItem.MenuItemType.List)
+                    {
+                        this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<int, CallbackDelegate>(
+                            (index, cb) =>
+                            {
+                                this.GetPrivateMethod(item, "RaiseOnListItemSelect")?.Invoke(item, new object[] { index });
+                                cb.Invoke(string.Empty);
+                            }));
+
+                        this._eventHandlerDictionary.AddNuiEvent($"fivepd:menu:list_onchange_{item.GetHashCode()}", new Action<int, CallbackDelegate>(
+                            (index, cb) =>
+                            {
+                                this.GetPrivateMethod(item as MenuListItem, "RaiseOnListIndexChange")?.Invoke(item, new object[] { index });
+                                cb.Invoke(string.Empty);
+                            }));
+                    }
+                    else
+                    {
+                        this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<int, CallbackDelegate>(
+                            (index, cb) =>
+                            {
+                                this.GetPrivateMethod(item, "RaiseOnItemSelect")?.Invoke(item, new object[] { });
+                                cb.Invoke(string.Empty);
+                            }));
+                    }
                 }
             }
+        }
+
+        private MethodInfo GetPrivateMethod(object objectVariable, string methodName)
+        {
+            return objectVariable.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
         }
     }
 }

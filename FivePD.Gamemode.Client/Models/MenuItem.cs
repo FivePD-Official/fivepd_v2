@@ -4,12 +4,13 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System;
-using CitizenFX.Core;
 using FivePD.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
+
+#pragma warning disable S3264
+#pragma warning disable CS0067
 
 namespace FivePD.Gamemode.Client.Models
 {
@@ -27,15 +28,18 @@ namespace FivePD.Gamemode.Client.Models
         /// <param name="title">The title of this item.</param>
         /// <param name="description">The description of this item.</param>
         /// <param name="type">The type of this item.</param>
-        /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
-        protected MenuItem(string title, string description, MenuItemType type, Action<int> onPress)
+        protected MenuItem(string title, string description, MenuItemType type)
         {
             this._title = title;
             this._enabled = true;
             this.Description = description;
             this.Type = type;
-            this.OnPress = onPress;
         }
+
+        /// <summary>
+        /// Used for firing the item selection event.
+        /// </summary>
+        public delegate void ItemSelect();
 
         /// <summary>
         /// The type of the item.
@@ -105,11 +109,6 @@ namespace FivePD.Gamemode.Client.Models
         /// Gets the type.
         /// </summary>
         public MenuItemType Type { get; }
-
-        /// <summary>
-        /// Gets or sets the action that will be invoked on press.
-        /// </summary>
-        public Action<int> OnPress { get; protected set; }
 
         private void UpdateItem(JObject data)
         {

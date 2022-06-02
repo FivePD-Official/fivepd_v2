@@ -1,4 +1,5 @@
 import { MenuItemType } from '@enums';
+import { post } from '@utils';
 import { MenuItem } from './MenuItem';
 
 export class MenuListItem extends MenuItem {
@@ -25,11 +26,13 @@ export class MenuListItem extends MenuItem {
   next(): void {
     if (this._currentIndex === this._items.length-1) return;
     this._currentIndex++;
+    post(`fivepd:menu:list_onchange_${this.hashcode}`, this.currentIndex).subscribe();
   }
 
   prev(): void {
     if (this._currentIndex === 0) return;
     this._currentIndex--;
+    post(`fivepd:menu:list_onchange_${this.hashcode}`, this.currentIndex).subscribe();
   }
 
 }

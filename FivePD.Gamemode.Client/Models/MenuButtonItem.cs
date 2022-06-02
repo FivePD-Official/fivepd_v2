@@ -4,7 +4,8 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System;
+#pragma warning disable S3264
+#pragma warning disable CS0067
 
 namespace FivePD.Gamemode.Client.Models
 {
@@ -16,10 +17,19 @@ namespace FivePD.Gamemode.Client.Models
         /// </summary>
         /// <param name="title">The title of this item.</param>
         /// <param name="description">The description of this item.</param>
-        /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
-        public MenuButtonItem(string title, string description, Action onPress)
-            : base(title, description, MenuItemType.Button, _ => onPress())
+        public MenuButtonItem(string title, string description)
+            : base(title, description, MenuItemType.Button)
         {
+        }
+
+        /// <summary>
+        /// Fires when the item has been selected.
+        /// </summary>
+        public event ItemSelect OnItemSelect;
+
+        private void RaiseOnItemSelect()
+        {
+            this.OnItemSelect?.Invoke();
         }
     }
 }
