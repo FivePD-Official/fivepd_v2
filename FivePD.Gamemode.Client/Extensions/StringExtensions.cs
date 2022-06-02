@@ -51,7 +51,7 @@ namespace FivePD.Gamemode.Client.Extensions
                 }
                 else
                 {
-                    text = text.Replace("{{" + item.Key + "}}", item.Value);
+                    text = text.Replace("{{" + item.Key + "}}", item.Value + new GtaStyleText().Reset().Build());
                 }
             }
 

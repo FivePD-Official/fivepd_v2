@@ -25,5 +25,8 @@
     "Proceed": "The vehicle has stopped. Proceed with the traffic stop.",
     "Canceled": "You've canceled the traffic stop.",
     "StoppedVehicle": "Stopped vehicle"
+  },
+  "ErrorLocalizations": {
+    "MultipleMenusWithSameKey": "There are multiple menus which key is set to {{key}}. Make sure to change them, otherwise they will not work."
   }
 }

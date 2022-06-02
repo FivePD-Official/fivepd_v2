@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -14,6 +15,7 @@ using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Menus;
 using FivePD.Gamemode.Client.Models;
+using FivePD.Gamemode.Client.Utilities;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
@@ -30,6 +32,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly ILocalizationService _localizationService;
         private readonly IResourceService _resourceService;
         private readonly IEntityService _entityService;
+        private readonly INotificationService _notificationService;
         private readonly List<Menu> _menus;
 
         /// <summary>
@@ -41,7 +44,15 @@ namespace FivePD.Gamemode.Client.Services
         /// <param name="localizationService">The <see cref="ILocalizationService" /> to use.</param>
         /// <param name="resourceService">The <see cref="IResourceService"/> to use.</param>
         /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
-        public MenuService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService, IKeybindService keybindService, ILocalizationService localizationService, IResourceService resourceService, IEntityService entityService)
+        /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
+        public MenuService(
+            EventHandlerDictionary eventHandlerDictionary,
+            INuiService nuiService,
+            IKeybindService keybindService,
+            ILocalizationService localizationService,
+            IResourceService resourceService,
+            IEntityService entityService,
+            INotificationService notificationService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._nuiService = nuiService;
@@ -49,6 +60,7 @@ namespace FivePD.Gamemode.Client.Services
             this._localizationService = localizationService;
             this._resourceService = resourceService;
             this._entityService = entityService;
+            this._notificationService = notificationService;
             this._menus = new List<Menu>();
         }
 
@@ -57,6 +69,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.IsNuiReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
+                this.CheckMenusForConflictingKeys();
                 this.SendToNui();
                 cb.Invoke(string.Empty);
             }));
@@ -65,51 +78,9 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void CreateMenus()
         {
-            this._menus.AddRange(new[]
+            this._menus.AddRange(new Menu[]
             {
                 new DutyMenu(this._localizationService, this._nuiService, this._resourceService, this._entityService),
-            });
-        }
-
-        /// <inheritdoc />
-        public void SendToNui()
-        {
-            var menus = new JArray();
-            foreach (var menu in this._menus)
-            {
-                var items = new JArray();
-                foreach (var item in menu.Items)
-                {
-                    var itemData = new JObject
-                    {
-                        { "Title", item.Title },
-                        { "Description", item.Description },
-                        { "Hashcode", item.GetHashCode().ToString() },
-                        { "Type", (int)item.Type },
-                    };
-
-                    if (item.Type == MenuItem.MenuItemType.List)
-                    {
-                        var casted = item as MenuListItem;
-                        itemData.Add("Items", JArray.FromObject(casted?.Items));
-                    }
-
-                    items.Add(itemData);
-                }
-
-                menus.Add(new JObject
-                {
-                    { "Title", menu.Title },
-                    { "UseLocalization", menu.UseLocalization },
-                    { "Id", menu.Id },
-                    { "Items", items },
-                });
-            }
-
-            this._nuiService.SendMessage(new JObject
-            {
-                { "type", Events.NuiEventType.SendMenuObjects },
-                { "data", menus },
             });
         }
 
@@ -155,6 +126,75 @@ namespace FivePD.Gamemode.Client.Services
                     }
                 }
             }
+        }
+
+        private void CheckMenusForConflictingKeys()
+        {
+            var keyCount = new Dictionary<string, int>();
+            foreach (var key in this._menus.Select(menu => menu.Key))
+            {
+                if (keyCount.ContainsKey(key))
+                {
+                    keyCount[key] += 1;
+                }
+                else
+                {
+                    keyCount[key] = 0;
+                }
+            }
+
+            foreach (var key in keyCount.Where(key => key.Value > 0).Select(key => key.Key))
+            {
+                var notificationText = new GtaStyleText().Red("[FivePD error]").NewLine().Reset().Build() +
+                   this._localizationService.CurrentLocalization.ErrorLocalizations
+                       .MultipleMenusWithSameKey.ReplaceParams(new Dictionary<string, string>
+                       {
+                           { "key", new GtaStyleText().Red(key).Build() },
+                       });
+
+                this._notificationService.ShowNotification(notificationText);
+            }
+        }
+
+        private void SendToNui()
+        {
+            var menus = new JArray();
+            foreach (var menu in this._menus)
+            {
+                var items = new JArray();
+                foreach (var item in menu.Items)
+                {
+                    var itemData = new JObject
+                    {
+                        { "Title", item.Title },
+                        { "Description", item.Description },
+                        { "Hashcode", item.GetHashCode().ToString() },
+                        { "Type", (int)item.Type },
+                    };
+
+                    if (item.Type == MenuItem.MenuItemType.List)
+                    {
+                        var casted = item as MenuListItem;
+                        itemData.Add("Items", JArray.FromObject(casted?.Items));
+                    }
+
+                    items.Add(itemData);
+                }
+
+                menus.Add(new JObject
+                {
+                    { "Title", menu.Title },
+                    { "UseLocalization", menu.UseLocalization },
+                    { "Id", menu.Id },
+                    { "Items", items },
+                });
+            }
+
+            this._nuiService.SendMessage(new JObject
+            {
+                { "type", Events.NuiEventType.SendMenuObjects },
+                { "data", menus },
+            });
         }
 
         private MethodInfo GetPrivateMethod(object objectVariable, string methodName)
