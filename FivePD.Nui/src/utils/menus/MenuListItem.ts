@@ -1,7 +1,7 @@
 import { MenuItemType } from '@enums';
 import { MenuItem } from './MenuItem';
 
-export class MenuItemList extends MenuItem {
+export class MenuListItem extends MenuItem {
 
   private _items: string[] = [];
   private _currentIndex: number = 0;

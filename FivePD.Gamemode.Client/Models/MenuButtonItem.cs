@@ -5,29 +5,21 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
-using System.Collections.Generic;
 
 namespace FivePD.Gamemode.Client.Models
 {
     /// <inheritdoc />
-    public class MenuItemList : MenuItem
+    public class MenuButtonItem : MenuItem
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MenuItemList"/> class.
+        /// Initializes a new instance of the <see cref="MenuButtonItem"/> class.
         /// </summary>
         /// <param name="title">The title of this item.</param>
         /// <param name="description">The description of this item.</param>
-        /// <param name="items">The items of this list.</param>
         /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
-        public MenuItemList(string title, string description, List<string> items, Action<int> onPress)
-            : base(title, description, MenuItemType.List, onPress)
+        public MenuButtonItem(string title, string description, Action onPress)
+            : base(title, description, MenuItemType.Button, _ => onPress())
         {
-            this.Items = items;
         }
-
-        /// <summary>
-        /// Gets the items.
-        /// </summary>
-        public List<string> Items { get; }
     }
 }

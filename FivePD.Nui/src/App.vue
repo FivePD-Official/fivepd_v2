@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { hideNui, showNui, post, Menu, MenuItem, MenuItemButton, MenuItemList, MenuItemToggle, nuiEventNext, onNuiEvent } from '@utils';
+import { hideNui, showNui, post, Menu, MenuItem, MenuButtonItem, MenuListItem, MenuCheckboxItem, nuiEventNext, onNuiEvent } from '@utils';
 import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
@@ -52,16 +52,16 @@ onNuiEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
       let _item: any;
       switch (item.Type) {
         case MenuItemType.Button: {
-          _item = new MenuItemButton(item.Title, item.Description, item.Hashcode);
+          _item = new MenuButtonItem(item.Title, item.Description, item.Hashcode);
           break;
         }
         case MenuItemType.List: {
-          _item = new MenuItemList(item.Title, item.Description, item.Hashcode);
+          _item = new MenuListItem(item.Title, item.Description, item.Hashcode);
           _item.setItems = item.Items;
           break;
         }
         case MenuItemType.Toggle: {
-          _item = new MenuItemToggle(item.Title, item.Description, item.Hashcode);
+          _item = new MenuCheckboxItem(item.Title, item.Description, item.Hashcode);
           break;
         }
       }

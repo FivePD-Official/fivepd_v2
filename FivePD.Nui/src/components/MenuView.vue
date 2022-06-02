@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
 import { useT } from '@hooks';
-import { type Menu, MenuItem, MenuItemList, MenuItemToggle, onNuiEvent } from '@utils';
+import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem, onNuiEvent } from '@utils';
 import { MenuItemType, NuiEventType } from '@enums';
 import { BaseNuiEvent } from '@interfaces';
 import { Subscription } from 'rxjs';
@@ -109,18 +109,18 @@ const onMenuSelect = () => {
   }, 100);
 
   // Change actual item state
-  if (currentItem.type === MenuItemType.Toggle) (currentItem as MenuItemToggle).toggle();
+  if (currentItem.type === MenuItemType.Toggle) (currentItem as MenuCheckboxItem).toggle();
   currentItem.onPress();
 }
 
-const getMarqueeClass = (item: MenuItemList) => {
+const getMarqueeClass = (item: MenuListItem) => {
   return item.items[item.currentIndex].length > 10 ? 'marquee' : '';
 }
 
 const onListSlide = (dir: string) => {
   if (!selectorNode.value || !itemNodes.value || !menuItems.value) return;
 
-  const currentItem: MenuItemList = menuItems.value[currentItemIndex.value] as MenuItemList;
+  const currentItem: MenuListItem = menuItems.value[currentItemIndex.value] as MenuListItem;
   if (currentItem.type !== MenuItemType.List) return;
 
   const currentItemNode = itemNodes.value[currentItemIndex.value];
@@ -155,22 +155,22 @@ const onListSlide = (dir: string) => {
 
         <p class="title">{{ menu.useLocalization ? t(item.title) : item.title }}</p>
 
-        <div v-if="item.type === MenuItemType.Toggle" :class="`menu-item-toggle ${(item as MenuItemToggle).checked ? 'checked' : ''}`">
+        <div v-if="item.type === MenuItemType.Toggle" :class="`menu-item-toggle ${(item as MenuCheckboxItem).checked ? 'checked' : ''}`">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
 
         <div v-if="item.type === MenuItemType.List" class="menu-item-list">
-          <svg xmlns="http://www.w3.org/2000/svg" :class="`left-arrow ${(item as MenuItemList).currentIndex === 0 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" :class="`left-arrow ${(item as MenuListItem).currentIndex === 0 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
           <div class="list-wrapper">
-            <div :class="`list-wrapper-item-inner ${getMarqueeClass(item as MenuItemList)}`">
-              <p>{{ (item as MenuItemList).items[(item as MenuItemList).currentIndex] }}</p>
+            <div :class="`list-wrapper-item-inner ${getMarqueeClass(item as MenuListItem)}`">
+              <p>{{ (item as MenuListItem).items[(item as MenuListItem).currentIndex] }}</p>
             </div>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" :class="`right-arrow ${(item as MenuItemList).currentIndex === (item as MenuItemList).items.length-1 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" :class="`right-arrow ${(item as MenuListItem).currentIndex === (item as MenuListItem).items.length-1 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </div>

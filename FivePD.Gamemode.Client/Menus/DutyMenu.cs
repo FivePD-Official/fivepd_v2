@@ -28,10 +28,10 @@ namespace FivePD.Gamemode.Client.Menus
         private readonly List<Loadout> _loadouts;
         private readonly List<Vehicles.PoliceVehicle> _policeVehicles;
 
-        private MenuItemToggle _dutyToggleItem;
-        private MenuItemList _spawnVehicleItem;
-        private MenuItemList _getLoadoutItem;
-        private MenuItemList _changeLanguageItem;
+        private MenuCheckboxItem _dutyCheckboxItem;
+        private MenuListItem _spawnVehicleListItem;
+        private MenuListItem _getLoadoutListItem;
+        private MenuListItem _changeLanguageListItem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DutyMenu"/> class.
@@ -55,18 +55,18 @@ namespace FivePD.Gamemode.Client.Menus
 
         private void CreateAndSetItems()
         {
-            this._dutyToggleItem = new MenuItemToggle("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", () =>
+            this._dutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description", () =>
             {
-                Debug.WriteLine($"Duty status toggle - {this._dutyToggleItem.Checked}");
+                Debug.WriteLine($"Duty status toggle - {this._dutyCheckboxItem.Checked}");
             });
 
-            this._spawnVehicleItem = new MenuItemList("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList(), index =>
+            this._spawnVehicleListItem = new MenuListItem("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList(), index =>
             {
                 var policeVehicle = this._policeVehicles.ElementAt(index);
                 this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
             });
 
-            this._getLoadoutItem = new MenuItemList("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), index =>
+            this._getLoadoutListItem = new MenuListItem("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList(), index =>
             {
                 var loadout = this._loadouts.ElementAt(index);
 
@@ -89,7 +89,7 @@ namespace FivePD.Gamemode.Client.Menus
                 }
             });
 
-            this._changeLanguageItem = new MenuItemList("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList(), index =>
+            this._changeLanguageListItem = new MenuListItem("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList(), index =>
             {
                 var locale = this._localizationService.Locales.ElementAt(index);
                 this._localizationService.LoadLocalization(locale.Key);
@@ -102,10 +102,10 @@ namespace FivePD.Gamemode.Client.Menus
 
             this.SetItems(new List<MenuItem>
             {
-                this._dutyToggleItem,
-                this._spawnVehicleItem,
-                this._getLoadoutItem,
-                this._changeLanguageItem,
+                this._dutyCheckboxItem,
+                this._spawnVehicleListItem,
+                this._getLoadoutListItem,
+                this._changeLanguageListItem,
             });
         }
     }

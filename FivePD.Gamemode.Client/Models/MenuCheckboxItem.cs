@@ -9,15 +9,15 @@ using System;
 namespace FivePD.Gamemode.Client.Models
 {
     /// <inheritdoc />
-    public class MenuItemToggle : MenuItem
+    public class MenuCheckboxItem : MenuItem
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MenuItemToggle"/> class.
+        /// Initializes a new instance of the <see cref="MenuCheckboxItem"/> class.
         /// </summary>
         /// <param name="title">The title of this item.</param>
         /// <param name="description">The description of this item.</param>
         /// <param name="onPress">The method that will be invoked upon selecting this item.</param>
-        public MenuItemToggle(string title, string description, Action onPress)
+        public MenuCheckboxItem(string title, string description, Action onPress)
             : base(title, description, MenuItemType.Toggle, null)
         {
             this.OnPress = _ =>

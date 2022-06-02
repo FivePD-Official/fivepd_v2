@@ -1,6 +1,6 @@
 import { MenuItemType } from "@enums";
 import { post } from "@utils";
-import { MenuItemList } from "./MenuItemList";
+import { MenuListItem } from "./MenuListItem";
 
 export class MenuItem {
 
@@ -32,7 +32,7 @@ export class MenuItem {
 
   onPress(): void {
     if (this._type === MenuItemType.List) {
-      const menuItemList = ((this as unknown)) as MenuItemList;
+      const menuItemList = ((this as unknown)) as MenuListItem;
       if (menuItemList.items.length) {
         post(`fivepd:menu:trigger_item_${this._hashcode}`, menuItemList.currentIndex).subscribe();
       }

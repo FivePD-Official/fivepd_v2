@@ -1,7 +1,7 @@
 import { MenuItemType } from '@enums';
 import { MenuItem } from './MenuItem';
 
-export class MenuItemToggle extends MenuItem {
+export class MenuCheckboxItem extends MenuItem {
 
   private _isChecked: boolean = false;
 

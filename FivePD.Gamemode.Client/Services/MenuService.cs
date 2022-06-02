@@ -95,7 +95,7 @@ namespace FivePD.Gamemode.Client.Services
 
                     if (item.Type == MenuItem.MenuItemType.List)
                     {
-                        var casted = item as MenuItemList;
+                        var casted = item as MenuListItem;
                         itemData.Add("Items", JArray.FromObject(casted?.Items));
                     }
 
