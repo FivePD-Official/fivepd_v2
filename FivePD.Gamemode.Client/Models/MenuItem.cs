@@ -71,13 +71,7 @@ namespace FivePD.Gamemode.Client.Models
             set
             {
                 this._title = value;
-                this.UpdateItem(new JObject
-                {
-                    { "type", Events.NuiEventType.UpdateMenuItem },
-                    { "hashcode", this.GetHashCode().ToString() },
-                    { "fieldname", "title" },
-                    { "value", this._title },
-                });
+                this.UpdateItem("title", this._title);
             }
         }
 
@@ -95,13 +89,7 @@ namespace FivePD.Gamemode.Client.Models
             set
             {
                 this._enabled = value;
-                this.UpdateItem(new JObject
-                {
-                    { "type", Events.NuiEventType.UpdateMenuItem },
-                    { "hashcode", this.GetHashCode().ToString() },
-                    { "fieldname", "enabled" },
-                    { "value", this._enabled },
-                });
+                this.UpdateItem("enabled", this._enabled);
             }
         }
 
@@ -110,9 +98,21 @@ namespace FivePD.Gamemode.Client.Models
         /// </summary>
         public MenuItemType Type { get; }
 
-        private void UpdateItem(JObject data)
+        /// <summary>
+        /// Updates a menu item's given field with the passed value.
+        /// </summary>
+        /// <typeparam name="T">The type of the new value.</typeparam>
+        /// <param name="fieldname">The field's name to update.</param>
+        /// <param name="value">The value which will be set to the given field.</param>
+        protected void UpdateItem<T>(string fieldname, T value)
         {
-            Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(data));
+            Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
+            {
+                { "type", Events.NuiEventType.UpdateMenuItem },
+                { "hashcode", this.GetHashCode().ToString() },
+                { "fieldname", fieldname },
+                { "value", JToken.FromObject(value) },
+            }));
         }
     }
 }

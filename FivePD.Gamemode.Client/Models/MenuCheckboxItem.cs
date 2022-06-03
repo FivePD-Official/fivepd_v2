@@ -12,6 +12,8 @@ namespace FivePD.Gamemode.Client.Models
     /// <inheritdoc />
     public class MenuCheckboxItem : MenuItem
     {
+        private bool _checked;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuCheckboxItem"/> class.
         /// </summary>
@@ -28,13 +30,21 @@ namespace FivePD.Gamemode.Client.Models
         public event ItemSelect OnItemSelect;
 
         /// <summary>
-        /// Gets a value indicating whether this checkbox is checked.
+        /// Gets or sets a value indicating whether this checkbox is checked.
         /// </summary>
-        public bool Checked { get; private set; }
+        public bool Checked
+        {
+            get => this._checked;
+            set
+            {
+                this._checked = value;
+                this.UpdateItem("checked", this._checked);
+            }
+        }
 
         private void RaiseOnItemSelect()
         {
-            this.Checked = !this.Checked;
+            this._checked = !this._checked;
             this.OnItemSelect?.Invoke();
         }
     }

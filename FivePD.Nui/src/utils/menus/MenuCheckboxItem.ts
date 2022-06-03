@@ -3,18 +3,14 @@ import { MenuItem } from './MenuItem';
 
 export class MenuCheckboxItem extends MenuItem {
 
-  private _isChecked: boolean = false;
+  public checked = false;
 
   constructor(title: string, description: string, hashcode: string) {
     super(title, description, hashcode, MenuItemType.Toggle);
   }
 
-  get checked(): boolean {
-    return this._isChecked;
-  }
-
   toggle(): void {
-    this._isChecked = !this._isChecked;
+    this.checked = !this.checked;
   }
 
 }
