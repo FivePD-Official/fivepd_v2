@@ -5,6 +5,8 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using System.Collections.Concurrent;
+using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
@@ -14,16 +16,39 @@ namespace FivePD.Gamemode.Client.Services
     /// <inheritdoc />
     public class ResourceService : IResourceService
     {
+        private readonly ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
+
         /// <inheritdoc />
-        public T LoadFile<T>(string path)
+        public T LoadFile<T>(string path, bool useCache = true)
         {
-            string data = this.InternalLoadFile(path);
-            if (string.IsNullOrEmpty(data))
+            if (this._cache.ContainsKey(path) && useCache)
             {
-                return Activator.CreateInstance<T>();
+                return (T)this._cache[path];
             }
 
-            return JsonConvert.DeserializeObject<T>(data);
+            string data = this.InternalLoadFile(path);
+
+            if (string.IsNullOrEmpty(data))
+            {
+                data = "{}";
+            }
+
+            try
+            {
+                var deserializedObject = JsonConvert.DeserializeObject<T>(data);
+                if (useCache)
+                {
+                    this._cache[path] = deserializedObject;
+                }
+
+                return deserializedObject;
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine($"Error parsing the following file: {path}. Make sure that the JSON formatting is correct.");
+            }
+
+            return Activator.CreateInstance<T>();
         }
 
         /// <summary>
