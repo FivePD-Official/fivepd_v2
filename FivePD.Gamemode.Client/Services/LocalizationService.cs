@@ -94,7 +94,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void LoadLocalization(string locale)
         {
-            this.CurrentLocalization = this._resourceService.LoadFile<Localization>($"/Localization/{locale}.json");
+            this.CurrentLocalization = this._resourceService.GetLocalization(locale);
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels;
+using FivePD.Common.ConfigModels.MenuConfigs;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Models;
 using Newtonsoft.Json.Linq;
@@ -26,6 +27,7 @@ namespace FivePD.Gamemode.Client.Menus
         private readonly IEntityService _entityService;
         private readonly List<Loadout> _loadouts;
         private readonly List<Vehicles.PoliceVehicle> _policeVehicles;
+        private readonly DutyMenuConfig _config;
 
         private MenuCheckboxItem _dutyCheckboxItem;
         private MenuListItem _spawnVehicleListItem;
@@ -47,45 +49,60 @@ namespace FivePD.Gamemode.Client.Menus
             this._nuiService = nuiService;
             this._entityService = entityService;
 
-            this._loadouts = resourceService.LoadFile<List<Loadout>>("/Config/loadouts.json");
-            this._policeVehicles = resourceService.LoadFile<Vehicles>("/Config/vehicles.json").Police;
+            this._loadouts = resourceService.GetLoadoutsConfig();
+            this._policeVehicles = resourceService.GetVehiclesConfig().Police;
+            this._config = resourceService.GetMenuConfig().DutyMenu;
             this.CreateAndSetItems();
         }
 
         private void CreateAndSetItems()
         {
-            this._dutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
+            var items = new List<MenuItem>();
 
-            this._spawnVehicleListItem = new MenuListItem("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList());
-            this._spawnVehicleListItem.OnListItemSelect += index =>
+            if (this._config.DutyToggle.Enabled)
             {
-                var policeVehicle = this._policeVehicles.ElementAt(index);
-                this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
-            };
+                this._dutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
+                items.Add(this._dutyCheckboxItem);
+            }
 
-            this._getLoadoutListItem = new MenuListItem("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList());
-            this._getLoadoutListItem.OnListItemSelect += index =>
+            if (this._config.SpawnVehicle.Enabled)
             {
-                var loadout = this._loadouts.ElementAt(index);
-
-                foreach (var weaponItem in loadout.Weapons)
+                this._spawnVehicleListItem = new MenuListItem("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList());
+                this._spawnVehicleListItem.OnListItemSelect += index =>
                 {
-                    var weapon = (WeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
-                    Game.PlayerPed.Weapons.Give(weapon, weaponItem.Ammunition, false, true);
+                    var policeVehicle = this._policeVehicles.ElementAt(index);
+                    this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
+                };
+                items.Add(this._spawnVehicleListItem);
+            }
 
-                    foreach (var componentKey in weaponItem.ComponentKeys)
+            if (this._config.GetLoadout.Enabled)
+            {
+                this._getLoadoutListItem = new MenuListItem("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList());
+                this._getLoadoutListItem.OnListItemSelect += index =>
+                {
+                    var loadout = this._loadouts.ElementAt(index);
+
+                    foreach (var weaponItem in loadout.Weapons)
                     {
-                        var componentHash = (uint)Cfx.API.GetHashKey(componentKey);
-                        var weaponHash = (uint)weapon;
-                        if (!Cfx.API.DoesWeaponTakeWeaponComponent(weaponHash, componentHash))
-                        {
-                            continue;
-                        }
+                        var weapon = (WeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
+                        Game.PlayerPed.Weapons.Give(weapon, weaponItem.Ammunition, false, true);
 
-                        Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHash, componentHash);
+                        foreach (var componentKey in weaponItem.ComponentKeys)
+                        {
+                            var componentHash = (uint)Cfx.API.GetHashKey(componentKey);
+                            var weaponHash = (uint)weapon;
+                            if (!Cfx.API.DoesWeaponTakeWeaponComponent(weaponHash, componentHash))
+                            {
+                                continue;
+                            }
+
+                            Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHash, componentHash);
+                        }
                     }
-                }
-            };
+                };
+                items.Add(this._getLoadoutListItem);
+            }
 
             this._changeLanguageListItem = new MenuListItem("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList());
             this._changeLanguageListItem.OnListItemSelect += index =>
@@ -98,14 +115,9 @@ namespace FivePD.Gamemode.Client.Menus
                     { "data", JObject.FromObject(this._localizationService.CurrentLocalization) },
                 });
             };
+            items.Add(this._changeLanguageListItem);
 
-            this.SetItems(new List<MenuItem>
-            {
-                this._dutyCheckboxItem,
-                this._spawnVehicleListItem,
-                this._getLoadoutListItem,
-                this._changeLanguageListItem,
-            });
+            this.SetItems(items);
         }
     }
 }

@@ -13,6 +13,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Builders\FVehicleBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Loadout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfigs\DutyMenuConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfigs\MenuItemConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Vehicles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />

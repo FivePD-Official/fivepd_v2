@@ -6,7 +6,10 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.Localization;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
@@ -19,7 +22,39 @@ namespace FivePD.Gamemode.Client.Services
         private readonly ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
 
         /// <inheritdoc />
-        public T LoadFile<T>(string path, bool useCache = true)
+        public Vehicles GetVehiclesConfig()
+        {
+            return this.LoadFile<Vehicles>("/Config/vehicles.json");
+        }
+
+        /// <inheritdoc />
+        public List<Loadout> GetLoadoutsConfig()
+        {
+            return this.LoadFile<List<Loadout>>("/Config/loadouts.json");
+        }
+
+        /// <inheritdoc />
+        public MenuConfig GetMenuConfig()
+        {
+            return this.LoadFile<MenuConfig>("/Config/menu.json");
+        }
+
+        /// <inheritdoc />
+        public Localization GetLocalization(string locale)
+        {
+            return this.LoadFile<Localization>($"/Localization/{locale}.json", false);
+        }
+
+        /// <summary>
+        /// Loads a file's content.
+        /// If empty, returns T with its default values.
+        /// Otherwise returns the data converted to the given type.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize the content.</typeparam>
+        /// <param name="path">The path of the file.</param>
+        /// <param name="useCache">Determines if the data should be cached.</param>
+        /// <returns>The data converted to T.</returns>
+        private T LoadFile<T>(string path, bool useCache = true)
         {
             if (this._cache.ContainsKey(path) && useCache)
             {
