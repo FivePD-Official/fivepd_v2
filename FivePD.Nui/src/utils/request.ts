@@ -1,24 +1,45 @@
-export const Post = (path: string, body?: object | number) => {
-  return new Promise (async (resolve, reject) => {
+import { catchError, map, Observable, of, switchMap } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
 
-    let newBody: string | number = '';
-    if (typeof body === 'object') {
-      newBody = JSON.stringify(body);
-    } else {
-      newBody = body as number;
-    }
+export function post<T>(path: string, options: object | number = {}): Observable<T> {
+  return request('POST', path, options);
+}
 
-    const res = await fetch(`https://fivepd/${path}`, {
-      method: 'POST',
-      body: newBody as BodyInit,
-      headers: {
-        'Content-Type': typeof body === 'object' ? 'application/json' : 'text/plain'
+function request(method: string, path: string, body: object | number = {}) {
+
+  let newBody: string | number = '';
+  if (typeof body === 'object') {
+    newBody = JSON.stringify(body);
+  } else {
+    newBody = body as number;
+  }
+
+  return fromFetch(`https://fivepd/${path}`, {
+    body: newBody as BodyInit,
+    method,
+  }).pipe(
+    switchMap(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        return of(new Error(`Error ${res.status}: ${res.statusText}`));
       }
-    });
+    }),
+    catchError(err => {
+      return of({
+        error: `Error: ${err}`,
+      });
+    }),
+    map(res => {
+      if (typeof res === 'string') {
+        try {
+          return JSON.parse(res);
+        } catch(_) {
+          return res;
+        }
+      }
 
-    if (!res) return reject();
-    const json = await res.json();
-    if (!json) return reject();
-    return resolve(json);
-  });
+      return res;
+    })
+  );
 }

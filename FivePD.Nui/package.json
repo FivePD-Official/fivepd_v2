@@ -10,7 +10,7 @@
   "dependencies": {
     "@vuelidate/core": "^2.0.0-alpha.34",
     "@vuelidate/validators": "^2.0.0-alpha.26",
-    "mitt": "^3.0.0",
+    "rxjs": "^7.5.5",
     "vue": "^3.2.25",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2"

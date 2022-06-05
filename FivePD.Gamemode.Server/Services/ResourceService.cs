@@ -8,15 +8,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Localization;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
-using NJsonSchema;
-using NJsonSchema.Generation;
-using NJsonSchema.Validation;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services
@@ -91,8 +87,6 @@ namespace FivePD.Gamemode.Server.Services
         /// <returns>The data converted to T.</returns>
         private T LoadFile<T>(string path, bool useCache = true)
         {
-            var type = typeof(T);
-
             if (this._cache.ContainsKey(path) && useCache)
             {
                 return (T)this._cache[path];
@@ -105,31 +99,22 @@ namespace FivePD.Gamemode.Server.Services
                 data = "{}";
             }
 
-            var localeData = JsonSchema.FromType(type, new JsonSchemaGeneratorSettings
+            try
             {
-                DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull,
-            });
-            var validator = new JsonSchemaValidator();
-            var errors = validator.Validate(data, localeData);
-
-            if (errors.Count > 0)
-            {
-                foreach (var error in errors)
+                var deserializedObject = JsonConvert.DeserializeObject<T>(data);
+                if (useCache)
                 {
-                    Debug.WriteLine("Localization error: " + error.Path + ": " + error.Kind);
+                    this._cache[path] = deserializedObject;
                 }
 
-                // TODO: If there are any errors terminate FivePD ?
-                return Activator.CreateInstance<T>();
+                return deserializedObject;
             }
-
-            var deserializedObject = JsonConvert.DeserializeObject<T>(data);
-            if (useCache)
+            catch (Exception)
             {
-                this._cache[path] = deserializedObject;
+                Debug.WriteLine($"Error parsing the following file: {path}. Make sure that the JSON formatting is correct.");
             }
 
-            return deserializedObject;
+            return Activator.CreateInstance<T>();
         }
 
         /// <summary>

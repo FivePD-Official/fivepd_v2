@@ -46,12 +46,12 @@ namespace FivePD.Gamemode.Client.Extensions
                         }
 
                         var newValue = text.Substring(startIndex + 2 + item.Key.Length + 1, i - startIndex - item.Key.Length - 3);
-                        text = text.Replace(sub, item.Value + newValue + new FormattedText().Reset().Build());
+                        text = text.Replace(sub, item.Value + newValue + new GtaStyleText().Reset().Build());
                     }
                 }
                 else
                 {
-                    text = text.Replace("{{" + item.Key + "}}", item.Value);
+                    text = text.Replace("{{" + item.Key + "}}", item.Value + new GtaStyleText().Reset().Build());
                 }
             }
 

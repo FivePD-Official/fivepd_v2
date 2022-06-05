@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
-import { useEmitter, useT } from '@hooks';
-import { type Menu, MenuItem, MenuItemList, MenuItemToggle } from '@utils';
+import { useT } from '@hooks';
+import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem, onNuiEvent } from '@utils';
 import { MenuItemType, NuiEventType } from '@enums';
+import { BaseNuiEvent } from '@interfaces';
+import { Subscription } from 'rxjs';
 
 const props = defineProps<{
   menu: Menu
 }>();
 
-const emitter = useEmitter();
 const t = useT();
+const menuEvents$ = ref<Subscription>();
 
 const currentItemIndex: Ref<number> = ref(0);
 const itemNodes: Ref<HTMLElement[] | null> = ref(null);
@@ -24,19 +26,34 @@ onMounted(() => {
   itemNodes.value = Array.from(document.querySelectorAll('.menu-item'));
   selectorNode.value = document.querySelector('.selector');
 
-  emitter.on(NuiEventType.MenuUp, onMenuUp);
-  emitter.on(NuiEventType.MenuDown, onMenuDown);
-  emitter.on(NuiEventType.MenuLeft, onMenuLeft);
-  emitter.on(NuiEventType.MenuRight, onMenuRight);
-  emitter.on(NuiEventType.MenuSelect, onMenuSelect);
+  menuEvents$.value = onNuiEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
+    switch (event.type) {
+      case NuiEventType.MenuUp: {
+        onMenuUp();
+        break;
+      }
+      case NuiEventType.MenuDown: {
+        onMenuDown();
+        break;
+      }
+      case NuiEventType.MenuLeft: {
+        onMenuLeft();
+        break;
+      }
+      case NuiEventType.MenuRight: {
+        onMenuRight();
+        break;
+      }
+      case NuiEventType.MenuSelect: {
+        onMenuSelect();
+        break;
+      }
+    }
+  });
 });
 
 onBeforeUnmount(() => {
-  emitter.off(NuiEventType.MenuUp, onMenuUp);
-  emitter.off(NuiEventType.MenuDown, onMenuDown);
-  emitter.off(NuiEventType.MenuLeft, onMenuLeft);
-  emitter.off(NuiEventType.MenuRight, onMenuRight);
-  emitter.off(NuiEventType.MenuSelect, onMenuSelect);
+  menuEvents$.value?.unsubscribe();
 });
 
 const onMenuUp = () => {
@@ -44,6 +61,12 @@ const onMenuUp = () => {
 
   if (currentItemIndex.value > 0) currentItemIndex.value = currentItemIndex.value - 1;
   else currentItemIndex.value = menuItems.value.length - 1;
+
+  const currentItem = menuItems.value[currentItemIndex.value];
+  if (!currentItem.enabled) {
+    onMenuUp();
+    return;
+  }
 
   const currentItemNode = itemNodes.value[currentItemIndex.value];
   selectorNode.value.style.top = `${currentItemNode.offsetTop}px`;
@@ -54,6 +77,12 @@ const onMenuDown = () => {
 
   if (currentItemIndex.value < menuItems.value.length - 1) currentItemIndex.value = currentItemIndex.value + 1;
   else currentItemIndex.value = 0;
+
+  const currentItem = menuItems.value[currentItemIndex.value];
+  if (!currentItem.enabled) {
+    onMenuDown();
+    return;
+  }
 
   const currentItemNode = itemNodes.value[currentItemIndex.value];
   selectorNode.value.style.top = `${currentItemNode.offsetTop}px`;
@@ -70,6 +99,9 @@ const onMenuRight = () => {
 const onMenuSelect = () => {
   if (!selectorNode.value || !itemNodes.value || !menuItems.value) return;
 
+  const currentItem = menuItems.value[currentItemIndex.value];
+  if (!currentItem.enabled) return;
+
   // Change DOM state
   selectorNode.value.classList.add('selector--on-select');
   setTimeout(() => {
@@ -77,19 +109,23 @@ const onMenuSelect = () => {
   }, 100);
 
   // Change actual item state
-  const currentItem = menuItems.value[currentItemIndex.value];
-  if (currentItem.type === MenuItemType.Toggle) (currentItem as MenuItemToggle).toggle();
+  if (currentItem.type === MenuItemType.Toggle) (currentItem as MenuCheckboxItem).toggle();
   currentItem.onPress();
 }
 
-const getMarqueeClass = (item: MenuItemList) => {
+const getMarqueeClass = (item: MenuListItem) => {
+
+  if (item.items.length <= item.currentIndex) {
+    return '';
+  }
+
   return item.items[item.currentIndex].length > 10 ? 'marquee' : '';
 }
 
 const onListSlide = (dir: string) => {
   if (!selectorNode.value || !itemNodes.value || !menuItems.value) return;
 
-  const currentItem: MenuItemList = menuItems.value[currentItemIndex.value] as MenuItemList;
+  const currentItem: MenuListItem = menuItems.value[currentItemIndex.value] as MenuListItem;
   if (currentItem.type !== MenuItemType.List) return;
 
   const currentItemNode = itemNodes.value[currentItemIndex.value];
@@ -120,26 +156,26 @@ const onListSlide = (dir: string) => {
 
       <div class="selector"></div>
 
-      <div v-for="(item, index) in menuItems || []" :key="index" class="menu-item">
+      <div v-for="(item, index) in menuItems || []" :key="index" :class="`menu-item ${item.enabled ? '' : 'menu-item--disabled'}`">
 
         <p class="title">{{ menu.useLocalization ? t(item.title) : item.title }}</p>
 
-        <div v-if="item.type === MenuItemType.Toggle" :class="`menu-item-toggle ${(item as MenuItemToggle).checked ? 'checked' : ''}`">
+        <div v-if="item.type === MenuItemType.Toggle" :class="`menu-item-toggle ${(item as MenuCheckboxItem).checked ? 'checked' : ''}`">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
 
         <div v-if="item.type === MenuItemType.List" class="menu-item-list">
-          <svg xmlns="http://www.w3.org/2000/svg" :class="`left-arrow ${(item as MenuItemList).currentIndex === 0 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" :class="`left-arrow ${(item as MenuListItem).currentIndex === 0 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
           <div class="list-wrapper">
-            <div :class="`list-wrapper-item-inner ${getMarqueeClass(item as MenuItemList)}`">
-              <p>{{ (item as MenuItemList).items[(item as MenuItemList).currentIndex] }}</p>
+            <div :class="`list-wrapper-item-inner ${getMarqueeClass(item as MenuListItem)}`">
+              <p>{{ (item as MenuListItem).items[(item as MenuListItem).currentIndex] }}</p>
             </div>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" :class="`right-arrow ${(item as MenuItemList).currentIndex === (item as MenuItemList).items.length-1 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" :class="`right-arrow ${(item as MenuListItem).currentIndex === (item as MenuListItem).items.length-1 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </div>
@@ -217,6 +253,8 @@ const onListSlide = (dir: string) => {
       transition: var(--transition)
       margin-bottom: 5px
       padding: 0 10px
+      &.menu-item--disabled
+        opacity: 0.5
 
       .title
         color: var(--clr-text-secondary)

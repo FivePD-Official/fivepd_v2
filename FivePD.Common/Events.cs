@@ -75,27 +75,17 @@ namespace FivePD.Common
         /// <summary>
         /// Contains definitions for events related to localization.
         /// </summary>
-        public abstract class NuiEvents
+        public abstract class Localization
         {
             /// <summary>
             /// C->S: Used when a client wants to request all available locales.
             /// </summary>
-            public const string GetAvailableLocalesFromServer = "fivepd:localization:getAllAvaibleLocalesFromServer";
+            public const string GetAvailableLocalesFromServer = "fivepd:localization:getAvaibleLocalesFromServer";
 
             /// <summary>
             /// Used to request localization from Nui.
             /// </summary>
-            public const string GetLocalization = "fivepd:nui:getLocalization";
-
-            /// <summary>
-            /// Changes the current localization.
-            /// </summary>
-            public const string ChangeLocalization = "fivepd:nui:changeLocalization";
-
-            /// <summary>
-            /// Used when a player searches for a ped in the Nui.
-            /// </summary>
-            public const string PedSearch = "fivepd:nui:pedSearch";
+            public const string GetLocalizationFromNui = "fivepd:localization:getLocalizationFromNui";
         }
 
         /// <summary>
@@ -139,6 +129,9 @@ namespace FivePD.Common
             /// <summary>Selects the current item.</summary>
             public const string MenuSelect = "menu:control_select";
 
+            /// <summary>Updates a menu item's specific value.</summary>
+            public const string UpdateMenuItem = "menu:update_item";
+
             /// <summary>Sends the current localization to the Nui.</summary>
             public const string LocalizationChange = "localization:change";
 
@@ -147,6 +140,9 @@ namespace FivePD.Common
 
             /// <summary>Sends all radial menus to the Nui.</summary>
             public const string SendRadialMenuObjects = "send:radialMenus";
+
+            /// <summary>Sends radial menu control events (mouse move up, down, select) to the Nui.</summary>
+            public const string RadialMenuControl = "radial_menu:control";
         }
 
         /// <summary>

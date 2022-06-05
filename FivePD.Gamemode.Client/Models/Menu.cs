@@ -63,10 +63,5 @@ namespace FivePD.Gamemode.Client.Models
         {
             this._items = items;
         }
-
-        /// <summary>
-        /// Creates the items of the derived class and sets them.
-        /// </summary>
-        protected abstract void CreateAndSetItems();
     }
 }

@@ -110,7 +110,7 @@ namespace FivePD.Gamemode.Client.Services
             this._notificationService.ShowTooltip(
                 this._localizationService.CurrentLocalization.TrafficStop.Initiate.ReplaceParams(new Dictionary<string, string>
                 {
-                    { "initiate", new FormattedText().Green().Build() },
+                    { "initiate", new GtaStyleText().Green().Build() },
                 }),
                 true);
             while (Game.PlayerPed.IsInVehicle() && !Game.PlayerPed.CurrentVehicle.IsSirenActive)

@@ -94,7 +94,7 @@ namespace FivePD.Gamemode.Client.Services
             this._nuiService.SendMessage(new JObject
             {
                 { "type", Events.NuiEventType.SendRadialMenuObjects },
-                { "data", JsonConvert.SerializeObject(radialMenus) },
+                { "data", radialMenus },
             });
         }
 
@@ -113,11 +113,12 @@ namespace FivePD.Gamemode.Client.Services
 
                 void OnRelease()
                 {
-                    this._nuiService.Hide();
                     this._nuiService.SendMessage(new JObject
                     {
-                        { "RadialMenuEventType", "trigger_selected" },
+                        { "type", Events.NuiEventType.RadialMenuControl },
+                        { "control", "select" },
                     });
+                    this._nuiService.Hide();
                 }
 
                 this._keybindService.RegisterKeybind($"fivepd:openRadialMenu_${menu.Id}", "-", menu.Key, OnPress, OnRelease);
@@ -196,18 +197,20 @@ namespace FivePD.Gamemode.Client.Services
             {
                 this._nuiService.SendMessage(new JObject
                 {
-                    { "RadialMenuEventType", "mouse_down" },
-                    { "X", coordinates.X },
-                    { "Y", coordinates.Y },
+                    { "type", Events.NuiEventType.RadialMenuControl },
+                    { "control", "down" },
+                    { "x", coordinates.X },
+                    { "y", coordinates.Y },
                 });
             }
             else if (Cfx.API.IsDisabledControlJustReleased(2, 237))
             {
                 this._nuiService.SendMessage(new JObject
                 {
-                    { "RadialMenuEventType", "mouse_up" },
-                    { "X", coordinates.X },
-                    { "Y", coordinates.Y },
+                    { "type", Events.NuiEventType.RadialMenuControl },
+                    { "control", "up" },
+                    { "x", coordinates.X },
+                    { "y", coordinates.Y },
                 });
             }
 
@@ -215,9 +218,10 @@ namespace FivePD.Gamemode.Client.Services
             {
                 this._nuiService.SendMessage(new JObject
                 {
-                    { "RadialMenuEventType", "mouse_up" },
-                    { "X", coordinates.X },
-                    { "Y", coordinates.Y },
+                    { "type", Events.NuiEventType.RadialMenuControl },
+                    { "control", "up" },
+                    { "x", coordinates.X },
+                    { "y", coordinates.Y },
                 });
                 this._lastMousePosition = new MouseCoordinate(coordinates.X, coordinates.Y);
             }

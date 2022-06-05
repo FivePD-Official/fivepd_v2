@@ -39,7 +39,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEvents.PedSearch, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.Ped.Search, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 BaseScript.TriggerServerEvent(Events.Ped.Search, body, new Action<string>((data) =>
                 {

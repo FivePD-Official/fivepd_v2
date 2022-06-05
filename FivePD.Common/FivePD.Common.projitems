@@ -13,10 +13,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Builders\FVehicleBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Loadout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfigs\DutyMenuConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfigs\MenuItemConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Vehicles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\DutyMenuLocalization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\ErrorLocalizations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Localization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\TrafficStopLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
@@ -28,5 +32,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\FVehicle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BasePoliceEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
   </ItemGroup>
 </Project>

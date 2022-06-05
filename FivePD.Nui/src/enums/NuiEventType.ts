@@ -10,7 +10,9 @@ export enum NuiEventType {
   MenuLeft = 'menu:control_left',
   MenuRight = 'menu:control_right',
   MenuSelect = 'menu:control_select',
+  UpdateMenuItem = 'menu:update_item',
   LocalizationChange = 'localization:change',
   SendMenuObjects = 'send:menus',
   SendRadialMenuObjects = 'send:radialMenus',
+  RadialMenuControl = 'radial_menu:control',
 }

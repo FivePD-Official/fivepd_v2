@@ -28,6 +28,7 @@ namespace FivePD.JsonGenerator
             Write(CreateDefaultLoadouts(), "Config/loadouts.json");
             Write(CreateDefaultItems(), "Config/items.json");
             Write(CreateDefaultVehicles(), "Config/vehicles.json");
+            Write(typeof(MenuConfig), "Config/menu.json");
         }
 
         private static void Write(Type typeOfObject, string path)
