@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Localization;
@@ -25,6 +26,8 @@ namespace FivePD.JsonGenerator
         public static void Main()
         {
             Write(typeof(Localization), "Localization/en.json");
+            Write(CreateLocalizationTestData(new Localization()) as Localization, "Localization/test.json");
+
             Write(CreateDefaultLoadouts(), "Config/loadouts.json");
             Write(CreateDefaultItems(), "Config/items.json");
             Write(CreateDefaultVehicles(), "Config/vehicles.json");
@@ -41,6 +44,26 @@ namespace FivePD.JsonGenerator
         {
             var data = JsonConvert.SerializeObject(defaultValue, Formatting.Indented);
             File.WriteAllText($"../FivePD.Gamemode.Statics/{path}", data);
+        }
+
+        private static object CreateLocalizationTestData(object o, string parent = null)
+        {
+            var t = o.GetType();
+            var props = t.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var prp in props)
+            {
+                if (prp.PropertyType.Module.ScopeName != "CommonLanguageRuntimeLibrary")
+                {
+                    CreateLocalizationTestData(prp.GetValue(o), parent == null ? t.Name : parent + "." + t.Name);
+                }
+                else
+                {
+                    var value = prp.GetValue(o);
+                    prp.SetValue(o, $"T: {(value is null ? string.Empty : value.ToString())}");
+                }
+            }
+
+            return o;
         }
 
         private static List<Loadout> CreateDefaultLoadouts()
