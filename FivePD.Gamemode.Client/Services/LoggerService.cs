@@ -127,7 +127,7 @@ namespace FivePD.Gamemode.Client.Services
                     break;
 
                 case LogLevel.Error:
-                    Debug.WriteLine($"[FivePD ^1ERROR^7]: ^2{message}");
+                    Debug.WriteLine($"[FivePD ^1ERROR^7]: ^1{message}");
                     break;
             }
 
