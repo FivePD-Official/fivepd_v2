@@ -57,7 +57,7 @@ onNuiEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
         }
         case MenuItemType.List: {
           _item = new MenuListItem(item.Title, item.Description, item.Hashcode);
-          _item.setItems = item.Items;
+          _item.items = item.Items;
           break;
         }
         case MenuItemType.Toggle: {

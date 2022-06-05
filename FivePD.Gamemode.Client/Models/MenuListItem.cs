@@ -11,6 +11,8 @@ namespace FivePD.Gamemode.Client.Models
     /// <inheritdoc />
     public class MenuListItem : MenuItem
     {
+        private List<string> _items;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuListItem"/> class.
         /// </summary>
@@ -20,7 +22,7 @@ namespace FivePD.Gamemode.Client.Models
         public MenuListItem(string title, string description, List<string> items)
             : base(title, description, MenuItemType.List)
         {
-            this.Items = items;
+            this._items = items;
         }
 
         /// <summary>
@@ -48,12 +50,22 @@ namespace FivePD.Gamemode.Client.Models
         /// <summary>
         /// Gets the items.
         /// </summary>
-        public List<string> Items { get; }
+        public List<string> Items => this._items;
 
         /// <summary>
         /// Gets the currently displayed item's index.
         /// </summary>
         public int CurrentIndex { get; private set; }
+
+        /// <summary>
+        /// Sets the list's items.
+        /// </summary>
+        /// <param name="items">The new items of the list.</param>
+        public void SetItems(List<string> items)
+        {
+            this._items = items;
+            this.UpdateItem("items", this._items);
+        }
 
         private void RaiseOnListIndexChange(int index)
         {
