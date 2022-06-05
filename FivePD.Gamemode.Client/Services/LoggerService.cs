@@ -1,4 +1,4 @@
-﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
+// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
 //
 // All code and assets contained in this file are STRICTLY
 // the intellectual property of GTAPoliceMods unless otherwise
@@ -119,15 +119,15 @@ namespace FivePD.Gamemode.Client.Services
             switch (logLevel)
             {
                 case LogLevel.Info:
-                    Debug.WriteLine($"^5INFO: {message}");
+                    Debug.WriteLine($"[FivePD ^5INFO^7]: ^5{message}");
                     break;
 
                 case LogLevel.Warning:
-                    Debug.WriteLine($"^3WARNING: {message}");
+                    Debug.WriteLine($"[FivePD ^3WARNING^7]: ^3{message}");
                     break;
 
                 case LogLevel.Error:
-                    Debug.WriteLine($"^1ERROR: {message}");
+                    Debug.WriteLine($"[FivePD ^1ERROR^7]: ^2{message}");
                     break;
             }
 
