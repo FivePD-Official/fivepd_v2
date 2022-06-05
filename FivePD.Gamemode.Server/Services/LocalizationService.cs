@@ -91,8 +91,16 @@ namespace FivePD.Gamemode.Server.Services
 
                 if (file.Item2 is null)
                 {
-                    locale.Title = file.Item1.Title;
-                    return;
+                    if (locale.Key != "en" && file.Item1.Title == "English")
+                    {
+                        locale.Title = "? " + locale.Key + " ?";
+                    }
+                    else
+                    {
+                        locale.Title = file.Item1.Title;
+                    }
+
+                    continue;
                 }
 
                 var exceptionMessage = file.Item2 switch
