@@ -109,10 +109,12 @@ namespace FivePD.Gamemode.Client.Services
             BaseScript.TriggerServerEvent(Events.TrafficStop.Initiate, JsonConvert.SerializeObject(trafficStop));
 
             this._notificationService.ShowTooltip(
-                this._localizationService.CurrentLocalization.TrafficStop.Initiate.ReplaceParams(new Dictionary<string, string>
-                {
-                    { "initiate", new GtaStyleText().Green().Build() },
-                }),
+                this._localizationService.CurrentLocalization.TrafficStop.Initiate.ReplaceParams(
+                    new Dictionary<string, string>
+                    {
+                        { "initiate", new GtaStyleText().Green().Build() },
+                    },
+                    new GtaStyleText().Reset().Build()),
                 true);
             while (Game.PlayerPed.IsInVehicle() && !Game.PlayerPed.CurrentVehicle.IsSirenActive)
             {

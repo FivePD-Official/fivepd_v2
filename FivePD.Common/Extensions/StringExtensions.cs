@@ -22,8 +22,9 @@ namespace FivePD.Common.Extensions
         /// </summary>
         /// <param name="text">The text that's parameters needs to be replaced.</param>
         /// <param name="parameters">A dictionary containing the key + formatting pairs.</param>
+        /// <param name="formattingReset">This string will be placed after the replaced value to reset its formatting.</param>
         /// <returns>The new string with the replaced parameters.</returns>
-        public static string ReplaceParams(this string text, Dictionary<string, string> parameters)
+        public static string ReplaceParams(this string text, Dictionary<string, string> parameters, string formattingReset = "")
         {
             foreach (var item in parameters)
             {
@@ -45,12 +46,12 @@ namespace FivePD.Common.Extensions
                         }
 
                         var newValue = text.Substring(startIndex + 2 + item.Key.Length + 1, i - startIndex - item.Key.Length - 3);
-                        text = text.Replace(sub, item.Value + newValue);
+                        text = text.Replace(sub, item.Value + newValue + formattingReset);
                     }
                 }
                 else
                 {
-                    text = text.Replace("{{" + item.Key + "}}", item.Value);
+                    text = text.Replace("{{" + item.Key + "}}", item.Value + formattingReset);
                 }
             }
 

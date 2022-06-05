@@ -148,10 +148,12 @@ namespace FivePD.Gamemode.Client.Services
             {
                 var notificationText = new GtaStyleText().Red("[FivePD error]").NewLine().Reset().Build() +
                    this._localizationService.CurrentLocalization.ErrorLocalizations
-                       .MultipleMenusWithSameKey.ReplaceParams(new Dictionary<string, string>
-                       {
-                           { "key", new GtaStyleText().Red(key).Build() },
-                       });
+                       .MultipleMenusWithSameKey.ReplaceParams(
+                           new Dictionary<string, string>
+                           {
+                               { "key", new GtaStyleText().Red(key).Build() },
+                           },
+                           new GtaStyleText().Reset().Build());
 
                 this._notificationService.ShowNotification(notificationText);
             }
