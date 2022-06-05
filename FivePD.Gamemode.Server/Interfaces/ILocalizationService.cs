@@ -4,7 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System.Threading.Tasks;
+using FivePD.Common.Localization;
 
 namespace FivePD.Gamemode.Server.Interfaces
 {
@@ -13,6 +13,12 @@ namespace FivePD.Gamemode.Server.Interfaces
     /// </summary>
     public interface ILocalizationService
     {
+        /// <summary>
+        /// Gets the default english localization.
+        /// </summary>
+        /// <returns>The default english localization.</returns>
+        public Localization GetDefaultLocalization();
+
         /// <summary>
         /// Registers all necessary NUI events for the MDT and menus.
         /// </summary>

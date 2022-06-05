@@ -135,17 +135,18 @@ namespace FivePD.Gamemode.Server
             // Find and register core services
             services.AddSingleton(Log.Logger);
 
+            services.AddSingleton<IFileHandlerService, FileHandlerService>();
+            services.AddSingleton<ILocalizationService, LocalizationService>();
+            services.AddSingleton<IConfigService, ConfigService>();
             services.AddSingleton<ICommandService, CommandService>();
             services.AddSingleton<IAddonMetadataService, AddonMetadataService>();
             services.AddTransient<IAddonLoggerService, AddonLoggerService>();
-            services.AddSingleton<IResourceService, ResourceService>();
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
             services.AddSingleton<IEntityService, EntityService>();
             services.AddSingleton<IServerStateService, ServerStateService>();
             services.AddSingleton<IReplicatedStateService, ReplicatedStateService>();
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
-            services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IPedService, PedService>();
             services.AddSingleton<IVehicleService, VehicleService>();
             services.AddSingleton<ITrafficStopService, TrafficStopService>();

@@ -6,9 +6,8 @@
 
 using System;
 using System.Collections.Generic;
-using FivePD.Gamemode.Client.Utilities;
 
-namespace FivePD.Gamemode.Client.Extensions
+namespace FivePD.Common.Extensions
 {
     /// <summary>
     /// Holds extension methods for strings.
@@ -46,12 +45,12 @@ namespace FivePD.Gamemode.Client.Extensions
                         }
 
                         var newValue = text.Substring(startIndex + 2 + item.Key.Length + 1, i - startIndex - item.Key.Length - 3);
-                        text = text.Replace(sub, item.Value + newValue + new GtaStyleText().Reset().Build());
+                        text = text.Replace(sub, item.Value + newValue);
                     }
                 }
                 else
                 {
-                    text = text.Replace("{{" + item.Key + "}}", item.Value + new GtaStyleText().Reset().Build());
+                    text = text.Replace("{{" + item.Key + "}}", item.Value);
                 }
             }
 

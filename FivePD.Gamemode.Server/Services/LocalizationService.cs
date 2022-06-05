@@ -9,9 +9,12 @@ using System.Collections.Generic;
 using System.IO;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Exceptions;
+using FivePD.Common.Extensions;
 using FivePD.Common.Localization;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
+using Serilog;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services
@@ -19,17 +22,28 @@ namespace FivePD.Gamemode.Server.Services
     /// <inheritdoc />
     public class LocalizationService : ILocalizationService
     {
+        private readonly Localization _defaultLocalization;
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IResourceService _resourceService;
+        private readonly IFileHandlerService _fileHandlerService;
+        private readonly ILogger _logger;
         private List<Locale> _locales;
 
         /// <summary>Initializes a new instance of the <see cref="LocalizationService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="resourceService">The <see cref="ResourceService" /> to use.</param>
-        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IResourceService resourceService)
+        /// <param name="fileHandlerService">The <see cref="IFileHandlerService" /> to use.</param>
+        /// <param name="logger">The <see cref="ILogger" /> to use.</param>
+        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IFileHandlerService fileHandlerService, ILogger logger)
         {
+            this._defaultLocalization = new Localization();
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._resourceService = resourceService;
+            this._fileHandlerService = fileHandlerService;
+            this._logger = logger;
+        }
+
+        /// <inheritdoc />
+        public Localization GetDefaultLocalization()
+        {
+            return this._defaultLocalization;
         }
 
         /// <inheritdoc />
@@ -72,8 +86,26 @@ namespace FivePD.Gamemode.Server.Services
         {
             foreach (var locale in this._locales)
             {
-                var localization = this._resourceService.GetLocalization(locale.Key);
-                locale.Title = localization!.Title;
+                var path = $"/Localization/{locale.Key}.json";
+                var file = this._fileHandlerService.LoadFile<Localization>(path, false);
+
+                if (file.Item2 is null)
+                {
+                    locale.Title = file.Item1.Title;
+                    return;
+                }
+
+                var exceptionMessage = file.Item2 switch
+                {
+                    EmptyConfigException _ => this._defaultLocalization.WarningLocalizations.EmptyConfigException,
+                    _ => this._defaultLocalization.WarningLocalizations.ConfigException,
+                };
+
+                this._logger.Warning(exceptionMessage.ReplaceParams(
+                    new Dictionary<string, string>
+                    {
+                        { "path", $"\"{path}\"" },
+                    }));
             }
         }
     }

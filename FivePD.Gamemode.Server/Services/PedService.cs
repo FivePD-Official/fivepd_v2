@@ -22,18 +22,18 @@ namespace FivePD.Gamemode.Server.Services
     public class PedService : IPedService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IResourceService _resourceService;
+        private readonly IConfigService _configService;
         private readonly ConcurrentDictionary<int, FPed> _peds = new ConcurrentDictionary<int, FPed>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PedService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="resourceService">The <see cref="IResourceService" /> to use.</param>
-        public PedService(EventHandlerDictionary eventHandlerDictionary, IResourceService resourceService)
+        /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
+        public PedService(EventHandlerDictionary eventHandlerDictionary, IConfigService configService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._resourceService = resourceService;
+            this._configService = configService;
         }
 
         /// <inheritdoc />
@@ -52,10 +52,10 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             var fPed = fPedBuilder
-                .WithFirstname(fPedBuilder.Gender == FGender.Female ? this._resourceService.GetFemaleFirstnames() : this._resourceService.GetMaleFirstnames())
-                .WithLastname(this._resourceService.GetLastnames())
+                .WithFirstname(fPedBuilder.Gender == FGender.Female ? this._configService.GetFemaleFirstnames() : this._configService.GetMaleFirstnames())
+                .WithLastname(this._configService.GetLastnames())
                 .WithBirthdate()
-                .WithItems(this._resourceService.GetItems())
+                .WithItems(this._configService.GetItems())
                 .Build();
 
             this._peds[fPed.NetworkId] = fPed;

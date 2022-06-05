@@ -43,6 +43,23 @@ namespace FivePD.Gamemode.Client
                 .Register<RemoveTickHandler>(() => this.OnTickRemove);
 
             services
+                .RegisterType<FileHandlerService>()
+                .As<IFileHandlerService>();
+
+            services
+                .RegisterType<LoggerService>()
+                .As<ILoggerService>();
+
+            services
+                .RegisterType<LocalizationService>()
+                .As<ILocalizationService>()
+                .IsSingleton();
+
+            services
+                .RegisterType<ConfigService>()
+                .As<IConfigService>();
+
+            services
                 .RegisterType<EntityService>()
                 .As<IEntityService>();
 
@@ -65,21 +82,12 @@ namespace FivePD.Gamemode.Client
                 .IsSingleton();
 
             services
-                .RegisterType<LocalizationService>()
-                .As<ILocalizationService>()
-                .IsSingleton();
-
-            services
                 .RegisterType<RadialMenuService>()
                 .As<IRadialMenuService>();
 
             services
                 .RegisterType<MenuService>()
                 .As<IMenuService>();
-
-            services
-                .RegisterType<ResourceService>()
-                .As<IResourceService>();
 
             services
                 .RegisterType<PedService>()
@@ -92,10 +100,6 @@ namespace FivePD.Gamemode.Client
             services
                 .RegisterType<NotificationService>()
                 .As<INotificationService>();
-
-            services
-                .RegisterType<LoggerService>()
-                .As<ILoggerService>();
 
             services
                 .RegisterType<PoliceEventService>()

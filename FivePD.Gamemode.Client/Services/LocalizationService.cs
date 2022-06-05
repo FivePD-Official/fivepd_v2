@@ -10,10 +10,11 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Exceptions;
+using FivePD.Common.Extensions;
 using FivePD.Common.Localization;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
@@ -25,19 +26,22 @@ namespace FivePD.Gamemode.Client.Services
     public class LocalizationService : ILocalizationService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IResourceService _resourceService;
+        private readonly IFileHandlerService _fileHandlerService;
+        private readonly ILoggerService _loggerService;
         private readonly string _defaultLocale = "en";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizationService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="resourceService">The <see cref="IResourceService" /> to use.</param>
-        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IResourceService resourceService)
+        /// <param name="fileHandlerService">The <see cref="IFileHandlerService" /> to use.</param>
+        /// <param name="loggerService">The <see cref="ILoggerService" /> to use.</param>
+        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IFileHandlerService fileHandlerService, ILoggerService loggerService)
         {
             this.Locales = new List<Locale>();
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._resourceService = resourceService;
+            this._fileHandlerService = fileHandlerService;
+            this._loggerService = loggerService;
         }
 
         /// <inheritdoc />
@@ -94,7 +98,26 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void LoadLocalization(string locale)
         {
-            this.CurrentLocalization = this._resourceService.GetLocalization(locale);
+            var path = $"/Localization/{locale}.json";
+            var file = this._fileHandlerService.LoadFile<Localization>(path, false);
+
+            if (file.Item2 is null)
+            {
+                this.CurrentLocalization = file.Item1;
+                return;
+            }
+
+            var exceptionMessage = file.Item2 switch
+            {
+                EmptyConfigException _ => this.CurrentLocalization.WarningLocalizations.EmptyConfigException,
+                _ => this.CurrentLocalization.WarningLocalizations.ConfigException,
+            };
+
+            this._loggerService.Warn(exceptionMessage.ReplaceParams(
+                new Dictionary<string, string>
+                {
+                    { "path", $"\"{path}\"" },
+                }));
         }
     }
 }

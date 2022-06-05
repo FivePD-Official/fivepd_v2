@@ -39,19 +39,19 @@ namespace FivePD.Gamemode.Client.Menus
         /// </summary>
         /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
         /// <param name="nuiService">The <see cref="INuiService"/> to use.</param>
-        /// <param name="resourceService">The <see cref="IResourceService"/> to use.</param>
+        /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
         /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
         /// >
-        public DutyMenu(ILocalizationService localizationService, INuiService nuiService, IResourceService resourceService, IEntityService entityService)
+        public DutyMenu(ILocalizationService localizationService, INuiService nuiService, IConfigService configService, IEntityService entityService)
             : base("duty_menu", "DutyMenu.Title", "F10", true)
         {
             this._localizationService = localizationService;
             this._nuiService = nuiService;
             this._entityService = entityService;
 
-            this._loadouts = resourceService.GetLoadoutsConfig();
-            this._policeVehicles = resourceService.GetVehiclesConfig().Police;
-            this._config = resourceService.GetMenuConfig().DutyMenu;
+            this._loadouts = configService.GetLoadoutsConfig();
+            this._policeVehicles = configService.GetVehiclesConfig().Police;
+            this._config = configService.GetMenuConfig().DutyMenu;
             this.CreateAndSetItems();
         }
 

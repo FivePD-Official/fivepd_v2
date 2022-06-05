@@ -28,5 +28,9 @@
   },
   "ErrorLocalizations": {
     "MultipleMenusWithSameKey": "There are multiple menus which key is set to {{key}}. Make sure to change them, otherwise they will not work."
+  },
+  "WarningLocalizations": {
+    "ConfigException": "An error occured while parsing the {{path}} file, the default values will be used. Make sure that the JSON formatting is correct, we recommend using the following site to check it: https://jsonformatter.org/",
+    "EmptyConfigException": "The {{path}} file is empty, the default values will be used."
   }
 }

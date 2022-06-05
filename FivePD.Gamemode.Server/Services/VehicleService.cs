@@ -19,18 +19,18 @@ namespace FivePD.Gamemode.Server.Services
     public class VehicleService : IVehicleService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IResourceService _resourceService;
+        private readonly IConfigService _configService;
         private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new ConcurrentDictionary<int, FVehicle>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VehicleService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="resourceService">The <see cref="IResourceService" /> to use.</param>
-        public VehicleService(EventHandlerDictionary eventHandlerDictionary, IResourceService resourceService)
+        /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
+        public VehicleService(EventHandlerDictionary eventHandlerDictionary, IConfigService configService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._resourceService = resourceService;
+            this._configService = configService;
         }
 
         /// <inheritdoc />
@@ -48,7 +48,7 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             var fVehicle = fVehicleBuilder
-                .WithItems(this._resourceService.GetItems())
+                .WithItems(this._configService.GetItems())
                 .Build();
 
             this._vehicles[fVehicle.NetworkId] = fVehicle;

@@ -16,7 +16,7 @@ namespace FivePD.Gamemode.Client.Interfaces
     /// <summary>
     /// Provides utility methods for the FivePD resource itself.
     /// </summary>
-    public interface IResourceService
+    public interface IConfigService
     {
         /// <summary>
         /// Loads and returns the /Config/vehicles.json file's content.
@@ -35,12 +35,5 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// </summary>
         /// <returns>Returns a deserialized <see cref="MenuConfig"/> object.</returns>
         public MenuConfig GetMenuConfig();
-
-        /// <summary>
-        /// Loads and returns a /Localization/{locale}.json file.
-        /// </summary>
-        /// <param name="locale">The locale of the localization to load.</param>
-        /// <returns>Returns a deserialized <see cref="Localization"/> object.</returns>
-        public Localization GetLocalization(string locale);
     }
 }

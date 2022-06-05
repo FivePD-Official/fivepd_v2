@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Extensions;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Menus;
@@ -30,7 +31,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly INuiService _nuiService;
         private readonly IKeybindService _keybindService;
         private readonly ILocalizationService _localizationService;
-        private readonly IResourceService _resourceService;
+        private readonly IConfigService _configService;
         private readonly IEntityService _entityService;
         private readonly INotificationService _notificationService;
         private readonly List<Menu> _menus;
@@ -42,7 +43,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
         /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
         /// <param name="localizationService">The <see cref="ILocalizationService" /> to use.</param>
-        /// <param name="resourceService">The <see cref="IResourceService"/> to use.</param>
+        /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
         /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
         /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
         public MenuService(
@@ -50,7 +51,7 @@ namespace FivePD.Gamemode.Client.Services
             INuiService nuiService,
             IKeybindService keybindService,
             ILocalizationService localizationService,
-            IResourceService resourceService,
+            IConfigService configService,
             IEntityService entityService,
             INotificationService notificationService)
         {
@@ -58,7 +59,7 @@ namespace FivePD.Gamemode.Client.Services
             this._nuiService = nuiService;
             this._keybindService = keybindService;
             this._localizationService = localizationService;
-            this._resourceService = resourceService;
+            this._configService = configService;
             this._entityService = entityService;
             this._notificationService = notificationService;
             this._menus = new List<Menu>();
@@ -80,7 +81,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._menus.AddRange(new Menu[]
             {
-                new DutyMenu(this._localizationService, this._nuiService, this._resourceService, this._entityService),
+                new DutyMenu(this._localizationService, this._nuiService, this._configService, this._entityService),
             });
         }
 
