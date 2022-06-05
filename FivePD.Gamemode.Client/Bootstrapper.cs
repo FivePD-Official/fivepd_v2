@@ -94,6 +94,10 @@ namespace FivePD.Gamemode.Client
                 .As<INotificationService>();
 
             services
+                .RegisterType<LoggerService>()
+                .As<ILoggerService>();
+
+            services
                 .RegisterType<PoliceEventService>()
                 .As<IPoliceEventService>()
                 .IsSingleton();
