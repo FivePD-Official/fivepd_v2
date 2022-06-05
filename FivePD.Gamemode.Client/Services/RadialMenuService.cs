@@ -28,7 +28,6 @@ namespace FivePD.Gamemode.Client.Services
         private readonly ITickService _tickService;
         private readonly List<RadialMenu> _menus = new List<RadialMenu>();
         private bool _isAnyMenuVisible;
-        private bool _isLocalizationReady;
         private MouseCoordinate _lastMousePosition;
 
         /// <summary>Initializes a new instance of the <see cref="RadialMenuService"/> class.</summary>
@@ -47,14 +46,8 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._isLocalizationReady = true;
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.IsNuiReady, new Action<ExpandoObject, CallbackDelegate>(async (body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.IsNuiReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
-                while (!this._isLocalizationReady)
-                {
-                    await BaseScript.Delay(10);
-                }
-
                 this.SendToNui();
                 cb.Invoke(string.Empty);
             }));

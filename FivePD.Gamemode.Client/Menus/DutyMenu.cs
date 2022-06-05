@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels;
@@ -16,6 +17,8 @@ using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450
+#pragma warning disable CS4014
+#pragma warning disable S3241
 
 namespace FivePD.Gamemode.Client.Menus
 {
@@ -53,6 +56,7 @@ namespace FivePD.Gamemode.Client.Menus
             this._policeVehicles = configService.GetVehiclesConfig().Police;
             this._config = configService.GetMenuConfig().DutyMenu;
             this.CreateAndSetItems();
+            this.WaitAndUpdateLocales();
         }
 
         private void CreateAndSetItems()
@@ -118,6 +122,12 @@ namespace FivePD.Gamemode.Client.Menus
             items.Add(this._changeLanguageListItem);
 
             this.SetItems(items);
+        }
+
+        private async Task WaitAndUpdateLocales()
+        {
+            var locales = await this._localizationService.LoadAvailableLocales();
+            this._changeLanguageListItem.SetItems(locales.Select(locale => locale.Title).ToList());
         }
     }
 }

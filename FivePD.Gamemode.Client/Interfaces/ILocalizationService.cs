@@ -35,7 +35,7 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Finds and loads all translation files located in fivepd/Localization.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public Task<bool> LoadAvailableLocales();
+        public Task<List<Locale>> LoadAvailableLocales();
 
         /// <summary>
         /// Loads the default localization file.

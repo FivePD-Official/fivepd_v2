@@ -113,7 +113,7 @@ namespace FivePD.Gamemode.Client
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();
-            screenDecorService.SetTextToDraw(false, false);
+            screenDecorService.SetTextToDraw(true, false);
             screenDecorService.BeginTextDraw();
 
             var keybindService = provider.Resolve<IKeybindService>();
@@ -134,30 +134,12 @@ namespace FivePD.Gamemode.Client
             localizationService.LoadDefaultLocalization();
 
             var radialMenuService = provider.Resolve<IRadialMenuService>();
-            var menuService = provider.Resolve<IMenuService>();
-
-            this.CreateMenus(localizationService, radialMenuService, menuService, screenDecorService);
-        }
-
-        private async Task CreateMenus(ILocalizationService localizationService, IRadialMenuService radialMenuService, IMenuService menuService, IScreenDecorService screenDecorService)
-        {
-            screenDecorService.SetTextToDraw(true, false);
-
             radialMenuService.RegisterEvents();
-            menuService.RegisterEvents();
-
-            // TODO: wait for server config file validation as well
-            var availableLocales = await localizationService.LoadAvailableLocales();
-
-            if (!availableLocales)
-            {
-                screenDecorService.SetTextToDraw(false, true);
-                return;
-            }
-
             radialMenuService.CreateMenus();
             radialMenuService.RegisterMenuKeybinds();
 
+            var menuService = provider.Resolve<IMenuService>();
+            menuService.RegisterEvents();
             menuService.CreateMenus();
             menuService.RegisterMenuKeybinds();
 

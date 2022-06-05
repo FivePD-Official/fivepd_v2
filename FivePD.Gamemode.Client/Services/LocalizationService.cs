@@ -60,8 +60,13 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> LoadAvailableLocales()
+        public async Task<List<Locale>> LoadAvailableLocales()
         {
+            if (this.Locales.Count > 0)
+            {
+                return this.Locales;
+            }
+
             int hasServerResponded = 0;
             var now = DateTime.Now;
             var timeUntilFinishWait = now.AddMinutes(1);
@@ -79,14 +84,14 @@ namespace FivePD.Gamemode.Client.Services
             {
                 if (DateTime.Compare(DateTime.Now, timeUntilFinishWait) > 0)
                 {
-                    return false;
+                    return new List<Locale>();
                 }
 
                 await BaseScript.Delay(1);
             }
             while (hasServerResponded == 0);
 
-            return true;
+            return this.Locales;
         }
 
         /// <inheritdoc />
