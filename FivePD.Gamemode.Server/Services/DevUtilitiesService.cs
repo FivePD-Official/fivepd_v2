@@ -17,17 +17,23 @@ namespace FivePD.Gamemode.Server.Services
      */
     public class DevUtilitiesService : IDevUtilitiesService
     {
+        private readonly ICommandService _commandService;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DevUtilitiesService"/> class.
+        /// </summary>
+        /// <param name="commandService">The <see cref="ICommandService"/> to use.</param>
+        public DevUtilitiesService(ICommandService commandService)
+        {
+            this._commandService = commandService;
+        }
+
         /**
          * <inheritdoc />
          */
         public void RegisterDevelopmentCommands()
         {
-            // todo: replace with proper usage of command system (once it exists)
-            Cfx.API.RegisterCommand(
-                "fpd_clear",
-                new Action<int, List<object>, string>(
-                    (source, args, rawCommand) => ClearAllEntities()),
-                false);
+            this._commandService.RegisterCommand("clear", (source, args) => ClearAllEntities());
         }
 
         private static void ClearAllEntities()
