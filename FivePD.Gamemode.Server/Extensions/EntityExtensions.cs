@@ -30,6 +30,7 @@ namespace FivePD.Gamemode.Server.Extensions
         /// </summary>
         /// <param name="entity">Entity to get data for.</param>
         /// <param name="key">Key to get.</param>
-        public static void GetTempData(this Entity entity, string key) => TempDataStorageService.Get(entity, key);
+        /// <returns>Temporary replicated data.</returns>
+        public static dynamic GetTempData(this Entity entity, string key) => TempDataStorageService.Get(entity, key);
     }
 }
