@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Vehicles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\DutyMenuLocalization.cs" />

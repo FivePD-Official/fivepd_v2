@@ -49,3 +49,11 @@ export interface UpdateMenuItemEvent extends BaseNuiEvent {
   fieldname: string;
   value: any;
 }
+
+export interface SoundEvent extends BaseNuiEvent {
+  sound: string;
+}
+
+export interface SoundSpeakEvent extends BaseNuiEvent {
+  textToPlay: string;
+}

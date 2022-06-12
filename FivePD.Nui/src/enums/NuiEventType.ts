@@ -15,4 +15,6 @@ export enum NuiEventType {
   SendMenuObjects = 'send:menus',
   SendRadialMenuObjects = 'send:radialMenus',
   RadialMenuControl = 'radial_menu:control',
+  PlaySound = 'sound:play',
+  PlayText = 'sound:playText',
 }

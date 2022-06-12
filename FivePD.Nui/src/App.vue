@@ -4,12 +4,13 @@ import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
-import { BaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent } from '@interfaces';
+import { BaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent, SoundEvent, SoundSpeakEvent } from '@interfaces';
 
 const store = useStore();
 const router = useRouter();
 const viewType = ref<string>('');
 const currentMenuId = ref<string>('#');
+const audioMap = new Map<string, any>();
 
 window.addEventListener('load', () => {
 
@@ -107,6 +108,33 @@ onNuiEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(event => 
       }
     }
   }
+});
+
+onNuiEvent<SoundEvent>(NuiEventType.PlaySound).subscribe(event => {
+  if (audioMap.has(event.sound)) {
+    const audio = audioMap.get(event.sound);
+    if (audio.paused) {
+      audio.play();
+    }
+    return;
+  }
+
+  const audio = new Audio(`./sounds/${event.sound}`);
+  audioMap.set(event.sound, audio);
+  audio.play();
+});
+
+onNuiEvent<SoundSpeakEvent>(NuiEventType.PlayText).subscribe(event => {
+  if (audioMap.has(event.textToPlay)) {
+    return;
+  }
+
+  const audio = new SpeechSynthesisUtterance(event.textToPlay);
+  audioMap.set(event.textToPlay, audio);
+  speechSynthesis.speak(audio);
+  audio.onend = () => {
+    audioMap.delete(event.textToPlay);
+  };
 });
 
 function loadLocalization() {

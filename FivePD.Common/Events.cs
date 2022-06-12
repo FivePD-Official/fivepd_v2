@@ -143,6 +143,12 @@ namespace FivePD.Common
 
             /// <summary>Sends radial menu control events (mouse move up, down, select) to the Nui.</summary>
             public const string RadialMenuControl = "radial_menu:control";
+
+            /// <summary>Sends an event to the Nui to play a sound effect.</summary>
+            public const string PlaySound = "sound:play";
+
+            /// <summary>Sends an event to the Nui to read out a text.</summary>
+            public const string Speak = "sound:speak";
         }
 
         /// <summary>

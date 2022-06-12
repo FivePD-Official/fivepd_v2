@@ -77,6 +77,10 @@ namespace FivePD.Gamemode.Client
                 .IsSingleton();
 
             services
+                .RegisterType<SoundService>()
+                .As<ISoundService>();
+
+            services
                 .RegisterType<KeybindService>()
                 .As<IKeybindService>()
                 .IsSingleton();
