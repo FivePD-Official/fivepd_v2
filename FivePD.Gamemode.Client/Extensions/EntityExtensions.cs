@@ -6,6 +6,7 @@
 
 using System;
 using CitizenFX.Core;
+using FivePD.Gamemode.Client.Services;
 using FivePD.Gamemode.Client.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
@@ -16,6 +17,8 @@ namespace FivePD.Gamemode.Client.Extensions
     /// </summary>
     public static class EntityExtensions
     {
+        private static readonly TempDataStorageService TempDataStorageService = new TempDataStorageService();
+
         private static readonly uint[] UnsupportedPedHashes =
         {
             (uint)PedHash.Humpback,
@@ -125,5 +128,13 @@ namespace FivePD.Gamemode.Client.Extensions
         {
             Cfx.API.SetEntityAsMissionEntity(entity.Handle, state, state);
         }
+
+        /// <summary>
+        /// Get temporary replicated data off this <see cref="Entity"/>.
+        /// </summary>
+        /// <param name="entity">Entity to get data for.</param>
+        /// <param name="key">Key to get.</param>
+        /// <returns>Temporary replicated data.</returns>
+        public static dynamic GetTempData(this Entity entity, string key) => TempDataStorageService.Get(entity, key);
     }
 }
