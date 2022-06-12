@@ -8,8 +8,18 @@
         <Platforms>x64</Platforms>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+        <OutputPath>../FXServer-Data/resources/fivepd/Libraries/IA/AmbientEvents</OutputPath>
+        <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\Scripts\RestartLocalFXServer.ps1</PostBuildEvent>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+        <OutputPath>../build-public/Libraries/IA/AmbientEvents</OutputPath>
+        <DebugType>none</DebugType>
+    </PropertyGroup>
+
     <ItemGroup>
-      <ProjectReference Include="..\FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj" />
+      <ProjectReference Include="..\FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj" Private="false" />
     </ItemGroup>
 
     <ItemGroup>
