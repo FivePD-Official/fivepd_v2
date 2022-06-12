@@ -24,7 +24,7 @@
         <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\Scripts\RestartLocalFXServer.ps1</PostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-        <OutputPath>../build-public/Libraries/FivePD.Gamemode.Server</OutputPath>
+        <OutputPath>../build-public-pre/Libraries/FivePD.Gamemode.Server</OutputPath>
     </PropertyGroup>
     <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />
 
@@ -42,10 +42,10 @@
     </ItemGroup>
     <Target Name="CopyStatics" BeforeTargets="CopyFilesToOutputDirectory" DependsOnTargets="CopyStaticsDebug;CopyStaticsRelease" />
     <Target Name="CopyStaticsDebug" Condition=" '$(Configuration)' == 'Debug' ">
-        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'..\FXServer-Data\resources\fivepd\%(RecursiveDir)%(Filename)%(Extension)')" />
+        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'..\FXServer-Data\resources\fivepd\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     </Target>
     <Target Name="CopyStaticsRelease" Condition=" '$(Configuration)' == 'Release' ">
-        <Copy SourceFiles="@(StaticFiles)" DestinationFolder="..\build-public\%(RecursiveDir)" />
+        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'..\build-public\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     </Target>
 
     <ItemGroup>

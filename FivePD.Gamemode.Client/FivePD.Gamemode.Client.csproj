@@ -21,7 +21,7 @@
     <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\Scripts\RestartLocalFXServer.ps1</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>../build-public/Libraries/FivePD.Gamemode.Client</OutputPath>
+    <OutputPath>../build-public-pre/Libraries/FivePD.Gamemode.Client</OutputPath>
   </PropertyGroup>
   <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />
 
