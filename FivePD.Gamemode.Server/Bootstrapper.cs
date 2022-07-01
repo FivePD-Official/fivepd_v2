@@ -8,19 +8,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.API;
+using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Sentry;
-using Sentry.Infrastructure;
 using Serilog;
-using Serilog.Sinks.SystemConsole.Themes;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server
@@ -48,9 +46,7 @@ namespace FivePD.Gamemode.Server
             #endif
 
             var globalLoggerConfig = new LoggerConfiguration()
-                .WriteTo.Console(
-                    theme: AnsiConsoleTheme.Code,
-                    outputTemplate: "[{Timestamp:HH:mm:ss} FivePD:{SourceIdentifier} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.CfxDebugSink("[{Timestamp:HH:mm:ss} FivePD:{SourceIdentifier} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .WriteTo.File(
                     $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/Server-.txt",
                     rollingInterval: RollingInterval.Day,
