@@ -9,6 +9,9 @@
 
   `VITE_OUTDIR`=<your_path_to_the_fivem_server>\\resources\\fivepd\\Libraries\\FivePD.Nui
 
+### Running Migrations
+
+- Use the syntax `dotnet ef migrations add <MigrationName> --project .\FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj --startup-project .\FivePD.StartupProject\FivePD.StartupProject.csproj` from the root folder. Migrations require a startup project to run properly.
 ### Developing
 
 1. Insert the latest recommended build of FXServer into the `FXServer` directory

@@ -28,6 +28,7 @@ namespace FivePD.JsonGenerator
             Write(typeof(Localization), "Localization/en.json");
             Write(CreateLocalizationTestData(new Localization()) as Localization, "Localization/test.json");
 
+            Write(CreateDefaultDatabase(), "Config/database.json");
             Write(CreateDefaultLoadouts(), "Config/loadouts.json");
             Write(CreateDefaultItems(), "Config/items.json");
             Write(CreateDefaultVehicles(), "Config/vehicles.json");
@@ -139,6 +140,18 @@ namespace FivePD.JsonGenerator
             };
 
             return vehicles;
+        }
+
+        private static DatabaseConfig CreateDefaultDatabase()
+        {
+            return new DatabaseConfig
+            {
+                Address = "127.0.0.1",
+                Port = "3306",
+                Database = "fivepd",
+                User = "root",
+                Password = string.Empty,
+            };
         }
     }
 }

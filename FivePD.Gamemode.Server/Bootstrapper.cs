@@ -9,13 +9,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.API;
+using FivePD.Gamemode.Server.Database;
+using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sentry;
 using Serilog;
@@ -34,6 +38,8 @@ namespace FivePD.Gamemode.Server
 
         private readonly ServiceProvider _provider;
         private readonly IDisposable _sentryClient;
+
+        private bool _isStopped;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
@@ -130,6 +136,9 @@ namespace FivePD.Gamemode.Server
 
             // Find and register core services
             services.AddSingleton(Log.Logger);
+            services.AddSingleton(this.EventHandlers);
+
+            services.AddDbContext<Database.DatabaseContext>();
 
             services.AddSingleton<IFileHandlerService, FileHandlerService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
@@ -146,10 +155,7 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IPedService, PedService>();
             services.AddSingleton<IVehicleService, VehicleService>();
             services.AddSingleton<ITrafficStopService, TrafficStopService>();
-
             services.AddSingleton<IPlayerDataService, PlayerDataService>();
-
-            services.AddSingleton(this.EventHandlers);
 
             // Find and register addons
             services.Scan(scan => scan
@@ -165,6 +171,9 @@ namespace FivePD.Gamemode.Server
             {
                 addonMetadataService?.RegisterAddonAssemblyWithDefinition(assembly.Key, assembly.Value);
             }
+
+            var playerDataService = this._provider.GetService<IPlayerDataService>();
+            playerDataService?.RegisterEvents();
 
             var entityService = this._provider.GetService<IEntityService>();
             entityService?.RegisterEvents();
@@ -194,6 +203,40 @@ namespace FivePD.Gamemode.Server
                 return;
             }
 
+            var db = this._provider.GetService<DatabaseContext>();
+            try
+            {
+                if (db is null)
+                {
+                    throw new DatabaseUsageException("No database context is available for usage");
+                }
+
+                if (!db.Database.CanConnect())
+                {
+                    throw new DatabaseUsageException("The configured database is invalid or offline. Verify the connection settings in the /Config/database.json file and try again");
+                }
+
+                var migrations = db.Database.GetPendingMigrations();
+
+                try
+                {
+                    log?.Information("Upgrading the database to {Version}", migrations.Last());
+                    db.Database.Migrate();
+                }
+                catch (Exception)
+                {
+                    // Throws when there are no migrations to run. Not an issue. Continue.
+                    log?.Information("The database is up to date");
+                }
+            }
+            catch (DatabaseUsageException e)
+            {
+                log?.Fatal("Database configuration failed: {Error}", e.Message);
+
+                this.StopGamemode();
+                return;
+            }
+
             // Check for dev mode. If enabled, register the utilities
             if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
             {
@@ -218,7 +261,6 @@ namespace FivePD.Gamemode.Server
             // Being that the thread is about to be free for the first time, enqueued addon starts will run here
             log?.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
 
-            var playerDataService = this._provider.GetService<IPlayerDataService>()!;
             var demoPlayer = new FPlayer("1");
 
             playerDataService.DutyStatusChanged += (sender, args) => log.Information("A duty status changed! ({@Player})", args);
@@ -234,9 +276,16 @@ namespace FivePD.Gamemode.Server
         [EventHandler("onResourceStop")]
         internal void OnStopped()
         {
+            if (this._isStopped)
+            {
+                return;
+            }
+
             var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
 
             log?.Information("Stopping FivePD");
+
+            this._isStopped = true;
 
             log?.Debug("Running addon shutdown routine");
 
@@ -248,9 +297,14 @@ namespace FivePD.Gamemode.Server
 
             log?.Debug("Addon shutdown complete. Running gamemode disposal routine");
 
-            this._provider.Dispose();
-            Log.CloseAndFlush();
-            this._sentryClient.Dispose();
+            try
+            {
+                this._provider.Dispose();
+            }
+            catch (Exception)
+            {
+                // Doesn't matter at this point
+            }
         }
 
         /// <summary>

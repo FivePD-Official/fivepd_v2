@@ -35,6 +35,12 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
+        public DatabaseConfig GetDatabaseConfig()
+        {
+            return this.InternalLoadFile<DatabaseConfig>("/Config/database.json");
+        }
+
+        /// <inheritdoc />
         public List<Item> GetItems()
         {
             return this.InternalLoadFile<List<Item>>("/Config/items.json");

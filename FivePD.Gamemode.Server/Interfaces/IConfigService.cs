@@ -17,6 +17,12 @@ namespace FivePD.Gamemode.Server.Interfaces
     public interface IConfigService
     {
         /// <summary>
+        /// Loads and returns the database connection settings.
+        /// </summary>
+        /// <returns>Returns the database connection settings.</returns>
+        public DatabaseConfig GetDatabaseConfig();
+
+        /// <summary>
         /// Loads and returns the /Config/items.json file's content.
         /// </summary>
         /// <returns>Returns all items from the config file.</returns>
