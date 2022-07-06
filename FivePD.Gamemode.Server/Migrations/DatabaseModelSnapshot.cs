@@ -23,12 +23,40 @@ namespace FivePD.Gamemode.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("Acronym")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("CallsignFormat")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("MaxUsers")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
                     b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.Division", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("Divisions");
                 });
 
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.User", b =>
@@ -43,6 +71,9 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DivisionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("License")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -53,7 +84,16 @@ namespace FivePD.Gamemode.Server.Migrations
 
                     b.HasIndex("DepartmentId");
 
+                    b.HasIndex("DivisionId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.Division", b =>
+                {
+                    b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
+                        .WithMany("Divisions")
+                        .HasForeignKey("DepartmentId");
                 });
 
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.User", b =>
@@ -61,6 +101,10 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
                         .WithMany("Users")
                         .HasForeignKey("DepartmentId");
+
+                    b.HasOne("FivePD.Gamemode.Server.Models.Division", "Division")
+                        .WithMany()
+                        .HasForeignKey("DivisionId");
                 });
 #pragma warning restore 612, 618
         }

@@ -50,6 +50,11 @@ namespace FivePD.Gamemode.Server.Database
         /// </summary>
         public DbSet<Department> Departments { get; set; }
 
+        /// <summary>
+        /// Gets or sets divisions table.
+        /// </summary>
+        public DbSet<Division> Divisions { get; set; }
+
         /// <inheritdoc />
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -66,6 +71,13 @@ namespace FivePD.Gamemode.Server.Database
             modelBuilder.Entity<Department>()
                 .HasMany(department => department.Users)
                 .WithOne(user => user.Department);
+
+            modelBuilder.Entity<Department>()
+                .HasMany(department => department.Divisions)
+                .WithOne(division => division.Department);
+
+            modelBuilder.Entity<User>()
+                .HasOne(user => user.Division);
         }
     }
 }

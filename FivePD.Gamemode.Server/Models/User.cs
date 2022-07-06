@@ -4,12 +4,14 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using FivePD.Gamemode.Server.Models.ResponseModels;
+
 namespace FivePD.Gamemode.Server.Models
 {
     /// <summary>
     /// Represents the 'users' table.
     /// </summary>
-    public class User
+    public class User : BaseEntity<UserResponse>
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -35,5 +37,24 @@ namespace FivePD.Gamemode.Server.Models
         /// Gets or sets the department which the user is joined to.
         /// </summary>
         public Department Department { get; set; }
+
+        /// <summary>
+        /// Gets or sets the division which the user is joined to.
+        /// </summary>
+        public Division Division { get; set; }
+
+        /// <inheritdoc />
+        public override UserResponse ToResponse()
+        {
+            return new UserResponse
+            {
+                Id = this.Id,
+                Name = this.Name,
+                License = this.License,
+                Admin = this.Admin,
+                Department = this.Department.ToResponse(),
+                Division = this.Division.ToResponse(),
+            };
+        }
     }
 }
