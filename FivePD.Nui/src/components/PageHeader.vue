@@ -25,6 +25,6 @@ const props = defineProps<{
   h1
     font-size: 24px
     font-weight: 700
-    color: var(--clr-text-primary)
+    color: var(--clr-text)
 
 </style>

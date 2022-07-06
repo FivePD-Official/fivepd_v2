@@ -147,7 +147,7 @@ namespace FivePD.Gamemode.Client.Services
             foreach (var key in keyCount.Where(key => key.Value > 0).Select(key => key.Key))
             {
                 var notificationText = new GtaStyleText().Red("[FivePD error]").NewLine().Reset().Build() +
-                   this._localizationService.CurrentLocalization.ErrorLocalizations
+                   this._localizationService.CurrentLocalization.Error
                        .MultipleMenusWithSameKey.ReplaceParams(
                            new Dictionary<string, string>
                            {

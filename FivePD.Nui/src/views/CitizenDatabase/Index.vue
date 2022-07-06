@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
 import { ISearchSubmitField, PedSearchResponse } from '@interfaces';
+import { useState } from '@store';
 import { post } from '@utils';
 import { ref } from 'vue';
 
+const state = useState();
 const onSearchSubmit = async (fields: ISearchSubmitField[]) => {
   post<PedSearchResponse>(ClientEvents.PedSearch, {...fields}).subscribe(res => {
     citizens.value = res;
@@ -33,7 +35,7 @@ const citizens = ref<PedSearchResponse>([]);
 </script>
 
 <template>
-  <PageHeader title="Citizen database" />
+  <PageHeader :title="state.user.localization?.Nui.Labels.Dashboard ?? 'Citizen database'" />
   <div class="content">
 
     <SearchPanel

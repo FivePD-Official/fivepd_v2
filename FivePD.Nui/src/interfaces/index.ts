@@ -6,3 +6,5 @@ export * from './Menu';
 export * from './NuiEventResponses';
 export * from './ILocalization';
 export * from './DatabaseSearch';
+export * from './IDepartment';
+export * from './IUser';

@@ -137,9 +137,11 @@ namespace FivePD.Gamemode.Server
             // Find and register core services
             services.AddSingleton(Log.Logger);
             services.AddSingleton(this.EventHandlers);
+            services.AddSingleton(this.Players);
 
-            services.AddDbContext<Database.DatabaseContext>();
+            services.AddDbContext<DatabaseContext>();
 
+            services.AddSingleton<IDepartmentService, DepartmentService>();
             services.AddSingleton<IFileHandlerService, FileHandlerService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IConfigService, ConfigService>();
@@ -171,6 +173,9 @@ namespace FivePD.Gamemode.Server
             {
                 addonMetadataService?.RegisterAddonAssemblyWithDefinition(assembly.Key, assembly.Value);
             }
+
+            var departmentService = this._provider.GetService<IDepartmentService>();
+            departmentService?.RegisterEvents();
 
             var playerDataService = this._provider.GetService<IPlayerDataService>();
             playerDataService?.RegisterEvents();

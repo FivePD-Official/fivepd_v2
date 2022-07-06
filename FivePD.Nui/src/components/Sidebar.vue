@@ -2,14 +2,15 @@
 import { computed } from 'vue';
 import type { IRoute } from '@interfaces';
 import { useStore } from 'vuex';
+import { State } from '@store';
 
-const store = useStore();
+const store = useStore<State>();
 const isSidebarCollapsed = computed(() => store.state.user.isSidebarCollapsed);
 const isPanicModeActive = computed(() => store.state.user.isPanicModeActive);
 
 const routes: IRoute[] = [
   {
-    title: 'Dashboard',
+    title: store.state.user.localization?.Nui.Labels.Dashboard ?? 'Dashboard',
     path: '/',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -17,7 +18,7 @@ const routes: IRoute[] = [
       </svg>`
   },
   {
-    title: 'Citizen database',
+    title: store.state.user.localization?.Nui.Labels.CitizenDatabase ?? 'Citizen Database',
     path: '/citizen-database',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,7 +26,7 @@ const routes: IRoute[] = [
       </svg>`
   },
   {
-    title: 'Vehicle database',
+    title: store.state.user.localization?.Nui.Labels.VehicleDatabase ?? 'Vehicle database',
     path: '/vehicle-database',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,7 +51,7 @@ const routes: IRoute[] = [
       </svg>`
   },
   {
-    title: 'Settings',
+    title: store.state.user.localization?.Nui.Labels.Settings ?? 'Settings',
     path: '/settings',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,7 +60,7 @@ const routes: IRoute[] = [
       </svg>`
   },
   {
-    title: 'Department',
+    title: store.state.user.localization?.Nui.Labels.Department ?? 'Department',
     path: '/department',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

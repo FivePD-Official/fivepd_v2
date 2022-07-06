@@ -8,7 +8,9 @@ export function post<T>(path: string, options: object | number = {}): Observable
 function request(method: string, path: string, body: object | number = {}) {
 
   let newBody: string | number = '';
-  if (typeof body === 'object') {
+  if (body === undefined) {
+    newBody = JSON.stringify({});
+  } else if (typeof body === 'object') {
     newBody = JSON.stringify(body);
   } else {
     newBody = body as number;

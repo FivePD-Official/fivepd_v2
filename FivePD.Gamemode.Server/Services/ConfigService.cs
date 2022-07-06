@@ -75,8 +75,8 @@ namespace FivePD.Gamemode.Server.Services
 
             var exceptionMessage = file.Item2 switch
             {
-                EmptyConfigException _ => this._localizationService.GetDefaultLocalization().WarningLocalizations.EmptyConfigException,
-                _ => this._localizationService.GetDefaultLocalization().WarningLocalizations.ConfigException,
+                EmptyConfigException _ => this._localizationService.GetDefaultLocalization().Warning.EmptyConfigException,
+                _ => this._localizationService.GetDefaultLocalization().Warning.ConfigException,
             };
 
             this._logger.Warning(exceptionMessage.ReplaceParams(

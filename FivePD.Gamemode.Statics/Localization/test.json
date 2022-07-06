@@ -26,11 +26,35 @@
     "Canceled": "T: You've canceled the traffic stop.",
     "StoppedVehicle": "T: Stopped vehicle"
   },
-  "ErrorLocalizations": {
+  "Error": {
     "MultipleMenusWithSameKey": "T: There are multiple menus which key is set to {{key}}. Make sure to change them, otherwise they will not work."
   },
-  "WarningLocalizations": {
+  "Warning": {
     "ConfigException": "T: An error occured while parsing the {{path}} file, the default values will be used. Make sure that the JSON formatting is correct, we recommend using the following site to check it: https://jsonformatter.org/",
     "EmptyConfigException": "T: The {{path}} file is empty, the default values will be used."
+  },
+  "Nui": {
+    "Labels": {
+      "Acronym": "T: Acronym",
+      "ActiveCalls": "T: Active calls",
+      "Address": "T: Address",
+      "AssignedCall": "T: Assigned call",
+      "CitizenDatabase": "T: Citizen database",
+      "Dashboard": "T: Dashboard",
+      "Department": "T: Department",
+      "Departments": "T: Departments",
+      "Division": "T: Division",
+      "Divisions": "T: Divisions",
+      "Members": "T: Members",
+      "MyDetails": "T: My details",
+      "Name": "T: Name",
+      "Rank": "T: Rank",
+      "Settings": "T: Settings",
+      "Statistics": "T: Statistics",
+      "Status": "T: Status",
+      "Type": "T: Type",
+      "Units": "T: Units",
+      "VehicleDatabase": "T: Vehicle database"
+    }
   }
 }
