@@ -128,6 +128,28 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
                         .WithMany("Ranks")
                         .HasForeignKey("DepartmentId");
+
+                    b.OwnsOne("FivePD.Gamemode.Server.Models.RankPermissions", "Permissions", b1 =>
+                        {
+                            b1.Property<int>("RankId")
+                                .HasColumnType("int");
+
+                            b1.Property<bool>("Kick")
+                                .HasColumnType("tinyint(1)");
+
+                            b1.Property<bool>("SetCallsign")
+                                .HasColumnType("tinyint(1)");
+
+                            b1.Property<bool>("SetRank")
+                                .HasColumnType("tinyint(1)");
+
+                            b1.HasKey("RankId");
+
+                            b1.ToTable("Ranks");
+
+                            b1.WithOwner()
+                                .HasForeignKey("RankId");
+                        });
                 });
 
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.User", b =>

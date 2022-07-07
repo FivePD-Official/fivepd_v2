@@ -7,3 +7,4 @@ export * from './NuiEventResponses';
 export * from './ILocalization';
 export * from './DatabaseSearch';
 export * from './Entities';
+export * from './Table';

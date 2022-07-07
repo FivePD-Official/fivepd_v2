@@ -2,7 +2,7 @@
 import { ClientEvents } from "@enums";
 import { ref } from "vue";
 import { post } from "@utils";
-import { IDepartment, IUser } from "@interfaces";
+import { Column, IDepartment, IUser } from "@interfaces";
 import { State } from "@store";
 import { useStore } from "vuex";
 
@@ -19,6 +19,10 @@ post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
 post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
   departments.value = res;
 });
+
+function departmentsLinkResolver(rowItem: any, columnKey: string, columnValue: Column) {
+  return `/departments/${rowItem.Id}`;
+}
 </script>
 
 <template>
@@ -72,10 +76,18 @@ post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
     :title="store.state.global.localization.Nui.Labels.ActiveCalls"
     :rows="[]"
     :columns="{
-      Type: store.state.global.localization.Nui.Labels.Type,
-      Address: store.state.global.localization.Nui.Labels.Address,
-      Status: store.state.global.localization.Nui.Labels.Status,
-      Units: store.state.global.localization.Nui.Labels.Units,
+      Type: {
+        label: store.state.global.localization.Nui.Labels.Type,
+      },
+      Address: {
+        label: store.state.global.localization.Nui.Labels.Address,
+      },
+      Status: {
+        label: store.state.global.localization.Nui.Labels.Status,
+      },
+      Units: {
+        label: store.state.global.localization.Nui.Labels.Units,
+      },
     }"
   />
 
@@ -84,10 +96,12 @@ post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
     :rows="departments"
     :columns="{
       Name: {
-        linkToId: '/departments',
+        linkResolver: (rowItem, columnKey, columnValue) => departmentsLinkResolver(rowItem, columnKey, columnValue),
         label: store.state.global.localization.Nui.Labels.Name,
       },
-      Acronym: store.state.global.localization.Nui.Labels.Acronym,
+      Acronym: {
+        label: store.state.global.localization.Nui.Labels.Acronym,
+      },
     }"
   />
 </template>

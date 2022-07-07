@@ -4,7 +4,7 @@ export function useT() {
 
   const t = (key: string) => {
     const store = useStore();
-    const localization = store.state.user.localization;
+    const localization = store.state.global.localization;
 
     let currentItem = localization;
     for (const k of key.split('.')) {

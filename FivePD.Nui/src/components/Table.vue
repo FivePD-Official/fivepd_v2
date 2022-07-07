@@ -1,37 +1,20 @@
 <script setup lang="ts">
 import { useState } from '@store';
 import { computed } from 'vue';
-
-interface Column {
-  replaceKeyFrom?: any[],
-  linkToId?: string,
-  label: string,
-};
-
-interface FormattedColumn {
-  value: string,
-  isLink: boolean,
-}
-
-interface FormattedRowItem {
-  value: string,
-  link?: string,
-}
-
-type FormattedRow = FormattedRowItem[];
+import { Column, FormattedColumn, FormattedRow, FormattedRowItem } from '@interfaces';
 
 const state = useState();
 const props = defineProps<{
   title: string,
-  columns: Record<string, string | Column>,
+  columns: Record<string, Column>,
   rows: any[],
 }>();
 
 const formattedColumns = computed<FormattedColumn[]>(() => {
   return Object.values(props.columns).map(item => {
     const newValue: FormattedColumn = {
-      value: typeof item === 'string' ? item : item.label,
-      isLink: typeof item !== 'string' && !!item.linkToId
+      value: item.label,
+      isLink: !!item.linkResolver
     }
     return newValue;
   });
@@ -44,10 +27,10 @@ const formattedRows = computed<FormattedRow[]>(() => {
     for (const [key, value] of Object.entries(props.columns)) {
       let newValue = '';
 
-      if (typeof value === 'string') {
+      if (!value.valueResolver) {
         newValue = item[key];
-      } else if (value.replaceKeyFrom) {
-        newValue = value.replaceKeyFrom.find(sub => sub.Id === item[key])?.Name;
+      } else if (value.valueResolver) {
+        newValue = value.valueResolver(item, key, value, []);
       } else {
         newValue = item[key];
       }
@@ -56,8 +39,8 @@ const formattedRows = computed<FormattedRow[]>(() => {
         value: newValue,
       };
 
-      if (typeof value !== 'string' && value.linkToId) {
-        rowItem.link = `${value.linkToId}/${item.Id}`
+      if (value.linkResolver) {
+        rowItem.link = value.linkResolver(item, key, value);
       }
       row.push(rowItem);
     }

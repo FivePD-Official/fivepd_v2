@@ -14,37 +14,7 @@ export const globalState = {
       radialMenus: [],
       menus: [],
       availableLocales: [],
-      localization: {
-        Title: '',
-        Nui: {
-          Labels: {
-            Acronym: '',
-            ActiveCalls: '',
-            Address: '',
-            AssignedCall: '',
-            Callsign: '',
-            CitizenDatabase: '',
-            Dashboard: '',
-            Department: '',
-            Departments: '',
-            Division: '',
-            Divisions: '',
-            Members: '',
-            MyDetails: '',
-            Name: '',
-            NoAssignedCall: '',
-            NoDataToDisplay: '',
-            NotInDepartment: '',
-            Rank: '',
-            Settings: '',
-            Statistics: '',
-            Status: '',
-            Type: '',
-            Units: '',
-            VehicleDatabase: '',
-          }
-        }
-      },
+      localization: defaultLocalization,
     }
   },
   mutations: {
@@ -63,3 +33,62 @@ export const globalState = {
   },
   actions: {}
 };
+
+const defaultLocalization = {
+  Title: '',
+  DutyMenu: {
+    Title: '',
+    OnDuty: {
+      Title: '',
+      Description: '',
+    },
+    GetLoadout: {
+      Title: '',
+      Description: '',
+    },
+    ChangeLanguage: {
+      Title: '',
+      Description: '',
+    },
+    SpawnVehicle: {
+      Title: '',
+      Description: '',
+    }
+  },
+  Nui: {
+    Labels: {
+      Acronym: '',
+      ActiveCalls: '',
+      Address: '',
+      AssignedCall: '',
+      Callsign: '',
+      CitizenDatabase: '',
+      Dashboard: '',
+      Department: '',
+      Departments: '',
+      Division: '',
+      Divisions: '',
+      Members: '',
+      MyDetails: '',
+      MyDepartment: '',
+      Name: '',
+      NoAssignedCall: '',
+      NoDataToDisplay: '',
+      NotInDepartment: '',
+      Permissions: '',
+      Rank: '',
+      Ranks: '',
+      Settings: '',
+      Statistics: '',
+      Status: '',
+      Type: '',
+      Units: '',
+      VehicleDatabase: '',
+    },
+    Actions: {
+      Kick: '',
+      SetRank: '',
+      SetCallsign: '',
+    }
+  }
+}

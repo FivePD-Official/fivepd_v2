@@ -31,4 +31,9 @@ export interface IDivision {
 export interface IRank {
   Id: number,
   Name: string,
+  Permissions: {
+    Kick: boolean,
+    SetRank: boolean,
+    SetCallsign: boolean,
+  }
 }

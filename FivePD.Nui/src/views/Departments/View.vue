@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import { IDepartment } from '@interfaces';
+import { IDepartment, IRank, Column, FormattedColumn, FormattedRow, FormattedRowItem } from '@interfaces';
 import { useState } from '@store';
 import { post } from '@utils';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const state = useState();
@@ -15,27 +15,73 @@ onMounted(() => {
   if (state.user.details.Department?.Id === parseInt(route.params.id as string)) {
     department.value = state.user.details.Department;
   }
+  requestDepartmentData();
 })
 
-post<IDepartment>(ClientEvents.GetDepartmentById, parseInt(route.params.id as string)).subscribe((res) => {
-  department.value = res;
+watch(route, () => {
+  requestDepartmentData();
+}, {
+  deep: true
 });
+
+
+function requestDepartmentData() {
+  post<IDepartment>(ClientEvents.GetDepartmentById, parseInt(route.params.id as string)).subscribe((res) => {
+    department.value = res;
+  });
+}
+
+function rowIdToNameResolver(rowItem: any, columnKey: string, columnValue: Column, substituteList: any[]) {
+  return substituteList.find(sub => sub.Id === rowItem[columnKey])?.Name;
+}
+
+function rankPermissionResolver(rank: IRank): string {
+  let permissions = '';
+
+  if (rank.Permissions.Kick) {
+    permissions += `${state.global.localization.Nui.Actions.Kick}, `;
+  }
+  if (rank.Permissions.SetRank) {
+    permissions += `${state.global.localization.Nui.Actions.SetRank}, `;
+  }
+  if (rank.Permissions.SetCallsign) {
+    permissions += `${state.global.localization.Nui.Actions.SetCallsign}, `;
+  }
+
+  return permissions.length ? permissions.slice(0, -2) : '-';
+}
 </script>
 
 <template>
   <PageHeader :title="title" />
 
   <Table
-    title="Members"
+    :title="state.global.localization.Nui.Labels.Ranks"
+    :rows="department?.Ranks ?? []"
+    :columns="{
+      Name: {
+        label: state.global.localization.Nui.Labels.Name,
+      },
+      Permissions: {
+        valueResolver: (rowItem) => rankPermissionResolver(rowItem),
+        label: state.global.localization.Nui.Labels.Permissions,
+      }
+    }"
+  />
+
+  <Table
+    :title="state.global.localization.Nui.Labels.Members"
     :rows="department?.Users ?? []"
     :columns="{
-      Name: state.global.localization.Nui.Labels.Name,
+      Name: {
+        label: state.global.localization.Nui.Labels.Name,
+      },
       RankId: {
-        replaceKeyFrom: department?.Ranks ?? [],
+        valueResolver: (rowItem, columnKey, columnValue) => rowIdToNameResolver(rowItem, columnKey, columnValue, department?.Ranks ?? []),
         label: state.global.localization.Nui.Labels.Rank,
       },
       DivisionId: {
-        replaceKeyFrom: department?.Divisions ?? [],
+        valueResolver: (rowItem, columnKey, columnValue) => rowIdToNameResolver(rowItem, columnKey, columnValue, department?.Divisions ?? []),
         label: state.global.localization.Nui.Labels.Division
       },
     }"

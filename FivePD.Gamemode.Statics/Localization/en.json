@@ -48,17 +48,25 @@
       "Divisions": "Divisions",
       "Members": "Members",
       "MyDetails": "My details",
+      "MyDepartment": "My department",
       "Name": "Name",
       "NoAssignedCall": "You're not assigned to a call at the moment.",
       "NoDataToDisplay": "No data to display.",
       "NotInDepartment": "You're not in a department.",
+      "Permissions": "Permissions",
       "Rank": "Rank",
+      "Ranks": "Ranks",
       "Settings": "Settings",
       "Statistics": "Statistics",
       "Status": "Status",
       "Type": "Type",
       "Units": "Units",
       "VehicleDatabase": "Vehicle database"
+    },
+    "Actions": {
+      "Kick": "Kick",
+      "SetRank": "Set rank",
+      "SetCallsign": "Set callsign"
     }
   }
 }

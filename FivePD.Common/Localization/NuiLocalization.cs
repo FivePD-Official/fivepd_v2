@@ -18,12 +18,18 @@ namespace FivePD.Common.Localization
         public NuiLocalization()
         {
             this.Labels = new Labels();
+            this.Actions = new Actions();
         }
 
         /// <summary>
         /// Gets or sets all labels that can be found in the NUI.
         /// </summary>
         public Labels Labels { get; set; }
+
+        /// <summary>
+        /// Gets or sets all action labels that can be found in the NUI.
+        /// </summary>
+        public Actions Actions { get; set; }
     }
 
     public class Labels
@@ -54,6 +60,8 @@ namespace FivePD.Common.Localization
 
         public string MyDetails { get; set; } = "My details";
 
+        public string MyDepartment { get; set; } = "My department";
+
         public string Name { get; set; } = "Name";
 
         public string NoAssignedCall { get; set; } = "You're not assigned to a call at the moment.";
@@ -62,7 +70,11 @@ namespace FivePD.Common.Localization
 
         public string NotInDepartment { get; set; } = "You're not in a department.";
 
+        public string Permissions { get; set; } = "Permissions";
+
         public string Rank { get; set; } = "Rank";
+
+        public string Ranks { get; set; } = "Ranks";
 
         public string Settings { get; set; } = "Settings";
 
@@ -75,5 +87,14 @@ namespace FivePD.Common.Localization
         public string Units { get; set; } = "Units";
 
         public string VehicleDatabase { get; set; } = "Vehicle database";
+    }
+
+    public class Actions
+    {
+        public string Kick { get; set; } = "Kick";
+
+        public string SetRank { get; set; } = "Set rank";
+
+        public string SetCallsign { get; set; } = "Set callsign";
     }
 }
