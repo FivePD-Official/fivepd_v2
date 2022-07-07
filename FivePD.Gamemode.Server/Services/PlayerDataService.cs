@@ -13,9 +13,9 @@ using FivePD.Common;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
+using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
-using FivePD.Gamemode.Server.Models.ResponseModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -131,7 +131,7 @@ namespace FivePD.Gamemode.Server.Services
                     .Include(user => user.Rank)
                     .FirstOrDefault(user => user.License == license);
 
-                networkCallbackDelegate.Invoke(user is null ? null : JsonConvert.SerializeObject(user.ToResponse()));
+                networkCallbackDelegate.Invoke(user is null ? null : Converter.SerializeObjectWithoutReferenceLoop(user));
             }
             catch (Exception e)
             {

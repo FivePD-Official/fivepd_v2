@@ -11,6 +11,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
+using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -38,14 +39,34 @@ namespace FivePD.Gamemode.Server.Services
         public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
+            this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
         }
 
         private void GetDepartmentsForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
             {
-                var departments = this._databaseContext.Departments.AsNoTracking().Select(department => department.ToResponse()).ToList();
-                networkCallbackDelegate.Invoke(JsonConvert.SerializeObject(departments));
+                var departments = this._databaseContext.Departments.AsNoTracking().ToList();
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(departments));
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void GetDepartmentByIdForNui(int id, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var department = this._databaseContext.Departments
+                    .AsNoTracking()
+                    .Include(department => department.Users)
+                    .Include(department => department.Ranks)
+                    .Include(department => department.Divisions)
+                    .FirstOrDefault(department => department.Id == id);
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(department));
             }
             catch (Exception e)
             {

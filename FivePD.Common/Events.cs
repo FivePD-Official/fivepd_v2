@@ -181,6 +181,11 @@ namespace FivePD.Common
             /// Used to request all departments for listing in the NUI.
             /// </summary>
             public const string List = "fivepd:department:list";
+
+            /// <summary>
+            /// Used to request a department by its id.
+            /// </summary>
+            public const string GetById = "fivepd:department:getById";
         }
 
         /// <summary>

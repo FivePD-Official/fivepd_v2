@@ -5,14 +5,13 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
-using FivePD.Gamemode.Server.Models.ResponseModels;
 
 namespace FivePD.Gamemode.Server.Models
 {
     /// <summary>
     /// Represents the 'departments' table.
     /// </summary>
-    public class Department : BaseEntity<DepartmentResponse>
+    public class Department
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -53,18 +52,5 @@ namespace FivePD.Gamemode.Server.Models
         /// Gets or sets the ranks of this department.
         /// </summary>
         public IEnumerable<Rank> Ranks { get; set; }
-
-        /// <inheritdoc />
-        public override DepartmentResponse ToResponse()
-        {
-            return new DepartmentResponse
-            {
-                Id = this.Id,
-                Name = this.Name,
-                Acronym = this.Acronym,
-                CallsignFormat = this.CallsignFormat,
-                MaxUsers = this.MaxUsers,
-            };
-        }
     }
 }

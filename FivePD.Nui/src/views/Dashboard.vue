@@ -14,7 +14,7 @@ const statistics = ref<any>(); // TODO
 const assignedCall = ref<any>(); // TODO
 
 post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
-  store.commit("setUserDetails", res);
+  store.commit('setUserDetails', res);
 });
 post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
   departments.value = res;

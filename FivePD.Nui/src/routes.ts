@@ -15,12 +15,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/citizen-database',
     component: CitizenDatabaseIndex,
-    children: [
-      {
-        path: '/:id',
-        component: CitizenDatabaseView
-      }
-    ]
+  },
+  {
+    path: '/citizen-database/:id',
+    component: CitizenDatabaseView
   },
   {
     path: '/vehicle-database',
@@ -33,12 +31,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/departments',
     component: DepartmentsIndex,
-    children: [
-      {
-        path: '/:id',
-        component: DepartmentsView,
-      }
-    ]
   },
+  {
+    path: '/departments/:id',
+    component: DepartmentsView,
+  }
 ];
 export default routes;
