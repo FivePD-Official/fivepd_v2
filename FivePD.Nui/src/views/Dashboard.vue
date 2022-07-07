@@ -69,22 +69,25 @@ post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
   </div>
 
   <Table
-    :title="store.state.global.localization?.Nui.Labels.ActiveCalls"
+    :title="store.state.global.localization.Nui.Labels.ActiveCalls"
     :rows="[]"
     :columns="{
-      Type: store.state.global.localization?.Nui.Labels.Type,
-      Address: store.state.global.localization?.Nui.Labels.Address,
-      Status: store.state.global.localization?.Nui.Labels.Status,
-      Units: store.state.global.localization?.Nui.Labels.Units,
+      Type: store.state.global.localization.Nui.Labels.Type,
+      Address: store.state.global.localization.Nui.Labels.Address,
+      Status: store.state.global.localization.Nui.Labels.Status,
+      Units: store.state.global.localization.Nui.Labels.Units,
     }"
   />
 
   <Table
-    :title="store.state.global.localization?.Nui.Labels.Departments"
+    :title="store.state.global.localization.Nui.Labels.Departments"
     :rows="departments"
     :columns="{
-      Name: store.state.global.localization?.Nui.Labels.Name,
-      Acronym: store.state.global.localization?.Nui.Labels.Acronym,
+      Name: {
+        linkToId: '/departments',
+        label: store.state.global.localization.Nui.Labels.Name,
+      },
+      Acronym: store.state.global.localization.Nui.Labels.Acronym,
     }"
   />
 </template>

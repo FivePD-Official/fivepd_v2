@@ -14,7 +14,37 @@ export const globalState = {
       radialMenus: [],
       menus: [],
       availableLocales: [],
-      localization: {} as ILocalization,
+      localization: {
+        Title: '',
+        Nui: {
+          Labels: {
+            Acronym: '',
+            ActiveCalls: '',
+            Address: '',
+            AssignedCall: '',
+            Callsign: '',
+            CitizenDatabase: '',
+            Dashboard: '',
+            Department: '',
+            Departments: '',
+            Division: '',
+            Divisions: '',
+            Members: '',
+            MyDetails: '',
+            Name: '',
+            NoAssignedCall: '',
+            NoDataToDisplay: '',
+            NotInDepartment: '',
+            Rank: '',
+            Settings: '',
+            Statistics: '',
+            Status: '',
+            Type: '',
+            Units: '',
+            VehicleDatabase: '',
+          }
+        }
+      },
     }
   },
   mutations: {

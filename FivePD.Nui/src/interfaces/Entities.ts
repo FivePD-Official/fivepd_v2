@@ -6,7 +6,10 @@ export interface IUser {
   Callsign: string,
   Department?: IDepartment,
   Division?: IDivision,
-  Rank?: IRank
+  Rank?: IRank,
+  DepartmentId?: number,
+  DivisionId?: number,
+  RankId?: number,
 }
 
 export interface IDepartment {

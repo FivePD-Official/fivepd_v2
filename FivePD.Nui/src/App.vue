@@ -216,7 +216,7 @@ function sendAvailabilityToClient() {
   .main-container
     position: relative
     z-index: 10
-    max-width: 1900px
+    max-width: 85vw
     width: 100%
     height: 100%
     @media (max-width: 1920px)
