@@ -13,7 +13,7 @@ const routes = computed<IRoute[]>(() => {
   console.log(store.state.user.details)
   return [
   {
-    title: store.state.user.localization?.Nui.Labels.Dashboard,
+    title: store.state.global.localization?.Nui.Labels.Dashboard,
     path: '/',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,7 +22,7 @@ const routes = computed<IRoute[]>(() => {
     show: true,
   },
   {
-    title: store.state.user.localization?.Nui.Labels.CitizenDatabase,
+    title: store.state.global.localization?.Nui.Labels.CitizenDatabase,
     path: '/citizen-database',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -31,7 +31,7 @@ const routes = computed<IRoute[]>(() => {
     show: true,
   },
   {
-    title: store.state.user.localization?.Nui.Labels.VehicleDatabase,
+    title: store.state.global.localization?.Nui.Labels.VehicleDatabase,
     path: '/vehicle-database',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,7 +59,7 @@ const routes = computed<IRoute[]>(() => {
     show: true,
   },
   {
-    title: store.state.user.localization?.Nui.Labels.Settings,
+    title: store.state.global.localization?.Nui.Labels.Settings,
     path: '/settings',
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +69,7 @@ const routes = computed<IRoute[]>(() => {
     show: true,
   },
   {
-    title: store.state.user.localization?.Nui.Labels.Department,
+    title: store.state.global.localization?.Nui.Labels.Department,
     path: `/departments/${store.state.user.details.Department?.Id}`,
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

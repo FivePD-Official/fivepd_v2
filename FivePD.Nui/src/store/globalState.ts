@@ -1,9 +1,11 @@
-import { IMenu } from "@interfaces";
+import type { IMenu, ILocalization, IListItem } from "@interfaces";
 import { Menu } from "@utils";
 
 export interface GlobalState {
   radialMenus: IMenu[],
   menus: Menu[],
+  availableLocales: IListItem[],
+  localization: ILocalization,
 }
 
 export const globalState = {
@@ -11,6 +13,8 @@ export const globalState = {
     return {
       radialMenus: [],
       menus: [],
+      availableLocales: [],
+      localization: {} as ILocalization,
     }
   },
   mutations: {
@@ -19,6 +23,12 @@ export const globalState = {
     },
     setMenus(state: GlobalState, menus: Menu[]) {
       state.menus = menus;
+    },
+    setAvailableLocales(state: GlobalState, availableLocales: IListItem[]) {
+      state.availableLocales = availableLocales;
+    },
+    setLocalization(state: GlobalState, localization: ILocalization) {
+      state.localization = localization;
     },
   },
   actions: {}

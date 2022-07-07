@@ -36,7 +36,7 @@ const formattedRows = computed(() => {
       </div>
     </div>
     <div v-else>
-      <p class="no-data">{{ state.user.localization.Nui.Labels.NoDataToDisplay }}</p>
+      <p class="no-data">{{ state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
     </div>
   </div>
 </template>

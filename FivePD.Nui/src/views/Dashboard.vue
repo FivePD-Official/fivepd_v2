@@ -22,27 +22,27 @@ post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
 </script>
 
 <template>
-  <PageHeader :title="store.state.user.localization.Nui.Labels.Dashboard" />
+  <PageHeader :title="store.state.global.localization.Nui.Labels.Dashboard" />
 
   <div class="grid">
     <div class="grid-item grid-item--details">
-      <p class="common-title">{{ store.state.user.localization.Nui.Labels.MyDetails }}</p>
+      <p class="common-title">{{ store.state.global.localization.Nui.Labels.MyDetails }}</p>
       <div class="common-bg">
         <ul>
           <li>
-            <p>{{ store.state.user.localization.Nui.Labels.Department }}</p>
+            <p>{{ store.state.global.localization.Nui.Labels.Department }}</p>
             <p>{{ store.state.user.details.Department?.Name ?? '-' }}</p>
           </li>
           <li>
-            <p>{{ store.state.user.localization.Nui.Labels.Division }}</p>
+            <p>{{ store.state.global.localization.Nui.Labels.Division }}</p>
             <p>{{ store.state.user.details.Division?.Name ?? '-' }}</p>
           </li>
           <li>
-            <p>{{ store.state.user.localization.Nui.Labels.Rank }}</p>
+            <p>{{ store.state.global.localization.Nui.Labels.Rank }}</p>
             <p>{{ store.state.user.details.Rank?.Name ?? '-' }}</p>
           </li>
            <li>
-            <p>{{ store.state.user.localization.Nui.Labels.Callsign }}</p>
+            <p>{{ store.state.global.localization.Nui.Labels.Callsign }}</p>
             <p>{{ store.state.user.details.Callsign ?? '-' }}</p>
           </li>
         </ul>
@@ -51,40 +51,40 @@ post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
 
     <div class="grid-item grid-item--statistics">
       <p class="common-title">
-        {{ store.state.user.localization.Nui.Labels.Statistics }}
+        {{ store.state.global.localization.Nui.Labels.Statistics }}
       </p>
       <div class="common-bg">
-        <p class="no-data" v-if="!statistics">{{ store.state.user.localization.Nui.Labels.NoDataToDisplay }}</p>
+        <p class="no-data" v-if="!statistics">{{ store.state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
       </div>
     </div>
 
     <div class="grid-item grid-item--call">
       <p class="common-title">
-        {{ store.state.user.localization.Nui.Labels.AssignedCall }}
+        {{ store.state.global.localization.Nui.Labels.AssignedCall }}
       </p>
       <div class="common-bg">
-        <p class="no-data" v-if="!assignedCall">{{ store.state.user.localization.Nui.Labels.NoAssignedCall }}</p>
+        <p class="no-data" v-if="!assignedCall">{{ store.state.global.localization.Nui.Labels.NoAssignedCall }}</p>
       </div>
     </div>
   </div>
 
   <Table
-    :title="store.state.user.localization?.Nui.Labels.ActiveCalls"
+    :title="store.state.global.localization?.Nui.Labels.ActiveCalls"
     :rows="[]"
     :columns="{
-      Type: store.state.user.localization?.Nui.Labels.Type,
-      Address: store.state.user.localization?.Nui.Labels.Address,
-      Status: store.state.user.localization?.Nui.Labels.Status,
-      Units: store.state.user.localization?.Nui.Labels.Units,
+      Type: store.state.global.localization?.Nui.Labels.Type,
+      Address: store.state.global.localization?.Nui.Labels.Address,
+      Status: store.state.global.localization?.Nui.Labels.Status,
+      Units: store.state.global.localization?.Nui.Labels.Units,
     }"
   />
 
   <Table
-    :title="store.state.user.localization?.Nui.Labels.Departments"
+    :title="store.state.global.localization?.Nui.Labels.Departments"
     :rows="departments"
     :columns="{
-      Name: store.state.user.localization?.Nui.Labels.Name,
-      Acronym: store.state.user.localization?.Nui.Labels.Acronym,
+      Name: store.state.global.localization?.Nui.Labels.Name,
+      Acronym: store.state.global.localization?.Nui.Labels.Acronym,
     }"
   />
 </template>
