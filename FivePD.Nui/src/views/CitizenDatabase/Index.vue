@@ -35,7 +35,7 @@ const citizens = ref<PedSearchResponse>([]);
 </script>
 
 <template>
-  <PageHeader :title="state.user.localization?.Nui.Labels.Dashboard ?? 'Citizen database'" />
+  <PageHeader :title="state.user.localization.Nui.Labels.CitizenDatabase" />
   <div class="content">
 
     <SearchPanel

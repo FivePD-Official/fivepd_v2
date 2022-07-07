@@ -128,6 +128,7 @@ namespace FivePD.Gamemode.Server.Services
                     .AsNoTracking()
                     .Include(user => user.Department)
                     .Include(user => user.Division)
+                    .Include(user => user.Rank)
                     .FirstOrDefault(user => user.License == license);
 
                 networkCallbackDelegate.Invoke(user is null ? null : JsonConvert.SerializeObject(user.ToResponse()));

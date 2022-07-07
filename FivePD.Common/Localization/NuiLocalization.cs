@@ -36,6 +36,8 @@ namespace FivePD.Common.Localization
 
         public string AssignedCall { get; set; } = "Assigned call";
 
+        public string Callsign { get; set; } = "Callsign";
+
         public string CitizenDatabase { get; set; } = "Citizen database";
 
         public string Dashboard { get; set; } = "Dashboard";
@@ -53,6 +55,12 @@ namespace FivePD.Common.Localization
         public string MyDetails { get; set; } = "My details";
 
         public string Name { get; set; } = "Name";
+
+        public string NoAssignedCall { get; set; } = "You're not assigned to a call at the moment.";
+
+        public string NoDataToDisplay { get; set; } = "No data to display.";
+
+        public string NotInDepartment { get; set; } = "You're not in a department.";
 
         public string Rank { get; set; } = "Rank";
 

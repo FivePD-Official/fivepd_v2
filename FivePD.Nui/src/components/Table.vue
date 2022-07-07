@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useState } from '@store';
 import { computed } from 'vue';
 
+const state = useState();
 const props = defineProps<{
   title: string,
   columns: Record<string, string>,
@@ -34,7 +36,7 @@ const formattedRows = computed(() => {
       </div>
     </div>
     <div v-else>
-      <p class="no-data">No data to display.</p>
+      <p class="no-data">{{ state.user.localization.Nui.Labels.NoDataToDisplay }}</p>
     </div>
   </div>
 </template>

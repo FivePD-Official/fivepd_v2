@@ -34,6 +34,11 @@ namespace FivePD.Gamemode.Server.Models
         public bool Admin { get; set; }
 
         /// <summary>
+        /// Gets or sets the callsign.
+        /// </summary>
+        public string Callsign { get; set; }
+
+        /// <summary>
         /// Gets or sets the department which the user is joined to.
         /// </summary>
         public Department Department { get; set; }
@@ -42,6 +47,11 @@ namespace FivePD.Gamemode.Server.Models
         /// Gets or sets the division which the user is joined to.
         /// </summary>
         public Division Division { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rank.
+        /// </summary>
+        public Rank Rank { get; set; }
 
         /// <inheritdoc />
         public override UserResponse ToResponse()
@@ -52,8 +62,10 @@ namespace FivePD.Gamemode.Server.Models
                 Name = this.Name,
                 License = this.License,
                 Admin = this.Admin,
-                Department = this.Department.ToResponse(),
-                Division = this.Division.ToResponse(),
+                Callsign = this.Callsign,
+                Department = this.Department?.ToResponse(),
+                Division = this.Division?.ToResponse(),
+                Rank = this.Rank?.ToResponse(),
             };
         }
     }

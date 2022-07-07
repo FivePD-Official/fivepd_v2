@@ -33,6 +33,11 @@ namespace FivePD.Gamemode.Server.Models.ResponseModels
         public bool Admin { get; set; }
 
         /// <summary>
+        /// Gets or sets the callsign.
+        /// </summary>
+        public string Callsign { get; set; }
+
+        /// <summary>
         /// Gets or sets the department which the user is joined to.
         /// </summary>
         public DepartmentResponse Department { get; set; }
@@ -41,5 +46,10 @@ namespace FivePD.Gamemode.Server.Models.ResponseModels
         /// Gets or sets the division which the user is joined to.
         /// </summary>
         public DivisionResponse Division { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rank.
+        /// </summary>
+        public RankResponse Rank { get; set; }
     }
 }

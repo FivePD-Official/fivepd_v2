@@ -5,7 +5,6 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
@@ -13,7 +12,6 @@ using FivePD.Common;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Interfaces;
-using FivePD.Gamemode.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -51,7 +49,7 @@ namespace FivePD.Gamemode.Server.Services
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(JsonConvert.SerializeObject(new List<Department>()));
+                networkCallbackDelegate.Invoke(null);
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }

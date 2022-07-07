@@ -49,6 +49,11 @@ namespace FivePD.Gamemode.Server.Models
         /// </summary>
         public IEnumerable<Division> Divisions { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ranks of this department.
+        /// </summary>
+        public IEnumerable<Rank> Ranks { get; set; }
+
         /// <inheritdoc />
         public override DepartmentResponse ToResponse()
         {

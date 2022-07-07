@@ -4,6 +4,8 @@ import CitizenDatabaseIndex from './views/CitizenDatabase/Index.vue';
 import CitizenDatabaseView from './views/CitizenDatabase/View.vue';
 import VehicleDatabase from './views/VehicleDatabase.vue';
 import Settings from './views/Settings.vue';
+import DepartmentsIndex from './views/Departments/Index.vue';
+import DepartmentsView from './views/Departments/View.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -27,6 +29,16 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/settings',
     component: Settings
+  },
+  {
+    path: '/departments',
+    component: DepartmentsIndex,
+    children: [
+      {
+        path: '/:id',
+        component: DepartmentsView,
+      }
+    ]
   },
 ];
 export default routes;

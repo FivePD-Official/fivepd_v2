@@ -59,6 +59,25 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.ToTable("Divisions");
                 });
 
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.Rank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("Ranks");
+                });
+
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +86,9 @@ namespace FivePD.Gamemode.Server.Migrations
 
                     b.Property<bool>("Admin")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Callsign")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
@@ -80,11 +102,16 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int?>("RankId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("DivisionId");
+
+                    b.HasIndex("RankId");
 
                     b.ToTable("Users");
                 });
@@ -93,6 +120,13 @@ namespace FivePD.Gamemode.Server.Migrations
                 {
                     b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
                         .WithMany("Divisions")
+                        .HasForeignKey("DepartmentId");
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.Rank", b =>
+                {
+                    b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
+                        .WithMany("Ranks")
                         .HasForeignKey("DepartmentId");
                 });
 
@@ -105,6 +139,10 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.HasOne("FivePD.Gamemode.Server.Models.Division", "Division")
                         .WithMany()
                         .HasForeignKey("DivisionId");
+
+                    b.HasOne("FivePD.Gamemode.Server.Models.Rank", "Rank")
+                        .WithMany()
+                        .HasForeignKey("RankId");
                 });
 #pragma warning restore 612, 618
         }
