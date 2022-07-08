@@ -35,6 +35,7 @@ export interface ILocalization {
       Division: string,
       Divisions: string,
       MaxNumberOfMembers: string,
+      MaxNumberOfMembersHelpLabel: string,
       Members: string,
       MyDetails: string,
       MyDepartment: string,

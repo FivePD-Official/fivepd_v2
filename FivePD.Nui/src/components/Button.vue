@@ -2,13 +2,16 @@
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   label: string,
   theme: 'primary' | 'secondary',
   type?: 'button' | 'submit',
   onClick?: () => void,
   link?: string,
-}>();
+  show?: boolean,
+}>(), {
+  show: true
+});
 
 function internalOnClick() {
   if (props.link) {
@@ -27,6 +30,7 @@ function internalOnClick() {
     }"
     :type="type ?? 'button'"
     @click="internalOnClick"
+    v-if="show"
   >
     <span>{{ label }}</span>
   </button>

@@ -27,22 +27,28 @@ function onSubmit(fields: FormFields) {
           name: 'Name',
           label: state.global.localization.Nui.Labels.Name,
           type: 'text',
+          required: true,
         },
         {
           name: 'Acronym',
           label: state.global.localization.Nui.Labels.Acronym,
           type: 'text',
+          required: false,
           helpLabel: state.global.localization.Nui.Labels.AcronymHelpLabel,
         },
         {
           name: 'CallsignFormat',
           label: state.global.localization.Nui.Labels.CallsignFormat,
           type: 'text',
+          required: true,
         },
         {
           name: 'MaxUsers',
           label: state.global.localization.Nui.Labels.MaxNumberOfMembers,
           type: 'number',
+          required: true,
+          defaultValue: 0,
+          helpLabel: state.global.localization.Nui.Labels.MaxNumberOfMembersHelpLabel,
         }
       ]"
       :onSubmit="onSubmit"

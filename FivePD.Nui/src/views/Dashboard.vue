@@ -97,6 +97,7 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
       {
         label: store.state.global.localization.Nui.Labels.NewDepartment,
         link: '/departments/new',
+        show: store.state.user.details?.Admin ?? false
       }
     ]"
     :rows="departments"

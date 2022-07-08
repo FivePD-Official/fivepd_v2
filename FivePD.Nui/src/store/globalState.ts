@@ -71,6 +71,7 @@ const defaultLocalization = {
       Division: '',
       Divisions: '',
       MaxNumberOfMembers: '',
+      MaxNumberOfMembersHelpLabel: '',
       Members: '',
       MyDetails: '',
       MyDepartment: '',

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 
 const store = useStore();

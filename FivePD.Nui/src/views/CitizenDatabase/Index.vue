@@ -17,18 +17,21 @@ const fields: InputField[] = [
     type: 'text',
     name: 'Firstname',
     label: 'Firstname',
-    placeholder: 'John'
+    placeholder: 'John',
+    required: false,
   },
   {
     type: 'text',
     name: 'Lastname',
     label: 'Lastname',
-    placeholder: 'Doe'
+    placeholder: 'Doe',
+    required: false,
   },
   {
     type: 'date',
     name: 'Birthdate',
-    label: 'Birthdate'
+    label: 'Birthdate',
+    required: false,
   }
 ];
 const citizens = ref<PedSearchResponse>([]);

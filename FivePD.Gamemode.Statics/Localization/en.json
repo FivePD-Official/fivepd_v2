@@ -49,6 +49,7 @@
       "Division": "Division",
       "Divisions": "Divisions",
       "MaxNumberOfMembers": "Max number of members",
+      "MaxNumberOfMembersHelpLabel": "If set to zero there won't be any limit.",
       "Members": "Members",
       "MyDetails": "My details",
       "MyDepartment": "My department",

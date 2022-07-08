@@ -2,28 +2,48 @@
 import { DateFormat } from "@enums";
 import type { InputField } from "@interfaces";
 import { createBirthdateInputList } from "@utils";
+import { ref } from "vue";
 
 const props = defineProps<{
   field: InputField
 }>();
+
+const dirty = ref(false);
+const error = ref(false);
+
+function onInput(event: any) {
+  if (!dirty.value) {
+    dirty.value = true;
+  }
+
+  if (props.field.required) {
+    error.value = !event.target.value;
+  }
+}
 </script>
 
 <template>
   <div class="input-box">
-    <label :for="field.name">{{ field.label }}</label>
+    <label
+      :class="{
+        'error': error,
+      }"
+    >
+      {{ field.label }}
+    </label>
     <input
       :type="field.type"
       :name="field.name"
-      :id="field.name"
       :placeholder="field.placeholder"
       v-if="field.type !== 'date'"
+      @input="event => onInput(event)"
+      :value="field.defaultValue"
     />
     <div class="inputs" v-else>
       <input
         type="number"
         min="0"
         :name="input.name"
-        id="birthdate"
         :placeholder="input.placeholder"
         v-for="input in createBirthdateInputList(DateFormat.MDY)"
       />
@@ -42,6 +62,8 @@ const props = defineProps<{
     font-size: 16px
     color: var(--clr-text-secondary)
     margin-bottom: 5px
+    &.error
+      color: var(--clr-red)
 
   input
     height: 40px

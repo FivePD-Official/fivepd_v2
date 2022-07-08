@@ -7,6 +7,8 @@ export interface InputField {
   type: 'text' | 'number' | 'date',
   name: string,
   label: string,
+  required: boolean,
   helpLabel?: string,
   placeholder?: string,
+  defaultValue?: string | number
 }

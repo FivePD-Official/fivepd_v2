@@ -62,6 +62,8 @@ namespace FivePD.Common.Localization
 
         public string MaxNumberOfMembers { get; set; } = "Max number of members";
 
+        public string MaxNumberOfMembersHelpLabel { get; set; } = "If set to zero there won't be any limit.";
+
         public string Members { get; set; } = "Members";
 
         public string MyDetails { get; set; } = "My details";

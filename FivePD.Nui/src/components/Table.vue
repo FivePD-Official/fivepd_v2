@@ -12,6 +12,7 @@ const props = defineProps<{
     label: string,
     onClick?: () => void,
     link?: string,
+    show?: boolean,
   }[]
 }>();
 
@@ -60,7 +61,7 @@ const formattedRows = computed<FormattedRow[]>(() => {
     <div class="table-header">
       <p class="common-title">{{ title }}</p>
       <div class="buttons" v-if="buttons">
-        <Button v-for="button in buttons" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
+        <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
       </div>
     </div>
     <div v-if="rows?.length" class="common-bg table">
