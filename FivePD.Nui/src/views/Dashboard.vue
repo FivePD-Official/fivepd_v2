@@ -2,7 +2,7 @@
 import { ClientEvents } from "@enums";
 import { ref } from "vue";
 import { post } from "@utils";
-import { Column, IDepartment, IUser } from "@interfaces";
+import type { Column, IDepartment, IUser } from "@interfaces";
 import { State } from "@store";
 import { useStore } from "vuex";
 
@@ -20,7 +20,7 @@ post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
   departments.value = res;
 });
 
-function departmentsLinkResolver(rowItem: any, columnKey: string, columnValue: Column) {
+function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, columnValue: Column) {
   return `/departments/${rowItem.Id}`;
 }
 </script>
@@ -74,7 +74,7 @@ function departmentsLinkResolver(rowItem: any, columnKey: string, columnValue: C
 
   <Table
     :title="store.state.global.localization.Nui.Labels.ActiveCalls"
-    :rows="[]"
+    :rows="activeCalls"
     :columns="{
       Type: {
         label: store.state.global.localization.Nui.Labels.Type,
@@ -96,7 +96,7 @@ function departmentsLinkResolver(rowItem: any, columnKey: string, columnValue: C
     :rows="departments"
     :columns="{
       Name: {
-        linkResolver: (rowItem, columnKey, columnValue) => departmentsLinkResolver(rowItem, columnKey, columnValue),
+        linkResolver: (rowItem: IDepartment, columnKey, columnValue) => departmentsLinkResolver(rowItem, columnKey, columnValue),
         label: store.state.global.localization.Nui.Labels.Name,
       },
       Acronym: {

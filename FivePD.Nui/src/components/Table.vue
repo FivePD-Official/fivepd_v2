@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useState } from '@store';
 import { computed } from 'vue';
-import { Column, FormattedColumn, FormattedRow, FormattedRowItem } from '@interfaces';
+import type { Column, FormattedColumn, FormattedRow, FormattedRowItem } from '@interfaces';
 
 const state = useState();
 const props = defineProps<{

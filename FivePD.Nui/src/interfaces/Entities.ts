@@ -1,4 +1,5 @@
 export interface IUser {
+  [key: string]: any,
   Id: number,
   Name: string,
   License: string,

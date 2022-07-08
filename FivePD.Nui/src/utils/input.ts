@@ -1,4 +1,4 @@
-import { IDateInput } from '@interfaces';
+import type { IDateInput } from '@interfaces';
 import { DateFormat } from '@enums';
 
 export const createBirthdateInputList = (dateFormat: DateFormat): IDateInput[] => {

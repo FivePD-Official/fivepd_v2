@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import { IDepartment, IRank, Column, FormattedColumn, FormattedRow, FormattedRowItem } from '@interfaces';
+import type { IDepartment, IRank, Column, IUser } from '@interfaces';
 import { useState } from '@store';
 import { post } from '@utils';
 import { ref, computed, onMounted, watch } from 'vue';
@@ -31,7 +31,7 @@ function requestDepartmentData() {
   });
 }
 
-function rowIdToNameResolver(rowItem: any, columnKey: string, columnValue: Column, substituteList: any[]) {
+function rowIdToNameResolver(rowItem: IUser, columnKey: string, columnValue: Column, substituteList: any[]) {
   return substituteList.find(sub => sub.Id === rowItem[columnKey])?.Name;
 }
 
@@ -77,7 +77,7 @@ function rankPermissionResolver(rank: IRank): string {
         label: state.global.localization.Nui.Labels.Name,
       },
       RankId: {
-        valueResolver: (rowItem, columnKey, columnValue) => rowIdToNameResolver(rowItem, columnKey, columnValue, department?.Ranks ?? []),
+        valueResolver: (rowItem: IUser, columnKey, columnValue) => rowIdToNameResolver(rowItem, columnKey, columnValue, department?.Ranks ?? []),
         label: state.global.localization.Nui.Labels.Rank,
       },
       DivisionId: {

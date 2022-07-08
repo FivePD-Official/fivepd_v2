@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import { ISearchSubmitField, PedSearchResponse } from '@interfaces';
+import type { ISearchSubmitField, PedSearchResponse } from '@interfaces';
 import { useState } from '@store';
 import { post } from '@utils';
 import { ref } from 'vue';

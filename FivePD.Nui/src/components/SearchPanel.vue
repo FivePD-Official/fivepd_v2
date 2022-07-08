@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IDateInput, ISearchSubmitField } from '@interfaces';
+import type { IDateInput } from '@interfaces';
 import { createBirthdateInputList } from '@utils';
 import { DateFormat } from '@enums';
 
