@@ -48,37 +48,10 @@ namespace FivePD.Gamemode.Client.Services
                 cb.Invoke(string.Empty);
             }));
 
-            this._eventHandlerDictionary.AddNuiEvent(Events.Department.List, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                BaseScript.TriggerServerEvent(Events.Department.List, body, new Action<string>((data) =>
-                {
-                    cb.Invoke(data);
-                }));
-            }));
-
-            this._eventHandlerDictionary.AddNuiEvent(Events.Department.GetById, new Action<int, CallbackDelegate>((id, cb) =>
-            {
-                BaseScript.TriggerServerEvent(Events.Department.GetById, id, new Action<string>((data) =>
-                {
-                    cb.Invoke(data);
-                }));
-            }));
-
-            this._eventHandlerDictionary.AddNuiEvent(Events.Department.Create, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                BaseScript.TriggerServerEvent(Events.Department.Create, body, new Action<string>((data) =>
-                {
-                    cb.Invoke(data);
-                }));
-            }));
-
-            this._eventHandlerDictionary.AddNuiEvent(Events.Player.GetDetails, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                BaseScript.TriggerServerEvent(Events.Player.GetDetails, body, new Action<string>((data) =>
-                {
-                    cb.Invoke(data);
-                }));
-            }));
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.List);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.GetById);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Create);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.GetDetails);
         }
 
         /// <inheritdoc />

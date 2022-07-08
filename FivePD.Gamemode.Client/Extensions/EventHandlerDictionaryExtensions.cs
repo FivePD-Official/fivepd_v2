@@ -27,5 +27,25 @@ namespace FivePD.Gamemode.Client.Extensions
             Cfx.API.RegisterNuiCallbackType(eventName);
             eventHandlerDictionary[$"__cfx_nui:{eventName}"] += action;
         }
+
+        /// <summary>
+        /// Registers a NUI event without a custom action.
+        /// The data will be sent directly to the server,
+        /// then the response back to the NUI.
+        /// </summary>
+        /// <param name="eventHandlerDictionary">The event handler dictionary to add the event for.</param>
+        /// <param name="eventName">The event's name.</param>
+        /// <typeparam name="T">The type of the request body.</typeparam>
+        public static void AddNuiEventServerResponse<T>(this EventHandlerDictionary eventHandlerDictionary, string eventName)
+        {
+            Cfx.API.RegisterNuiCallbackType(eventName);
+            eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<T, CallbackDelegate>((body, cb) =>
+            {
+                BaseScript.TriggerServerEvent(eventName, body, new Action<string>((data) =>
+                {
+                    cb.Invoke(data);
+                }));
+            });
+        }
     }
 }
