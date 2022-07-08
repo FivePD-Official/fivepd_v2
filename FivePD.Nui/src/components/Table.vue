@@ -8,6 +8,11 @@ const props = defineProps<{
   title: string,
   columns: Record<string, Column>,
   rows: any[],
+  buttons?: {
+    label: string,
+    onClick?: () => void,
+    link?: string,
+  }[]
 }>();
 
 const formattedColumns = computed<FormattedColumn[]>(() => {
@@ -52,7 +57,12 @@ const formattedRows = computed<FormattedRow[]>(() => {
 
 <template>
   <div class="table-container">
-    <p class="common-title">{{ title }}</p>
+    <div class="table-header">
+      <p class="common-title">{{ title }}</p>
+      <div class="buttons" v-if="buttons">
+        <Button v-for="button in buttons" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
+      </div>
+    </div>
     <div v-if="rows?.length" class="common-bg table">
       <div class="table-row table-header">
         <div class="table-cell" v-for="column in formattedColumns">
@@ -78,6 +88,21 @@ const formattedRows = computed<FormattedRow[]>(() => {
 <style scoped lang="sass">
 .table-container
   margin-bottom: 40px
+
+  .table-header
+    width: 100%
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: space-between
+    margin-bottom: 15px
+
+    .buttons
+      display: flex
+      flex-direction: row
+      align-items: center
+      justify-content: space-between
+
 
   .no-data
     font-size: 20px

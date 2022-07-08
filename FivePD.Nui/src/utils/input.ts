@@ -31,3 +31,31 @@ export const createBirthdateInputList = (dateFormat: DateFormat): IDateInput[] =
   }
   return inputs;
 }
+
+export type FormFields = null | { [key: string]: any };
+
+export const formatFormEvent = (event: any): FormFields => {
+
+  if (!event?.target?.elements) {
+    return null;
+  }
+
+  const fields: any = {};
+
+  for (const e of event.target.elements) {
+    if (!e.name || !e.value) {
+      continue;
+    }
+
+    if (['Day', 'Month', 'Year'].includes(e.name)) {
+      if (!fields.hasOwnProperty('Birthdate')) {
+        fields['Birthdate'] = {};
+      }
+      fields['Birthdate'][e.name] = e.value;
+    } else {
+      fields[e.name] = e.type === 'number' ? e.valueAsNumber : e.value;
+    }
+  }
+
+  return fields;
+}

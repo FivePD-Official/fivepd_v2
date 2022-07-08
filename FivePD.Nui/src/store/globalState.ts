@@ -58,20 +58,24 @@ const defaultLocalization = {
   Nui: {
     Labels: {
       Acronym: '',
+      AcronymHelpLabel: '',
       ActiveCalls: '',
       Address: '',
       AssignedCall: '',
       Callsign: '',
+      CallsignFormat: '',
       CitizenDatabase: '',
       Dashboard: '',
       Department: '',
       Departments: '',
       Division: '',
       Divisions: '',
+      MaxNumberOfMembers: '',
       Members: '',
       MyDetails: '',
       MyDepartment: '',
       Name: '',
+      NewDepartment: '',
       NoAssignedCall: '',
       NoDataToDisplay: '',
       NotInDepartment: '',
@@ -87,6 +91,7 @@ const defaultLocalization = {
     },
     Actions: {
       Kick: '',
+      Save: '',
       SetRank: '',
       SetCallsign: '',
     }

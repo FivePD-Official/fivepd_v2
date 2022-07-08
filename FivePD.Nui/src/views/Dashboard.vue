@@ -31,7 +31,7 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
   <div class="grid">
     <div class="grid-item grid-item--details">
       <p class="common-title">{{ store.state.global.localization.Nui.Labels.MyDetails }}</p>
-      <div class="common-bg">
+      <div class="common-bg grid-item--content">
         <ul>
           <li>
             <p>{{ store.state.global.localization.Nui.Labels.Department }}</p>
@@ -57,7 +57,7 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
       <p class="common-title">
         {{ store.state.global.localization.Nui.Labels.Statistics }}
       </p>
-      <div class="common-bg">
+      <div class="common-bg grid-item--content">
         <p class="no-data" v-if="!statistics">{{ store.state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
       </div>
     </div>
@@ -66,7 +66,7 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
       <p class="common-title">
         {{ store.state.global.localization.Nui.Labels.AssignedCall }}
       </p>
-      <div class="common-bg">
+      <div class="common-bg grid-item--content">
         <p class="no-data" v-if="!assignedCall">{{ store.state.global.localization.Nui.Labels.NoAssignedCall }}</p>
       </div>
     </div>
@@ -93,6 +93,12 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
 
   <Table
     :title="store.state.global.localization.Nui.Labels.Departments"
+    :buttons="[
+      {
+        label: store.state.global.localization.Nui.Labels.NewDepartment,
+        link: '/departments/new',
+      }
+    ]"
     :rows="departments"
     :columns="{
       Name: {
@@ -117,11 +123,15 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
     width: 100%
     height: 100%
 
-    .common-bg
+    .grid-item--content
       position: relative
       display: flex
       width: 100%
       height: 240px
+      margin-top: 15px
+      border-radius: var(--radius)
+      background-color: var(--clr-bg-secondary)
+      padding: 20px
 
       .no-data
         position: absolute

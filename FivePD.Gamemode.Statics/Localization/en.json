@@ -36,20 +36,24 @@
   "Nui": {
     "Labels": {
       "Acronym": "Acronym",
+      "AcronymHelpLabel": "If left empty it'll be auto-generated from the name.",
       "ActiveCalls": "Active calls",
       "Address": "Address",
       "AssignedCall": "Assigned call",
       "Callsign": "Callsign",
+      "CallsignFormat": "Callsign format",
       "CitizenDatabase": "Citizen database",
       "Dashboard": "Dashboard",
       "Department": "Department",
       "Departments": "Departments",
       "Division": "Division",
       "Divisions": "Divisions",
+      "MaxNumberOfMembers": "Max number of members",
       "Members": "Members",
       "MyDetails": "My details",
       "MyDepartment": "My department",
       "Name": "Name",
+      "NewDepartment": "New department",
       "NoAssignedCall": "You're not assigned to a call at the moment.",
       "NoDataToDisplay": "No data to display.",
       "NotInDepartment": "You're not in a department.",
@@ -65,6 +69,7 @@
     },
     "Actions": {
       "Kick": "Kick",
+      "Save": "Save",
       "SetRank": "Set rank",
       "SetCallsign": "Set callsign"
     }

@@ -226,7 +226,6 @@ function sendAvailabilityToClient() {
   font-size: 22px
   font-weight: 700
   color: var(--clr-text-primary)
-  margin-bottom: 15px
 
 .common-bg
   border-radius: var(--radius)

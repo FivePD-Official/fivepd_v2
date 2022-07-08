@@ -186,6 +186,11 @@ namespace FivePD.Common
             /// Used to request a department by its id.
             /// </summary>
             public const string GetById = "fivepd:department:getById";
+
+            /// <summary>
+            /// Used when a user creates a department in the NUI.
+            /// </summary>
+            public const string Create = "fivepd:department:create";
         }
 
         /// <summary>

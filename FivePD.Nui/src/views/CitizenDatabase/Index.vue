@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { ISearchSubmitField, PedSearchResponse } from '@interfaces';
+import type { InputField, ISearchSubmitField, PedSearchResponse } from '@interfaces';
 import { useState } from '@store';
 import { post } from '@utils';
 import { ref } from 'vue';
@@ -12,7 +12,7 @@ const onSearchSubmit = async (fields: ISearchSubmitField[]) => {
   });
 }
 
-const fields= [
+const fields: InputField[] = [
   {
     type: 'text',
     name: 'Firstname',

@@ -1,5 +1,5 @@
 export { post } from './request';
-export { createBirthdateInputList } from './input';
+export * from './input';
 export { hideNui, showNui } from './nui';
 export { nuiEventNext, onNuiEvent } from './eventHandler';
 export { Menu } from './menus/Menu';

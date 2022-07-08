@@ -1,11 +1,11 @@
 import { catchError, map, Observable, of, switchMap } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 
-export function post<T>(path: string, options: object | number = {}): Observable<T> {
+export function post<T>(path: string, options: any | number = {}): Observable<T> {
   return request('POST', path, options);
 }
 
-function request(method: string, path: string, body: object | number = {}) {
+function request(method: string, path: string, body: any | number = {}) {
 
   let newBody: string | number = '';
   if (body === undefined) {

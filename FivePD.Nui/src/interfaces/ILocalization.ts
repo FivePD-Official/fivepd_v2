@@ -22,20 +22,24 @@ export interface ILocalization {
   Nui: {
     Labels: {
       Acronym: string,
+      AcronymHelpLabel: string,
       ActiveCalls: string,
       Address: string,
       AssignedCall: string,
       Callsign: string,
+      CallsignFormat: string,
       CitizenDatabase: string,
       Dashboard: string,
       Department: string,
       Departments: string,
       Division: string,
       Divisions: string,
+      MaxNumberOfMembers: string,
       Members: string,
       MyDetails: string,
       MyDepartment: string,
       Name: string,
+      NewDepartment: string,
       NoAssignedCall: string,
       NoDataToDisplay: string,
       NotInDepartment: string,
@@ -51,6 +55,7 @@ export interface ILocalization {
     },
     Actions: {
       Kick: string,
+      Save: string,
       SetRank: string,
       SetCallsign: string,
     }

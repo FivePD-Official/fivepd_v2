@@ -1,5 +1,5 @@
 export * from './IRoute';
-export * from './IDateInput';
+export * from './Form';
 export * from './ISearchSubmitField';
 export * from './IListItem';
 export * from './Menu';

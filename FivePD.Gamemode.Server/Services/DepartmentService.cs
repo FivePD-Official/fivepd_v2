@@ -9,10 +9,13 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Builders;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.NuiModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -40,6 +43,7 @@ namespace FivePD.Gamemode.Server.Services
         {
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
             this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
+            this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartment);
         }
 
         private void GetDepartmentsForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
@@ -71,6 +75,50 @@ namespace FivePD.Gamemode.Server.Services
             catch (Exception e)
             {
                 networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void CreateDepartment(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var departmentFields = JsonConvert.DeserializeObject<CreateDepartmentFields>(JsonConvert.SerializeObject(expandoObject));
+                if (departmentFields is null)
+                {
+                    networkCallbackDelegate.Invoke(false);
+                    return;
+                }
+
+                string departmentAcronym;
+                if (string.IsNullOrEmpty(departmentFields.Acronym))
+                {
+                    departmentAcronym = string.Join(
+                        string.Empty,
+                        departmentFields.Name
+                            .Split()
+                            .Where(s => s.Length > 0 && char.IsLetter(s[0]))
+                            .Select(s => s[0])
+                            .ToArray());
+                }
+                else
+                {
+                    departmentAcronym = departmentFields.Acronym;
+                }
+
+                this._databaseContext.Departments.Add(new Department
+                {
+                    Name = departmentFields.Name,
+                    Acronym = departmentAcronym,
+                    CallsignFormat = departmentFields.CallsignFormat,
+                    MaxUsers = departmentFields.MaxUsers,
+                });
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(true);
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(false);
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }

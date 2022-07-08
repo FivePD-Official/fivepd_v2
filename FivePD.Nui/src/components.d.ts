@@ -4,7 +4,10 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    Button: typeof import('./components/Button.vue')['default']
+    Form: typeof import('./components/Form.vue')['default']
     Header: typeof import('./components/Header.vue')['default']
+    InputField: typeof import('./components/InputField.vue')['default']
     Main: typeof import('./components/Main.vue')['default']
     MenuView: typeof import('./components/MenuView.vue')['default']
     PageHeader: typeof import('./components/PageHeader.vue')['default']

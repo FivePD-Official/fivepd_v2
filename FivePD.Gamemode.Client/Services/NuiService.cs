@@ -64,6 +64,14 @@ namespace FivePD.Gamemode.Client.Services
                 }));
             }));
 
+            this._eventHandlerDictionary.AddNuiEvent(Events.Department.Create, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            {
+                BaseScript.TriggerServerEvent(Events.Department.Create, body, new Action<string>((data) =>
+                {
+                    cb.Invoke(data);
+                }));
+            }));
+
             this._eventHandlerDictionary.AddNuiEvent(Events.Player.GetDetails, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 BaseScript.TriggerServerEvent(Events.Player.GetDetails, body, new Action<string>((data) =>
