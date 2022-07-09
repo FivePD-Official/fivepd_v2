@@ -12,7 +12,11 @@ namespace FivePD.Common.Localization
 {
     public class NuiActions
     {
+        public string Join { get; set; } = "Join";
+
         public string Kick { get; set; } = "Kick";
+
+        public string Leave { get; set; } = "Leave";
 
         public string Save { get; set; } = "Save";
 

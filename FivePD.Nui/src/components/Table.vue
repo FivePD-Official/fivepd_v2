@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import { useState } from '@store';
 import { computed } from 'vue';
-import type { Column, FormattedColumn, FormattedRow, FormattedRowItem } from '@interfaces';
+import type { Column, FormattedColumn, FormattedRow, FormattedRowItem, PropButton } from '@interfaces';
 
 const state = useState();
 const props = defineProps<{
   title: string,
   columns: Record<string, Column>,
   rows: any[],
-  buttons?: {
-    label: string,
-    onClick?: () => void,
-    link?: string,
-    show?: boolean,
-  }[]
+  buttons?: PropButton[]
 }>();
 
 const formattedColumns = computed<FormattedColumn[]>(() => {

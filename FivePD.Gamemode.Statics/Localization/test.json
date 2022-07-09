@@ -69,7 +69,9 @@
       "VehicleDatabase": "T: Vehicle database"
     },
     "Actions": {
+      "Join": "T: Join",
       "Kick": "T: Kick",
+      "Leave": "T: Leave",
       "Save": "T: Save",
       "SetRank": "T: Set rank",
       "SetCallsign": "T: Set callsign"

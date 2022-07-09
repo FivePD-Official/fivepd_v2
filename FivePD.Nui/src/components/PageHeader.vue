@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { PropButton } from '@interfaces';
+
 const props = defineProps<{
   title: string,
   centerTitle?: boolean,
+  buttons?: PropButton[],
 }>();
 </script>
 
@@ -13,6 +16,9 @@ const props = defineProps<{
     }"
   >
     <h1>{{ title }}</h1>
+    <div class="buttons" v-if="buttons">
+      <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
+    </div>
   </div>
 </template>
 
@@ -37,5 +43,11 @@ const props = defineProps<{
     font-size: 24px
     font-weight: 700
     color: var(--clr-text)
+
+  .buttons
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: space-between
 
 </style>

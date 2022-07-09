@@ -85,4 +85,7 @@
         <Compile Remove="obj\x64\Release\net472\FivePD.Gamemode.Server.AssemblyInfo.cs" />
         <Compile Remove="obj\x64\Release\netstandard2.0\FivePD.Gamemode.Server.AssemblyInfo.cs" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Migrations" />
+    </ItemGroup>
 </Project>

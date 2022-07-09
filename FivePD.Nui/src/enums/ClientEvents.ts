@@ -4,5 +4,7 @@ export enum ClientEvents {
   ListDepartments = 'fivepd:department:list',
   GetDepartmentById = 'fivepd:department:getById',
   CreateDepartment = 'fivepd:department:create',
+  JoinDepartment = 'fivepd:department:join',
+  LeaveDepartment = 'fivepd:department:leave',
   GetPlayerDetails = 'fivepd:player:getDetails',
 }

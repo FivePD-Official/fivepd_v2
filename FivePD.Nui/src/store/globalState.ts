@@ -91,7 +91,9 @@ const defaultLocalization = {
       VehicleDatabase: '',
     },
     Actions: {
+      Join: '',
       Kick: '',
+      Leave: '',
       Save: '',
       SetRank: '',
       SetCallsign: '',

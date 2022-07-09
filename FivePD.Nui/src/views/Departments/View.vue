@@ -4,10 +4,11 @@ import type { IDepartment, IRank, Column, IUser } from '@interfaces';
 import { useState } from '@store';
 import { post } from '@utils';
 import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const state = useState();
 const route = useRoute();
+const router = useRouter();
 const department = ref<IDepartment>();
 const title = computed(() => `${state.global.localization.Nui.Labels.Department} ${(department?.value?.Name ? '(' + department?.value?.Name + ')' : '')}`);
 
@@ -50,10 +51,37 @@ function rankPermissionResolver(rank: IRank): string {
 
   return permissions.length ? permissions.slice(0, -2) : '-';
 }
+
+function joinOrLeaveDepartment(type: 'join' | 'leave') {
+  if (!department.value) {
+    return;
+  }
+
+  post<boolean>(ClientEvents.JoinDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
+    if (res) {
+      router.push('/');
+      // TODO: notification
+    }
+  });
+}
 </script>
 
 <template>
-  <PageHeader :title="title" />
+  <PageHeader
+    :title="title"
+    :buttons="[
+      {
+        label: state.global.localization.Nui.Actions.Join,
+        onClick: () => joinOrLeaveDepartment('join'),
+        show: state.user.details.DepartmentId !== department?.Id,
+      },
+      {
+        label: state.global.localization.Nui.Actions.Leave,
+        onClick: () => joinOrLeaveDepartment('leave'),
+        show: state.user.details.DepartmentId === department?.Id,
+      }
+    ]"
+  />
 
   <Table
     :title="state.global.localization.Nui.Labels.Ranks"

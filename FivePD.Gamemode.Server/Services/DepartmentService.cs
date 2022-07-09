@@ -44,6 +44,8 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
             this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
             this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartment);
+            this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.JoinOrLeaveDepartment);
+            this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.JoinOrLeaveDepartment);
         }
 
         private void GetDepartmentsForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
@@ -115,6 +117,39 @@ namespace FivePD.Gamemode.Server.Services
                 });
                 this._databaseContext.SaveChanges();
                 networkCallbackDelegate.Invoke(true);
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(false);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void JoinOrLeaveDepartment([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            var license = player.Identifiers["license"];
+            if (string.IsNullOrEmpty(license))
+            {
+                networkCallbackDelegate.Invoke(false);
+                return;
+            }
+
+            try
+            {
+                var user = this._databaseContext.Users.FirstOrDefault(user => user.License == license);
+
+                if (user != null)
+                {
+                    user.DepartmentId = departmentId == 0 ? (int?)null : departmentId;
+                    user.DivisionId = null;
+                    user.RankId = null;
+                    this._databaseContext.SaveChangesAsync();
+                    networkCallbackDelegate.Invoke(true);
+                }
+                else
+                {
+                    networkCallbackDelegate.Invoke(false);
+                }
             }
             catch (Exception e)
             {

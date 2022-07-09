@@ -8,7 +8,7 @@ const state = useState();
 const router = useRouter();
 
 function onSubmit(fields: FormFields) {
-  post(ClientEvents.CreateDepartment, fields).subscribe((res) => {
+  post<boolean>(ClientEvents.CreateDepartment, fields).subscribe((res) => {
     console.log(res)
     router.push('/');
     // TODO: success / error notification

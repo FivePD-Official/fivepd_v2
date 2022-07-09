@@ -55,7 +55,9 @@ export interface ILocalization {
       VehicleDatabase: string,
     },
     Actions: {
+      Join: string,
       Kick: string,
+      Leave: string,
       Save: string,
       SetRank: string,
       SetCallsign: string,

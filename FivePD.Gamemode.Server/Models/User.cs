@@ -39,7 +39,7 @@ namespace FivePD.Gamemode.Server.Models
         /// <summary>
         /// Gets or sets the id of the department.
         /// </summary>
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
 
         /// <summary>
         /// Gets or sets the department which the user is joined to.
@@ -49,7 +49,7 @@ namespace FivePD.Gamemode.Server.Models
         /// <summary>
         /// Gets or sets the id of the division.
         /// </summary>
-        public int DivisionId { get; set; }
+        public int? DivisionId { get; set; }
 
         /// <summary>
         /// Gets or sets the division which the user is joined to.
@@ -59,7 +59,7 @@ namespace FivePD.Gamemode.Server.Models
         /// <summary>
         /// Gets or sets the id of the rank.
         /// </summary>
-        public int RankId { get; set; }
+        public int? RankId { get; set; }
 
         /// <summary>
         /// Gets or sets the rank.

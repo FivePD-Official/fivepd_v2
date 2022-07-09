@@ -191,6 +191,16 @@ namespace FivePD.Common
             /// Used when a user creates a department in the NUI.
             /// </summary>
             public const string Create = "fivepd:department:create";
+
+            /// <summary>
+            /// Used when a user joins a department in the NUI.
+            /// </summary>
+            public const string Join = "fivepd:department:join";
+
+            /// <summary>
+            /// Used when a user leaves a department in the NUI.
+            /// </summary>
+            public const string Leave = "fivepd:department:leave";
         }
 
         /// <summary>

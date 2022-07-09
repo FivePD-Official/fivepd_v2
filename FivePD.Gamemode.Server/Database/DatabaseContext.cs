@@ -75,15 +75,18 @@ namespace FivePD.Gamemode.Server.Database
         {
             modelBuilder.Entity<Department>()
                 .HasMany(department => department.Users)
-                .WithOne(user => user.Department);
+                .WithOne(user => user.Department)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Department>()
                 .HasMany(department => department.Divisions)
-                .WithOne(division => division.Department);
+                .WithOne(division => division.Department)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Department>()
                 .HasMany(department => department.Ranks)
-                .WithOne(user => user.Department);
+                .WithOne(user => user.Department)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
                 .HasOne(user => user.Division);

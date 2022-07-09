@@ -5,14 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
 #pragma warning disable CS1591
-
 namespace FivePD.Gamemode.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220709142537_AddRankPermissions")]
-    partial class AddRankPermissions
+    [Migration("20220709182625_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,10 +92,10 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.Property<string>("Callsign")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int>("DepartmentId")
+                    b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DivisionId")
+                    b.Property<int?>("DivisionId")
                         .HasColumnType("int");
 
                     b.Property<string>("License")
@@ -106,7 +104,7 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int>("RankId")
+                    b.Property<int?>("RankId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -124,14 +122,16 @@ namespace FivePD.Gamemode.Server.Migrations
                 {
                     b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
                         .WithMany("Divisions")
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.Rank", b =>
                 {
                     b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
                         .WithMany("Ranks")
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.OwnsOne("FivePD.Gamemode.Server.Models.Rank+Permissions", "Permission", b1 =>
                         {
@@ -161,20 +161,15 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
                         .WithMany("Users")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("FivePD.Gamemode.Server.Models.Division", "Division")
                         .WithMany()
-                        .HasForeignKey("DivisionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DivisionId");
 
                     b.HasOne("FivePD.Gamemode.Server.Models.Rank", "Rank")
                         .WithMany()
-                        .HasForeignKey("RankId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RankId");
                 });
 #pragma warning restore 612, 618
         }
