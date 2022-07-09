@@ -34,6 +34,11 @@ function request(method: string, path: string, body: any | number = {}) {
     }),
     map(res => {
       if (typeof res === 'string') {
+
+        if (res === 'True' || res === 'False') {
+          return res === 'True';
+        }
+
         try {
           return JSON.parse(res);
         } catch(_) {

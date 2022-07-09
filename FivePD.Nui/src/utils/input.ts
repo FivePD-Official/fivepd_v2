@@ -43,7 +43,7 @@ export const formatFormEvent = (event: any): FormFields => {
   const fields: any = {};
 
   for (const e of event.target.elements) {
-    if (!e.name || !e.value) {
+    if (!e.name) {
       continue;
     }
 

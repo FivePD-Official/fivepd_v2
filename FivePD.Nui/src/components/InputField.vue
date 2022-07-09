@@ -2,14 +2,20 @@
 import { DateFormat } from "@enums";
 import type { InputField } from "@interfaces";
 import { createBirthdateInputList } from "@utils";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps<{
-  field: InputField
+  field: InputField,
+  hasError?: boolean,
 }>();
 
 const dirty = ref(false);
-const error = ref(false);
+const hasError = ref(false);
+const value = ref(props.field.defaultValue);
+
+watch(() => props.hasError, (newValue) => {
+  hasError.value = newValue!;
+});
 
 function onInput(event: any) {
   if (!dirty.value) {
@@ -17,7 +23,7 @@ function onInput(event: any) {
   }
 
   if (props.field.required) {
-    error.value = !event.target.value;
+    hasError.value = !event.target.value;
   }
 }
 </script>
@@ -26,7 +32,7 @@ function onInput(event: any) {
   <div class="input-box">
     <label
       :class="{
-        'error': error,
+        'error': hasError,
       }"
     >
       {{ field.label }}
@@ -37,7 +43,7 @@ function onInput(event: any) {
       :placeholder="field.placeholder"
       v-if="field.type !== 'date'"
       @input="event => onInput(event)"
-      :value="field.defaultValue"
+      v-model="value"
     />
     <div class="inputs" v-else>
       <input

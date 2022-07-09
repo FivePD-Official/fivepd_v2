@@ -10,5 +10,5 @@ export interface InputField {
   required: boolean,
   helpLabel?: string,
   placeholder?: string,
-  defaultValue?: string | number
+  defaultValue?: string | number,
 }
