@@ -10,29 +10,7 @@
 
 namespace FivePD.Common.Localization
 {
-    /// <summary>
-    /// Contains all keys that are used within the NUI.
-    /// </summary>
-    public class NuiLocalization
-    {
-        public NuiLocalization()
-        {
-            this.Labels = new Labels();
-            this.Actions = new Actions();
-        }
-
-        /// <summary>
-        /// Gets or sets all labels that can be found in the NUI.
-        /// </summary>
-        public Labels Labels { get; set; }
-
-        /// <summary>
-        /// Gets or sets all action labels that can be found in the NUI.
-        /// </summary>
-        public Actions Actions { get; set; }
-    }
-
-    public class Labels
+    public class NuiLabels
     {
         public string Acronym { get; set; } = "Acronym";
 
@@ -97,16 +75,5 @@ namespace FivePD.Common.Localization
         public string Units { get; set; } = "Units";
 
         public string VehicleDatabase { get; set; } = "Vehicle database";
-    }
-
-    public class Actions
-    {
-        public string Kick { get; set; } = "Kick";
-
-        public string Save { get; set; } = "Save";
-
-        public string SetRank { get; set; } = "Set rank";
-
-        public string SetCallsign { get; set; } = "Set callsign";
     }
 }

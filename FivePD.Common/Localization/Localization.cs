@@ -4,41 +4,23 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+#pragma warning disable CS1591
+#pragma warning disable SA1600
+
 namespace FivePD.Common.Localization
 {
-    /// <summary>
-    /// Contains all keys that are used within the whole project for translations.
-    /// </summary>
     public class Localization
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Localization"/> class.
-        /// </summary>
-        public Localization()
-        {
-            this.DutyMenu = new DutyMenuLocalization();
-            this.TrafficStop = new TrafficStopLocalization();
-            this.Error = new ErrorLocalizations();
-            this.Warning = new WarningLocalizations();
-            this.Nui = new NuiLocalization();
-        }
-
-        /// <summary>Gets or sets title of the localization.</summary>
         public string Title { get; set; } = "English";
 
-        /// <summary>Gets or sets localization of the duty menu.</summary>
-        public DutyMenuLocalization DutyMenu { get; set; }
+        public DutyMenuLocalization DutyMenu { get; set; } = new DutyMenuLocalization();
 
-        /// <summary>Gets or sets localization of traffic stop.</summary>
-        public TrafficStopLocalization TrafficStop { get; set; }
+        public TrafficStopLocalization TrafficStop { get; set; } = new TrafficStopLocalization();
 
-        /// <summary>Gets or sets localizations of errors.</summary>
-        public ErrorLocalizations Error { get; set; }
+        public ErrorLocalizations Error { get; set; } = new ErrorLocalizations();
 
-        /// <summary>Gets or sets localizations of warnings.</summary>
-        public WarningLocalizations Warning { get; set; }
+        public WarningLocalizations Warning { get; set; } = new WarningLocalizations();
 
-        /// <summary>Gets or sets localizations of the NUI.</summary>
-        public NuiLocalization Nui { get; set; }
+        public NuiLocalization Nui { get; set; } = new NuiLocalization();
     }
 }

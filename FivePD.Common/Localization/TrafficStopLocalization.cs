@@ -6,12 +6,10 @@
 
 #pragma warning disable CS1591
 #pragma warning disable SA1600
+#pragma warning disable SA1402
 
 namespace FivePD.Common.Localization
 {
-    /// <summary>
-    /// Contains all keys that are used for traffic stop related messages.
-    /// </summary>
     public class TrafficStopLocalization
     {
         public string Initiate { get; set; } = "Turn on your sirens to {{initiate(initiate)}} the traffic stop.";
