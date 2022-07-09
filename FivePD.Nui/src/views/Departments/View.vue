@@ -38,13 +38,13 @@ function rowIdToNameResolver(rowItem: IUser, columnKey: string, columnValue: Col
 function rankPermissionResolver(rank: IRank): string {
   let permissions = '';
 
-  if (rank.Permissions.Kick) {
+  if (rank.Permission.Kick) {
     permissions += `${state.global.localization.Nui.Actions.Kick}, `;
   }
-  if (rank.Permissions.SetRank) {
+  if (rank.Permission.SetRank) {
     permissions += `${state.global.localization.Nui.Actions.SetRank}, `;
   }
-  if (rank.Permissions.SetCallsign) {
+  if (rank.Permission.SetCallsign) {
     permissions += `${state.global.localization.Nui.Actions.SetCallsign}, `;
   }
 

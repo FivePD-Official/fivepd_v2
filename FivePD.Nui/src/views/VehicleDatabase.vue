@@ -1,28 +1,31 @@
 <script setup lang="ts">
-import type { ISearchSubmitField } from '@interfaces';
+import type { InputField, ISearchSubmitField } from '@interfaces';
 
 const onSearchSubmit = (fields: ISearchSubmitField[]) => {
   console.log(fields)
 }
 
-const fields= [
+const fields: InputField[] = [
   {
     type: 'text',
     name: 'license_plate',
     label: 'License plate',
-    placeholder: '12ABC34'
+    placeholder: '12ABC34',
+    required: false,
   },
   {
     type: 'text',
     name: 'owner_lastname',
     label: 'Owner\'s lastname',
-    placeholder: 'John'
+    placeholder: 'John',
+    required: false,
   },
   {
     type: 'text',
     name: 'owner_firstname',
     label: 'Owner\'s firstname',
-    placeholder: 'Doe'
+    placeholder: 'Doe',
+    required: false,
   }
 ];
 </script>

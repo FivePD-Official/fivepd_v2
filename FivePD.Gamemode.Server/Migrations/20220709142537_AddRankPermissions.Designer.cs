@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FivePD.Gamemode.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220707183031_AddRankPermissions")]
+    [Migration("20220709142537_AddRankPermissions")]
     partial class AddRankPermissions
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,7 +133,7 @@ namespace FivePD.Gamemode.Server.Migrations
                         .WithMany("Ranks")
                         .HasForeignKey("DepartmentId");
 
-                    b.OwnsOne("FivePD.Gamemode.Server.Models.RankPermissions", "Permissions", b1 =>
+                    b.OwnsOne("FivePD.Gamemode.Server.Models.Rank+Permissions", "Permission", b1 =>
                         {
                             b1.Property<int>("RankId")
                                 .HasColumnType("int");

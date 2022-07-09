@@ -129,7 +129,7 @@ namespace FivePD.Gamemode.Server.Migrations
                         .WithMany("Ranks")
                         .HasForeignKey("DepartmentId");
 
-                    b.OwnsOne("FivePD.Gamemode.Server.Models.RankPermissions", "Permissions", b1 =>
+                    b.OwnsOne("FivePD.Gamemode.Server.Models.Rank+Permissions", "Permission", b1 =>
                         {
                             b1.Property<int>("RankId")
                                 .HasColumnType("int");

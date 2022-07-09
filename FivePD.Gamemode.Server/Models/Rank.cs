@@ -32,32 +32,32 @@ namespace FivePD.Gamemode.Server.Models
         public Department Department { get; set; }
 
         /// <summary>
-        /// Gets or sets the privileges of this rank.
+        /// Gets or sets the permissions of this rank.
         /// </summary>
-        public virtual RankPermissions Permissions { get; set; }
-    }
-
-    /// <summary>
-    /// Defines the actions a given <see cref="Rank"/> can do.
-    /// </summary>
-    public class RankPermissions
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether the user has the ability
-        /// to kick other players from the department.
-        /// </summary>
-        public bool Kick { get; set; }
+        public Permissions Permission { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user has the ability
-        /// to set the rank of other players in the department.
+        /// Defines the actions a given <see cref="Rank"/> can do.
         /// </summary>
-        public bool SetRank { get; set; }
+        public class Permissions
+        {
+            /// <summary>
+            /// Gets or sets a value indicating whether the user has the ability
+            /// to kick other players from the department.
+            /// </summary>
+            public bool Kick { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the user has the ability
-        /// to set the callsign of other players in the department.
-        /// </summary>
-        public bool SetCallsign { get; set; }
+            /// <summary>
+            /// Gets or sets a value indicating whether the user has the ability
+            /// to set the rank of other players in the department.
+            /// </summary>
+            public bool SetRank { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether the user has the ability
+            /// to set the callsign of other players in the department.
+            /// </summary>
+            public bool SetCallsign { get; set; }
+        }
     }
 }

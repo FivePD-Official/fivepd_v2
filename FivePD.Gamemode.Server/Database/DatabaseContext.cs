@@ -92,7 +92,7 @@ namespace FivePD.Gamemode.Server.Database
                 .HasOne(user => user.Rank);
 
             modelBuilder.Entity<Rank>()
-                .OwnsOne(rank => rank.Permissions)
+                .OwnsOne(rank => rank.Permission)
                 .WithOwner();
         }
     }
