@@ -15,5 +15,7 @@ namespace FivePD.Common.Localization
         public NuiLabels Labels { get; set; } = new NuiLabels();
 
         public NuiActions Actions { get; set; } = new NuiActions();
+
+        public NuiErrors Errors { get; set; } = new NuiErrors();
     }
 }

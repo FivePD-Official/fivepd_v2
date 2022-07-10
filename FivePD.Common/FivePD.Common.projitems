@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Menu\DutyMenuLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Menu\MenuItemLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiErrors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiLabels.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\TrafficStopLocalization.cs" />

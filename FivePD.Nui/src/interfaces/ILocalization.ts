@@ -61,6 +61,10 @@ export interface ILocalization {
       Save: string,
       SetRank: string,
       SetCallsign: string,
+    },
+    Errors: {
+      DatabaseAccess: string,
+      DepartmentExistsWithName: string,
     }
   }
 }

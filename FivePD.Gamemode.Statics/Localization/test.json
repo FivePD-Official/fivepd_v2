@@ -75,6 +75,10 @@
       "Save": "T: Save",
       "SetRank": "T: Set rank",
       "SetCallsign": "T: Set callsign"
+    },
+    "Errors": {
+      "DatabaseAccess": "T: A database error occured. Please try again later.",
+      "DepartmentExistsWithName": "T: A department with this name already exists."
     }
   }
 }

@@ -18,6 +18,7 @@ using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.NuiModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FivePD.Gamemode.Server.Services
 {
@@ -85,10 +86,15 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var departmentFields = JsonConvert.DeserializeObject<CreateDepartmentFields>(JsonConvert.SerializeObject(expandoObject));
-                if (departmentFields is null)
+                var departmentFields = JsonConvert.DeserializeObject<CreateDepartmentFields>(JsonConvert.SerializeObject(expandoObject))!;
+                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Name == departmentFields.Name);
+                if (department != null)
                 {
-                    networkCallbackDelegate.Invoke(false);
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Message = "Nui.Errors.DepartmentExistsWithName",
+                    }.ToString());
                     return;
                 }
 
@@ -116,11 +122,18 @@ namespace FivePD.Gamemode.Server.Services
                     MaxUsers = departmentFields.MaxUsers,
                 });
                 this._databaseContext.SaveChanges();
-                networkCallbackDelegate.Invoke(true);
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                }.ToString());
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(false);
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Message = "Nui.Errors.DatabaseAccess",
+                }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -130,30 +143,42 @@ namespace FivePD.Gamemode.Server.Services
             var license = player.Identifiers["license"];
             if (string.IsNullOrEmpty(license))
             {
-                networkCallbackDelegate.Invoke(false);
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                }.ToString());
                 return;
             }
 
             try
             {
                 var user = this._databaseContext.Users.FirstOrDefault(user => user.License == license);
-
-                if (user != null)
+                if (user is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                    }.ToString());
+                }
+                else
                 {
                     user.DepartmentId = departmentId == 0 ? (int?)null : departmentId;
                     user.DivisionId = null;
                     user.RankId = null;
-                    this._databaseContext.SaveChangesAsync();
-                    networkCallbackDelegate.Invoke(true);
-                }
-                else
-                {
-                    networkCallbackDelegate.Invoke(false);
+                    this._databaseContext.SaveChanges();
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = true,
+                    }.ToString());
                 }
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(false);
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Message = "Nui.Errors.DatabaseAccess",
+                }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }

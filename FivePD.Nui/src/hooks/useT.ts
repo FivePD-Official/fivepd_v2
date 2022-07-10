@@ -1,10 +1,9 @@
-import { useStore } from "vuex";
+import { store } from "@store";
 
 export function useT() {
 
   const t = (key: string) => {
-    const store = useStore();
-    const localization = store.state.global.localization;
+    const localization: any = store.state.global.localization;
 
     let currentItem = localization;
     for (const k of key.split('.')) {

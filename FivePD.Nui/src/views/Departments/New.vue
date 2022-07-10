@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
+import { ActionResponse } from '@interfaces';
 import { useState } from '@store';
 import { FormFields, post } from '@utils';
 import { useRouter } from 'vue-router';
@@ -8,10 +9,13 @@ const state = useState();
 const router = useRouter();
 
 function onSubmit(fields: FormFields) {
-  post<boolean>(ClientEvents.CreateDepartment, fields).subscribe((res) => {
-    console.log(res)
-    router.push('/');
+  post<ActionResponse>(ClientEvents.CreateDepartment, fields).subscribe((res) => {
     // TODO: success / error notification
+    if (res.Status) {
+      router.push('/');
+    } else {
+
+    }
   });
 }
 </script>

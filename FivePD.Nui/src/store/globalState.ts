@@ -97,6 +97,10 @@ const defaultLocalization = {
       Save: '',
       SetRank: '',
       SetCallsign: '',
+    },
+    Errors: {
+      DatabaseAccess: '',
+      DepartmentExistsWithName: '',
     }
   }
 }

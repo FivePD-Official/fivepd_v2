@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { IDepartment, IRank, Column, IUser } from '@interfaces';
+import type { IDepartment, IRank, Column, IUser, ActionResponse } from '@interfaces';
 import { useState } from '@store';
 import { post } from '@utils';
 import { ref, computed, onMounted, watch } from 'vue';
@@ -57,10 +57,12 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
     return;
   }
 
-  post<boolean>(ClientEvents.JoinDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
-    if (res) {
+  post<ActionResponse>(ClientEvents.JoinDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
+    // TODO: success / error notification
+    if (res.Status) {
       router.push('/');
-      // TODO: notification
+    } else {
+
     }
   });
 }
