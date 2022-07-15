@@ -63,14 +63,16 @@ const formattedRows = computed<FormattedRow[]>(() => {
       <div class="table-row table-header">
         <div class="table-cell" v-for="column in formattedColumns">
           <p>{{ column.value }}</p>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" v-if="column.isLink">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
         </div>
       </div>
       <div class="table-row" v-for="row in formattedRows">
         <div class="table-cell" v-for="item in row">
-          <router-link v-if="item.link" :to="item.link">{{ item.value }}</router-link>
+          <router-link v-if="item.link" :to="item.link">
+            {{ item.value }}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </router-link>
           <p v-else>{{ item.value }}</p>
         </div>
       </div>
@@ -120,6 +122,16 @@ const formattedRows = computed<FormattedRow[]>(() => {
           color: var(--clr-text-secondary)
           text-decoration: none
 
+        a
+          display: flex
+          flex-direction: row
+          align-items: center
+
+          svg
+            margin-left: 10px
+            height: 20px
+            color: var(--clr-text-tertiary)
+
         a:hover
           color: var(--clr-text)
 
@@ -133,11 +145,6 @@ const formattedRows = computed<FormattedRow[]>(() => {
             font-size: 20px
             font-weight: 700
             color: var(--clr-text)
-
-          svg
-            margin-left: 10px
-            height: 20px
-            color: var(--clr-text-secondary)
 
 </style>
 
