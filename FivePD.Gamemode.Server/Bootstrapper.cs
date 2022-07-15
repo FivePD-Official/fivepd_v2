@@ -177,9 +177,6 @@ namespace FivePD.Gamemode.Server
             var departmentService = this._provider.GetService<IDepartmentService>();
             departmentService?.RegisterEvents();
 
-            var playerDataService = this._provider.GetService<IPlayerDataService>();
-            playerDataService?.RegisterEvents();
-
             var entityService = this._provider.GetService<IEntityService>();
             entityService?.RegisterEvents();
 
@@ -268,6 +265,7 @@ namespace FivePD.Gamemode.Server
 
             var demoPlayer = new FPlayer("1");
 
+            var playerDataService = this._provider.GetService<IPlayerDataService>();
             playerDataService.DutyStatusChanged += (sender, args) => log.Information("A duty status changed! ({@Player})", args);
 
             log?.Information("Before duty status is {@Status}", playerDataService.GetDutyStatus(demoPlayer));

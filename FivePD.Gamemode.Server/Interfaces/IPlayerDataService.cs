@@ -21,11 +21,6 @@ namespace FivePD.Gamemode.Server.Interfaces
          */
         public event EventHandler<DutyStatusChangedEventArgs> DutyStatusChanged;
 
-        /// <summary>
-        /// Registers all player related events.
-        /// </summary>
-        public void RegisterEvents();
-
         /**
          * <summary>Gets the current <see cref="FDutyStatus"/>
          * of the player.</summary>

@@ -44,19 +44,13 @@ namespace FivePD.Gamemode.Server.Services
             this._serverStateService = serverStateService;
             this._databaseContext = databaseContext;
             this._playerList = playerList;
+            this.RegisterEvents();
         }
 
         /**
          * <inheritdoc />
          */
         public event EventHandler<DutyStatusChangedEventArgs> DutyStatusChanged;
-
-        /// <inheritdoc />
-        public void RegisterEvents()
-        {
-            this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
-            this._eventHandlerDictionary[Events.Player.GetDetails] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.GetPlayerDetails);
-        }
 
         /**
          * <inheritdoc />
@@ -85,7 +79,27 @@ namespace FivePD.Gamemode.Server.Services
             return $"player:{player.NetId}";
         }
 
+        private void RegisterEvents()
+        {
+            this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
+            this._eventHandlerDictionary[Events.Player.GetDetails] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.GetPlayerDetails);
+            this.CreateDataForOnlinePlayers();
+        }
+
+        private void CreateDataForOnlinePlayers()
+        {
+            foreach (var player in this._playerList)
+            {
+                this.CreatePlayerData(player);
+            }
+        }
+
         private void OnPlayerConnecting([FromSource] Player player, string playerName, dynamic setKickReason, dynamic deferrals)
+        {
+            this.CreatePlayerData(player);
+        }
+
+        private void CreatePlayerData(Player player)
         {
             var license = player.Identifiers["license"];
             if (string.IsNullOrEmpty(license))
