@@ -5,11 +5,11 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Builders;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
@@ -18,7 +18,6 @@ using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.NuiModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace FivePD.Gamemode.Server.Services
 {
@@ -47,6 +46,76 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartment);
             this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.JoinOrLeaveDepartment);
             this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.JoinOrLeaveDepartment);
+        }
+
+        /// <inheritdoc />
+        public bool CreateDepartment(Department department)
+        {
+            try
+            {
+                this._databaseContext.Departments.Add(department);
+                this._databaseContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <inheritdoc />
+        public bool RemoveDepartment(Department department)
+        {
+            try
+            {
+                this._databaseContext.Departments.Remove(department);
+                this._databaseContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<Department> GetDepartments()
+        {
+            try
+            {
+                return this._databaseContext.Departments;
+            }
+            catch (Exception)
+            {
+                return new List<Department>();
+            }
+        }
+
+        /// <inheritdoc />
+        public Department GetDepartmentById(int id)
+        {
+            try
+            {
+                return this._databaseContext.Departments.FirstOrDefault(department => department.Id == id);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public bool SaveChanges()
+        {
+            try
+            {
+                this._databaseContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private void GetDepartmentsForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
