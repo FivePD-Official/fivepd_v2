@@ -43,11 +43,9 @@ function internalOnSubmit(event: any) {
 
   internalFields.value = modifiedInternalFields;
 
-  console.log({formattedFields})
-
-  // if (!internalFields.value.some(field => field.hasError)) {
-  //   props.onSubmit(formattedFields);
-  // }
+  if (!modifiedInternalFields.some(field => field.hasError)) {
+    props.onSubmit(formattedFields);
+  }
 }
 </script>
 

@@ -63,7 +63,7 @@ function onSubmit(fields: FormFields) {
               </tr>
             </table>
           `,
-          validator: (value: string) => !new RegExp('^[a-zA-Z0-9\-*]{1,10}$').test(value),
+          validator: (value: string) => !new RegExp('^[A-Z0-9\-*]{1,10}$').test(value),
         },
         {
           name: 'MaxUsers',
