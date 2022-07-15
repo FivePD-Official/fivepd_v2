@@ -39,12 +39,31 @@ function onSubmit(fields: FormFields) {
           type: 'text',
           required: false,
           helpLabel: state.global.localization.Nui.Labels.AcronymHelpLabel,
+          validator: (value: string) => !new RegExp('^[a-zA-Z]+$').test(value),
         },
         {
           name: 'CallsignFormat',
           label: state.global.localization.Nui.Labels.CallsignFormat,
           type: 'text',
           required: true,
+          helpLabel: `
+            ${state.global.localization.Nui.Labels.CallsignFormatHelpLabel} ${state.global.localization.Nui.Labels.AvailableCharacters}: <br/>
+            <table>
+              <tr>
+                <td><b>L</b><td>
+                <td>(${state.global.localization.Nui.Labels.Letter})<td>
+              </tr>
+              <tr>
+                <td><b>N</b><td>
+                <td>(${state.global.localization.Nui.Labels.Number})<td>
+              </tr>
+              <tr>
+                <td><b>-</b><td>
+                <td>(${state.global.localization.Nui.Labels.Dash})<td>
+              </tr>
+            </table>
+          `,
+          validator: (value: string) => !new RegExp('^[a-zA-Z0-9\-*]{1,10}$').test(value),
         },
         {
           name: 'MaxUsers',

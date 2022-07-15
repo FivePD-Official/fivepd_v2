@@ -11,4 +11,5 @@ export interface InputField {
   helpLabel?: string,
   placeholder?: string,
   defaultValue?: string | number,
+  validator?: (value: any) => boolean,
 }

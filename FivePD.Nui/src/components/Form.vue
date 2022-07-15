@@ -23,18 +23,31 @@ function internalOnSubmit(event: any) {
     return;
   }
 
+  const modifiedInternalFields = [...internalFields.value];
   for (const [key, value] of Object.entries(formattedFields)) {
-    const field = internalFields.value.find(field => field.name === key);
-    if (!field?.required) {
-      continue;
+    const field = modifiedInternalFields.find(field => field.name === key)!;
+
+    const isValueFalsy = field.type === 'number' ? isNaN(value) : !value;
+    if (field.required) {
+      if (field.validator) {
+        field.hasError = field.validator(value);
+      } else {
+        field.hasError = isValueFalsy;
+      }
+    } else if (value && field.validator) {
+      field.hasError = field.validator(value);
+    } else {
+      field.hasError = false;
     }
-
-    field.hasError = field.type === 'number' ? isNaN(value) : !value;
   }
 
-  if (!internalFields.value.some(field => field.hasError)) {
-    props.onSubmit(formattedFields);
-  }
+  internalFields.value = modifiedInternalFields;
+
+  console.log({formattedFields})
+
+  // if (!internalFields.value.some(field => field.hasError)) {
+  //   props.onSubmit(formattedFields);
+  // }
 }
 </script>
 

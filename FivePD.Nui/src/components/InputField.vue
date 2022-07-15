@@ -22,8 +22,19 @@ function onInput(event: any) {
     dirty.value = true;
   }
 
+  const value = event.target.value;
+
+  const isValueFalsy = props.field.type === 'number' ? isNaN(value) : !value;
   if (props.field.required) {
-    hasError.value = !event.target.value;
+    if (props.field.validator) {
+      hasError.value = props.field.validator(value);
+    } else {
+      hasError.value = isValueFalsy;
+    }
+  } else if (value && props.field.validator) {
+    hasError.value = props.field.validator(value);
+  } else {
+    hasError.value = false;
   }
 }
 </script>
@@ -54,7 +65,7 @@ function onInput(event: any) {
         v-for="input in createBirthdateInputList(DateFormat.MDY)"
       />
     </div>
-    <span class="help-label" v-if="field.helpLabel">{{ field.helpLabel }}</span>
+    <span class="help-label" v-if="field.helpLabel" v-html="field.helpLabel"></span>
   </div>
 </template>
 

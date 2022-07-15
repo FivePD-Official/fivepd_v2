@@ -14,7 +14,7 @@ namespace FivePD.Common.Localization
     {
         public string Acronym { get; set; } = "Acronym";
 
-        public string AcronymHelpLabel { get; set; } = "If left empty it'll be auto-generated from the name.";
+        public string AcronymHelpLabel { get; set; } = "If left empty it'll be auto-generated from the name. Can only consists of alphabetical characters.";
 
         public string ActiveCalls { get; set; } = "Active calls";
 
@@ -22,11 +22,17 @@ namespace FivePD.Common.Localization
 
         public string AssignedCall { get; set; } = "Assigned call";
 
+        public string AvailableCharacters { get; set; } = "Available characters";
+
         public string Callsign { get; set; } = "Callsign";
 
         public string CallsignFormat { get; set; } = "Callsign format";
 
+        public string CallsignFormatHelpLabel { get; set; } = "Maximum length is 10 characters.";
+
         public string CitizenDatabase { get; set; } = "Citizen database";
+
+        public string Dash { get; set; } = "Dash";
 
         public string Dashboard { get; set; } = "Dashboard";
 
@@ -37,6 +43,8 @@ namespace FivePD.Common.Localization
         public string Division { get; set; } = "Division";
 
         public string Divisions { get; set; } = "Divisions";
+
+        public string Letter { get; set; } = "Letter";
 
         public string MaxNumberOfMembers { get; set; } = "Max number of members";
 
@@ -57,6 +65,8 @@ namespace FivePD.Common.Localization
         public string NoDataToDisplay { get; set; } = "No data to display.";
 
         public string NotInDepartment { get; set; } = "You're not in a department.";
+
+        public string Number { get; set; } = "Number";
 
         public string Permissions { get; set; } = "Permissions";
 
