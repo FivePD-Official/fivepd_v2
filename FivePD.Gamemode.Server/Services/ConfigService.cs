@@ -14,8 +14,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services
 {
-    /// <inheritdoc />
-    public class ConfigService : IConfigService
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IConfigService" />
+    public class ConfigService : IConfigService, IConfigInternalService
     {
         private readonly IFileHandlerService _fileHandlerService;
         private readonly ILocalizationService _localizationService;
@@ -35,7 +35,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        public DatabaseConfig GetDatabaseConfig()
+        DatabaseConfig IConfigInternalService.GetDatabaseConfig()
         {
             return this.InternalLoadFile<DatabaseConfig>("/Config/database.json");
         }

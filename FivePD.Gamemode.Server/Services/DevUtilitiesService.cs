@@ -13,9 +13,9 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Server.Services
 {
     /**
-     * <inheritdoc />
+     * <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IDevUtilitiesService" />
      */
-    public class DevUtilitiesService : IDevUtilitiesService
+    public class DevUtilitiesService : IDevUtilitiesService, IDevUtilitiesInternalService
     {
         private readonly ICommandService _commandService;
 
@@ -31,7 +31,7 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public void RegisterDevelopmentCommands()
+        void IDevUtilitiesInternalService.RegisterDevelopmentCommands()
         {
             this._commandService.RegisterCommand("clear", (source, args) => ClearAllEntities());
         }

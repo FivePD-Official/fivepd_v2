@@ -174,25 +174,23 @@ namespace FivePD.Gamemode.Server
                 addonMetadataService?.RegisterAddonAssemblyWithDefinition(assembly.Key, assembly.Value);
             }
 
-            var departmentService = this._provider.GetService<IDepartmentService>();
+            var departmentService = this._provider.GetService<IDepartmentService>() as IServiceWithEvents;
             departmentService?.RegisterEvents();
 
-            var entityService = this._provider.GetService<IEntityService>();
+            var entityService = this._provider.GetService<IEntityService>() as IServiceWithEvents;
             entityService?.RegisterEvents();
 
-            var pedService = this._provider.GetService<IPedService>();
+            var pedService = this._provider.GetService<IPedService>() as IServiceWithEvents;
             pedService?.RegisterEvents();
 
-            var vehicleService = this._provider.GetService<IVehicleService>();
+            var vehicleService = this._provider.GetService<IVehicleService>() as IServiceWithEvents;
             vehicleService?.RegisterEvents();
 
-            var trafficStopService = this._provider.GetService<ITrafficStopService>();
+            var trafficStopService = this._provider.GetService<ITrafficStopService>() as IServiceWithEvents;
             trafficStopService?.RegisterEvents();
 
-            var localizationService = this._provider.GetService<ILocalizationService>();
-            localizationService?.RegisterEventHandlers();
-            localizationService?.LoadAvailableLocales();
-            localizationService?.ValidateLocalizationFiles();
+            var localizationService = this._provider.GetService<ILocalizationService>() as IServiceWithEvents;
+            localizationService?.RegisterEvents();
 
             var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
 
@@ -242,7 +240,7 @@ namespace FivePD.Gamemode.Server
             // Check for dev mode. If enabled, register the utilities
             if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
             {
-                var devUtilsService = this._provider.GetService<IDevUtilitiesService>();
+                var devUtilsService = this._provider.GetService<IDevUtilitiesService>() as IDevUtilitiesInternalService;
 
                 devUtilsService?.RegisterDevelopmentCommands();
             }

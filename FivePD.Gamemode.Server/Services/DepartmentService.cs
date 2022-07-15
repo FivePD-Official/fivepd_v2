@@ -21,8 +21,8 @@ using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
 {
-    /// <inheritdoc />
-    public class DepartmentService : IDepartmentService
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IDepartmentService" />
+    public class DepartmentService : IDepartmentService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly DatabaseContext _databaseContext;
@@ -38,8 +38,8 @@ namespace FivePD.Gamemode.Server.Services
             this._databaseContext = databaseContext;
         }
 
-        /// <inheritdoc />
-        public void RegisterEvents()
+        /// <inheritdoc/>
+        void IServiceWithEvents.RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
             this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);

@@ -63,7 +63,7 @@ namespace FivePD.Gamemode.Server.Database
         /// <inheritdoc />
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var config = this._configService?.GetDatabaseConfig();
+            var config = ((IConfigInternalService)this._configService)?.GetDatabaseConfig();
             if (config != null)
             {
                 optionsBuilder.UseMySql(config.ToString());

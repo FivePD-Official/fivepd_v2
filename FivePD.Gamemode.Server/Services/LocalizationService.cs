@@ -19,8 +19,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services
 {
-    /// <inheritdoc />
-    public class LocalizationService : ILocalizationService
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.ILocalizationService" />
+    public class LocalizationService : ILocalizationService, IServiceWithEvents
     {
         private readonly Localization _defaultLocalization;
         private readonly EventHandlerDictionary _eventHandlerDictionary;
@@ -40,23 +40,27 @@ namespace FivePD.Gamemode.Server.Services
             this._logger = logger;
         }
 
+        /// <inheritdoc/>
+        void IServiceWithEvents.RegisterEvents()
+        {
+            this._eventHandlerDictionary[Events.Localization.GetAvailableLocalesFromServer] += new Action<NetworkCallbackDelegate>(cb =>
+            {
+                cb.Invoke(JsonConvert.SerializeObject(this._locales));
+            });
+            this.LoadAvailableLocales();
+            this.ValidateLocalizationFiles();
+        }
+
         /// <inheritdoc />
         public Localization GetDefaultLocalization()
         {
             return this._defaultLocalization;
         }
 
-        /// <inheritdoc />
-        public void RegisterEventHandlers()
-        {
-            this._eventHandlerDictionary[Events.Localization.GetAvailableLocalesFromServer] += new Action<NetworkCallbackDelegate>(cb =>
-            {
-                cb.Invoke(JsonConvert.SerializeObject(this._locales));
-            });
-        }
-
-        /// <inheritdoc />
-        public void LoadAvailableLocales()
+        /// <summary>
+        /// Finds and loads all translation files located in fivepd/Localization.
+        /// </summary>
+        private void LoadAvailableLocales()
         {
             try
             {
@@ -81,8 +85,10 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        /// <inheritdoc />
-        public void ValidateLocalizationFiles()
+        /// <summary>
+        /// Validates all localization files, both with the Json and the Localization schema.
+        /// </summary>
+        private void ValidateLocalizationFiles()
         {
             foreach (var locale in this._locales)
             {

@@ -12,10 +12,5 @@ namespace FivePD.Gamemode.Server.Interfaces
      */
     public interface IDevUtilitiesService
     {
-        /**
-         * <summary>Registers commands intended for development
-         * usage.</summary>
-         */
-        public void RegisterDevelopmentCommands();
     }
 }

@@ -15,11 +15,6 @@ namespace FivePD.Gamemode.Server.Interfaces
     public interface IDepartmentService
     {
         /// <summary>
-        /// Registers all <see cref="Department"/> related events.
-        /// </summary>
-        public void RegisterEvents();
-
-        /// <summary>
         /// Inserts a <see cref="Database"/> into the 'departments' table.
         /// </summary>
         /// <param name="department">The department to insert.</param>

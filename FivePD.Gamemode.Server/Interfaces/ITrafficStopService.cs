@@ -13,9 +13,5 @@ namespace FivePD.Gamemode.Server.Interfaces
     /// </summary>
     public interface ITrafficStopService
     {
-        /// <summary>
-        /// Registers all police event related events.
-        /// </summary>
-        public void RegisterEvents();
     }
 }

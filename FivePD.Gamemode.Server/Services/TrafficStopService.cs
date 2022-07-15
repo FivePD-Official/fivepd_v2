@@ -15,8 +15,8 @@ using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
 {
-    /// <inheritdoc />
-    public class TrafficStopService : ITrafficStopService
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IServiceWithEvents" />
+    public class TrafficStopService : ITrafficStopService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly ConcurrentDictionary<string, TrafficStop> _trafficStops = new ConcurrentDictionary<string, TrafficStop>();
@@ -30,8 +30,8 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary = eventHandlerDictionary;
         }
 
-        /// <inheritdoc />
-        public void RegisterEvents()
+        /// <inheritdoc/>
+        void IServiceWithEvents.RegisterEvents()
         {
             this._eventHandlerDictionary[Events.TrafficStop.Initiate] += new Action<string>(this.Initiate);
             this._eventHandlerDictionary[Events.TrafficStop.Cancel] += new Action<string>(this.Cancel);
