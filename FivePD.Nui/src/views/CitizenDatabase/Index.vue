@@ -1,39 +1,44 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import { ISearchSubmitField, PedSearchResponse } from '@interfaces';
+import type { InputField, ISearchSubmitField, PedSearchResponse } from '@interfaces';
+import { useState } from '@store';
 import { post } from '@utils';
 import { ref } from 'vue';
 
+const state = useState();
 const onSearchSubmit = async (fields: ISearchSubmitField[]) => {
   post<PedSearchResponse>(ClientEvents.PedSearch, {...fields}).subscribe(res => {
     citizens.value = res;
   });
 }
 
-const fields= [
+const fields: InputField[] = [
   {
     type: 'text',
     name: 'Firstname',
     label: 'Firstname',
-    placeholder: 'John'
+    placeholder: 'John',
+    required: false,
   },
   {
     type: 'text',
     name: 'Lastname',
     label: 'Lastname',
-    placeholder: 'Doe'
+    placeholder: 'Doe',
+    required: false,
   },
   {
     type: 'date',
     name: 'Birthdate',
-    label: 'Birthdate'
+    label: 'Birthdate',
+    required: false,
   }
 ];
 const citizens = ref<PedSearchResponse>([]);
 </script>
 
 <template>
-  <PageHeader title="Citizen database" />
+  <PageHeader :title="state.global.localization.Nui.Labels.CitizenDatabase" />
   <div class="content">
 
     <SearchPanel

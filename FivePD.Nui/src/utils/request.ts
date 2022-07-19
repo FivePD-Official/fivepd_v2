@@ -1,14 +1,16 @@
 import { catchError, map, Observable, of, switchMap } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 
-export function post<T>(path: string, options: object | number = {}): Observable<T> {
+export function post<T>(path: string, options: any | number = {}): Observable<T> {
   return request('POST', path, options);
 }
 
-function request(method: string, path: string, body: object | number = {}) {
+function request(method: string, path: string, body: any | number = {}) {
 
   let newBody: string | number = '';
-  if (typeof body === 'object') {
+  if (body === undefined) {
+    newBody = JSON.stringify({});
+  } else if (typeof body === 'object') {
     newBody = JSON.stringify(body);
   } else {
     newBody = body as number;
@@ -32,6 +34,11 @@ function request(method: string, path: string, body: object | number = {}) {
     }),
     map(res => {
       if (typeof res === 'string') {
+
+        if (res === 'True' || res === 'False') {
+          return res === 'True';
+        }
+
         try {
           return JSON.parse(res);
         } catch(_) {

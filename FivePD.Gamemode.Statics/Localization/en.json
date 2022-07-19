@@ -26,11 +26,64 @@
     "Canceled": "You've canceled the traffic stop.",
     "StoppedVehicle": "Stopped vehicle"
   },
-  "ErrorLocalizations": {
+  "Error": {
     "MultipleMenusWithSameKey": "There are multiple menus which key is set to {{key}}. Make sure to change them, otherwise they will not work."
   },
-  "WarningLocalizations": {
+  "Warning": {
     "ConfigException": "An error occured while parsing the {{path}} file, the default values will be used. Make sure that the JSON formatting is correct, we recommend using the following site to check it: https://jsonformatter.org/",
     "EmptyConfigException": "The {{path}} file is empty, the default values will be used."
+  },
+  "Nui": {
+    "Labels": {
+      "Acronym": "Acronym",
+      "AcronymHelpLabel": "If left empty it'll be auto-generated from the name. Can only consists of alphabetical characters.",
+      "ActiveCalls": "Active calls",
+      "Address": "Address",
+      "AssignedCall": "Assigned call",
+      "AvailableCharacters": "Available characters",
+      "Callsign": "Callsign",
+      "CallsignFormat": "Callsign format",
+      "CallsignFormatHelpLabel": "Maximum length is 10 characters.",
+      "CitizenDatabase": "Citizen database",
+      "Dash": "Dash",
+      "Dashboard": "Dashboard",
+      "Department": "Department",
+      "Departments": "Departments",
+      "Division": "Division",
+      "Divisions": "Divisions",
+      "Letter": "Letter",
+      "MaxNumberOfMembers": "Max number of members",
+      "MaxNumberOfMembersHelpLabel": "If set to zero there won't be any limit.",
+      "Members": "Members",
+      "MyDetails": "My details",
+      "MyDepartment": "My department",
+      "Name": "Name",
+      "NewDepartment": "New department",
+      "NoAssignedCall": "You're not assigned to a call at the moment.",
+      "NoDataToDisplay": "No data to display.",
+      "NotInDepartment": "You're not in a department.",
+      "Number": "Number",
+      "Permissions": "Permissions",
+      "Rank": "Rank",
+      "Ranks": "Ranks",
+      "Settings": "Settings",
+      "Statistics": "Statistics",
+      "Status": "Status",
+      "Type": "Type",
+      "Units": "Units",
+      "VehicleDatabase": "Vehicle database"
+    },
+    "Actions": {
+      "Join": "Join",
+      "Kick": "Kick",
+      "Leave": "Leave",
+      "Save": "Save",
+      "SetRank": "Set rank",
+      "SetCallsign": "Set callsign"
+    },
+    "Errors": {
+      "DatabaseAccess": "A database error occured. Please try again later.",
+      "DepartmentExistsWithName": "A department with this name already exists."
+    }
   }
 }

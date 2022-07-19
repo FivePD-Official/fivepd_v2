@@ -47,6 +47,13 @@ namespace FivePD.Gamemode.Client.Services
                 this.Hide();
                 cb.Invoke(string.Empty);
             }));
+
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.List);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.GetById);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Join);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Leave);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Create);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.GetDetails);
         }
 
         /// <inheritdoc />

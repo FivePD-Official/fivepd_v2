@@ -32,8 +32,38 @@ namespace FivePD.Gamemode.Server.Models
         public bool Admin { get; set; }
 
         /// <summary>
+        /// Gets or sets the callsign.
+        /// </summary>
+        public string Callsign { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of the department.
+        /// </summary>
+        public int? DepartmentId { get; set; }
+
+        /// <summary>
         /// Gets or sets the department which the user is joined to.
         /// </summary>
         public Department Department { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of the division.
+        /// </summary>
+        public int? DivisionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the division which the user is joined to.
+        /// </summary>
+        public Division Division { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of the rank.
+        /// </summary>
+        public int? RankId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rank.
+        /// </summary>
+        public Rank Rank { get; set; }
     }
 }

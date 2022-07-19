@@ -16,9 +16,9 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Server.Services
 {
     /**
-     * <inheritdoc />
+     * <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IEntityService" />
      */
-    public class EntityService : IEntityService
+    public class EntityService : IEntityService, IServiceWithEvents
     {
         private static readonly Cfx.Hash CreateAutomobile = (Cfx.Hash)Cfx.API.GetHashKey("CREATE_AUTOMOBILE");
         private readonly EventHandlerDictionary _eventHandlerDictionary;
@@ -33,8 +33,8 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary = eventHandlerDictionary;
         }
 
-        /// <inheritdoc />
-        public void RegisterEvents()
+        /// <inheritdoc/>
+        void IServiceWithEvents.RegisterEvents()
         {
             this._eventHandlerDictionary[Events.EntityManagement.RequestVehicle] += new Action<uint, Vector3, float, NetworkCallbackDelegate>((model, location, heading, networkCallbackDelegate) =>
             {

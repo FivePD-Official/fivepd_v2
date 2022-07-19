@@ -50,10 +50,20 @@ namespace FivePD.Gamemode.Server.Database
         /// </summary>
         public DbSet<Department> Departments { get; set; }
 
+        /// <summary>
+        /// Gets or sets divisions table.
+        /// </summary>
+        public DbSet<Division> Divisions { get; set; }
+
+        /// <summary>
+        /// Gets or sets ranks table.
+        /// </summary>
+        public DbSet<Rank> Ranks { get; set; }
+
         /// <inheritdoc />
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var config = this._configService?.GetDatabaseConfig();
+            var config = ((IConfigInternalService)this._configService)?.GetDatabaseConfig();
             if (config != null)
             {
                 optionsBuilder.UseMySql(config.ToString());
@@ -65,7 +75,28 @@ namespace FivePD.Gamemode.Server.Database
         {
             modelBuilder.Entity<Department>()
                 .HasMany(department => department.Users)
-                .WithOne(user => user.Department);
+                .WithOne(user => user.Department)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Department>()
+                .HasMany(department => department.Divisions)
+                .WithOne(division => division.Department)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Department>()
+                .HasMany(department => department.Ranks)
+                .WithOne(user => user.Department)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasOne(user => user.Division);
+
+            modelBuilder.Entity<User>()
+                .HasOne(user => user.Rank);
+
+            modelBuilder.Entity<Rank>()
+                .OwnsOne(rank => rank.Permission)
+                .WithOwner();
         }
     }
 }

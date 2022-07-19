@@ -4,9 +4,10 @@ import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
-import { BaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent, SoundEvent, SoundSpeakEvent } from '@interfaces';
+import type { BaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent, SoundEvent, SoundSpeakEvent } from '@interfaces';
+import { State } from '@store';
 
-const store = useStore();
+const store = useStore<State>();
 const router = useRouter();
 const viewType = ref<string>('');
 const currentMenuId = ref<string>('#');
@@ -151,7 +152,7 @@ function sendAvailabilityToClient() {
 <template>
   <div class="main-container">
     <Main v-if="viewType === NuiEventType.Mdt" />
-    <template v-if="viewType === NuiEventType.MenuView" v-for="item in (store.state.global.menus as Menu[])">
+    <template v-if="viewType === NuiEventType.MenuView" v-for="item in store.state.global.menus">
       <MenuView :menu="item" v-if="currentMenuId === item.id" />
     </template>
     <TimerBar />
@@ -177,6 +178,7 @@ function sendAvailabilityToClient() {
   --clr-text: rgba(255,255,255,1)
   --clr-text-primary: rgba(255,255,255,.9)
   --clr-text-secondary: rgba(255,255,255,.7)
+  --clr-text-tertiary: rgba(255,255,255,.5)
 
   --radius-sm: 5px
   --radius: 10px
@@ -214,10 +216,20 @@ function sendAvailabilityToClient() {
   .main-container
     position: relative
     z-index: 10
-    max-width: 1900px
+    max-width: 85vw
     width: 100%
     height: 100%
     @media (max-width: 1920px)
       width: 95vw
+
+.common-title
+  font-size: 22px
+  font-weight: 700
+  color: var(--clr-text-primary)
+
+.common-bg
+  border-radius: var(--radius)
+  background-color: var(--clr-bg-secondary)
+  padding: 20px
 
 </style>

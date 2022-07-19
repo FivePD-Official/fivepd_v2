@@ -15,8 +15,8 @@ using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
 {
-    /// <inheritdoc />
-    public class VehicleService : IVehicleService
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IVehicleService" />
+    public class VehicleService : IVehicleService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IConfigService _configService;
@@ -33,8 +33,8 @@ namespace FivePD.Gamemode.Server.Services
             this._configService = configService;
         }
 
-        /// <inheritdoc />
-        public void RegisterEvents()
+        /// <inheritdoc/>
+        void IServiceWithEvents.RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Vehicle.Generate] += new Action<string>(this.GenerateVehicle);
         }

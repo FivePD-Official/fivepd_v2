@@ -18,8 +18,8 @@ using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
 {
-    /// <inheritdoc />
-    public class PedService : IPedService
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IPedService" />
+    public class PedService : IPedService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IConfigService _configService;
@@ -36,8 +36,8 @@ namespace FivePD.Gamemode.Server.Services
             this._configService = configService;
         }
 
-        /// <inheritdoc />
-        public void RegisterEvents()
+        /// <inheritdoc/>
+        void IServiceWithEvents.RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
             this._eventHandlerDictionary[Events.Ped.Search] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.Search);

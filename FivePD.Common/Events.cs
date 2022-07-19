@@ -171,5 +171,47 @@ namespace FivePD.Common
             /// </summary>
             public const string IsVehicleAttached = "fivepd:trafficStop:isVehicleAttached";
         }
+
+        /// <summary>
+        /// Contains definitions for department related events.
+        /// </summary>
+        public abstract class Department
+        {
+            /// <summary>
+            /// Used to request all departments for listing in the NUI.
+            /// </summary>
+            public const string List = "fivepd:department:list";
+
+            /// <summary>
+            /// Used to request a department by its id.
+            /// </summary>
+            public const string GetById = "fivepd:department:getById";
+
+            /// <summary>
+            /// Used when a user creates a department in the NUI.
+            /// </summary>
+            public const string Create = "fivepd:department:create";
+
+            /// <summary>
+            /// Used when a user joins a department in the NUI.
+            /// </summary>
+            public const string Join = "fivepd:department:join";
+
+            /// <summary>
+            /// Used when a user leaves a department in the NUI.
+            /// </summary>
+            public const string Leave = "fivepd:department:leave";
+        }
+
+        /// <summary>
+        /// Contains definitions for player related events.
+        /// </summary>
+        public abstract class Player
+        {
+            /// <summary>
+            /// Used to request all departments for listing in the NUI.
+            /// </summary>
+            public const string GetDetails = "fivepd:player:getDetails";
+        }
     }
 }

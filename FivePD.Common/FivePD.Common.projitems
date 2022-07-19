@@ -23,9 +23,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\DutyMenuLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\ErrorLocalizations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Localization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\Menu\DutyMenuLocalization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\Menu\MenuItemLocalization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiErrors.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiLabels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\TrafficStopLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\WarningLocalizations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />

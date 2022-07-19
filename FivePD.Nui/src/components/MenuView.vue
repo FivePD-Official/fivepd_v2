@@ -3,7 +3,7 @@ import { type Ref, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
 import { useT } from '@hooks';
 import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem, onNuiEvent } from '@utils';
 import { MenuItemType, NuiEventType } from '@enums';
-import { BaseNuiEvent } from '@interfaces';
+import type { BaseNuiEvent } from '@interfaces';
 import { Subscription } from 'rxjs';
 
 const props = defineProps<{

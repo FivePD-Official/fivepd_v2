@@ -8,8 +8,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vuelidate/core": "^2.0.0-alpha.34",
-    "@vuelidate/validators": "^2.0.0-alpha.26",
     "rxjs": "^7.5.5",
     "vue": "^3.2.25",
     "vue-router": "^4.0.12",

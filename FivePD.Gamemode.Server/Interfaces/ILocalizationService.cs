@@ -18,20 +18,5 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <returns>The default english localization.</returns>
         public Localization GetDefaultLocalization();
-
-        /// <summary>
-        /// Registers all necessary NUI events for the MDT and menus.
-        /// </summary>
-        public void RegisterEventHandlers();
-
-        /// <summary>
-        /// Finds and loads all translation files located in fivepd/Localization.
-        /// </summary>
-        public void LoadAvailableLocales();
-
-        /// <summary>
-        /// Validates all localization files, both with the Json and the Localization schema.
-        /// </summary>
-        public void ValidateLocalizationFiles();
     }
 }

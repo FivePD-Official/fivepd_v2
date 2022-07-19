@@ -13,9 +13,5 @@ namespace FivePD.Gamemode.Server.Interfaces
     /// </summary>
     public interface IVehicleService
     {
-        /// <summary>
-        /// Registers all ped related events at startup.
-        /// </summary>
-        public void RegisterEvents();
     }
 }

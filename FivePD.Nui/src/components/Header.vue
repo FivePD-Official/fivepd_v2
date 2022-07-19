@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { type Ref, ref } from 'vue';
 import { hideNui } from '@utils';
+import { useState } from '@store';
 
+const state = useState();
 const username: string = 'John Doe';
 const currentStatus: Ref<string> = ref('10-0');
 const isStatusSelectOpened: Ref<boolean> = ref(false);
@@ -26,12 +28,12 @@ const changeStatus = (status: string) => {
   <header>
     <div class="department">
       <img src="" alt="">
-      <p>LSPD</p>
+      <p>{{ state.user.details.Department?.Name ?? state.global.localization.Nui.Labels.NotInDepartment }}</p>
     </div>
     <div class="side-row">
       <div :class="`status-select ${isStatusSelectOpened ? 'status-select--open' : ''}`" v-click-outside="closeStatusSelect">
         <button class="status-select-btn" @click="toggleStatusSelect()">
-          <p>Status: {{ currentStatus }}</p>
+          <p>{{ state.global.localization.Nui.Labels.Status }}: {{ currentStatus }}</p>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>

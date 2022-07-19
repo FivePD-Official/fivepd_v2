@@ -14,11 +14,6 @@ namespace FivePD.Gamemode.Server.Interfaces
      */
     public interface IEntityService
     {
-         /// <summary>
-         /// Registers all entity management related network events.
-         /// </summary>
-         public void RegisterEvents();
-
          /**
          * <summary>Spawns a ped via RPC natives.</summary>
          * <param name="model">A ped model for the ped to use.</param>
