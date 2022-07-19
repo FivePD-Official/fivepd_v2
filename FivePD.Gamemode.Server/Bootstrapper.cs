@@ -282,6 +282,18 @@ namespace FivePD.Gamemode.Server
             this.OnStopped();
         }
 
+        #if DEBUG
+        /// <summary>
+        /// Configures pre-run settings for development mode.
+        /// This logic runs before the gamemode has been initialized.
+        /// </summary>
+        private static void ConfigureForDevelopment()
+        {
+            // Disables client-side script entity spawning
+            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
+        }
+        #endif
+
         /// <summary>
         /// Called when the gamemode is being stopped. Handles cleanup.
         /// </summary>
@@ -317,18 +329,6 @@ namespace FivePD.Gamemode.Server
                 // Doesn't matter at this point
             }
         }
-
-        #if DEBUG
-        /// <summary>
-        /// Configures pre-run settings for development mode.
-        /// This logic runs before the gamemode has been initialized.
-        /// </summary>
-        private static void ConfigureForDevelopment()
-        {
-            // Disables client-side script entity spawning
-            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
-        }
-        #endif
 
         /// <summary>
         /// Determines if the gamemode can run in the current environment.
