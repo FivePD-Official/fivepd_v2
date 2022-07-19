@@ -70,6 +70,9 @@
             <HasAttribute>
               FivePD.Common.Attributes.NoUsageAttribute
             </HasAttribute>
+            <Properties>
+              <Internalize>True</Internalize>
+            </Properties>
           </Rule>
           <Rule name="FriendlyBootstrapper" feature="renaming" exclude="true" applyToMembers="true">
             <Pattern>FivePD.Gamemode.Server.Bootstrapper</Pattern>

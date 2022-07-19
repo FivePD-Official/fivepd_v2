@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Attributes;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Interfaces;
@@ -34,7 +35,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc/>
-        void IServiceWithEvents.RegisterEvents()
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Vehicle.Generate] += new Action<string>(this.GenerateVehicle);
         }

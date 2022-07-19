@@ -11,6 +11,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using CitizenFX.Core;
+using FivePD.Common.Attributes;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.Database;
@@ -134,6 +135,14 @@ namespace FivePD.Gamemode.Server
 
             var services = new ServiceCollection();
 
+            // Find and register services that use event handlers
+            services.AddSingleton<IServiceWithEvents, DepartmentService>();
+            services.AddSingleton<IServiceWithEvents, EntityService>();
+            services.AddSingleton<IServiceWithEvents, PedService>();
+            services.AddSingleton<IServiceWithEvents, VehicleService>();
+            services.AddSingleton<IServiceWithEvents, TrafficStopService>();
+            services.AddSingleton<IServiceWithEvents, LocalizationService>();
+
             // Find and register core services
             services.AddSingleton(Log.Logger);
             services.AddSingleton(this.EventHandlers);
@@ -174,24 +183,6 @@ namespace FivePD.Gamemode.Server
                 addonMetadataService?.RegisterAddonAssemblyWithDefinition(assembly.Key, assembly.Value);
             }
 
-            var departmentService = this._provider.GetService<IDepartmentService>() as IServiceWithEvents;
-            departmentService?.RegisterEvents();
-
-            var entityService = this._provider.GetService<IEntityService>() as IServiceWithEvents;
-            entityService?.RegisterEvents();
-
-            var pedService = this._provider.GetService<IPedService>() as IServiceWithEvents;
-            pedService?.RegisterEvents();
-
-            var vehicleService = this._provider.GetService<IVehicleService>() as IServiceWithEvents;
-            vehicleService?.RegisterEvents();
-
-            var trafficStopService = this._provider.GetService<ITrafficStopService>() as IServiceWithEvents;
-            trafficStopService?.RegisterEvents();
-
-            var localizationService = this._provider.GetService<ILocalizationService>() as IServiceWithEvents;
-            localizationService?.RegisterEvents();
-
             var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
 
             this.LogDiagnostics();
@@ -201,6 +192,17 @@ namespace FivePD.Gamemode.Server
                 log?.Fatal("FivePD cannot run in this environment. Verify all prerequisites have been met and try again");
                 this.OnStopped();
                 return;
+            }
+
+            // Register shutdown routine listener
+            this.EventHandlers["onResourceStop"] += new Action(this.OnStopped);
+
+            // Register all event listeners for services
+            foreach (var service in this._provider.GetServices<IServiceWithEvents>())
+            {
+                log?.Debug("Registering event handlers for {Service}", service.GetType());
+
+                service.RegisterEvents();
             }
 
             var db = this._provider.GetService<DatabaseContext>();
@@ -240,7 +242,7 @@ namespace FivePD.Gamemode.Server
             // Check for dev mode. If enabled, register the utilities
             if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
             {
-                var devUtilsService = this._provider.GetService<IDevUtilitiesService>() as IDevUtilitiesInternalService;
+                var devUtilsService = this._provider.GetService<IDevUtilitiesService>();
 
                 devUtilsService?.RegisterDevelopmentCommands();
             }
@@ -272,10 +274,18 @@ namespace FivePD.Gamemode.Server
         }
 
         /// <summary>
+        /// Terminates the gamemode.
+        /// </summary>
+        [NoUsage]
+        public void StopGamemode()
+        {
+            this.OnStopped();
+        }
+
+        /// <summary>
         /// Called when the gamemode is being stopped. Handles cleanup.
         /// </summary>
-        [EventHandler("onResourceStop")]
-        internal void OnStopped()
+        private void OnStopped()
         {
             if (this._isStopped)
             {
@@ -306,14 +316,6 @@ namespace FivePD.Gamemode.Server
             {
                 // Doesn't matter at this point
             }
-        }
-
-        /// <summary>
-        /// Terminates the gamemode.
-        /// </summary>
-        internal void StopGamemode()
-        {
-            this.OnStopped();
         }
 
         #if DEBUG

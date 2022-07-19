@@ -10,6 +10,7 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Attributes;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
@@ -39,7 +40,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc/>
-        void IServiceWithEvents.RegisterEvents()
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
             this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
