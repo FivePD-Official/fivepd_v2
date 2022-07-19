@@ -58,17 +58,22 @@
       <VirtualFunctions>true</VirtualFunctions>
       <XmlRules>
         <Rules targetAssembly="FivePD.Gamemode.Server.net">
-          <Rule name="Default" feature="all" exclude="false" applyToMembers="true">
+          <Rule name="Apply All" feature="agent, merge, embed, renaming blob, control flow, string encryption, value encryption, resource encryption, dead code, cleanup attributes, msil encryption, code encryption, instrumentation, dynamic proxy, xaml, optimizations, inline, string encryption encrypt method, string encryption decrypt method, msil encryption get stream, code encryption get stream, msil encryption get password, code encryption get password, instrumentation on entry method, instrumentation on exception method, instrumentation on exit method" exclude="false" applyToMembers="true">
             <Pattern>*</Pattern>
+          </Rule>
+          <Rule name="Rename Non-Public" feature="renaming" exclude="false" applyToMembers="true">
+            <Access>Protected, Internal, Private, FamilyAndAssembly, FamilyOrAssembly</Access>
+            <Pattern>*</Pattern>
+          </Rule>
+          <Rule name="Rename NoUsage" feature="renaming" exclude="false" applyToMembers="true" locked="true">
+            <Pattern>*</Pattern>
+            <HasAttribute>
+              FivePD.Common.Attributes.NoUsageAttribute
+            </HasAttribute>
           </Rule>
           <Rule name="FriendlyBootstrapper" feature="renaming" exclude="true" applyToMembers="true">
             <Pattern>FivePD.Gamemode.Server.Bootstrapper</Pattern>
             <Description>Disable Renaming</Description>
-          </Rule>
-        </Rules>
-        <Rules targetAssembly="Newtonsoft.Json">
-          <Rule name="exclude json" feature="all" exclude="true" applyToMembers="true">
-            <Pattern>*</Pattern>
           </Rule>
         </Rules>
       </XmlRules>
@@ -77,33 +82,8 @@
       <SearchDirectory Remove="@(SearchDirectory)" />
       <SearchDirectory Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server" />
     </ItemGroup>
-    <ItemGroup>
-      <MergeAssembly Remove="@(MergeAssembly)" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Microsoft.Bcl.AsyncInterfaces.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Microsoft.CSharp.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Microsoft.Extensions.DependencyInjection.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Microsoft.Extensions.DependencyModel.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Namotion.Reflection.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Newtonsoft.Json.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\NJsonSchema.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Scrutor.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Sentry.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Serilog.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Serilog.Sinks.Console.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\Serilog.Sinks.File.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Buffers.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Collections.Immutable.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Memory.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Numerics.Vectors.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Reflection.Metadata.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Runtime.CompilerServices.Unsafe.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Text.Encodings.Web.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Text.Json.dll" />
-      <MergeAssembly Include="..\..\build-public-pre\Libraries\FivePD.Gamemode.Server\System.Threading.Tasks.Extensions.dll" />
-    </ItemGroup>
     <Message Text="Obfuscating $(BabelInputFile)..." />
-    <Babel CleanAttributes="$(CleanAttributes)" ConstRemoval="$(ConstRemoval)" ControlFlowObfuscation="$(ControlFlowObfuscation)" CopyAttributes="$(CopyAttributes)" DeadCodeElimination="$(DeadCodeElimination)" DebuggingProtection="$(DebuggingProtection)" DependenciesManifest="$(DependenciesManifest)" DetectIfObfuscated="$(DetectIfObfuscated)" DisgregateRemoval="$(DisgregateRemoval)" DynamicProxy="$(DynamicProxy)" EmitInvalidOpcodes="$(EmitInvalidOpcodes)" EnableObfuscationAgent="$(EnableObfuscationAgent)" EnumRemoval="$(EnumRemoval)" FlattenNamespaces="$(FlattenNamespaces)" GenerateDebug="$(GenerateDebug)" GenerateLogFile="$(GenerateLogFile)" GenerateMapOutFile="$(GenerateMapOutFile)" ILIterations="$(ILIterations)" InlineExpansion="$(InlineExpansion)" InputFile="$(BabelInputFile)" Instrument="$(Instrument)" InstrumentEmptyMethods="$(InstrumentEmptyMethods)" Internalize="$(Internalize)" MapOutFile="$(MapOutFile)" MergeAssemblies="@(MergeAssembly)" ModuleInitializer="$(ModuleInitializer)" MsilEncryption="$(MsilEncryption)" NameLength="$(NameLength)" ObfuscateEvents="$(ObfuscateEvents)" ObfuscateFields="$(ObfuscateFields)" ObfuscateMethods="$(ObfuscateMethods)" ObfuscateParameters="$(ObfuscateParameters)" ObfuscateProperties="$(ObfuscateProperties)" ObfuscateTypes="$(ObfuscateTypes)" ObfuscateXaml="$(ObfuscateXaml)" OutputFile="$(BabelOutputFile)" OverloadedRenaming="$(OverloadedRenaming)" ResourceEncryption="$(ResourceEncryption)" SealClasses="$(SealClasses)" SearchDirectories="@(SearchDirectory)" SearchSatelliteAssemblies="$(SearchSatelliteAssemblies)" ShowLogo="$(ShowLogo)" ShowStatistics="$(ShowStatistics)" StringEncryption="$(StringEncryption)" SuppressIldasm="$(SuppressIldasm)" SuppressReflection="$(SuppressReflection)" TamperingDetection="$(TamperingDetection)" UnicodeNormalization="$(UnicodeNormalization)" ValueEncryption="$(ValueEncryption)" VerboseLevel="$(VerboseLevel)" VirtualFunctions="$(VirtualFunctions)" XmlRules="$(XmlRules)" />
+    <Babel CleanAttributes="$(CleanAttributes)" ConstRemoval="$(ConstRemoval)" ControlFlowObfuscation="$(ControlFlowObfuscation)" CopyAttributes="$(CopyAttributes)" DeadCodeElimination="$(DeadCodeElimination)" DebuggingProtection="$(DebuggingProtection)" DependenciesManifest="$(DependenciesManifest)" DetectIfObfuscated="$(DetectIfObfuscated)" DisgregateRemoval="$(DisgregateRemoval)" DynamicProxy="$(DynamicProxy)" EmitInvalidOpcodes="$(EmitInvalidOpcodes)" EnableObfuscationAgent="$(EnableObfuscationAgent)" EnumRemoval="$(EnumRemoval)" FlattenNamespaces="$(FlattenNamespaces)" GenerateDebug="$(GenerateDebug)" GenerateLogFile="$(GenerateLogFile)" GenerateMapOutFile="$(GenerateMapOutFile)" ILIterations="$(ILIterations)" InlineExpansion="$(InlineExpansion)" InputFile="$(BabelInputFile)" Instrument="$(Instrument)" InstrumentEmptyMethods="$(InstrumentEmptyMethods)" Internalize="$(Internalize)" MapOutFile="$(MapOutFile)" ModuleInitializer="$(ModuleInitializer)" MsilEncryption="$(MsilEncryption)" NameLength="$(NameLength)" ObfuscateEvents="$(ObfuscateEvents)" ObfuscateFields="$(ObfuscateFields)" ObfuscateMethods="$(ObfuscateMethods)" ObfuscateParameters="$(ObfuscateParameters)" ObfuscateProperties="$(ObfuscateProperties)" ObfuscateTypes="$(ObfuscateTypes)" ObfuscateXaml="$(ObfuscateXaml)" OutputFile="$(BabelOutputFile)" OverloadedRenaming="$(OverloadedRenaming)" ResourceEncryption="$(ResourceEncryption)" SealClasses="$(SealClasses)" SearchDirectories="@(SearchDirectory)" SearchSatelliteAssemblies="$(SearchSatelliteAssemblies)" ShowLogo="$(ShowLogo)" ShowStatistics="$(ShowStatistics)" StringEncryption="$(StringEncryption)" SuppressIldasm="$(SuppressIldasm)" SuppressReflection="$(SuppressReflection)" TamperingDetection="$(TamperingDetection)" UnicodeNormalization="$(UnicodeNormalization)" ValueEncryption="$(ValueEncryption)" VerboseLevel="$(VerboseLevel)" VirtualFunctions="$(VirtualFunctions)" XmlRules="$(XmlRules)" />
   </Target>
   <Target Name="FivePDGamemodeClientnet">
     <PropertyGroup>
@@ -158,7 +138,7 @@
       <VirtualFunctions>true</VirtualFunctions>
       <XmlRules>
         <Rules targetAssembly="FivePD.Gamemode.Client.net">
-          <Rule name="Default" feature="all" exclude="false" applyToMembers="true">
+          <Rule name="Base" feature="all" exclude="false" applyToMembers="true">
             <Pattern>*</Pattern>
           </Rule>
           <Rule name="FriendlyBootstrapper" feature="renaming" exclude="true" applyToMembers="true">
