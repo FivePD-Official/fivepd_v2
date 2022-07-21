@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Gamemode.Server.Models;
 
 namespace FivePD.Gamemode.Server.Interfaces
@@ -46,5 +47,35 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <returns>If the operation was successful.</returns>
         public bool SaveChanges();
+
+        /// <summary>
+        /// Adds the given player to the given department.
+        /// </summary>
+        /// <param name="user">The user to set its department.</param>
+        /// <param name="department">The department to which the user will be added.</param>
+        /// <returns>If the operation was successful.</returns>
+        public bool AddPlayerToDepartment(User user, Department department);
+
+        /// <summary>
+        /// Adds the given player to the given department.
+        /// </summary>
+        /// <param name="player">The user to set its department.</param>
+        /// <param name="department">The department to which the user will be added.</param>
+        /// <returns>If the operation was successful.</returns>
+        public bool AddPlayerToDepartment(Player player, Department department);
+
+        /// <summary>
+        /// The given player will be removed from their department.
+        /// </summary>
+        /// <param name="user">The user to set its department.</param>
+        /// <returns>If the operation was successful.</returns>
+        public bool RemovePlayerFromDepartment(User user);
+
+        /// <summary>
+        /// The given player will be removed from their department.
+        /// </summary>
+        /// <param name="player">The user to set its department.</param>
+        /// <returns>If the operation was successful.</returns>
+        public bool RemovePlayerFromDepartment(Player player);
     }
 }

@@ -118,6 +118,62 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        /// <inheritdoc />
+        public bool AddPlayerToDepartment(User user, Department department)
+        {
+            if (user is null || department is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                user.DepartmentId = department.Id;
+                user.DivisionId = null;
+                user.RankId = null;
+                this._databaseContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <inheritdoc />
+        public bool AddPlayerToDepartment(Player player, Department department)
+        {
+            return this.AddPlayerToDepartment(this.FindUserByLicense(player), department);
+        }
+
+        /// <inheritdoc />
+        public bool RemovePlayerFromDepartment(Player player)
+        {
+            return this.RemovePlayerFromDepartment(this.FindUserByLicense(player));
+        }
+
+        /// <inheritdoc />
+        public bool RemovePlayerFromDepartment(User user)
+        {
+            if (user is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                user.DepartmentId = null;
+                user.DivisionId = null;
+                user.RankId = null;
+                this._databaseContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         private void GetDepartmentsForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -210,19 +266,9 @@ namespace FivePD.Gamemode.Server.Services
 
         private void JoinOrLeaveDepartment([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
         {
-            var license = player.Identifiers["license"];
-            if (string.IsNullOrEmpty(license))
-            {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                }.ToString());
-                return;
-            }
-
             try
             {
-                var user = this._databaseContext.Users.FirstOrDefault(user => user.License == license);
+                var user = this.FindUserByLicense(player);
                 if (user is null)
                 {
                     networkCallbackDelegate.Invoke(new ActionResponse
@@ -250,6 +296,24 @@ namespace FivePD.Gamemode.Server.Services
                     Status = false,
                     Message = "Nui.Errors.DatabaseAccess",
                 }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private User FindUserByLicense(Player player)
+        {
+            var license = player.Identifiers["license"];
+            if (string.IsNullOrEmpty(license))
+            {
+                return null;
+            }
+
+            try
+            {
+                return this._databaseContext.Users.FirstOrDefault(user => user.License == license);
+            }
+            catch (Exception e)
+            {
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
