@@ -55,6 +55,12 @@ export interface ILocalization {
       Settings: string,
       Statistics: string,
       Status: string,
+      SuccessfulJoin: string,
+      SuccessfulLeave: string,
+      SuccessfulCreate: string,
+      SuccessfulDepartmentJoin: string,
+      SuccessfulDepartmentLeave: string,
+      SuccessfulDepartmentCreate: string,
       Type: string,
       Units: string,
       VehicleDatabase: string,
@@ -70,6 +76,10 @@ export interface ILocalization {
     Errors: {
       DatabaseAccess: string,
       DepartmentExistsWithName: string,
+      DepartmentJoin: string,
+      DepartmentCreate: string,
+      UnexpectedError: string,
+      PleaseTryAgainLater: string,
     }
   }
 }

@@ -14,6 +14,7 @@ const store = useStore();
         <router-view></router-view>
       </div>
     </div>
+    <NotificationWrapper />
   </div>
 </template>
 

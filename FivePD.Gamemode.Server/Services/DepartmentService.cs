@@ -194,6 +194,7 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
+                    Message = "Nui.Labels.SuccessfulDepartmentCreate",
                 }.ToString());
             }
             catch (Exception e)

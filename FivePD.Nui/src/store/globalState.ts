@@ -91,6 +91,12 @@ const defaultLocalization = {
       Settings: '',
       Statistics: '',
       Status: '',
+      SuccessfulJoin: '',
+      SuccessfulLeave: '',
+      SuccessfulCreate: '',
+      SuccessfulDepartmentJoin: '',
+      SuccessfulDepartmentLeave: '',
+      SuccessfulDepartmentCreate: '',
       Type: '',
       Units: '',
       VehicleDatabase: '',
@@ -106,6 +112,10 @@ const defaultLocalization = {
     Errors: {
       DatabaseAccess: '',
       DepartmentExistsWithName: '',
+      DepartmentJoin: '',
+      DepartmentCreate: '',
+      UnexpectedError: '',
+      PleaseTryAgainLater: '',
     }
   }
 }

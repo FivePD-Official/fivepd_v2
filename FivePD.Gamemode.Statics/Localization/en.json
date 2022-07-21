@@ -69,6 +69,12 @@
       "Settings": "Settings",
       "Statistics": "Statistics",
       "Status": "Status",
+      "SuccessfulJoin": "Successful join",
+      "SuccessfulLeave": "Successful leave",
+      "SuccessfulCreate": "Successful create",
+      "SuccessfulDepartmentJoin": "You've successfully joined to {{department}}.",
+      "SuccessfulDepartmentLeave": "You've successfully left {{department}}.",
+      "SuccessfulDepartmentCreate": "The department {{department}} has been successfully created.",
       "Type": "Type",
       "Units": "Units",
       "VehicleDatabase": "Vehicle database"
@@ -83,7 +89,11 @@
     },
     "Errors": {
       "DatabaseAccess": "A database error occured. Please try again later.",
-      "DepartmentExistsWithName": "A department with this name already exists."
+      "DepartmentExistsWithName": "A department with this name already exists.",
+      "DepartmentJoin": "Couldn't join to {{department}}.",
+      "DepartmentCreate": "Couldn't create the department.",
+      "UnexpectedError": "Unexpected error",
+      "PleaseTryAgainLater": "Please try again later."
     }
   }
 }

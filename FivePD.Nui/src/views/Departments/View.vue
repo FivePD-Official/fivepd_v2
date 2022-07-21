@@ -2,7 +2,7 @@
 import { ClientEvents } from '@enums';
 import type { IDepartment, IRank, Column, IUser, ActionResponse } from '@interfaces';
 import { useState } from '@store';
-import { post } from '@utils';
+import { showNotification, post, replaceParams, toSentence } from '@utils';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -58,11 +58,36 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
   }
 
   post<ActionResponse>(ClientEvents.JoinDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
-    // TODO: success / error notification
     if (res.Status) {
+      if (type === 'join') {
+        showNotification({
+          type: 'success',
+          title: state.global.localization.Nui.Labels.SuccessfulJoin,
+          description: replaceParams(state.global.localization.Nui.Labels.SuccessfulDepartmentJoin, {
+            'department': `<b>${department.value?.Name ?? '-'}</b>`, 
+          })
+        });
+      } else {
+        showNotification({
+          type: 'success',
+          title: state.global.localization.Nui.Labels.SuccessfulLeave,
+          description: replaceParams(state.global.localization.Nui.Labels.SuccessfulDepartmentLeave, {
+            'department': `<b>${department.value?.Name ?? '-'}</b>`,
+          })
+        });
+      }
       router.push('/');
     } else {
-
+      showNotification({
+        type: 'error',
+        title: state.global.localization.Nui.Errors.UnexpectedError,
+        description: toSentence(
+          replaceParams(state.global.localization.Nui.Errors.DepartmentJoinError, {
+            'department': `<b>${department.value?.Name ?? '-'}</b>`,
+          }),
+          state.global.localization.Nui.Errors.PleaseTryAgainLater
+        ),
+      });
     }
   });
 }
