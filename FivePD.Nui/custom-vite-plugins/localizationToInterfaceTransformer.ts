@@ -1,5 +1,5 @@
 ﻿import { PluginOption } from "vite";
-import { readFile, writeFile } from "fs";
+import { readFile, watch, writeFile } from "fs";
 import * as path from "path";
 
 const localizationPath = path.join(__dirname, '../../FivePD.Gamemode.Statics/Localization/en.json');
@@ -10,20 +10,22 @@ export default function localizationToInterfaceTransformer(): PluginOption {
     return {
         name: 'localization-to-interface',
         enforce: 'post',
-        async handleHotUpdate() {
-            try {
-                const data = await read();
-                if (previousData === data) {
-                    return;
-                }
+        configureServer() {
+            watch(localizationPath, async () => {
+                try {
+                    const data = await read();
+                    if (previousData === data) {
+                        return;
+                    }
 
-                previousData = data;
-                const formattedInterface = data.replace(/(:.*".*)/gm, ": string").replace(/"/gm, '');
-                const formattedObject = formattedInterface.replace(/string/gm, "'',");
-                write(`export interface ILocalization {${formattedInterface.substring(1)}\n\nexport const defaultLocalization = ${formattedObject}`)
-            } catch (err) {
-                console.log(err)
-            }
+                    previousData = data;
+                    const formattedInterface = data.replace(/(:.*".*)/gm, ": string").replace(/"/gm, '');
+                    const formattedObject = formattedInterface.replace(/string/gm, "'',");
+                    write(`export interface ILocalization {${formattedInterface.substring(1)}\n\nexport const defaultLocalization = ${formattedObject}`)
+                } catch (err) {
+                    console.log(err)
+                }
+            });
         }
     }
 }
