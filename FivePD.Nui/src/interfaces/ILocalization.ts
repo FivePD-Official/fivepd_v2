@@ -1,3 +1,5 @@
+// The content of this file is auto-generated, do not edit it manually.
+
 export interface ILocalization {
   Title: string
   DutyMenu: {

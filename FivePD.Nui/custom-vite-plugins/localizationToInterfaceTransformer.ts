@@ -21,7 +21,7 @@ export default function localizationToInterfaceTransformer(): PluginOption {
                     previousData = data;
                     const formattedInterface = data.replace(/(:.*".*)/gm, ": string").replace(/"/gm, '');
                     const formattedObject = formattedInterface.replace(/string/gm, "'',");
-                    write(`export interface ILocalization {${formattedInterface.substring(1)}\n\nexport const defaultLocalization = ${formattedObject}`)
+                    write(`// The content of this file is auto-generated, do not edit it manually.\n\nexport interface ILocalization {${formattedInterface.substring(1)}\n\nexport const defaultLocalization = ${formattedObject}`)
                 } catch (err) {
                     console.log(err)
                 }
@@ -43,7 +43,7 @@ function read(): Promise<string> {
     })
 }
 
-function write(data: any) {
+function write(data: string) {
     writeFile(localizationInterfacePath, data, (err) => {
         if (err) {
             console.log(err)
