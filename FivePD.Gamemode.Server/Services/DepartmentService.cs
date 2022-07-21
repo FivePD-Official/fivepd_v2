@@ -239,7 +239,7 @@ namespace FivePD.Gamemode.Server.Services
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = true,
-                        Message = departmentId == 0 ? "Nui.Labels.SuccessfulLeave" : "Nui.Labels.SuccessfulJoin",
+                        Message = departmentId == 0 ? "Nui.Labels.SuccessfulDepartmentLeave" : "Nui.Labels.SuccessfulDepartmentJoin",
                     }.ToString());
                 }
             }

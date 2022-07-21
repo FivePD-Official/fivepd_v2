@@ -72,9 +72,9 @@
       "SuccessfulJoin": "T: Successful join",
       "SuccessfulLeave": "T: Successful leave",
       "SuccessfulCreate": "T: Successful create",
-      "SuccessfulDepartmentJoin": "T: You've successfully joined to {{department}}.",
+      "SuccessfulDepartmentJoin": "T: You've successfully joined {{department}}.",
       "SuccessfulDepartmentLeave": "T: You've successfully left {{department}}.",
-      "SuccessfulDepartmentCreate": "T: The department {{department}} has been successfully created.",
+      "SuccessfulDepartmentCreate": "T: {{department}} has been successfully created.",
       "Type": "T: Type",
       "Units": "T: Units",
       "VehicleDatabase": "T: Vehicle database"
@@ -90,7 +90,7 @@
     "Errors": {
       "DatabaseAccess": "T: A database error occured. Please try again later.",
       "DepartmentExistsWithName": "T: A department with this name already exists.",
-      "DepartmentJoin": "T: Couldn't join to {{department}}.",
+      "DepartmentJoin": "T: Couldn't join {{department}}.",
       "DepartmentCreate": "T: Couldn't create the department.",
       "UnexpectedError": "T: Unexpected error",
       "PleaseTryAgainLater": "T: Please try again later."

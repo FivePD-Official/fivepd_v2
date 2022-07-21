@@ -86,11 +86,11 @@ namespace FivePD.Common.Localization
 
         public string SuccessfulCreate { get; set; } = "Successful create";
 
-        public string SuccessfulDepartmentJoin { get; set; } = "You've successfully joined to {{department}}.";
+        public string SuccessfulDepartmentJoin { get; set; } = "You've successfully joined {{department}}.";
 
         public string SuccessfulDepartmentLeave { get; set; } = "You've successfully left {{department}}.";
 
-        public string SuccessfulDepartmentCreate { get; set; } = "The department {{department}} has been successfully created.";
+        public string SuccessfulDepartmentCreate { get; set; } = "{{department}} has been successfully created.";
 
         public string Type { get; set; } = "Type";
 

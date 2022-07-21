@@ -16,7 +16,7 @@ namespace FivePD.Common.Localization
 
         public string DepartmentExistsWithName { get; set; } = "A department with this name already exists.";
 
-        public string DepartmentJoin { get; set; } = "Couldn't join to {{department}}.";
+        public string DepartmentJoin { get; set; } = "Couldn't join {{department}}.";
 
         public string DepartmentCreate { get; set; } = "Couldn't create the department.";
 

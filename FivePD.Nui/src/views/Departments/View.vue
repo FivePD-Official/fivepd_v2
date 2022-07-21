@@ -63,7 +63,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
     if (res.Status) {
       showNotification({
         type: 'success',
-        title: type === 'join' ? state.global.localization.Nui.Labels.SuccessfulDepartmentJoin : state.global.localization.Nui.Labels.SuccessfulDepartmentLeave,
+        title: type === 'join' ? state.global.localization.Nui.Labels.SuccessfulJoin : state.global.localization.Nui.Labels.SuccessfulLeave,
         description: replaceParams(t(res.Message), { 'department': `<b>${department.value?.Name ?? '-'}</b>` }),
       });
       router.push('/');
