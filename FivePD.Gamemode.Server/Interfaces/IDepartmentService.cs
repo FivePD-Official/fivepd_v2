@@ -51,7 +51,7 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// <summary>
         /// Adds the given player to the given department.
         /// </summary>
-        /// <param name="user">The user to set its department.</param>
+        /// <param name="user">The user to update.</param>
         /// <param name="department">The department to which the user will be added.</param>
         /// <returns>If the operation was successful.</returns>
         public bool AddPlayerToDepartment(User user, Department department);
@@ -59,7 +59,7 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// <summary>
         /// Adds the given player to the given department.
         /// </summary>
-        /// <param name="player">The user to set its department.</param>
+        /// <param name="player">The user to update.</param>
         /// <param name="department">The department to which the user will be added.</param>
         /// <returns>If the operation was successful.</returns>
         public bool AddPlayerToDepartment(Player player, Department department);
@@ -67,14 +67,14 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// <summary>
         /// The given player will be removed from their department.
         /// </summary>
-        /// <param name="user">The user to set its department.</param>
+        /// <param name="user">The user to update.</param>
         /// <returns>If the operation was successful.</returns>
         public bool RemovePlayerFromDepartment(User user);
 
         /// <summary>
         /// The given player will be removed from their department.
         /// </summary>
-        /// <param name="player">The user to set its department.</param>
+        /// <param name="player">The user to update.</param>
         /// <returns>If the operation was successful.</returns>
         public bool RemovePlayerFromDepartment(Player player);
     }
