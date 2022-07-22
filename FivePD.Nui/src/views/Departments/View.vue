@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { IDepartment, IRank, Column, IUser, ActionResponse } from '@interfaces';
+import type { ActionResponse, Column, IDepartment, IRank, IUser } from '@interfaces';
 import { useState } from '@store';
-import { showNotification, post, replaceParams, toSentence } from '@utils';
-import { ref, computed, onMounted, watch } from 'vue';
+import { post, replaceParams, showNotification, toSentence } from '@utils';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useT } from "@hooks";
 
@@ -59,7 +59,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
     return;
   }
 
-  post<ActionResponse>(ClientEvents.JoinDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
+  post<ActionResponse>(type === 'join' ? ClientEvents.JoinDepartment : ClientEvents.LeaveDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
     if (res.Status) {
       showNotification({
         type: 'success',

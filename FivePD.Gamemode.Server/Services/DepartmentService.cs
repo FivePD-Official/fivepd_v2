@@ -10,6 +10,7 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Extensions;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
@@ -38,23 +39,43 @@ namespace FivePD.Gamemode.Server.Services
             this._databaseContext = databaseContext;
         }
 
+        /// <inheritdoc />
+        public event EventHandler<Department> DepartmentCreated;
+
+        /// <inheritdoc />
+        public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerJoinedDepartment;
+
+        /// <inheritdoc />
+        public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerLeftDepartment;
+
         /// <inheritdoc/>
         void IServiceWithEvents.RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
             this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
             this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartment);
-            this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.JoinOrLeaveDepartment);
-            this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.JoinOrLeaveDepartment);
+            this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
         }
 
         /// <inheritdoc />
         public bool CreateDepartment(Department department)
         {
+            if (department is null || string.IsNullOrEmpty(department.Name))
+            {
+                return false;
+            }
+
             try
             {
-                this._databaseContext.Departments.Add(department);
+                if (string.IsNullOrEmpty(department.Acronym))
+                {
+                    department.Acronym = department.Name.ToAcronym();
+                }
+
+                var createdDepartmentEntry = this._databaseContext.Departments.Add(department);
                 this._databaseContext.SaveChanges();
+                this.DepartmentCreated?.Invoke(this, createdDepartmentEntry.Entity);
                 return true;
             }
             catch (Exception)
@@ -132,6 +153,11 @@ namespace FivePD.Gamemode.Server.Services
                 user.DivisionId = null;
                 user.RankId = null;
                 this._databaseContext.SaveChanges();
+                this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs
+                {
+                    User = user,
+                    Department = department,
+                });
                 return true;
             }
             catch (Exception)
@@ -147,12 +173,6 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        public bool RemovePlayerFromDepartment(Player player)
-        {
-            return this.RemovePlayerFromDepartment(this.FindUserByLicense(player));
-        }
-
-        /// <inheritdoc />
         public bool RemovePlayerFromDepartment(User user)
         {
             if (user is null)
@@ -162,16 +182,28 @@ namespace FivePD.Gamemode.Server.Services
 
             try
             {
+                var department = user.Department;
                 user.DepartmentId = null;
                 user.DivisionId = null;
                 user.RankId = null;
                 this._databaseContext.SaveChanges();
+                this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs
+                {
+                    User = user,
+                    Department = department,
+                });
                 return true;
             }
             catch (Exception)
             {
                 return false;
             }
+        }
+
+        /// <inheritdoc />
+        public bool RemovePlayerFromDepartment(Player player)
+        {
+            return this.RemovePlayerFromDepartment(this.FindUserByLicense(player));
         }
 
         private void GetDepartmentsForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
@@ -223,26 +255,10 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
-                string departmentAcronym;
-                if (string.IsNullOrEmpty(departmentFields.Acronym))
-                {
-                    departmentAcronym = string.Join(
-                        string.Empty,
-                        departmentFields.Name
-                            .Split()
-                            .Where(s => s.Length > 0 && char.IsLetter(s[0]))
-                            .Select(s => s[0])
-                            .ToArray());
-                }
-                else
-                {
-                    departmentAcronym = departmentFields.Acronym;
-                }
-
-                this._databaseContext.Departments.Add(new Department
+                var createdDepartmentEntry = this._databaseContext.Departments.Add(new Department
                 {
                     Name = departmentFields.Name,
-                    Acronym = departmentAcronym,
+                    Acronym = string.IsNullOrEmpty(departmentFields.Acronym) ? departmentFields.Name.ToAcronym() : departmentFields.Acronym,
                     CallsignFormat = departmentFields.CallsignFormat,
                     MaxUsers = departmentFields.MaxUsers,
                 });
@@ -252,6 +268,7 @@ namespace FivePD.Gamemode.Server.Services
                     Status = true,
                     Message = "Nui.Labels.SuccessfulDepartmentCreate",
                 }.ToString());
+                this.DepartmentCreated?.Invoke(this, createdDepartmentEntry.Entity);
             }
             catch (Exception e)
             {
@@ -264,28 +281,46 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private void JoinOrLeaveDepartment([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
+        private void PlayerJoinDepartmentFromNui([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
             {
-                var user = this.FindUserByLicense(player);
-                if (user is null)
+                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == departmentId);
+                if (department is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                    }.ToString());
+                    return;
                 }
-                else
+
+                if (this.AddPlayerToDepartment(player, department))
                 {
-                    user.DepartmentId = departmentId == 0 ? (int?)null : departmentId;
-                    user.DivisionId = null;
-                    user.RankId = null;
-                    this._databaseContext.SaveChanges();
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = true,
-                        Message = departmentId == 0 ? "Nui.Labels.SuccessfulDepartmentLeave" : "Nui.Labels.SuccessfulDepartmentJoin",
+                        Message = "Nui.Labels.SuccessfulDepartmentJoin",
+                    }.ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Message = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void PlayerLeaveDepartmentFromNui([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                if (this.RemovePlayerFromDepartment(player))
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = true,
+                        Message = "Nui.Labels.SuccessfulDepartmentLeave",
                     }.ToString());
                 }
             }
