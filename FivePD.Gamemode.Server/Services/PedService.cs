@@ -10,6 +10,7 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Attributes;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Interfaces;
@@ -37,7 +38,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc/>
-        void IServiceWithEvents.RegisterEvents()
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
             this._eventHandlerDictionary[Events.Ped.Search] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.Search);

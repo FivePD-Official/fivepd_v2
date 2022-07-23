@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
+using FivePD.Common.Attributes;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Exceptions;
 using FivePD.Common.Extensions;
@@ -15,7 +16,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Server.Services
 {
     /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IConfigService" />
-    public class ConfigService : IConfigService, IConfigInternalService
+    public class ConfigService : IConfigService
     {
         private readonly IFileHandlerService _fileHandlerService;
         private readonly ILocalizationService _localizationService;
@@ -35,7 +36,8 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        DatabaseConfig IConfigInternalService.GetDatabaseConfig()
+        [NoUsage]
+        public DatabaseConfig GetDatabaseConfig()
         {
             return this.InternalLoadFile<DatabaseConfig>("/Config/database.json");
         }

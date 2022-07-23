@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
+using FivePD.Common.Attributes;
 using FivePD.Common.ConfigModels;
 
 #pragma warning disable SA1618
@@ -39,5 +40,12 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <returns>A list containing each line of the file.</returns>
         public List<string> GetLastnames();
+
+        /// <summary>
+        /// Loads and returns the database connection settings.
+        /// </summary>
+        /// <returns>Returns the database connection settings.</returns>
+        [NoUsage]
+        public DatabaseConfig GetDatabaseConfig();
     }
 }

@@ -49,7 +49,7 @@ namespace FivePD.Gamemode.Server.Services
         public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerLeftDepartment;
 
         /// <inheritdoc/>
-        void IServiceWithEvents.RegisterEvents()
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
             this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);

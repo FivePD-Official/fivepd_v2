@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Attributes;
 using FivePD.Common.Exceptions;
 using FivePD.Common.Extensions;
 using FivePD.Common.Localization;
@@ -41,7 +42,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc/>
-        void IServiceWithEvents.RegisterEvents()
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Localization.GetAvailableLocalesFromServer] += new Action<NetworkCallbackDelegate>(cb =>
             {
