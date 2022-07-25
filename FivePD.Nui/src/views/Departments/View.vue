@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { IDepartment, IRank, Column, IUser, ActionResponse } from '@interfaces';
+import type { IDepartment, IRank, ColumnDef, IUser, ActionResponse } from '@interfaces';
 import { useState } from '@store';
 import { post } from '@utils';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+interface FormattedDepartment extends IDepartment {
+  Ranks?: (IRank & { Permissions: string })[],
+  Users?: (IUser & { RankName: string, DivisionName: string })[],
+}
+
 const state = useState();
 const route = useRoute();
 const router = useRouter();
-const department = ref<IDepartment>();
+const department = ref<FormattedDepartment>();
 const title = computed(() => `${state.global.localization.Nui.Labels.Department} ${(department?.value?.Name ? '(' + department?.value?.Name + ')' : '')}`);
 
 onMounted(() => {
   if (state.user.details.Department?.Id === parseInt(route.params.id as string)) {
-    department.value = state.user.details.Department;
+    department.value = mapDepartmentData(state.user.details.Department);
   }
   requestDepartmentData();
 })
@@ -28,12 +33,26 @@ watch(route, () => {
 
 function requestDepartmentData() {
   post<IDepartment>(ClientEvents.GetDepartmentById, parseInt(route.params.id as string)).subscribe((res) => {
-    department.value = res;
+    department.value = mapDepartmentData(res);
+    console.log(department.value)
   });
 }
 
-function rowIdToNameResolver(rowItem: IUser, columnKey: string, columnValue: Column, substituteList: any[]) {
-  return substituteList.find(sub => sub.Id === rowItem[columnKey])?.Name;
+function mapDepartmentData(department: IDepartment): FormattedDepartment {
+  department.Users = department.Users?.map(user => {
+    return {
+      ...user,
+      RankName: department.Ranks?.find(rank => rank.Id === user.RankId)?.Name ?? '-',  
+      DivisionName: department.Divisions?.find(division => division.Id === user.DivisionId)?.Name ?? '-',
+    };
+  });
+  department.Ranks = department.Ranks?.map(rank => {
+    return {
+      ...rank,
+      Permissions: rankPermissionResolver(rank)
+    };
+  });
+  return department as FormattedDepartment;
 }
 
 function rankPermissionResolver(rank: IRank): string {
@@ -87,34 +106,36 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
 
   <Table
     :title="state.global.localization.Nui.Labels.Ranks"
-    :rows="department?.Ranks ?? []"
-    :columns="{
-      Name: {
-        label: state.global.localization.Nui.Labels.Name,
-      },
-      Permissions: {
-        valueResolver: (rowItem) => rankPermissionResolver(rowItem),
-        label: state.global.localization.Nui.Labels.Permissions,
-      }
-    }"
+    :data="department?.Ranks ?? []"
+    :columns="[
+        {
+          header: state.global.localization.Nui.Labels.Name,
+          accessorKey: 'Name',
+        },
+        {
+          header: state.global.localization.Nui.Labels.Permissions,
+          accessorKey: 'Permissions', 
+        }
+    ]"
   />
 
   <Table
     :title="state.global.localization.Nui.Labels.Members"
-    :rows="department?.Users ?? []"
-    :columns="{
-      Name: {
-        label: state.global.localization.Nui.Labels.Name,
+    :data="department?.Users ?? []"
+    :columns="[
+      {
+        header: state.global.localization.Nui.Labels.Name,
+        accessorKey: 'Name',
       },
-      RankId: {
-        valueResolver: (rowItem: IUser, columnKey, columnValue) => rowIdToNameResolver(rowItem, columnKey, columnValue, department?.Ranks ?? []),
-        label: state.global.localization.Nui.Labels.Rank,
+      {
+        header: state.global.localization.Nui.Labels.Rank,
+        accessorKey: 'RankName',
       },
-      DivisionId: {
-        valueResolver: (rowItem, columnKey, columnValue) => rowIdToNameResolver(rowItem, columnKey, columnValue, department?.Divisions ?? []),
-        label: state.global.localization.Nui.Labels.Division
+      {
+        header: state.global.localization.Nui.Labels.Division,
+        accessorKey: 'DivisionName'
       },
-    }"
+    ]"
   />
 
 </template>

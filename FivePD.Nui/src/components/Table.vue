@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { useState } from '@store';
 import { computed } from 'vue';
-import type { Column, FormattedColumn, FormattedRow, FormattedRowItem, PropButton } from '@interfaces';
+import type { ColumnDef, FormattedColumn, FormattedRow, FormattedRowItem, PropButton } from '@interfaces';
 
 const state = useState();
 const props = defineProps<{
-  title: string,
-  columns: Record<string, Column>,
-  rows: any[],
-  buttons?: PropButton[]
+  title: string;
+  buttons?: PropButton[];
+  columns: ColumnDef<any>[];
+  data: any[];
 }>();
 
 const formattedColumns = computed<FormattedColumn[]>(() => {
   return Object.values(props.columns).map(item => {
     const newValue: FormattedColumn = {
-      value: item.label,
+      value: item.header,
       isLink: !!item.linkResolver
     }
     return newValue;
@@ -22,26 +22,20 @@ const formattedColumns = computed<FormattedColumn[]>(() => {
 });
 
 const formattedRows = computed<FormattedRow[]>(() => {
-  return props.rows.map(item => {
+  return props.data.map(item => {
     const row: FormattedRow = [];
 
-    for (const [key, value] of Object.entries(props.columns)) {
+    for (const value of Object.values(props.columns)) {
       let newValue = '';
-
-      if (!value.valueResolver) {
-        newValue = item[key];
-      } else if (value.valueResolver) {
-        newValue = value.valueResolver(item, key, value, []);
-      } else {
-        newValue = item[key];
-      }
+      
+      newValue = item[value.accessorKey];
 
       const rowItem: FormattedRowItem = {
         value: newValue,
       };
 
       if (value.linkResolver) {
-        rowItem.link = value.linkResolver(item, key, value);
+        rowItem.link = value.linkResolver(item);
       }
       row.push(rowItem);
     }
@@ -59,7 +53,8 @@ const formattedRows = computed<FormattedRow[]>(() => {
         <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
       </div>
     </div>
-    <div v-if="rows?.length" class="common-bg table">
+    
+    <div v-if="data?.length" class="common-bg table">
       <div class="table-row table-header">
         <div class="table-cell" v-for="column in formattedColumns">
           <p>{{ column.value }}</p>
@@ -80,6 +75,7 @@ const formattedRows = computed<FormattedRow[]>(() => {
     <div v-else>
       <p class="no-data">{{ state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
     </div>
+    
   </div>
 </template>
 

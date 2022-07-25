@@ -2,7 +2,7 @@
 import { ClientEvents } from "@enums";
 import { ref } from "vue";
 import { post } from "@utils";
-import type { Column, IDepartment, IUser } from "@interfaces";
+import type { ColumnDef, IDepartment, IUser } from "@interfaces";
 import { State } from "@store";
 import { useStore } from "vuex";
 
@@ -20,8 +20,8 @@ post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
   departments.value = res;
 });
 
-function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, columnValue: Column) {
-  return `/departments/${rowItem.Id}`;
+function departmentsLinkResolver(item: IDepartment) {
+  return `/departments/${item.Id}`;
 }
 </script>
 
@@ -74,21 +74,25 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
 
   <Table
     :title="store.state.global.localization.Nui.Labels.ActiveCalls"
-    :rows="activeCalls"
-    :columns="{
-      Type: {
-        label: store.state.global.localization.Nui.Labels.Type,
-      },
-      Address: {
-        label: store.state.global.localization.Nui.Labels.Address,
-      },
-      Status: {
-        label: store.state.global.localization.Nui.Labels.Status,
-      },
-      Units: {
-        label: store.state.global.localization.Nui.Labels.Units,
-      },
-    }"
+    :data="activeCalls"
+    :columns="[
+        {
+          header: store.state.global.localization.Nui.Labels.Type,
+          accessorKey: 'Type',
+        },
+        {
+          header: store.state.global.localization.Nui.Labels.Address,
+          accessorKey: 'Address',
+        },
+        {
+          header: store.state.global.localization.Nui.Labels.Status,
+          accessorKey: 'Status', 
+        },
+        {
+          header: store.state.global.localization.Nui.Labels.Units,
+          accessorKey: 'Units',
+        }
+    ]"
   />
 
   <Table
@@ -100,16 +104,18 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
         show: store.state.user.details?.Admin ?? false
       }
     ]"
-    :rows="departments"
-    :columns="{
-      Name: {
-        linkResolver: (rowItem: IDepartment, columnKey, columnValue) => departmentsLinkResolver(rowItem, columnKey, columnValue),
-        label: store.state.global.localization.Nui.Labels.Name,
-      },
-      Acronym: {
-        label: store.state.global.localization.Nui.Labels.Acronym,
-      },
-    }"
+    :data="departments"
+    :columns="[
+        {
+          header: store.state.global.localization.Nui.Labels.Name,
+          accessorKey: 'Name',
+          linkResolver: (item) => departmentsLinkResolver(item)
+        },
+        {
+          header: store.state.global.localization.Nui.Labels.Acronym,
+          accessorKey: 'Acronym',
+        }
+    ]"
   />
 </template>
 
