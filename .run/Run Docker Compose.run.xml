@@ -1,11 +1,12 @@
 ﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Docker Compose" type="docker-deploy" factoryName="docker-compose.yml" singleton="false" server-name="Docker">
+  <configuration default="false" name="Run Docker Compose" type="docker-deploy" factoryName="docker-compose.yml" singleton="false">
     <deployment type="docker-compose.yml">
       <settings>
         <option name="envFilePath" value="" />
         <option name="sourceFilePath" value="Scripts/Docker/docker-compose.yml" />
       </settings>
     </deployment>
+    <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isPublishEnabled="true" />
     <method v="2" />
   </configuration>
 </component>
