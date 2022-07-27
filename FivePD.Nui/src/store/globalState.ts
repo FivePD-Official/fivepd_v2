@@ -34,3 +34,89 @@ export const globalState = {
   },
   actions: {}
 };
+
+const defaultLocalization = {
+  Title: '',
+  DutyMenu: {
+    Title: '',
+    OnDuty: {
+      Title: '',
+      Description: '',
+    },
+    GetLoadout: {
+      Title: '',
+      Description: '',
+    },
+    ChangeLanguage: {
+      Title: '',
+      Description: '',
+    },
+    SpawnVehicle: {
+      Title: '',
+      Description: '',
+    }
+  },
+  Nui: {
+    Labels: {
+      Acronym: '',
+      AcronymHelpLabel: '',
+      ActiveCalls: '',
+      Address: '',
+      AssignedCall: '',
+      AvailableCharacters: '',
+      Callsign: '',
+      CallsignFormat: '',
+      CallsignFormatHelpLabel: '',
+      CitizenDatabase: '',
+      Dash: '',
+      Dashboard: '',
+      Department: '',
+      Departments: '',
+      Division: '',
+      Divisions: '',
+      Letter: '',
+      MaxNumberOfMembers: '',
+      MaxNumberOfMembersHelpLabel: '',
+      Members: '',
+      MyDetails: '',
+      MyDepartment: '',
+      Name: '',
+      NewDepartment: '',
+      NoAssignedCall: '',
+      NoDataToDisplay: '',
+      NotInDepartment: '',
+      Number: '',
+      Permissions: '',
+      Rank: '',
+      Ranks: '',
+      Settings: '',
+      Statistics: '',
+      Status: '',
+      SuccessfulJoin: '',
+      SuccessfulLeave: '',
+      SuccessfulCreate: '',
+      SuccessfulDepartmentJoin: '',
+      SuccessfulDepartmentLeave: '',
+      SuccessfulDepartmentCreate: '',
+      Type: '',
+      Units: '',
+      VehicleDatabase: '',
+    },
+    Actions: {
+      Join: '',
+      Kick: '',
+      Leave: '',
+      Save: '',
+      SetRank: '',
+      SetCallsign: '',
+    },
+    Errors: {
+      DatabaseAccess: '',
+      DepartmentExistsWithName: '',
+      DepartmentJoin: '',
+      DepartmentCreate: '',
+      UnexpectedError: '',
+      PleaseTryAgainLater: '',
+    }
+  }
+}

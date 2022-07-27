@@ -71,6 +71,12 @@ export interface ILocalization {
       Settings: string
       Statistics: string
       Status: string
+      SuccessfulJoin: string
+      SuccessfulLeave: string
+      SuccessfulCreate: string
+      SuccessfulDepartmentJoin: string
+      SuccessfulDepartmentLeave: string
+      SuccessfulDepartmentCreate: string
       Type: string
       Units: string
       VehicleDatabase: string
@@ -86,6 +92,10 @@ export interface ILocalization {
     Errors: {
       DatabaseAccess: string
       DepartmentExistsWithName: string
+      DepartmentJoin: string
+      DepartmentCreate: string
+      UnexpectedError: string
+      PleaseTryAgainLater: string
     }
   }
 }
@@ -161,6 +171,12 @@ export const defaultLocalization = {
       Settings: '',
       Statistics: '',
       Status: '',
+      SuccessfulJoin: '',
+      SuccessfulLeave: '',
+      SuccessfulCreate: '',
+      SuccessfulDepartmentJoin: '',
+      SuccessfulDepartmentLeave: '',
+      SuccessfulDepartmentCreate: '',
       Type: '',
       Units: '',
       VehicleDatabase: '',
@@ -176,6 +192,10 @@ export const defaultLocalization = {
     Errors: {
       DatabaseAccess: '',
       DepartmentExistsWithName: '',
+      DepartmentJoin: '',
+      DepartmentCreate: '',
+      UnexpectedError: '',
+      PleaseTryAgainLater: '',
     }
   }
 }

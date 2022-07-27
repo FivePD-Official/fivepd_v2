@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { IDepartment, IRank, Column, IUser, ActionResponse } from '@interfaces';
+import type { ActionResponse, Column, IDepartment, IRank, IUser } from '@interfaces';
 import { useState } from '@store';
-import { post } from '@utils';
-import { ref, computed, onMounted, watch } from 'vue';
+import { post, replaceParams, showNotification, toSentence } from '@utils';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useT } from "@hooks";
 
 const state = useState();
 const route = useRoute();
 const router = useRouter();
+const t = useT();
 const department = ref<IDepartment>();
 const title = computed(() => `${state.global.localization.Nui.Labels.Department} ${(department?.value?.Name ? '(' + department?.value?.Name + ')' : '')}`);
 
@@ -57,13 +59,25 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
     return;
   }
 
-  post<ActionResponse>(ClientEvents.JoinDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
-    // TODO: success / error notification
+  post<ActionResponse>(type === 'join' ? ClientEvents.JoinDepartment : ClientEvents.LeaveDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
     if (res.Status) {
+      showNotification({
+        type: 'success',
+        title: type === 'join' ? state.global.localization.Nui.Labels.SuccessfulJoin : state.global.localization.Nui.Labels.SuccessfulLeave,
+        description: replaceParams(t(res.Message), { 'department': `<b>${department.value?.Name ?? '-'}</b>` }),
+      });
       router.push('/');
     } else {
-
+      showNotification({
+        type: 'error',
+        title: state.global.localization.Nui.Errors.UnexpectedError,
+        description: toSentence(
+          t(res.Message),
+          state.global.localization.Nui.Errors.PleaseTryAgainLater
+        ),
+      });
     }
+
   });
 }
 </script>

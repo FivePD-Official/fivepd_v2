@@ -10,6 +10,8 @@ declare module 'vue' {
     InputField: typeof import('./components/InputField.vue')['default']
     Main: typeof import('./components/Main.vue')['default']
     MenuView: typeof import('./components/MenuView.vue')['default']
+    Notification: typeof import('./components/Notifications/Notification.vue')['default']
+    NotificationWrapper: typeof import('./components/Notifications/NotificationWrapper.vue')['default']
     PageHeader: typeof import('./components/PageHeader.vue')['default']
     RadialMenu: typeof import('./components/RadialMenu.vue')['default']
     SearchPanel: typeof import('./components/SearchPanel.vue')['default']

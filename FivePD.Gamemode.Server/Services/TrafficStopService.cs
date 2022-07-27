@@ -31,7 +31,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc/>
-        void IServiceWithEvents.RegisterEvents()
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.TrafficStop.Initiate] += new Action<string>(this.Initiate);
             this._eventHandlerDictionary[Events.TrafficStop.Cancel] += new Action<string>(this.Cancel);

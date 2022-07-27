@@ -9,3 +9,4 @@ export * from './DatabaseSearch';
 export * from './Entities';
 export * from './Table';
 export * from './Button';
+export * from './Notification';

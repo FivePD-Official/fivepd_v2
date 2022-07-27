@@ -2,20 +2,25 @@
 import { ClientEvents } from '@enums';
 import { ActionResponse } from '@interfaces';
 import { useState } from '@store';
-import { FormFields, post } from '@utils';
+import { FormFields, post, replaceParams, showNotification } from '@utils';
 import { useRouter } from 'vue-router';
+import { useT } from "@hooks";
 
 const state = useState();
 const router = useRouter();
+const t = useT();
 
 function onSubmit(fields: FormFields) {
   post<ActionResponse>(ClientEvents.CreateDepartment, fields).subscribe((res) => {
-    // TODO: success / error notification
     if (res.Status) {
       router.push('/');
-    } else {
-
     }
+
+    showNotification({
+      type: res.Status ? 'success' : 'error',
+      title: res.Status ? state.global.localization.Nui.Labels.SuccessfulCreate : state.global.localization.Nui.Errors.UnexpectedError,
+      description: res.Status ? replaceParams(t(res.Message), { 'department': `<b>${fields!.Name}</b>` }) : t(res.Message),
+    });
   });
 }
 </script>
