@@ -1,28 +1,72 @@
 <script setup lang="ts">
 import { useState } from '@store';
-import { computed } from 'vue';
-import type { ColumnDef, FormattedColumn, FormattedRow, FormattedRowItem, PropButton } from '@interfaces';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import type {
+  FormattedRow,
+  FormattedRowItem,
+  PropButton,
+  ColumnDef, FormFilter, Page, BaseRequest
+} from '@interfaces';
+import { debounceTime, Observable, Subject } from "rxjs";
 
 const state = useState();
 const props = defineProps<{
   title: string;
   buttons?: PropButton[];
-  columns: ColumnDef<any>[];
-  data: any[];
+  columns: ColumnDef<any>;
+  defaultData?: any;
+  dataRequest: (request?: BaseRequest) => Observable<Page<any>>;
+  dataMapper?: (response: Page<any>) => any;
 }>();
 
-const formattedColumns = computed<FormattedColumn[]>(() => {
-  return Object.values(props.columns).map(item => {
-    const newValue: FormattedColumn = {
-      value: item.header,
-      isLink: !!item.linkResolver
-    }
-    return newValue;
-  });
+const data = ref<Page<any>>({
+  Items: [],
+  PageCount: 0,
+  PageSize: 10,
+  CurrentPage: 1,
+  ItemCount: 0,
+});
+const currentPage = ref<number>(1);
+const filter = ref<FormFilter>({});
+const filter$ = new Subject<FormFilter>();
+
+onMounted(() => {
+  if (!props.defaultData || !props.defaultData.length) {
+    requestData();
+  }
+
+  filter$.pipe(
+      debounceTime(500)
+  ).subscribe(filters => requestData(filters));
 });
 
+onUnmounted(() => {
+  filter$.unsubscribe();
+});
+
+function requestData(filters?: FormFilter) {
+  if (!props.dataRequest) {
+    return;
+  }
+
+  const requestObject: BaseRequest = {
+    Page: currentPage.value,
+  };
+  if (filters) {
+    requestObject.Filters = filters;
+  }
+
+  props.dataRequest(requestObject)?.subscribe(res => {
+    if (props.dataMapper) {
+      data.value = props.dataMapper(res);
+    } else {
+      data.value = res;
+    }
+  });
+}
+
 const formattedRows = computed<FormattedRow[]>(() => {
-  return props.data.map(item => {
+  return data.value?.Items?.map((item: any) => {
     const row: FormattedRow = [];
 
     for (const value of Object.values(props.columns)) {
@@ -43,6 +87,59 @@ const formattedRows = computed<FormattedRow[]>(() => {
     return row;
   })
 });
+
+function onFilterFormChange(accessorKey: string, value: string | number) {
+  // I have no idea what's happening here, but for some reason the 'accessorKey'
+  // is sometimes an input change event, although it always should be a string.
+  if (typeof accessorKey !== 'string') {
+    return;
+  }
+
+  const filterCopy = {...filter.value};
+  if (filterCopy.hasOwnProperty(accessorKey)) {
+    if (typeof value === 'string') {
+      if (value) {
+        filterCopy[accessorKey] = value;
+      } else {
+        delete filterCopy[accessorKey];
+      }
+    }
+  } else {
+    if (typeof value === "string") {
+      filterCopy[accessorKey] = value;
+    }
+  }
+
+  filter.value = filterCopy;
+  filter$.next(filterCopy);
+}
+
+function toPreviousPage() {
+  if (currentPage.value === 1) {
+    return;
+  }
+
+  currentPage.value--;
+  requestData(filter.value);
+}
+
+function toNextPage() {
+  if (currentPage.value === data.value.PageCount) {
+    return;
+  }
+
+  currentPage.value++;
+  requestData(filter.value);
+}
+
+function toPage(pageNumber: number) {
+  if (currentPage.value === pageNumber || data.value.PageCount < pageNumber) {
+    return;
+  }
+
+  currentPage.value = pageNumber;
+  requestData(filter.value);
+}
 </script>
 
 <template>
@@ -54,13 +151,24 @@ const formattedRows = computed<FormattedRow[]>(() => {
       </div>
     </div>
     
-    <div v-if="data?.length" class="common-bg table">
+    <div class="common-bg table">
       <div class="table-row table-header">
-        <div class="table-cell" v-for="column in formattedColumns">
-          <p>{{ column.value }}</p>
+        <div class="table-cell" v-for="column in columns">
+          <p>{{ column.header }}</p>
         </div>
       </div>
-      <div class="table-row" v-for="row in formattedRows">
+      <form class="table-row table-filter" v-if="columns.some(col => col.filter)" @change="onFilterFormChange">
+        <div class="table-cell" v-for="column in columns">
+          <InputField v-if="column.filter" :field="{
+            type: 'text',
+            name: `${column.accessorKey}-filter`,
+            placeholder: column.header,
+            required: false
+          }" 
+          :onValueChange="value => onFilterFormChange(column.accessorKey, value)"/>
+        </div>
+      </form>
+      <div class="table-row" v-for="row in formattedRows" v-if="formattedRows?.length">
         <div class="table-cell" v-for="item in row">
           <router-link v-if="item.link" :to="item.link">
             {{ item.value }}
@@ -71,9 +179,24 @@ const formattedRows = computed<FormattedRow[]>(() => {
           <p v-else>{{ item.value }}</p>
         </div>
       </div>
-    </div>
-    <div v-else>
-      <p class="no-data">{{ state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
+      <div class="table-pagination" v-if="formattedRows?.length">
+        <div class="pagination-inner">
+          <button :disabled="currentPage === 1" @click="toPreviousPage()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button v-if="currentPage > 1" @click="toPage(currentPage - 1)"><span>{{ currentPage - 1 }}</span></button>
+          <button class="active"><span>{{ currentPage }}</span></button>
+          <button v-if="currentPage < data.PageCount" @click="toPage(currentPage + 1)"><span>{{ currentPage + 1 }}</span></button>
+          <button :disabled="currentPage === data.PageCount" @click="toNextPage()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <p v-else class="no-data">{{ state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
     </div>
     
   </div>
@@ -96,11 +219,14 @@ const formattedRows = computed<FormattedRow[]>(() => {
       flex-direction: row
       align-items: center
       justify-content: space-between
-
+      
+  .table-filter
+    margin-top: 15px
 
   .no-data
-    font-size: 20px
+    font-size: 18px
     color: var(--clr-text-secondary)
+    display: block
 
   .table
 
@@ -109,7 +235,7 @@ const formattedRows = computed<FormattedRow[]>(() => {
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
       grid-gap: 10px
       margin-bottom: 10px
-      &:last-of-type
+      &:last-of-type:not(.table-header):not(.table-filter)
         margin-bottom: 0
 
       .table-cell
@@ -141,6 +267,44 @@ const formattedRows = computed<FormattedRow[]>(() => {
             font-size: 20px
             font-weight: 700
             color: var(--clr-text)
+            
+  .table-pagination
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: flex-end
+    
+    .pagination-inner
+      display: flex
+      flex-direction: row
+      align-items: center
+    
+      button
+        display: flex
+        flex-direction: row
+        align-items: center
+        justify-content: center
+        width: 35px
+        height: 40px
+        border-radius: var(--radius-sm)
+        background: transparent
+        margin: 0 2px
+        border: none
+        &:hover:not(:disabled):not(.active)
+          background: var(--clr-bg-80)
+        &:disabled
+          svg, span
+            color: var(--clr-text-tertiary)
+        &.active
+          background: var(--clr-bg-40)
+        
+        svg
+          height: 22px
+          color: var(--clr-text-primary)
+          
+        span
+          font-size: 18px
+          color: var(--clr-text-primary)
 
 </style>
 

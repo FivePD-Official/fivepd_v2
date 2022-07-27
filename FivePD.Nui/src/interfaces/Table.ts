@@ -1,14 +1,11 @@
-export interface ColumnDef<T> {
+export interface Column<T> {
   header: string;
-  accessorKey: string;
+  accessorKey: keyof T;
   filter?: boolean;
   linkResolver?: (item: T) => string;
 }
 
-export interface FormattedColumn {
-  value: string,
-  isLink: boolean,
-}
+export type ColumnDef<T> = Column<T>[];
 
 export interface FormattedRowItem {
   value: string,

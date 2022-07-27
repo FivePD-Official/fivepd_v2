@@ -7,6 +7,7 @@ import { ref, watch } from "vue";
 const props = defineProps<{
   field: InputField,
   hasError?: boolean,
+  onValueChange?: (value: string | number) => void,
 }>();
 
 const dirty = ref(false);
@@ -36,12 +37,17 @@ function onInput(event: any) {
   } else {
     hasError.value = false;
   }
+  
+  if (!hasError.value && props.onValueChange) {
+    props.onValueChange(value);
+  }
 }
 </script>
 
 <template>
   <div class="input-box">
     <label
+      v-if="field.label"
       :class="{
         'error': hasError,
       }"

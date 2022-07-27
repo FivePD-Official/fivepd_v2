@@ -1,24 +1,36 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { IDepartment, IRank, ColumnDef, IUser, ActionResponse } from '@interfaces';
+import type { IDepartment, IRank, ColumnDef, IUser, ActionResponse, FormFilter, Page } from '@interfaces';
 import { useState } from '@store';
 import { post } from '@utils';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { BaseRequest } from "@interfaces";
+import { Observable } from "rxjs";
+
+interface FormattedRank extends IRank {
+  Permissions: string;
+}
+
+interface FormattedUser extends IUser {
+  RankName: string;
+  DivisionName: string;
+}
 
 interface FormattedDepartment extends IDepartment {
-  Ranks?: (IRank & { Permissions: string })[],
-  Users?: (IUser & { RankName: string, DivisionName: string })[],
+  Ranks?: FormattedRank[];
+  Users?: FormattedUser[];
 }
 
 const state = useState();
 const route = useRoute();
 const router = useRouter();
+const defaultDepartmentId = parseInt(route.params.id as string);
 const department = ref<FormattedDepartment>();
 const title = computed(() => `${state.global.localization.Nui.Labels.Department} ${(department?.value?.Name ? '(' + department?.value?.Name + ')' : '')}`);
 
 onMounted(() => {
-  if (state.user.details.Department?.Id === parseInt(route.params.id as string)) {
+  if (state.user.details.Department?.Id === defaultDepartmentId) {
     department.value = mapDepartmentData(state.user.details.Department);
   }
   requestDepartmentData();
@@ -30,29 +42,78 @@ watch(route, () => {
   deep: true
 });
 
+const ranksColumns: ColumnDef<FormattedRank> = [
+  {
+    header: state.global.localization.Nui.Labels.Name,
+    accessorKey: 'Name',
+    filter: true,
+  },
+  {
+    header: state.global.localization.Nui.Labels.Permissions,
+    accessorKey: 'Permissions',
+  }
+];
+
+const usersColumnDef: ColumnDef<FormattedUser> = [
+  {
+    header: state.global.localization.Nui.Labels.Name,
+    accessorKey: 'Name',
+    filter: true,
+  },
+  {
+    header: state.global.localization.Nui.Labels.Rank,
+    accessorKey: 'RankName',
+  },
+  {
+    header: state.global.localization.Nui.Labels.Division,
+    accessorKey: 'DivisionName',
+  },
+];
 
 function requestDepartmentData() {
-  post<IDepartment>(ClientEvents.GetDepartmentById, parseInt(route.params.id as string)).subscribe((res) => {
+  post<IDepartment>(ClientEvents.GetDepartmentById, defaultDepartmentId).subscribe((res) => {
     department.value = mapDepartmentData(res);
-    console.log(department.value)
+  });
+}
+
+function requestDepartmentUsers(userRequest: BaseRequest): Observable<Page<IUser>> {
+  return post<Page<IUser>>(ClientEvents.GetDepartmentUsers, {
+    DepartmentId: department.value?.Id ?? defaultDepartmentId,
+    ...userRequest
+  });
+}
+
+function requestDepartmentRanks(ranksRequest: BaseRequest): Observable<Page<IRank>> {
+  return post<Page<IRank>>(ClientEvents.GetDepartmentRanks, {
+    DepartmentId: department.value?.Id ?? defaultDepartmentId,
+    ...ranksRequest
   });
 }
 
 function mapDepartmentData(department: IDepartment): FormattedDepartment {
-  department.Users = department.Users?.map(user => {
+  return department as FormattedDepartment;
+}
+
+function mapDepartmentUsers(users: Page<IUser>): Page<IUser> {
+  users.Items = users.Items.map(user => {
     return {
       ...user,
-      RankName: department.Ranks?.find(rank => rank.Id === user.RankId)?.Name ?? '-',  
-      DivisionName: department.Divisions?.find(division => division.Id === user.DivisionId)?.Name ?? '-',
+      RankName: department.value?.Ranks?.find(rank => rank.Id === user.RankId)?.Name ?? '-',
+      DivisionName: department.value?.Divisions?.find(division => division.Id === user.DivisionId)?.Name ?? '-',
     };
   });
-  department.Ranks = department.Ranks?.map(rank => {
+  return users;
+}
+
+function mapDepartmentRanks(ranks: Page<IRank>): Page<IRank> {
+  ranks.Items = ranks.Items.map(rank => {
     return {
       ...rank,
       Permissions: rankPermissionResolver(rank)
     };
-  });
-  return department as FormattedDepartment;
+  }); 
+  
+  return ranks;
 }
 
 function rankPermissionResolver(rank: IRank): string {
@@ -106,36 +167,18 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
 
   <Table
     :title="state.global.localization.Nui.Labels.Ranks"
-    :data="department?.Ranks ?? []"
-    :columns="[
-        {
-          header: state.global.localization.Nui.Labels.Name,
-          accessorKey: 'Name',
-        },
-        {
-          header: state.global.localization.Nui.Labels.Permissions,
-          accessorKey: 'Permissions', 
-        }
-    ]"
+    :columns="ranksColumns"
+    :defaultData="department?.Ranks ?? []"
+    :dataRequest="requestDepartmentRanks"
+    :dataMapper="mapDepartmentRanks"
   />
 
   <Table
     :title="state.global.localization.Nui.Labels.Members"
-    :data="department?.Users ?? []"
-    :columns="[
-      {
-        header: state.global.localization.Nui.Labels.Name,
-        accessorKey: 'Name',
-      },
-      {
-        header: state.global.localization.Nui.Labels.Rank,
-        accessorKey: 'RankName',
-      },
-      {
-        header: state.global.localization.Nui.Labels.Division,
-        accessorKey: 'DivisionName'
-      },
-    ]"
+    :columns="usersColumnDef"
+    :defaultData="department?.Users ?? []"
+    :dataRequest="requestDepartmentUsers"
+    :dataMapper="mapDepartmentUsers"
   />
 
 </template>

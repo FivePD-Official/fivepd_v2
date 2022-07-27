@@ -188,6 +188,16 @@ namespace FivePD.Common
             public const string GetById = "fivepd:department:getById";
 
             /// <summary>
+            /// Used to request a the users of a department.
+            /// </summary>
+            public const string GetUsers = "fivepd:department:getUsers";
+
+            /// <summary>
+            /// Used to request a the ranks of a department.
+            /// </summary>
+            public const string GetRanks = "fivepd:department:getRanks";
+
+            /// <summary>
             /// Used when a user creates a department in the NUI.
             /// </summary>
             public const string Create = "fivepd:department:create";
