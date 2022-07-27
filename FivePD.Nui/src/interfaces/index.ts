@@ -11,3 +11,4 @@ export * from './Table';
 export * from './Button';
 export * from './Page';
 export * from './BaseRequest';
+export * from './Notification';

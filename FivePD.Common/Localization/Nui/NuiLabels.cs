@@ -80,6 +80,18 @@ namespace FivePD.Common.Localization
 
         public string Status { get; set; } = "Status";
 
+        public string SuccessfulJoin { get; set; } = "Successful join";
+
+        public string SuccessfulLeave { get; set; } = "Successful leave";
+
+        public string SuccessfulCreate { get; set; } = "Successful create";
+
+        public string SuccessfulDepartmentJoin { get; set; } = "You've successfully joined {{department}}.";
+
+        public string SuccessfulDepartmentLeave { get; set; } = "You've successfully left {{department}}.";
+
+        public string SuccessfulDepartmentCreate { get; set; } = "{{department}} has been successfully created.";
+
         public string Type { get; set; } = "Type";
 
         public string Units { get; set; } = "Units";
