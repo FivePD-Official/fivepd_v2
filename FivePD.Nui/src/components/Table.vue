@@ -15,7 +15,7 @@ const props = defineProps<{
   buttons?: PropButton[];
   columns: ColumnDef<any>;
   defaultData?: any;
-  dataRequest: (request?: BaseRequest) => Observable<Page<any>>;
+  dataRequest?: (request: BaseRequest) => Observable<Page<any>>;
   dataMapper?: (response: Page<any>) => any;
 }>();
 
@@ -76,7 +76,6 @@ const formattedRows = computed<FormattedRow[]>(() => {
 
       const rowItem: FormattedRowItem = {
         value: newValue,
-        type: value.type ?? 'text',
       };
 
       if (value.linkResolver) {
@@ -90,12 +89,6 @@ const formattedRows = computed<FormattedRow[]>(() => {
 });
 
 function onFilterFormChange(accessorKey: string, value: string | number) {
-  // I have no idea what's happening here, but for some reason the 'accessorKey'
-  // is sometimes an input change event, although it always should be a string.
-  if (typeof accessorKey !== 'string') {
-    return;
-  }
-
   const filterCopy = {...filter.value};
   if (filterCopy.hasOwnProperty(accessorKey)) {
     if (typeof value === 'string') {
@@ -158,7 +151,7 @@ function toPage(pageNumber: number) {
           <p>{{ column.header }}</p>
         </div>
       </div>
-      <form class="table-row table-filter" v-if="columns.some(col => col.filter)" @change="onFilterFormChange">
+      <form class="table-row table-filter" v-if="columns.some(col => col.filter)">
         <div class="table-cell" v-for="column in columns">
           <InputField v-if="column.filter" :field="{
             type: 'text',

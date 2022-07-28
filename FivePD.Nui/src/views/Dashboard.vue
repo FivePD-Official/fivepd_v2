@@ -110,7 +110,6 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
 
   <Table
     :title="store.state.global.localization.Nui.Labels.ActiveCalls"
-    :dataRequest="() => {}"
     :columns="activeCallsColumnDef"
   />
 

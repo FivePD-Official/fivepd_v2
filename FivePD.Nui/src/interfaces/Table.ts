@@ -1,6 +1,6 @@
 export interface Column<T> {
   header: string;
-  accessorKey: keyof T;
+  accessorKey: Extract<keyof T, string>;
   filter?: boolean;
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
