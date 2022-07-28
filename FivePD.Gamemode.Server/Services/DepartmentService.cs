@@ -17,6 +17,7 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.Requests;
+using FivePD.Gamemode.Server.Models.Responses;
 using FivePD.Gamemode.Server.NuiModels;
 using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -72,9 +73,9 @@ namespace FivePD.Gamemode.Server.Services
 
             try
             {
-                if (string.IsNullOrEmpty(department.Acronym))
+                if (string.IsNullOrEmpty(department.Callsign))
                 {
-                    department.Acronym = department.Name.ToAcronym();
+                    department.Callsign = department.Name.ToAcronym();
                 }
 
                 var createdDepartmentEntry = this._databaseContext.Departments.Add(department);
@@ -218,9 +219,14 @@ namespace FivePD.Gamemode.Server.Services
 
                 var filters = new Filters<Department>();
                 filters.Add(!string.IsNullOrEmpty(departmentsRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentsRequest.Filters.Name.ToLower()));
-                filters.Add(!string.IsNullOrEmpty(departmentsRequest.Filters.Acronym), department => department.Acronym.ToLower().Contains(departmentsRequest.Filters.Acronym.ToLower()));
+                filters.Add(!string.IsNullOrEmpty(departmentsRequest.Filters.Callsign), department => department.Callsign.ToLower().Contains(departmentsRequest.Filters.Callsign.ToLower()));
 
-                var page = this._databaseContext.Departments.AsNoTracking().Paginate(departmentsRequest.Page, filters);
+                var page = this._databaseContext.Departments
+                    .AsNoTracking()
+                    .Include(department => department.Users)
+                    .Paginate(departmentsRequest.Page, filters);
+                page.Items = page.Items.Select(item => item.ToResponse()).ToList();
+
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
             }
             catch (Exception e)
@@ -306,7 +312,7 @@ namespace FivePD.Gamemode.Server.Services
                 var createdDepartmentEntry = this._databaseContext.Departments.Add(new Department
                 {
                     Name = departmentFields.Name,
-                    Acronym = string.IsNullOrEmpty(departmentFields.Acronym) ? departmentFields.Name.ToAcronym() : departmentFields.Acronym,
+                    Callsign = string.IsNullOrEmpty(departmentFields.Acronym) ? departmentFields.Name.ToAcronym() : departmentFields.Acronym,
                     CallsignFormat = departmentFields.CallsignFormat,
                     MaxUsers = departmentFields.MaxUsers,
                 });

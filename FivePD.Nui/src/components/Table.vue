@@ -72,10 +72,11 @@ const formattedRows = computed<FormattedRow[]>(() => {
     for (const value of Object.values(props.columns)) {
       let newValue = '';
       
-      newValue = item[value.accessorKey];
+      newValue = value.valueResolver ? value.valueResolver(item) : item[value.accessorKey];
 
       const rowItem: FormattedRowItem = {
         value: newValue,
+        type: value.type ?? 'text',
       };
 
       if (value.linkResolver) {
@@ -144,7 +145,7 @@ function toPage(pageNumber: number) {
 
 <template>
   <div class="table-container">
-    <div class="table-header">
+    <div class="table-container-header">
       <p class="common-title">{{ title }}</p>
       <div class="buttons" v-if="buttons">
         <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
@@ -206,7 +207,7 @@ function toPage(pageNumber: number) {
 .table-container
   margin-bottom: 40px
 
-  .table-header
+  .table-container-header
     width: 100%
     display: flex
     flex-direction: row
@@ -219,26 +220,34 @@ function toPage(pageNumber: number) {
       flex-direction: row
       align-items: center
       justify-content: space-between
-      
-  .table-filter
-    margin-top: 15px
 
   .no-data
     font-size: 18px
     color: var(--clr-text-secondary)
     display: block
+    padding-left: 10px
 
   .table
+    padding: 20px 20px 20px 10px
 
     .table-row
       display: grid
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
       grid-gap: 10px
-      margin-bottom: 10px
+      border-radius: var(--radius-sm)
+      &:hover:not(.table-header):not(.table-filter)
+        background: var(--clr-bg-5)
       &:last-of-type:not(.table-header):not(.table-filter)
         margin-bottom: 0
 
       .table-cell
+        padding: 5px 20px 5px 10px
+        &:not(:last-of-type)
+          border-right: 1px solid var(--clr-bg-40)
+        &.numeric
+          p
+            font-variant-numeric: tabular-nums
+      
         p, a
           font-size: 18px
           color: var(--clr-text-secondary)
@@ -267,12 +276,24 @@ function toPage(pageNumber: number) {
             font-size: 20px
             font-weight: 700
             color: var(--clr-text)
+
+    .table-header .table-cell
+      padding-bottom: 10px
+
+    .table-filter .table-cell
+      padding-bottom: 15px
+
+      .input-box
+        margin: 0
             
   .table-pagination
     display: flex
     flex-direction: row
     align-items: center
     justify-content: flex-end
+    padding-top: 15px
+    margin-top: 20px
+    border-top: 1px solid var(--clr-bg-40)
     
     .pagination-inner
       display: flex
@@ -292,6 +313,7 @@ function toPage(pageNumber: number) {
         border: none
         &:hover:not(:disabled):not(.active)
           background: var(--clr-bg-80)
+          cursor: pointer
         &:disabled
           svg, span
             color: var(--clr-text-tertiary)

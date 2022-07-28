@@ -152,7 +152,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
         type: 'error',
         title: state.global.localization.Nui.Errors.UnexpectedError,
         description: toSentence(
-          t(res.Message),
+          t(res.Message), 
           state.global.localization.Nui.Errors.PleaseTryAgainLater
         ),
       });
@@ -182,7 +182,6 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
   <Table
     :title="state.global.localization.Nui.Labels.Ranks"
     :columns="ranksColumns"
-    :defaultData="department?.Ranks ?? []"
     :dataRequest="requestDepartmentRanks"
     :dataMapper="mapDepartmentRanks"
   />
@@ -190,7 +189,6 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
   <Table
     :title="state.global.localization.Nui.Labels.Members"
     :columns="usersColumnDef"
-    :defaultData="department?.Users ?? []"
     :dataRequest="requestDepartmentUsers"
     :dataMapper="mapDepartmentUsers"
   />

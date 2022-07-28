@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
+using FivePD.Gamemode.Server.Models.Responses;
 
 namespace FivePD.Gamemode.Server.Models
 {
@@ -24,9 +25,9 @@ namespace FivePD.Gamemode.Server.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the acronym.
+        /// Gets or sets the callsign.
         /// </summary>
-        public string Acronym { get; set; }
+        public string Callsign { get; set; }
 
         /// <summary>
         /// Gets or sets the callsign format.
@@ -52,5 +53,14 @@ namespace FivePD.Gamemode.Server.Models
         /// Gets or sets the ranks of this department.
         /// </summary>
         public IEnumerable<Rank> Ranks { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="DepartmentResponse"/>.
+        /// </summary>
+        /// <returns>The created response object.</returns>
+        public DepartmentResponse ToResponse()
+        {
+            return new DepartmentResponse(this);
+        }
     }
 }

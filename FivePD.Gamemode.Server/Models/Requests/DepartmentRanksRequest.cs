@@ -24,12 +24,12 @@ namespace FivePD.Gamemode.Server.Models.Requests
         /// <summary>
         /// Gets or sets the filters which will be applied to the query.
         /// </summary>
-        public DepartmentRequestFilters Filters { get; set; } = new DepartmentRequestFilters();
+        public DepartmentRanksRequestFilters Filters { get; set; } = new DepartmentRanksRequestFilters();
 
         /// <summary>
         /// Contains all filters that is applicable to the given class.
         /// </summary>
-        public class DepartmentRequestFilters
+        public class DepartmentRanksRequestFilters
         {
             /// <summary>
             /// Gets or sets the name.

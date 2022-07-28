@@ -47,6 +47,7 @@ export interface ILocalization {
       CallsignFormat: string
       CallsignFormatHelpLabel: string
       CitizenDatabase: string
+      Capacity: string
       Dash: string
       Dashboard: string
       Department: string
@@ -147,6 +148,7 @@ export const defaultLocalization = {
       CallsignFormat: '',
       CallsignFormatHelpLabel: '',
       CitizenDatabase: '',
+      Capacity: '',
       Dash: '',
       Dashboard: '',
       Department: '',

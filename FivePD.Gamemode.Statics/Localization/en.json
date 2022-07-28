@@ -44,6 +44,7 @@
       "Callsign": "Callsign",
       "CallsignFormat": "Callsign format",
       "CallsignFormatHelpLabel": "Maximum length is 10 characters.",
+      "Capacity": "Capacity",
       "CitizenDatabase": "Citizen database",
       "Dash": "Dash",
       "Dashboard": "Dashboard",

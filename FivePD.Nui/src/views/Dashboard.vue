@@ -45,9 +45,14 @@ const departmentColumnDef: ColumnDef<IDepartment> = [
     filter: true,
   },
   {
-    header: store.state.global.localization.Nui.Labels.Acronym,
-    accessorKey: 'Acronym',
+    header: store.state.global.localization.Nui.Labels.Callsign,
+    accessorKey: 'Callsign',
     filter: true,
+  },
+  {
+    header: store.state.global.localization.Nui.Labels.Capacity,
+    accessorKey: 'UserCount',
+    valueResolver: (item) => `${item.UserCount} / ${item.MaxUsers}`,
   }
 ];
 

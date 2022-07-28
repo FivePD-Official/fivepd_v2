@@ -34,7 +34,7 @@ namespace FivePD.Gamemode.Server.Models.Requests
             /// <summary>
             /// Gets or sets the acronym.
             /// </summary>
-            public string Acronym { get; set; }
+            public string Callsign { get; set; }
         }
     }
 }

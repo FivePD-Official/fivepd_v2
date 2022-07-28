@@ -23,7 +23,7 @@ namespace FivePD.Gamemode.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Acronym")
+                    b.Property<string>("Callsign")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("CallsignFormat")
