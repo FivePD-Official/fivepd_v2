@@ -63,6 +63,7 @@
       "NoAssignedCall": "T: You're not assigned to a call at the moment.",
       "NoDataToDisplay": "T: No data to display.",
       "NotInDepartment": "T: You're not in a department.",
+      "NoLimit": "T: No limit",
       "Number": "T: Number",
       "Permissions": "T: Permissions",
       "Rank": "T: Rank",

@@ -52,7 +52,7 @@ const departmentColumnDef: ColumnDef<IDepartment> = [
   {
     header: store.state.global.localization.Nui.Labels.Capacity,
     accessorKey: 'UserCount',
-    valueResolver: (item) => `${item.UserCount} / ${item.MaxUsers}`,
+    valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${store.state.global.localization.Nui.Labels.NoLimit}` : `${item.UserCount} / ${item.MaxUsers}`,
   }
 ];
 

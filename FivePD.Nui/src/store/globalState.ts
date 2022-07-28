@@ -84,6 +84,7 @@ const defaultLocalization = {
       NoAssignedCall: '',
       NoDataToDisplay: '',
       NotInDepartment: '',
+      NoLimit: '',
       Number: '',
       Permissions: '',
       Rank: '',

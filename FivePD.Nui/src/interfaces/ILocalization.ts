@@ -65,6 +65,7 @@ export interface ILocalization {
       NoAssignedCall: string
       NoDataToDisplay: string
       NotInDepartment: string
+      NoLimit: string
       Number: string
       Permissions: string
       Rank: string

@@ -68,6 +68,8 @@ namespace FivePD.Common.Localization
 
         public string NotInDepartment { get; set; } = "You're not in a department.";
 
+        public string NoLimit { get; set; } = "No limit";
+
         public string Number { get; set; } = "Number";
 
         public string Permissions { get; set; } = "Permissions";
