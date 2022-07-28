@@ -1,5 +1,6 @@
-import { IMenu, ILocalization, defaultLocalization, IListItem } from "@interfaces";
+import type { IMenu, ILocalization, IListItem } from "@interfaces";
 import { Menu } from "@utils";
+import { defaultLocalization } from "@interfaces";
 
 export interface GlobalState {
   radialMenus: IMenu[],
