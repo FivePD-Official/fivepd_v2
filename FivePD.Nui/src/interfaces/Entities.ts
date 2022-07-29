@@ -16,12 +16,13 @@ export interface IUser {
 export interface IDepartment {
   Id: number,
   Name: string,
-  Acronym: string,
+  Callsign: string,
   CallsignFormat: string,
   MaxUsers: number,
   Users?: IUser[],
   Divisions?: IDivision[],
   Ranks?: IRank[],
+  UserCount?: number,
 }
 
 export interface IDivision {

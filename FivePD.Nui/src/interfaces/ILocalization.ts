@@ -47,6 +47,7 @@ export interface ILocalization {
       CallsignFormat: string
       CallsignFormatHelpLabel: string
       CitizenDatabase: string
+      Capacity: string
       Dash: string
       Dashboard: string
       Department: string
@@ -64,6 +65,7 @@ export interface ILocalization {
       NoAssignedCall: string
       NoDataToDisplay: string
       NotInDepartment: string
+      NoLimit: string
       Number: string
       Permissions: string
       Rank: string
@@ -147,6 +149,7 @@ export const defaultLocalization = {
       CallsignFormat: '',
       CallsignFormatHelpLabel: '',
       CitizenDatabase: '',
+      Capacity: '',
       Dash: '',
       Dashboard: '',
       Department: '',
@@ -164,6 +167,7 @@ export const defaultLocalization = {
       NoAssignedCall: '',
       NoDataToDisplay: '',
       NotInDepartment: '',
+      NoLimit: '',
       Number: '',
       Permissions: '',
       Rank: '',

@@ -16,7 +16,10 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.Requests;
+using FivePD.Gamemode.Server.Models.Responses;
 using FivePD.Gamemode.Server.NuiModels;
+using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -53,6 +56,8 @@ namespace FivePD.Gamemode.Server.Services
         {
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
             this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
+            this._eventHandlerDictionary[Events.Department.GetUsers] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentUsersForNui);
+            this._eventHandlerDictionary[Events.Department.GetRanks] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentRanksForNui);
             this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartment);
             this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
@@ -68,9 +73,9 @@ namespace FivePD.Gamemode.Server.Services
 
             try
             {
-                if (string.IsNullOrEmpty(department.Acronym))
+                if (string.IsNullOrEmpty(department.Callsign))
                 {
-                    department.Acronym = department.Name.ToAcronym();
+                    department.Callsign = department.Name.ToAcronym();
                 }
 
                 var createdDepartmentEntry = this._databaseContext.Departments.Add(department);
@@ -206,12 +211,23 @@ namespace FivePD.Gamemode.Server.Services
             return this.RemovePlayerFromDepartment(this.FindUserByLicense(player));
         }
 
-        private void GetDepartmentsForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        private void GetDepartmentsForNui(ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
             {
-                var departments = this._databaseContext.Departments.AsNoTracking().ToList();
-                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(departments));
+                var departmentsRequest = departmentsRequestString.ConvertTo<DepartmentsRequest>();
+
+                var filters = new Filters<Department>();
+                filters.Add(!string.IsNullOrEmpty(departmentsRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentsRequest.Filters.Name.ToLower()));
+                filters.Add(!string.IsNullOrEmpty(departmentsRequest.Filters.Callsign), department => department.Callsign.ToLower().Contains(departmentsRequest.Filters.Callsign.ToLower()));
+
+                var page = this._databaseContext.Departments
+                    .AsNoTracking()
+                    .Include(department => department.Users)
+                    .Paginate(departmentsRequest.Page, filters);
+                page.Items = page.Items.Select(item => item.ToResponse()).ToList();
+
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
             }
             catch (Exception e)
             {
@@ -226,11 +242,49 @@ namespace FivePD.Gamemode.Server.Services
             {
                 var department = this._databaseContext.Departments
                     .AsNoTracking()
-                    .Include(department => department.Users)
-                    .Include(department => department.Ranks)
                     .Include(department => department.Divisions)
                     .FirstOrDefault(department => department.Id == id);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(department));
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void GetDepartmentUsersForNui(ExpandoObject departmentUsersRequestString, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var departmentUsersRequest = departmentUsersRequestString.ConvertTo<DepartmentUsersRequest>();
+
+                var filters = new Filters<User>();
+                filters.Add(true, user => user.Department.Id == departmentUsersRequest.DepartmentId);
+                filters.Add(!string.IsNullOrEmpty(departmentUsersRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
+
+                var page = this._databaseContext.Users.AsNoTracking().Paginate(departmentUsersRequest.Page, filters);
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void GetDepartmentRanksForNui(ExpandoObject departmentRanksRequestString, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var departmentRanksRequest = departmentRanksRequestString.ConvertTo<DepartmentRanksRequest>();
+
+                var filters = new Filters<Rank>();
+                filters.Add(true, rank => rank.Department.Id == departmentRanksRequest.DepartmentId);
+                filters.Add(!string.IsNullOrEmpty(departmentRanksRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentRanksRequest.Filters.Name.ToLower()));
+
+                var page = this._databaseContext.Ranks.AsNoTracking().Paginate(departmentRanksRequest.Page, filters);
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
             }
             catch (Exception e)
             {
@@ -243,7 +297,7 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var departmentFields = JsonConvert.DeserializeObject<CreateDepartmentFields>(JsonConvert.SerializeObject(expandoObject))!;
+                var departmentFields = expandoObject.ConvertTo<CreateDepartmentFields>();
                 var department = this._databaseContext.Departments.FirstOrDefault(department => department.Name == departmentFields.Name);
                 if (department != null)
                 {
@@ -258,7 +312,7 @@ namespace FivePD.Gamemode.Server.Services
                 var createdDepartmentEntry = this._databaseContext.Departments.Add(new Department
                 {
                     Name = departmentFields.Name,
-                    Acronym = string.IsNullOrEmpty(departmentFields.Acronym) ? departmentFields.Name.ToAcronym() : departmentFields.Acronym,
+                    Callsign = string.IsNullOrEmpty(departmentFields.Acronym) ? departmentFields.Name.ToAcronym() : departmentFields.Acronym,
                     CallsignFormat = departmentFields.CallsignFormat,
                     MaxUsers = departmentFields.MaxUsers,
                 });

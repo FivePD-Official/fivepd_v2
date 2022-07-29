@@ -4,6 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System.Dynamic;
 using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Extensions
@@ -25,6 +26,17 @@ namespace FivePD.Gamemode.Server.Extensions
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             });
+        }
+
+        /// <summary>
+        /// Serializes, then deserializes an <see cref="ExpandoObject"/> into <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="expandoObject">The object to convert.</param>
+        /// <typeparam name="T">The type to convert the object.</typeparam>
+        /// <returns>The converted object.</returns>
+        public static T ConvertTo<T>(this ExpandoObject expandoObject)
+        {
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(expandoObject));
         }
     }
 }

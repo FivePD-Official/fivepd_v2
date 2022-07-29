@@ -1,27 +1,63 @@
 <script setup lang="ts">
 import { ClientEvents } from "@enums";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { post } from "@utils";
-import type { Column, IDepartment, IUser } from "@interfaces";
+import type { BaseRequest, ColumnDef, IDepartment, IUser, Page } from "@interfaces";
 import { State } from "@store";
 import { useStore } from "vuex";
+import { Observable } from "rxjs";
 
 const store = useStore<State>();
 
-const departments = ref<IDepartment[]>([]);
-const activeCalls = ref<any>([]); // TODO
 const statistics = ref<any>(); // TODO
 const assignedCall = ref<any>(); // TODO
 
-post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
-  store.commit('setUserDetails', res);
-});
-post<IDepartment[]>(ClientEvents.ListDepartments).subscribe((res) => {
-  departments.value = res;
+onMounted(() => {
+  post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
+    store.commit('setUserDetails', res);
+  });
 });
 
-function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, columnValue: Column) {
-  return `/departments/${rowItem.Id}`;
+const activeCallsColumnDef: ColumnDef<any> = [
+  {
+    header: store.state.global.localization.Nui.Labels.Type,
+    accessorKey: 'Type',
+  },
+  {
+    header: store.state.global.localization.Nui.Labels.Address,
+    accessorKey: 'Address',
+  },
+  {
+    header: store.state.global.localization.Nui.Labels.Status,
+    accessorKey: 'Status',
+  },
+  {
+    header: store.state.global.localization.Nui.Labels.Units,
+    accessorKey: 'Units',
+  }
+];
+
+const departmentColumnDef: ColumnDef<IDepartment> = [
+  {
+    header: store.state.global.localization.Nui.Labels.Name,
+    accessorKey: 'Name',
+    linkResolver: (item) => `/departments/${item.Id}`,
+    filter: true,
+  },
+  {
+    header: store.state.global.localization.Nui.Labels.Callsign,
+    accessorKey: 'Callsign',
+    filter: true,
+  },
+  {
+    header: store.state.global.localization.Nui.Labels.Capacity,
+    accessorKey: 'UserCount',
+    valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${store.state.global.localization.Nui.Labels.NoLimit}` : `${item.UserCount} / ${item.MaxUsers}`,
+  }
+];
+
+function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<IDepartment>> {
+  return post<Page<IDepartment>>(ClientEvents.ListDepartments, departmentsRequest);
 }
 </script>
 
@@ -74,21 +110,7 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
 
   <Table
     :title="store.state.global.localization.Nui.Labels.ActiveCalls"
-    :rows="activeCalls"
-    :columns="{
-      Type: {
-        label: store.state.global.localization.Nui.Labels.Type,
-      },
-      Address: {
-        label: store.state.global.localization.Nui.Labels.Address,
-      },
-      Status: {
-        label: store.state.global.localization.Nui.Labels.Status,
-      },
-      Units: {
-        label: store.state.global.localization.Nui.Labels.Units,
-      },
-    }"
+    :columns="activeCallsColumnDef"
   />
 
   <Table
@@ -100,16 +122,8 @@ function departmentsLinkResolver(rowItem: IDepartment, columnKey: string, column
         show: store.state.user.details?.Admin ?? false
       }
     ]"
-    :rows="departments"
-    :columns="{
-      Name: {
-        linkResolver: (rowItem: IDepartment, columnKey, columnValue) => departmentsLinkResolver(rowItem, columnKey, columnValue),
-        label: store.state.global.localization.Nui.Labels.Name,
-      },
-      Acronym: {
-        label: store.state.global.localization.Nui.Labels.Acronym,
-      },
-    }"
+    :dataRequest="requestDepartments"
+    :columns="departmentColumnDef"
   />
 </template>
 

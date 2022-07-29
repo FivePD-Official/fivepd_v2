@@ -30,6 +30,8 @@ namespace FivePD.Common.Localization
 
         public string CallsignFormatHelpLabel { get; set; } = "Maximum length is 10 characters.";
 
+        public string Capacity { get; set; } = "Capacity";
+
         public string CitizenDatabase { get; set; } = "Citizen database";
 
         public string Dash { get; set; } = "Dash";
@@ -65,6 +67,8 @@ namespace FivePD.Common.Localization
         public string NoDataToDisplay { get; set; } = "No data to display.";
 
         public string NotInDepartment { get; set; } = "You're not in a department.";
+
+        public string NoLimit { get; set; } = "No limit";
 
         public string Number { get; set; } = "Number";
 
