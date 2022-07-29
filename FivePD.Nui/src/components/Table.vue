@@ -151,7 +151,7 @@ function toPage(pageNumber: number) {
           <p>{{ column.header }}</p>
         </div>
       </div>
-      <form class="table-row table-filter" v-if="columns.some(col => col.filter)">
+      <form class="table-row table-filter" v-if="columns.some(col => col.filter) && formattedRows?.length">
         <div class="table-cell" v-for="column in columns">
           <InputField v-if="column.filter" :field="{
             type: 'text',
@@ -218,6 +218,7 @@ function toPage(pageNumber: number) {
     font-size: 18px
     color: var(--clr-text-secondary)
     display: block
+    padding-top: 10px
     padding-left: 10px
 
   .table

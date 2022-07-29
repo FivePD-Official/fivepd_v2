@@ -19,9 +19,9 @@ export default function localizationToInterfaceTransformer(): PluginOption {
                     }
 
                     previousData = data;
-                    const formattedInterface = data.replace(/(:.*".*)/gm, ": string").replace(/"/gm, '');
-                    const formattedObject = formattedInterface.replace(/string/gm, "'',");
-                    write(`// The content of this file is auto-generated, do not edit it manually.\n\nexport interface ILocalization {${formattedInterface.substring(1)}\n\nexport const defaultLocalization = ${formattedObject}`)
+                    const formattedInterface = data.replace(/(:.*".*)/gm, ": string;").replace(/"/gm, '');
+                    const formattedObject = formattedInterface.replace(/string;/gm, "'',");
+                    write(`// The content of this file is auto-generated, do not edit it manually.\n\nexport interface ILocalization {${formattedInterface.substring(1)}\n\nexport const defaultLocalization: ILocalization = ${formattedObject}`)
                 } catch (err) {
                     console.log(err)
                 }

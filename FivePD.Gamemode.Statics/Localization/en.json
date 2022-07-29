@@ -36,12 +36,12 @@
   "Nui": {
     "Labels": {
       "Acronym": "Acronym",
-      "AcronymHelpLabel": "If left empty it'll be auto-generated from the name. Can only consists of alphabetical characters.",
       "ActiveCalls": "Active calls",
       "Address": "Address",
       "AssignedCall": "Assigned call",
       "AvailableCharacters": "Available characters",
       "Callsign": "Callsign",
+      "CallsignHelpLabel": "If left empty it'll be auto-generated from the name. Can only consists of alphabetical characters.",
       "CallsignFormat": "Callsign format",
       "CallsignFormatHelpLabel": "Maximum length is 10 characters.",
       "Capacity": "Capacity",
@@ -91,8 +91,11 @@
     },
     "Errors": {
       "DatabaseAccess": "A database error occured. Please try again later.",
-      "DepartmentExistsWithName": "A department with this name already exists.",
+      "DepartmentExistsWithNameTitle": "Couldn't create department",
+      "DepartmentExistsWithNameDescription": "A department with this name already exists.",
       "DepartmentJoin": "Couldn't join {{department}}.",
+      "DepartmentFullTitle": "Couldn't join department",
+      "DepartmentFullDescription": "The selected department is full.",
       "DepartmentCreate": "Couldn't create the department.",
       "UnexpectedError": "Unexpected error",
       "PleaseTryAgainLater": "Please try again later."

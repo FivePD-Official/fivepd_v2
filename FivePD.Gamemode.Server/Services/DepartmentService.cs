@@ -17,11 +17,9 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.Requests;
-using FivePD.Gamemode.Server.Models.Responses;
 using FivePD.Gamemode.Server.NuiModels;
 using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
 {
@@ -64,11 +62,22 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        public bool CreateDepartment(Department department)
+        public Department CreateDepartment(Department department)
         {
-            if (department is null || string.IsNullOrEmpty(department.Name))
+            if (department is null)
             {
-                return false;
+                throw new ArgumentException("The provided department is null");
+            }
+
+            if (string.IsNullOrEmpty(department.Name))
+            {
+                throw new ArgumentException("The name of the department can't be null or empty");
+            }
+
+            var departmentExists = this._databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name);
+            if (departmentExists != null)
+            {
+                throw new DepartmentExistsWithNameException();
             }
 
             try
@@ -81,26 +90,25 @@ namespace FivePD.Gamemode.Server.Services
                 var createdDepartmentEntry = this._databaseContext.Departments.Add(department);
                 this._databaseContext.SaveChanges();
                 this.DepartmentCreated?.Invoke(this, createdDepartmentEntry.Entity);
-                return true;
+                return createdDepartmentEntry.Entity;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                throw new DatabaseUsageException("Failed to access database", e);
             }
         }
 
         /// <inheritdoc />
-        public bool RemoveDepartment(Department department)
+        public void RemoveDepartment(Department department)
         {
             try
             {
                 this._databaseContext.Departments.Remove(department);
                 this._databaseContext.SaveChanges();
-                return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                throw new DatabaseUsageException("Failed to access database", e);
             }
         }
 
@@ -145,44 +153,41 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        public bool AddPlayerToDepartment(User user, Department department)
+        public void AddPlayerToDepartment(User user, Department department)
         {
             if (user is null || department is null)
             {
-                return false;
+                throw new ArgumentException("Some of the provided arguments is null");
             }
 
-            try
+            if (department.MaxUsers != 0 && department.MaxUsers == department.Users.Count())
             {
-                user.DepartmentId = department.Id;
-                user.DivisionId = null;
-                user.RankId = null;
-                this._databaseContext.SaveChanges();
-                this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs
-                {
-                    User = user,
-                    Department = department,
-                });
-                return true;
+                throw new DepartmentFullException();
             }
-            catch (Exception)
+
+            user.DepartmentId = department.Id;
+            user.DivisionId = null;
+            user.RankId = null;
+            this._databaseContext.SaveChanges();
+            this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs
             {
-                return false;
-            }
+                User = user,
+                Department = department,
+            });
         }
 
         /// <inheritdoc />
-        public bool AddPlayerToDepartment(Player player, Department department)
+        public void AddPlayerToDepartment(Player player, Department department)
         {
-            return this.AddPlayerToDepartment(this.FindUserByLicense(player), department);
+            this.AddPlayerToDepartment(this.FindUserByLicense(player), department);
         }
 
         /// <inheritdoc />
-        public bool RemovePlayerFromDepartment(User user)
+        public void RemovePlayerFromDepartment(User user)
         {
             if (user is null)
             {
-                return false;
+                throw new ArgumentException("The provided user is null");
             }
 
             try
@@ -197,18 +202,17 @@ namespace FivePD.Gamemode.Server.Services
                     User = user,
                     Department = department,
                 });
-                return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                throw new DatabaseUsageException("Failed to access database", e);
             }
         }
 
         /// <inheritdoc />
-        public bool RemovePlayerFromDepartment(Player player)
+        public void RemovePlayerFromDepartment(Player player)
         {
-            return this.RemovePlayerFromDepartment(this.FindUserByLicense(player));
+            this.RemovePlayerFromDepartment(this.FindUserByLicense(player));
         }
 
         private void GetDepartmentsForNui(ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
@@ -298,38 +302,39 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var departmentFields = expandoObject.ConvertTo<CreateDepartmentFields>();
-                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Name == departmentFields.Name);
-                if (department != null)
-                {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Message = "Nui.Errors.DepartmentExistsWithName",
-                    }.ToString());
-                    return;
-                }
-
-                var createdDepartmentEntry = this._databaseContext.Departments.Add(new Department
+                this.CreateDepartment(new Department
                 {
                     Name = departmentFields.Name,
-                    Callsign = string.IsNullOrEmpty(departmentFields.Acronym) ? departmentFields.Name.ToAcronym() : departmentFields.Acronym,
                     CallsignFormat = departmentFields.CallsignFormat,
                     MaxUsers = departmentFields.MaxUsers,
                 });
-                this._databaseContext.SaveChanges();
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
-                    Message = "Nui.Labels.SuccessfulDepartmentCreate",
+                    Title = "Nui.Labels.SuccessfulCreate",
+                    Description = "Nui.Labels.SuccessfulDepartmentCreate",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "department", departmentFields.Name },
+                    },
                 }.ToString());
-                this.DepartmentCreated?.Invoke(this, createdDepartmentEntry.Entity);
+            }
+            catch (DepartmentExistsWithNameException)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.DepartmentExistsWithNameTitle",
+                    Description = "Nui.Errors.DepartmentExistsWithNameDescription",
+                }.ToString());
             }
             catch (Exception e)
             {
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Message = "Nui.Errors.DatabaseAccess",
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
@@ -337,29 +342,40 @@ namespace FivePD.Gamemode.Server.Services
 
         private void PlayerJoinDepartmentFromNui([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
         {
+            var department = this._databaseContext.Departments
+                .Include(department => department.Users)
+                .FirstOrDefault(department => department.Id == departmentId);
+
             try
             {
-                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == departmentId);
-                if (department is null)
+                this.AddPlayerToDepartment(player, department);
+                networkCallbackDelegate.Invoke(new ActionResponse
                 {
-                    return;
-                }
-
-                if (this.AddPlayerToDepartment(player, department))
-                {
-                    networkCallbackDelegate.Invoke(new ActionResponse
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulJoin",
+                    Description = "Nui.Labels.SuccessfulDepartmentJoin",
+                    Params = new Dictionary<string, string>
                     {
-                        Status = true,
-                        Message = "Nui.Labels.SuccessfulDepartmentJoin",
-                    }.ToString());
-                }
+                        { "department", department!.Name },
+                    },
+                }.ToString());
+            }
+            catch (DepartmentFullException)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.DepartmentFullTitle",
+                    Description = "Nui.Errors.DepartmentFullDescription",
+                }.ToString());
             }
             catch (Exception e)
             {
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Message = "Nui.Errors.DatabaseAccess",
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
@@ -367,23 +383,29 @@ namespace FivePD.Gamemode.Server.Services
 
         private void PlayerLeaveDepartmentFromNui([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
         {
+            var playerDepartment = this.FindUserByLicense(player).Department;
+
             try
             {
-                if (this.RemovePlayerFromDepartment(player))
+                this.RemovePlayerFromDepartment(player);
+                networkCallbackDelegate.Invoke(new ActionResponse
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulLeave",
+                    Description = "Nui.Labels.SuccessfulDepartmentLeave",
+                    Params = new Dictionary<string, string>
                     {
-                        Status = true,
-                        Message = "Nui.Labels.SuccessfulDepartmentLeave",
-                    }.ToString());
-                }
+                        { "department", playerDepartment!.Name },
+                    },
+                }.ToString());
             }
             catch (Exception e)
             {
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Message = "Nui.Errors.DatabaseAccess",
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }

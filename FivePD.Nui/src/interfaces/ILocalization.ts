@@ -1,108 +1,111 @@
 // The content of this file is auto-generated, do not edit it manually.
 
 export interface ILocalization {
-  Title: string
+  Title: string;
   DutyMenu: {
-    Title: string
+    Title: string;
     OnDuty: {
-      Title: string
-      Description: string
+      Title: string;
+      Description: string;
     },
     GetLoadout: {
-      Title: string
-      Description: string
+      Title: string;
+      Description: string;
     },
     ChangeLanguage: {
-      Title: string
-      Description: string
+      Title: string;
+      Description: string;
     },
     SpawnVehicle: {
-      Title: string
-      Description: string
+      Title: string;
+      Description: string;
     }
   },
   TrafficStop: {
-    Initiate: string
-    WaitUntilStop: string
-    Proceed: string
-    Canceled: string
-    StoppedVehicle: string
+    Initiate: string;
+    WaitUntilStop: string;
+    Proceed: string;
+    Canceled: string;
+    StoppedVehicle: string;
   },
   Error: {
-    MultipleMenusWithSameKey: string
+    MultipleMenusWithSameKey: string;
   },
   Warning: {
-    ConfigException: string
-    EmptyConfigException: string
+    ConfigException: string;
+    EmptyConfigException: string;
   },
   Nui: {
     Labels: {
-      Acronym: string
-      AcronymHelpLabel: string
-      ActiveCalls: string
-      Address: string
-      AssignedCall: string
-      AvailableCharacters: string
-      Callsign: string
-      CallsignFormat: string
-      CallsignFormatHelpLabel: string
-      CitizenDatabase: string
-      Capacity: string
-      Dash: string
-      Dashboard: string
-      Department: string
-      Departments: string
-      Division: string
-      Divisions: string
-      Letter: string
-      MaxNumberOfMembers: string
-      MaxNumberOfMembersHelpLabel: string
-      Members: string
-      MyDetails: string
-      MyDepartment: string
-      Name: string
-      NewDepartment: string
-      NoAssignedCall: string
-      NoDataToDisplay: string
-      NotInDepartment: string
-      NoLimit: string
-      Number: string
-      Permissions: string
-      Rank: string
-      Ranks: string
-      Settings: string
-      Statistics: string
-      Status: string
-      SuccessfulJoin: string
-      SuccessfulLeave: string
-      SuccessfulCreate: string
-      SuccessfulDepartmentJoin: string
-      SuccessfulDepartmentLeave: string
-      SuccessfulDepartmentCreate: string
-      Type: string
-      Units: string
-      VehicleDatabase: string
+      Acronym: string;
+      ActiveCalls: string;
+      Address: string;
+      AssignedCall: string;
+      AvailableCharacters: string;
+      Callsign: string;
+      CallsignHelpLabel: string;
+      CallsignFormat: string;
+      CallsignFormatHelpLabel: string;
+      Capacity: string;
+      CitizenDatabase: string;
+      Dash: string;
+      Dashboard: string;
+      Department: string;
+      Departments: string;
+      Division: string;
+      Divisions: string;
+      Letter: string;
+      MaxNumberOfMembers: string;
+      MaxNumberOfMembersHelpLabel: string;
+      Members: string;
+      MyDetails: string;
+      MyDepartment: string;
+      Name: string;
+      NewDepartment: string;
+      NoAssignedCall: string;
+      NoDataToDisplay: string;
+      NotInDepartment: string;
+      NoLimit: string;
+      Number: string;
+      Permissions: string;
+      Rank: string;
+      Ranks: string;
+      Settings: string;
+      Statistics: string;
+      Status: string;
+      SuccessfulJoin: string;
+      SuccessfulLeave: string;
+      SuccessfulCreate: string;
+      SuccessfulDepartmentJoin: string;
+      SuccessfulDepartmentLeave: string;
+      SuccessfulDepartmentCreate: string;
+      Type: string;
+      Units: string;
+      VehicleDatabase: string;
     },
     Actions: {
-      Join: string
-      Kick: string
-      Leave: string
-      Save: string
-      SetRank: string
-      SetCallsign: string
+      Join: string;
+      Kick: string;
+      Leave: string;
+      Save: string;
+      SetRank: string;
+      SetCallsign: string;
     },
     Errors: {
-      DatabaseAccess: string
-      DepartmentExistsWithName: string
-      DepartmentJoin: string
-      DepartmentCreate: string
-      UnexpectedError: string
-      PleaseTryAgainLater: string
+      DatabaseAccess: string;
+      DepartmentExistsWithNameTitle: string;
+      DepartmentExistsWithNameDescription: string;
+      DepartmentJoin: string;
+      DepartmentFullTitle: string;
+      DepartmentFullDescription: string;
+      DepartmentCreate: string;
+      UnexpectedError: string;
+      PleaseTryAgainLater: string;
     }
   }
 }
 
-export const defaultLocalization = {
+export const defaultLocalization: ILocalization = {
   Title: '',
   DutyMenu: {
     Title: '',
@@ -140,16 +143,16 @@ export const defaultLocalization = {
   Nui: {
     Labels: {
       Acronym: '',
-      AcronymHelpLabel: '',
       ActiveCalls: '',
       Address: '',
       AssignedCall: '',
       AvailableCharacters: '',
       Callsign: '',
+      CallsignHelpLabel: '',
       CallsignFormat: '',
       CallsignFormatHelpLabel: '',
-      CitizenDatabase: '',
       Capacity: '',
+      CitizenDatabase: '',
       Dash: '',
       Dashboard: '',
       Department: '',
@@ -195,8 +198,11 @@ export const defaultLocalization = {
     },
     Errors: {
       DatabaseAccess: '',
-      DepartmentExistsWithName: '',
+      DepartmentExistsWithNameTitle: '',
+      DepartmentExistsWithNameDescription: '',
       DepartmentJoin: '',
+      DepartmentFullTitle: '',
+      DepartmentFullDescription: '',
       DepartmentCreate: '',
       UnexpectedError: '',
       PleaseTryAgainLater: '',

@@ -143,18 +143,15 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
     if (res.Status) {
       showNotification({
         type: 'success',
-        title: type === 'join' ? state.global.localization.Nui.Labels.SuccessfulJoin : state.global.localization.Nui.Labels.SuccessfulLeave,
-        description: replaceParams(t(res.Message), { 'department': `<b>${department.value?.Name ?? '-'}</b>` }),
+        title: t(res.Title),
+        description: replaceParams(t(res.Description), res.Params),
       });
       router.push('/');
     } else {
       showNotification({
         type: 'error',
-        title: state.global.localization.Nui.Errors.UnexpectedError,
-        description: toSentence(
-          t(res.Message), 
-          state.global.localization.Nui.Errors.PleaseTryAgainLater
-        ),
+        title: t(res.Title),
+        description: t(res.Description),
       });
     }
 

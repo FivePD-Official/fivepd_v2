@@ -18,8 +18,8 @@ function onSubmit(fields: FormFields) {
 
     showNotification({
       type: res.Status ? 'success' : 'error',
-      title: res.Status ? state.global.localization.Nui.Labels.SuccessfulCreate : state.global.localization.Nui.Errors.UnexpectedError,
-      description: res.Status ? replaceParams(t(res.Message), { 'department': `<b>${fields!.Name}</b>` }) : t(res.Message),
+      title: t(res.Title),
+      description: res.Status ? replaceParams(t(res.Description), res.Params) : t(res.Description),
     });
   });
 }
@@ -39,11 +39,11 @@ function onSubmit(fields: FormFields) {
           required: true,
         },
         {
-          name: 'Acronym',
-          label: state.global.localization.Nui.Labels.Acronym,
+          name: 'Callsign',
+          label: state.global.localization.Nui.Labels.Callsign,
           type: 'text',
           required: false,
-          helpLabel: state.global.localization.Nui.Labels.AcronymHelpLabel,
+          helpLabel: state.global.localization.Nui.Labels.CallsignHelpLabel,
           validator: (value: string) => !new RegExp('^[a-zA-Z]+$').test(value),
         },
         {
@@ -68,7 +68,7 @@ function onSubmit(fields: FormFields) {
               </tr>
             </table>
           `,
-          validator: (value: string) => !new RegExp('^[A-Z0-9\-*]{1,10}$').test(value),
+          validator: (value: string) => !new RegExp('^[NL0-9\-*]{1,10}$').test(value),
         },
         {
           name: 'MaxUsers',

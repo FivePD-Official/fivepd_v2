@@ -17,7 +17,7 @@ namespace FivePD.Gamemode.Server.NuiModels
         public string Name { get; private set; }
 
         [JsonProperty]
-        public string Acronym { get; private set; } = string.Empty;
+        public string Callsign { get; private set; } = string.Empty;
 
         [JsonProperty]
         public string CallsignFormat { get; private set; }

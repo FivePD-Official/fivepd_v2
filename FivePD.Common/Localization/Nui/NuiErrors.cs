@@ -14,9 +14,15 @@ namespace FivePD.Common.Localization
     {
         public string DatabaseAccess { get; set; } = "A database error occured. Please try again later.";
 
-        public string DepartmentExistsWithName { get; set; } = "A department with this name already exists.";
+        public string DepartmentExistsWithNameTitle { get; set; } = "Couldn't create department";
+
+        public string DepartmentExistsWithNameDescription { get; set; } = "A department with this name already exists.";
 
         public string DepartmentJoin { get; set; } = "Couldn't join {{department}}.";
+
+        public string DepartmentFullTitle { get; set; } = "Couldn't join department";
+
+        public string DepartmentFullDescription { get; set; } = "The selected department is full.";
 
         public string DepartmentCreate { get; set; } = "Couldn't create the department.";
 

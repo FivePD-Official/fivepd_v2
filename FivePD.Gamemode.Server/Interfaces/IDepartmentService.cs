@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Models;
 
 namespace FivePD.Gamemode.Server.Interfaces
@@ -35,15 +36,18 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// Inserts a <see cref="Database"/> into the 'departments' table.
         /// </summary>
         /// <param name="department">The department to insert.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool CreateDepartment(Department department);
+        /// <exception cref="ArgumentException">The provided department or its name is null.</exception>
+        /// <exception cref="DepartmentExistsWithNameException">A department already exists with the same name.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        /// <returns>The created department object with change tracking.</returns>
+        public Department CreateDepartment(Department department);
 
         /// <summary>
         /// Removes a <see cref="Database"/> from the 'departments' table.
         /// </summary>
         /// <param name="department">The department to remove.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool RemoveDepartment(Department department);
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void RemoveDepartment(Department department);
 
         /// <summary>
         /// Selects and returns all departments.
@@ -69,30 +73,36 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <param name="user">The user to update.</param>
         /// <param name="department">The department to which the user will be added.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool AddPlayerToDepartment(User user, Department department);
+        /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+        /// <exception cref="DepartmentFullException">The provided department is full.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void AddPlayerToDepartment(User user, Department department);
 
         /// <summary>
         /// Adds the given player to the given department.
         /// </summary>
         /// <param name="player">The user to update.</param>
         /// <param name="department">The department to which the user will be added.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool AddPlayerToDepartment(Player player, Department department);
+        /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+        /// <exception cref="DepartmentFullException">The provided department is full.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void AddPlayerToDepartment(Player player, Department department);
 
         /// <summary>
         /// The given player will be removed from their department.
         /// </summary>
         /// <param name="user">The user to update.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool RemovePlayerFromDepartment(User user);
+        /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void RemovePlayerFromDepartment(User user);
 
         /// <summary>
         /// The given player will be removed from their department.
         /// </summary>
         /// <param name="player">The user to update.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool RemovePlayerFromDepartment(Player player);
+        /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void RemovePlayerFromDepartment(Player player);
     }
 
     /// <summary>

@@ -14,8 +14,6 @@ namespace FivePD.Common.Localization
     {
         public string Acronym { get; set; } = "Acronym";
 
-        public string AcronymHelpLabel { get; set; } = "If left empty it'll be auto-generated from the name. Can only consists of alphabetical characters.";
-
         public string ActiveCalls { get; set; } = "Active calls";
 
         public string Address { get; set; } = "Address";
@@ -25,6 +23,8 @@ namespace FivePD.Common.Localization
         public string AvailableCharacters { get; set; } = "Available characters";
 
         public string Callsign { get; set; } = "Callsign";
+
+        public string CallsignHelpLabel { get; set; } = "If left empty it'll be auto-generated from the name. Can only consists of alphabetical characters.";
 
         public string CallsignFormat { get; set; } = "Callsign format";
 
