@@ -5,7 +5,7 @@ import type {
   FormattedRow,
   FormattedRowItem,
   PropButton,
-  ColumnDef, FormFilter, Page, BaseRequest, TableCellActionButton
+  ColumnDef, FormFilter, Page, BaseRequest, TableCellActionButton, TableCellActionSelect
 } from '@interfaces';
 import { debounceTime, Observable, Subject } from "rxjs";
 
@@ -164,6 +164,14 @@ function tableCellActionButtonClick(onClick: TableCellActionButton<any>['onClick
   });
 }
 
+function tableCellActionSelect(onSelect: TableCellActionSelect<any>['onSelect'], item: FormattedRowItem<any>, selectedId: number) {
+  onSelect(item.originalItem, selectedId, res => {
+    if (res.Status) {
+      requestData(filter.value);
+    }
+  });
+}
+
 function headerButtonClick(onClick: PropButton['onClick']) {
   if (!onClick) {
     return;
@@ -223,8 +231,9 @@ function headerButtonClick(onClick: PropButton['onClick']) {
                   :label="action.label"
                   :onClick="() => tableCellActionButtonClick(action.onClick, item)"
               />
-              <select v-else-if="action.type === 'select'" @change="event => action.onSelect(item.originalItem, event.target.value)">
-                <option v-for="selectItem in Object.entries(action.items)" :value="selectItem[0]">{{ selectItem[1] }}</option>
+              <select v-else-if="action.type === 'select'" @change="event => tableCellActionSelect(action.onSelect, item, parseInt(event.target.value))">
+                <option :value="0" :selected="true">{{ action.label }}</option>
+                <option v-for="selectItem in action.items()" :value="selectItem.id" :selected="action.itemSelected(item.originalItem, selectItem.id)">{{ selectItem.label }}</option>
               </select>
             </template>
           </div>

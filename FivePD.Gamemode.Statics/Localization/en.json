@@ -93,6 +93,8 @@
       "SuccessfulRankDelete": "{{rank}} has been successfully deleted.",
       "SuccessfulRankEdit": "{{rank}} has been successfully edited.",
       "SuccessfulRankCreate": "{{rank}} has been successfully created.",
+      "SuccessfulPlayerDivisionChange": "The division of {{player}} has been successfully changed.",
+      "SuccessfulPlayerRankChange": "The rank of {{player}} has been successfully changed.",
       "Type": "Type",
       "Units": "Units",
       "VehicleDatabase": "Vehicle database"

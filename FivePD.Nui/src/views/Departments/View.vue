@@ -49,11 +49,25 @@ onMounted(() => {
 })
 
 watch(route, (value) => {
-  requestDepartmentData(parseInt(value.params.id as string));
+  if (value.params.id) {
+    requestDepartmentData(parseInt(value.params.id as string));
+  }
 }, {
   deep: true
 });
 
+const pageHeaderButtons: PropButton[] = [
+  {
+    label: state.global.localization.Nui.Actions.Join,
+    onClick: () => joinOrLeaveDepartment('join'),
+    show: state.user.details.DepartmentId !== department.value?.Id,
+  },
+  {
+    label: state.global.localization.Nui.Actions.Leave,
+    onClick: () => joinOrLeaveDepartment('leave'),
+    show: state.user.details.DepartmentId === department.value?.Id,
+  }
+];
 
 const ranksButtons: PropButton[] = [
   {
@@ -365,10 +379,66 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
     header: state.global.localization.Nui.Labels.Division,
     accessorKey: 'DivisionName',
   },
+  {
+    header: state.global.localization.Nui.Labels.Actions,
+    show: () => state.user.details.Admin,
+    actions: [
+      {
+        type: 'select',
+        label: 'Rank',
+        itemSelected: (user, itemId) => user.RankId === itemId,
+        items: () => department.value?.Ranks?.map(rank => {
+          return {
+            id: rank.Id,
+            label: rank.Name,
+          };
+        }) ?? [],
+        onSelect: (user, selectedId, onResponse) => {
+          post<ActionResponse>(ClientEvents.ChangePlayerRank, {
+            UserId: user.Id,
+            IdToChange: selectedId,
+          }).subscribe(deleteRes => {
+            showNotification({
+              type: deleteRes.Status ? 'success' : 'error',
+              title: t(deleteRes.Title),
+              description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+            })
+            onResponse(deleteRes);
+          });
+        }
+      },
+      {
+        type: 'select',
+        label: 'Division',
+        itemSelected: (user, itemId) => user.DivisionId === itemId,
+        items: () => department.value?.Divisions?.map(division => {
+          return {
+            id: division.Id,
+            label: division.Name,
+          };
+        }) ?? [],
+        onSelect: (user, selectedId, onResponse) => {
+          post<ActionResponse>(ClientEvents.ChangePlayerDivision, {
+            UserId: user.Id,
+            IdToChange: selectedId,
+          }).subscribe(deleteRes => {
+            showNotification({
+              type: deleteRes.Status ? 'success' : 'error',
+              title: t(deleteRes.Title),
+              description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+            })
+            onResponse(deleteRes);
+          });
+        }
+      },
+    ]
+  }
 ];
 
 function requestDepartmentData(departmentId?: number) {
-  post<IDepartment>(ClientEvents.GetDepartmentById, departmentId ?? defaultDepartmentId).subscribe((res) => {
+  post<IDepartment>(ClientEvents.GetDepartmentById, {
+    DepartmentId: departmentId ?? defaultDepartmentId,
+  }).subscribe((res) => {
     department.value = mapDepartmentData(res);
   });
 }
@@ -464,21 +534,10 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
 <template>
   <PageHeader
     :title="title"
-    :buttons="[
-      {
-        label: state.global.localization.Nui.Actions.Join,
-        onClick: () => joinOrLeaveDepartment('join'),
-        show: state.user.details.DepartmentId !== department?.Id,
-      },
-      {
-        label: state.global.localization.Nui.Actions.Leave,
-        onClick: () => joinOrLeaveDepartment('leave'),
-        show: state.user.details.DepartmentId === department?.Id,
-      }
-    ]"
+    :buttons="pageHeaderButtons"
   />
   
-  <TableGrid :columns="2">
+  <TableGrid :columns="2" v-if="department">
     <Table
       :title="state.global.localization.Nui.Labels.Ranks"
       :buttons="ranksButtons"
@@ -495,6 +554,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
   </TableGrid>
 
   <Table
+    v-if="department && department.Divisions?.length"
     :title="state.global.localization.Nui.Labels.Members"
     :columns="usersColumnDef"
     :dataRequest="requestDepartmentUsers"

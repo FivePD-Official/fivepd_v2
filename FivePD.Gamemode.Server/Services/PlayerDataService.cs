@@ -16,8 +16,9 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.Requests;
+using FivePD.Gamemode.Server.NuiModels;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
 {
@@ -83,6 +84,8 @@ namespace FivePD.Gamemode.Server.Services
         {
             this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
             this._eventHandlerDictionary[Events.Player.GetDetails] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.GetPlayerDetails);
+            this._eventHandlerDictionary[Events.Player.ChangeDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.ChangePlayerDivisionFromNui);
+            this._eventHandlerDictionary[Events.Player.ChangeRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.ChangePlayerRankFromNui);
             this.CreateDataForOnlinePlayers();
         }
 
@@ -150,6 +153,130 @@ namespace FivePD.Gamemode.Server.Services
             catch (Exception e)
             {
                 networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void ChangePlayerDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var playerChangeRequest = expandoObject.ConvertTo<PlayerChangeRequest>();
+                var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
+                if (user is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                    return;
+                }
+
+                if (playerChangeRequest.IdToChange == 0)
+                {
+                    user.DivisionId = null;
+                }
+                else
+                {
+                    var division = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
+                    if (division is null)
+                    {
+                        networkCallbackDelegate.Invoke(new ActionResponse
+                        {
+                            Status = false,
+                            Title = "Nui.Errors.UnexpectedError",
+                            Description = "Nui.Errors.DatabaseAccess",
+                        }.ToString());
+                        return;
+                    }
+
+                    user.DivisionId = playerChangeRequest.IdToChange;
+                }
+
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulChange",
+                    Description = "Nui.Labels.SuccessfulPlayerDivisionChange",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "player", user.Name },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void ChangePlayerRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var playerChangeRequest = expandoObject.ConvertTo<PlayerChangeRequest>();
+                var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
+                if (user is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                    return;
+                }
+
+                if (playerChangeRequest.IdToChange == 0)
+                {
+                    user.RankId = null;
+                }
+                else
+                {
+                    var rank = this._databaseContext.Ranks.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
+                    if (rank is null)
+                    {
+                        networkCallbackDelegate.Invoke(new ActionResponse
+                        {
+                            Status = false,
+                            Title = "Nui.Errors.UnexpectedError",
+                            Description = "Nui.Errors.DatabaseAccess",
+                        }.ToString());
+                        return;
+                    }
+
+                    user.RankId = playerChangeRequest.IdToChange;
+                }
+
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulChange",
+                    Description = "Nui.Labels.SuccessfulPlayerRankChange",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "player", user.Name },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }

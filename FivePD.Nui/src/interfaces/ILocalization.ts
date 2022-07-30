@@ -95,6 +95,8 @@ export interface ILocalization {
       SuccessfulRankDelete: string;
       SuccessfulRankEdit: string;
       SuccessfulRankCreate: string;
+      SuccessfulPlayerDivisionChange: string;
+      SuccessfulPlayerRankChange: string;
       Type: string;
       Units: string;
       VehicleDatabase: string;
@@ -229,6 +231,8 @@ export const defaultLocalization: ILocalization = {
       SuccessfulRankDelete: '',
       SuccessfulRankEdit: '',
       SuccessfulRankCreate: '',
+      SuccessfulPlayerDivisionChange: '',
+      SuccessfulPlayerRankChange: '',
       Type: '',
       Units: '',
       VehicleDatabase: '',

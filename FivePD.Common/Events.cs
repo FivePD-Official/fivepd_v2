@@ -257,6 +257,16 @@ namespace FivePD.Common
             /// Used to request all departments for listing in the NUI.
             /// </summary>
             public const string GetDetails = "fivepd:player:getDetails";
+
+            /// <summary>
+            /// Used to change a player's division.
+            /// </summary>
+            public const string ChangeDivision = "fivepd:player:changeDivision";
+
+            /// <summary>
+            /// Used to change a player's rank.
+            /// </summary>
+            public const string ChangeRank = "fivepd:player:changeRank";
         }
     }
 }

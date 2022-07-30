@@ -53,7 +53,7 @@ namespace FivePD.Gamemode.Server.Services
         public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
-            this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
+            this._eventHandlerDictionary[Events.Department.GetById] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
             this._eventHandlerDictionary[Events.Department.GetUsers] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentUsersForNui);
             this._eventHandlerDictionary[Events.Department.GetRanks] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentRanksForNui);
             this._eventHandlerDictionary[Events.Department.GetDivisions] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentDivisionsForNui);
@@ -247,14 +247,16 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private void GetDepartmentByIdForNui(int id, NetworkCallbackDelegate networkCallbackDelegate)
+        private void GetDepartmentByIdForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
             {
+                var departmentRequest = expandoObject.ConvertTo<DepartmentByIdRequest>();
                 var department = this._databaseContext.Departments
                     .AsNoTracking()
-                    .Include(department => department.Divisions)
-                    .FirstOrDefault(department => department.Id == id);
+                        .Include(dept => dept.Divisions)
+                        .Include(dept => dept.Ranks)
+                        .FirstOrDefault(dept => dept.Id == departmentRequest.DepartmentId);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(department));
             }
             catch (Exception e)

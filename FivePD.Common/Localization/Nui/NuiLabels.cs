@@ -104,6 +104,8 @@ namespace FivePD.Common.Localization
 
         public string SuccessfulCreate { get; set; } = "Successful create";
 
+        public string SuccessfulChange { get; set; } = "Successful change";
+
         public string SuccessfulDelete { get; set; } = "Successful delete";
 
         public string SuccessfulEdit { get; set; } = "Successful edit";
@@ -127,6 +129,10 @@ namespace FivePD.Common.Localization
         public string SuccessfulRankEdit { get; set; } = "{{rank}} has been successfully edited.";
 
         public string SuccessfulRankCreate { get; set; } = "{{rank}} has been successfully created.";
+
+        public string SuccessfulPlayerDivisionChange { get; set; } = "The division of {{player}} has been successfully changed.";
+
+        public string SuccessfulPlayerRankChange { get; set; } = "The rank of {{player}} has been successfully changed.";
 
         public string Type { get; set; } = "Type";
 

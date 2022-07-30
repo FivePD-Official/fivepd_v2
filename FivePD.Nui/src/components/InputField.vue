@@ -155,6 +155,7 @@ function onInput(event: any) {
           opacity: 0
           color: white
           z-index: var(--layer-10)
+          pointer-events: none
           
         input
           position: absolute
@@ -169,6 +170,7 @@ function onInput(event: any) {
           -webkit-appearance: none
           background: transparent
           padding: 0
+          cursor: pointer
           &:checked
             border-color: var(--clr-text-secondary)
             & ~ svg

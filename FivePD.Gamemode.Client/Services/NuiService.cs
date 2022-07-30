@@ -49,7 +49,7 @@ namespace FivePD.Gamemode.Client.Services
             }));
 
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.List);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.GetById);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetById);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetUsers);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetRanks);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetDivisions);
@@ -63,6 +63,8 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Leave);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Create);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.GetDetails);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeDivision);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeRank);
         }
 
         /// <inheritdoc />

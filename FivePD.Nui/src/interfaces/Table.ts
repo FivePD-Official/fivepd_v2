@@ -33,6 +33,13 @@ export interface TableCellActionButton<T> extends TableCellAction<T> {
 }
 
 export interface TableCellActionSelect<T> extends TableCellAction<T> {
-  items: Record<number, string>;
-  onSelect: (item: T, value: number) => void;
+  itemSelected: (item: T, itemId: number) => boolean;
+  items: () => TableCellActionSelectItem[];
+  onSelect: (item: T, selectedId: number, onResponse: (response: ActionResponse) => void) => void;
+}
+
+interface TableCellActionSelectItem {
+  id: number;
+  label: string;
+  selected?: boolean;
 }

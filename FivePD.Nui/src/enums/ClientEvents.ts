@@ -16,4 +16,6 @@ export enum ClientEvents {
   EditRank = 'fivepd:department:editRank',
   CreateRank = 'fivepd:department:createRank',
   GetPlayerDetails = 'fivepd:player:getDetails',
+  ChangePlayerDivision = 'fivepd:player:changeDivision',
+  ChangePlayerRank = 'fivepd:player:changeRank',
 }
