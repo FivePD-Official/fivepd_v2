@@ -374,18 +374,20 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
   {
     header: state.global.localization.Nui.Labels.Rank,
     accessorKey: 'RankName',
+    show: () => !state.user.details.Admin,
   },
   {
     header: state.global.localization.Nui.Labels.Division,
     accessorKey: 'DivisionName',
+    show: () => !state.user.details.Admin,
   },
   {
-    header: state.global.localization.Nui.Labels.Actions,
+    header: state.global.localization.Nui.Labels.Rank,
     show: () => state.user.details.Admin,
     actions: [
       {
         type: 'select',
-        label: 'No rank',
+        label: state.global.localization.Nui.Labels.NoRank,
         selectedItemResolver: (user, itemId) => user.RankId === itemId,
         items: () => department.value?.Ranks?.map(rank => {
           return {
@@ -406,10 +408,16 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
             onResponse(deleteRes);
           });
         }
-      },
+      }
+    ]
+  },
+  {
+    header: state.global.localization.Nui.Labels.Division,
+    show: () => state.user.details.Admin,
+    actions: [
       {
         type: 'select',
-        label: 'No division',
+        label: state.global.localization.Nui.Labels.NoDivision,
         selectedItemResolver: (user, itemId) => user.DivisionId === itemId,
         items: () => department.value?.Divisions?.map(division => {
           return {

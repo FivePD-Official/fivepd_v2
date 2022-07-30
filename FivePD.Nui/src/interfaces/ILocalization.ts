@@ -73,6 +73,8 @@ export interface ILocalization {
       NoDataToDisplay: string;
       NotInDepartment: string;
       NoLimit: string;
+      NoDivision: string;
+      NoRank: string;
       Number: string;
       Permissions: string;
       Rank: string;
@@ -209,6 +211,8 @@ export const defaultLocalization: ILocalization = {
       NoDataToDisplay: '',
       NotInDepartment: '',
       NoLimit: '',
+      NoDivision: '',
+      NoRank: '',
       Number: '',
       Permissions: '',
       Rank: '',

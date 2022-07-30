@@ -84,6 +84,10 @@ namespace FivePD.Common.Localization
 
         public string NoLimit { get; set; } = "No limit";
 
+        public string NoDivision { get; set; } = "No division";
+
+        public string NoRank { get; set; } = "No rank";
+
         public string Number { get; set; } = "Number";
 
         public string Permissions { get; set; } = "Permissions";

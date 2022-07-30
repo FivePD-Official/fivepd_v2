@@ -71,6 +71,8 @@
       "NoDataToDisplay": "T: No data to display.",
       "NotInDepartment": "T: You're not in a department.",
       "NoLimit": "T: No limit",
+      "NoDivision": "T: No division",
+      "NoRank": "T: No rank",
       "Number": "T: Number",
       "Permissions": "T: Permissions",
       "Rank": "T: Rank",
