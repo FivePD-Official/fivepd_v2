@@ -225,7 +225,7 @@ namespace FivePD.Common
             /// <summary>
             /// Used to rename a division in a department.
             /// </summary>
-            public const string RenameDivision = "fivepd:department:renameDivision";
+            public const string EditDivision = "fivepd:department:renameDivision";
 
             /// <summary>
             /// Used to create a division in a department.

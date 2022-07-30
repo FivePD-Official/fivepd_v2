@@ -28,7 +28,7 @@ namespace FivePD.Common.Localization
 
         public string CreateDivisionExistsWithNameTitle { get; set; } = "Couldn't create division";
 
-        public string RenameDivisionExistsWithNameTitle { get; set; } = "Couldn't rename division";
+        public string EditDivisionExistsWithNameTitle { get; set; } = "Couldn't rename division";
 
         public string DivisionExistsWithNameDescription { get; set; } = "A division with this name already exists.";
 

@@ -57,6 +57,7 @@ export interface ILocalization {
       DeleteDivisionDescription: string;
       DeleteRankTitle: string;
       DeleteRankDescription: string;
+      EditDivision: string;
       EditRankTitle: string;
       Division: string;
       Divisions: string;
@@ -76,21 +77,20 @@ export interface ILocalization {
       Permissions: string;
       Rank: string;
       Ranks: string;
-      RenameDivision: string;
       Settings: string;
       Statistics: string;
       Status: string;
       SuccessfulJoin: string;
       SuccessfulLeave: string;
       SuccessfulCreate: string;
+      SuccessfulChange: string;
       SuccessfulDelete: string;
       SuccessfulEdit: string;
-      SuccessfulRename: string;
       SuccessfulDepartmentJoin: string;
       SuccessfulDepartmentLeave: string;
       SuccessfulDepartmentCreate: string;
       SuccessfulDivisionDelete: string;
-      SuccessfulDivisionRename: string;
+      SuccessfulDivisionEdit: string;
       SuccessfulDivisionCreate: string;
       SuccessfulRankDelete: string;
       SuccessfulRankEdit: string;
@@ -125,7 +125,7 @@ export interface ILocalization {
       DepartmentFullDescription: string;
       DepartmentCreate: string;
       CreateDivisionExistsWithNameTitle: string;
-      RenameDivisionExistsWithNameTitle: string;
+      EditDivisionExistsWithNameTitle: string;
       DivisionExistsWithNameDescription: string;
       UnexpectedError: string;
       PleaseTryAgainLater: string;
@@ -193,6 +193,7 @@ export const defaultLocalization: ILocalization = {
       DeleteDivisionDescription: '',
       DeleteRankTitle: '',
       DeleteRankDescription: '',
+      EditDivision: '',
       EditRankTitle: '',
       Division: '',
       Divisions: '',
@@ -212,21 +213,20 @@ export const defaultLocalization: ILocalization = {
       Permissions: '',
       Rank: '',
       Ranks: '',
-      RenameDivision: '',
       Settings: '',
       Statistics: '',
       Status: '',
       SuccessfulJoin: '',
       SuccessfulLeave: '',
       SuccessfulCreate: '',
+      SuccessfulChange: '',
       SuccessfulDelete: '',
       SuccessfulEdit: '',
-      SuccessfulRename: '',
       SuccessfulDepartmentJoin: '',
       SuccessfulDepartmentLeave: '',
       SuccessfulDepartmentCreate: '',
       SuccessfulDivisionDelete: '',
-      SuccessfulDivisionRename: '',
+      SuccessfulDivisionEdit: '',
       SuccessfulDivisionCreate: '',
       SuccessfulRankDelete: '',
       SuccessfulRankEdit: '',
@@ -261,7 +261,7 @@ export const defaultLocalization: ILocalization = {
       DepartmentFullDescription: '',
       DepartmentCreate: '',
       CreateDivisionExistsWithNameTitle: '',
-      RenameDivisionExistsWithNameTitle: '',
+      EditDivisionExistsWithNameTitle: '',
       DivisionExistsWithNameDescription: '',
       UnexpectedError: '',
       PleaseTryAgainLater: '',

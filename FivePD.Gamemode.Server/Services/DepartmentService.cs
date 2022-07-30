@@ -61,7 +61,7 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
-            this._eventHandlerDictionary[Events.Department.RenameDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.RenameDivisionFromNui);
+            this._eventHandlerDictionary[Events.Department.EditDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.CreateDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.DeleteRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteRankFromNui);
             this._eventHandlerDictionary[Events.Department.EditRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditRankFromNui);
@@ -419,13 +419,13 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private void RenameDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        private void EditDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
             {
                 var renameDivisionRequest = expandoObject.ConvertTo<RenameDivisionRequest>();
-                var divisionToRename = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == renameDivisionRequest.DivisionId);
-                if (divisionToRename is null)
+                var divisionToEdit = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == renameDivisionRequest.DivisionId);
+                if (divisionToEdit is null)
                 {
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
@@ -436,30 +436,29 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
-                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == renameDivisionRequest.Name && division.Department.Id == renameDivisionRequest.DepartmentId && division.Id != divisionToRename.Id);
+                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == renameDivisionRequest.Name && division.Department.Id == renameDivisionRequest.DepartmentId && division.Id != divisionToEdit.Id);
                 if (divisionExistsWithName != null)
                 {
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = false,
-                        Title = "Nui.Errors.RenameDivisionExistsWithNameTitle",
+                        Title = "Nui.Errors.EditDivisionExistsWithNameTitle",
                         Description = "Nui.Errors.DivisionExistsWithNameDescription",
                     }.ToString());
                     return;
                 }
 
-                var divisionToRenameOldName = divisionToRename.Name;
-                divisionToRename.Name = renameDivisionRequest.Name;
+                var divisionToEditOldName = divisionToEdit.Name;
+                divisionToEdit.Name = renameDivisionRequest.Name;
                 this._databaseContext.SaveChanges();
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
-                    Title = "Nui.Labels.SuccessfulRename",
-                    Description = "Nui.Labels.SuccessfulDivisionRename",
+                    Title = "Nui.Labels.SuccessfulEdit",
+                    Description = "Nui.Labels.SuccessfulDivisionEdit",
                     Params = new Dictionary<string, string>
                     {
-                        { "oldDivisionName", divisionToRenameOldName },
-                        { "newDivisionName", renameDivisionRequest.Name },
+                        { "division", divisionToEditOldName },
                     },
                 }.ToString());
             }
@@ -611,6 +610,7 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
+                var rankToEditOldName = rankToEdit.Name;
                 rankToEdit.Name = editRankRequest.Name;
                 rankToEdit.Permission = editRankRequest.Permission;
                 this._databaseContext.SaveChanges();
@@ -621,7 +621,7 @@ namespace FivePD.Gamemode.Server.Services
                     Description = "Nui.Labels.SuccessfulRankEdit",
                     Params = new Dictionary<string, string>
                     {
-                        { "rank", editRankRequest.Name },
+                        { "rank", rankToEditOldName },
                     },
                 }.ToString());
             }

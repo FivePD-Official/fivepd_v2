@@ -52,6 +52,8 @@ namespace FivePD.Common.Localization
 
         public string DeleteRankDescription { get; set; } = "Are you sure you want to delete {{rank}}? You can't undo this action.";
 
+        public string EditDivision { get; set; } = "Edit division";
+
         public string EditRankTitle { get; set; } = "Edit rank";
 
         public string Division { get; set; } = "Division";
@@ -90,8 +92,6 @@ namespace FivePD.Common.Localization
 
         public string Ranks { get; set; } = "Ranks";
 
-        public string RenameDivision { get; set; } = "Rename division";
-
         public string Settings { get; set; } = "Settings";
 
         public string Statistics { get; set; } = "Statistics";
@@ -110,8 +110,6 @@ namespace FivePD.Common.Localization
 
         public string SuccessfulEdit { get; set; } = "Successful edit";
 
-        public string SuccessfulRename { get; set; } = "Successful rename";
-
         public string SuccessfulDepartmentJoin { get; set; } = "You've successfully joined {{department}}.";
 
         public string SuccessfulDepartmentLeave { get; set; } = "You've successfully left {{department}}.";
@@ -120,7 +118,7 @@ namespace FivePD.Common.Localization
 
         public string SuccessfulDivisionDelete { get; set; } = "{{division}} has been successfully deleted.";
 
-        public string SuccessfulDivisionRename { get; set; } = "{{oldDivisionName}} has been renamed to {{newDivisionName}}.";
+        public string SuccessfulDivisionEdit { get; set; } = "{{division}} has been successfully edited.";
 
         public string SuccessfulDivisionCreate { get; set; } = "{{division}} has been successfully created.";
 

@@ -322,10 +322,10 @@ const divisionsColumns: ColumnDef<IDivision> = [
       },
       {
         type: 'button',
-        label: state.global.localization.Nui.Actions.Rename,
+        label: state.global.localization.Nui.Actions.Edit,
         onClick: (division, onResponse) => {
           modalService.open({
-            title: state.global.localization.Nui.Labels.RenameDivision,
+            title: state.global.localization.Nui.Labels.EditDivision,
             inputs: [{
               type: 'text',
               name: 'Name',
@@ -346,7 +346,7 @@ const divisionsColumns: ColumnDef<IDivision> = [
             },
           }).subscribe(res => {
             if (res.success) {
-              post<ActionResponse>(ClientEvents.RenameDivision, {
+              post<ActionResponse>(ClientEvents.EditDivision, {
                 DivisionId: division.Id,
                 Name: res.inputFields!['Name'],
               }).subscribe(renameRes => {
