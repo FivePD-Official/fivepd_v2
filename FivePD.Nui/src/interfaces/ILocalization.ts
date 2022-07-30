@@ -38,6 +38,7 @@ export interface ILocalization {
   Nui: {
     Labels: {
       Acronym: string;
+      Actions: string;
       ActiveCalls: string;
       Address: string;
       AssignedCall: string;
@@ -48,10 +49,13 @@ export interface ILocalization {
       CallsignFormatHelpLabel: string;
       Capacity: string;
       CitizenDatabase: string;
+      CreateDivisionTitle: string;
       Dash: string;
       Dashboard: string;
       Department: string;
       Departments: string;
+      DeleteDivisionTitle: string;
+      DeleteDivisionDescription: string;
       Division: string;
       Divisions: string;
       Letter: string;
@@ -70,23 +74,35 @@ export interface ILocalization {
       Permissions: string;
       Rank: string;
       Ranks: string;
+      RenameDivision: string;
       Settings: string;
       Statistics: string;
       Status: string;
       SuccessfulJoin: string;
       SuccessfulLeave: string;
       SuccessfulCreate: string;
+      SuccessfulDelete: string;
+      SuccessfulRename: string;
       SuccessfulDepartmentJoin: string;
       SuccessfulDepartmentLeave: string;
       SuccessfulDepartmentCreate: string;
+      SuccessfulDivisionDelete: string;
+      SuccessfulDivisionRename: string;
+      SuccessfulDivisionCreate: string;
       Type: string;
       Units: string;
       VehicleDatabase: string;
     },
     Actions: {
+      Cancel: string;
+      CreateDivision: string;
+      CreateRank: string;
+      Delete: string;
+      Edit: string;
       Join: string;
       Kick: string;
       Leave: string;
+      Rename: string;
       Save: string;
       SetRank: string;
       SetCallsign: string;
@@ -99,6 +115,9 @@ export interface ILocalization {
       DepartmentFullTitle: string;
       DepartmentFullDescription: string;
       DepartmentCreate: string;
+      CreateDivisionExistsWithNameTitle: string;
+      RenameDivisionExistsWithNameTitle: string;
+      DivisionExistsWithNameDescription: string;
       UnexpectedError: string;
       PleaseTryAgainLater: string;
     }
@@ -143,6 +162,7 @@ export const defaultLocalization: ILocalization = {
   Nui: {
     Labels: {
       Acronym: '',
+      Actions: '',
       ActiveCalls: '',
       Address: '',
       AssignedCall: '',
@@ -153,10 +173,13 @@ export const defaultLocalization: ILocalization = {
       CallsignFormatHelpLabel: '',
       Capacity: '',
       CitizenDatabase: '',
+      CreateDivisionTitle: '',
       Dash: '',
       Dashboard: '',
       Department: '',
       Departments: '',
+      DeleteDivisionTitle: '',
+      DeleteDivisionDescription: '',
       Division: '',
       Divisions: '',
       Letter: '',
@@ -175,23 +198,35 @@ export const defaultLocalization: ILocalization = {
       Permissions: '',
       Rank: '',
       Ranks: '',
+      RenameDivision: '',
       Settings: '',
       Statistics: '',
       Status: '',
       SuccessfulJoin: '',
       SuccessfulLeave: '',
       SuccessfulCreate: '',
+      SuccessfulDelete: '',
+      SuccessfulRename: '',
       SuccessfulDepartmentJoin: '',
       SuccessfulDepartmentLeave: '',
       SuccessfulDepartmentCreate: '',
+      SuccessfulDivisionDelete: '',
+      SuccessfulDivisionRename: '',
+      SuccessfulDivisionCreate: '',
       Type: '',
       Units: '',
       VehicleDatabase: '',
     },
     Actions: {
+      Cancel: '',
+      CreateDivision: '',
+      CreateRank: '',
+      Delete: '',
+      Edit: '',
       Join: '',
       Kick: '',
       Leave: '',
+      Rename: '',
       Save: '',
       SetRank: '',
       SetCallsign: '',
@@ -204,6 +239,9 @@ export const defaultLocalization: ILocalization = {
       DepartmentFullTitle: '',
       DepartmentFullDescription: '',
       DepartmentCreate: '',
+      CreateDivisionExistsWithNameTitle: '',
+      RenameDivisionExistsWithNameTitle: '',
+      DivisionExistsWithNameDescription: '',
       UnexpectedError: '',
       PleaseTryAgainLater: '',
     }

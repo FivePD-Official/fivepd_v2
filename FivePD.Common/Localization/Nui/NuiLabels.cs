@@ -14,6 +14,8 @@ namespace FivePD.Common.Localization
     {
         public string Acronym { get; set; } = "Acronym";
 
+        public string Actions { get; set; } = "Actions";
+
         public string ActiveCalls { get; set; } = "Active calls";
 
         public string Address { get; set; } = "Address";
@@ -34,6 +36,8 @@ namespace FivePD.Common.Localization
 
         public string CitizenDatabase { get; set; } = "Citizen database";
 
+        public string CreateDivisionTitle { get; set; } = "New division";
+
         public string Dash { get; set; } = "Dash";
 
         public string Dashboard { get; set; } = "Dashboard";
@@ -41,6 +45,10 @@ namespace FivePD.Common.Localization
         public string Department { get; set; } = "Department";
 
         public string Departments { get; set; } = "Departments";
+
+        public string DeleteDivisionTitle { get; set; } = "Delete division";
+
+        public string DeleteDivisionDescription { get; set; } = "Are you sure you want to delete {{division}}? You can't undo this action.";
 
         public string Division { get; set; } = "Division";
 
@@ -78,6 +86,8 @@ namespace FivePD.Common.Localization
 
         public string Ranks { get; set; } = "Ranks";
 
+        public string RenameDivision { get; set; } = "Rename division";
+
         public string Settings { get; set; } = "Settings";
 
         public string Statistics { get; set; } = "Statistics";
@@ -90,11 +100,21 @@ namespace FivePD.Common.Localization
 
         public string SuccessfulCreate { get; set; } = "Successful create";
 
+        public string SuccessfulDelete { get; set; } = "Successful delete";
+
+        public string SuccessfulRename { get; set; } = "Successful rename";
+
         public string SuccessfulDepartmentJoin { get; set; } = "You've successfully joined {{department}}.";
 
         public string SuccessfulDepartmentLeave { get; set; } = "You've successfully left {{department}}.";
 
         public string SuccessfulDepartmentCreate { get; set; } = "{{department}} has been successfully created.";
+
+        public string SuccessfulDivisionDelete { get; set; } = "{{division}} has been successfully delete.";
+
+        public string SuccessfulDivisionRename { get; set; } = "{{oldDivisionName}} has been renamed to {{newDivisionName}}.";
+
+        public string SuccessfulDivisionCreate { get; set; } = "{{division}} has been successfully created.";
 
         public string Type { get; set; } = "Type";
 

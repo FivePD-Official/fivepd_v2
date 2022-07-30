@@ -33,6 +33,8 @@ const props = defineProps<{
   justify-content: space-between
   background: var(--clr-bg)
   z-index: var(--layer-10)
+  border-bottom: 1px solid var(--clr-bg-40)
+  margin-bottom: 40px
   &.page-header--center-title
     justify-content: center
 

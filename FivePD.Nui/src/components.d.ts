@@ -10,6 +10,7 @@ declare module 'vue' {
     InputField: typeof import('./components/InputField.vue')['default']
     Main: typeof import('./components/Main.vue')['default']
     MenuView: typeof import('./components/MenuView.vue')['default']
+    Modal: typeof import('./components/Modal.vue')['default']
     Notification: typeof import('./components/Notifications/Notification.vue')['default']
     NotificationWrapper: typeof import('./components/Notifications/NotificationWrapper.vue')['default']
     PageHeader: typeof import('./components/PageHeader.vue')['default']
@@ -17,6 +18,7 @@ declare module 'vue' {
     SearchPanel: typeof import('./components/SearchPanel.vue')['default']
     Sidebar: typeof import('./components/Sidebar.vue')['default']
     Table: typeof import('./components/Table.vue')['default']
+    TableGrid: typeof import('./components/TableGrid.vue')['default']
     TimerBar: typeof import('./components/TimerBar.vue')['default']
   }
 }

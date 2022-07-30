@@ -26,6 +26,12 @@ namespace FivePD.Common.Localization
 
         public string DepartmentCreate { get; set; } = "Couldn't create the department.";
 
+        public string CreateDivisionExistsWithNameTitle { get; set; } = "Couldn't create division";
+
+        public string RenameDivisionExistsWithNameTitle { get; set; } = "Couldn't rename division";
+
+        public string DivisionExistsWithNameDescription { get; set; } = "A division with this name already exists.";
+
         public string UnexpectedError { get; set; } = "Unexpected error";
 
         public string PleaseTryAgainLater { get; set; } = "Please try again later.";

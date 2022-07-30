@@ -56,9 +56,13 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.GetById] += new Action<int, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
             this._eventHandlerDictionary[Events.Department.GetUsers] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentUsersForNui);
             this._eventHandlerDictionary[Events.Department.GetRanks] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentRanksForNui);
+            this._eventHandlerDictionary[Events.Department.GetDivisions] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentDivisionsForNui);
             this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartment);
             this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
+            this._eventHandlerDictionary[Events.Department.RenameDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.RenameDivisionFromNui);
+            this._eventHandlerDictionary[Events.Department.CreateDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDivisionFromNui);
         }
 
         /// <inheritdoc />
@@ -297,6 +301,26 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        private void GetDepartmentDivisionsForNui(ExpandoObject departmentDivisionsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var departmentDivisionsRequest = departmentDivisionsRequestString.ConvertTo<DepartmentDivisionsRequest>();
+
+                var filters = new Filters<Division>();
+                filters.Add(true, division => division.Department.Id == departmentDivisionsRequest.DepartmentId);
+                filters.Add(!string.IsNullOrEmpty(departmentDivisionsRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentDivisionsRequest.Filters.Name.ToLower()));
+
+                var page = this._databaseContext.Divisions.AsNoTracking().Paginate(departmentDivisionsRequest.Page, filters);
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
         private void CreateDepartment(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -326,6 +350,169 @@ namespace FivePD.Gamemode.Server.Services
                     Status = false,
                     Title = "Nui.Errors.DepartmentExistsWithNameTitle",
                     Description = "Nui.Errors.DepartmentExistsWithNameDescription",
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void DeleteDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var divisionFields = expandoObject.ConvertTo<DeleteDivisionRequest>();
+                var divisionToDelete = this._databaseContext.Divisions
+                    .Include(division => division.Users)
+                    .FirstOrDefault(division => division.Id == divisionFields.DivisionId);
+                if (divisionToDelete is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                    return;
+                }
+
+                var divisionToDeleteName = divisionToDelete.Name;
+                foreach (var user in divisionToDelete.Users)
+                {
+                    user.DivisionId = null;
+                }
+
+                this._databaseContext.Divisions.Remove(divisionToDelete);
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulDelete",
+                    Description = "Nui.Labels.SuccessfulDivisionDelete",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "division", divisionToDeleteName },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void RenameDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var renameDivisionRequest = expandoObject.ConvertTo<RenameDivisionRequest>();
+                var divisionToRename = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == renameDivisionRequest.DivisionId);
+                if (divisionToRename is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                    return;
+                }
+
+                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == renameDivisionRequest.Name);
+                if (divisionExistsWithName != null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.RenameDivisionExistsWithNameTitle",
+                        Description = "Nui.Errors.DivisionExistsWithNameDescription",
+                    }.ToString());
+                    return;
+                }
+
+                var divisionToRenameOldName = divisionToRename.Name;
+                divisionToRename.Name = renameDivisionRequest.Name;
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulRename",
+                    Description = "Nui.Labels.SuccessfulDivisionRename",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "oldDivisionName", divisionToRenameOldName },
+                        { "newDivisionName", renameDivisionRequest.Name },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void CreateDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var createDivisionRequest = expandoObject.ConvertTo<CreateDivisionRequest>();
+                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == createDivisionRequest.Name);
+                if (divisionExistsWithName != null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.CreateDivisionExistsWithNameTitle",
+                        Description = "Nui.Errors.DivisionExistsWithNameDescription",
+                    }.ToString());
+                    return;
+                }
+
+                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == createDivisionRequest.DepartmentId);
+                if (department is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                }
+
+                this._databaseContext.Divisions.Add(new Division
+                {
+                    Department = department,
+                    Name = createDivisionRequest.Name,
+                });
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulCreate",
+                    Description = "Nui.Labels.SuccessfulDivisionCreate",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "division", createDivisionRequest.Name },
+                    },
                 }.ToString());
             }
             catch (Exception e)

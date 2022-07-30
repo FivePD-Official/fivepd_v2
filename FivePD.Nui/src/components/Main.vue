@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { useStore } from 'vuex';
+import { onMounted, ref } from "vue";
+import type { Modal } from "@utils";
+import { modalService } from "@utils";
 
 const store = useStore();
+const currentModal = ref<Modal | null>(null);
+
+onMounted(() => {
+  modalService.onOpen().subscribe(modal => {
+    currentModal.value = modal;
+  });
+});
 </script>
 
 <template>
@@ -15,6 +25,7 @@ const store = useStore();
       </div>
     </div>
     <NotificationWrapper />
+    <Modal v-if="currentModal" :modal="currentModal" />
   </div>
 </template>
 

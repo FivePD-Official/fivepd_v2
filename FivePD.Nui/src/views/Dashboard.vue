@@ -12,12 +12,6 @@ const store = useStore<State>();
 const statistics = ref<any>(); // TODO
 const assignedCall = ref<any>(); // TODO
 
-onMounted(() => {
-  post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
-    store.commit('setUserDetails', res);
-  });
-});
-
 const activeCallsColumnDef: ColumnDef<any> = [
   {
     header: store.state.global.localization.Nui.Labels.Type,
@@ -119,7 +113,7 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
       {
         label: store.state.global.localization.Nui.Labels.NewDepartment,
         link: '/departments/new',
-        show: store.state.user.details?.Admin ?? false
+        show: store.state.user.details.Admin
       }
     ]"
     :dataRequest="requestDepartments"

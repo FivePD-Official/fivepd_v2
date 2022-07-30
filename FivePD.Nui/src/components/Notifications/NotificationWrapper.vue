@@ -50,4 +50,5 @@ onNotification().subscribe((notification) => {
   right: 40px
   overflow: hidden
   z-index: var(--layer-100)
+  pointer-events: none
 </style>

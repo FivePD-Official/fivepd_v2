@@ -1,11 +1,33 @@
 <script setup lang="ts">
-import { hideNui, showNui, post, Menu, MenuItem, MenuButtonItem, MenuListItem, MenuCheckboxItem, nuiEventNext, onNuiEvent } from '@utils';
-import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
-import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import {
+  hideNui,
+  Menu,
+  MenuButtonItem,
+  MenuCheckboxItem,
+  MenuItem,
+  MenuListItem,
+  nuiEventNext,
+  onNuiEvent,
+  post,
+  showNui,
+} from '@utils';
+import { ClientEvents, MenuItemType, NuiEventType } from '@enums';
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
-import type { BaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent, SoundEvent, SoundSpeakEvent } from '@interfaces';
+import type {
+  BaseNuiEvent,
+  ILocalization,
+  LocalizationChangeEvent,
+  MenuObjectsEvent,
+  MenuShowEvent,
+  RadialMenuObjectsEvent,
+  SoundEvent,
+  SoundSpeakEvent,
+  UpdateMenuItemEvent,
+} from '@interfaces';
 import { State } from '@store';
+import { IUser } from "@interfaces";
 
 const store = useStore<State>();
 const router = useRouter();
@@ -85,6 +107,9 @@ onNuiEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(e
 onNuiEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
   viewType.value = event.type;
   showNui();
+  post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
+    store.commit('setUserDetails', res);
+  });
 });
 
 onNuiEvent<MenuShowEvent>(NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {

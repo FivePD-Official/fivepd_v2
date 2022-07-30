@@ -5,7 +5,7 @@ import type {
   FormattedRow,
   FormattedRowItem,
   PropButton,
-  ColumnDef, FormFilter, Page, BaseRequest
+  ColumnDef, FormFilter, Page, BaseRequest, TableCellActionButton
 } from '@interfaces';
 import { debounceTime, Observable, Subject } from "rxjs";
 
@@ -65,19 +65,40 @@ function requestData(filters?: FormFilter) {
   });
 }
 
-const formattedRows = computed<FormattedRow[]>(() => {
+const formattedColumns = computed<ColumnDef<any>>(() => {
+  return props.columns.map(column => {
+    return {
+      ...column,
+      show: () => column.show ? column.show() : true,
+    };
+  });
+})
+
+const formattedRows = computed<FormattedRow<any>[]>(() => {
   return data.value?.Items?.map((item: any) => {
-    const row: FormattedRow = [];
+    const row: FormattedRow<any> = [];
 
-    for (const value of Object.values(props.columns)) {
+    for (const value of Object.values(formattedColumns.value)) {
+      if (value.show && !value.show()) {
+        continue;
+      }
+
       let newValue = '';
-      
-      newValue = value.valueResolver ? value.valueResolver(item) : item[value.accessorKey];
 
-      const rowItem: FormattedRowItem = {
+      if (value.valueResolver) {
+        newValue = value.valueResolver(item);
+      } else if (value.accessorKey) {
+        newValue = item[value.accessorKey];
+      }
+
+      const rowItem: FormattedRowItem<any> = {
         value: newValue,
+        originalItem: item,
       };
 
+      if (value.actions) {
+        rowItem.actions = value.actions;
+      }
       if (value.linkResolver) {
         rowItem.link = value.linkResolver(item);
       }
@@ -134,6 +155,26 @@ function toPage(pageNumber: number) {
   currentPage.value = pageNumber;
   requestData(filter.value);
 }
+
+function tableCellActionButtonClick(onClick: TableCellActionButton<any>['onClick'], item: FormattedRowItem<any>) {
+  onClick(item.originalItem, res => {
+    if (res.Status) {
+      requestData(filter.value);
+    }
+  });
+}
+
+function headerButtonClick(onClick: PropButton['onClick']) {
+  if (!onClick) {
+    return;
+  }
+
+  onClick(res => {
+    if (res.Status) {
+      requestData(filter.value);
+    }
+  });
+}
 </script>
 
 <template>
@@ -141,18 +182,19 @@ function toPage(pageNumber: number) {
     <div class="table-container-header">
       <p class="common-title">{{ title }}</p>
       <div class="buttons" v-if="buttons">
-        <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
+        <Button v-for="button in buttons" :show="button.show" :onClick="() => headerButtonClick(button.onClick)" :link="button.link" :label="button.label" theme="secondary" />
       </div>
     </div>
     
     <div class="common-bg table">
       <div class="table-row table-header">
-        <div class="table-cell" v-for="column in columns">
+        <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show())">
           <p>{{ column.header }}</p>
         </div>
       </div>
-      <form class="table-row table-filter" v-if="columns.some(col => col.filter) && formattedRows?.length">
-        <div class="table-cell" v-for="column in columns">
+
+      <form class="table-row table-filter" v-if="formattedColumns.filter(col => col.show()).some(col => col.filter) && formattedRows?.length">
+        <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show())">
           <InputField v-if="column.filter" :field="{
             type: 'text',
             name: `${column.accessorKey}-filter`,
@@ -162,17 +204,33 @@ function toPage(pageNumber: number) {
           :onValueChange="value => onFilterFormChange(column.accessorKey, value)"/>
         </div>
       </form>
+
       <div class="table-row" v-for="row in formattedRows" v-if="formattedRows?.length">
         <div class="table-cell" v-for="item in row">
-          <router-link v-if="item.link" :to="item.link">
+          <router-link v-if="item.link && !item.actions" :to="item.link">
             {{ item.value }}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </router-link>
-          <p v-else>{{ item.value }}</p>
+          <p v-if="!item.link && !item.actions">{{ item.value }}</p>
+          <div v-if="!item.link && item.actions" class="table-cell-actions">
+            <template v-for="action in item.actions">
+              <Button 
+                  v-if="action.type === 'button'"
+                  type="button"
+                  theme="small"
+                  :label="action.label"
+                  :onClick="() => tableCellActionButtonClick(action.onClick, item)"
+              />
+              <select v-else-if="action.type === 'select'" @change="event => action.onSelect(item.originalItem, event.target.value)">
+                <option v-for="selectItem in Object.entries(action.items)" :value="selectItem[0]">{{ selectItem[1] }}</option>
+              </select>
+            </template>
+          </div>
         </div>
       </div>
+
       <div class="table-pagination" v-if="formattedRows?.length">
         <div class="pagination-inner">
           <button :disabled="currentPage === 1" @click="toPreviousPage()">
@@ -190,6 +248,7 @@ function toPage(pageNumber: number) {
           </button>
         </div>
       </div>
+
       <p v-else class="no-data">{{ state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
     </div>
     
@@ -235,6 +294,10 @@ function toPage(pageNumber: number) {
         margin-bottom: 0
 
       .table-cell
+        display: flex
+        flex-direction: row
+        align-items: center
+        height: 45px
         padding: 5px 20px 5px 10px
         &:not(:last-of-type)
           border-right: 1px solid var(--clr-bg-40)
@@ -259,6 +322,12 @@ function toPage(pageNumber: number) {
 
         a:hover
           color: var(--clr-text)
+          
+        .table-cell-actions
+          display: flex
+          flex-direction: row
+          align-items: center
+          gap: 10px
 
       &.table-header
         .table-cell

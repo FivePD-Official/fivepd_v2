@@ -4,13 +4,14 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const props = withDefaults(defineProps<{
   label: string,
-  theme: 'primary' | 'secondary',
+  theme: 'primary' | 'secondary' | 'small' | 'danger',
   type?: 'button' | 'submit',
   onClick?: () => void,
   link?: string,
   show?: boolean,
 }>(), {
-  show: true
+  show: true,
+  type: 'button',
 });
 
 function internalOnClick() {
@@ -27,8 +28,10 @@ function internalOnClick() {
     :class="{
       'button--primary': theme === 'primary',
       'button--secondary': theme === 'secondary',
+      'button--small': theme === 'small',
+      'button--danger': theme === 'danger',
     }"
-    :type="type ?? 'button'"
+    :type="type"
     @click="internalOnClick"
     v-if="show"
   >
@@ -51,6 +54,7 @@ button
   flex-direction: row
   align-items: center
   justify-content: center
+  white-space: nowrap
   &.button--primary
     &::before
       content: ''
@@ -59,20 +63,43 @@ button
       left: 0
       width: 100%
       height: 100%
-      border-radius: var(--radius)
+      border-radius: var(--radius-sm)
       opacity: 1
       background: var(--clr-blue)
       z-index: var(--layer-0)
     &:hover
       &::before
         opacity: .8
+  &.button--danger
+    &::before
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      border-radius: var(--radius-sm)
+      opacity: 1
+      background: var(--clr-red)
+      z-index: var(--layer-0)
     &:hover
-      background: var(--clr-blue-light)
+      &::before
+        opacity: .8
 
   &.button--secondary
     border: 2px solid var(--clr-text-tertiary)
     &:hover
       border-color: var(--clr-text-secondary)
+  
+  &.button--small
+    height: 30px
+    font-size: 16px
+    border: 2px solid var(--clr-bg-80)
+    &:hover
+      border-color: var(--clr-text-tertiary)
+
+    span
+      color: var(--clr-text-secondary)
 
   span
     position: relative

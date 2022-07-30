@@ -9,3 +9,4 @@ export { MenuButtonItem } from './menus/MenuButtonItem';
 export { MenuListItem } from './menus/MenuListItem';
 export { MenuCheckboxItem } from './menus/MenuCheckboxItem';
 export * from './stringHelpers';
+export * from './modalService';

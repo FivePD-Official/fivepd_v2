@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { IDepartment, IRank, ColumnDef, IUser, ActionResponse, FormFilter, Page } from '@interfaces';
+import type {
+  IDepartment,
+  IRank,
+  ColumnDef,
+  IUser,
+  ActionResponse,
+  FormFilter,
+  Page,
+  IDivision,
+  PropButton
+} from '@interfaces';
 import { useState } from '@store';
-import { post, replaceParams, showNotification, toSentence } from '@utils';
+import { post, replaceParams, showNotification, toSentence, modalService } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { BaseRequest } from "@interfaces";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { useT } from '@hooks';
 
 interface FormattedRank extends IRank {
@@ -38,8 +48,8 @@ onMounted(() => {
   requestDepartmentData();
 })
 
-watch(route, () => {
-  requestDepartmentData();
+watch(route, (value) => {
+  requestDepartmentData(parseInt(value.params.id as string));
 }, {
   deep: true
 });
@@ -53,6 +63,137 @@ const ranksColumns: ColumnDef<FormattedRank> = [
   {
     header: state.global.localization.Nui.Labels.Permissions,
     accessorKey: 'Permissions',
+  }
+];
+
+const divisionsButtons: PropButton[] = [
+  {
+    label: state.global.localization.Nui.Actions.CreateDivision,
+    onClick: (onResponse) => {
+      modalService.open({
+        title: state.global.localization.Nui.Labels.CreateDivisionTitle,
+        input: {
+          type: 'text',
+          name: 'Name',
+          label: state.global.localization.Nui.Labels.Name,
+          placeholder: state.global.localization.Nui.Labels.Name,
+          required: true,
+        },
+        buttons: {
+          cancel: {
+            theme: 'secondary',
+            label: state.global.localization.Nui.Actions.Cancel,
+          },
+          submit: {
+            theme: 'primary',
+            label: state.global.localization.Nui.Actions.Save,
+          },
+        },
+      }).subscribe(res => {
+        if (res.success) {
+          post<ActionResponse>(ClientEvents.CreateDivision, {
+            DepartmentId: department.value?.Id,
+            Name: res.inputFields!['Name']
+          }).subscribe(createRes => {
+            showNotification({
+              type: createRes.Status ? 'success' : 'error',
+              title: t(createRes.Title),
+              description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
+            })
+            onResponse(createRes);
+          });
+        }
+      })
+    },
+    show: state.user.details.Admin,
+  }
+];
+
+const divisionsColumns: ColumnDef<IDivision> = [
+  {
+    header: state.global.localization.Nui.Labels.Name,
+    accessorKey: 'Name',
+    filter: true,
+  },
+  {
+    header: state.global.localization.Nui.Labels.Actions,
+    show: () => state.user.details.Admin,
+    actions: [
+      {
+        type: 'button',
+        label: state.global.localization.Nui.Actions.Delete,
+        onClick: (division, onResponse) => {
+          modalService.open({
+            title: state.global.localization.Nui.Labels.DeleteDivisionTitle,
+            description: replaceParams(state.global.localization.Nui.Labels.DeleteDivisionDescription, { 'division': `<b>${division.Name}</b>`}),
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'danger',
+                label: state.global.localization.Nui.Actions.Delete,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.DeleteDivision, {
+                DivisionId: division.Id
+              }).subscribe(deleteRes => {
+                showNotification({
+                  type: deleteRes.Status ? 'success' : 'error',
+                  title: t(deleteRes.Title),
+                  description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+                })
+                onResponse(deleteRes);
+              });
+            }
+          })
+        }
+      },
+      {
+        type: 'button',
+        label: state.global.localization.Nui.Actions.Rename,
+        onClick: (division, onResponse) => {
+          modalService.open({
+            title: state.global.localization.Nui.Labels.RenameDivision,
+            input: {
+              type: 'text',
+              name: 'Name',
+              label: state.global.localization.Nui.Labels.Name,
+              placeholder: state.global.localization.Nui.Labels.Name,
+              required: true,
+              defaultValue: division.Name,
+            },
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'primary',
+                label: state.global.localization.Nui.Actions.Save,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.RenameDivision, {
+                DivisionId: division.Id,
+                Name: res.inputFields!['Name'],
+              }).subscribe(renameRes => {
+                showNotification({
+                  type: renameRes.Status ? 'success' : 'error',
+                  title: t(renameRes.Title),
+                  description: renameRes.Status ? replaceParams(t(renameRes.Description), renameRes.Params) : t(renameRes.Description),
+                })
+                onResponse(renameRes);
+              });
+            }
+          })
+        }
+      }
+    ]
   }
 ];
 
@@ -72,8 +213,8 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
   },
 ];
 
-function requestDepartmentData() {
-  post<IDepartment>(ClientEvents.GetDepartmentById, defaultDepartmentId).subscribe((res) => {
+function requestDepartmentData(departmentId?: number) {
+  post<IDepartment>(ClientEvents.GetDepartmentById, departmentId ?? defaultDepartmentId).subscribe((res) => {
     department.value = mapDepartmentData(res);
   });
 }
@@ -89,6 +230,13 @@ function requestDepartmentRanks(ranksRequest: BaseRequest): Observable<Page<IRan
   return post<Page<IRank>>(ClientEvents.GetDepartmentRanks, {
     DepartmentId: department.value?.Id ?? defaultDepartmentId,
     ...ranksRequest
+  });
+}
+
+function requestDepartmentDivisions(divisionsRequest: BaseRequest): Observable<Page<IDivision>> {
+  return post<Page<IDivision>>(ClientEvents.GetDepartmentDivisions, {
+    DepartmentId: department.value?.Id ?? defaultDepartmentId,
+    ...divisionsRequest
   });
 }
 
@@ -175,13 +323,28 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
       }
     ]"
   />
-
-  <Table
-    :title="state.global.localization.Nui.Labels.Ranks"
-    :columns="ranksColumns"
-    :dataRequest="requestDepartmentRanks"
-    :dataMapper="mapDepartmentRanks"
-  />
+  
+  <TableGrid :columns="2">
+    <Table
+      :title="state.global.localization.Nui.Labels.Ranks"
+      :buttons="[
+          {
+            label: state.global.localization.Nui.Actions.CreateRank,
+            onClick: () => {},
+            show: state.user.details.Admin,
+          }
+        ]"
+      :columns="ranksColumns"
+      :dataRequest="requestDepartmentRanks"
+      :dataMapper="mapDepartmentRanks"
+    />
+    <Table
+        :title="state.global.localization.Nui.Labels.Divisions"
+        :buttons="divisionsButtons"
+        :columns="divisionsColumns"
+        :dataRequest="requestDepartmentDivisions"
+    />
+  </TableGrid>
 
   <Table
     :title="state.global.localization.Nui.Labels.Members"
@@ -189,6 +352,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
     :dataRequest="requestDepartmentUsers"
     :dataMapper="mapDepartmentUsers"
   />
+
 
 </template>
 

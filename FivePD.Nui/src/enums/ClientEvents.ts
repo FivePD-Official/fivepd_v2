@@ -5,8 +5,12 @@ export enum ClientEvents {
   GetDepartmentById = 'fivepd:department:getById',
   GetDepartmentUsers = 'fivepd:department:getUsers',
   GetDepartmentRanks = 'fivepd:department:getRanks',
+  GetDepartmentDivisions = 'fivepd:department:getDivisions',
   CreateDepartment = 'fivepd:department:create',
   JoinDepartment = 'fivepd:department:join',
   LeaveDepartment = 'fivepd:department:leave',
+  DeleteDivision = 'fivepd:department:deleteDivision',
+  RenameDivision = 'fivepd:department:renameDivision',
+  CreateDivision = 'fivepd:department:createDivision',
   GetPlayerDetails = 'fivepd:player:getDetails',
 }
