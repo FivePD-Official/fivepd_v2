@@ -16,6 +16,7 @@ declare module 'vue' {
     PageHeader: typeof import('./components/PageHeader.vue')['default']
     RadialMenu: typeof import('./components/RadialMenu.vue')['default']
     SearchPanel: typeof import('./components/SearchPanel.vue')['default']
+    Select: typeof import('./components/Select.vue')['default']
     Sidebar: typeof import('./components/Sidebar.vue')['default']
     Table: typeof import('./components/Table.vue')['default']
     TableGrid: typeof import('./components/TableGrid.vue')['default']

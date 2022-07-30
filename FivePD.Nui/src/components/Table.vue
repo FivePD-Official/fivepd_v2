@@ -231,10 +231,13 @@ function headerButtonClick(onClick: PropButton['onClick']) {
                   :label="action.label"
                   :onClick="() => tableCellActionButtonClick(action.onClick, item)"
               />
-              <select v-else-if="action.type === 'select'" @change="event => tableCellActionSelect(action.onSelect, item, parseInt(event.target.value))">
-                <option :value="0" :selected="true">{{ action.label }}</option>
-                <option v-for="selectItem in action.items()" :value="selectItem.id" :selected="action.itemSelected(item.originalItem, selectItem.id)">{{ selectItem.label }}</option>
-              </select>
+              <Select 
+                  v-else-if="action.type === 'select'"
+                  :defaultItem="{ id: 0, label: action.label }"
+                  :items="action.items()"
+                  :selectedItemResolver="(selectItem) => action.selectedItemResolver(item.originalItem, selectItem.id)"
+                  :onSelect="(selected) => tableCellActionSelect(action.onSelect, item, selected.id)"
+              />
             </template>
           </div>
         </div>

@@ -92,7 +92,7 @@ button
       border-color: var(--clr-text-secondary)
   
   &.button--small
-    height: 30px
+    height: 35px
     font-size: 16px
     border: 2px solid var(--clr-bg-80)
     &:hover

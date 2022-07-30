@@ -385,8 +385,8 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
     actions: [
       {
         type: 'select',
-        label: 'Rank',
-        itemSelected: (user, itemId) => user.RankId === itemId,
+        label: 'No rank',
+        selectedItemResolver: (user, itemId) => user.RankId === itemId,
         items: () => department.value?.Ranks?.map(rank => {
           return {
             id: rank.Id,
@@ -409,8 +409,8 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
       },
       {
         type: 'select',
-        label: 'Division',
-        itemSelected: (user, itemId) => user.DivisionId === itemId,
+        label: 'No division',
+        selectedItemResolver: (user, itemId) => user.DivisionId === itemId,
         items: () => department.value?.Divisions?.map(division => {
           return {
             id: division.Id,
