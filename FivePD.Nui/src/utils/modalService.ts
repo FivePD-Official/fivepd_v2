@@ -14,7 +14,7 @@ export interface Modal {
     cancel: ModalButton;
     submit: ModalButton;
   };
-  input?: InputField;
+  inputs?: InputField[];
 }
 
 export interface ModalReturn {

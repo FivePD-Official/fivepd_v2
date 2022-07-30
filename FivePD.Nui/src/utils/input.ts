@@ -46,16 +46,24 @@ export const formatFormEvent = (event: any): FormFields => {
     if (!e.name) {
       continue;
     }
-
-    if (['Day', 'Month', 'Year'].includes(e.name)) {
-      if (!fields.hasOwnProperty('Birthdate')) {
-        fields['Birthdate'] = {};
+    
+    const split = e.name.split('-');
+    if (split.length > 1) {
+      if (!fields.hasOwnProperty(split[0])) {
+        fields[split[0]] = {};
       }
-      fields['Birthdate'][e.name] = e.value;
+      fields[split[0]][split[1]] = e.type === 'checkbox' ? e.checked : (e.type === 'number' ? e.valueAsNumber : e.value);
     } else {
-      fields[e.name] = e.type === 'number' ? e.valueAsNumber : e.value;
+      if (['Day', 'Month', 'Year'].includes(e.name)) {
+        if (!fields.hasOwnProperty('Birthdate')) {
+          fields['Birthdate'] = {};
+        }
+        fields['Birthdate'][e.name] = e.value;
+      } else {
+        fields[e.name] = e.type === 'checkbox' ? e.checked : (e.type === 'number' ? e.valueAsNumber : e.value);
+      }
     }
   }
-
+  
   return fields;
 }

@@ -56,20 +56,33 @@ function onInput(event: any) {
     </label>
     <input
       :type="field.type"
+      :id="field.name"
       :name="field.name"
       :placeholder="field.placeholder"
-      v-if="field.type !== 'date'"
+      v-if="field.type !== 'date' && field.type !== 'checkboxGroup'"
       @input="event => onInput(event)"
       v-model="value"
     />
-    <div class="inputs" v-else>
+    <div class="inputs" v-else-if="field.type === 'date'">
       <input
         type="number"
         min="0"
+        :id="input.name"
         :name="input.name"
         :placeholder="input.placeholder"
         v-for="input in createBirthdateInputList(DateFormat.MDY)"
       />
+    </div>
+    <div class="checkbox-group" v-else>
+      <div class="checkbox" v-for="checkbox in field.checkboxes">
+        <div class="checkbox-inner">
+          <input type="checkbox" :value="checkbox.id" :name="field.name + '-' + checkbox.id" :id="field.name + '-' + checkbox.id" :checked="checkbox.defaultValue ?? false">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <label :for="field.name + '-' + checkbox.id">{{ checkbox.label }}</label>
+      </div>
     </div>
     <span class="help-label" v-if="field.helpLabel" v-html="field.helpLabel"></span>
   </div>
@@ -118,4 +131,53 @@ function onInput(event: any) {
       &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
         appearance: none
         -webkit-appearance: none
+        
+  .checkbox-group
+    margin-top: 10px
+
+    .checkbox
+      display: flex
+      flex-direction: row
+      align-items: center
+      margin-bottom: 10px
+      
+      .checkbox-inner
+        position: relative
+        width: 24px
+        height: 24px
+
+        svg
+          position: absolute
+          top: 50%
+          left: 50%
+          transform: translate(-50%,-50%)
+          height: 22px
+          opacity: 0
+          color: white
+          z-index: var(--layer-10)
+          
+        input
+          position: absolute
+          top: 0
+          left: 0
+          width: 100%
+          height: 100%
+          border: 2px solid var(--clr-bg-80)
+          border-radius: var(--radius-sm)
+          z-index: var(--layer-0)
+          appearance: none
+          -webkit-appearance: none
+          background: transparent
+          padding: 0
+          &:checked
+            border-color: var(--clr-text-secondary)
+            & ~ svg
+              opacity: 1
+        
+      label
+        font-size: 16px
+        color: var(--clr-text-secondary)
+        cursor: pointer
+        margin-left: 10px
+        margin-bottom: 0
 </style>

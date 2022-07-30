@@ -54,6 +54,64 @@ watch(route, (value) => {
   deep: true
 });
 
+
+const ranksButtons: PropButton[] = [
+  {
+    label: state.global.localization.Nui.Actions.CreateRank,
+    onClick: (onResponse) => {
+      modalService.open({
+        title: state.global.localization.Nui.Actions.CreateRank,
+        inputs: [
+          {
+            type: 'text',
+            name: 'Name',
+            label: state.global.localization.Nui.Labels.Name,
+            placeholder: state.global.localization.Nui.Labels.Name,
+            required: true,
+          },
+          {
+            type: 'checkboxGroup',
+            name: 'Permission',
+            label: state.global.localization.Nui.Labels.Permissions,
+            required: false,
+            checkboxes: [
+              { id: 'Kick', label: 'Kick label' },
+              { id: 'SetRank', label: 'Set rank label' },
+              { id: 'SetCallsign', label: 'Set callsign label' },
+            ]
+          }
+        ],
+        buttons: {
+          cancel: {
+            theme: 'secondary',
+            label: state.global.localization.Nui.Actions.Cancel,
+          },
+          submit: {
+            theme: 'primary',
+            label: state.global.localization.Nui.Actions.Create,
+          },
+        },
+      }).subscribe(res => {
+        if (res.success) {
+          post<ActionResponse>(ClientEvents.CreateRank, {
+            DepartmentId: department.value?.Id,
+            Name: res.inputFields!['Name'],
+            Permission: res.inputFields!['Permission']
+          }).subscribe(createRes => {
+            showNotification({
+              type: createRes.Status ? 'success' : 'error',
+              title: t(createRes.Title),
+              description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
+            })
+            onResponse(createRes);
+          });
+        }
+      })
+    },
+    show: state.user.details.Admin,
+  }
+];
+
 const ranksColumns: ColumnDef<FormattedRank> = [
   {
     header: state.global.localization.Nui.Labels.Name,
@@ -63,6 +121,101 @@ const ranksColumns: ColumnDef<FormattedRank> = [
   {
     header: state.global.localization.Nui.Labels.Permissions,
     accessorKey: 'Permissions',
+  },
+  {
+    header: state.global.localization.Nui.Labels.Actions,
+    show: () => state.user.details.Admin,
+    actions: [
+      {
+        type: 'button',
+        label: state.global.localization.Nui.Actions.Delete,
+        onClick: (rank, onResponse) => {
+          modalService.open({
+            title: state.global.localization.Nui.Labels.DeleteRankTitle,
+            description: replaceParams(state.global.localization.Nui.Labels.DeleteRankDescription, { 'rank': `<b>${rank.Name}</b>`}),
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'danger',
+                label: state.global.localization.Nui.Actions.Delete,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.DeleteRank, {
+                RankId: rank.Id
+              }).subscribe(deleteRes => {
+                showNotification({
+                  type: deleteRes.Status ? 'success' : 'error',
+                  title: t(deleteRes.Title),
+                  description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+                })
+                onResponse(deleteRes);
+              });
+            }
+          })
+        }
+      },
+      {
+        type: 'button',
+        label: state.global.localization.Nui.Actions.Edit,
+        onClick: (rank, onResponse) => {
+          modalService.open({
+            title: state.global.localization.Nui.Labels.EditRankTitle,
+            inputs: [
+              {
+                type: 'text',
+                name: 'Name',
+                label: state.global.localization.Nui.Labels.Name,
+                placeholder: state.global.localization.Nui.Labels.Name,
+                required: true,
+                defaultValue: rank.Name,
+              },
+              {
+                type: 'checkboxGroup',
+                name: 'Permission',
+                label: state.global.localization.Nui.Labels.Permissions,
+                required: false,
+                checkboxes: [
+                  { id: 'Kick', label: state.global.localization.Nui.Actions.Kick, defaultValue: rank.Permission.Kick },
+                  { id: 'SetRank', label: state.global.localization.Nui.Actions.SetRank, defaultValue: rank.Permission.SetRank },
+                  { id: 'SetCallsign', label: state.global.localization.Nui.Actions.SetCallsign, defaultValue: rank.Permission.SetCallsign },
+                ]
+              }
+            ],
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'primary',
+                label: state.global.localization.Nui.Actions.Save,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.EditRank, {
+                DepartmentId: department.value?.Id,
+                RankId: rank.Id,
+                Name: res.inputFields!['Name'],
+                Permission: res.inputFields!['Permission']
+              }).subscribe(editRes => {
+                showNotification({
+                  type: editRes.Status ? 'success' : 'error',
+                  title: t(editRes.Title),
+                  description: editRes.Status ? replaceParams(t(editRes.Description), editRes.Params) : t(editRes.Description),
+                })
+                onResponse(editRes);
+              });
+            }
+          })
+        }
+      },
+    ]
   }
 ];
 
@@ -71,14 +224,14 @@ const divisionsButtons: PropButton[] = [
     label: state.global.localization.Nui.Actions.CreateDivision,
     onClick: (onResponse) => {
       modalService.open({
-        title: state.global.localization.Nui.Labels.CreateDivisionTitle,
-        input: {
+        title: state.global.localization.Nui.Actions.CreateDivision,
+        inputs: [{
           type: 'text',
           name: 'Name',
           label: state.global.localization.Nui.Labels.Name,
           placeholder: state.global.localization.Nui.Labels.Name,
           required: true,
-        },
+        }],
         buttons: {
           cancel: {
             theme: 'secondary',
@@ -86,7 +239,7 @@ const divisionsButtons: PropButton[] = [
           },
           submit: {
             theme: 'primary',
-            label: state.global.localization.Nui.Actions.Save,
+            label: state.global.localization.Nui.Actions.Create,
           },
         },
       }).subscribe(res => {
@@ -139,7 +292,8 @@ const divisionsColumns: ColumnDef<IDivision> = [
           }).subscribe(res => {
             if (res.success) {
               post<ActionResponse>(ClientEvents.DeleteDivision, {
-                DivisionId: division.Id
+                DepartmentId: department.value?.Id,
+                DivisionId: division.Id,
               }).subscribe(deleteRes => {
                 showNotification({
                   type: deleteRes.Status ? 'success' : 'error',
@@ -158,14 +312,14 @@ const divisionsColumns: ColumnDef<IDivision> = [
         onClick: (division, onResponse) => {
           modalService.open({
             title: state.global.localization.Nui.Labels.RenameDivision,
-            input: {
+            inputs: [{
               type: 'text',
               name: 'Name',
               label: state.global.localization.Nui.Labels.Name,
               placeholder: state.global.localization.Nui.Labels.Name,
               required: true,
               defaultValue: division.Name,
-            },
+            }],
             buttons: {
               cancel: {
                 theme: 'secondary',
@@ -327,13 +481,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
   <TableGrid :columns="2">
     <Table
       :title="state.global.localization.Nui.Labels.Ranks"
-      :buttons="[
-          {
-            label: state.global.localization.Nui.Actions.CreateRank,
-            onClick: () => {},
-            show: state.user.details.Admin,
-          }
-        ]"
+      :buttons="ranksButtons"
       :columns="ranksColumns"
       :dataRequest="requestDepartmentRanks"
       :dataMapper="mapDepartmentRanks"

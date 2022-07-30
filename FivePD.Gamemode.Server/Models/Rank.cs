@@ -4,6 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,6 +36,11 @@ namespace FivePD.Gamemode.Server.Models
         /// Gets or sets the permissions of this rank.
         /// </summary>
         public Permissions Permission { get; set; }
+
+        /// <summary>
+        /// Gets or sets the users of this ranks.
+        /// </summary>
+        public IEnumerable<User> Users { get; set; }
 
         /// <summary>
         /// Defines the actions a given <see cref="Rank"/> can do.

@@ -49,13 +49,15 @@ export interface ILocalization {
       CallsignFormatHelpLabel: string;
       Capacity: string;
       CitizenDatabase: string;
-      CreateDivisionTitle: string;
       Dash: string;
       Dashboard: string;
       Department: string;
       Departments: string;
       DeleteDivisionTitle: string;
       DeleteDivisionDescription: string;
+      DeleteRankTitle: string;
+      DeleteRankDescription: string;
+      EditRankTitle: string;
       Division: string;
       Divisions: string;
       Letter: string;
@@ -82,6 +84,7 @@ export interface ILocalization {
       SuccessfulLeave: string;
       SuccessfulCreate: string;
       SuccessfulDelete: string;
+      SuccessfulEdit: string;
       SuccessfulRename: string;
       SuccessfulDepartmentJoin: string;
       SuccessfulDepartmentLeave: string;
@@ -89,12 +92,16 @@ export interface ILocalization {
       SuccessfulDivisionDelete: string;
       SuccessfulDivisionRename: string;
       SuccessfulDivisionCreate: string;
+      SuccessfulRankDelete: string;
+      SuccessfulRankEdit: string;
+      SuccessfulRankCreate: string;
       Type: string;
       Units: string;
       VehicleDatabase: string;
     },
     Actions: {
       Cancel: string;
+      Create: string;
       CreateDivision: string;
       CreateRank: string;
       Delete: string;
@@ -120,6 +127,9 @@ export interface ILocalization {
       DivisionExistsWithNameDescription: string;
       UnexpectedError: string;
       PleaseTryAgainLater: string;
+      CreateRankExistsWithNameTitle: string;
+      EditRankExistsWithNameTitle: string;
+      RankExistsWithNameDescription: string;
     }
   }
 }
@@ -173,13 +183,15 @@ export const defaultLocalization: ILocalization = {
       CallsignFormatHelpLabel: '',
       Capacity: '',
       CitizenDatabase: '',
-      CreateDivisionTitle: '',
       Dash: '',
       Dashboard: '',
       Department: '',
       Departments: '',
       DeleteDivisionTitle: '',
       DeleteDivisionDescription: '',
+      DeleteRankTitle: '',
+      DeleteRankDescription: '',
+      EditRankTitle: '',
       Division: '',
       Divisions: '',
       Letter: '',
@@ -206,6 +218,7 @@ export const defaultLocalization: ILocalization = {
       SuccessfulLeave: '',
       SuccessfulCreate: '',
       SuccessfulDelete: '',
+      SuccessfulEdit: '',
       SuccessfulRename: '',
       SuccessfulDepartmentJoin: '',
       SuccessfulDepartmentLeave: '',
@@ -213,12 +226,16 @@ export const defaultLocalization: ILocalization = {
       SuccessfulDivisionDelete: '',
       SuccessfulDivisionRename: '',
       SuccessfulDivisionCreate: '',
+      SuccessfulRankDelete: '',
+      SuccessfulRankEdit: '',
+      SuccessfulRankCreate: '',
       Type: '',
       Units: '',
       VehicleDatabase: '',
     },
     Actions: {
       Cancel: '',
+      Create: '',
       CreateDivision: '',
       CreateRank: '',
       Delete: '',
@@ -244,6 +261,9 @@ export const defaultLocalization: ILocalization = {
       DivisionExistsWithNameDescription: '',
       UnexpectedError: '',
       PleaseTryAgainLater: '',
+      CreateRankExistsWithNameTitle: '',
+      EditRankExistsWithNameTitle: '',
+      RankExistsWithNameDescription: '',
     }
   }
 }

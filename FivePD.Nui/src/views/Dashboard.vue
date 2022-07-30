@@ -12,6 +12,12 @@ const store = useStore<State>();
 const statistics = ref<any>(); // TODO
 const assignedCall = ref<any>(); // TODO
 
+onMounted(() => {
+  post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
+    store.commit('setUserDetails', res);
+  });
+});
+
 const activeCallsColumnDef: ColumnDef<any> = [
   {
     header: store.state.global.localization.Nui.Labels.Type,

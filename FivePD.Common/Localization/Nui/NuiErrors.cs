@@ -35,5 +35,11 @@ namespace FivePD.Common.Localization
         public string UnexpectedError { get; set; } = "Unexpected error";
 
         public string PleaseTryAgainLater { get; set; } = "Please try again later.";
+
+        public string CreateRankExistsWithNameTitle { get; set; } = "Couldn't create rank";
+
+        public string EditRankExistsWithNameTitle { get; set; } = "Couldn't edit rank";
+
+        public string RankExistsWithNameDescription { get; set; } = "A rank with this name already exists.";
     }
 }

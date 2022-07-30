@@ -193,7 +193,7 @@ function headerButtonClick(onClick: PropButton['onClick']) {
         </div>
       </div>
 
-      <form class="table-row table-filter" v-if="formattedColumns.filter(col => col.show()).some(col => col.filter) && formattedRows?.length">
+      <form class="table-row table-filter" v-if="formattedColumns.filter(col => col.show()).some(col => col.filter)">
         <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show())">
           <InputField v-if="column.filter" :field="{
             type: 'text',
@@ -297,7 +297,7 @@ function headerButtonClick(onClick: PropButton['onClick']) {
         display: flex
         flex-direction: row
         align-items: center
-        height: 45px
+        min-height: 45px
         padding: 5px 20px 5px 10px
         &:not(:last-of-type)
           border-right: 1px solid var(--clr-bg-40)

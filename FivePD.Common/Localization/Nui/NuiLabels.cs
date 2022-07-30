@@ -36,8 +36,6 @@ namespace FivePD.Common.Localization
 
         public string CitizenDatabase { get; set; } = "Citizen database";
 
-        public string CreateDivisionTitle { get; set; } = "New division";
-
         public string Dash { get; set; } = "Dash";
 
         public string Dashboard { get; set; } = "Dashboard";
@@ -49,6 +47,12 @@ namespace FivePD.Common.Localization
         public string DeleteDivisionTitle { get; set; } = "Delete division";
 
         public string DeleteDivisionDescription { get; set; } = "Are you sure you want to delete {{division}}? You can't undo this action.";
+
+        public string DeleteRankTitle { get; set; } = "Delete rank";
+
+        public string DeleteRankDescription { get; set; } = "Are you sure you want to delete {{rank}}? You can't undo this action.";
+
+        public string EditRankTitle { get; set; } = "Edit rank";
 
         public string Division { get; set; } = "Division";
 
@@ -102,6 +106,8 @@ namespace FivePD.Common.Localization
 
         public string SuccessfulDelete { get; set; } = "Successful delete";
 
+        public string SuccessfulEdit { get; set; } = "Successful edit";
+
         public string SuccessfulRename { get; set; } = "Successful rename";
 
         public string SuccessfulDepartmentJoin { get; set; } = "You've successfully joined {{department}}.";
@@ -110,11 +116,17 @@ namespace FivePD.Common.Localization
 
         public string SuccessfulDepartmentCreate { get; set; } = "{{department}} has been successfully created.";
 
-        public string SuccessfulDivisionDelete { get; set; } = "{{division}} has been successfully delete.";
+        public string SuccessfulDivisionDelete { get; set; } = "{{division}} has been successfully deleted.";
 
         public string SuccessfulDivisionRename { get; set; } = "{{oldDivisionName}} has been renamed to {{newDivisionName}}.";
 
         public string SuccessfulDivisionCreate { get; set; } = "{{division}} has been successfully created.";
+
+        public string SuccessfulRankDelete { get; set; } = "{{rank}} has been successfully deleted.";
+
+        public string SuccessfulRankEdit { get; set; } = "{{rank}} has been successfully edited.";
+
+        public string SuccessfulRankCreate { get; set; } = "{{rank}} has been successfully created.";
 
         public string Type { get; set; } = "Type";
 

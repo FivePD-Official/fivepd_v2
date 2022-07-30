@@ -231,6 +231,21 @@ namespace FivePD.Common
             /// Used to create a division in a department.
             /// </summary>
             public const string CreateDivision = "fivepd:department:createDivision";
+
+            /// <summary>
+            /// Used to delete a rank from a department.
+            /// </summary>
+            public const string DeleteRank = "fivepd:department:deleteRank";
+
+            /// <summary>
+            /// Used to edit a rank in a department.
+            /// </summary>
+            public const string EditRank = "fivepd:department:editRank";
+
+            /// <summary>
+            /// Used to create a rank in a department.
+            /// </summary>
+            public const string CreateRank = "fivepd:department:createRank";
         }
 
         /// <summary>

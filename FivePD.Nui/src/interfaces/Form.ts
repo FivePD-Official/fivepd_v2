@@ -4,7 +4,7 @@ export interface IDateInput {
 }
 
 export interface InputField {
-  type: 'text' | 'number' | 'date',
+  type: 'text' | 'number' | 'date' | 'checkboxGroup',
   name: string,
   label?: string,
   required: boolean,
@@ -12,6 +12,11 @@ export interface InputField {
   placeholder?: string,
   defaultValue?: string | number,
   validator?: (value: any) => boolean,
+  checkboxes?: {
+    id: string,
+    label: string,
+    defaultValue?: boolean,
+  }[],
 }
 
 export type FormFilter = Record<string, string>;

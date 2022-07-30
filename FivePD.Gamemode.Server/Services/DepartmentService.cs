@@ -63,6 +63,9 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.RenameDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.RenameDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.CreateDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDivisionFromNui);
+            this._eventHandlerDictionary[Events.Department.DeleteRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteRankFromNui);
+            this._eventHandlerDictionary[Events.Department.EditRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditRankFromNui);
+            this._eventHandlerDictionary[Events.Department.CreateRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateRankFromNui);
         }
 
         /// <inheritdoc />
@@ -431,7 +434,7 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
-                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == renameDivisionRequest.Name);
+                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == renameDivisionRequest.Name && division.Department.Id == renameDivisionRequest.DepartmentId && division.Id != divisionToRename.Id);
                 if (divisionExistsWithName != null)
                 {
                     networkCallbackDelegate.Invoke(new ActionResponse
@@ -475,7 +478,7 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var createDivisionRequest = expandoObject.ConvertTo<CreateDivisionRequest>();
-                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == createDivisionRequest.Name);
+                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == createDivisionRequest.Name && division.Department.Id == createDivisionRequest.DepartmentId);
                 if (divisionExistsWithName != null)
                 {
                     networkCallbackDelegate.Invoke(new ActionResponse
@@ -512,6 +515,169 @@ namespace FivePD.Gamemode.Server.Services
                     Params = new Dictionary<string, string>
                     {
                         { "division", createDivisionRequest.Name },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void DeleteRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var deleteRankRequest = expandoObject.ConvertTo<DeleteRankRequest>();
+                var rankToDelete = this._databaseContext.Ranks
+                    .Include(rank => rank.Users)
+                    .FirstOrDefault(rank => rank.Id == deleteRankRequest.RankId);
+                if (rankToDelete is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                    return;
+                }
+
+                var rankToDeleteName = rankToDelete.Name;
+                foreach (var user in rankToDelete.Users)
+                {
+                    user.RankId = null;
+                }
+
+                this._databaseContext.Ranks.Remove(rankToDelete);
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulDelete",
+                    Description = "Nui.Labels.SuccessfulRankDelete",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "rank", rankToDeleteName },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void EditRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var editRankRequest = expandoObject.ConvertTo<EditRankRequest>();
+                var rankToEdit = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == editRankRequest.RankId);
+                if (rankToEdit is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                    return;
+                }
+
+                var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == editRankRequest.Name && rank.Department.Id == editRankRequest.DepartmentId && rank.Id != rankToEdit.Id);
+                if (rankExistsWithName != null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.EditRankExistsWithNameTitle",
+                        Description = "Nui.Errors.RankExistsWithNameDescription",
+                    }.ToString());
+                    return;
+                }
+
+                rankToEdit.Name = editRankRequest.Name;
+                rankToEdit.Permission = editRankRequest.Permission;
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulEdit",
+                    Description = "Nui.Labels.SuccessfulRankEdit",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "rank", editRankRequest.Name },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void CreateRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var createRankRequest = expandoObject.ConvertTo<CreateRankRequest>();
+                var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == createRankRequest.Name && rank.Department.Id == createRankRequest.DepartmentId);
+                if (rankExistsWithName != null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.CreateRankExistsWithNameTitle",
+                        Description = "Nui.Errors.RankExistsWithNameDescription",
+                    }.ToString());
+                    return;
+                }
+
+                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == createRankRequest.DepartmentId);
+                if (department is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                }
+
+                this._databaseContext.Ranks.Add(new Rank
+                {
+                    Department = department,
+                    Name = createRankRequest.Name,
+                    Permission = createRankRequest.Permission,
+                });
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulCreate",
+                    Description = "Nui.Labels.SuccessfulRankCreate",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "rank", createRankRequest.Name },
                     },
                 }.ToString());
             }

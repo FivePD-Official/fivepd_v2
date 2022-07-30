@@ -20,7 +20,7 @@ function submit(fields?: FormFields) {
     <div class="modal">
       <p class="title">{{ modal.title }}</p>
       <p class="description" v-if="modal.description" v-html="modal.description"></p>
-      <Form v-if="modal.input" :fields="[modal.input]" :onSubmit="submit">
+      <Form v-if="modal.inputs?.length" :fields="modal.inputs" :onSubmit="submit">
         <div class="buttons-wrapper">
           <div class="buttons">
             <Button

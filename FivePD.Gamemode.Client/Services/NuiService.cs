@@ -56,6 +56,9 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.DeleteDivision);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.RenameDivision);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CreateDivision);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.DeleteRank);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.EditRank);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CreateRank);
             this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Join);
             this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Leave);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Create);

@@ -11,6 +11,8 @@ namespace FivePD.Gamemode.Server.Models.Requests
 {
     public class RenameDivisionRequest
     {
+        public int DepartmentId { get; set; }
+
         public int DivisionId { get; set; }
 
         public string Name { get; set; }
