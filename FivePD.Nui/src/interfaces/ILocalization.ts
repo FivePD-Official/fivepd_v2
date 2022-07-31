@@ -108,6 +108,7 @@ export interface ILocalization {
     Actions: {
       Cancel: string;
       Create: string;
+      CreateDepartment: string;
       CreateDivision: string;
       CreateRank: string;
       Delete: string;
@@ -249,6 +250,7 @@ export const defaultLocalization: ILocalization = {
     Actions: {
       Cancel: '',
       Create: '',
+      CreateDepartment: '',
       CreateDivision: '',
       CreateRank: '',
       Delete: '',

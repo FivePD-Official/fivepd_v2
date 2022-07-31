@@ -106,6 +106,7 @@
     "Actions": {
       "Cancel": "T: Cancel",
       "Create": "T: Create",
+      "CreateDepartment": "T: Create department",
       "CreateDivision": "T: Create division",
       "CreateRank": "T: Create rank",
       "Delete": "T: Delete",

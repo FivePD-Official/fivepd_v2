@@ -16,6 +16,8 @@ namespace FivePD.Common.Localization
 
         public string Create { get; set; } = "Create";
 
+        public string CreateDepartment { get; set; } = "Create department";
+
         public string CreateDivision { get; set; } = "Create division";
 
         public string CreateRank { get; set; } = "Create rank";
