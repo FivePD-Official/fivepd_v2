@@ -1,4 +1,4 @@
-import type { RadialMenu, ILocalization } from "@interfaces";
+import type { RadialMenu, Localization } from "@interfaces";
 import type { Menu } from "@models";
 import { defaultLocalization } from "@interfaces";
 
@@ -11,7 +11,7 @@ export interface GlobalState {
   radialMenus: RadialMenu[],
   menus: Menu[],
   availableLocales: IListItem[],
-  localization: ILocalization,
+  localization: Localization,
 }
 
 export const globalState = {
@@ -33,7 +33,7 @@ export const globalState = {
     setAvailableLocales(state: GlobalState, availableLocales: IListItem[]) {
       state.availableLocales = availableLocales;
     },
-    setLocalization(state: GlobalState, localization: ILocalization) {
+    setLocalization(state: GlobalState, localization: Localization) {
       state.localization = localization;
     },
   },

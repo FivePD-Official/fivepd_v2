@@ -3,7 +3,7 @@ import { readFile, watch, writeFile } from "fs";
 import * as path from "path";
 
 const localizationPath = path.join(__dirname, '../../FivePD.Gamemode.Statics/Localization/en.json');
-const localizationInterfacePath = path.join(__dirname, '../src/interfaces/ILocalization.ts');
+const localizationInterfacePath = path.join(__dirname, '../src/interfaces/Localization.ts');
 let previousData = '';
 
 export default function localizationToInterfaceTransformer(): PluginOption {
@@ -21,7 +21,7 @@ export default function localizationToInterfaceTransformer(): PluginOption {
                     previousData = data;
                     const formattedInterface = data.replace(/(:.*".*)/gm, ": string").replace(/"/gm, '');
                     const formattedObject = formattedInterface.replace(/string/gm, "'',");
-                    write(`// The content of this file is auto-generated, do not edit it manually.\n\nexport interface ILocalization {${formattedInterface.substring(1)}\n\nexport const defaultLocalization = ${formattedObject}`)
+                    write(`// The content of this file is auto-generated, do not edit it manually.\n\nexport interface Localization {${formattedInterface.substring(1)}\n\nexport const defaultLocalization: Localization = ${formattedObject}`)
                 } catch (err) {
                     console.log(err)
                 }

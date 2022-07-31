@@ -1,6 +1,6 @@
 // The content of this file is auto-generated, do not edit it manually.
 
-export interface ILocalization {
+export interface Localization {
   Title: string
   DutyMenu: {
     Title: string
@@ -46,8 +46,8 @@ export interface ILocalization {
       Callsign: string
       CallsignFormat: string
       CallsignFormatHelpLabel: string
-      CitizenDatabase: string
       Capacity: string
+      CitizenDatabase: string
       Dash: string
       Dashboard: string
       Department: string
@@ -102,7 +102,7 @@ export interface ILocalization {
   }
 }
 
-export const defaultLocalization = {
+export const defaultLocalization: Localization = {
   Title: '',
   DutyMenu: {
     Title: '',
@@ -148,8 +148,8 @@ export const defaultLocalization = {
       Callsign: '',
       CallsignFormat: '',
       CallsignFormatHelpLabel: '',
-      CitizenDatabase: '',
       Capacity: '',
+      CitizenDatabase: '',
       Dash: '',
       Dashboard: '',
       Department: '',

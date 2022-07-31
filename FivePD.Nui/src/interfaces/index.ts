@@ -1,6 +1,5 @@
 export * from './Form';
 export * from './NuiEventResponses';
-export * from './ILocalization';
 export * from './Entities';
 export * from './Table';
 export * from './Button';
@@ -8,3 +7,4 @@ export * from './Page';
 export * from './BaseRequest';
 export * from './Notification';
 export * from './RadialMenu';
+export * from './Localization';

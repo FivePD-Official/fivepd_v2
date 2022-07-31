@@ -5,7 +5,7 @@ import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
-import type { BaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent, SoundEvent, SoundSpeakEvent } from '@interfaces';
+import type { BaseNuiEvent, Localization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent, SoundEvent, SoundSpeakEvent } from '@interfaces';
 import { State } from '@store';
 import { eventService } from '@services';
 
@@ -141,7 +141,7 @@ eventService.onEvent<SoundSpeakEvent>(NuiEventType.PlayText).subscribe(event => 
 });
 
 function loadLocalization() {
-  post<ILocalization>(ClientEvents.GetLocalizationFromNui).subscribe(localization => {
+  post<Localization>(ClientEvents.GetLocalizationFromNui).subscribe(localization => {
     store.commit('setLocalization', localization);
   });
 }
