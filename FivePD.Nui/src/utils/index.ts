@@ -10,3 +10,4 @@ export { MenuListItem } from './menus/MenuListItem';
 export { MenuCheckboxItem } from './menus/MenuCheckboxItem';
 export * from './stringHelpers';
 export * from './modalService';
+export * from './dataHelpers';

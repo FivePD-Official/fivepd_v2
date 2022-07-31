@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ClientEvents } from "@enums";
 import { onMounted, ref } from "vue";
-import { modalService, post, replaceParams, showNotification } from "@utils";
-import type { BaseRequest, ColumnDef, IDepartment, IUser, Page, PropButton } from "@interfaces";
+import { modalService, post, replaceParams, showNotification, requestAndCommitUserData } from "@utils";
+import type { BaseRequest, ColumnDef, IDepartment, Page, PropButton } from "@interfaces";
 import { State } from "@store";
 import { useStore } from "vuex";
 import { Observable } from "rxjs";
@@ -18,14 +18,8 @@ const statistics = ref<any>(); // TODO
 const assignedCall = ref<any>(); // TODO
 
 onMounted(() => {
-  requestUserData();
+  requestAndCommitUserData();
 });
-
-function requestUserData() {
-  post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
-    store.commit('setUserDetails', res);
-  });
-}
 
 const activeCallsColumnDef: ColumnDef<any> = [
   {
@@ -182,7 +176,7 @@ const departmentColumnDef: ColumnDef<IDepartment> = [
                 })
                 onResponse(deleteRes);
                 if (deleteRes.Status) {
-                  requestUserData();
+                  requestAndCommitUserData();
                 }
               });
             }

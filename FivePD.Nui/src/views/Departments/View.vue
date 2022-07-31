@@ -3,7 +3,7 @@ import { ClientEvents } from '@enums';
 import type { ActionResponse, ColumnDef, IDepartment, IDivision, IRank, IUser, Page, PropButton } from '@interfaces';
 import { BaseRequest } from "@interfaces";
 import { useState } from '@store';
-import { FormFields, modalService, post, replaceParams, showNotification } from '@utils';
+import { FormFields, modalService, post, replaceParams, showNotification, requestAndCommitUserData } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Observable } from "rxjs";
@@ -522,7 +522,12 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
         title: t(res.Title),
         description: replaceParams(t(res.Description), res.Params),
       });
-      router.push('/');
+      
+      if (type === 'join') {
+         requestAndCommitUserData();
+      } else {
+        router.push('/');
+      }
     } else {
       showNotification({
         type: 'error',
