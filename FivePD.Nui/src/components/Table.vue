@@ -5,7 +5,7 @@ import type {
   FormattedRow,
   FormattedRowItem,
   PropButton,
-  ColumnDef, FormFilter, Page, BaseRequest, TableCellActionButton, TableCellActionSelect
+  ColumnDef, FormFilter, Page, BaseRequest, TableCellActionButton, TableCellActionSelect, TableCellAction
 } from '@interfaces';
 import { debounceTime, Observable, Subject } from "rxjs";
 
@@ -69,7 +69,7 @@ const formattedColumns = computed<ColumnDef<any>>(() => {
   return props.columns.map(column => {
     return {
       ...column,
-      show: () => column.show ? column.show() : true,
+      show: column.show,
     };
   });
 })
@@ -109,7 +109,11 @@ const formattedRows = computed<FormattedRow<any>[]>(() => {
   })
 });
 
-function onFilterFormChange(accessorKey: string, value: string | number) {
+function onFilterFormChange(accessorKey: string | undefined, value: string | number) {
+  if (!accessorKey) {
+    return;
+  }
+
   const filterCopy = {...filter.value};
   if (filterCopy.hasOwnProperty(accessorKey)) {
     if (typeof value === 'string') {
@@ -156,16 +160,16 @@ function toPage(pageNumber: number) {
   requestData(filter.value);
 }
 
-function tableCellActionButtonClick(onClick: TableCellActionButton<any>['onClick'], item: FormattedRowItem<any>) {
-  onClick(item.originalItem, res => {
+function tableCellActionButtonClick(action: TableCellAction<any>, item: FormattedRowItem<any>) {
+  (action as TableCellActionButton<any>).onClick(item.originalItem, res => {
     if (res.Status) {
       requestData(filter.value);
     }
   });
 }
 
-function tableCellActionSelect(onSelect: TableCellActionSelect<any>['onSelect'], item: FormattedRowItem<any>, selectedId: number) {
-  onSelect(item.originalItem, selectedId, res => {
+function tableCellActionSelect(action: TableCellAction<any>, item: FormattedRowItem<any>, selectedId: number) {
+  (action as TableCellActionSelect<any>).onSelect(item.originalItem, selectedId, res => {
     if (res.Status) {
       requestData(filter.value);
     }
@@ -190,19 +194,19 @@ function headerButtonClick(onClick: PropButton['onClick']) {
     <div class="table-container-header">
       <p class="common-title">{{ title }}</p>
       <div class="buttons" v-if="buttons">
-        <Button v-for="button in buttons" :show="button.show" :onClick="() => headerButtonClick(button.onClick)" :link="button.link" :label="button.label" theme="secondary" />
+        <Button v-for="button in buttons" :show="button.show()" :onClick="() => headerButtonClick(button.onClick)" :link="button.link" :label="button.label" theme="secondary" />
       </div>
     </div>
     
     <div class="common-bg table">
       <div class="table-row table-header">
-        <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show())">
+        <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show ? col.show() : true)">
           <p>{{ column.header }}</p>
         </div>
       </div>
 
-      <form class="table-row table-filter" v-if="formattedColumns.filter(col => col.show()).some(col => col.filter)">
-        <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show())">
+      <form class="table-row table-filter" v-if="formattedColumns.filter(col => col.show ? col.show() : true).some(col => col.filter)">
+        <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show ? col.show() : true)">
           <InputField v-if="column.filter" :field="{
             type: 'text',
             name: `${column.accessorKey}-filter`,
@@ -229,14 +233,14 @@ function headerButtonClick(onClick: PropButton['onClick']) {
                   type="button"
                   theme="small"
                   :label="action.label"
-                  :onClick="() => tableCellActionButtonClick(action.onClick, item)"
+                  :onClick="() => tableCellActionButtonClick(action, item)"
               />
               <Select 
                   v-else-if="action.type === 'select'"
                   :defaultItem="{ id: 0, label: action.label }"
-                  :items="action.items()"
-                  :selectedItemResolver="(selectItem) => action.selectedItemResolver(item.originalItem, selectItem.id)"
-                  :onSelect="(selected) => tableCellActionSelect(action.onSelect, item, selected.id)"
+                  :items="(action as TableCellActionSelect<any>).items()"
+                  :selectedItemResolver="(selectItem) => (action as TableCellActionSelect<any>).selectedItemResolver(item.originalItem, selectItem.id)"
+                  :onSelect="(selected) => tableCellActionSelect(action, item, selected.id)"
               />
             </template>
           </div>

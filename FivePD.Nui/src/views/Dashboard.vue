@@ -49,7 +49,7 @@ const activeCallsColumnDef: ColumnDef<any> = [
 const departmentButtons: PropButton[] = [
   {
     label: store.state.global.localization.Nui.Actions.CreateDepartment,
-    show: store.state.user.details.Admin,
+    show: () => store.state.user.details.Admin,
     onClick: onResponse => {
       modalService.open({
         title: store.state.global.localization.Nui.Actions.CreateDepartment,
@@ -116,7 +116,9 @@ const departmentButtons: PropButton[] = [
           post<ActionResponse>(ClientEvents.CreateDepartment, res.inputFields).subscribe(createRes => {
             if (createRes.Status) {
               router.push('/');
-              onResponse(createRes);
+              if (onResponse) {
+                onResponse(createRes);
+              }
             }
 
             showNotification({

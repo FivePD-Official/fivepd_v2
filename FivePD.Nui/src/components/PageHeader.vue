@@ -17,7 +17,7 @@ const props = defineProps<{
   >
     <h1>{{ title }}</h1>
     <div class="buttons" v-if="buttons">
-      <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
+      <Button v-for="button in buttons" :show="button.show()" :onClick="() => button.onClick()" :link="button.link" :label="button.label" theme="secondary" />
     </div>
   </div>
 </template>

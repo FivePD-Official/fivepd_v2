@@ -50,12 +50,12 @@ const pageHeaderButtons: PropButton[] = [
   {
     label: state.global.localization.Nui.Actions.Join,
     onClick: () => joinOrLeaveDepartment('join'),
-    show: state.user.details.DepartmentId !== department.value?.Id,
+    show: () => state.user.details.DepartmentId !== department.value?.Id,
   },
   {
     label: state.global.localization.Nui.Actions.Leave,
     onClick: () => joinOrLeaveDepartment('leave'),
-    show: state.user.details.DepartmentId === department.value?.Id,
+    show: () => state.user.details.DepartmentId === department.value?.Id,
   }
 ];
 
@@ -107,12 +107,15 @@ const ranksButtons: PropButton[] = [
               title: t(createRes.Title),
               description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
             })
-            onResponse(createRes);
+            
+            if (onResponse) {
+              onResponse(createRes);
+            }
           });
         }
       })
     },
-    show: state.user.details.Admin,
+    show: () => state.user.details.Admin,
   }
 ];
 
@@ -257,12 +260,15 @@ const divisionsButtons: PropButton[] = [
               title: t(createRes.Title),
               description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
             })
-            onResponse(createRes);
+            
+            if (onResponse) {
+              onResponse(createRes);
+            }
           });
         }
       })
     },
-    show: state.user.details.Admin,
+    show: () => state.user.details.Admin,
   }
 ];
 
