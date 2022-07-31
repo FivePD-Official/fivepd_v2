@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { InputField, ISearchSubmitField } from '@interfaces';
+import type { InputField } from '@interfaces';
+import type { FormFields } from "@utils";
 
-const onSearchSubmit = (fields: ISearchSubmitField[]) => {
+const onSearchSubmit = (fields: FormFields) => {
   console.log(fields)
 }
 

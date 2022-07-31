@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NuiEventType } from '@enums';
-import type { IMenu, MenuShowEvent, RadialMenuControlEvent } from '@interfaces';
+import type { MenuShowEvent, RadialMenu, RadialMenuControlEvent } from '@interfaces';
 import { post } from '@utils';
 import { Subscription } from 'rxjs';
 import { onMounted, ref, onBeforeUnmount } from 'vue';
@@ -20,10 +20,10 @@ const menuShowEvent$ = ref<Subscription>();
 const menuControlEvent$ = ref<Subscription>();
 
 const store = useStore();
-const menus: IMenu[] = store.state.global.radialMenus;
+const menus: RadialMenu[] = store.state.global.radialMenus;
 
 const canvas = ref<HTMLCanvasElement | null>(null);
-const selectedMenu = ref<IMenu | null>(null);
+const selectedMenu = ref<RadialMenu | null>(null);
 const selectedItemIndex = ref<number>(-1);
 const currentMousePosition = ref<MousePosition>({ x: 0, y: 0 });
 const lastMousePosition = ref<MousePosition>({ x: 0, y: 0 });
@@ -71,7 +71,7 @@ const resetValues = () => {
 }
 
 const findSelectedMenu = (id: string) => {
-  selectedMenu.value = menus.find((x: IMenu) => x.Id === id)!;
+  selectedMenu.value = menus.find((x: RadialMenu) => x.Id === id)!;
 }
 
 const onMouseMove = () => {
@@ -100,7 +100,7 @@ const onMouseMove = () => {
 const drawCanvas = () => {
   if (!selectedMenu.value || !canvas.value) return;
 
-  const menu: IMenu = selectedMenu.value;
+  const menu: RadialMenu = selectedMenu.value;
 
   // All of the configuration stuff for canvas (2d context)
   const ctx: CanvasRenderingContext2D  = canvas.value.getContext('2d')!;

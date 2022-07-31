@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { hideNui, showNui, post, Menu, MenuItem, MenuButtonItem, MenuListItem, MenuCheckboxItem } from '@utils';
+import { hideNui, showNui, post } from '@utils';
+import { Menu, MenuItem, MenuButtonItem, MenuListItem, MenuCheckboxItem } from '@models';
 import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';

@@ -1,8 +1,8 @@
 ﻿import { ILocalization } from "./ILocalization";
 
 export interface ActionResponse {
-  Status: boolean,
-  Message: string,
+  Status: boolean;
+  Message: string;
 }
 
 export interface BaseNuiEvent {

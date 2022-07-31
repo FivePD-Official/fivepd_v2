@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
 import { useTranslation } from '@hooks';
-import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem } from '@utils';
+import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem } from '@models';
 import { MenuItemType, NuiEventType } from '@enums';
 import type { BaseNuiEvent } from '@interfaces';
 import { Subscription } from 'rxjs';

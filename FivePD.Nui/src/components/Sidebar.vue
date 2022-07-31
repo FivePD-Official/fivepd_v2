@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { IRoute } from '@interfaces';
 import { useStore } from 'vuex';
 import { State } from '@store';
+
+interface Route {
+  title: string;
+  path: string;
+  icon: string;
+  show: boolean;
+}
 
 const store = useStore<State>();
 const isSidebarCollapsed = computed(() => store.state.user.isSidebarCollapsed);
 const isPanicModeActive = computed(() => store.state.user.isPanicModeActive);
 
-const routes = computed<IRoute[]>(() => [
+const routes = computed<Route[]>(() => [
   {
     title: store.state.global.localization.Nui.Labels.Dashboard,
     path: '/',

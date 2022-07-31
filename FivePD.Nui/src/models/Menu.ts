@@ -2,10 +2,10 @@ import { MenuItem } from './MenuItem';
 
 export class Menu {
 
-  private _id: string;
-  private _title: string;
-  private _useLocalization: boolean;
-  private _items: MenuItem[];
+  private readonly _id: string;
+  private readonly _title: string;
+  private readonly _useLocalization: boolean;
+  private readonly _items: MenuItem[];
 
   constructor(id: string, title: string, useLocalization: boolean, items: MenuItem[]) {
     this._id = id;

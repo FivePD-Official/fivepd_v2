@@ -1,12 +1,25 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { InputField, ISearchSubmitField, PedSearchResponse } from '@interfaces';
+import type { InputField } from '@interfaces';
 import { useState } from '@store';
-import { post } from '@utils';
+import { type FormFields, post } from '@utils';
 import { ref } from 'vue';
 
+interface Ped {
+  NetworkId: number;
+  Firstname: string;
+  Lastname: string;
+  Gender: number;
+  Birthdate: {
+    Year: number;
+    Month: number;
+    Day: number;
+  }
+}
+type PedSearchResponse = Ped[];
+
 const state = useState();
-const onSearchSubmit = async (fields: ISearchSubmitField[]) => {
+const onSearchSubmit = async (fields: FormFields) => {
   post<PedSearchResponse>(ClientEvents.PedSearch, {...fields}).subscribe(res => {
     citizens.value = res;
   });
