@@ -649,7 +649,7 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
   </template>
 
   <Table
-    v-if="department && department.Divisions?.length"
+    v-if="department"
     :title="state.global.localization.Nui.Labels.Members"
     :columns="usersColumnDef"
     :dataRequest="requestDepartmentUsers"
