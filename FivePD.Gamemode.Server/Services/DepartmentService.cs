@@ -62,6 +62,7 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Edit] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.Delete] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.EditDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.CreateDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDivisionFromNui);
@@ -737,6 +738,58 @@ namespace FivePD.Gamemode.Server.Services
                     Status = true,
                     Title = "Nui.Labels.SuccessfulEdit",
                     Description = "Nui.Labels.SuccessfulDepartmentEdit",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "department", departmentOldName },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void DeleteDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var deleteDepartmentRequest = expandoObject.ConvertTo<DeleteDepartmentRequest>();
+                var department = this._databaseContext.Departments
+                    .Include(department => department.Users)
+                    .FirstOrDefault(department => department.Id == deleteDepartmentRequest.DepartmentId);
+                if (department is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                    return;
+                }
+
+                foreach (var user in department.Users)
+                {
+                    user.DepartmentId = null;
+                    user.DivisionId = null;
+                    user.RankId = null;
+                }
+
+                var departmentOldName = department.Name;
+                this._databaseContext.Departments.Remove(department);
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulDelete",
+                    Description = "Nui.Labels.SuccessfulDepartmentDelete",
                     Params = new Dictionary<string, string>
                     {
                         { "department", departmentOldName },

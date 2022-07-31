@@ -18,10 +18,14 @@ const statistics = ref<any>(); // TODO
 const assignedCall = ref<any>(); // TODO
 
 onMounted(() => {
+  requestUserData();
+});
+
+function requestUserData() {
   post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
     store.commit('setUserDetails', res);
   });
-});
+}
 
 const activeCallsColumnDef: ColumnDef<any> = [
   {
@@ -143,6 +147,47 @@ const departmentColumnDef: ColumnDef<IDepartment> = [
     header: store.state.global.localization.Nui.Labels.Capacity,
     accessorKey: 'UserCount',
     valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${store.state.global.localization.Nui.Labels.NoLimit}` : `${item.UserCount} / ${item.MaxUsers}`,
+  },
+  {
+    header: store.state.global.localization.Nui.Labels.Actions,
+    actions: [
+      {
+        type: 'button',
+        label: store.state.global.localization.Nui.Actions.Delete,
+        onClick: (department, onResponse) => {
+          modalService.open({
+            title: store.state.global.localization.Nui.Labels.DeleteDepartmentTitle,
+            description: replaceParams(store.state.global.localization.Nui.Labels.DeleteDepartmentDescription, { 'department': `<b>${department.Name}</b>`}),
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: store.state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'danger',
+                label: store.state.global.localization.Nui.Actions.Delete,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.DeleteDepartment, {
+                DepartmentId: department.Id,
+              }).subscribe(deleteRes => {
+                showNotification({
+                  type: deleteRes.Status ? 'success' : 'error',
+                  title: t(deleteRes.Title),
+                  description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+                })
+                onResponse(deleteRes);
+                if (deleteRes.Status) {
+                  requestUserData();
+                }
+              });
+            }
+          })
+        }
+      },
+    ]
   }
 ];
 

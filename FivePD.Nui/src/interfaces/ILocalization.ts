@@ -54,6 +54,8 @@ export interface ILocalization {
       Department: string;
       Departments: string;
       DepartmentSettings: string;
+      DeleteDepartmentTitle: string;
+      DeleteDepartmentDescription: string;
       DeleteDivisionTitle: string;
       DeleteDivisionDescription: string;
       DeleteRankTitle: string;
@@ -93,6 +95,7 @@ export interface ILocalization {
       SuccessfulDepartmentLeave: string;
       SuccessfulDepartmentCreate: string;
       SuccessfulDepartmentEdit: string;
+      SuccessfulDepartmentDelete: string;
       SuccessfulDivisionDelete: string;
       SuccessfulDivisionEdit: string;
       SuccessfulDivisionCreate: string;
@@ -196,6 +199,8 @@ export const defaultLocalization: ILocalization = {
       Department: '',
       Departments: '',
       DepartmentSettings: '',
+      DeleteDepartmentTitle: '',
+      DeleteDepartmentDescription: '',
       DeleteDivisionTitle: '',
       DeleteDivisionDescription: '',
       DeleteRankTitle: '',
@@ -235,6 +240,7 @@ export const defaultLocalization: ILocalization = {
       SuccessfulDepartmentLeave: '',
       SuccessfulDepartmentCreate: '',
       SuccessfulDepartmentEdit: '',
+      SuccessfulDepartmentDelete: '',
       SuccessfulDivisionDelete: '',
       SuccessfulDivisionEdit: '',
       SuccessfulDivisionCreate: '',

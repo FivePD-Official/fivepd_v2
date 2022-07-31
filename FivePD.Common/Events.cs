@@ -223,6 +223,11 @@ namespace FivePD.Common
             public const string Edit = "fivepd:department:edit";
 
             /// <summary>
+            /// Used to delete a department.
+            /// </summary>
+            public const string Delete = "fivepd:department:delete";
+
+            /// <summary>
             /// Used to delete a division from a department.
             /// </summary>
             public const string DeleteDivision = "fivepd:department:deleteDivision";
