@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { NuiEventType } from '@enums';
 import type { IMenu, MenuShowEvent, RadialMenuControlEvent } from '@interfaces';
-import { onNuiEvent, post } from '@utils';
+import { post } from '@utils';
 import { Subscription } from 'rxjs';
 import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
+import { eventService } from '@services';
 
 interface MousePosition {
   x: number,
@@ -32,13 +33,13 @@ onMounted(() => {
   findSelectedMenu(props.menuId);
   drawCanvas();
 
-  menuShowEvent$.value = onNuiEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(event => {
+  menuShowEvent$.value = eventService.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(event => {
     resetValues();
     findSelectedMenu(event.menuId);
     drawCanvas();
   });
 
-  menuControlEvent$.value = onNuiEvent<RadialMenuControlEvent>(NuiEventType.RadialMenuControl).subscribe(event => {
+  menuControlEvent$.value = eventService.onEvent<RadialMenuControlEvent>(NuiEventType.RadialMenuControl).subscribe(event => {
     if (event.control === 'up' || event.control === 'down') {
       if (event.x && event.y) {
         currentMousePosition.value = {

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { hideNui, showNui, post, Menu, MenuItem, MenuButtonItem, MenuListItem, MenuCheckboxItem, nuiEventNext, onNuiEvent } from '@utils';
+import { hideNui, showNui, post, Menu, MenuItem, MenuButtonItem, MenuListItem, MenuCheckboxItem } from '@utils';
 import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import type { BaseNuiEvent, ILocalization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent, SoundEvent, SoundSpeakEvent } from '@interfaces';
 import { State } from '@store';
+import { eventService } from '@services';
 
 const store = useStore<State>();
 const router = useRouter();
@@ -20,7 +21,7 @@ window.addEventListener('load', () => {
   document.head.innerHTML = document.head.innerHTML + '<base href=' + (isDev ? '' : '/Libraries/FivePD.Terminal/') + '/>';
   document.body.style.display = "none";
 
-  window.addEventListener('message', event => nuiEventNext(event.data));
+  window.addEventListener('message', event => eventService.next(event.data));
   window.addEventListener('keydown', (event) => {
     if (event.code === 'Escape') {
       hideNui();
@@ -46,7 +47,7 @@ window.addEventListener('load', () => {
   loadLocalization();
 });
 
-onNuiEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
+eventService.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
   const menus: Menu[] = [];
   for (const menu of event.data) {
     const menuItems: MenuItem[] = [];
@@ -74,31 +75,31 @@ onNuiEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
   store.commit('setMenus', menus);
 });
 
-onNuiEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(event => {
+eventService.onEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(event => {
   store.commit('setRadialMenus', event.data);
 });
 
-onNuiEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(event => {
+eventService.onEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(event => {
   store.commit('setLocalization', event.data);
 });
 
-onNuiEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
+eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
   viewType.value = event.type;
   showNui();
 });
 
-onNuiEvent<MenuShowEvent>(NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {
+eventService.onEvent<MenuShowEvent>(NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {
   viewType.value = event.type;
   currentMenuId.value = event.menuId;
   showNui();
 });
 
-onNuiEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => {
+eventService.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => {
   document.body.style.display = 'none';
   viewType.value = '';
 });
 
-onNuiEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(event => {
+eventService.onEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(event => {
   for (const menu of (store.state.global.menus as Menu[])) {
     for (const item of menu.items) {
       if (item.hashcode === event.hashcode) {
@@ -111,7 +112,7 @@ onNuiEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(event => 
   }
 });
 
-onNuiEvent<SoundEvent>(NuiEventType.PlaySound).subscribe(event => {
+eventService.onEvent<SoundEvent>(NuiEventType.PlaySound).subscribe(event => {
   if (audioMap.has(event.sound)) {
     const audio = audioMap.get(event.sound);
     if (audio.paused) {
@@ -125,7 +126,7 @@ onNuiEvent<SoundEvent>(NuiEventType.PlaySound).subscribe(event => {
   audio.play();
 });
 
-onNuiEvent<SoundSpeakEvent>(NuiEventType.PlayText).subscribe(event => {
+eventService.onEvent<SoundSpeakEvent>(NuiEventType.PlayText).subscribe(event => {
   if (audioMap.has(event.textToPlay)) {
     return;
   }

@@ -1,1 +1,1 @@
-export * from './useT';
+export * from './useTranslation';

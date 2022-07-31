@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { IDepartment, IRank, ColumnDef, IUser, ActionResponse, FormFilter, Page } from '@interfaces';
+import type { ActionResponse, ColumnDef, IDepartment, IRank, IUser, Page } from '@interfaces';
+import { BaseRequest } from "@interfaces";
 import { useState } from '@store';
-import { post, replaceParams, showNotification, toSentence } from '@utils';
+import { post, replaceParams, toSentence } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { BaseRequest } from "@interfaces";
 import { Observable } from "rxjs";
-import { useT } from '@hooks';
+import { useTranslation } from '@hooks';
+import { notificationService } from '@services';
 
 interface FormattedRank extends IRank {
   Permissions: string;
@@ -23,7 +24,7 @@ interface FormattedDepartment extends IDepartment {
   Users?: FormattedUser[];
 }
 
-const t = useT();
+const t = useTranslation();
 const state = useState();
 const route = useRoute();
 const router = useRouter();
@@ -141,14 +142,14 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
 
   post<ActionResponse>(type === 'join' ? ClientEvents.JoinDepartment : ClientEvents.LeaveDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
     if (res.Status) {
-      showNotification({
+      notificationService.show({
         type: 'success',
         title: type === 'join' ? state.global.localization.Nui.Labels.SuccessfulJoin : state.global.localization.Nui.Labels.SuccessfulLeave,
         description: replaceParams(t(res.Message), { 'department': `<b>${department.value?.Name ?? '-'}</b>` }),
       });
       router.push('/');
     } else {
-      showNotification({
+      notificationService.show({
         type: 'error',
         title: state.global.localization.Nui.Errors.UnexpectedError,
         description: toSentence(

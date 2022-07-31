@@ -19,6 +19,7 @@
       "@directives": ["directives"],
       "@hooks": ["hooks"],
       "@enums": ["enums"],
+      "@services": ["services"],
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

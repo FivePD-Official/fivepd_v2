@@ -2,13 +2,14 @@
 import { ClientEvents } from '@enums';
 import { ActionResponse } from '@interfaces';
 import { useState } from '@store';
-import { FormFields, post, replaceParams, showNotification } from '@utils';
+import { FormFields, post, replaceParams } from '@utils';
 import { useRouter } from 'vue-router';
-import { useT } from "@hooks";
+import { useTranslation } from "@hooks";
+import { notificationService } from '@services';
 
 const state = useState();
 const router = useRouter();
-const t = useT();
+const t = useTranslation();
 
 function onSubmit(fields: FormFields) {
   post<ActionResponse>(ClientEvents.CreateDepartment, fields).subscribe((res) => {
@@ -16,7 +17,7 @@ function onSubmit(fields: FormFields) {
       router.push('/');
     }
 
-    showNotification({
+    notificationService.show({
       type: res.Status ? 'success' : 'error',
       title: res.Status ? state.global.localization.Nui.Labels.SuccessfulCreate : state.global.localization.Nui.Errors.UnexpectedError,
       description: res.Status ? replaceParams(t(res.Message), { 'department': `<b>${fields!.Name}</b>` }) : t(res.Message),

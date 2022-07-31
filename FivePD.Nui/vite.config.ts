@@ -35,6 +35,7 @@ export default ({ mode }) => {
         '@directives': `${path.resolve(__dirname, 'src/directives')}/`,
         '@hooks': `${path.resolve(__dirname, 'src/hooks')}/`,
         '@enums': `${path.resolve(__dirname, 'src/enums')}/`,
+        '@services': `${path.resolve(__dirname, 'src/services')}/`,
       }
     }
   })

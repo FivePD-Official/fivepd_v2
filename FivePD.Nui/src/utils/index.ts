@@ -1,8 +1,6 @@
 export { post } from './request';
 export * from './input';
 export { hideNui, showNui } from './nui';
-export { nuiEventNext, onNuiEvent } from './eventHandler';
-export { showNotification, onNotification } from './notificationHandler';
 export { Menu } from './menus/Menu';
 export { MenuItem } from './menus/MenuItem';
 export { MenuButtonItem } from './menus/MenuButtonItem';

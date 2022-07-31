@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
-import { useT } from '@hooks';
-import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem, onNuiEvent } from '@utils';
+import { useTranslation } from '@hooks';
+import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem } from '@utils';
 import { MenuItemType, NuiEventType } from '@enums';
 import type { BaseNuiEvent } from '@interfaces';
 import { Subscription } from 'rxjs';
+import { eventService } from '@services';
 
 const props = defineProps<{
   menu: Menu
 }>();
 
-const t = useT();
+const t = useTranslation();
 const menuEvents$ = ref<Subscription>();
 
 const currentItemIndex: Ref<number> = ref(0);
@@ -26,7 +27,7 @@ onMounted(() => {
   itemNodes.value = Array.from(document.querySelectorAll('.menu-item'));
   selectorNode.value = document.querySelector('.selector');
 
-  menuEvents$.value = onNuiEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
+  menuEvents$.value = eventService.onEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
     switch (event.type) {
       case NuiEventType.MenuUp: {
         onMenuUp();
