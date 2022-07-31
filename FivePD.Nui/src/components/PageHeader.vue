@@ -32,11 +32,12 @@ const props = defineProps<{
   align-items: center
   justify-content: space-between
   background: var(--clr-bg)
-  z-index: var(--layer-10)
+  z-index: var(--layer-100)
   border-bottom: 1px solid var(--clr-bg-40)
   margin-bottom: 40px
   &.page-header--center-title
     justify-content: center
+    border: none
 
     h1
       text-align: center

@@ -23,7 +23,7 @@ function onInput(event: any) {
     dirty.value = true;
   }
 
-  const value = event.target.value;
+  const value = props.field.type === 'number' ? event.target.valueAsNumber : event.target.value;
 
   const isValueFalsy = props.field.type === 'number' ? isNaN(value) : !value;
   if (props.field.required) {

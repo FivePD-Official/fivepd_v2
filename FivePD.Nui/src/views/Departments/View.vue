@@ -1,22 +1,12 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type {
-  IDepartment,
-  IRank,
-  ColumnDef,
-  IUser,
-  ActionResponse,
-  FormFilter,
-  Page,
-  IDivision,
-  PropButton
-} from '@interfaces';
+import type { ActionResponse, ColumnDef, IDepartment, IDivision, IRank, IUser, Page, PropButton } from '@interfaces';
+import { BaseRequest } from "@interfaces";
 import { useState } from '@store';
-import { post, replaceParams, showNotification, toSentence, modalService } from '@utils';
+import { FormFields, modalService, post, replaceParams, showNotification } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { BaseRequest } from "@interfaces";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { useT } from '@hooks';
 
 interface FormattedRank extends IRank {
@@ -537,6 +527,23 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
 
   });
 }
+
+function onDepartmentSettingsSubmit(fields: FormFields) {
+  post<ActionResponse>(ClientEvents.EditDepartment, {
+    DepartmentId: department.value?.Id ?? defaultDepartmentId,
+    ...fields
+  }).subscribe(res => {
+    showNotification({
+      type: res.Status ? 'success' : 'error',
+      title: t(res.Title),
+      description: res.Status ? replaceParams(t(res.Description), res.Params) : t(res.Description),
+    });
+    
+    if (res.Status) {
+      requestDepartmentData();
+    }
+  });
+}
 </script>
 
 <template>
@@ -545,21 +552,101 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
     :buttons="pageHeaderButtons"
   />
   
-  <TableGrid :columns="2" v-if="department">
+  <template v-if="state.user.details?.Admin">
+    <Grid :columns="2" v-if="department">
+      <EditableForm 
+          :title="state.global.localization.Nui.Labels.DepartmentSettings"
+          :submitButtonLabel="state.global.localization.Nui.Actions.Save"
+          :onSubmit="onDepartmentSettingsSubmit"
+          :fields="[
+              [
+                 {
+                  name: 'Name',
+                  label: state.global.localization.Nui.Labels.Name,
+                  type: 'text',
+                  required: true,
+                  defaultValue: department.Name,
+                },
+                {
+                  name: 'MaxUsers',
+                  label: state.global.localization.Nui.Labels.MaxNumberOfMembers,
+                  type: 'number',
+                  required: true,
+                  defaultValue: department.MaxUsers,
+                  helpLabel: state.global.localization.Nui.Labels.MaxNumberOfMembersHelpLabel,
+                }
+              ],
+              [
+                {
+                  name: 'Callsign',
+                  label: state.global.localization.Nui.Labels.Callsign,
+                  type: 'text',
+                  required: false,
+                  helpLabel: state.global.localization.Nui.Labels.CallsignHelpLabel,
+                  defaultValue: department.Callsign,
+                  validator: (value: string) => !new RegExp('^[a-zA-Z]+$').test(value),
+                },
+                {
+                  name: 'CallsignFormat',
+                  label: state.global.localization.Nui.Labels.CallsignFormat,
+                  type: 'text',
+                  required: true,
+                  defaultValue: department.CallsignFormat,
+                  helpLabel: `
+                    ${state.global.localization.Nui.Labels.CallsignFormatHelpLabel} ${state.global.localization.Nui.Labels.AvailableCharacters}: <br/>
+                    <table>
+                      <tr>
+                        <td><b>L</b><td>
+                        <td>(${state.global.localization.Nui.Labels.Letter})<td>
+                      </tr>
+                      <tr>
+                        <td><b>N</b><td>
+                        <td>(${state.global.localization.Nui.Labels.Number})<td>
+                      </tr>
+                      <tr>
+                        <td><b>-</b><td>
+                        <td>(${state.global.localization.Nui.Labels.Dash})<td>
+                      </tr>
+                    </table>
+                  `,
+                  validator: (value: string) => !new RegExp('^[NL0-9\-*]{1,10}$').test(value),
+                }
+              ]
+          ]"
+      />
+      <Table
+          :title="state.global.localization.Nui.Labels.Divisions"
+          :buttons="divisionsButtons"
+          :columns="divisionsColumns"
+          :dataRequest="requestDepartmentDivisions"
+      />
+    </Grid>
     <Table
-      :title="state.global.localization.Nui.Labels.Ranks"
-      :buttons="ranksButtons"
-      :columns="ranksColumns"
-      :dataRequest="requestDepartmentRanks"
-      :dataMapper="mapDepartmentRanks"
+        :title="state.global.localization.Nui.Labels.Ranks"
+        :buttons="ranksButtons"
+        :columns="ranksColumns"
+        :dataRequest="requestDepartmentRanks"
+        :dataMapper="mapDepartmentRanks"
     />
-    <Table
-        :title="state.global.localization.Nui.Labels.Divisions"
-        :buttons="divisionsButtons"
-        :columns="divisionsColumns"
-        :dataRequest="requestDepartmentDivisions"
-    />
-  </TableGrid>
+  </template>
+
+  <template v-if="!state.user.details?.Admin">
+    <Grid :columns="2" v-if="department">
+      <Table
+          :title="state.global.localization.Nui.Labels.Ranks"
+          :buttons="ranksButtons"
+          :columns="ranksColumns"
+          :dataRequest="requestDepartmentRanks"
+          :dataMapper="mapDepartmentRanks"
+      />
+      <Table
+          :title="state.global.localization.Nui.Labels.Divisions"
+          :buttons="divisionsButtons"
+          :columns="divisionsColumns"
+          :dataRequest="requestDepartmentDivisions"
+      />
+    </Grid>
+  </template>
 
   <Table
     v-if="department && department.Divisions?.length"

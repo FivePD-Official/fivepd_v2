@@ -3,14 +3,16 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const props = withDefaults(defineProps<{
-  label: string,
-  theme: 'primary' | 'secondary' | 'small' | 'danger',
-  type?: 'button' | 'submit',
-  onClick?: () => void,
-  link?: string,
-  show?: boolean,
+  label: string;
+  theme: 'primary' | 'secondary' | 'small' | 'danger';
+  type?: 'button' | 'submit';
+  onClick?: () => void;
+  link?: string;
+  show?: boolean;
+  disabled?: boolean;
 }>(), {
   show: true,
+  disabled: false,
   type: 'button',
 });
 
@@ -26,14 +28,16 @@ function internalOnClick() {
 <template>
   <button
     :class="{
-      'button--primary': theme === 'primary',
-      'button--secondary': theme === 'secondary',
-      'button--small': theme === 'small',
-      'button--danger': theme === 'danger',
+      'button--primary': theme === 'primary' && !disabled,
+      'button--secondary': theme === 'secondary' && !disabled,
+      'button--small': theme === 'small' && !disabled,
+      'button--danger': theme === 'danger' && !disabled,
+      'button--disabled': disabled,
     }"
     :type="type"
     @click="internalOnClick"
     v-if="show"
+    :disabled="disabled"
   >
     <span>{{ label }}</span>
   </button>
@@ -100,6 +104,13 @@ button
 
     span
       color: var(--clr-text-secondary)
+      
+  &.button--disabled
+    cursor: not-allowed
+    background: var(--clr-bg-20)
+
+    span
+      color: var(--clr-text-tertiary)
 
   span
     position: relative

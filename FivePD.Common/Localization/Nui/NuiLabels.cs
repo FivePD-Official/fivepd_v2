@@ -44,6 +44,8 @@ namespace FivePD.Common.Localization
 
         public string Departments { get; set; } = "Departments";
 
+        public string DepartmentSettings { get; set; } = "Department settings";
+
         public string DeleteDivisionTitle { get; set; } = "Delete division";
 
         public string DeleteDivisionDescription { get; set; } = "Are you sure you want to delete {{division}}? You can't undo this action.";
@@ -119,6 +121,8 @@ namespace FivePD.Common.Localization
         public string SuccessfulDepartmentLeave { get; set; } = "You've successfully left {{department}}.";
 
         public string SuccessfulDepartmentCreate { get; set; } = "{{department}} has been successfully created.";
+
+        public string SuccessfulDepartmentEdit { get; set; } = "{{department}} has been successfully edited.";
 
         public string SuccessfulDivisionDelete { get; set; } = "{{division}} has been successfully deleted.";
 

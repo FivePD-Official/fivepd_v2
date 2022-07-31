@@ -9,6 +9,7 @@ export enum ClientEvents {
   CreateDepartment = 'fivepd:department:create',
   JoinDepartment = 'fivepd:department:join',
   LeaveDepartment = 'fivepd:department:leave',
+  EditDepartment = 'fivepd:department:edit',
   DeleteDivision = 'fivepd:department:deleteDivision',
   EditDivision = 'fivepd:department:renameDivision',
   CreateDivision = 'fivepd:department:createDivision',

@@ -53,6 +53,7 @@ export interface ILocalization {
       Dashboard: string;
       Department: string;
       Departments: string;
+      DepartmentSettings: string;
       DeleteDivisionTitle: string;
       DeleteDivisionDescription: string;
       DeleteRankTitle: string;
@@ -91,6 +92,7 @@ export interface ILocalization {
       SuccessfulDepartmentJoin: string;
       SuccessfulDepartmentLeave: string;
       SuccessfulDepartmentCreate: string;
+      SuccessfulDepartmentEdit: string;
       SuccessfulDivisionDelete: string;
       SuccessfulDivisionEdit: string;
       SuccessfulDivisionCreate: string;
@@ -120,7 +122,8 @@ export interface ILocalization {
     },
     Errors: {
       DatabaseAccess: string;
-      DepartmentExistsWithNameTitle: string;
+      CreateDepartmentExistsWithNameTitle: string;
+      EditDepartmentExistsWithNameTitle: string;
       DepartmentExistsWithNameDescription: string;
       DepartmentJoin: string;
       DepartmentFullTitle: string;
@@ -191,6 +194,7 @@ export const defaultLocalization: ILocalization = {
       Dashboard: '',
       Department: '',
       Departments: '',
+      DepartmentSettings: '',
       DeleteDivisionTitle: '',
       DeleteDivisionDescription: '',
       DeleteRankTitle: '',
@@ -229,6 +233,7 @@ export const defaultLocalization: ILocalization = {
       SuccessfulDepartmentJoin: '',
       SuccessfulDepartmentLeave: '',
       SuccessfulDepartmentCreate: '',
+      SuccessfulDepartmentEdit: '',
       SuccessfulDivisionDelete: '',
       SuccessfulDivisionEdit: '',
       SuccessfulDivisionCreate: '',
@@ -258,7 +263,8 @@ export const defaultLocalization: ILocalization = {
     },
     Errors: {
       DatabaseAccess: '',
-      DepartmentExistsWithNameTitle: '',
+      CreateDepartmentExistsWithNameTitle: '',
+      EditDepartmentExistsWithNameTitle: '',
       DepartmentExistsWithNameDescription: '',
       DepartmentJoin: '',
       DepartmentFullTitle: '',

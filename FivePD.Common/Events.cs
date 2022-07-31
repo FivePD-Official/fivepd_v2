@@ -218,6 +218,11 @@ namespace FivePD.Common
             public const string Leave = "fivepd:department:leave";
 
             /// <summary>
+            /// Used to edit a department's settings.
+            /// </summary>
+            public const string Edit = "fivepd:department:edit";
+
+            /// <summary>
             /// Used to delete a division from a department.
             /// </summary>
             public const string DeleteDivision = "fivepd:department:deleteDivision";

@@ -58,9 +58,10 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.GetUsers] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentUsersForNui);
             this._eventHandlerDictionary[Events.Department.GetRanks] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentRanksForNui);
             this._eventHandlerDictionary[Events.Department.GetDivisions] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentDivisionsForNui);
-            this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartment);
+            this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.Edit] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.EditDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.CreateDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDivisionFromNui);
@@ -327,7 +328,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private void CreateDepartment(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        private void CreateDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
             {
@@ -354,7 +355,7 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Title = "Nui.Errors.DepartmentExistsWithNameTitle",
+                    Title = "Nui.Errors.CreateDepartmentExistsWithNameTitle",
                     Description = "Nui.Errors.DepartmentExistsWithNameDescription",
                 }.ToString());
             }
@@ -681,6 +682,64 @@ namespace FivePD.Gamemode.Server.Services
                     Params = new Dictionary<string, string>
                     {
                         { "rank", createRankRequest.Name },
+                    },
+                }.ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = false,
+                    Title = "Nui.Errors.UnexpectedError",
+                    Description = "Nui.Errors.DatabaseAccess",
+                }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void EditDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var editDepartmentRequest = expandoObject.ConvertTo<EditDepartmentRequest>();
+                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == editDepartmentRequest.DepartmentId);
+                if (department is null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.UnexpectedError",
+                        Description = "Nui.Errors.DatabaseAccess",
+                    }.ToString());
+                    return;
+                }
+
+                var departmentExistsWithName = this._databaseContext.Departments.AsNoTracking().FirstOrDefault(dept => dept.Id != editDepartmentRequest.DepartmentId && dept.Name == editDepartmentRequest.Name);
+                if (departmentExistsWithName != null)
+                {
+                    networkCallbackDelegate.Invoke(new ActionResponse
+                    {
+                        Status = false,
+                        Title = "Nui.Errors.EditDepartmentExistsWithNameTitle",
+                        Description = "Nui.Errors.DepartmentExistsWithNameDescription",
+                    }.ToString());
+                    return;
+                }
+
+                var departmentOldName = department.Name;
+                department.Name = editDepartmentRequest.Name;
+                department.Callsign = string.IsNullOrEmpty(editDepartmentRequest.Callsign) ? editDepartmentRequest.Name.ToAcronym() : editDepartmentRequest.Callsign;
+                department.CallsignFormat = editDepartmentRequest.CallsignFormat;
+                department.MaxUsers = editDepartmentRequest.MaxUsers;
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.Invoke(new ActionResponse
+                {
+                    Status = true,
+                    Title = "Nui.Labels.SuccessfulEdit",
+                    Description = "Nui.Labels.SuccessfulDepartmentEdit",
+                    Params = new Dictionary<string, string>
+                    {
+                        { "department", departmentOldName },
                     },
                 }.ToString());
             }

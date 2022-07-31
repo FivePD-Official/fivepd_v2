@@ -5,7 +5,9 @@
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('./components/Button.vue')['default']
+    EditableForm: typeof import('./components/EditableForm.vue')['default']
     Form: typeof import('./components/Form.vue')['default']
+    Grid: typeof import('./components/Grid.vue')['default']
     Header: typeof import('./components/Header.vue')['default']
     InputField: typeof import('./components/InputField.vue')['default']
     Main: typeof import('./components/Main.vue')['default']
@@ -19,7 +21,6 @@ declare module 'vue' {
     Select: typeof import('./components/Select.vue')['default']
     Sidebar: typeof import('./components/Sidebar.vue')['default']
     Table: typeof import('./components/Table.vue')['default']
-    TableGrid: typeof import('./components/TableGrid.vue')['default']
     TimerBar: typeof import('./components/TimerBar.vue')['default']
   }
 }
