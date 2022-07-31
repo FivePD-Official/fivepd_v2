@@ -7,7 +7,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace FivePD.Gamemode.Server.NuiModels
+namespace FivePD.Gamemode.Server.Models.Responses
 {
     /// <summary>
     /// Used for actions initiated in the NUI.

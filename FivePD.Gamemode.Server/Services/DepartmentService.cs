@@ -17,6 +17,7 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.Requests;
+using FivePD.Gamemode.Server.Models.Responses;
 using FivePD.Gamemode.Server.NuiModels;
 using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -330,12 +331,12 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var departmentFields = expandoObject.ConvertTo<CreateDepartmentFields>();
+                var createDepartmentRequest = expandoObject.ConvertTo<CreateDepartmentRequest>();
                 this.CreateDepartment(new Department
                 {
-                    Name = departmentFields.Name,
-                    CallsignFormat = departmentFields.CallsignFormat,
-                    MaxUsers = departmentFields.MaxUsers,
+                    Name = createDepartmentRequest.Name,
+                    CallsignFormat = createDepartmentRequest.CallsignFormat,
+                    MaxUsers = createDepartmentRequest.MaxUsers,
                 });
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
@@ -344,7 +345,7 @@ namespace FivePD.Gamemode.Server.Services
                     Description = "Nui.Labels.SuccessfulDepartmentCreate",
                     Params = new Dictionary<string, string>
                     {
-                        { "department", departmentFields.Name },
+                        { "department", createDepartmentRequest.Name },
                     },
                 }.ToString());
             }
