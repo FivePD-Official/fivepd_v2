@@ -214,6 +214,7 @@ function sendAvailabilityToClient() {
   --layer-0: 0
   --layer-10: 10
   --layer-100: 100
+  --layer-1000: 1000
 
   --page-header-height: 115px
 

@@ -55,7 +55,7 @@ const changeStatus = (status: string) => {
 <style scoped lang="sass">
 header
   position: relative
-  z-index: var(--layer-100)
+  z-index: var(--layer-1000)
   width: 100%
   height: 80px
   border-bottom: 1px solid var(--clr-border)
