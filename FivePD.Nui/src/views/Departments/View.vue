@@ -183,17 +183,16 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
   <Table
     :title="state.global.localization.Nui.Labels.Ranks"
     :columns="ranksColumns"
-    :dataRequest="requestDepartmentRanks"
-    :dataMapper="mapDepartmentRanks"
+    :data-request="requestDepartmentRanks"
+    :data-mapper="mapDepartmentRanks"
   />
 
   <Table
     :title="state.global.localization.Nui.Labels.Members"
     :columns="usersColumnDef"
-    :dataRequest="requestDepartmentUsers"
-    :dataMapper="mapDepartmentUsers"
+    :data-request="requestDepartmentUsers"
+    :data-mapper="mapDepartmentUsers"
   />
-
 </template>
 
 <style scoped lang="sass">

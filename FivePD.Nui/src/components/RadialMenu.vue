@@ -160,7 +160,11 @@ const drawCanvas = () => {
 
 <template>
   <div>
-    <canvas width="600" height="600" ref="canvas"></canvas>
+    <canvas
+      ref="canvas"
+      width="600"
+      height="600"
+    />
   </div>
 </template>
 

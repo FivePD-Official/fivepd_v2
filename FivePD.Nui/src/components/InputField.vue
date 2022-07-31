@@ -55,23 +55,24 @@ function onInput(event: any) {
       {{ field.label }}
     </label>
     <input
+      v-if="field.type !== 'date'"
+      v-model="value"
       :type="field.type"
       :name="field.name"
       :placeholder="field.placeholder"
-      v-if="field.type !== 'date'"
       @input="event => onInput(event)"
-      v-model="value"
-    />
-    <div class="inputs" v-else>
+    >
+    <div v-else class="inputs">
       <input
+        v-for="input in createBirthdateInputList(DateFormat.MDY)"
+        :key="input.name"
         type="number"
         min="0"
         :name="input.name"
         :placeholder="input.placeholder"
-        v-for="input in createBirthdateInputList(DateFormat.MDY)"
-      />
+      >
     </div>
-    <span class="help-label" v-if="field.helpLabel" v-html="field.helpLabel"></span>
+    <span v-if="field.helpLabel" class="help-label" v-html="field.helpLabel" />
   </div>
 </template>
 

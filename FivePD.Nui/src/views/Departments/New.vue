@@ -27,11 +27,14 @@ function onSubmit(fields: FormFields) {
 </script>
 
 <template>
-  <PageHeader :title="state.global.localization.Nui.Labels.NewDepartment" :centerTitle="true" />
+  <PageHeader
+    :title="state.global.localization.Nui.Labels.NewDepartment"
+    :center-title="true"
+  />
 
   <div class="form-wrapper">
     <Form
-      :submitButtonLabel="state.global.localization.Nui.Actions.Save"
+      :submit-button-label="state.global.localization.Nui.Actions.Save"
       :fields="[
         {
           name: 'Name',
@@ -80,7 +83,7 @@ function onSubmit(fields: FormFields) {
           helpLabel: state.global.localization.Nui.Labels.MaxNumberOfMembersHelpLabel,
         }
       ]"
-      :onSubmit="onSubmit"
+      :on-submit="onSubmit"
     />
   </div>
 </template>

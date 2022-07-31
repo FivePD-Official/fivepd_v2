@@ -27,7 +27,7 @@ function internalOnSubmit(event: any) {
   for (const [key, value] of Object.entries(formattedFields)) {
     const field = modifiedInternalFields.find(field => field.name === key)!;
 
-    const isValueFalsy = field.type === 'number' ? isNaN(value) : !value;
+    const isValueFalsy = field.type === 'text' ? !value : false;
     if (field.required) {
       if (field.validator) {
         field.hasError = field.validator(value);
@@ -51,9 +51,13 @@ function internalOnSubmit(event: any) {
 
 <template>
   <form @submit.prevent="internalOnSubmit">
-    <p class="form-title" v-if="title">{{ title }}</p>
-    <p class="form-subtitle" v-if="subtitle">{{ subtitle }}</p>
-    <InputField v-for="field in internalFields" :field="field" :hasError="field.hasError" />
+    <p v-if="title" class="form-title">
+      {{ title }}
+    </p>
+    <p v-if="subtitle" class="form-subtitle">
+      {{ subtitle }}
+    </p>
+    <InputField v-for="field in internalFields" :key="field.name" :field="field" :has-error="field.hasError" />
     <Button :label="submitButtonLabel" theme="primary" type="submit" />
   </form>
 </template>

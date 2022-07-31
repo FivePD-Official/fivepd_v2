@@ -9,8 +9,8 @@ import { Observable } from "rxjs";
 
 const store = useStore<State>();
 
-const statistics = ref<any>(); // TODO
-const assignedCall = ref<any>(); // TODO
+const statistics = ref(); // TODO
+const assignedCall = ref(); // TODO
 
 onMounted(() => {
   post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
@@ -66,7 +66,9 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
 
   <div class="grid">
     <div class="grid-item grid-item--details">
-      <p class="common-title">{{ store.state.global.localization.Nui.Labels.MyDetails }}</p>
+      <p class="common-title">
+        {{ store.state.global.localization.Nui.Labels.MyDetails }}
+      </p>
       <div class="common-bg grid-item--content">
         <ul>
           <li>
@@ -81,7 +83,7 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
             <p>{{ store.state.global.localization.Nui.Labels.Rank }}</p>
             <p>{{ store.state.user.details.Rank?.Name ?? '-' }}</p>
           </li>
-           <li>
+          <li>
             <p>{{ store.state.global.localization.Nui.Labels.Callsign }}</p>
             <p>{{ store.state.user.details.Callsign ?? '-' }}</p>
           </li>
@@ -94,7 +96,9 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
         {{ store.state.global.localization.Nui.Labels.Statistics }}
       </p>
       <div class="common-bg grid-item--content">
-        <p class="no-data" v-if="!statistics">{{ store.state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
+        <p v-if="!statistics" class="no-data">
+          {{ store.state.global.localization.Nui.Labels.NoDataToDisplay }}
+        </p>
       </div>
     </div>
 
@@ -103,7 +107,9 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
         {{ store.state.global.localization.Nui.Labels.AssignedCall }}
       </p>
       <div class="common-bg grid-item--content">
-        <p class="no-data" v-if="!assignedCall">{{ store.state.global.localization.Nui.Labels.NoAssignedCall }}</p>
+        <p v-if="!assignedCall" class="no-data">
+          {{ store.state.global.localization.Nui.Labels.NoAssignedCall }}
+        </p>
       </div>
     </div>
   </div>
@@ -122,7 +128,7 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
         show: store.state.user.details?.Admin ?? false
       }
     ]"
-    :dataRequest="requestDepartments"
+    :data-request="requestDepartments"
     :columns="departmentColumnDef"
   />
 </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PropButton } from '@interfaces';
 
-const props = defineProps<{
+defineProps<{
   title: string,
   centerTitle?: boolean,
   buttons?: PropButton[],
@@ -16,8 +16,16 @@ const props = defineProps<{
     }"
   >
     <h1>{{ title }}</h1>
-    <div class="buttons" v-if="buttons">
-      <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
+    <div v-if="buttons" class="buttons">
+      <Button
+        v-for="button in buttons"
+        :key="button.label"
+        :show="button.show"
+        :on-click="button.onClick"
+        :link="button.link"
+        :label="button.label"
+        theme="secondary"
+      />
     </div>
   </div>
 </template>

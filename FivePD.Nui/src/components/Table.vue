@@ -16,7 +16,7 @@ const props = defineProps<{
   columns: ColumnDef<any>;
   defaultData?: any;
   dataRequest?: (request: BaseRequest) => Observable<Page<any>>;
-  dataMapper?: (response: Page<any>) => any;
+  dataMapper?: (response: Page<any>) => Page<any>;
 }>();
 
 const data = ref<Page<any>>({
@@ -72,7 +72,7 @@ const formattedRows = computed<FormattedRow[]>(() => {
     for (const value of Object.values(props.columns)) {
       let newValue = '';
       
-      newValue = value.valueResolver ? value.valueResolver(item) : item[value.accessorKey];
+      newValue = value.valueResolver ? value.valueResolver(item) : item[value.accessorKey] as string;
 
       const rowItem: FormattedRowItem = {
         value: newValue,
@@ -139,60 +139,83 @@ function toPage(pageNumber: number) {
 <template>
   <div class="table-container">
     <div class="table-container-header">
-      <p class="common-title">{{ title }}</p>
-      <div class="buttons" v-if="buttons">
-        <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
+      <p class="common-title">
+        {{ title }}
+      </p>
+      <div v-if="buttons" class="buttons">
+        <Button
+          v-for="button in buttons"
+          :key="button.label"
+          :show="button.show"
+          :on-click="button.onClick"
+          :link="button.link"
+          :label="button.label"
+          theme="secondary"
+        />
       </div>
     </div>
     
     <div class="common-bg table">
       <div class="table-row table-header">
-        <div class="table-cell" v-for="column in columns">
+        <div v-for="column in columns" :key="column.accessorKey" class="table-cell">
           <p>{{ column.header }}</p>
         </div>
       </div>
-      <form class="table-row table-filter" v-if="columns.some(col => col.filter)">
-        <div class="table-cell" v-for="column in columns">
-          <InputField v-if="column.filter" :field="{
-            type: 'text',
-            name: `${column.accessorKey}-filter`,
-            placeholder: column.header,
-            required: false
-          }" 
-          :onValueChange="value => onFilterFormChange(column.accessorKey, value)"/>
+      <form v-if="columns.some(col => col.filter)" class="table-row table-filter">
+        <div v-for="column in columns" :key="column.accessorKey" class="table-cell">
+          <InputField
+            v-if="column.filter"
+            :field="{
+              type: 'text',
+              name: `${column.accessorKey}-filter`,
+              placeholder: column.header,
+              required: false
+            }" 
+            :on-value-change="value => onFilterFormChange(column.accessorKey, value)"
+          />
         </div>
       </form>
-      <div class="table-row" v-for="row in formattedRows" v-if="formattedRows?.length">
-        <div class="table-cell" v-for="item in row">
-          <router-link v-if="item.link" :to="item.link">
-            {{ item.value }}
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </router-link>
-          <p v-else>{{ item.value }}</p>
+      <template v-if="formattedRows?.length">
+        <div v-for="(row, rowIndex) in formattedRows" :key="rowIndex" class="table-row">
+          <div v-for="(item, itemIndex) in row" :key="itemIndex" class="table-cell">
+            <router-link v-if="item.link" :to="item.link">
+              {{ item.value }}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </router-link>
+            <p v-else>{{ item.value }}</p>
+          </div>
         </div>
-      </div>
-      <div class="table-pagination" v-if="formattedRows?.length">
+      </template>
+      <div v-if="formattedRows?.length" class="table-pagination">
         <div class="pagination-inner">
-          <button :disabled="currentPage === 1" @click="toPreviousPage()">
+          <button
+            :disabled="currentPage === 1"
+            @click="toPreviousPage()"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <button v-if="currentPage > 1" @click="toPage(currentPage - 1)"><span>{{ currentPage - 1 }}</span></button>
-          <button class="active"><span>{{ currentPage }}</span></button>
-          <button v-if="currentPage < data.PageCount" @click="toPage(currentPage + 1)"><span>{{ currentPage + 1 }}</span></button>
+          <button v-if="currentPage > 1" @click="toPage(currentPage - 1)">
+            <span>{{ currentPage - 1 }}</span>
+          </button>
+          <button class="active">
+            <span>{{ currentPage }}</span>
+          </button>
+          <button v-if="currentPage < data.PageCount" @click="toPage(currentPage + 1)">
+            <span>{{ currentPage + 1 }}</span>
+          </button>
           <button :disabled="currentPage === data.PageCount" @click="toNextPage()">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
         </div>
       </div>
       <p v-else class="no-data">{{ state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
     </div>
-    
   </div>
 </template>
 

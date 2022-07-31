@@ -39,7 +39,12 @@ notificationService.onShow().subscribe((notification) => {
 
 <template>
   <div class="wrapper">
-    <Notification v-for="notification in notifications" :notification="notification" :exit="notification.exit" />
+    <Notification
+      v-for="(notification, i) in notifications"
+      :key="i"
+      :notification="notification"
+      :exit="notification.exit"
+    />
   </div>
 </template>
 

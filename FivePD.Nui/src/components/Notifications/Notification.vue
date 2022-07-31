@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Notification } from '@interfaces';
 
-const props = defineProps<{
+defineProps<{
   notification: Notification,
   exit: boolean
 }>();
@@ -10,19 +10,21 @@ const props = defineProps<{
 <template>
   <div class="notification" :class="{ 'exit': exit, 'notification-error': notification.type === 'error', 'notification-success': notification.type === 'success' }">
     <div class="notification-header">
-      <div class="icon icon-success" v-if="notification.type === 'success'">
+      <div v-if="notification.type === 'success'" class="icon icon-success">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <div class="icon icon-error" v-if="notification.type === 'error'">
+      <div v-if="notification.type === 'error'" class="icon icon-error">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </div>
-      <p class="title">{{ notification.title }}</p>
+      <p class="title">
+        {{ notification.title }}
+      </p>
     </div>
-    <p class="description" v-html="notification.description"></p>
+    <p class="description" v-html="notification.description" />
   </div>
 </template>
 

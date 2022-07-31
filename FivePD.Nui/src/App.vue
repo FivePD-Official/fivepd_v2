@@ -13,7 +13,7 @@ const store = useStore<State>();
 const router = useRouter();
 const viewType = ref<string>('');
 const currentMenuId = ref<string>('#');
-const audioMap = new Map<string, any>();
+const audioMap = new Map<string, HTMLAudioElement | SpeechSynthesisUtterance>();
 
 window.addEventListener('load', () => {
 
@@ -53,7 +53,7 @@ eventService.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(e
   for (const menu of event.data) {
     const menuItems: MenuItem[] = [];
     for (const item of menu.Items) {
-      let _item: any;
+      let _item: MenuItem | undefined;
       switch (item.Type) {
         case MenuItemType.Button: {
           _item = new MenuButtonItem(item.Title, item.Description, item.Hashcode);
@@ -61,7 +61,7 @@ eventService.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(e
         }
         case MenuItemType.List: {
           _item = new MenuListItem(item.Title, item.Description, item.Hashcode);
-          _item.items = item.Items;
+          (_item as MenuListItem).items = item.Items!;
           break;
         }
         case MenuItemType.Toggle: {
@@ -69,7 +69,9 @@ eventService.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(e
           break;
         }
       }
-      menuItems.push(_item);
+      if (_item) {
+        menuItems.push(_item as MenuItem);
+      }
     }
     menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
   }
@@ -115,8 +117,8 @@ eventService.onEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe
 
 eventService.onEvent<SoundEvent>(NuiEventType.PlaySound).subscribe(event => {
   if (audioMap.has(event.sound)) {
-    const audio = audioMap.get(event.sound);
-    if (audio.paused) {
+    const audio = audioMap.get(event.sound) as HTMLAudioElement;
+    if (audio && audio.paused) {
       audio.play();
     }
     return;
@@ -133,11 +135,13 @@ eventService.onEvent<SoundSpeakEvent>(NuiEventType.PlayText).subscribe(event => 
   }
 
   const audio = new SpeechSynthesisUtterance(event.textToPlay);
-  audioMap.set(event.textToPlay, audio);
-  speechSynthesis.speak(audio);
-  audio.onend = () => {
-    audioMap.delete(event.textToPlay);
-  };
+  if (audio) {
+    audioMap.set(event.textToPlay, audio);
+    speechSynthesis.speak(audio);
+    audio.onend = () => {
+      audioMap.delete(event.textToPlay);
+    };
+  }
 });
 
 function loadLocalization() {
@@ -154,12 +158,18 @@ function sendAvailabilityToClient() {
 <template>
   <div class="main-container">
     <Main v-if="viewType === NuiEventType.Mdt" />
-    <template v-if="viewType === NuiEventType.MenuView" v-for="item in store.state.global.menus">
-      <MenuView :menu="item" v-if="currentMenuId === item.id" />
+    <template v-if="viewType === NuiEventType.MenuView">
+      <template v-for="item in store.state.global.menus">
+        <MenuView
+          v-if="currentMenuId === item.id"
+          :key="item.id"
+          :menu="item"
+        />
+      </template>
     </template>
     <TimerBar />
   </div>
-  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuId="currentMenuId" />
+  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menu-id="currentMenuId" />
 </template>
 
 <style lang="sass">

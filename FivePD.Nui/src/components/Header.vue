@@ -4,7 +4,7 @@ import { hideNui } from '@utils';
 import { useState } from '@store';
 
 const state = useState();
-const username: string = 'John Doe';
+const username = 'John Doe';
 const currentStatus: Ref<string> = ref('10-0');
 const isStatusSelectOpened: Ref<boolean> = ref(false);
 
@@ -31,18 +31,22 @@ const changeStatus = (status: string) => {
       <p>{{ state.user.details.Department?.Name ?? state.global.localization.Nui.Labels.NotInDepartment }}</p>
     </div>
     <div class="side-row">
-      <div :class="`status-select ${isStatusSelectOpened ? 'status-select--open' : ''}`" v-click-outside="closeStatusSelect">
+      <div v-click-outside="closeStatusSelect" :class="`status-select ${isStatusSelectOpened ? 'status-select--open' : ''}`">
         <button class="status-select-btn" @click="toggleStatusSelect()">
           <p>{{ state.global.localization.Nui.Labels.Status }}: {{ currentStatus }}</p>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-        <div class="status-select-list" v-if="isStatusSelectOpened">
-          <button v-for="status in statusList" :key="status" @click="changeStatus(status)">{{ status }}</button>
+        <div v-if="isStatusSelectOpened" class="status-select-list">
+          <button v-for="status in statusList" :key="status" @click="changeStatus(status)">
+            {{ status }}
+          </button>
         </div>
       </div>
-      <p class="user">Logged in as <b>{{ username }}</b></p>
+      <p class="user">
+        Logged in as <b>{{ username }}</b>
+      </p>
       <button class="close-btn" @click="hideNui()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

@@ -4,7 +4,7 @@ import { FormFields } from '@utils';
 
 const emit = defineEmits(['onSubmit']);
 
-const props = defineProps<{
+defineProps<{
   fields: InputField[],
   title: string,
   subtitle?: string,
@@ -18,9 +18,9 @@ function onSearchSubmit(fields: FormFields) {
 
 <template>
   <Form
-    submitButtonLabel="Search"
+    submit-button-label="Search"
     :fields="fields"
-    :onSubmit="onSearchSubmit"
+    :on-submit="onSearchSubmit"
     :title="title"
     :subtitle="subtitle"
   />

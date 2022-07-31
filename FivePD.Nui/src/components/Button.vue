@@ -24,13 +24,13 @@ function internalOnClick() {
 
 <template>
   <button
+    v-if="show"
     :class="{
       'button--primary': theme === 'primary',
       'button--secondary': theme === 'secondary',
     }"
     :type="type ?? 'button'"
     @click="internalOnClick"
-    v-if="show"
   >
     <span>{{ label }}</span>
   </button>
