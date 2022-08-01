@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import { useState } from '@store';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import type {
+  BaseRequest,
+  ColumnDef,
   FormattedRow,
   FormattedRowItem,
-  PropButton,
-  ColumnDef, FormFilter, Page, BaseRequest, TableCellActionButton, TableCellActionSelect, TableCellAction
+  FormFilter,
+  Page,
+  PropButtonWithResponse,
+  TableCellAction,
+  TableCellActionButton,
+  TableCellActionSelect
 } from '@interfaces';
 import { debounceTime, Observable, Subject } from "rxjs";
 
 const state = useState();
 const props = defineProps<{
   title: string;
-  buttons?: PropButton[];
+  buttons?: PropButtonWithResponse[];
   columns: ColumnDef<any>;
   defaultData?: any;
   dataRequest?: (request: BaseRequest) => Observable<Page<any>>;
@@ -176,7 +182,7 @@ function tableCellActionSelect(action: TableCellAction<any>, item: FormattedRowI
   });
 }
 
-function headerButtonClick(onClick: PropButton['onClick']) {
+function headerButtonClick(onClick: PropButtonWithResponse['onClick']) {
   if (!onClick) {
     return;
   }

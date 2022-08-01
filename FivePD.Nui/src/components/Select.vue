@@ -65,6 +65,7 @@ function setSelectedItem(selectItem: SelectItem) {
 
 <style scoped lang="sass">
 .select
+  position: relative
   height: 35px
   
   .selected
@@ -90,11 +91,13 @@ function setSelectedItem(selectItem: SelectItem) {
       color: var(--clr-text-secondary)
     
   .items
+    position: relative
     display: none
     flex-direction: column
     align-items: center
     width: 100%
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
+    z-index: var(--layer-100)
     
     .item
       width: 100%

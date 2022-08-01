@@ -6,7 +6,7 @@ import type { BaseRequest, ColumnDef, IDepartment, Page, PropButton } from "@int
 import { State } from "@store";
 import { useStore } from "vuex";
 import { Observable } from "rxjs";
-import { ActionResponse } from "@interfaces";
+import { ActionResponse, PropButtonWithResponse } from "@interfaces";
 import { useRouter } from "vue-router";
 import { useT } from "@hooks";
 
@@ -40,7 +40,7 @@ const activeCallsColumnDef: ColumnDef<any> = [
   }
 ];
 
-const departmentButtons: PropButton[] = [
+const departmentButtons: PropButtonWithResponse[] = [
   {
     label: store.state.global.localization.Nui.Actions.CreateDepartment,
     show: () => store.state.user.details.Admin,
@@ -110,9 +110,7 @@ const departmentButtons: PropButton[] = [
           post<ActionResponse>(ClientEvents.CreateDepartment, res.inputFields).subscribe(createRes => {
             if (createRes.Status) {
               router.push('/');
-              if (onResponse) {
-                onResponse(createRes);
-              }
+              onResponse(createRes);
             }
 
             showNotification({

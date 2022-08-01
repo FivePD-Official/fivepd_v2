@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
 import type { ActionResponse, ColumnDef, IDepartment, IDivision, IRank, IUser, Page, PropButton } from '@interfaces';
-import { BaseRequest } from "@interfaces";
+import { BaseRequest, PropButtonWithResponse } from "@interfaces";
 import { useState } from '@store';
 import { FormFields, modalService, post, replaceParams, showNotification, requestAndCommitUserData } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -59,7 +59,7 @@ const pageHeaderButtons: PropButton[] = [
   }
 ];
 
-const ranksButtons: PropButton[] = [
+const ranksButtons: PropButtonWithResponse[] = [
   {
     label: state.global.localization.Nui.Actions.CreateRank,
     onClick: (onResponse) => {
@@ -107,10 +107,8 @@ const ranksButtons: PropButton[] = [
               title: t(createRes.Title),
               description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
             })
-            
-            if (onResponse) {
-              onResponse(createRes);
-            }
+
+            onResponse(createRes);
           });
         }
       })
@@ -226,7 +224,7 @@ const ranksColumns: ColumnDef<FormattedRank> = [
   }
 ];
 
-const divisionsButtons: PropButton[] = [
+const divisionsButtons: PropButtonWithResponse[] = [
   {
     label: state.global.localization.Nui.Actions.CreateDivision,
     onClick: (onResponse) => {
@@ -260,10 +258,8 @@ const divisionsButtons: PropButton[] = [
               title: t(createRes.Title),
               description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
             })
-            
-            if (onResponse) {
-              onResponse(createRes);
-            }
+
+            onResponse(createRes);
           });
         }
       })
@@ -666,7 +662,6 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
     :dataRequest="requestDepartmentUsers"
     :dataMapper="mapDepartmentUsers"
   />
-
 
 </template>
 
