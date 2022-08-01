@@ -96,6 +96,13 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.DeleteRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteRankFromNui);
             this._eventHandlerDictionary[Events.Department.EditRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditRankFromNui);
             this._eventHandlerDictionary[Events.Department.CreateRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateRankFromNui);
+
+            var d = this.GetDepartmentById(5, false, true);
+            if (d != null)
+            {
+                Debug.WriteLine($"{d.Ranks is null} - {d.Ranks?.Count()}");
+                Debug.WriteLine($"{d.Divisions is null} - {d.Divisions?.Count()}");
+            }
         }
 
         /// <inheritdoc />
@@ -150,11 +157,14 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        public IEnumerable<Department> GetDepartments()
+        public IEnumerable<Department> GetDepartments(bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false)
         {
             try
             {
-                return this._databaseContext.Departments;
+                return this._databaseContext.Departments
+                    .IncludeIf(includeDivisions, dept => dept.Divisions)
+                    .IncludeIf(includeRanks, dept => dept.Ranks)
+                    .IncludeIf(includeUsers, dept => dept.Users);
             }
             catch (Exception)
             {
@@ -163,11 +173,15 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        public Department GetDepartmentById(int id)
+        public Department GetDepartmentById(int id, bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false)
         {
             try
             {
-                return this._databaseContext.Departments.FirstOrDefault(department => department.Id == id);
+                return this._databaseContext.Departments
+                    .IncludeIf(includeDivisions, dept => dept.Divisions)
+                    .IncludeIf(includeRanks, dept => dept.Ranks)
+                    .IncludeIf(includeUsers, dept => dept.Users)
+                    .FirstOrDefault(department => department.Id == id);
             }
             catch (Exception)
             {

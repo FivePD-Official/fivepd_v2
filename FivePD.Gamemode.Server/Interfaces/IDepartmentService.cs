@@ -92,15 +92,21 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// <summary>
         /// Selects and returns all departments.
         /// </summary>
+        /// <param name="includeRanks">Specifies whether to include the departments' ranks in the query or not.</param>
+        /// <param name="includeDivisions">Specifies whether to include the departments' divisions in the query or not.</param>
+        /// <param name="includeUsers">Specifies whether to include the departments' users in the query or not.</param>
         /// <returns>A list of departments.</returns>
-        public IEnumerable<Department> GetDepartments();
+        public IEnumerable<Department> GetDepartments(bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false);
 
         /// <summary>
         /// Finds the first department with the given identifier.
         /// </summary>
         /// <param name="id">The identifier to search for.</param>
+        /// <param name="includeRanks">Specifies whether to include the department's ranks in the query or not.</param>
+        /// <param name="includeDivisions">Specifies whether to include the department's divisions in the query or not.</param>
+        /// <param name="includeUsers">Specifies whether to include the department's users in the query or not.</param>
         /// <returns>The found department.</returns>
-        public Department GetDepartmentById(int id);
+        public Department GetDepartmentById(int id, bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false);
 
         /// <summary>
         /// Saves all changes made to any <see cref="Department"/> object.
