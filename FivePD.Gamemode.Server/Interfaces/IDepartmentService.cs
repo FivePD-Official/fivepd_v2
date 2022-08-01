@@ -23,6 +23,46 @@ namespace FivePD.Gamemode.Server.Interfaces
         public event EventHandler<Department> DepartmentCreated;
 
         /// <summary>
+        /// Fires when a department has been edited.
+        /// </summary>
+        public event EventHandler<Department> DepartmentEdited;
+
+        /// <summary>
+        /// Fires when a department has been deleted.
+        /// </summary>
+        public event EventHandler<Department> DepartmentDeleted;
+
+        /// <summary>
+        /// Fires when a rank has been created.
+        /// </summary>
+        public event EventHandler<Rank> PlayerRankCreated;
+
+        /// <summary>
+        /// Fires when a rank has been edited.
+        /// </summary>
+        public event EventHandler<Rank> PlayerRankEdited;
+
+        /// <summary>
+        /// Fires when a rank has been deleted.
+        /// </summary>
+        public event EventHandler<Rank> PlayerRankDeleted;
+
+        /// <summary>
+        /// Fires when a division has been created.
+        /// </summary>
+        public event EventHandler<Division> PlayerDivisionCreated;
+
+        /// <summary>
+        /// Fires when a division has been edited.
+        /// </summary>
+        public event EventHandler<Division> PlayerDivisionEdited;
+
+        /// <summary>
+        /// Fires when a division has been deleted.
+        /// </summary>
+        public event EventHandler<Division> PlayerDivisionDeleted;
+
+        /// <summary>
         /// Fires when a player joins a department or has been added to one with the API.
         /// </summary>
         public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerJoinedDepartment;

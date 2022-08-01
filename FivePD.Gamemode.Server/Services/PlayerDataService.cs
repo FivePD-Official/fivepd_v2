@@ -54,6 +54,12 @@ namespace FivePD.Gamemode.Server.Services
          */
         public event EventHandler<DutyStatusChangedEventArgs> DutyStatusChanged;
 
+        /// <inheritdoc />
+        public event EventHandler<Rank> PlayerRankChanged;
+
+        /// <inheritdoc />
+        public event EventHandler<Division> PlayerDivisionChanged;
+
         /**
          * <inheritdoc />
          */
@@ -175,13 +181,15 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
+                Division division;
                 if (playerChangeRequest.IdToChange == 0)
                 {
                     user.DivisionId = null;
+                    division = null;
                 }
                 else
                 {
-                    var division = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
+                    division = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
                     if (division is null)
                     {
                         networkCallbackDelegate.Invoke(new ActionResponse
@@ -197,6 +205,7 @@ namespace FivePD.Gamemode.Server.Services
                 }
 
                 this._databaseContext.SaveChanges();
+                this.PlayerDivisionChanged?.Invoke(this, division);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
@@ -237,13 +246,15 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
+                Rank rank;
                 if (playerChangeRequest.IdToChange == 0)
                 {
                     user.RankId = null;
+                    rank = null;
                 }
                 else
                 {
-                    var rank = this._databaseContext.Ranks.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
+                    rank = this._databaseContext.Ranks.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
                     if (rank is null)
                     {
                         networkCallbackDelegate.Invoke(new ActionResponse
@@ -259,6 +270,7 @@ namespace FivePD.Gamemode.Server.Services
                 }
 
                 this._databaseContext.SaveChanges();
+                this.PlayerRankChanged?.Invoke(this, rank);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,

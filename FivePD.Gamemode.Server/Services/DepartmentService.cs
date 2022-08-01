@@ -45,10 +45,34 @@ namespace FivePD.Gamemode.Server.Services
         public event EventHandler<Department> DepartmentCreated;
 
         /// <inheritdoc />
+        public event EventHandler<Department> DepartmentEdited;
+
+        /// <inheritdoc />
+        public event EventHandler<Department> DepartmentDeleted;
+
+        /// <inheritdoc />
         public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerJoinedDepartment;
 
         /// <inheritdoc />
         public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerLeftDepartment;
+
+        /// <inheritdoc />
+        public event EventHandler<Rank> PlayerRankCreated;
+
+        /// <inheritdoc />
+        public event EventHandler<Rank> PlayerRankEdited;
+
+        /// <inheritdoc />
+        public event EventHandler<Rank> PlayerRankDeleted;
+
+        /// <inheritdoc />
+        public event EventHandler<Division> PlayerDivisionCreated;
+
+        /// <inheritdoc />
+        public event EventHandler<Division> PlayerDivisionEdited;
+
+        /// <inheritdoc />
+        public event EventHandler<Division> PlayerDivisionDeleted;
 
         /// <inheritdoc/>
         public void RegisterEvents()
@@ -58,14 +82,17 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.GetUsers] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentUsersForNui);
             this._eventHandlerDictionary[Events.Department.GetRanks] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentRanksForNui);
             this._eventHandlerDictionary[Events.Department.GetDivisions] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentDivisionsForNui);
+
             this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Edit] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Delete] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDepartmentFromNui);
+
             this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.EditDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.CreateDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDivisionFromNui);
+
             this._eventHandlerDictionary[Events.Department.DeleteRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteRankFromNui);
             this._eventHandlerDictionary[Events.Department.EditRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditRankFromNui);
             this._eventHandlerDictionary[Events.Department.CreateRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateRankFromNui);
@@ -399,6 +426,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 this._databaseContext.Divisions.Remove(divisionToDelete);
                 this._databaseContext.SaveChanges();
+                this.PlayerDivisionDeleted?.Invoke(this, divisionToDelete);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
@@ -454,6 +482,7 @@ namespace FivePD.Gamemode.Server.Services
                 var divisionToEditOldName = divisionToEdit.Name;
                 divisionToEdit.Name = renameDivisionRequest.Name;
                 this._databaseContext.SaveChanges();
+                this.PlayerDivisionEdited?.Invoke(this, divisionToEdit);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
@@ -505,12 +534,13 @@ namespace FivePD.Gamemode.Server.Services
                     }.ToString());
                 }
 
-                this._databaseContext.Divisions.Add(new Division
+                var createdDivisionEntry = this._databaseContext.Divisions.Add(new Division
                 {
                     Department = department,
                     Name = createDivisionRequest.Name,
                 });
                 this._databaseContext.SaveChanges();
+                this.PlayerDivisionCreated?.Invoke(this, createdDivisionEntry.Entity);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
@@ -561,6 +591,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 this._databaseContext.Ranks.Remove(rankToDelete);
                 this._databaseContext.SaveChanges();
+                this.PlayerRankDeleted?.Invoke(this, rankToDelete);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
@@ -617,6 +648,7 @@ namespace FivePD.Gamemode.Server.Services
                 rankToEdit.Name = editRankRequest.Name;
                 rankToEdit.Permission = editRankRequest.Permission;
                 this._databaseContext.SaveChanges();
+                this.PlayerRankEdited?.Invoke(this, rankToEdit);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
@@ -668,13 +700,14 @@ namespace FivePD.Gamemode.Server.Services
                     }.ToString());
                 }
 
-                this._databaseContext.Ranks.Add(new Rank
+                var createdRankEntry = this._databaseContext.Ranks.Add(new Rank
                 {
                     Department = department,
                     Name = createRankRequest.Name,
                     Permission = createRankRequest.Permission,
                 });
                 this._databaseContext.SaveChanges();
+                this.PlayerRankCreated?.Invoke(this, createdRankEntry.Entity);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
@@ -733,6 +766,7 @@ namespace FivePD.Gamemode.Server.Services
                 department.CallsignFormat = editDepartmentRequest.CallsignFormat;
                 department.MaxUsers = editDepartmentRequest.MaxUsers;
                 this._databaseContext.SaveChanges();
+                this.DepartmentEdited?.Invoke(this, department);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
@@ -785,6 +819,7 @@ namespace FivePD.Gamemode.Server.Services
                 var departmentOldName = department.Name;
                 this._databaseContext.Departments.Remove(department);
                 this._databaseContext.SaveChanges();
+                this.DepartmentDeleted?.Invoke(this, department);
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
