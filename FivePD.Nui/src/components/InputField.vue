@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { DateFormat } from "@enums";
-import type { InputField } from "@interfaces";
+import type { InputField, SelectItem } from "@interfaces";
 import { createBirthdateInputList } from "@utils";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 const props = defineProps<{
   field: InputField,
@@ -12,11 +12,23 @@ const props = defineProps<{
 
 const dirty = ref(false);
 const hasError = ref(false);
-const value = ref(props.field.defaultValue);
+const value = ref();
+
+onMounted(() => {
+  if (props.field.defaultValue) {
+    value.value = props.field.defaultValue();
+  }
+});
 
 watch(() => props.hasError, (newValue) => {
   hasError.value = newValue!;
 });
+
+function onSelect(selectedItem: SelectItem) {
+  if (props.onValueChange) {
+    props.onValueChange(selectedItem.id);
+  }
+}
 
 function onInput(event: any) {
   if (!dirty.value) {
@@ -59,7 +71,7 @@ function onInput(event: any) {
       :id="field.name"
       :name="field.name"
       :placeholder="field.placeholder"
-      v-if="field.type !== 'date' && field.type !== 'checkboxGroup'"
+      v-if="field.type === 'text' || field.type === 'number'"
       @input="event => onInput(event)"
       v-model="value"
     />
@@ -73,6 +85,14 @@ function onInput(event: any) {
         v-for="input in createBirthdateInputList(DateFormat.MDY)"
       />
     </div>
+    <Select
+        v-else-if="field.type === 'select'"
+        :default-item="field.defaultItem!"
+        :items="field.items!"
+        :selected-item-resolver="field.selectedItemResolver!"
+        :on-select="onSelect!"
+        :name="field.name"
+    />
     <div class="checkbox-group" v-else>
       <div class="checkbox" v-for="checkbox in field.checkboxes">
         <div class="checkbox-inner">
@@ -111,8 +131,7 @@ function onInput(event: any) {
     font-size: 16px
     color: var(--clr-text-secondary)
     &::placeholder
-      color: var(--clr-text-secondary)
-      opacity: .4
+      color: var(--clr-text-tertiary)
     &:focus
       border-color: var(--clr-gray)
 

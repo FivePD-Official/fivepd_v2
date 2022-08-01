@@ -60,6 +60,8 @@ export interface ILocalization {
       DeleteDivisionDescription: string;
       DeleteRankTitle: string;
       DeleteRankDescription: string;
+      DefaultRank: string;
+      DefaultRankDescription: string;
       EditDivision: string;
       EditRankTitle: string;
       Division: string;
@@ -78,6 +80,7 @@ export interface ILocalization {
       NoLimit: string;
       NoDivision: string;
       NoRank: string;
+      NoDefaultRank: string;
       Number: string;
       Permissions: string;
       Rank: string;
@@ -205,6 +208,8 @@ export const defaultLocalization: ILocalization = {
       DeleteDivisionDescription: '',
       DeleteRankTitle: '',
       DeleteRankDescription: '',
+      DefaultRank: '',
+      DefaultRankDescription: '',
       EditDivision: '',
       EditRankTitle: '',
       Division: '',
@@ -223,6 +228,7 @@ export const defaultLocalization: ILocalization = {
       NoLimit: '',
       NoDivision: '',
       NoRank: '',
+      NoDefaultRank: '',
       Number: '',
       Permissions: '',
       Rank: '',

@@ -3,12 +3,15 @@ import { formatFormEvent, FormFields } from "@utils";
 import type { InputField } from "@interfaces";
 import { computed, onMounted, ref, watch } from "vue";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   title: string;
   fields: InputField[][];
   submitButtonLabel: string;
   onSubmit: (fields: FormFields) => void;
-}>();
+  renderKey?: number;
+}>(), {
+  renderKey: 0,
+});
 
 interface InputFieldWithError extends InputField {
   hasError?: boolean;
@@ -19,7 +22,7 @@ const internalFields = ref<InputFieldWithError[][]>(props.fields as InputFieldWi
 const modified = computed(() => {
   const flattenedInternal = internalFields.value.flat();
   for (const item of flattenedInternal) {
-    if (item.value !== item.defaultValue) {
+    if (item.defaultValue && item.value !== item.defaultValue()) {
       return true;
     }
   }
@@ -34,12 +37,18 @@ watch(() => props.fields, () => {
   setDefaultFieldValues();
 });
 
+watch(() => props.renderKey, () => {
+  setDefaultFieldValues();
+});
+
 function setDefaultFieldValues() {
   const modifiedInternalFields: InputFieldWithError[][] = [];
   for (const col of props.fields) {
     const arr = [];
     for (const item of col) {
-      (item as InputFieldWithError).value = item.defaultValue;
+      if (item.defaultValue) {
+        (item as InputFieldWithError).value = item.defaultValue();
+      }
       arr.push(item);
     }
     modifiedInternalFields.push(arr);
@@ -123,7 +132,7 @@ function internalOnSubmit(event: any) {
 </script>
 
 <template>
-  <form @submit.prevent="internalOnSubmit">
+  <form :key="renderKey" @submit.prevent="internalOnSubmit">
     <p class="common-title">{{ title }}</p>
     <div class="form-columns" :style="{ grid: `1fr / repeat(${fields.length}, 1fr)` }">
       <div class="form-column" v-for="col in internalFields">

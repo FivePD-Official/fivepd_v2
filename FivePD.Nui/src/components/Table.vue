@@ -255,9 +255,10 @@ function headerButtonClick(onClick: PropButtonWithResponse['onClick']) {
               <Select 
                   v-else-if="action.type === 'select'"
                   :defaultItem="{ id: 0, label: action.label }"
-                  :items="(action as TableCellActionSelect<any>).items()"
+                  :items="(action as TableCellActionSelect<any>).items"
                   :selectedItemResolver="(selectItem) => (action as TableCellActionSelect<any>).selectedItemResolver(item.originalItem, selectItem.id)"
                   :onSelect="(selected) => tableCellActionSelect(action, item, selected.id)"
+                  size="small"
               />
             </template>
           </div>

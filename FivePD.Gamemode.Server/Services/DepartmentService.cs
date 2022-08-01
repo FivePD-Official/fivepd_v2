@@ -571,6 +571,7 @@ namespace FivePD.Gamemode.Server.Services
                 var deleteRankRequest = expandoObject.ConvertTo<DeleteRankRequest>();
                 var rankToDelete = this._databaseContext.Ranks
                     .Include(rank => rank.Users)
+                    .Include(rank => rank.Department)
                     .FirstOrDefault(rank => rank.Id == deleteRankRequest.RankId);
                 if (rankToDelete is null)
                 {
@@ -587,6 +588,11 @@ namespace FivePD.Gamemode.Server.Services
                 foreach (var user in rankToDelete.Users)
                 {
                     user.RankId = null;
+                }
+
+                if (rankToDelete.Department.DefaultRankId == rankToDelete.Id)
+                {
+                    rankToDelete.Department.DefaultRankId = null;
                 }
 
                 this._databaseContext.Ranks.Remove(rankToDelete);
@@ -760,11 +766,27 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
+                if (editDepartmentRequest.DefaultRankId != 0)
+                {
+                    var defaultRank = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == editDepartmentRequest.DefaultRankId);
+                    if (defaultRank is null)
+                    {
+                        networkCallbackDelegate.Invoke(new ActionResponse
+                        {
+                            Status = false,
+                            Title = "Nui.Errors.UnexpectedError",
+                            Description = "Nui.Errors.DatabaseAccess",
+                        }.ToString());
+                        return;
+                    }
+                }
+
                 var departmentOldName = department.Name;
                 department.Name = editDepartmentRequest.Name;
                 department.Callsign = string.IsNullOrEmpty(editDepartmentRequest.Callsign) ? editDepartmentRequest.Name.ToAcronym() : editDepartmentRequest.Callsign;
                 department.CallsignFormat = editDepartmentRequest.CallsignFormat;
                 department.MaxUsers = editDepartmentRequest.MaxUsers;
+                department.DefaultRankId = editDepartmentRequest.DefaultRankId == 0 ? (int?)null : editDepartmentRequest.DefaultRankId;
                 this._databaseContext.SaveChanges();
                 this.DepartmentEdited?.Invoke(this, department);
                 networkCallbackDelegate.Invoke(new ActionResponse
@@ -852,6 +874,13 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 this.AddPlayerToDepartment(player, department);
+                if (department?.DefaultRankId != null)
+                {
+                    var user = this.FindUserByLicense(player);
+                    user.RankId = department.DefaultRankId;
+                    this._databaseContext.SaveChanges();
+                }
+
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,

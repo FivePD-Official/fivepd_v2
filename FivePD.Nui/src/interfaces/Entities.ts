@@ -23,6 +23,8 @@ export interface IDepartment {
   Divisions?: IDivision[],
   Ranks?: IRank[],
   UserCount?: number,
+  DefaultRank?: IRank,
+  DefaultRankId?: number,
 }
 
 export interface IDivision {

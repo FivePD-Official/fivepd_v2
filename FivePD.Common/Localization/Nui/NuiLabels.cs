@@ -58,6 +58,10 @@ namespace FivePD.Common.Localization
 
         public string DeleteRankDescription { get; set; } = "Are you sure you want to delete {{rank}}? You can't undo this action.";
 
+        public string DefaultRank { get; set; } = "Default rank";
+
+        public string DefaultRankDescription { get; set; } = "The rank of new members will be automatically set to the default rank.";
+
         public string EditDivision { get; set; } = "Edit division";
 
         public string EditRankTitle { get; set; } = "Edit rank";
@@ -93,6 +97,8 @@ namespace FivePD.Common.Localization
         public string NoDivision { get; set; } = "No division";
 
         public string NoRank { get; set; } = "No rank";
+
+        public string NoDefaultRank { get; set; } = "No default rank";
 
         public string Number { get; set; } = "Number";
 

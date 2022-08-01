@@ -1,26 +1,25 @@
 ﻿<script setup lang="ts">
 import { onMounted, ref } from "vue";
+import type { SelectItem } from "@interfaces";
 
-export interface SelectItem {
-  id: number;
-  label: string;
-  selected?: boolean;
-}
-
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   defaultItem: Omit<SelectItem, 'selected'>;
-  items: SelectItem[];
+  items: () => SelectItem[];
   selectedItemResolver: (item: SelectItem) => boolean;
   onSelect: (item: SelectItem) => void;
-  defaultSelectItemId?: number;
-}>();
+  name?: string;
+  size?: 'normal' | 'small';
+}>(), {
+  name: '',
+  size: 'normal',
+});
 
 const selectedItem = ref(props.defaultItem);
 const open = ref(false);
-const filteredItems = ref(props.items);
+const filteredItems = ref(props.items());
 
 onMounted(() => {
-  for (const item of props.items) {
+  for (const item of props.items()) {
     const selected = props.selectedItemResolver(item);
     if (selected) {
       setSelectedItem(item);
@@ -37,7 +36,7 @@ function onSelect(selectItem: SelectItem) {
 
 function setSelectedItem(selectItem: SelectItem) {
   selectedItem.value = selectItem;
-  filteredItems.value = props.items.filter(item => item.id !== selectItem.id);
+  filteredItems.value = props.items().filter(item => item.id !== selectItem.id);
   
   if (selectItem.id !== props.defaultItem.id) {
     const copy = [...filteredItems.value];
@@ -48,7 +47,16 @@ function setSelectedItem(selectItem: SelectItem) {
 </script>
 
 <template>
-  <div class="select" :class="{ 'select--open': open }" v-click-outside="() => open = false">
+  <div
+    class="select"
+    :class="{
+      'select--open': open,
+      'select--normal': size === 'normal',
+      'select--small': size === 'small',
+    }"
+    v-click-outside="() => open = false"
+  >
+    <input v-if="name" type="number" :name="name" v-model="selectedItem.id">
     <div class="selected" @click="open = !open">
       <p>{{ selectedItem.label }}</p>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -56,7 +64,7 @@ function setSelectedItem(selectItem: SelectItem) {
       </svg>
     </div>
     <div class="items">
-      <button class="item" v-for="item in filteredItems" @click="onSelect(item)">
+      <button type="button" class="item" v-for="item in filteredItems" @click="onSelect(item)">
         <p>{{ item.label }}</p>
       </button>
     </div>
@@ -66,7 +74,16 @@ function setSelectedItem(selectItem: SelectItem) {
 <style scoped lang="sass">
 .select
   position: relative
-  height: 35px
+  &.select--normal
+    height: 40px
+    .selected
+      border: 1px solid var(--clr-bg-40)
+      background: transparent
+  &.select--small
+    height: 35px
+  
+  input
+    display: none
   
   .selected
     height: 35px

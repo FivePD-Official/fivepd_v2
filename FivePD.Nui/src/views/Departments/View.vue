@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { ActionResponse, ColumnDef, IDepartment, IDivision, IRank, IUser, Page, PropButton } from '@interfaces';
+import type {
+  ActionResponse,
+  ColumnDef,
+  IDepartment,
+  IDivision,
+  InputField,
+  IRank,
+  IUser,
+  Page,
+  PropButton
+} from '@interfaces';
 import { BaseRequest, PropButtonWithResponse } from "@interfaces";
 import { useState } from '@store';
 import { FormFields, modalService, post, replaceParams, showNotification, requestAndCommitUserData } from '@utils';
@@ -30,7 +40,8 @@ const router = useRouter();
 const defaultDepartmentId = parseInt(route.params.id as string);
 const department = ref<FormattedDepartment>();
 const title = computed(() => `${state.global.localization.Nui.Labels.Department} ${(department?.value?.Name ? '(' + department?.value?.Name + ')' : '')}`);
-const renderUsersKey = ref(0);
+const renderKey = ref(0);
+const renderKeyOnRouteChange = ref(0);
 
 onMounted(() => {
   if (state.user.details.Department?.Id === defaultDepartmentId) {
@@ -42,6 +53,7 @@ onMounted(() => {
 watch(route, (value) => {
   if (value.params.id) {
     requestDepartmentData(parseInt(value.params.id as string));
+    renderKeyOnRouteChange.value++;
   }
 }, {
   deep: true
@@ -182,7 +194,7 @@ const ranksColumns: ColumnDef<FormattedRank> = [
                 label: state.global.localization.Nui.Labels.Name,
                 placeholder: state.global.localization.Nui.Labels.Name,
                 required: true,
-                defaultValue: rank.Name,
+                defaultValue: () => rank.Name,
               },
               {
                 type: 'checkboxGroup',
@@ -329,7 +341,7 @@ const divisionsColumns: ColumnDef<IDivision> = [
               label: state.global.localization.Nui.Labels.Name,
               placeholder: state.global.localization.Nui.Labels.Name,
               required: true,
-              defaultValue: division.Name,
+              defaultValue: () => division.Name,
             }],
             buttons: {
               cancel: {
@@ -440,12 +452,93 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
   }
 ];
 
+const departmentSettingsFields: InputField[][] = [
+  [
+    {
+      name: 'Name',
+      label: state.global.localization.Nui.Labels.Name,
+      type: 'text',
+      required: true,
+      defaultValue: () => department.value?.Name,
+    },
+    {
+      name: 'MaxUsers',
+      label: state.global.localization.Nui.Labels.MaxNumberOfMembers,
+      type: 'number',
+      required: true,
+      defaultValue: () => department.value?.MaxUsers,
+      helpLabel: state.global.localization.Nui.Labels.MaxNumberOfMembersHelpLabel,
+    },
+    {
+      name: 'DefaultRankId',
+      label: state.global.localization.Nui.Labels.DefaultRank,
+      type: 'select',
+      required: false,
+      defaultValue: () => department.value?.DefaultRankId ?? 0,
+      helpLabel: state.global.localization.Nui.Labels.DefaultRankDescription,
+      items: () => department.value?.Ranks?.map(rank => {
+        return {
+          id: rank.Id,
+          label: rank.Name,
+        };
+      }) ?? [],
+      defaultItem: { id: 0, label: state.global.localization.Nui.Labels.NoDefaultRank },
+      selectedItemResolver: (item) => item.id === department.value?.DefaultRankId,
+    }
+  ],
+  [
+    {
+      name: 'Callsign',
+      label: state.global.localization.Nui.Labels.Callsign,
+      type: 'text',
+      required: false,
+      helpLabel: state.global.localization.Nui.Labels.CallsignHelpLabel,
+      defaultValue: () => department.value?.Callsign,
+      validator: (value: string) => !new RegExp('^[a-zA-Z]+$').test(value),
+    },
+    {
+      name: 'CallsignFormat',
+      label: state.global.localization.Nui.Labels.CallsignFormat,
+      type: 'text',
+      required: true,
+      defaultValue: () => department.value?.CallsignFormat,
+      helpLabel: `${state.global.localization.Nui.Labels.CallsignFormatHelpLabel} ${state.global.localization.Nui.Labels.AvailableCharacters}: <br/>
+        <table>
+          <tr>
+            <td><b>L</b><td>
+            <td>(${state.global.localization.Nui.Labels.Letter})<td>
+          </tr>
+          <tr>
+            <td><b>N</b><td>
+            <td>(${state.global.localization.Nui.Labels.Number})<td>
+          </tr>
+          <tr>
+            <td><b>-</b><td>
+            <td>(${state.global.localization.Nui.Labels.Dash})<td>
+          </tr>
+        </table>
+      `,
+      validator: (value: string) => !new RegExp('^[NL0-9\-*]{1,10}$').test(value),
+    }
+  ]
+];
+
 function requestDepartmentData(departmentId?: number) {
+  let departmentIdToRequest: number;
+  if (departmentId) {
+    departmentIdToRequest = departmentId;
+  } else if (department.value?.Id) {
+    departmentIdToRequest = department.value?.Id;
+  } else {
+    departmentIdToRequest = defaultDepartmentId;
+  }
+
   post<IDepartment>(ClientEvents.GetDepartmentById, {
-    DepartmentId: departmentId ?? defaultDepartmentId,
+    DepartmentId: departmentIdToRequest,
   }).subscribe((res) => {
     department.value = mapDepartmentData(res);
-    renderUsersKey.value++;
+    renderKey.value++;
+    renderKeyOnRouteChange.value++;
   });
 }
 
@@ -527,7 +620,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
       
       if (type === 'join') {
          requestAndCommitUserData();
-         renderUsersKey.value++;
+         renderKey.value++;
       } else {
         router.push('/');
       }
@@ -568,67 +661,15 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
   
   <template v-if="state.user.details?.Admin">
     <Grid :columns="2" v-if="department">
-      <EditableForm 
+      <EditableForm
+          :render-key="renderKey"
           :title="state.global.localization.Nui.Labels.DepartmentSettings"
           :submitButtonLabel="state.global.localization.Nui.Actions.Save"
           :onSubmit="onDepartmentSettingsSubmit"
-          :fields="[
-              [
-                 {
-                  name: 'Name',
-                  label: state.global.localization.Nui.Labels.Name,
-                  type: 'text',
-                  required: true,
-                  defaultValue: department.Name,
-                },
-                {
-                  name: 'MaxUsers',
-                  label: state.global.localization.Nui.Labels.MaxNumberOfMembers,
-                  type: 'number',
-                  required: true,
-                  defaultValue: department.MaxUsers,
-                  helpLabel: state.global.localization.Nui.Labels.MaxNumberOfMembersHelpLabel,
-                }
-              ],
-              [
-                {
-                  name: 'Callsign',
-                  label: state.global.localization.Nui.Labels.Callsign,
-                  type: 'text',
-                  required: false,
-                  helpLabel: state.global.localization.Nui.Labels.CallsignHelpLabel,
-                  defaultValue: department.Callsign,
-                  validator: (value: string) => !new RegExp('^[a-zA-Z]+$').test(value),
-                },
-                {
-                  name: 'CallsignFormat',
-                  label: state.global.localization.Nui.Labels.CallsignFormat,
-                  type: 'text',
-                  required: true,
-                  defaultValue: department.CallsignFormat,
-                  helpLabel: `
-                    ${state.global.localization.Nui.Labels.CallsignFormatHelpLabel} ${state.global.localization.Nui.Labels.AvailableCharacters}: <br/>
-                    <table>
-                      <tr>
-                        <td><b>L</b><td>
-                        <td>(${state.global.localization.Nui.Labels.Letter})<td>
-                      </tr>
-                      <tr>
-                        <td><b>N</b><td>
-                        <td>(${state.global.localization.Nui.Labels.Number})<td>
-                      </tr>
-                      <tr>
-                        <td><b>-</b><td>
-                        <td>(${state.global.localization.Nui.Labels.Dash})<td>
-                      </tr>
-                    </table>
-                  `,
-                  validator: (value: string) => !new RegExp('^[NL0-9\-*]{1,10}$').test(value),
-                }
-              ]
-          ]"
+          :fields="departmentSettingsFields"
       />
       <Table
+          :render-key="renderKeyOnRouteChange"
           :title="state.global.localization.Nui.Labels.Divisions"
           :buttons="divisionsButtons"
           :columns="divisionsColumns"
@@ -637,6 +678,7 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
       />
     </Grid>
     <Table
+        :render-key="renderKeyOnRouteChange"
         :title="state.global.localization.Nui.Labels.Ranks"
         :buttons="ranksButtons"
         :columns="ranksColumns"
@@ -649,6 +691,7 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
   <template v-if="!state.user.details?.Admin">
     <Grid :columns="2" v-if="department">
       <Table
+          :render-key="renderKeyOnRouteChange"
           :title="state.global.localization.Nui.Labels.Ranks"
           :buttons="ranksButtons"
           :columns="ranksColumns"
@@ -657,6 +700,7 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
           @on-change="onRankAndDivisionChange"
       />
       <Table
+          :render-key="renderKeyOnRouteChange"
           :title="state.global.localization.Nui.Labels.Divisions"
           :buttons="divisionsButtons"
           :columns="divisionsColumns"
@@ -667,7 +711,7 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
   </template>
 
   <Table
-    :renderKey="renderUsersKey"
+    :render-key="renderKey"
     v-if="department"
     :title="state.global.localization.Nui.Labels.Members"
     :columns="usersColumnDef"

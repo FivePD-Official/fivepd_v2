@@ -20,5 +20,7 @@ namespace FivePD.Gamemode.Server.Models.Requests
         public string CallsignFormat { get; set; }
 
         public int MaxUsers { get; set; }
+
+        public int DefaultRankId { get; set; }
     }
 }

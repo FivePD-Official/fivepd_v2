@@ -91,7 +91,7 @@ const departmentButtons: PropButtonWithResponse[] = [
             label: store.state.global.localization.Nui.Labels.MaxNumberOfMembers,
             type: 'number',
             required: true,
-            defaultValue: 0,
+            defaultValue: () => 0,
             helpLabel: store.state.global.localization.Nui.Labels.MaxNumberOfMembersHelpLabel,
           }
         ],
