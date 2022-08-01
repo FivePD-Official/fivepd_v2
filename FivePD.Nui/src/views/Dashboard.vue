@@ -130,12 +130,16 @@ const departmentColumnDef: ColumnDef<IDepartment> = [
     header: store.state.global.localization.Nui.Labels.Name,
     accessorKey: 'Name',
     linkResolver: (item) => `/departments/${item.Id}`,
-    filter: true,
+    filter: {
+      label: store.state.global.localization.Nui.Labels.SearchByName,
+    },
   },
   {
     header: store.state.global.localization.Nui.Labels.Callsign,
     accessorKey: 'Callsign',
-    filter: true,
+    filter: {
+      label: store.state.global.localization.Nui.Labels.SearchByCallsign,
+    },
   },
   {
     header: store.state.global.localization.Nui.Labels.Capacity,

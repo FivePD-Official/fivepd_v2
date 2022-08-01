@@ -138,7 +138,9 @@ const ranksColumns: ColumnDef<FormattedRank> = [
   {
     header: state.global.localization.Nui.Labels.Name,
     accessorKey: 'Name',
-    filter: true,
+    filter: {
+      label: state.global.localization.Nui.Labels.SearchByName,
+    },
   },
   {
     header: state.global.localization.Nui.Labels.Permissions,
@@ -289,7 +291,9 @@ const divisionsColumns: ColumnDef<IDivision> = [
   {
     header: state.global.localization.Nui.Labels.Name,
     accessorKey: 'Name',
-    filter: true,
+    filter: {
+      label: state.global.localization.Nui.Labels.SearchByName,
+    },
   },
   {
     header: state.global.localization.Nui.Labels.Actions,
@@ -378,7 +382,9 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
   {
     header: state.global.localization.Nui.Labels.Name,
     accessorKey: 'Name',
-    filter: true,
+    filter: {
+      label: state.global.localization.Nui.Labels.SearchByName,
+    },
   },
   {
     header: state.global.localization.Nui.Labels.Rank,

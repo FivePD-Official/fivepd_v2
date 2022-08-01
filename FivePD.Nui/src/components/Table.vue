@@ -227,7 +227,7 @@ function headerButtonClick(onClick: PropButtonWithResponse['onClick']) {
           <InputField v-if="column.filter" :field="{
             type: 'text',
             name: `${column.accessorKey}-filter`,
-            placeholder: column.header,
+            placeholder: column.filter.label,
             required: false
           }" 
           :onValueChange="value => onFilterFormChange(column.accessorKey, value)"/>

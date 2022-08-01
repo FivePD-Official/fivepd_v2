@@ -85,6 +85,8 @@ export interface ILocalization {
       Permissions: string;
       Rank: string;
       Ranks: string;
+      SearchByName: string;
+      SearchByCallsign: string;
       Settings: string;
       Statistics: string;
       Status: string;
@@ -233,6 +235,8 @@ export const defaultLocalization: ILocalization = {
       Permissions: '',
       Rank: '',
       Ranks: '',
+      SearchByName: '',
+      SearchByCallsign: '',
       Settings: '',
       Statistics: '',
       Status: '',

@@ -108,6 +108,10 @@ namespace FivePD.Common.Localization
 
         public string Ranks { get; set; } = "Ranks";
 
+        public string SearchByName { get; set; } = "Search by name";
+
+        public string SearchByCallsign { get; set; } = "Search by callsign";
+
         public string Settings { get; set; } = "Settings";
 
         public string Statistics { get; set; } = "Statistics";

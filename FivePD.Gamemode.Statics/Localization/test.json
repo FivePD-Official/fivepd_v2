@@ -83,6 +83,8 @@
       "Permissions": "T: Permissions",
       "Rank": "T: Rank",
       "Ranks": "T: Ranks",
+      "SearchByName": "T: Search by name",
+      "SearchByCallsign": "T: Search by callsign",
       "Settings": "T: Settings",
       "Statistics": "T: Statistics",
       "Status": "T: Status",

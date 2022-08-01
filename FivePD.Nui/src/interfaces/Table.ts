@@ -3,7 +3,9 @@ import { ActionResponse } from "@interfaces";
 export interface Column<T> {
   header: string;
   accessorKey?: Extract<keyof T, string>;
-  filter?: boolean;
+  filter?: {
+    label: string;
+  };
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
   actions?: TableCellActions<T>[];
