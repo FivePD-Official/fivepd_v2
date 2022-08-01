@@ -30,6 +30,7 @@ const router = useRouter();
 const defaultDepartmentId = parseInt(route.params.id as string);
 const department = ref<FormattedDepartment>();
 const title = computed(() => `${state.global.localization.Nui.Labels.Department} ${(department?.value?.Name ? '(' + department?.value?.Name + ')' : '')}`);
+const renderUsersKey = ref(0);
 
 onMounted(() => {
   if (state.user.details.Department?.Id === defaultDepartmentId) {
@@ -45,6 +46,10 @@ watch(route, (value) => {
 }, {
   deep: true
 });
+
+function onRankAndDivisionChange() {
+  requestDepartmentData();
+}
 
 const pageHeaderButtons: PropButton[] = [
   {
@@ -440,6 +445,7 @@ function requestDepartmentData(departmentId?: number) {
     DepartmentId: departmentId ?? defaultDepartmentId,
   }).subscribe((res) => {
     department.value = mapDepartmentData(res);
+    renderUsersKey.value++;
   });
 }
 
@@ -521,6 +527,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
       
       if (type === 'join') {
          requestAndCommitUserData();
+         renderUsersKey.value++;
       } else {
         router.push('/');
       }
@@ -626,6 +633,7 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
           :buttons="divisionsButtons"
           :columns="divisionsColumns"
           :dataRequest="requestDepartmentDivisions"
+          @on-change="onRankAndDivisionChange"
       />
     </Grid>
     <Table
@@ -634,6 +642,7 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
         :columns="ranksColumns"
         :dataRequest="requestDepartmentRanks"
         :dataMapper="mapDepartmentRanks"
+        @on-change="onRankAndDivisionChange"
     />
   </template>
 
@@ -645,17 +654,20 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
           :columns="ranksColumns"
           :dataRequest="requestDepartmentRanks"
           :dataMapper="mapDepartmentRanks"
+          @on-change="onRankAndDivisionChange"
       />
       <Table
           :title="state.global.localization.Nui.Labels.Divisions"
           :buttons="divisionsButtons"
           :columns="divisionsColumns"
           :dataRequest="requestDepartmentDivisions"
+          @on-change="onRankAndDivisionChange"
       />
     </Grid>
   </template>
 
   <Table
+    :renderKey="renderUsersKey"
     v-if="department"
     :title="state.global.localization.Nui.Labels.Members"
     :columns="usersColumnDef"

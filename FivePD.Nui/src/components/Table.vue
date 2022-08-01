@@ -16,14 +16,18 @@ import type {
 import { debounceTime, Observable, Subject } from "rxjs";
 
 const state = useState();
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   title: string;
   buttons?: PropButtonWithResponse[];
   columns: ColumnDef<any>;
   defaultData?: any;
   dataRequest?: (request: BaseRequest) => Observable<Page<any>>;
   dataMapper?: (response: Page<any>) => any;
-}>();
+  renderKey?: number;
+}>(), {
+  renderKey: 0,
+});
+const emit = defineEmits(['onChange'])
 
 const data = ref<Page<any>>({
   Items: [],
@@ -48,6 +52,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   filter$.unsubscribe();
+});
+
+watch(() => props.renderKey, () => {
+  requestData(filter.value);
 });
 
 function requestData(filters?: FormFilter) {
@@ -170,6 +178,7 @@ function tableCellActionButtonClick(action: TableCellAction<any>, item: Formatte
   (action as TableCellActionButton<any>).onClick(item.originalItem, res => {
     if (res.Status) {
       requestData(filter.value);
+      emit('onChange');
     }
   });
 }
@@ -178,6 +187,7 @@ function tableCellActionSelect(action: TableCellAction<any>, item: FormattedRowI
   (action as TableCellActionSelect<any>).onSelect(item.originalItem, selectedId, res => {
     if (res.Status) {
       requestData(filter.value);
+      emit('onChange');
     }
   });
 }
@@ -190,13 +200,14 @@ function headerButtonClick(onClick: PropButtonWithResponse['onClick']) {
   onClick(res => {
     if (res.Status) {
       requestData(filter.value);
+      emit('onChange');
     }
   });
 }
 </script>
 
 <template>
-  <div class="table-container">
+  <div :key="renderKey" class="table-container">
     <div class="table-container-header">
       <p class="common-title">{{ title }}</p>
       <div class="buttons" v-if="buttons">
