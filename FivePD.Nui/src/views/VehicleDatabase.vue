@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { InputField } from '@interfaces';
-import type { FormFields } from "@utils";
+import type { FormFields } from '@utils';
 
 const onSearchSubmit = (fields: FormFields) => {
   console.log(fields)

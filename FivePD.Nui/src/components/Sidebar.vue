@@ -85,11 +85,10 @@ const routes = computed<Route[]>(() => [
 
 <template>
   <aside :class="isSidebarCollapsed ? 'collapsed' : ''">
-
     <div class="links">
-      <router-link v-for="item in routes" :to="item.path" :key="item.path" active-class="active">
+      <router-link v-for="item in routes" :key="item.path" :to="item.path" active-class="active">
         <div v-if="item.show" class="link">
-          <div class="icon" v-html="item.icon"></div>
+          <div class="icon" v-html="item.icon" />
           <p>{{ item.title }}</p>
         </div>
       </router-link>
@@ -109,14 +108,13 @@ const routes = computed<Route[]>(() => [
         </svg>
       </button>
 
-      <button @click="store.commit('toggleSidebarCollapse')" :class="`collapse-btn ${isSidebarCollapsed ? 'collapsed' : ''}`">
+      <button :class="`collapse-btn ${isSidebarCollapsed ? 'collapsed' : ''}`" @click="store.commit('toggleSidebarCollapse')">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
         </svg>
         <span>Collapse</span>
       </button>
     </div>
-
   </aside>
 </template>
 

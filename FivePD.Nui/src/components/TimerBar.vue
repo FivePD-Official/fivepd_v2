@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { showNui } from "@utils";
-import { onMounted, ref, onBeforeUnmount } from "vue";
+import { showNui } from '@utils';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
 
 // TODO: Refactor to use the EventService
 
 const showTimerBar = ref<boolean>(false);
-const title = ref<string>("");
+const title = ref<string>('');
 const interval = ref<NodeJS.Timer>();
 const percentage = ref<number>(0);
 
 onMounted(() => {
-  window.addEventListener("message", onNuiEvent);
+  window.addEventListener('message', onNuiEvent);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("message", onNuiEvent);
+  window.removeEventListener('message', onNuiEvent);
 });
 
 interface TimerBarEvent {
@@ -25,7 +25,7 @@ interface TimerBarEvent {
   };
 }
 const onNuiEvent = (event: TimerBarEvent) => {
-  if (!event.data.hasOwnProperty("showTimerBar")) return;
+  if (!event.data.hasOwnProperty('showTimerBar')) return;
 
   showTimerBar.value = event.data.showTimerBar;
 

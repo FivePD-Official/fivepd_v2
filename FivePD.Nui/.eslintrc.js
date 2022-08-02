@@ -11,8 +11,8 @@
     'NodeJS': true,
   },
   rules: {
-    // override/add rules settings here, such as:
-    // 'vue/no-unused-vars': 'error'
+    'quotes': 'off',
+    '@typescript-eslint/quotes': ['error', 'single'],
     'no-prototype-builtins': 'off',
     'vue/no-v-html': 'off',
     'vue/multi-word-component-names': 'off',
@@ -22,5 +22,6 @@
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/prefer-for-of': 'warn',
   }
 }

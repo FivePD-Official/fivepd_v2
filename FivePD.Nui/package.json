@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build --emptyOutDir",
     "preview": "vite preview",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
+    "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
     "rxjs": "^7.5.5",

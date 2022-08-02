@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { DateFormat } from "@enums";
-import type { InputField } from "@interfaces";
-import { createBirthdateInputList } from "@utils";
-import { ref, watch } from "vue";
+import { DateFormat } from '@enums';
+import type { InputField } from '@interfaces';
+import { createBirthdateInputList } from '@utils';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
   field: InputField,

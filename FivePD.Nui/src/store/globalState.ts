@@ -1,6 +1,6 @@
-import type { RadialMenu, Localization } from "@interfaces";
-import type { Menu } from "@models";
-import { defaultLocalization } from "@interfaces";
+import type { RadialMenu, Localization } from '@interfaces';
+import type { Menu } from '@models';
+import { defaultLocalization } from '@interfaces';
 
 export interface IListItem {
   Key: number;

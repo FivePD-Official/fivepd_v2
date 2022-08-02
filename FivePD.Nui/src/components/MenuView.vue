@@ -160,13 +160,13 @@ const onListSlide = (dir: string) => {
         <p class="title">{{ menu.useLocalization ? t(item.title) : item.title }}</p>
         <div v-if="item.type === MenuItemType.Toggle" :class="`menu-item-toggle ${(item as MenuCheckboxItem).checked ? 'checked' : ''}`">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
 
         <div v-if="item.type === MenuItemType.List" class="menu-item-list">
-          <svg xmlns="http://www.w3.org/2000/svg" :class="`left-arrow ${(item as MenuListItem).currentIndex === 0 ? 'arrow-disabled' : ''}`"fill="none"viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          <svg xmlns="http://www.w3.org/2000/svg" :class="`left-arrow ${(item as MenuListItem).currentIndex === 0 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
           <div class="list-wrapper">
             <div :class="`list-wrapper-item-inner ${getMarqueeClass(item as MenuListItem)}`">
@@ -174,7 +174,7 @@ const onListSlide = (dir: string) => {
             </div>
           </div>
           <svg xmlns="http://www.w3.org/2000/svg" :class="`right-arrow ${(item as MenuListItem).currentIndex === (item as MenuListItem).items.length-1 ? 'arrow-disabled' : ''}`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </div>
       </div>

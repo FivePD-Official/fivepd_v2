@@ -1,4 +1,4 @@
-﻿import { Localization } from "./Localization";
+﻿import { Localization } from './Localization';
 
 export interface ActionResponse {
   Status: boolean;

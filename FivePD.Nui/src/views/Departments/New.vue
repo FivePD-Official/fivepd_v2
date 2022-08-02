@@ -4,7 +4,7 @@ import { ActionResponse } from '@interfaces';
 import { useState } from '@store';
 import { FormFields, post, replaceParams } from '@utils';
 import { useRouter } from 'vue-router';
-import { useTranslation } from "@hooks";
+import { useTranslation } from '@hooks';
 import { notificationService } from '@services';
 
 const state = useState();

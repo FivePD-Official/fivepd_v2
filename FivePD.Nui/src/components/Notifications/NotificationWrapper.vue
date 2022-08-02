@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
-import type { Notification } from "@interfaces";
+import { onMounted, onUnmounted, ref } from 'vue';
+import type { Notification } from '@interfaces';
 import { notificationService } from '@services';
 
 type NotificationWithTimer = Notification & { timer: number; exit: boolean };

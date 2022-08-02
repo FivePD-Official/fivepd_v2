@@ -7,7 +7,7 @@ import type {
   PropButton,
   ColumnDef, FormFilter, Page, BaseRequest
 } from '@interfaces';
-import { debounceTime, Observable, Subject } from "rxjs";
+import { debounceTime, Observable, Subject } from 'rxjs';
 
 const state = useState();
 const props = defineProps<{
@@ -99,7 +99,7 @@ function onFilterFormChange(accessorKey: string, value: string | number) {
       }
     }
   } else {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       filterCopy[accessorKey] = value;
     }
   }
@@ -209,7 +209,7 @@ function toPage(pageNumber: number) {
           </button>
           <button :disabled="currentPage === data.PageCount" @click="toNextPage()">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>

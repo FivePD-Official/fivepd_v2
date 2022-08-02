@@ -20,7 +20,7 @@ window.addEventListener('load', () => {
   const isDev = import.meta.env.MODE === 'development';
 
   document.head.innerHTML = document.head.innerHTML + '<base href=' + (isDev ? '' : '/Libraries/FivePD.Terminal/') + '/>';
-  document.body.style.display = "none";
+  document.body.style.display = 'none';
 
   window.addEventListener('message', event => eventService.next(event.data));
   window.addEventListener('keydown', (event) => {

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ClientEvents } from "@enums";
-import { onMounted, ref } from "vue";
-import { post } from "@utils";
-import type { BaseRequest, ColumnDef, IDepartment, IUser, Page } from "@interfaces";
-import { State } from "@store";
-import { useStore } from "vuex";
-import { Observable } from "rxjs";
+import { ClientEvents } from '@enums';
+import { onMounted, ref } from 'vue';
+import { post } from '@utils';
+import type { BaseRequest, ColumnDef, IDepartment, IUser, Page } from '@interfaces';
+import { State } from '@store';
+import { useStore } from 'vuex';
+import { Observable } from 'rxjs';
 
 const store = useStore<State>();
 

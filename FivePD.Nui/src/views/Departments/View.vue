@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
 import type { ActionResponse, ColumnDef, IDepartment, IRank, IUser, Page } from '@interfaces';
-import { BaseRequest } from "@interfaces";
+import { BaseRequest } from '@interfaces';
 import { useState } from '@store';
 import { post, replaceParams, toSentence } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 import { useTranslation } from '@hooks';
 import { notificationService } from '@services';
 

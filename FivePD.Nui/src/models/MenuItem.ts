@@ -1,6 +1,6 @@
-import { MenuItemType } from "@enums";
-import { post } from "@utils";
-import { MenuListItem } from "./MenuListItem";
+import { MenuItemType } from '@enums';
+import { post } from '@utils';
+import { MenuListItem } from './MenuListItem';
 
 export class MenuItem {
 

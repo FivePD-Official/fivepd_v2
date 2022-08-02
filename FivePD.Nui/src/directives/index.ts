@@ -1,4 +1,4 @@
-import { type Directive } from "vue";
+import { type Directive } from 'vue';
 
 const clickOutside: Directive = {
   mounted: (element: any, binding: any) => {
