@@ -12,12 +12,12 @@ import type {
 } from '@interfaces';
 import { BaseRequest } from '@interfaces';
 import { useState } from '@store';
-import { FormFields, modalService, post, replaceParams, requestAndCommitUserData } from '@utils';
+import { FormFields, post, replaceParams, requestAndCommitUserData } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Observable } from 'rxjs';
 import { useTranslation } from '@hooks';
-import { notificationService } from '@services';
+import { notificationService, modalService } from '@services';
 
 interface FormattedRank extends IRank {
   Permissions: string;

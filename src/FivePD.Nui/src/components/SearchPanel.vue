@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { InputField } from '@interfaces';
-import { FormFields } from '@utils';
+import type { FormFields } from '@utils';
 
 const emit = defineEmits(['onSubmit']);
 

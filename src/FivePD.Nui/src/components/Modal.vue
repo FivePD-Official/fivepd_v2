@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
-import type { FormFields, Modal } from '@utils';
-import { modalService } from '@utils';
+import type { FormFields } from '@utils';
+import { type Modal, modalService } from '@services';
 
 defineProps<{
   modal: Modal;

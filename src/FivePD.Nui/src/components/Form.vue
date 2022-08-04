@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { InputField } from '@interfaces';
-import { formatFormEvent, FormFields } from '@utils';
+import { formatFormEvent, type FormFields } from '@utils';
 import { ref, useSlots } from 'vue';
 
 const slots = useSlots();

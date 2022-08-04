@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropButton } from '@interfaces';
+import type { PropButton } from '@interfaces';
 
 defineProps<{
   title: string;

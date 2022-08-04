@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useStore } from 'vuex';
 import { onMounted, ref } from 'vue';
-import type { Modal } from '@utils';
-import { modalService } from '@utils';
+import { type Modal, modalService } from '@services';
 
 const store = useStore();
 const currentModal = ref<Modal | null>(null);

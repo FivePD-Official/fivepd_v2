@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
 import { onMounted, ref } from 'vue';
-import { modalService, post, replaceParams, requestAndCommitUserData } from '@utils';
+import { post, replaceParams, requestAndCommitUserData } from '@utils';
 import type {
   ActionResponse,
   BaseRequest,
@@ -15,7 +15,7 @@ import { useStore } from 'vuex';
 import { Observable } from 'rxjs';
 import { useRouter } from 'vue-router';
 import { useTranslation } from '@hooks';
-import { notificationService } from '@services';
+import { notificationService, modalService } from '@services';
 
 const router = useRouter();
 const t = useTranslation();

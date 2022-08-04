@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { formatFormEvent, FormFields } from '@utils';
+import { formatFormEvent, type FormFields } from '@utils';
 import type { InputField } from '@interfaces';
 import { computed, onMounted, ref, watch } from 'vue';
 
