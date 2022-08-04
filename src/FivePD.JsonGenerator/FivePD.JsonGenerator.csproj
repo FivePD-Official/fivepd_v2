@@ -44,4 +44,9 @@
     <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="TextFiles\FemaleFirstNames.txt" />
+    <Content Include="TextFiles\LastNames.txt" />
+    <Content Include="TextFiles\MaleFirstNames.txt" />
+  </ItemGroup>
 </Project>

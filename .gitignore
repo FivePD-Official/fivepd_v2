@@ -2,6 +2,7 @@ bin/
 obj/
 /packages/
 riderModule.iml
+FivePD.sln.DotSettings.user
 /_ReSharper.Caches/
 dev/FXServer/**/*.*
 !dev/FXServer/**/*.gitkeep
