@@ -6,6 +6,8 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 #pragma warning disable SA1649
 
@@ -16,6 +18,25 @@ namespace FivePD.Gamemode.Server.QueryHelpers
     /// </summary>
     public static class QueryableExtensions
     {
+        /// <summary>
+        /// Conditionally includes the specified entity in the query.
+        /// </summary>
+        /// <param name="source">The source query.</param>
+        /// <param name="condition">Specified whether to include the entity or not.</param>
+        /// <param name="navigationPropertyPath">A lambda expression representing the navigation property to be included (t => t.Property1)..</param>
+        /// <typeparam name="T">The type of entity being queried.</typeparam>
+        /// <returns>A new query with the related data included..</returns>
+        public static IQueryable<T> IncludeIf<T>(this IQueryable<T> source, bool condition, Expression<Func<T, object>> navigationPropertyPath)
+            where T : class
+        {
+            if (condition)
+            {
+                source = source.Include(navigationPropertyPath);
+            }
+
+            return source;
+        }
+
         /// <summary>
         /// Paginates your query and returns Page object for the given page number and page size.
         /// </summary>

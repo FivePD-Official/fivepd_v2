@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { DateFormat } from "@enums";
-import type { InputField } from "@interfaces";
+import type { InputField, SelectItem } from "@interfaces";
 import { createBirthdateInputList } from "@utils";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 const props = defineProps<{
   field: InputField,
@@ -12,18 +12,30 @@ const props = defineProps<{
 
 const dirty = ref(false);
 const hasError = ref(false);
-const value = ref(props.field.defaultValue);
+const value = ref();
+
+onMounted(() => {
+  if (props.field.defaultValue) {
+    value.value = props.field.defaultValue();
+  }
+});
 
 watch(() => props.hasError, (newValue) => {
   hasError.value = newValue!;
 });
+
+function onSelect(selectedItem: SelectItem) {
+  if (props.onValueChange) {
+    props.onValueChange(selectedItem.id);
+  }
+}
 
 function onInput(event: any) {
   if (!dirty.value) {
     dirty.value = true;
   }
 
-  const value = event.target.value;
+  const value = props.field.type === 'number' ? event.target.valueAsNumber : event.target.value;
 
   const isValueFalsy = props.field.type === 'number' ? isNaN(value) : !value;
   if (props.field.required) {
@@ -56,20 +68,41 @@ function onInput(event: any) {
     </label>
     <input
       :type="field.type"
+      :id="field.name"
       :name="field.name"
       :placeholder="field.placeholder"
-      v-if="field.type !== 'date'"
+      v-if="field.type === 'text' || field.type === 'number'"
       @input="event => onInput(event)"
       v-model="value"
     />
-    <div class="inputs" v-else>
+    <div class="inputs" v-else-if="field.type === 'date'">
       <input
         type="number"
         min="0"
+        :id="input.name"
         :name="input.name"
         :placeholder="input.placeholder"
         v-for="input in createBirthdateInputList(DateFormat.MDY)"
       />
+    </div>
+    <Select
+        v-else-if="field.type === 'select'"
+        :default-item="field.defaultItem!"
+        :items="field.items!"
+        :selected-item-resolver="field.selectedItemResolver!"
+        :on-select="onSelect!"
+        :name="field.name"
+    />
+    <div class="checkbox-group" v-else>
+      <div class="checkbox" v-for="checkbox in field.checkboxes">
+        <div class="checkbox-inner">
+          <input type="checkbox" :value="checkbox.id" :name="field.name + '-' + checkbox.id" :id="field.name + '-' + checkbox.id" :checked="checkbox.defaultValue ?? false">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <label :for="field.name + '-' + checkbox.id">{{ checkbox.label }}</label>
+      </div>
     </div>
     <span class="help-label" v-if="field.helpLabel" v-html="field.helpLabel"></span>
   </div>
@@ -98,8 +131,7 @@ function onInput(event: any) {
     font-size: 16px
     color: var(--clr-text-secondary)
     &::placeholder
-      color: var(--clr-text-secondary)
-      opacity: .4
+      color: var(--clr-text-tertiary)
     &:focus
       border-color: var(--clr-gray)
 
@@ -118,4 +150,55 @@ function onInput(event: any) {
       &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
         appearance: none
         -webkit-appearance: none
+        
+  .checkbox-group
+    margin-top: 10px
+
+    .checkbox
+      display: flex
+      flex-direction: row
+      align-items: center
+      margin-bottom: 10px
+      
+      .checkbox-inner
+        position: relative
+        width: 24px
+        height: 24px
+
+        svg
+          position: absolute
+          top: 50%
+          left: 50%
+          transform: translate(-50%,-50%)
+          height: 22px
+          opacity: 0
+          color: white
+          z-index: var(--layer-10)
+          pointer-events: none
+          
+        input
+          position: absolute
+          top: 0
+          left: 0
+          width: 100%
+          height: 100%
+          border: 2px solid var(--clr-bg-80)
+          border-radius: var(--radius-sm)
+          z-index: var(--layer-0)
+          appearance: none
+          -webkit-appearance: none
+          background: transparent
+          padding: 0
+          cursor: pointer
+          &:checked
+            border-color: var(--clr-text-secondary)
+            & ~ svg
+              opacity: 1
+        
+      label
+        font-size: 16px
+        color: var(--clr-text-secondary)
+        cursor: pointer
+        margin-left: 10px
+        margin-bottom: 0
 </style>

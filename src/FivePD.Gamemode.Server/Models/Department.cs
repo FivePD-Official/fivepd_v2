@@ -40,6 +40,17 @@ namespace FivePD.Gamemode.Server.Models
         public int MaxUsers { get; set; }
 
         /// <summary>
+        /// Gets or sets the default rank's id.
+        /// </summary>
+        public int? DefaultRankId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default rank which will be
+        /// assigned to new members upon joining.
+        /// </summary>
+        public Rank DefaultRank { get; set; }
+
+        /// <summary>
         /// Gets or sets the users of this department.
         /// </summary>
         public IEnumerable<User> Users { get; set; }

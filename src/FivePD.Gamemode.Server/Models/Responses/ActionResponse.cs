@@ -4,9 +4,10 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace FivePD.Gamemode.Server.NuiModels
+namespace FivePD.Gamemode.Server.Models.Responses
 {
     /// <summary>
     /// Used for actions initiated in the NUI.
@@ -20,9 +21,18 @@ namespace FivePD.Gamemode.Server.NuiModels
 
         /// <summary>
         /// Gets or sets the message if any.
-        /// Should be set to a localization path.
         /// </summary>
-        public string Message { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the message if any.
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the params.
+        /// </summary>
+        public Dictionary<string, string> Params { get; set; } = new Dictionary<string, string>();
 
         /// <inheritdoc />
         public override string ToString()

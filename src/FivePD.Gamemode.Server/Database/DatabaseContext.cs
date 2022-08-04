@@ -88,6 +88,9 @@ namespace FivePD.Gamemode.Server.Database
                 .WithOne(user => user.Department)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Department>()
+                .HasOne(department => department.DefaultRank);
+
             modelBuilder.Entity<User>()
                 .HasOne(user => user.Division);
 

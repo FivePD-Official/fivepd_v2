@@ -4,6 +4,8 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System.Collections.Generic;
+
 namespace FivePD.Gamemode.Server.Models
 {
     /// <summary>
@@ -25,5 +27,10 @@ namespace FivePD.Gamemode.Server.Models
         /// Gets or sets the department of this division.
         /// </summary>
         public Department Department { get; set; }
+
+        /// <summary>
+        /// Gets or sets the users of this division.
+        /// </summary>
+        public IEnumerable<User> Users { get; set; }
     }
 }

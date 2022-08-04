@@ -17,7 +17,7 @@ const props = defineProps<{
   >
     <h1>{{ title }}</h1>
     <div class="buttons" v-if="buttons">
-      <Button v-for="button in buttons" :show="button.show" :onClick="button.onClick" :link="button.link" :label="button.label" theme="secondary" />
+      <Button v-for="button in buttons" :show="button.show()" :onClick="() => button.onClick()" :link="button.link" :label="button.label" theme="secondary" />
     </div>
   </div>
 </template>
@@ -32,9 +32,12 @@ const props = defineProps<{
   align-items: center
   justify-content: space-between
   background: var(--clr-bg)
-  z-index: var(--layer-10)
+  z-index: var(--layer-100)
+  border-bottom: 1px solid var(--clr-bg-40)
+  margin-bottom: 40px
   &.page-header--center-title
     justify-content: center
+    border: none
 
     h1
       text-align: center

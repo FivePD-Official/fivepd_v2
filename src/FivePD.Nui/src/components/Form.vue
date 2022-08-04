@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { InputField } from '@interfaces';
 import { formatFormEvent, FormFields } from '@utils';
-import { ref } from 'vue';
+import { onMounted, ref, useSlots } from 'vue';
 
+const slots = useSlots();
 const props = defineProps<{
   fields: InputField[],
-  submitButtonLabel: string,
+  submitButtonLabel?: string,
   onSubmit: (fields: FormFields) => void,
   title?: string,
   subtitle?: string,
@@ -54,7 +55,8 @@ function internalOnSubmit(event: any) {
     <p class="form-title" v-if="title">{{ title }}</p>
     <p class="form-subtitle" v-if="subtitle">{{ subtitle }}</p>
     <InputField v-for="field in internalFields" :field="field" :hasError="field.hasError" />
-    <Button :label="submitButtonLabel" theme="primary" type="submit" />
+    <Button v-if="submitButtonLabel && !slots.default" :label="submitButtonLabel" theme="primary" type="submit" />
+    <slot></slot>
   </form>
 </template>
 
