@@ -20,11 +20,11 @@
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-        <OutputPath>../FXServer-Data/resources/fivepd/Libraries/FivePD.Gamemode.Server</OutputPath>
-        <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\Scripts\RestartLocalFXServer.ps1</PostBuildEvent>
+        <OutputPath>$(SolutionDir)/dev/FXServer-Data/resources/fivepd/Libraries/FivePD.Gamemode.Server</OutputPath>
+        <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\scripts\RestartLocalFXServer.ps1</PostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-        <OutputPath>../build-public-pre/Libraries/FivePD.Gamemode.Server</OutputPath>
+        <OutputPath>$(SolutionDir)/build-public-pre/Libraries/FivePD.Gamemode.Server</OutputPath>
     </PropertyGroup>
     <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />
 
@@ -42,10 +42,10 @@
     </ItemGroup>
     <Target Name="CopyStatics" BeforeTargets="CopyFilesToOutputDirectory" DependsOnTargets="CopyStaticsDebug;CopyStaticsRelease" />
     <Target Name="CopyStaticsDebug" Condition=" '$(Configuration)' == 'Debug' ">
-        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'..\FXServer-Data\resources\fivepd\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'$(SolutionDir)\dev\FXServer-Data\resources\fivepd\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     </Target>
     <Target Name="CopyStaticsRelease" Condition=" '$(Configuration)' == 'Release' ">
-        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'..\build-public\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'$(SolutionDir)\build-public\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     </Target>
 
     <ItemGroup>
