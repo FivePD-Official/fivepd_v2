@@ -25,8 +25,8 @@ namespace FivePD.JsonGenerator
             "Config",
         };
 
-        private static string RootPath = "../FivePD.Gamemode.Statics";
-        private static bool CreateTestLocalization = true;
+        private static string rootPath = "../FivePD.Gamemode.Statics";
+        private static bool createTestLocalization = true;
 
         /// <summary>
         /// Generates JSON files from the given types..
@@ -39,14 +39,14 @@ namespace FivePD.JsonGenerator
         {
             if (args.Length > 0 && !string.IsNullOrEmpty(args[0]))
             {
-                RootPath = args[0];
-                CreateTestLocalization = false;
+                rootPath = args[0];
+                createTestLocalization = false;
             }
 
             CreateDirectories();
 
             Write(typeof(Localization), "Localization/en.json");
-            if (CreateTestLocalization)
+            if (createTestLocalization)
             {
                 Write(CreateLocalizationTestData(new Localization()) as Localization, "Localization/test.json");
             }
@@ -66,7 +66,7 @@ namespace FivePD.JsonGenerator
         {
             foreach (var dir in Directories)
             {
-                var path = $"{RootPath}/{dir}";
+                var path = $"{rootPath}/{dir}";
                 try
                 {
                     if (!Directory.Exists(path))
@@ -90,19 +90,19 @@ namespace FivePD.JsonGenerator
             }
 
             var path = Path.Combine(assemblyFolder, sourceFileName);
-            File.Copy(path, $"{RootPath}/{destFileName}", true);
+            File.Copy(path, $"{rootPath}/{destFileName}", true);
         }
 
         private static void Write(Type typeOfObject, string path)
         {
             var data = JsonConvert.SerializeObject(Activator.CreateInstance(typeOfObject), Formatting.Indented);
-            File.WriteAllText($"{RootPath}/{path}", data);
+            File.WriteAllText($"{rootPath}/{path}", data);
         }
 
         private static void Write<T>(T defaultValue, string path)
         {
             var data = JsonConvert.SerializeObject(defaultValue, Formatting.Indented);
-            File.WriteAllText($"{RootPath}/{path}", data);
+            File.WriteAllText($"{rootPath}/{path}", data);
         }
 
         private static object CreateLocalizationTestData(object o, string parent = null)
