@@ -2,10 +2,13 @@
 <project version="4">
   <component name="UserContentModel">
     <attachedFolders>
-      <Path>FivePD.Nui</Path>
-      <Path>Scripts/Docker</Path>
+      <Path>dev/FXServer-Data</Path>
+      <Path>src/FivePD.Nui</Path>
     </attachedFolders>
     <explicitIncludes />
-    <explicitExcludes />
+    <explicitExcludes>
+      <Path>dev</Path>
+      <Path>dev/FXServer-Data</Path>
+    </explicitExcludes>
   </component>
 </project>
