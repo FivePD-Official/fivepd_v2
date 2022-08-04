@@ -2,11 +2,13 @@ bin/
 obj/
 /packages/
 riderModule.iml
+FivePD.sln.DotSettings.user
 /_ReSharper.Caches/
-/FXServer/**/*.*
-!/FXServer/**/*.gitkeep
-/FXServer-Data/resources/fivepd
+dev/FXServer/**/*.*
+!dev/FXServer/**/*.gitkeep
+dev/FXServer-Data/resources/fivepd
 build-public/
+build-public-pre/
 build-insider/
 FXServer-Data/db
 FXServer-Data/imgui.ini
@@ -15,4 +17,8 @@ txData/
 /**/Pages/*.css
 /**/Documentation.xml
 .idea/sonarlint
-FivePD.JsonGenerator/FivePD.JsonGenerator.exe
+src/FivePD.JsonGenerator/FivePD.JsonGenerator.exe
+src/FivePD.JsonGenerator/FivePD.JsonGenerator.exe.config
+aws.xml
+.name
+.vs

@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Localization;
 using Newtonsoft.Json;
@@ -20,31 +19,90 @@ namespace FivePD.JsonGenerator
     /// </summary>
     public static class JsonGenerator
     {
+        private static readonly string[] Directories =
+        {
+            "Localization",
+            "Config",
+        };
+
+        private static string rootPath = "../FivePD.Gamemode.Statics";
+        private static bool createTestLocalization = true;
+
         /// <summary>
         /// Generates JSON files from the given types..
         /// </summary>
-        public static void Main()
+        /// <param name="args">
+        /// If the first arg is set it'll be used as the output path,
+        /// otherwise they'll be written to the Statics folder.
+        /// </param>
+        public static void Main(string[] args)
         {
+            if (args.Length > 0 && !string.IsNullOrEmpty(args[0]))
+            {
+                rootPath = args[0];
+                createTestLocalization = false;
+            }
+
+            CreateDirectories();
+
             Write(typeof(Localization), "Localization/en.json");
-            Write(CreateLocalizationTestData(new Localization()) as Localization, "Localization/test.json");
+            if (createTestLocalization)
+            {
+                Write(CreateLocalizationTestData(new Localization()) as Localization, "Localization/test.json");
+            }
 
             Write(CreateDefaultDatabase(), "Config/database.json");
             Write(CreateDefaultLoadouts(), "Config/loadouts.json");
             Write(CreateDefaultItems(), "Config/items.json");
             Write(CreateDefaultVehicles(), "Config/vehicles.json");
             Write(typeof(MenuConfig), "Config/menu.json");
+
+            Copy("TextFiles/LastNames.txt", "Config/LastNames.txt");
+            Copy("TextFiles/MaleFirstNames.txt", "Config/MaleFirstNames.txt");
+            Copy("TextFiles/FemaleFirstNames.txt", "Config/FemaleFirstNames.txt");
+        }
+
+        private static void CreateDirectories()
+        {
+            foreach (var dir in Directories)
+            {
+                var path = $"{rootPath}/{dir}";
+                try
+                {
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Couldn't create directories: {e}");
+                }
+            }
+        }
+
+        private static void Copy(string sourceFileName, string destFileName)
+        {
+            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrEmpty(assemblyFolder))
+            {
+                return;
+            }
+
+            var path = Path.Combine(assemblyFolder, sourceFileName);
+            File.Copy(path, $"{rootPath}/{destFileName}", true);
         }
 
         private static void Write(Type typeOfObject, string path)
         {
             var data = JsonConvert.SerializeObject(Activator.CreateInstance(typeOfObject), Formatting.Indented);
-            File.WriteAllText($"../FivePD.Gamemode.Statics/{path}", data);
+            File.WriteAllText($"{rootPath}/{path}", data);
         }
 
         private static void Write<T>(T defaultValue, string path)
         {
             var data = JsonConvert.SerializeObject(defaultValue, Formatting.Indented);
-            File.WriteAllText($"../FivePD.Gamemode.Statics/{path}", data);
+            File.WriteAllText($"{rootPath}/{path}", data);
         }
 
         private static object CreateLocalizationTestData(object o, string parent = null)
