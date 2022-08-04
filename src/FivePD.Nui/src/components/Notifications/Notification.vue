@@ -33,7 +33,7 @@ defineProps<{
   position: relative
   background: var(--clr-bg-20)
   padding: 15px
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .25)
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
   border-radius: var(--radius-lg)
   margin-bottom: 20px
   animation: slideIn .2s

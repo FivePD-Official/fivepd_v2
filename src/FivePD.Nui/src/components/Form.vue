@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import type { InputField } from '@interfaces';
 import { formatFormEvent, FormFields } from '@utils';
-import { ref } from 'vue';
+import { ref, useSlots } from 'vue';
 
+const slots = useSlots();
 const props = defineProps<{
-  fields: InputField[],
-  submitButtonLabel: string,
-  onSubmit: (fields: FormFields) => void,
-  title?: string,
-  subtitle?: string,
+  fields: InputField[];
+  submitButtonLabel?: string;
+  onSubmit: (fields: FormFields) => void;
+  title?: string;
+  subtitle?: string;
 }>();
 
 interface InputFieldWithError extends InputField {
@@ -57,8 +58,9 @@ function internalOnSubmit(event: any) {
     <p v-if="subtitle" class="form-subtitle">
       {{ subtitle }}
     </p>
-    <InputField v-for="field in internalFields" :key="field.name" :field="field" :has-error="field.hasError" />
-    <Button :label="submitButtonLabel" theme="primary" type="submit" />
+    <InputField v-for="(field, fieldIndex) in internalFields" :key="fieldIndex" :field="field" :has-error="field.hasError" />
+    <Button v-if="!slots.default && submitButtonLabel" :label="submitButtonLabel" theme="primary" type="submit" />
+    <slot />
   </form>
 </template>
 

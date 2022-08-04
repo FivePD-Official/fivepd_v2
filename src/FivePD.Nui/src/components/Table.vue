@@ -1,23 +1,33 @@
 <script setup lang="ts">
 import { useState } from '@store';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import type {
+  BaseRequest,
+  ColumnDef,
   FormattedRow,
   FormattedRowItem,
-  PropButton,
-  ColumnDef, FormFilter, Page, BaseRequest
+  FormFilter,
+  Page,
+  PropButtonWithResponse,
+  TableCellAction,
+  TableCellActionButton,
+  TableCellActionSelect
 } from '@interfaces';
 import { debounceTime, Observable, Subject } from 'rxjs';
 
 const state = useState();
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   title: string;
-  buttons?: PropButton[];
+  buttons?: PropButtonWithResponse[];
   columns: ColumnDef<any>;
   defaultData?: any;
   dataRequest?: (request: BaseRequest) => Observable<Page<any>>;
-  dataMapper?: (response: Page<any>) => Page<any>;
-}>();
+  dataMapper?: (response: Page<any>) => any;
+  renderKey?: number;
+}>(), {
+  renderKey: 0,
+});
+const emit = defineEmits(['onChange'])
 
 const data = ref<Page<any>>({
   Items: [],
@@ -44,6 +54,10 @@ onUnmounted(() => {
   filter$.unsubscribe();
 });
 
+watch(() => props.renderKey, () => {
+  requestData(filter.value);
+});
+
 function requestData(filters?: FormFilter) {
   if (!props.dataRequest) {
     return;
@@ -65,19 +79,40 @@ function requestData(filters?: FormFilter) {
   });
 }
 
-const formattedRows = computed<FormattedRow[]>(() => {
+const formattedColumns = computed<ColumnDef<any>>(() => {
+  return props.columns.map(column => {
+    return {
+      ...column,
+      show: column.show,
+    };
+  });
+})
+
+const formattedRows = computed<FormattedRow<any>[]>(() => {
   return data.value?.Items?.map((item: any) => {
-    const row: FormattedRow = [];
+    const row: FormattedRow<any> = [];
 
-    for (const value of Object.values(props.columns)) {
+    for (const value of Object.values(formattedColumns.value)) {
+      if (value.show && !value.show()) {
+        continue;
+      }
+
       let newValue = '';
-      
-      newValue = value.valueResolver ? value.valueResolver(item) : item[value.accessorKey] as string;
 
-      const rowItem: FormattedRowItem = {
+      if (value.valueResolver) {
+        newValue = value.valueResolver(item);
+      } else if (value.accessorKey) {
+        newValue = item[value.accessorKey];
+      }
+
+      const rowItem: FormattedRowItem<any> = {
         value: newValue,
+        originalItem: item,
       };
 
+      if (value.actions) {
+        rowItem.actions = value.actions;
+      }
       if (value.linkResolver) {
         rowItem.link = value.linkResolver(item);
       }
@@ -88,7 +123,11 @@ const formattedRows = computed<FormattedRow[]>(() => {
   })
 });
 
-function onFilterFormChange(accessorKey: string, value: string | number) {
+function onFilterFormChange(accessorKey: string | undefined, value: string | number) {
+  if (!accessorKey) {
+    return;
+  }
+
   const filterCopy = {...filter.value};
   if (filterCopy.hasOwnProperty(accessorKey)) {
     if (typeof value === 'string') {
@@ -134,79 +173,124 @@ function toPage(pageNumber: number) {
   currentPage.value = pageNumber;
   requestData(filter.value);
 }
+
+function tableCellActionButtonClick(action: TableCellAction, item: FormattedRowItem<any>) {
+  (action as TableCellActionButton<any>).onClick(item.originalItem, res => {
+    if (res.Status) {
+      requestData(filter.value);
+      emit('onChange');
+    }
+  });
+}
+
+function tableCellActionSelect(action: TableCellAction, item: FormattedRowItem<any>, selectedId: number) {
+  (action as TableCellActionSelect<any>).onSelect(item.originalItem, selectedId, res => {
+    if (res.Status) {
+      requestData(filter.value);
+      emit('onChange');
+    }
+  });
+}
+
+function headerButtonClick(onClick: PropButtonWithResponse['onClick']) {
+  if (!onClick) {
+    return;
+  }
+
+  onClick(res => {
+    if (res.Status) {
+      requestData(filter.value);
+      emit('onChange');
+    }
+  });
+}
 </script>
 
 <template>
-  <div class="table-container">
+  <div :key="renderKey" class="table-container">
     <div class="table-container-header">
-      <p class="common-title">
-        {{ title }}
-      </p>
+      <p class="common-title">{{ title }}</p>
       <div v-if="buttons" class="buttons">
-        <Button
-          v-for="button in buttons"
-          :key="button.label"
-          :show="button.show"
-          :on-click="button.onClick"
-          :link="button.link"
-          :label="button.label"
-          theme="secondary"
-        />
+        <Button v-for="button in buttons" :key="button.label" :show="button.show()" :on-click="() => headerButtonClick(button.onClick)" :link="button.link" :label="button.label" theme="secondary" />
       </div>
     </div>
     
     <div class="common-bg table">
       <div class="table-row table-header">
-        <div v-for="column in columns" :key="column.accessorKey" class="table-cell">
+        <div
+          v-for="column in formattedColumns.filter(col => col.show ? col.show() : true)"
+          :key="column.header"
+          class="table-cell"
+        >
           <p>{{ column.header }}</p>
         </div>
       </div>
-      <form v-if="columns.some(col => col.filter)" class="table-row table-filter">
-        <div v-for="column in columns" :key="column.accessorKey" class="table-cell">
+
+      <form v-if="formattedColumns.filter(col => col.show ? col.show() : true).some(col => col.filter)" class="table-row table-filter">
+        <div
+          v-for="column in formattedColumns.filter(col => col.show ? col.show() : true)"
+          :key="column.header"
+          class="table-cell"
+        >
           <InputField
-            v-if="column.filter"
-            :field="{
+            v-if="column.filter" :field="{
               type: 'text',
               name: `${column.accessorKey}-filter`,
-              placeholder: column.header,
+              placeholder: column.filter.label,
               required: false
             }" 
             :on-value-change="value => onFilterFormChange(column.accessorKey, value)"
           />
         </div>
       </form>
+
       <template v-if="formattedRows?.length">
-        <div v-for="(row, rowIndex) in formattedRows" :key="rowIndex" class="table-row">
-          <div v-for="(item, itemIndex) in row" :key="itemIndex" class="table-cell">
-            <router-link v-if="item.link" :to="item.link">
+        <div
+          v-for="(row, rowIndex) in formattedRows"
+          :key="rowIndex"
+          class="table-row"
+        >
+          <div v-for="(item, rowItemIndex) in row" :key="rowItemIndex" class="table-cell">
+            <router-link v-if="item.link && !item.actions" :to="item.link">
               {{ item.value }}
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </router-link>
-            <p v-else>{{ item.value }}</p>
+            <p v-if="!item.link && !item.actions">{{ item.value }}</p>
+            <div v-if="!item.link && item.actions" class="table-cell-actions">
+              <template v-for="(action, actionIndex) in item.actions" :key="actionIndex">
+                <Button 
+                  v-if="action.type === 'button'"
+                  type="button"
+                  theme="small"
+                  :label="action.label"
+                  :on-click="() => tableCellActionButtonClick(action, item)"
+                />
+                <Select 
+                  v-else-if="action.type === 'select'"
+                  :default-item="{ id: 0, label: action.label }"
+                  :items="(action as TableCellActionSelect<any>).items"
+                  :selected-item-resolver="(selectItem) => (action as TableCellActionSelect<any>).selectedItemResolver(item.originalItem, selectItem.id)"
+                  :on-select="(selected) => tableCellActionSelect(action, item, selected.id)"
+                  size="small"
+                />
+              </template>
+            </div>
           </div>
         </div>
       </template>
+
       <div v-if="formattedRows?.length" class="table-pagination">
         <div class="pagination-inner">
-          <button
-            :disabled="currentPage === 1"
-            @click="toPreviousPage()"
-          >
+          <button :disabled="currentPage === 1" @click="toPreviousPage()">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <button v-if="currentPage > 1" @click="toPage(currentPage - 1)">
-            <span>{{ currentPage - 1 }}</span>
-          </button>
-          <button class="active">
-            <span>{{ currentPage }}</span>
-          </button>
-          <button v-if="currentPage < data.PageCount" @click="toPage(currentPage + 1)">
-            <span>{{ currentPage + 1 }}</span>
-          </button>
+          <button v-if="currentPage > 1" @click="toPage(currentPage - 1)"><span>{{ currentPage - 1 }}</span></button>
+          <button class="active"><span>{{ currentPage }}</span></button>
+          <button v-if="currentPage < data.PageCount" @click="toPage(currentPage + 1)"><span>{{ currentPage + 1 }}</span></button>
           <button :disabled="currentPage === data.PageCount" @click="toNextPage()">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -214,6 +298,7 @@ function toPage(pageNumber: number) {
           </button>
         </div>
       </div>
+
       <p v-else class="no-data">{{ state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
     </div>
   </div>
@@ -241,6 +326,7 @@ function toPage(pageNumber: number) {
     font-size: 18px
     color: var(--clr-text-secondary)
     display: block
+    padding-top: 10px
     padding-left: 10px
 
   .table
@@ -257,6 +343,10 @@ function toPage(pageNumber: number) {
         margin-bottom: 0
 
       .table-cell
+        display: flex
+        flex-direction: row
+        align-items: center
+        min-height: 45px
         padding: 5px 20px 5px 10px
         &:not(:last-of-type)
           border-right: 1px solid var(--clr-bg-40)
@@ -281,6 +371,12 @@ function toPage(pageNumber: number) {
 
         a:hover
           color: var(--clr-text)
+          
+        .table-cell-actions
+          display: flex
+          flex-direction: row
+          align-items: center
+          gap: 10px
 
       &.table-header
         .table-cell

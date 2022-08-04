@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import * as path from 'path';
-import localizationToInterfaceTransformer from "./custom-vite-plugins/localizationToInterfaceTransformer";
+import localizationToInterfaceTransformer from './custom-vite-plugins/localizationToInterfaceTransformer';
 
 export default ({ mode }) => {
 
@@ -12,7 +12,7 @@ export default ({ mode }) => {
     base: '',
     build: {
       target: 'es2015',
-      outDir: process.env.VITE_OUTDIR
+      outDir: './dist',
     },
     plugins: [
       vue(),

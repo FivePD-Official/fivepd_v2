@@ -198,6 +198,11 @@ namespace FivePD.Common
             public const string GetRanks = "fivepd:department:getRanks";
 
             /// <summary>
+            /// Used to request the divisions of a department.
+            /// </summary>
+            public const string GetDivisions = "fivepd:department:getDivisions";
+
+            /// <summary>
             /// Used when a user creates a department in the NUI.
             /// </summary>
             public const string Create = "fivepd:department:create";
@@ -211,6 +216,46 @@ namespace FivePD.Common
             /// Used when a user leaves a department in the NUI.
             /// </summary>
             public const string Leave = "fivepd:department:leave";
+
+            /// <summary>
+            /// Used to edit a department's settings.
+            /// </summary>
+            public const string Edit = "fivepd:department:edit";
+
+            /// <summary>
+            /// Used to delete a department.
+            /// </summary>
+            public const string Delete = "fivepd:department:delete";
+
+            /// <summary>
+            /// Used to delete a division from a department.
+            /// </summary>
+            public const string DeleteDivision = "fivepd:department:deleteDivision";
+
+            /// <summary>
+            /// Used to rename a division in a department.
+            /// </summary>
+            public const string EditDivision = "fivepd:department:renameDivision";
+
+            /// <summary>
+            /// Used to create a division in a department.
+            /// </summary>
+            public const string CreateDivision = "fivepd:department:createDivision";
+
+            /// <summary>
+            /// Used to delete a rank from a department.
+            /// </summary>
+            public const string DeleteRank = "fivepd:department:deleteRank";
+
+            /// <summary>
+            /// Used to edit a rank in a department.
+            /// </summary>
+            public const string EditRank = "fivepd:department:editRank";
+
+            /// <summary>
+            /// Used to create a rank in a department.
+            /// </summary>
+            public const string CreateRank = "fivepd:department:createRank";
         }
 
         /// <summary>
@@ -222,6 +267,16 @@ namespace FivePD.Common
             /// Used to request all departments for listing in the NUI.
             /// </summary>
             public const string GetDetails = "fivepd:player:getDetails";
+
+            /// <summary>
+            /// Used to change a player's division.
+            /// </summary>
+            public const string ChangeDivision = "fivepd:player:changeDivision";
+
+            /// <summary>
+            /// Used to change a player's rank.
+            /// </summary>
+            public const string ChangeRank = "fivepd:player:changeRank";
         }
     }
 }

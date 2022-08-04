@@ -29,6 +29,9 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.Property<string>("CallsignFormat")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int?>("DefaultRankId")
+                        .HasColumnType("int");
+
                     b.Property<int>("MaxUsers")
                         .HasColumnType("int");
 
@@ -36,6 +39,8 @@ namespace FivePD.Gamemode.Server.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DefaultRankId");
 
                     b.ToTable("Departments");
                 });
@@ -116,6 +121,13 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.Department", b =>
+                {
+                    b.HasOne("FivePD.Gamemode.Server.Models.Rank", "DefaultRank")
+                        .WithMany()
+                        .HasForeignKey("DefaultRankId");
+                });
+
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.Division", b =>
                 {
                     b.HasOne("FivePD.Gamemode.Server.Models.Department", "Department")
@@ -162,11 +174,11 @@ namespace FivePD.Gamemode.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("FivePD.Gamemode.Server.Models.Division", "Division")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("DivisionId");
 
                     b.HasOne("FivePD.Gamemode.Server.Models.Rank", "Rank")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("RankId");
                 });
 #pragma warning restore 612, 618

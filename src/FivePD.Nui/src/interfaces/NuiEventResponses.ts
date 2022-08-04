@@ -2,7 +2,9 @@
 
 export interface ActionResponse {
   Status: boolean;
-  Message: string;
+  Title: string;
+  Description: string;
+  Params: Record<string, string>;
 }
 
 export interface BaseNuiEvent {

@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Models;
 
 namespace FivePD.Gamemode.Server.Interfaces
@@ -22,6 +23,46 @@ namespace FivePD.Gamemode.Server.Interfaces
         public event EventHandler<Department> DepartmentCreated;
 
         /// <summary>
+        /// Fires when a department has been edited.
+        /// </summary>
+        public event EventHandler<Department> DepartmentEdited;
+
+        /// <summary>
+        /// Fires when a department has been deleted.
+        /// </summary>
+        public event EventHandler<Department> DepartmentDeleted;
+
+        /// <summary>
+        /// Fires when a rank has been created.
+        /// </summary>
+        public event EventHandler<Rank> PlayerRankCreated;
+
+        /// <summary>
+        /// Fires when a rank has been edited.
+        /// </summary>
+        public event EventHandler<Rank> PlayerRankEdited;
+
+        /// <summary>
+        /// Fires when a rank has been deleted.
+        /// </summary>
+        public event EventHandler<Rank> PlayerRankDeleted;
+
+        /// <summary>
+        /// Fires when a division has been created.
+        /// </summary>
+        public event EventHandler<Division> PlayerDivisionCreated;
+
+        /// <summary>
+        /// Fires when a division has been edited.
+        /// </summary>
+        public event EventHandler<Division> PlayerDivisionEdited;
+
+        /// <summary>
+        /// Fires when a division has been deleted.
+        /// </summary>
+        public event EventHandler<Division> PlayerDivisionDeleted;
+
+        /// <summary>
         /// Fires when a player joins a department or has been added to one with the API.
         /// </summary>
         public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerJoinedDepartment;
@@ -35,28 +76,37 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// Inserts a <see cref="Database"/> into the 'departments' table.
         /// </summary>
         /// <param name="department">The department to insert.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool CreateDepartment(Department department);
+        /// <exception cref="ArgumentException">The provided department or its name is null.</exception>
+        /// <exception cref="DepartmentExistsWithNameException">A department already exists with the same name.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        /// <returns>The created department object with change tracking.</returns>
+        public Department CreateDepartment(Department department);
 
         /// <summary>
         /// Removes a <see cref="Database"/> from the 'departments' table.
         /// </summary>
         /// <param name="department">The department to remove.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool RemoveDepartment(Department department);
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void RemoveDepartment(Department department);
 
         /// <summary>
         /// Selects and returns all departments.
         /// </summary>
+        /// <param name="includeRanks">Specifies whether to include the departments' ranks in the query or not.</param>
+        /// <param name="includeDivisions">Specifies whether to include the departments' divisions in the query or not.</param>
+        /// <param name="includeUsers">Specifies whether to include the departments' users in the query or not.</param>
         /// <returns>A list of departments.</returns>
-        public IEnumerable<Department> GetDepartments();
+        public IEnumerable<Department> GetDepartments(bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false);
 
         /// <summary>
         /// Finds the first department with the given identifier.
         /// </summary>
         /// <param name="id">The identifier to search for.</param>
+        /// <param name="includeRanks">Specifies whether to include the department's ranks in the query or not.</param>
+        /// <param name="includeDivisions">Specifies whether to include the department's divisions in the query or not.</param>
+        /// <param name="includeUsers">Specifies whether to include the department's users in the query or not.</param>
         /// <returns>The found department.</returns>
-        public Department GetDepartmentById(int id);
+        public Department GetDepartmentById(int id, bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false);
 
         /// <summary>
         /// Saves all changes made to any <see cref="Department"/> object.
@@ -69,30 +119,36 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <param name="user">The user to update.</param>
         /// <param name="department">The department to which the user will be added.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool AddPlayerToDepartment(User user, Department department);
+        /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+        /// <exception cref="DepartmentFullException">The provided department is full.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void AddPlayerToDepartment(User user, Department department);
 
         /// <summary>
         /// Adds the given player to the given department.
         /// </summary>
         /// <param name="player">The user to update.</param>
         /// <param name="department">The department to which the user will be added.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool AddPlayerToDepartment(Player player, Department department);
+        /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+        /// <exception cref="DepartmentFullException">The provided department is full.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void AddPlayerToDepartment(Player player, Department department);
 
         /// <summary>
         /// The given player will be removed from their department.
         /// </summary>
         /// <param name="user">The user to update.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool RemovePlayerFromDepartment(User user);
+        /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void RemovePlayerFromDepartment(User user);
 
         /// <summary>
         /// The given player will be removed from their department.
         /// </summary>
         /// <param name="player">The user to update.</param>
-        /// <returns>If the operation was successful.</returns>
-        public bool RemovePlayerFromDepartment(Player player);
+        /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void RemovePlayerFromDepartment(Player player);
     }
 
     /// <summary>

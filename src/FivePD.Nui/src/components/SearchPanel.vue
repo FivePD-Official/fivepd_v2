@@ -5,10 +5,10 @@ import { FormFields } from '@utils';
 const emit = defineEmits(['onSubmit']);
 
 defineProps<{
-  fields: InputField[],
-  title: string,
-  subtitle?: string,
-  buttonText: string
+  fields: InputField[];
+  title: string;
+  subtitle?: string;
+  buttonText: string;
 }>();
 
 function onSearchSubmit(fields: FormFields) {

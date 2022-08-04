@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { eventService } from '@services';
 
 const props = defineProps<{
-  menu: Menu
+  menu: Menu;
 }>();
 
 const t = useTranslation();

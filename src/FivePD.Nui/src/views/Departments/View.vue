@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { ActionResponse, ColumnDef, IDepartment, IRank, IUser, Page } from '@interfaces';
+import type {
+  ActionResponse,
+  ColumnDef,
+  IDepartment, IDivision, InputField,
+  IRank,
+  IUser,
+  Page,
+  PropButton,
+  PropButtonWithResponse
+} from '@interfaces';
 import { BaseRequest } from '@interfaces';
 import { useState } from '@store';
-import { post, replaceParams, toSentence } from '@utils';
+import { FormFields, modalService, post, replaceParams, requestAndCommitUserData } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Observable } from 'rxjs';
@@ -31,6 +40,8 @@ const router = useRouter();
 const defaultDepartmentId = parseInt(route.params.id as string);
 const department = ref<FormattedDepartment>();
 const title = computed(() => `${state.global.localization.Nui.Labels.Department} ${(department?.value?.Name ? '(' + department?.value?.Name + ')' : '')}`);
+const renderKey = ref(0);
+const renderKeyOnRouteChange = ref(0);
 
 onMounted(() => {
   if (state.user.details.Department?.Id === defaultDepartmentId) {
@@ -39,21 +50,331 @@ onMounted(() => {
   requestDepartmentData();
 })
 
-watch(route, () => {
-  requestDepartmentData();
+watch(route, (value) => {
+  if (value.params.id) {
+    requestDepartmentData(parseInt(value.params.id as string));
+    renderKeyOnRouteChange.value++;
+  }
 }, {
   deep: true
 });
+
+function onRankAndDivisionChange() {
+  requestDepartmentData();
+}
+
+const pageHeaderButtons: PropButton[] = [
+  {
+    label: state.global.localization.Nui.Actions.Join,
+    onClick: () => joinOrLeaveDepartment('join'),
+    show: () => state.user.details.DepartmentId !== department.value?.Id,
+  },
+  {
+    label: state.global.localization.Nui.Actions.Leave,
+    onClick: () => joinOrLeaveDepartment('leave'),
+    show: () => state.user.details.DepartmentId === department.value?.Id,
+  }
+];
+
+const ranksButtons: PropButtonWithResponse[] = [
+  {
+    label: state.global.localization.Nui.Actions.CreateRank,
+    onClick: (onResponse) => {
+      modalService.open({
+        title: state.global.localization.Nui.Actions.CreateRank,
+        inputs: [
+          {
+            type: 'text',
+            name: 'Name',
+            label: state.global.localization.Nui.Labels.Name,
+            placeholder: state.global.localization.Nui.Labels.Name,
+            required: true,
+          },
+          {
+            type: 'checkboxGroup',
+            name: 'Permission',
+            label: state.global.localization.Nui.Labels.Permissions,
+            required: false,
+            checkboxes: [
+              { id: 'Kick', label: 'Kick label' },
+              { id: 'SetRank', label: 'Set rank label' },
+              { id: 'SetCallsign', label: 'Set callsign label' },
+            ]
+          }
+        ],
+        buttons: {
+          cancel: {
+            theme: 'secondary',
+            label: state.global.localization.Nui.Actions.Cancel,
+          },
+          submit: {
+            theme: 'primary',
+            label: state.global.localization.Nui.Actions.Create,
+          },
+        },
+      }).subscribe(res => {
+        if (res.success) {
+          post<ActionResponse>(ClientEvents.CreateRank, {
+            DepartmentId: department.value?.Id,
+            Name: res.inputFields!['Name'],
+            Permission: res.inputFields!['Permission']
+          }).subscribe(createRes => {
+            notificationService.show({
+              type: createRes.Status ? 'success' : 'error',
+              title: t(createRes.Title),
+              description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
+            })
+
+            onResponse(createRes);
+          });
+        }
+      })
+    },
+    show: () => state.user.details.Admin,
+  }
+];
 
 const ranksColumns: ColumnDef<FormattedRank> = [
   {
     header: state.global.localization.Nui.Labels.Name,
     accessorKey: 'Name',
-    filter: true,
+    filter: {
+      label: state.global.localization.Nui.Labels.SearchByName,
+    },
   },
   {
     header: state.global.localization.Nui.Labels.Permissions,
     accessorKey: 'Permissions',
+  },
+  {
+    header: state.global.localization.Nui.Labels.Actions,
+    show: () => state.user.details.Admin,
+    actions: [
+      {
+        type: 'button',
+        label: state.global.localization.Nui.Actions.Delete,
+        onClick: (rank, onResponse) => {
+          modalService.open({
+            title: state.global.localization.Nui.Labels.DeleteRankTitle,
+            description: replaceParams(state.global.localization.Nui.Labels.DeleteRankDescription, { 'rank': `<b>${rank.Name}</b>`}),
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'danger',
+                label: state.global.localization.Nui.Actions.Delete,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.DeleteRank, {
+                RankId: rank.Id
+              }).subscribe(deleteRes => {
+                notificationService.show({
+                  type: deleteRes.Status ? 'success' : 'error',
+                  title: t(deleteRes.Title),
+                  description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+                })
+                onResponse(deleteRes);
+              });
+            }
+          })
+        }
+      },
+      {
+        type: 'button',
+        label: state.global.localization.Nui.Actions.Edit,
+        onClick: (rank, onResponse) => {
+          modalService.open({
+            title: state.global.localization.Nui.Labels.EditRankTitle,
+            inputs: [
+              {
+                type: 'text',
+                name: 'Name',
+                label: state.global.localization.Nui.Labels.Name,
+                placeholder: state.global.localization.Nui.Labels.Name,
+                required: true,
+                defaultValue: () => rank.Name,
+              },
+              {
+                type: 'checkboxGroup',
+                name: 'Permission',
+                label: state.global.localization.Nui.Labels.Permissions,
+                required: false,
+                checkboxes: [
+                  { id: 'Kick', label: state.global.localization.Nui.Actions.Kick, defaultValue: rank.Permission.Kick },
+                  { id: 'SetRank', label: state.global.localization.Nui.Actions.SetRank, defaultValue: rank.Permission.SetRank },
+                  { id: 'SetCallsign', label: state.global.localization.Nui.Actions.SetCallsign, defaultValue: rank.Permission.SetCallsign },
+                ]
+              }
+            ],
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'primary',
+                label: state.global.localization.Nui.Actions.Save,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.EditRank, {
+                DepartmentId: department.value?.Id,
+                RankId: rank.Id,
+                Name: res.inputFields!['Name'],
+                Permission: res.inputFields!['Permission']
+              }).subscribe(editRes => {
+                notificationService.show({
+                  type: editRes.Status ? 'success' : 'error',
+                  title: t(editRes.Title),
+                  description: editRes.Status ? replaceParams(t(editRes.Description), editRes.Params) : t(editRes.Description),
+                })
+                onResponse(editRes);
+              });
+            }
+          })
+        }
+      },
+    ]
+  }
+];
+
+const divisionsButtons: PropButtonWithResponse[] = [
+  {
+    label: state.global.localization.Nui.Actions.CreateDivision,
+    onClick: (onResponse) => {
+      modalService.open({
+        title: state.global.localization.Nui.Actions.CreateDivision,
+        inputs: [{
+          type: 'text',
+          name: 'Name',
+          label: state.global.localization.Nui.Labels.Name,
+          placeholder: state.global.localization.Nui.Labels.Name,
+          required: true,
+        }],
+        buttons: {
+          cancel: {
+            theme: 'secondary',
+            label: state.global.localization.Nui.Actions.Cancel,
+          },
+          submit: {
+            theme: 'primary',
+            label: state.global.localization.Nui.Actions.Create,
+          },
+        },
+      }).subscribe(res => {
+        if (res.success) {
+          post<ActionResponse>(ClientEvents.CreateDivision, {
+            DepartmentId: department.value?.Id,
+            Name: res.inputFields!['Name']
+          }).subscribe(createRes => {
+            notificationService.show({
+              type: createRes.Status ? 'success' : 'error',
+              title: t(createRes.Title),
+              description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
+            })
+
+            onResponse(createRes);
+          });
+        }
+      })
+    },
+    show: () => state.user.details.Admin,
+  }
+];
+
+const divisionsColumns: ColumnDef<IDivision> = [
+  {
+    header: state.global.localization.Nui.Labels.Name,
+    accessorKey: 'Name',
+    filter: {
+      label: state.global.localization.Nui.Labels.SearchByName,
+    },
+  },
+  {
+    header: state.global.localization.Nui.Labels.Actions,
+    show: () => state.user.details.Admin,
+    actions: [
+      {
+        type: 'button',
+        label: state.global.localization.Nui.Actions.Delete,
+        onClick: (division, onResponse) => {
+          modalService.open({
+            title: state.global.localization.Nui.Labels.DeleteDivisionTitle,
+            description: replaceParams(state.global.localization.Nui.Labels.DeleteDivisionDescription, { 'division': `<b>${division.Name}</b>`}),
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'danger',
+                label: state.global.localization.Nui.Actions.Delete,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.DeleteDivision, {
+                DepartmentId: department.value?.Id,
+                DivisionId: division.Id,
+              }).subscribe(deleteRes => {
+                notificationService.show({
+                  type: deleteRes.Status ? 'success' : 'error',
+                  title: t(deleteRes.Title),
+                  description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+                })
+                onResponse(deleteRes);
+              });
+            }
+          })
+        }
+      },
+      {
+        type: 'button',
+        label: state.global.localization.Nui.Actions.Edit,
+        onClick: (division, onResponse) => {
+          modalService.open({
+            title: state.global.localization.Nui.Labels.EditDivision,
+            inputs: [{
+              type: 'text',
+              name: 'Name',
+              label: state.global.localization.Nui.Labels.Name,
+              placeholder: state.global.localization.Nui.Labels.Name,
+              required: true,
+              defaultValue: () => division.Name,
+            }],
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'primary',
+                label: state.global.localization.Nui.Actions.Save,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.EditDivision, {
+                DivisionId: division.Id,
+                Name: res.inputFields!['Name'],
+              }).subscribe(renameRes => {
+                notificationService.show({
+                  type: renameRes.Status ? 'success' : 'error',
+                  title: t(renameRes.Title),
+                  description: renameRes.Status ? replaceParams(t(renameRes.Description), renameRes.Params) : t(renameRes.Description),
+                })
+                onResponse(renameRes);
+              });
+            }
+          })
+        }
+      }
+    ]
   }
 ];
 
@@ -61,21 +382,169 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
   {
     header: state.global.localization.Nui.Labels.Name,
     accessorKey: 'Name',
-    filter: true,
+    filter: {
+      label: state.global.localization.Nui.Labels.SearchByName,
+    },
   },
   {
     header: state.global.localization.Nui.Labels.Rank,
     accessorKey: 'RankName',
+    show: () => !state.user.details.Admin,
   },
   {
     header: state.global.localization.Nui.Labels.Division,
     accessorKey: 'DivisionName',
+    show: () => !state.user.details.Admin,
   },
+  {
+    header: state.global.localization.Nui.Labels.Rank,
+    show: () => state.user.details.Admin,
+    actions: [
+      {
+        type: 'select',
+        label: state.global.localization.Nui.Labels.NoRank,
+        selectedItemResolver: (user, itemId) => user.RankId === itemId,
+        items: () => department.value?.Ranks?.map(rank => {
+          return {
+            id: rank.Id,
+            label: rank.Name,
+          };
+        }) ?? [],
+        onSelect: (user, selectedId, onResponse) => {
+          post<ActionResponse>(ClientEvents.ChangePlayerRank, {
+            UserId: user.Id,
+            IdToChange: selectedId,
+          }).subscribe(deleteRes => {
+            notificationService.show({
+              type: deleteRes.Status ? 'success' : 'error',
+              title: t(deleteRes.Title),
+              description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+            })
+            onResponse(deleteRes);
+          });
+        }
+      }
+    ]
+  },
+  {
+    header: state.global.localization.Nui.Labels.Division,
+    show: () => state.user.details.Admin,
+    actions: [
+      {
+        type: 'select',
+        label: state.global.localization.Nui.Labels.NoDivision,
+        selectedItemResolver: (user, itemId) => user.DivisionId === itemId,
+        items: () => department.value?.Divisions?.map(division => {
+          return {
+            id: division.Id,
+            label: division.Name,
+          };
+        }) ?? [],
+        onSelect: (user, selectedId, onResponse) => {
+          post<ActionResponse>(ClientEvents.ChangePlayerDivision, {
+            UserId: user.Id,
+            IdToChange: selectedId,
+          }).subscribe(deleteRes => {
+            notificationService.show({
+              type: deleteRes.Status ? 'success' : 'error',
+              title: t(deleteRes.Title),
+              description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+            })
+            onResponse(deleteRes);
+          });
+        }
+      },
+    ]
+  }
 ];
 
-function requestDepartmentData() {
-  post<IDepartment>(ClientEvents.GetDepartmentById, defaultDepartmentId).subscribe((res) => {
+const departmentSettingsFields: InputField[][] = [
+  [
+    {
+      name: 'Name',
+      label: state.global.localization.Nui.Labels.Name,
+      type: 'text',
+      required: true,
+      defaultValue: () => department.value?.Name,
+    },
+    {
+      name: 'MaxUsers',
+      label: state.global.localization.Nui.Labels.MaxNumberOfMembers,
+      type: 'number',
+      required: true,
+      defaultValue: () => department.value?.MaxUsers,
+      helpLabel: state.global.localization.Nui.Labels.MaxNumberOfMembersHelpLabel,
+    },
+    {
+      name: 'DefaultRankId',
+      label: state.global.localization.Nui.Labels.DefaultRank,
+      type: 'select',
+      required: false,
+      defaultValue: () => department.value?.DefaultRankId ?? 0,
+      helpLabel: state.global.localization.Nui.Labels.DefaultRankDescription,
+      items: () => department.value?.Ranks?.map(rank => {
+        return {
+          id: rank.Id,
+          label: rank.Name,
+        };
+      }) ?? [],
+      defaultItem: { id: 0, label: state.global.localization.Nui.Labels.NoDefaultRank },
+      selectedItemResolver: (item) => item.id === department.value?.DefaultRankId,
+    }
+  ],
+  [
+    {
+      name: 'Callsign',
+      label: state.global.localization.Nui.Labels.Callsign,
+      type: 'text',
+      required: false,
+      helpLabel: state.global.localization.Nui.Labels.CallsignHelpLabel,
+      defaultValue: () => department.value?.Callsign,
+      validator: (value: string) => !new RegExp('^[a-zA-Z]+$').test(value),
+    },
+    {
+      name: 'CallsignFormat',
+      label: state.global.localization.Nui.Labels.CallsignFormat,
+      type: 'text',
+      required: true,
+      defaultValue: () => department.value?.CallsignFormat,
+      helpLabel: `${state.global.localization.Nui.Labels.CallsignFormatHelpLabel} ${state.global.localization.Nui.Labels.AvailableCharacters}: <br/>
+        <table>
+          <tr>
+            <td><b>L</b><td>
+            <td>(${state.global.localization.Nui.Labels.Letter})<td>
+          </tr>
+          <tr>
+            <td><b>N</b><td>
+            <td>(${state.global.localization.Nui.Labels.Number})<td>
+          </tr>
+          <tr>
+            <td><b>-</b><td>
+            <td>(${state.global.localization.Nui.Labels.Dash})<td>
+          </tr>
+        </table>
+      `,
+      validator: (value: string) => !new RegExp('^[NL0-9-*]{1,10}$').test(value),
+    }
+  ]
+];
+
+function requestDepartmentData(departmentId?: number) {
+  let departmentIdToRequest: number;
+  if (departmentId) {
+    departmentIdToRequest = departmentId;
+  } else if (department.value?.Id) {
+    departmentIdToRequest = department.value?.Id;
+  } else {
+    departmentIdToRequest = defaultDepartmentId;
+  }
+
+  post<IDepartment>(ClientEvents.GetDepartmentById, {
+    DepartmentId: departmentIdToRequest,
+  }).subscribe((res) => {
     department.value = mapDepartmentData(res);
+    renderKey.value++;
+    renderKeyOnRouteChange.value++;
   });
 }
 
@@ -90,6 +559,13 @@ function requestDepartmentRanks(ranksRequest: BaseRequest): Observable<Page<IRan
   return post<Page<IRank>>(ClientEvents.GetDepartmentRanks, {
     DepartmentId: department.value?.Id ?? defaultDepartmentId,
     ...ranksRequest
+  });
+}
+
+function requestDepartmentDivisions(divisionsRequest: BaseRequest): Observable<Page<IDivision>> {
+  return post<Page<IDivision>>(ClientEvents.GetDepartmentDivisions, {
+    DepartmentId: department.value?.Id ?? defaultDepartmentId,
+    ...divisionsRequest
   });
 }
 
@@ -144,21 +620,41 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
     if (res.Status) {
       notificationService.show({
         type: 'success',
-        title: type === 'join' ? state.global.localization.Nui.Labels.SuccessfulJoin : state.global.localization.Nui.Labels.SuccessfulLeave,
-        description: replaceParams(t(res.Message), { 'department': `<b>${department.value?.Name ?? '-'}</b>` }),
+        title: t(res.Title),
+        description: replaceParams(t(res.Description), res.Params),
       });
-      router.push('/');
+      
+      if (type === 'join') {
+         requestAndCommitUserData();
+         renderKey.value++;
+      } else {
+        router.push('/');
+      }
     } else {
       notificationService.show({
         type: 'error',
-        title: state.global.localization.Nui.Errors.UnexpectedError,
-        description: toSentence(
-          t(res.Message), 
-          state.global.localization.Nui.Errors.PleaseTryAgainLater
-        ),
+        title: t(res.Title),
+        description: t(res.Description),
       });
     }
 
+  });
+}
+
+function onDepartmentSettingsSubmit(fields: FormFields) {
+  post<ActionResponse>(ClientEvents.EditDepartment, {
+    DepartmentId: department.value?.Id ?? defaultDepartmentId,
+    ...fields
+  }).subscribe(res => {
+    notificationService.show({
+      type: res.Status ? 'success' : 'error',
+      title: t(res.Title),
+      description: res.Status ? replaceParams(t(res.Description), res.Params) : t(res.Description),
+    });
+    
+    if (res.Status) {
+      requestDepartmentData();
+    }
   });
 }
 </script>
@@ -166,28 +662,63 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
 <template>
   <PageHeader
     :title="title"
-    :buttons="[
-      {
-        label: state.global.localization.Nui.Actions.Join,
-        onClick: () => joinOrLeaveDepartment('join'),
-        show: state.user.details.DepartmentId !== department?.Id,
-      },
-      {
-        label: state.global.localization.Nui.Actions.Leave,
-        onClick: () => joinOrLeaveDepartment('leave'),
-        show: state.user.details.DepartmentId === department?.Id,
-      }
-    ]"
+    :buttons="pageHeaderButtons"
   />
+  
+  <template v-if="state.user.details?.Admin">
+    <Grid v-if="department" :columns="2">
+      <EditableForm
+        :render-key="renderKey"
+        :title="state.global.localization.Nui.Labels.DepartmentSettings"
+        :submit-button-label="state.global.localization.Nui.Actions.Save"
+        :on-submit="onDepartmentSettingsSubmit"
+        :fields="departmentSettingsFields"
+      />
+      <Table
+        :render-key="renderKeyOnRouteChange"
+        :title="state.global.localization.Nui.Labels.Divisions"
+        :buttons="divisionsButtons"
+        :columns="divisionsColumns"
+        :data-request="requestDepartmentDivisions"
+        @on-change="onRankAndDivisionChange"
+      />
+    </Grid>
+    <Table
+      :render-key="renderKeyOnRouteChange"
+      :title="state.global.localization.Nui.Labels.Ranks"
+      :buttons="ranksButtons"
+      :columns="ranksColumns"
+      :data-request="requestDepartmentRanks"
+      :data-mapper="mapDepartmentRanks"
+      @on-change="onRankAndDivisionChange"
+    />
+  </template>
+
+  <template v-if="!state.user.details?.Admin">
+    <Grid v-if="department" :columns="2">
+      <Table
+        :render-key="renderKeyOnRouteChange"
+        :title="state.global.localization.Nui.Labels.Ranks"
+        :buttons="ranksButtons"
+        :columns="ranksColumns"
+        :data-request="requestDepartmentRanks"
+        :data-mapper="mapDepartmentRanks"
+        @on-change="onRankAndDivisionChange"
+      />
+      <Table
+        :render-key="renderKeyOnRouteChange"
+        :title="state.global.localization.Nui.Labels.Divisions"
+        :buttons="divisionsButtons"
+        :columns="divisionsColumns"
+        :data-request="requestDepartmentDivisions"
+        @on-change="onRankAndDivisionChange"
+      />
+    </Grid>
+  </template>
 
   <Table
-    :title="state.global.localization.Nui.Labels.Ranks"
-    :columns="ranksColumns"
-    :data-request="requestDepartmentRanks"
-    :data-mapper="mapDepartmentRanks"
-  />
-
-  <Table
+    v-if="department"
+    :render-key="renderKey"
     :title="state.global.localization.Nui.Labels.Members"
     :columns="usersColumnDef"
     :data-request="requestDepartmentUsers"

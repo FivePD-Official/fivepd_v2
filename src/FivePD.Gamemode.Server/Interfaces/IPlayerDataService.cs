@@ -6,6 +6,7 @@
 
 using System;
 using FivePD.Common.Models;
+using FivePD.Gamemode.Server.Models;
 
 namespace FivePD.Gamemode.Server.Interfaces
 {
@@ -20,6 +21,16 @@ namespace FivePD.Gamemode.Server.Interfaces
          * <summary>Fires when a player's duty status changes.</summary>
          */
         public event EventHandler<DutyStatusChangedEventArgs> DutyStatusChanged;
+
+        /// <summary>
+        /// Fires when a player's rank has been changed.
+        /// </summary>
+        public event EventHandler<Rank> PlayerRankChanged;
+
+        /// <summary>
+        /// Fires when a player's division has been changed.
+        /// </summary>
+        public event EventHandler<Division> PlayerDivisionChanged;
 
         /**
          * <summary>Gets the current <see cref="FDutyStatus"/>

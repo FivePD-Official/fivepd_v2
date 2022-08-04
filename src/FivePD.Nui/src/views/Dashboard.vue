@@ -1,21 +1,31 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
 import { onMounted, ref } from 'vue';
-import { post } from '@utils';
-import type { BaseRequest, ColumnDef, IDepartment, IUser, Page } from '@interfaces';
+import { modalService, post, replaceParams, requestAndCommitUserData } from '@utils';
+import type {
+  ActionResponse,
+  BaseRequest,
+  ColumnDef,
+  IDepartment,
+  Page,
+  PropButtonWithResponse
+} from '@interfaces';
 import { State } from '@store';
 import { useStore } from 'vuex';
 import { Observable } from 'rxjs';
+import { useRouter } from 'vue-router';
+import { useTranslation } from '@hooks';
+import { notificationService } from '@services';
 
+const router = useRouter();
+const t = useTranslation();
 const store = useStore<State>();
 
 const statistics = ref(); // TODO
 const assignedCall = ref(); // TODO
 
 onMounted(() => {
-  post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
-    store.commit('setUserDetails', res);
-  });
+  requestAndCommitUserData();
 });
 
 const activeCallsColumnDef: ColumnDef<any> = [
@@ -37,22 +47,152 @@ const activeCallsColumnDef: ColumnDef<any> = [
   }
 ];
 
+const departmentButtons: PropButtonWithResponse[] = [
+  {
+    label: store.state.global.localization.Nui.Actions.CreateDepartment,
+    show: () => store.state.user.details.Admin,
+    onClick: onResponse => {
+      modalService.open({
+        title: store.state.global.localization.Nui.Actions.CreateDepartment,
+        inputs: [
+          {
+            name: 'Name',
+            label: store.state.global.localization.Nui.Labels.Name,
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'Callsign',
+            label: store.state.global.localization.Nui.Labels.Callsign,
+            type: 'text',
+            required: false,
+            helpLabel: store.state.global.localization.Nui.Labels.CallsignHelpLabel,
+            validator: (value: string) => !new RegExp('^[a-zA-Z]+$').test(value),
+          },
+          {
+            name: 'CallsignFormat',
+            label: store.state.global.localization.Nui.Labels.CallsignFormat,
+            type: 'text',
+            required: true,
+            helpLabel: `
+            ${store.state.global.localization.Nui.Labels.CallsignFormatHelpLabel} ${store.state.global.localization.Nui.Labels.AvailableCharacters}: <br/>
+            <table>
+              <tr>
+                <td><b>L</b><td>
+                <td>(${store.state.global.localization.Nui.Labels.Letter})<td>
+              </tr>
+              <tr>
+                <td><b>N</b><td>
+                <td>(${store.state.global.localization.Nui.Labels.Number})<td>
+              </tr>
+              <tr>
+                <td><b>-</b><td>
+                <td>(${store.state.global.localization.Nui.Labels.Dash})<td>
+              </tr>
+            </table>
+          `,
+            validator: (value: string) => !new RegExp('^[NL0-9-*]{1,10}$').test(value),
+          },
+          {
+            name: 'MaxUsers',
+            label: store.state.global.localization.Nui.Labels.MaxNumberOfMembers,
+            type: 'number',
+            required: true,
+            defaultValue: () => 0,
+            helpLabel: store.state.global.localization.Nui.Labels.MaxNumberOfMembersHelpLabel,
+          }
+        ],
+        buttons: {
+          cancel: {
+            theme: 'secondary',
+            label: store.state.global.localization.Nui.Actions.Cancel,
+          },
+          submit: {
+            theme: 'primary',
+            label: store.state.global.localization.Nui.Actions.Create,
+          },
+        },
+      }).subscribe(res => {
+        if (res.success) {
+          post<ActionResponse>(ClientEvents.CreateDepartment, res.inputFields).subscribe(createRes => {
+            if (createRes.Status) {
+              router.push('/');
+              onResponse(createRes);
+            }
+
+            notificationService.show({
+              type: createRes.Status ? 'success' : 'error',
+              title: t(createRes.Title),
+              description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
+            });
+          });
+        }
+      })
+    }
+  }
+];
+
 const departmentColumnDef: ColumnDef<IDepartment> = [
   {
     header: store.state.global.localization.Nui.Labels.Name,
     accessorKey: 'Name',
     linkResolver: (item) => `/departments/${item.Id}`,
-    filter: true,
+    filter: {
+      label: store.state.global.localization.Nui.Labels.SearchByName,
+    },
   },
   {
     header: store.state.global.localization.Nui.Labels.Callsign,
     accessorKey: 'Callsign',
-    filter: true,
+    filter: {
+      label: store.state.global.localization.Nui.Labels.SearchByCallsign,
+    },
   },
   {
     header: store.state.global.localization.Nui.Labels.Capacity,
     accessorKey: 'UserCount',
     valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${store.state.global.localization.Nui.Labels.NoLimit}` : `${item.UserCount} / ${item.MaxUsers}`,
+  },
+  {
+    header: store.state.global.localization.Nui.Labels.Actions,
+    actions: [
+      {
+        type: 'button',
+        label: store.state.global.localization.Nui.Actions.Delete,
+        onClick: (department, onResponse) => {
+          modalService.open({
+            title: store.state.global.localization.Nui.Labels.DeleteDepartmentTitle,
+            description: replaceParams(store.state.global.localization.Nui.Labels.DeleteDepartmentDescription, { 'department': `<b>${department.Name}</b>`}),
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: store.state.global.localization.Nui.Actions.Cancel,
+              },
+              submit: {
+                theme: 'danger',
+                label: store.state.global.localization.Nui.Actions.Delete,
+              },
+            },
+          }).subscribe(res => {
+            if (res.success) {
+              post<ActionResponse>(ClientEvents.DeleteDepartment, {
+                DepartmentId: department.Id,
+              }).subscribe(deleteRes => {
+                notificationService.show({
+                  type: deleteRes.Status ? 'success' : 'error',
+                  title: t(deleteRes.Title),
+                  description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
+                })
+                onResponse(deleteRes);
+                if (deleteRes.Status) {
+                  requestAndCommitUserData();
+                }
+              });
+            }
+          })
+        }
+      },
+    ]
   }
 ];
 
@@ -121,13 +261,7 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
 
   <Table
     :title="store.state.global.localization.Nui.Labels.Departments"
-    :buttons="[
-      {
-        label: store.state.global.localization.Nui.Labels.NewDepartment,
-        link: '/departments/new',
-        show: store.state.user.details?.Admin ?? false
-      }
-    ]"
+    :buttons="departmentButtons"
     :data-request="requestDepartments"
     :columns="departmentColumnDef"
   />

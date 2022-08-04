@@ -1,6 +1,15 @@
-export interface PropButton {
+import { ActionResponse } from '@interfaces';
+
+interface Button {
   label: string;
-  onClick?: () => void;
   link?: string;
-  show?: boolean;
+  show: () => boolean;
+}
+
+export interface PropButton extends Button {
+  onClick: () => void;
+}
+
+export interface PropButtonWithResponse extends Button {
+  onClick: (onResponse: (response: ActionResponse) => void) => void;
 }

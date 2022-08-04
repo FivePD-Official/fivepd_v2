@@ -49,13 +49,24 @@ namespace FivePD.Gamemode.Client.Services
             }));
 
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.List);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.GetById);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetById);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetUsers);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetRanks);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetDivisions);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.DeleteDivision);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.EditDivision);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CreateDivision);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.DeleteRank);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.EditRank);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CreateRank);
             this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Join);
             this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Leave);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Edit);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Delete);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Create);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.GetDetails);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeDivision);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeRank);
         }
 
         /// <inheritdoc />

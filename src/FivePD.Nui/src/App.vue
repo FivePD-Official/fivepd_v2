@@ -1,13 +1,24 @@
 <script setup lang="ts">
-import { hideNui, showNui, post } from '@utils';
-import { Menu, MenuItem, MenuButtonItem, MenuListItem, MenuCheckboxItem } from '@models';
-import { MenuItemType, NuiEventType, ClientEvents } from '@enums';
+import { hideNui, post, showNui, } from '@utils';
+import { ClientEvents, MenuItemType, NuiEventType } from '@enums';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
-import type { BaseNuiEvent, Localization, LocalizationChangeEvent, MenuObjectsEvent, MenuShowEvent, RadialMenuObjectsEvent, UpdateMenuItemEvent, SoundEvent, SoundSpeakEvent } from '@interfaces';
+import type {
+  BaseNuiEvent,
+  Localization,
+  LocalizationChangeEvent,
+  MenuObjectsEvent,
+  MenuShowEvent,
+  RadialMenuObjectsEvent,
+  SoundEvent,
+  SoundSpeakEvent,
+  UpdateMenuItemEvent,
+} from '@interfaces';
+import { IUser } from '@interfaces';
 import { State } from '@store';
 import { eventService } from '@services';
+import { Menu, MenuButtonItem, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
 
 const store = useStore<State>();
 const router = useRouter();
@@ -89,6 +100,9 @@ eventService.onEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).s
 eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
   viewType.value = event.type;
   showNui();
+  post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
+    store.commit('setUserDetails', res);
+  });
 });
 
 eventService.onEvent<MenuShowEvent>(NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {
@@ -201,6 +215,7 @@ function sendAvailabilityToClient() {
   --layer-0: 0
   --layer-10: 10
   --layer-100: 100
+  --layer-1000: 1000
 
   --page-header-height: 115px
 
