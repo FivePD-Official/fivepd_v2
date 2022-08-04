@@ -5,6 +5,7 @@ $RootPath = Split-Path $PSScriptRoot -Parent
 $BuildPath = Join-Path -Path $RootPath -ChildPath "dev\FXServer"
 $BuildZipPath = Join-Path -Path $BuildPath -ChildPath "build.zip"
 
+$ProgressPreference = 'SilentlyContinue'
 Invoke-WebRequest -Uri $BuildUrl -OutFile $BuildZipPath # download zip
 Expand-Archive -Path $BuildZipPath -DestinationPath $BuildPath # unarchive zip into fxserver folder
 Remove-Item $BuildZipPath # delete zip
