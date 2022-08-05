@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { IRoute } from '@interfaces';
 import { useStore } from 'vuex';
 import { State } from '@store';
+
+interface Route {
+  title: string;
+  path: string;
+  icon: string;
+  show: boolean;
+}
 
 const store = useStore<State>();
 const isSidebarCollapsed = computed(() => store.state.user.isSidebarCollapsed);
 const isPanicModeActive = computed(() => store.state.user.isPanicModeActive);
 
-const routes = computed<IRoute[]>(() => [
+const routes = computed<Route[]>(() => [
   {
     title: store.state.global.localization.Nui.Labels.Dashboard,
     path: '/',
@@ -79,11 +85,10 @@ const routes = computed<IRoute[]>(() => [
 
 <template>
   <aside :class="isSidebarCollapsed ? 'collapsed' : ''">
-
     <div class="links">
-      <router-link v-for="item in routes" :to="item.path" :key="item.path" active-class="active">
+      <router-link v-for="item in routes" :key="item.path" :to="item.path" active-class="active">
         <div v-if="item.show" class="link">
-          <div class="icon" v-html="item.icon"></div>
+          <div class="icon" v-html="item.icon" />
           <p>{{ item.title }}</p>
         </div>
       </router-link>
@@ -103,14 +108,13 @@ const routes = computed<IRoute[]>(() => [
         </svg>
       </button>
 
-      <button @click="store.commit('toggleSidebarCollapse')" :class="`collapse-btn ${isSidebarCollapsed ? 'collapsed' : ''}`">
+      <button :class="`collapse-btn ${isSidebarCollapsed ? 'collapsed' : ''}`" @click="store.commit('toggleSidebarCollapse')">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
         </svg>
         <span>Collapse</span>
       </button>
     </div>
-
   </aside>
 </template>
 

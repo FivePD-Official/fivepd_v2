@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { InputField, ISearchSubmitField } from '@interfaces';
+import type { InputField } from '@interfaces';
+import type { FormFields } from '@utils';
 
-const onSearchSubmit = (fields: ISearchSubmitField[]) => {
+const onSearchSubmit = (fields: FormFields) => {
   console.log(fields)
 }
 
@@ -33,15 +34,13 @@ const fields: InputField[] = [
 <template>
   <PageHeader title="Vehicle database" />
   <div class="content">
-
     <SearchPanel
       :fields="fields"
       title="Search"
       subtitle="All fields are optional. If empty, every vehicle will be displayed."
-      buttonText="Search"
-      @onSubmit="onSearchSubmit"
+      button-text="Search"
+      @on-submit="onSearchSubmit"
     />
-
   </div>
 </template>
 

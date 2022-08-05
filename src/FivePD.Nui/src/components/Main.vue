@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useStore } from 'vuex';
-import { onMounted, ref } from "vue";
-import type { Modal } from "@utils";
-import { modalService } from "@utils";
+import { onMounted, ref } from 'vue';
+import { type Modal, modalService } from '@services';
 
 const store = useStore();
 const currentModal = ref<Modal | null>(null);
@@ -15,13 +14,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="main-overlay"></div>
+  <div id="main-overlay" />
   <div class="mdt-view">
     <Header />
     <div :class="`main-subgrid ${store.state.user.isSidebarCollapsed ? 'collapsed' : ''}`">
       <Sidebar />
       <div class="router-view">
-        <router-view></router-view>
+        <router-view />
       </div>
     </div>
     <NotificationWrapper />

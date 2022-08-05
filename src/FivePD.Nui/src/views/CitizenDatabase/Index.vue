@@ -1,12 +1,25 @@
 <script setup lang="ts">
 import { ClientEvents } from '@enums';
-import type { InputField, ISearchSubmitField, PedSearchResponse } from '@interfaces';
+import type { InputField } from '@interfaces';
 import { useState } from '@store';
-import { post } from '@utils';
+import { type FormFields, post } from '@utils';
 import { ref } from 'vue';
 
+interface Ped {
+  NetworkId: number;
+  Firstname: string;
+  Lastname: string;
+  Gender: number;
+  Birthdate: {
+    Year: number;
+    Month: number;
+    Day: number;
+  }
+}
+type PedSearchResponse = Ped[];
+
 const state = useState();
-const onSearchSubmit = async (fields: ISearchSubmitField[]) => {
+const onSearchSubmit = async (fields: FormFields) => {
   post<PedSearchResponse>(ClientEvents.PedSearch, {...fields}).subscribe(res => {
     citizens.value = res;
   });
@@ -40,31 +53,36 @@ const citizens = ref<PedSearchResponse>([]);
 <template>
   <PageHeader :title="state.global.localization.Nui.Labels.CitizenDatabase" />
   <div class="content">
-
     <SearchPanel
       :fields="fields"
       title="Search"
       subtitle="All fields are optional. If empty, every citizen will be displayed."
-      buttonText="Search"
-      @onSubmit="onSearchSubmit"
+      button-text="Search"
+      @on-submit="onSearchSubmit"
     />
 
-    <div class="list" v-if="citizens?.length">
+    <div v-if="citizens?.length" class="list">
       <div class="list-item list-header">
         <p>Firstname</p>
         <p>Lastname</p>
         <p>Birthdate</p>
         <p>Wanted</p>
       </div>
-      <router-link v-for="citizen in citizens" :key="citizen.NetworkId" :to="`/citizen-database/${citizen.NetworkId}`" class="list-item">
+      <router-link
+        v-for="citizen in citizens"
+        :key="citizen.NetworkId"
+        :to="`/citizen-database/${citizen.NetworkId}`"
+        class="list-item"
+      >
         <p>{{ citizen.Firstname }}</p>
         <p>{{ citizen.Lastname }}</p>
         <p>{{ citizen.Birthdate.Month }} / {{ citizen.Birthdate.Day }} / {{ citizen.Birthdate.Year }}</p>
         <!-- <p :class="citizen.wanted ? 'text-danger' : ''">{{ citizen.wanted ? 'WANTED' : 'Not wanted' }}</p> -->
       </router-link>
     </div>
-    <p v-else class="list--empty">There are no citizens in the system.</p>
-
+    <p v-else class="list--empty">
+      There are no citizens in the system.
+    </p>
   </div>
 </template>
 

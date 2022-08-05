@@ -1,23 +1,12 @@
 <script setup lang="ts">
-import {
-  hideNui,
-  Menu,
-  MenuButtonItem,
-  MenuCheckboxItem,
-  MenuItem,
-  MenuListItem,
-  nuiEventNext,
-  onNuiEvent,
-  post,
-  showNui,
-} from '@utils';
+import { hideNui, post, showNui, } from '@utils';
 import { ClientEvents, MenuItemType, NuiEventType } from '@enums';
-import { useRoute, useRouter } from 'vue-router';
-import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 import { useStore } from 'vuex';
 import type {
   BaseNuiEvent,
-  ILocalization,
+  Localization,
   LocalizationChangeEvent,
   MenuObjectsEvent,
   MenuShowEvent,
@@ -26,23 +15,25 @@ import type {
   SoundSpeakEvent,
   UpdateMenuItemEvent,
 } from '@interfaces';
+import { IUser } from '@interfaces';
 import { State } from '@store';
-import { IUser } from "@interfaces";
+import { eventService } from '@services';
+import { Menu, MenuButtonItem, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
 
 const store = useStore<State>();
 const router = useRouter();
 const viewType = ref<string>('');
 const currentMenuId = ref<string>('#');
-const audioMap = new Map<string, any>();
+const audioMap = new Map<string, HTMLAudioElement | SpeechSynthesisUtterance>();
 
 window.addEventListener('load', () => {
 
   const isDev = import.meta.env.MODE === 'development';
 
   document.head.innerHTML = document.head.innerHTML + '<base href=' + (isDev ? '' : '/Libraries/FivePD.Terminal/') + '/>';
-  document.body.style.display = "none";
+  document.body.style.display = 'none';
 
-  window.addEventListener('message', event => nuiEventNext(event.data));
+  window.addEventListener('message', event => eventService.next(event.data));
   window.addEventListener('keydown', (event) => {
     if (event.code === 'Escape') {
       hideNui();
@@ -68,12 +59,12 @@ window.addEventListener('load', () => {
   loadLocalization();
 });
 
-onNuiEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
+eventService.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
   const menus: Menu[] = [];
   for (const menu of event.data) {
     const menuItems: MenuItem[] = [];
     for (const item of menu.Items) {
-      let _item: any;
+      let _item: MenuItem | undefined;
       switch (item.Type) {
         case MenuItemType.Button: {
           _item = new MenuButtonItem(item.Title, item.Description, item.Hashcode);
@@ -81,7 +72,7 @@ onNuiEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
         }
         case MenuItemType.List: {
           _item = new MenuListItem(item.Title, item.Description, item.Hashcode);
-          _item.items = item.Items;
+          (_item as MenuListItem).items = item.Items!;
           break;
         }
         case MenuItemType.Toggle: {
@@ -89,22 +80,24 @@ onNuiEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
           break;
         }
       }
-      menuItems.push(_item);
+      if (_item) {
+        menuItems.push(_item as MenuItem);
+      }
     }
     menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
   }
   store.commit('setMenus', menus);
 });
 
-onNuiEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(event => {
+eventService.onEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(event => {
   store.commit('setRadialMenus', event.data);
 });
 
-onNuiEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(event => {
+eventService.onEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(event => {
   store.commit('setLocalization', event.data);
 });
 
-onNuiEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
+eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
   viewType.value = event.type;
   showNui();
   post<IUser>(ClientEvents.GetPlayerDetails).subscribe((res) => {
@@ -112,18 +105,18 @@ onNuiEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(event => {
   });
 });
 
-onNuiEvent<MenuShowEvent>(NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {
+eventService.onEvent<MenuShowEvent>(NuiEventType.MenuView, NuiEventType.RadialMenu).subscribe(event => {
   viewType.value = event.type;
   currentMenuId.value = event.menuId;
   showNui();
 });
 
-onNuiEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => {
+eventService.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => {
   document.body.style.display = 'none';
   viewType.value = '';
 });
 
-onNuiEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(event => {
+eventService.onEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(event => {
   for (const menu of (store.state.global.menus as Menu[])) {
     for (const item of menu.items) {
       if (item.hashcode === event.hashcode) {
@@ -136,10 +129,10 @@ onNuiEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(event => 
   }
 });
 
-onNuiEvent<SoundEvent>(NuiEventType.PlaySound).subscribe(event => {
+eventService.onEvent<SoundEvent>(NuiEventType.PlaySound).subscribe(event => {
   if (audioMap.has(event.sound)) {
-    const audio = audioMap.get(event.sound);
-    if (audio.paused) {
+    const audio = audioMap.get(event.sound) as HTMLAudioElement;
+    if (audio && audio.paused) {
       audio.play();
     }
     return;
@@ -150,21 +143,23 @@ onNuiEvent<SoundEvent>(NuiEventType.PlaySound).subscribe(event => {
   audio.play();
 });
 
-onNuiEvent<SoundSpeakEvent>(NuiEventType.PlayText).subscribe(event => {
+eventService.onEvent<SoundSpeakEvent>(NuiEventType.PlayText).subscribe(event => {
   if (audioMap.has(event.textToPlay)) {
     return;
   }
 
   const audio = new SpeechSynthesisUtterance(event.textToPlay);
-  audioMap.set(event.textToPlay, audio);
-  speechSynthesis.speak(audio);
-  audio.onend = () => {
-    audioMap.delete(event.textToPlay);
-  };
+  if (audio) {
+    audioMap.set(event.textToPlay, audio);
+    speechSynthesis.speak(audio);
+    audio.onend = () => {
+      audioMap.delete(event.textToPlay);
+    };
+  }
 });
 
 function loadLocalization() {
-  post<ILocalization>(ClientEvents.GetLocalizationFromNui).subscribe(localization => {
+  post<Localization>(ClientEvents.GetLocalizationFromNui).subscribe(localization => {
     store.commit('setLocalization', localization);
   });
 }
@@ -177,12 +172,18 @@ function sendAvailabilityToClient() {
 <template>
   <div class="main-container">
     <Main v-if="viewType === NuiEventType.Mdt" />
-    <template v-if="viewType === NuiEventType.MenuView" v-for="item in store.state.global.menus">
-      <MenuView :menu="item" v-if="currentMenuId === item.id" />
+    <template v-if="viewType === NuiEventType.MenuView">
+      <template v-for="item in store.state.global.menus">
+        <MenuView
+          v-if="currentMenuId === item.id"
+          :key="item.id"
+          :menu="item"
+        />
+      </template>
     </template>
     <TimerBar />
   </div>
-  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menuId="currentMenuId" />
+  <RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menu-id="currentMenuId" />
 </template>
 
 <style lang="sass">

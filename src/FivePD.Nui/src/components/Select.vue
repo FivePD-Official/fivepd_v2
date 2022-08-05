@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
-import { onMounted, ref } from "vue";
-import type { SelectItem } from "@interfaces";
+import { onMounted, ref } from 'vue';
+import type { SelectItem } from '@interfaces';
 
 const props = withDefaults(defineProps<{
   defaultItem: Omit<SelectItem, 'selected'>;
@@ -48,15 +48,15 @@ function setSelectedItem(selectItem: SelectItem) {
 
 <template>
   <div
+    v-click-outside="() => open = false"
     class="select"
     :class="{
       'select--open': open,
       'select--normal': size === 'normal',
       'select--small': size === 'small',
     }"
-    v-click-outside="() => open = false"
   >
-    <input v-if="name" type="number" :name="name" v-model="selectedItem.id">
+    <input v-if="name" v-model="selectedItem.id" type="number" :name="name">
     <div class="selected" @click="open = !open">
       <p>{{ selectedItem.label }}</p>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -64,7 +64,7 @@ function setSelectedItem(selectItem: SelectItem) {
       </svg>
     </div>
     <div class="items">
-      <button type="button" class="item" v-for="item in filteredItems" @click="onSelect(item)">
+      <button v-for="item in filteredItems" :key="item.id" type="button" class="item" @click="onSelect(item)">
         <p>{{ item.label }}</p>
       </button>
     </div>

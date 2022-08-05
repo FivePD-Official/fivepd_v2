@@ -4,7 +4,7 @@ import { MenuItem } from './MenuItem';
 
 export class MenuListItem extends MenuItem {
 
-  private _currentIndex: number = 0;
+  private _currentIndex = 0;
 
   public items: string[] = [];
 

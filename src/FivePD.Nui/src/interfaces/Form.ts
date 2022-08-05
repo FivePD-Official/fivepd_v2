@@ -1,22 +1,22 @@
 export interface IDateInput {
-  name: string
-  placeholder: string
+  name: string;
+  placeholder: string;
 }
 
 export interface InputField {
-  type: 'text' | 'number' | 'date' | 'checkboxGroup' | 'select',
-  name: string,
-  label?: string,
-  required: boolean,
-  helpLabel?: string,
-  placeholder?: string,
-  defaultValue?: () => string | number | undefined,
-  validator?: (value: any) => boolean,
+  type: 'text' | 'number' | 'date' | 'checkboxGroup' | 'select';
+  name: string;
+  label?: string;
+  required: boolean;
+  helpLabel?: string;
+  placeholder?: string;
+  defaultValue?: () => string | number | undefined;
+  validator?: (value: any) => boolean;
   checkboxes?: {
-    id: string,
-    label: string,
-    defaultValue?: boolean,
-  }[],
+    id: string;
+    label: string;
+    defaultValue?: boolean;
+  }[];
   items?: () => SelectItem[];
   defaultItem?: Omit<SelectItem, 'selected'>;
   selectedItemResolver?: (item: SelectItem) => boolean;

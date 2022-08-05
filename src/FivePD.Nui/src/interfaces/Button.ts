@@ -1,4 +1,4 @@
-import { ActionResponse } from "@interfaces";
+import { ActionResponse } from '@interfaces';
 
 interface Button {
   label: string;

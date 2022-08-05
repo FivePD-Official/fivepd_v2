@@ -13,7 +13,7 @@ import type {
   TableCellActionButton,
   TableCellActionSelect
 } from '@interfaces';
-import { debounceTime, Observable, Subject } from "rxjs";
+import { debounceTime, Observable, Subject } from 'rxjs';
 
 const state = useState();
 const props = withDefaults(defineProps<{
@@ -138,7 +138,7 @@ function onFilterFormChange(accessorKey: string | undefined, value: string | num
       }
     }
   } else {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       filterCopy[accessorKey] = value;
     }
   }
@@ -174,7 +174,7 @@ function toPage(pageNumber: number) {
   requestData(filter.value);
 }
 
-function tableCellActionButtonClick(action: TableCellAction<any>, item: FormattedRowItem<any>) {
+function tableCellActionButtonClick(action: TableCellAction, item: FormattedRowItem<any>) {
   (action as TableCellActionButton<any>).onClick(item.originalItem, res => {
     if (res.Status) {
       requestData(filter.value);
@@ -183,7 +183,7 @@ function tableCellActionButtonClick(action: TableCellAction<any>, item: Formatte
   });
 }
 
-function tableCellActionSelect(action: TableCellAction<any>, item: FormattedRowItem<any>, selectedId: number) {
+function tableCellActionSelect(action: TableCellAction, item: FormattedRowItem<any>, selectedId: number) {
   (action as TableCellActionSelect<any>).onSelect(item.originalItem, selectedId, res => {
     if (res.Status) {
       requestData(filter.value);
@@ -210,62 +210,78 @@ function headerButtonClick(onClick: PropButtonWithResponse['onClick']) {
   <div :key="renderKey" class="table-container">
     <div class="table-container-header">
       <p class="common-title">{{ title }}</p>
-      <div class="buttons" v-if="buttons">
-        <Button v-for="button in buttons" :show="button.show()" :onClick="() => headerButtonClick(button.onClick)" :link="button.link" :label="button.label" theme="secondary" />
+      <div v-if="buttons" class="buttons">
+        <Button v-for="button in buttons" :key="button.label" :show="button.show()" :on-click="() => headerButtonClick(button.onClick)" :link="button.link" :label="button.label" theme="secondary" />
       </div>
     </div>
     
     <div class="common-bg table">
       <div class="table-row table-header">
-        <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show ? col.show() : true)">
+        <div
+          v-for="column in formattedColumns.filter(col => col.show ? col.show() : true)"
+          :key="column.header"
+          class="table-cell"
+        >
           <p>{{ column.header }}</p>
         </div>
       </div>
 
-      <form class="table-row table-filter" v-if="formattedColumns.filter(col => col.show ? col.show() : true).some(col => col.filter)">
-        <div class="table-cell" v-for="column in formattedColumns.filter(col => col.show ? col.show() : true)">
-          <InputField v-if="column.filter" :field="{
-            type: 'text',
-            name: `${column.accessorKey}-filter`,
-            placeholder: column.filter.label,
-            required: false
-          }" 
-          :onValueChange="value => onFilterFormChange(column.accessorKey, value)"/>
+      <form v-if="formattedColumns.filter(col => col.show ? col.show() : true).some(col => col.filter)" class="table-row table-filter">
+        <div
+          v-for="column in formattedColumns.filter(col => col.show ? col.show() : true)"
+          :key="column.header"
+          class="table-cell"
+        >
+          <InputField
+            v-if="column.filter" :field="{
+              type: 'text',
+              name: `${column.accessorKey}-filter`,
+              placeholder: column.filter.label,
+              required: false
+            }" 
+            :on-value-change="value => onFilterFormChange(column.accessorKey, value)"
+          />
         </div>
       </form>
 
-      <div class="table-row" v-for="row in formattedRows" v-if="formattedRows?.length">
-        <div class="table-cell" v-for="item in row">
-          <router-link v-if="item.link && !item.actions" :to="item.link">
-            {{ item.value }}
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </router-link>
-          <p v-if="!item.link && !item.actions">{{ item.value }}</p>
-          <div v-if="!item.link && item.actions" class="table-cell-actions">
-            <template v-for="action in item.actions">
-              <Button 
+      <template v-if="formattedRows?.length">
+        <div
+          v-for="(row, rowIndex) in formattedRows"
+          :key="rowIndex"
+          class="table-row"
+        >
+          <div v-for="(item, rowItemIndex) in row" :key="rowItemIndex" class="table-cell">
+            <router-link v-if="item.link && !item.actions" :to="item.link">
+              {{ item.value }}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </router-link>
+            <p v-if="!item.link && !item.actions">{{ item.value }}</p>
+            <div v-if="!item.link && item.actions" class="table-cell-actions">
+              <template v-for="(action, actionIndex) in item.actions" :key="actionIndex">
+                <Button 
                   v-if="action.type === 'button'"
                   type="button"
                   theme="small"
                   :label="action.label"
-                  :onClick="() => tableCellActionButtonClick(action, item)"
-              />
-              <Select 
+                  :on-click="() => tableCellActionButtonClick(action, item)"
+                />
+                <Select 
                   v-else-if="action.type === 'select'"
-                  :defaultItem="{ id: 0, label: action.label }"
+                  :default-item="{ id: 0, label: action.label }"
                   :items="(action as TableCellActionSelect<any>).items"
-                  :selectedItemResolver="(selectItem) => (action as TableCellActionSelect<any>).selectedItemResolver(item.originalItem, selectItem.id)"
-                  :onSelect="(selected) => tableCellActionSelect(action, item, selected.id)"
+                  :selected-item-resolver="(selectItem) => (action as TableCellActionSelect<any>).selectedItemResolver(item.originalItem, selectItem.id)"
+                  :on-select="(selected) => tableCellActionSelect(action, item, selected.id)"
                   size="small"
-              />
-            </template>
+                />
+              </template>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
 
-      <div class="table-pagination" v-if="formattedRows?.length">
+      <div v-if="formattedRows?.length" class="table-pagination">
         <div class="pagination-inner">
           <button :disabled="currentPage === 1" @click="toPreviousPage()">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -285,7 +301,6 @@ function headerButtonClick(onClick: PropButtonWithResponse['onClick']) {
 
       <p v-else class="no-data">{{ state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
     </div>
-    
   </div>
 </template>
 

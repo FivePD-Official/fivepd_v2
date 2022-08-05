@@ -1,6 +1,6 @@
 // The content of this file is auto-generated, do not edit it manually.
 
-export interface ILocalization {
+export interface Localization {
   Title: string;
   DutyMenu: {
     Title: string;
@@ -150,7 +150,7 @@ export interface ILocalization {
   }
 }
 
-export const defaultLocalization: ILocalization = {
+export const defaultLocalization: Localization = {
   Title: '',
   DutyMenu: {
     Title: '',

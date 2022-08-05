@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onNotification } from "@utils";
-import { onMounted, onUnmounted, ref } from "vue";
-import type { Notification } from "@interfaces";
+import { onMounted, onUnmounted, ref } from 'vue';
+import type { Notification } from '@interfaces';
+import { notificationService } from '@services';
 
 type NotificationWithTimer = Notification & { timer: number; exit: boolean };
 
@@ -28,7 +28,7 @@ onUnmounted(() => {
   }
 });
 
-onNotification().subscribe((notification) => {
+notificationService.onShow().subscribe((notification) => {
   notifications.value.push({
     ...notification,
     timer: 0,
@@ -39,7 +39,12 @@ onNotification().subscribe((notification) => {
 
 <template>
   <div class="wrapper">
-    <Notification v-for="notification in notifications" :notification="notification" :exit="notification.exit" />
+    <Notification
+      v-for="(notification, i) in notifications"
+      :key="i"
+      :notification="notification"
+      :exit="notification.exit"
+    />
   </div>
 </template>
 

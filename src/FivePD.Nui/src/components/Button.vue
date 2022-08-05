@@ -27,6 +27,7 @@ function internalOnClick() {
 
 <template>
   <button
+    v-if="show"
     :class="{
       'button--primary': theme === 'primary' && !disabled,
       'button--secondary': theme === 'secondary' && !disabled,
@@ -35,9 +36,8 @@ function internalOnClick() {
       'button--disabled': disabled,
     }"
     :type="type"
-    @click="internalOnClick"
-    v-if="show"
     :disabled="disabled"
+    @click="internalOnClick"
   >
     <span>{{ label }}</span>
   </button>

@@ -1,22 +1,31 @@
 <script setup lang="ts">
-import { hideNui, showNui } from "@utils";
-import { onMounted, ref, onBeforeUnmount } from "vue";
+import { showNui } from '@utils';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
+
+// TODO: Refactor to use the EventService
 
 const showTimerBar = ref<boolean>(false);
-const title = ref<string>("");
+const title = ref<string>('');
 const interval = ref<NodeJS.Timer>();
 const percentage = ref<number>(0);
 
 onMounted(() => {
-  window.addEventListener("message", onNuiEvent);
+  window.addEventListener('message', onNuiEvent);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("message", onNuiEvent);
+  window.removeEventListener('message', onNuiEvent);
 });
 
-const onNuiEvent = (event: any) => {
-  if (!event.data.hasOwnProperty("showTimerBar")) return;
+interface TimerBarEvent {
+  data: {
+   showTimerBar: boolean;
+   timerBarTitle: string;
+   timerBarTimeToHold: number;
+  };
+}
+const onNuiEvent = (event: TimerBarEvent) => {
+  if (!event.data.hasOwnProperty('showTimerBar')) return;
 
   showTimerBar.value = event.data.showTimerBar;
 
@@ -36,10 +45,12 @@ const onNuiEvent = (event: any) => {
 </script>
 
 <template>
-  <div class="timerbar" v-if="showTimerBar">
-    <p class="title">{{ title }}</p>
+  <div v-if="showTimerBar" class="timerbar">
+    <p class="title">
+      {{ title }}
+    </p>
     <div class="timerbar-inner">
-      <div :style="`width: ${percentage}%`"></div>
+      <div :style="`width: ${percentage}%`" />
     </div>
   </div>
 </template>

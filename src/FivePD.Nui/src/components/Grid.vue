@@ -1,15 +1,17 @@
 ﻿<script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   rows?: number; // TODO?
   columns: number;
 }>();
 </script>
 
 <template>
-  <div class="grid" :style="{
-    gridTemplateColumns: `repeat(${columns}, 1fr)`
-  }">
-    <slot></slot>
+  <div
+    class="grid" :style="{
+      gridTemplateColumns: `repeat(${columns}, 1fr)`
+    }"
+  >
+    <slot />
   </div>
 </template>
 

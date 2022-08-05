@@ -1,6 +1,6 @@
 ﻿import { Subject } from 'rxjs';
-import { InputField } from "@interfaces";
-import { FormFields } from "@utils";
+import { InputField } from '@interfaces';
+import { FormFields } from '@utils';
 
 interface ModalButton {
   theme: 'primary' | 'secondary' | 'danger';

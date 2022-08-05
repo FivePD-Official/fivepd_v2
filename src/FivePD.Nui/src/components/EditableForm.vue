@@ -1,7 +1,7 @@
 ﻿<script setup lang="ts">
-import { formatFormEvent, FormFields } from "@utils";
-import type { InputField } from "@interfaces";
-import { computed, onMounted, ref, watch } from "vue";
+import { formatFormEvent, type FormFields } from '@utils';
+import type { InputField } from '@interfaces';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const props = withDefaults(defineProps<{
   title: string;
@@ -99,7 +99,7 @@ function internalOnSubmit(event: any) {
       continue;
     }
 
-    const isValueFalsy = field.type === 'number' ? isNaN(value) : !value;
+    const isValueFalsy = field.type === 'text' ? !value : false;
     if (field.required) {
       if (field.validator) {
         field.hasError = field.validator(value);
@@ -135,16 +135,26 @@ function internalOnSubmit(event: any) {
   <form :key="renderKey" @submit.prevent="internalOnSubmit">
     <p class="common-title">{{ title }}</p>
     <div class="form-columns" :style="{ grid: `1fr / repeat(${fields.length}, 1fr)` }">
-      <div class="form-column" v-for="col in internalFields">
-        <InputField v-for="field in col" :field="field" :hasError="field.hasError" :onValueChange="value => onInputValueChange(field, value)" />
+      <div
+        v-for="(col, i) in internalFields"
+        :key="i"
+        class="form-column"
+      >
+        <InputField
+          v-for="field in col"
+          :key="field.name"
+          :field="field"
+          :has-error="field.hasError"
+          :on-value-change="value => onInputValueChange(field, value)"
+        />
       </div>
     </div>
     <div class="button-wrapper">
       <Button
-          :disabled="!modified"
-          :label="submitButtonLabel"
-          type="submit"
-          theme="primary"
+        :disabled="!modified"
+        :label="submitButtonLabel"
+        type="submit"
+        theme="primary"
       />
     </div>
   </form>

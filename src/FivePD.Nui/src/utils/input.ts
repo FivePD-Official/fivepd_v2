@@ -1,6 +1,8 @@
 import type { IDateInput } from '@interfaces';
 import { DateFormat } from '@enums';
 
+export type FormFields = null | { [key: string]: unknown; };
+
 export const createBirthdateInputList = (dateFormat: DateFormat): IDateInput[] => {
   let inputs: IDateInput[] = [];
   switch (dateFormat as DateFormat) {
@@ -31,8 +33,6 @@ export const createBirthdateInputList = (dateFormat: DateFormat): IDateInput[] =
   }
   return inputs;
 }
-
-export type FormFields = null | { [key: string]: any };
 
 export const formatFormEvent = (event: any): FormFields => {
 

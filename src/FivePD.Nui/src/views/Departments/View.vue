@@ -3,21 +3,21 @@ import { ClientEvents } from '@enums';
 import type {
   ActionResponse,
   ColumnDef,
-  IDepartment,
-  IDivision,
-  InputField,
+  IDepartment, IDivision, InputField,
   IRank,
   IUser,
   Page,
-  PropButton
+  PropButton,
+  PropButtonWithResponse
 } from '@interfaces';
-import { BaseRequest, PropButtonWithResponse } from "@interfaces";
+import { BaseRequest } from '@interfaces';
 import { useState } from '@store';
-import { FormFields, modalService, post, replaceParams, showNotification, requestAndCommitUserData } from '@utils';
+import { FormFields, post, replaceParams, requestAndCommitUserData } from '@utils';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Observable } from "rxjs";
-import { useT } from '@hooks';
+import { Observable } from 'rxjs';
+import { useTranslation } from '@hooks';
+import { notificationService, modalService } from '@services';
 
 interface FormattedRank extends IRank {
   Permissions: string;
@@ -33,7 +33,7 @@ interface FormattedDepartment extends IDepartment {
   Users?: FormattedUser[];
 }
 
-const t = useT();
+const t = useTranslation();
 const state = useState();
 const route = useRoute();
 const router = useRouter();
@@ -119,7 +119,7 @@ const ranksButtons: PropButtonWithResponse[] = [
             Name: res.inputFields!['Name'],
             Permission: res.inputFields!['Permission']
           }).subscribe(createRes => {
-            showNotification({
+            notificationService.show({
               type: createRes.Status ? 'success' : 'error',
               title: t(createRes.Title),
               description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
@@ -172,7 +172,7 @@ const ranksColumns: ColumnDef<FormattedRank> = [
               post<ActionResponse>(ClientEvents.DeleteRank, {
                 RankId: rank.Id
               }).subscribe(deleteRes => {
-                showNotification({
+                notificationService.show({
                   type: deleteRes.Status ? 'success' : 'error',
                   title: t(deleteRes.Title),
                   description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
@@ -228,7 +228,7 @@ const ranksColumns: ColumnDef<FormattedRank> = [
                 Name: res.inputFields!['Name'],
                 Permission: res.inputFields!['Permission']
               }).subscribe(editRes => {
-                showNotification({
+                notificationService.show({
                   type: editRes.Status ? 'success' : 'error',
                   title: t(editRes.Title),
                   description: editRes.Status ? replaceParams(t(editRes.Description), editRes.Params) : t(editRes.Description),
@@ -272,7 +272,7 @@ const divisionsButtons: PropButtonWithResponse[] = [
             DepartmentId: department.value?.Id,
             Name: res.inputFields!['Name']
           }).subscribe(createRes => {
-            showNotification({
+            notificationService.show({
               type: createRes.Status ? 'success' : 'error',
               title: t(createRes.Title),
               description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
@@ -322,7 +322,7 @@ const divisionsColumns: ColumnDef<IDivision> = [
                 DepartmentId: department.value?.Id,
                 DivisionId: division.Id,
               }).subscribe(deleteRes => {
-                showNotification({
+                notificationService.show({
                   type: deleteRes.Status ? 'success' : 'error',
                   title: t(deleteRes.Title),
                   description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
@@ -363,7 +363,7 @@ const divisionsColumns: ColumnDef<IDivision> = [
                 DivisionId: division.Id,
                 Name: res.inputFields!['Name'],
               }).subscribe(renameRes => {
-                showNotification({
+                notificationService.show({
                   type: renameRes.Status ? 'success' : 'error',
                   title: t(renameRes.Title),
                   description: renameRes.Status ? replaceParams(t(renameRes.Description), renameRes.Params) : t(renameRes.Description),
@@ -415,7 +415,7 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
             UserId: user.Id,
             IdToChange: selectedId,
           }).subscribe(deleteRes => {
-            showNotification({
+            notificationService.show({
               type: deleteRes.Status ? 'success' : 'error',
               title: t(deleteRes.Title),
               description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
@@ -445,7 +445,7 @@ const usersColumnDef: ColumnDef<FormattedUser> = [
             UserId: user.Id,
             IdToChange: selectedId,
           }).subscribe(deleteRes => {
-            showNotification({
+            notificationService.show({
               type: deleteRes.Status ? 'success' : 'error',
               title: t(deleteRes.Title),
               description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
@@ -524,7 +524,7 @@ const departmentSettingsFields: InputField[][] = [
           </tr>
         </table>
       `,
-      validator: (value: string) => !new RegExp('^[NL0-9\-*]{1,10}$').test(value),
+      validator: (value: string) => !new RegExp('^[NL0-9-*]{1,10}$').test(value),
     }
   ]
 ];
@@ -618,7 +618,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
 
   post<ActionResponse>(type === 'join' ? ClientEvents.JoinDepartment : ClientEvents.LeaveDepartment, type === 'join' ? department.value.Id : 0).subscribe((res) => {
     if (res.Status) {
-      showNotification({
+      notificationService.show({
         type: 'success',
         title: t(res.Title),
         description: replaceParams(t(res.Description), res.Params),
@@ -631,7 +631,7 @@ function joinOrLeaveDepartment(type: 'join' | 'leave') {
         router.push('/');
       }
     } else {
-      showNotification({
+      notificationService.show({
         type: 'error',
         title: t(res.Title),
         description: t(res.Description),
@@ -646,7 +646,7 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
     DepartmentId: department.value?.Id ?? defaultDepartmentId,
     ...fields
   }).subscribe(res => {
-    showNotification({
+    notificationService.show({
       type: res.Status ? 'success' : 'error',
       title: t(res.Title),
       description: res.Status ? replaceParams(t(res.Description), res.Params) : t(res.Description),
@@ -666,65 +666,64 @@ function onDepartmentSettingsSubmit(fields: FormFields) {
   />
   
   <template v-if="state.user.details?.Admin">
-    <Grid :columns="2" v-if="department">
+    <Grid v-if="department" :columns="2">
       <EditableForm
-          :render-key="renderKey"
-          :title="state.global.localization.Nui.Labels.DepartmentSettings"
-          :submitButtonLabel="state.global.localization.Nui.Actions.Save"
-          :onSubmit="onDepartmentSettingsSubmit"
-          :fields="departmentSettingsFields"
+        :render-key="renderKey"
+        :title="state.global.localization.Nui.Labels.DepartmentSettings"
+        :submit-button-label="state.global.localization.Nui.Actions.Save"
+        :on-submit="onDepartmentSettingsSubmit"
+        :fields="departmentSettingsFields"
       />
       <Table
-          :render-key="renderKeyOnRouteChange"
-          :title="state.global.localization.Nui.Labels.Divisions"
-          :buttons="divisionsButtons"
-          :columns="divisionsColumns"
-          :dataRequest="requestDepartmentDivisions"
-          @on-change="onRankAndDivisionChange"
+        :render-key="renderKeyOnRouteChange"
+        :title="state.global.localization.Nui.Labels.Divisions"
+        :buttons="divisionsButtons"
+        :columns="divisionsColumns"
+        :data-request="requestDepartmentDivisions"
+        @on-change="onRankAndDivisionChange"
       />
     </Grid>
     <Table
-        :render-key="renderKeyOnRouteChange"
-        :title="state.global.localization.Nui.Labels.Ranks"
-        :buttons="ranksButtons"
-        :columns="ranksColumns"
-        :dataRequest="requestDepartmentRanks"
-        :dataMapper="mapDepartmentRanks"
-        @on-change="onRankAndDivisionChange"
+      :render-key="renderKeyOnRouteChange"
+      :title="state.global.localization.Nui.Labels.Ranks"
+      :buttons="ranksButtons"
+      :columns="ranksColumns"
+      :data-request="requestDepartmentRanks"
+      :data-mapper="mapDepartmentRanks"
+      @on-change="onRankAndDivisionChange"
     />
   </template>
 
   <template v-if="!state.user.details?.Admin">
-    <Grid :columns="2" v-if="department">
+    <Grid v-if="department" :columns="2">
       <Table
-          :render-key="renderKeyOnRouteChange"
-          :title="state.global.localization.Nui.Labels.Ranks"
-          :buttons="ranksButtons"
-          :columns="ranksColumns"
-          :dataRequest="requestDepartmentRanks"
-          :dataMapper="mapDepartmentRanks"
-          @on-change="onRankAndDivisionChange"
+        :render-key="renderKeyOnRouteChange"
+        :title="state.global.localization.Nui.Labels.Ranks"
+        :buttons="ranksButtons"
+        :columns="ranksColumns"
+        :data-request="requestDepartmentRanks"
+        :data-mapper="mapDepartmentRanks"
+        @on-change="onRankAndDivisionChange"
       />
       <Table
-          :render-key="renderKeyOnRouteChange"
-          :title="state.global.localization.Nui.Labels.Divisions"
-          :buttons="divisionsButtons"
-          :columns="divisionsColumns"
-          :dataRequest="requestDepartmentDivisions"
-          @on-change="onRankAndDivisionChange"
+        :render-key="renderKeyOnRouteChange"
+        :title="state.global.localization.Nui.Labels.Divisions"
+        :buttons="divisionsButtons"
+        :columns="divisionsColumns"
+        :data-request="requestDepartmentDivisions"
+        @on-change="onRankAndDivisionChange"
       />
     </Grid>
   </template>
 
   <Table
-    :render-key="renderKey"
     v-if="department"
+    :render-key="renderKey"
     :title="state.global.localization.Nui.Labels.Members"
     :columns="usersColumnDef"
-    :dataRequest="requestDepartmentUsers"
-    :dataMapper="mapDepartmentUsers"
+    :data-request="requestDepartmentUsers"
+    :data-mapper="mapDepartmentUsers"
   />
-
 </template>
 
 <style scoped lang="sass">

@@ -1,9 +1,9 @@
 ﻿<script setup lang="ts">
-import type { FormFields, Modal } from "@utils";
-import { modalService } from "@utils";
+import type { FormFields } from '@utils';
+import { type Modal, modalService } from '@services';
 
-const props = defineProps<{
-  modal: Modal,
+defineProps<{
+  modal: Modal;
 }>();
 
 function submit(fields?: FormFields) {
@@ -19,19 +19,19 @@ function submit(fields?: FormFields) {
   <div class="modal-backdrop">
     <div class="modal">
       <p class="title">{{ modal.title }}</p>
-      <p class="description" v-if="modal.description" v-html="modal.description"></p>
-      <Form v-if="modal.inputs?.length" :fields="modal.inputs" :onSubmit="submit">
+      <p v-if="modal.description" class="description" v-html="modal.description" />
+      <Form v-if="modal.inputs?.length" :fields="modal.inputs" :on-submit="submit">
         <div class="buttons-wrapper">
           <div class="buttons">
             <Button
-                :theme="modal.buttons.cancel.theme"
-                :label="modal.buttons.cancel.label"
-                :onClick="() => modalService.close()"
+              :theme="modal.buttons.cancel.theme"
+              :label="modal.buttons.cancel.label"
+              :on-click="() => modalService.close()"
             />
             <Button
-                type="submit"
-                :theme="modal.buttons.submit.theme"
-                :label="modal.buttons.submit.label"
+              type="submit"
+              :theme="modal.buttons.submit.theme"
+              :label="modal.buttons.submit.label"
             />
           </div>
         </div>
@@ -39,21 +39,20 @@ function submit(fields?: FormFields) {
       <div v-else class="buttons-wrapper">
         <div class="buttons">
           <Button
-              :theme="modal.buttons.cancel.theme"
-              :label="modal.buttons.cancel.label"
-              :onClick="() => modalService.close()"
+            :theme="modal.buttons.cancel.theme"
+            :label="modal.buttons.cancel.label"
+            :on-click="() => modalService.close()"
           />
           <Button
-              type="submit"
-              :theme="modal.buttons.submit.theme"
-              :label="modal.buttons.submit.label"
-              :onClick="() => submit()"
+            type="submit"
+            :theme="modal.buttons.submit.theme"
+            :label="modal.buttons.submit.label"
+            :on-click="() => submit()"
           />
         </div>
       </div>
     </div>
   </div>
-  
 </template>
 
 <style scoped lang="sass">

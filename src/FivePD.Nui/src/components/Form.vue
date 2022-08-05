@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import type { InputField } from '@interfaces';
-import { formatFormEvent, FormFields } from '@utils';
-import { onMounted, ref, useSlots } from 'vue';
+import { formatFormEvent, type FormFields } from '@utils';
+import { ref, useSlots } from 'vue';
 
 const slots = useSlots();
 const props = defineProps<{
-  fields: InputField[],
-  submitButtonLabel?: string,
-  onSubmit: (fields: FormFields) => void,
-  title?: string,
-  subtitle?: string,
+  fields: InputField[];
+  submitButtonLabel?: string;
+  onSubmit: (fields: FormFields) => void;
+  title?: string;
+  subtitle?: string;
 }>();
 
 interface InputFieldWithError extends InputField {
@@ -28,7 +28,7 @@ function internalOnSubmit(event: any) {
   for (const [key, value] of Object.entries(formattedFields)) {
     const field = modifiedInternalFields.find(field => field.name === key)!;
 
-    const isValueFalsy = field.type === 'number' ? isNaN(value) : !value;
+    const isValueFalsy = field.type === 'text' ? !value : false;
     if (field.required) {
       if (field.validator) {
         field.hasError = field.validator(value);
@@ -52,11 +52,15 @@ function internalOnSubmit(event: any) {
 
 <template>
   <form @submit.prevent="internalOnSubmit">
-    <p class="form-title" v-if="title">{{ title }}</p>
-    <p class="form-subtitle" v-if="subtitle">{{ subtitle }}</p>
-    <InputField v-for="field in internalFields" :field="field" :hasError="field.hasError" />
-    <Button v-if="submitButtonLabel && !slots.default" :label="submitButtonLabel" theme="primary" type="submit" />
-    <slot></slot>
+    <p v-if="title" class="form-title">
+      {{ title }}
+    </p>
+    <p v-if="subtitle" class="form-subtitle">
+      {{ subtitle }}
+    </p>
+    <InputField v-for="(field, fieldIndex) in internalFields" :key="fieldIndex" :field="field" :has-error="field.hasError" />
+    <Button v-if="!slots.default && submitButtonLabel" :label="submitButtonLabel" theme="primary" type="submit" />
+    <slot />
   </form>
 </template>
 

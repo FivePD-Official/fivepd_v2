@@ -1,21 +1,28 @@
 <script setup lang="ts">
-import { ClientEvents } from "@enums";
-import { onMounted, ref } from "vue";
-import { modalService, post, replaceParams, showNotification, requestAndCommitUserData } from "@utils";
-import type { BaseRequest, ColumnDef, IDepartment, Page, PropButton } from "@interfaces";
-import { State } from "@store";
-import { useStore } from "vuex";
-import { Observable } from "rxjs";
-import { ActionResponse, PropButtonWithResponse } from "@interfaces";
-import { useRouter } from "vue-router";
-import { useT } from "@hooks";
+import { ClientEvents } from '@enums';
+import { onMounted, ref } from 'vue';
+import { post, replaceParams, requestAndCommitUserData } from '@utils';
+import type {
+  ActionResponse,
+  BaseRequest,
+  ColumnDef,
+  IDepartment,
+  Page,
+  PropButtonWithResponse
+} from '@interfaces';
+import { State } from '@store';
+import { useStore } from 'vuex';
+import { Observable } from 'rxjs';
+import { useRouter } from 'vue-router';
+import { useTranslation } from '@hooks';
+import { notificationService, modalService } from '@services';
 
 const router = useRouter();
-const t = useT();
+const t = useTranslation();
 const store = useStore<State>();
 
-const statistics = ref<any>(); // TODO
-const assignedCall = ref<any>(); // TODO
+const statistics = ref(); // TODO
+const assignedCall = ref(); // TODO
 
 onMounted(() => {
   requestAndCommitUserData();
@@ -84,7 +91,7 @@ const departmentButtons: PropButtonWithResponse[] = [
               </tr>
             </table>
           `,
-            validator: (value: string) => !new RegExp('^[NL0-9\-*]{1,10}$').test(value),
+            validator: (value: string) => !new RegExp('^[NL0-9-*]{1,10}$').test(value),
           },
           {
             name: 'MaxUsers',
@@ -113,7 +120,7 @@ const departmentButtons: PropButtonWithResponse[] = [
               onResponse(createRes);
             }
 
-            showNotification({
+            notificationService.show({
               type: createRes.Status ? 'success' : 'error',
               title: t(createRes.Title),
               description: createRes.Status ? replaceParams(t(createRes.Description), createRes.Params) : t(createRes.Description),
@@ -171,7 +178,7 @@ const departmentColumnDef: ColumnDef<IDepartment> = [
               post<ActionResponse>(ClientEvents.DeleteDepartment, {
                 DepartmentId: department.Id,
               }).subscribe(deleteRes => {
-                showNotification({
+                notificationService.show({
                   type: deleteRes.Status ? 'success' : 'error',
                   title: t(deleteRes.Title),
                   description: deleteRes.Status ? replaceParams(t(deleteRes.Description), deleteRes.Params) : t(deleteRes.Description),
@@ -199,7 +206,9 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
 
   <div class="grid">
     <div class="grid-item grid-item--details">
-      <p class="common-title">{{ store.state.global.localization.Nui.Labels.MyDetails }}</p>
+      <p class="common-title">
+        {{ store.state.global.localization.Nui.Labels.MyDetails }}
+      </p>
       <div class="common-bg grid-item--content">
         <ul>
           <li>
@@ -214,7 +223,7 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
             <p>{{ store.state.global.localization.Nui.Labels.Rank }}</p>
             <p>{{ store.state.user.details.Rank?.Name ?? '-' }}</p>
           </li>
-           <li>
+          <li>
             <p>{{ store.state.global.localization.Nui.Labels.Callsign }}</p>
             <p>{{ store.state.user.details.Callsign ?? '-' }}</p>
           </li>
@@ -227,7 +236,9 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
         {{ store.state.global.localization.Nui.Labels.Statistics }}
       </p>
       <div class="common-bg grid-item--content">
-        <p class="no-data" v-if="!statistics">{{ store.state.global.localization.Nui.Labels.NoDataToDisplay }}</p>
+        <p v-if="!statistics" class="no-data">
+          {{ store.state.global.localization.Nui.Labels.NoDataToDisplay }}
+        </p>
       </div>
     </div>
 
@@ -236,7 +247,9 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
         {{ store.state.global.localization.Nui.Labels.AssignedCall }}
       </p>
       <div class="common-bg grid-item--content">
-        <p class="no-data" v-if="!assignedCall">{{ store.state.global.localization.Nui.Labels.NoAssignedCall }}</p>
+        <p v-if="!assignedCall" class="no-data">
+          {{ store.state.global.localization.Nui.Labels.NoAssignedCall }}
+        </p>
       </div>
     </div>
   </div>
@@ -249,7 +262,7 @@ function requestDepartments(departmentsRequest: BaseRequest): Observable<Page<ID
   <Table
     :title="store.state.global.localization.Nui.Labels.Departments"
     :buttons="departmentButtons"
-    :dataRequest="requestDepartments"
+    :data-request="requestDepartments"
     :columns="departmentColumnDef"
   />
 </template>

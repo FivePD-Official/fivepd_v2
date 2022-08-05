@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { DateFormat } from "@enums";
-import type { InputField, SelectItem } from "@interfaces";
-import { createBirthdateInputList } from "@utils";
-import { onMounted, ref, watch } from "vue";
+import { DateFormat } from '@enums';
+import type { InputField, SelectItem } from '@interfaces';
+import { createBirthdateInputList } from '@utils';
+import { ref, watch, onMounted } from 'vue';
 
 const props = defineProps<{
-  field: InputField,
-  hasError?: boolean,
-  onValueChange?: (value: string | number) => void,
+  field: InputField;
+  hasError?: boolean;
+  onValueChange?: (value: string | number) => void;
 }>();
 
 const dirty = ref(false);
@@ -67,36 +67,37 @@ function onInput(event: any) {
       {{ field.label }}
     </label>
     <input
-      :type="field.type"
+      v-if="field.type === 'text' || field.type === 'number'"
       :id="field.name"
+      v-model="value"
+      :type="field.type"
       :name="field.name"
       :placeholder="field.placeholder"
-      v-if="field.type === 'text' || field.type === 'number'"
       @input="event => onInput(event)"
-      v-model="value"
-    />
-    <div class="inputs" v-else-if="field.type === 'date'">
+    >
+    <div v-else-if="field.type === 'date'" class="inputs">
       <input
+        v-for="input in createBirthdateInputList(DateFormat.MDY)"
+        :id="input.name"
+        :key="input.name"
         type="number"
         min="0"
-        :id="input.name"
         :name="input.name"
         :placeholder="input.placeholder"
-        v-for="input in createBirthdateInputList(DateFormat.MDY)"
-      />
+      >
     </div>
     <Select
-        v-else-if="field.type === 'select'"
-        :default-item="field.defaultItem!"
-        :items="field.items!"
-        :selected-item-resolver="field.selectedItemResolver!"
-        :on-select="onSelect!"
-        :name="field.name"
+      v-else-if="field.type === 'select'"
+      :default-item="field.defaultItem!"
+      :items="field.items!"
+      :selected-item-resolver="field.selectedItemResolver!"
+      :on-select="onSelect!"
+      :name="field.name"
     />
-    <div class="checkbox-group" v-else>
-      <div class="checkbox" v-for="checkbox in field.checkboxes">
+    <div v-else class="checkbox-group">
+      <div v-for="checkbox in field.checkboxes" :key="checkbox.id" class="checkbox">
         <div class="checkbox-inner">
-          <input type="checkbox" :value="checkbox.id" :name="field.name + '-' + checkbox.id" :id="field.name + '-' + checkbox.id" :checked="checkbox.defaultValue ?? false">
+          <input :id="field.name + '-' + checkbox.id" type="checkbox" :value="checkbox.id" :name="field.name + '-' + checkbox.id" :checked="checkbox.defaultValue ?? false">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
@@ -104,7 +105,7 @@ function onInput(event: any) {
         <label :for="field.name + '-' + checkbox.id">{{ checkbox.label }}</label>
       </div>
     </div>
-    <span class="help-label" v-if="field.helpLabel" v-html="field.helpLabel"></span>
+    <span v-if="field.helpLabel" class="help-label" v-html="field.helpLabel" />
   </div>
 </template>
 

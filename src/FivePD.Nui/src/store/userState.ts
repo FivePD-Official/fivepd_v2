@@ -1,4 +1,4 @@
-import { IUser } from "@interfaces";
+import { IUser } from '@interfaces';
 
 export interface UserState {
   isSidebarCollapsed: boolean,

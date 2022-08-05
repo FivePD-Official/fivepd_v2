@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
-import { useT } from '@hooks';
-import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem, onNuiEvent } from '@utils';
+import { useTranslation } from '@hooks';
+import { type Menu, MenuItem, MenuListItem, MenuCheckboxItem } from '@models';
 import { MenuItemType, NuiEventType } from '@enums';
 import type { BaseNuiEvent } from '@interfaces';
 import { Subscription } from 'rxjs';
+import { eventService } from '@services';
 
 const props = defineProps<{
-  menu: Menu
+  menu: Menu;
 }>();
 
-const t = useT();
+const t = useTranslation();
 const menuEvents$ = ref<Subscription>();
 
 const currentItemIndex: Ref<number> = ref(0);
@@ -26,7 +27,7 @@ onMounted(() => {
   itemNodes.value = Array.from(document.querySelectorAll('.menu-item'));
   selectorNode.value = document.querySelector('.selector');
 
-  menuEvents$.value = onNuiEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
+  menuEvents$.value = eventService.onEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
     switch (event.type) {
       case NuiEventType.MenuUp: {
         onMenuUp();
@@ -153,13 +154,10 @@ const onListSlide = (dir: string) => {
       <p>{{ menu.useLocalization ? t(menu.title) : menu.title }}</p>
     </div>
     <div class="menu-items">
-
-      <div class="selector"></div>
+      <div class="selector" />
 
       <div v-for="(item, index) in menuItems || []" :key="index" :class="`menu-item ${item.enabled ? '' : 'menu-item--disabled'}`">
-
         <p class="title">{{ menu.useLocalization ? t(item.title) : item.title }}</p>
-
         <div v-if="item.type === MenuItemType.Toggle" :class="`menu-item-toggle ${(item as MenuCheckboxItem).checked ? 'checked' : ''}`">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -179,9 +177,7 @@ const onListSlide = (dir: string) => {
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </div>
-
       </div>
-
     </div>
   </div>
 </template>
