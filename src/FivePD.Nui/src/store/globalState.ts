@@ -1,6 +1,7 @@
 import type { RadialMenu, Localization } from '@interfaces';
 import type { Menu } from '@models';
 import { defaultLocalization } from '@interfaces';
+import sanitizeHtml from 'sanitize-html';
 
 export interface IListItem {
   Key: number;
@@ -33,9 +34,23 @@ export const globalState = {
     setAvailableLocales(state: GlobalState, availableLocales: IListItem[]) {
       state.availableLocales = availableLocales;
     },
-    setLocalization(state: GlobalState, localization: Localization) {
-      state.localization = localization;
+    async setLocalization(state: GlobalState, localization: Localization) {
+      await sanitizeObject(localization)
+      state.localization = localization as any;
     },
   },
   actions: {}
 };
+
+function sanitizeObject(object: any): Promise<void> {
+  return new Promise(resolve => {
+    Object.keys(object).forEach(key => {
+      if (object[key] && typeof object[key] === 'object') {
+        sanitizeObject(object[key]);
+        return;
+      }
+      object[key] = sanitizeHtml(object[key]);
+      resolve();
+    });
+  });
+}
