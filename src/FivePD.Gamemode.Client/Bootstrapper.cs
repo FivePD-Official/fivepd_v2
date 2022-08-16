@@ -7,10 +7,12 @@
 using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Services;
+using FivePD.Gamemode.Client.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3241
@@ -114,10 +116,15 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<TrafficStopService>()
                 .As<ITrafficStopService>();
 
+            services
+                .RegisterType<LocalPlayerService>()
+                .As<ILocalPlayerService>();
+
             var provider = services.Build();
 
             var screenDecorService = provider.Resolve<IScreenDecorService>();
-            screenDecorService.SetTextToDraw(true, false);
+            screenDecorService.Version = "v2.0.0";
+            screenDecorService.ProtectionNotice = true;
             screenDecorService.BeginTextDraw();
 
             var keybindService = provider.Resolve<IKeybindService>();
@@ -147,7 +154,10 @@ namespace FivePD.Gamemode.Client
             menuService.CreateMenus();
             menuService.RegisterMenuKeybinds();
 
-            screenDecorService.SetTextToDraw(false, false);
+            FPlayer.FromNetId(Game.Player.ServerId).DutyStatus.Subscribe(status =>
+            {
+                screenDecorService.DutyStatus = status;
+            });
         }
 
         private void OnTickAdd(Func<Task> task)
