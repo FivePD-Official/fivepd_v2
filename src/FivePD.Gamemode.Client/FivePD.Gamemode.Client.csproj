@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="CitizenFX.Core.Client, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <Private>True</Private>
+      <Aliases Condition="$(DefineConstants.Contains(IS_GAMEMODE_SERVER))">CfxClient</Aliases>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
       <HintPath>..\FivePD.Gamemode.Statics\Libraries\FivePD.Gamemode.Client\Newtonsoft.Json.dll</HintPath>

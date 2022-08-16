@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\NoUsageAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\StatefulItemAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\FPedBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\FVehicleBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\DatabaseConfig.cs" />
@@ -37,10 +38,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FDutyStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FEntityType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FObservable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPoliceEventPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FGender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FStatefulContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FVehicle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BasePoliceEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />

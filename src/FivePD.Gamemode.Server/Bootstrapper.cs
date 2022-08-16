@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -160,8 +161,6 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
             services.AddSingleton<IEntityService, EntityService>();
-            services.AddSingleton<IServerStateService, ServerStateService>();
-            services.AddSingleton<IReplicatedStateService, ReplicatedStateService>();
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
             services.AddSingleton<IPedService, PedService>();
             services.AddSingleton<IVehicleService, VehicleService>();
@@ -262,21 +261,13 @@ namespace FivePD.Gamemode.Server
 
             // Being that the thread is about to be free for the first time, enqueued addon starts will run here
             log?.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
-
-            var demoPlayer = new FPlayer("1");
-
-            var playerDataService = this._provider.GetService<IPlayerDataService>();
-            playerDataService.DutyStatusChanged += (sender, args) => log.Information("A duty status changed! ({@Player})", args);
-
-            log?.Information("Before duty status is {@Status}", playerDataService.GetDutyStatus(demoPlayer));
-            playerDataService.SetDutyStatus(demoPlayer, FDutyStatus.OnDutyAndReceiving);
-            log?.Information("After duty status is {@Status}", playerDataService.GetDutyStatus(demoPlayer));
         }
 
         /// <summary>
         /// Terminates the gamemode.
         /// </summary>
         [NoUsage]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public void StopGamemode()
         {
             this.OnStopped();
@@ -328,6 +319,15 @@ namespace FivePD.Gamemode.Server
             {
                 // Doesn't matter at this point
             }
+        }
+
+        // TEMPORARY: Use while we do not have a proper way to go on duty.
+        // /setduty <0,1,2> corresponding to an FDutyStatus value
+        [Command("setduty")]
+        private void TemporarySetDutyCommand(Player cfxPlayer, string[] args)
+        {
+            var player = FPlayer.FromNetId(cfxPlayer.Handle);
+            player.DutyStatus.Value = (FDutyStatus)uint.Parse(args[0]);
         }
 
         /// <summary>

@@ -29,63 +29,28 @@ namespace FivePD.Gamemode.Server.Services
     public class PlayerDataService : IPlayerDataService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IServerStateService _serverStateService;
         private readonly DatabaseContext _databaseContext;
         private readonly PlayerList _playerList;
 
         /**
          * <summary>Initializes a new instance of the <see cref="PlayerDataService"/> class.</summary>
          * <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-         * <param name="serverStateService">The <see cref="IServerStateService"/> to use.</param>
          * <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
          * <param name="playerList">The <see cref="PlayerList"/> to use.</param>
          */
-        public PlayerDataService(EventHandlerDictionary eventHandlerDictionary, IServerStateService serverStateService, DatabaseContext databaseContext, PlayerList playerList)
+        public PlayerDataService(EventHandlerDictionary eventHandlerDictionary, DatabaseContext databaseContext, PlayerList playerList)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._serverStateService = serverStateService;
             this._databaseContext = databaseContext;
             this._playerList = playerList;
             this.RegisterEvents();
         }
-
-        /**
-         * <inheritdoc />
-         */
-        public event EventHandler<DutyStatusChangedEventArgs> DutyStatusChanged;
 
         /// <inheritdoc />
         public event EventHandler<Rank> PlayerRankChanged;
 
         /// <inheritdoc />
         public event EventHandler<Division> PlayerDivisionChanged;
-
-        /**
-         * <inheritdoc />
-         */
-        public FDutyStatus GetDutyStatus(FPlayer player)
-        {
-            return this._serverStateService.GetOrAdd<FDutyStatus>(GetStorageSlug(player), "dutyStatus", FDutyStatus.OffDuty);
-        }
-
-        /**
-         * <inheritdoc />
-         */
-        public void SetDutyStatus(FPlayer player, FDutyStatus dutyStatus)
-        {
-            this._serverStateService.Set(GetStorageSlug(player), "dutyStatus", dutyStatus);
-
-            this.DutyStatusChanged?.Invoke(this, new DutyStatusChangedEventArgs()
-            {
-                Player = player,
-                DutyStatus = dutyStatus,
-            });
-        }
-
-        private static string GetStorageSlug(FPlayer player)
-        {
-            return $"player:{player.NetId}";
-        }
 
         private void RegisterEvents()
         {

@@ -18,6 +18,7 @@
         <Configurations>Release;Debug</Configurations>
         <Platforms>x64</Platforms>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <DefineConstants>IS_GAMEMODE_SERVER</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
         <OutputPath>$(SolutionDir)/dev/FXServer-Data/resources/fivepd/Libraries/FivePD.Gamemode.Server</OutputPath>
@@ -72,6 +73,7 @@
     <ItemGroup>
         <Reference Include="CitizenFX.Core.Server, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Private>True</Private>
+            <Aliases Condition="$(DefineConstants.Contains(IS_GAMEMODE_CLIENT))">CfxServer</Aliases>
         </Reference>
     </ItemGroup>
     <ItemGroup>

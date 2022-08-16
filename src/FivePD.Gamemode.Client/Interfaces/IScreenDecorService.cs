@@ -4,19 +4,43 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using FivePD.Common.Models;
+
 namespace FivePD.Gamemode.Client.Interfaces
 {
     /**
      * <summary>Provides utility methods for controlling
-     * the content presented on user's screen passively.
-     * (Used for the version banner, mainly).</summary>
+     * the content presented on user's screen passively.</summary>
      */
     public interface IScreenDecorService
     {
-        /**
-         * <summary>Gets or sets the text to draw on the screen.</summary>
-         */
-        public string TextToDraw { get; set; }
+        /// <summary>
+        /// Gets or sets the version code to draw.
+        /// </summary>
+        /// <value>
+        ///     A string representation of
+        ///     the version (e.x. v2.0.0).
+        /// </value>
+        public string Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets the duty status to draw.
+        /// </summary>
+        /// <value>
+        ///     The <see cref="FDutyStatus"/>
+        ///     of the current player.
+        /// </value>
+        public FDutyStatus DutyStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether
+        /// the on screen build protection notice
+        /// is enabled.
+        /// </summary>
+        /// <value>
+        ///     If the protection notice is shown.
+        /// </value>
+        public bool ProtectionNotice { get; set; }
 
         /**
          * <summary>Begins drawing text on the screen.</summary>
@@ -27,12 +51,5 @@ namespace FivePD.Gamemode.Client.Interfaces
          * <summary>Ends drawing text on the screen.</summary>
          */
         public void EndTextDraw();
-
-        /// <summary>
-        /// Sets the text to draw on the screen with formatting.
-        /// </summary>
-        /// <param name="isLoading">If set to true a loading text will be added to the string.</param>
-        /// <param name="hasError">If set to true an error message will be added to the string.</param>
-        public void SetTextToDraw(bool isLoading, bool hasError);
     }
 }
