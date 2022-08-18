@@ -4,6 +4,7 @@
     <attachedFolders>
       <Path>dev/FXServer-Data</Path>
       <Path>src/FivePD.Nui</Path>
+      <Path>src/nui</Path>
     </attachedFolders>
     <explicitIncludes />
     <explicitExcludes>

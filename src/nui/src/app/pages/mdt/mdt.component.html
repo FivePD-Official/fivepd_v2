@@ -1,0 +1,12 @@
+<div id="main-overlay"></div>
+<div class="mdt-view">
+  <app-header></app-header>
+  <div class="main-subgrid" [ngClass]="{ 'collapsed': isSidebarCollapsed$ | async }">
+    <app-sidebar></app-sidebar>
+    <div class="router-view">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+<!--  <NotificationWrapper />-->
+<!--  <Modal v-if="currentModal" :modal="currentModal" />-->
+</div>
