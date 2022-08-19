@@ -22,7 +22,7 @@
     "@ngxs-labs/select-snapshot": "^4.0.0",
     "@ngxs/logger-plugin": "^3.7.5",
     "@ngxs/store": "^3.7.5",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -33,7 +33,7 @@
     "@angular/compiler-cli": "^14.1.0",
     "@ngxs/devtools-plugin": "^3.7.5",
     "@types/jasmine": "~4.0.0",
-    "@types/lodash": "^4.14.183",
+    "@types/lodash-es": "^4.17.6",
     "jasmine-core": "~4.2.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",

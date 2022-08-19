@@ -4,7 +4,7 @@ import { ClientEvents, NuiEventType } from '@enums';
 import { HttpClient } from '@angular/common/http';
 import { EventService } from './event.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import getKeyFromObjectPath from 'lodash/get';
+import getKeyFromObjectPath from 'lodash-es/get';
 
 @Injectable({
   providedIn: 'root'
