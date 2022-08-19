@@ -22,6 +22,7 @@ namespace FivePD.Gamemode.Client.Services
     {
         private readonly ITickService _tickService;
         private readonly ILocalPlayerService _localPlayerService;
+        private readonly ILocalizationService _localizationService;
 
         private string _text;
 
@@ -29,15 +30,17 @@ namespace FivePD.Gamemode.Client.Services
         private FDutyStatus _dutyStatus = FDutyStatus.OffDuty;
         private bool _showProtectionNotice;
 
-        /**
-         * <summary>Initializes a new instance of the <see cref="ScreenDecorService"/> class.</summary>
-         * <param name="tickService">The <see cref="ITickService" /> to use.</param>
-         * <param name="localPlayerService">The <see cref="ILocalPlayerService" /> to use.</param>
-         */
-        public ScreenDecorService(ITickService tickService, ILocalPlayerService localPlayerService)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScreenDecorService"/> class.
+        /// </summary>
+        /// <param name="tickService">The ITickService to use.</param>
+        /// <param name="localPlayerService">The ILocalPlayerService to use.</param>
+        /// <param name="localizationService">The ILocalizationService to use.</param>
+        public ScreenDecorService(ITickService tickService, ILocalPlayerService localPlayerService, ILocalizationService localizationService)
         {
             this._tickService = tickService;
             this._localPlayerService = localPlayerService;
+            this._localizationService = localizationService;
         }
 
         /**
@@ -121,9 +124,9 @@ namespace FivePD.Gamemode.Client.Services
         {
             return dutyStatus switch
             {
-                FDutyStatus.OffDuty => "Off Duty",
-                FDutyStatus.OnDutyAndReceiving => "On Duty & Receiving Calls",
-                FDutyStatus.OnDutyAndNotReceiving => "On Duty & Not Receiving Calls",
+                FDutyStatus.OffDuty => this._localizationService.CurrentLocalization.PlayerStatus.OffDuty.Generic,
+                FDutyStatus.OnDutyAndReceiving => this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.GenericReceiving,
+                FDutyStatus.OnDutyAndNotReceiving => this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.GenericNotReceiving,
                 _ => "Unknown",
             };
         }

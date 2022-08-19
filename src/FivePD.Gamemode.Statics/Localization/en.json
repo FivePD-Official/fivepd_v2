@@ -145,5 +145,22 @@
       "EditRankExistsWithNameTitle": "Couldn't edit rank",
       "RankExistsWithNameDescription": "A rank with this name already exists."
     }
+  },
+  "PlayerStatus": {
+    "OnDuty": {
+      "GenericNotReceiving": "On duty & not receiving calls",
+      "GenericReceiving": "On duty & receiving calls",
+      "OptionA": "Patrolling the streets",
+      "OptionB": "Out on patrol",
+      "OptionC": "Keeping the streets safe",
+      "OptionD": "Dishing out justice"
+    },
+    "OffDuty": {
+      "Generic": "Off duty",
+      "OptionA": "Off duty",
+      "OptionB": "Off the clock",
+      "OptionC": "Not in service",
+      "OptionD": "On a donut break"
+    }
   }
 }
