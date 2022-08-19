@@ -204,9 +204,9 @@ namespace FivePD.Gamemode.Server
                 service.RegisterEvents();
             }
 
-            var db = this._provider.GetService<DatabaseContext>();
             try
             {
+                var db = this._provider.GetService<DatabaseContext>();
                 if (db is null)
                 {
                     throw new DatabaseUsageException("No database context is available for usage");
@@ -214,7 +214,7 @@ namespace FivePD.Gamemode.Server
 
                 if (!db.Database.CanConnect())
                 {
-                    throw new DatabaseUsageException("The configured database is invalid or offline. Verify the connection settings in the /Config/database.json file and try again");
+                    throw new DatabaseUsageException("Database connection failed");
                 }
 
                 var migrations = db.Database.GetPendingMigrations();
@@ -230,9 +230,9 @@ namespace FivePD.Gamemode.Server
                     log?.Information("The database is up to date");
                 }
             }
-            catch (DatabaseUsageException e)
+            catch (Exception e)
             {
-                log?.Fatal("Database configuration failed: {Error}", e.Message);
+                log?.Fatal("The configured database is invalid or offline. Verify the connection settings in the /Config/database.json file and try again. Inner error: {Error}", e.Message);
 
                 this.StopGamemode();
                 return;
