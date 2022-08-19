@@ -1,0 +1,82 @@
+.notification
+  position: relative
+  background: var(--clr-bg-20)
+  padding: 15px
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
+  border-radius: var(--radius-lg)
+  margin-bottom: 20px
+  animation: slideIn .2s
+  animation-fill-mode: forwards
+  width: 350px
+  &.exit
+    animation: slideOut .2s
+    animation-fill-mode: forwards
+
+  .notification-header
+    display: flex
+    flex-direction: row
+    align-items: center
+    margin-bottom: 10px
+
+    .icon
+      position: relative
+      display: flex
+      flex-direction: row
+      align-items: center
+      justify-content: center
+      margin-right: 10px
+      padding: 5px
+      &::before
+        content: ''
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        border-radius: 50%
+        opacity: .1
+      &.icon-success
+        &::before
+          background: var(--clr-blue)
+
+        svg
+          color: var(--clr-blue)
+
+      &.icon-error
+        &::before
+          background: var(--clr-red)
+
+        svg
+          color: var(--clr-red)
+
+      svg
+        height: 22px
+
+    .title
+      font-size: 18px
+      font-weight: 700
+      color: var(--clr-text-secondary)
+
+  .description
+    font-size: 16px
+    color: var(--clr-text-secondary)
+
+  &.notification-error
+    .title
+      color: var(--clr-red)
+
+  &.notification-success
+    .title
+      color: var(--clr-blue)
+
+@keyframes slideIn
+  0%
+    transform: translateX(100%)
+  100%
+    transform: translateX(0)
+
+@keyframes slideOut
+  0%
+    transform: translateX(0)
+  100%
+    transform: translateX(100%)

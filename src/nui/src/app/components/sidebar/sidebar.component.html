@@ -1,6 +1,12 @@
 <aside [ngClass]="{ 'collapsed': isSidebarCollapsed }">
   <div class="links">
-    <a *ngFor="let item of routes" (click)="setPathInState(item.path)" [routerLink]="item.path" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: false }">
+    <a
+      *ngFor="let item of routes"
+      (click)="setPathInState(item.path)"
+      [routerLink]="item.path"
+      [routerLinkActive]="'active'"
+      [routerLinkActiveOptions]="{ exact: false }"
+    >
       <div *ngIf="item.show" class="link">
         <div class="icon" [innerHtml]="item.icon | safeHtml"></div>
         <p>{{ item.title }}</p>

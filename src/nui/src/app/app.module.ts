@@ -25,6 +25,9 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { TranslatePipe } from './pipes/translate.pipe';
 import { MenuService } from './services/menu.service';
 import { LocalizationService } from './services/localization.service';
+import { NotificationService } from './services/notification.service';
+import { NotificationWrapperComponent } from './components/notification-wrapper/notification-wrapper.component';
+import { NotificationComponent } from './components/notification/notification.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,9 @@ import { LocalizationService } from './services/localization.service';
     PageHeaderComponent,
     SidebarComponent,
     SafeHtmlPipe,
-    TranslatePipe
+    TranslatePipe,
+    NotificationWrapperComponent,
+    NotificationComponent
   ],
   imports: [
     BrowserModule,
@@ -58,6 +63,7 @@ import { LocalizationService } from './services/localization.service';
     ModalService,
     MenuService,
     LocalizationService,
+    NotificationService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomHttpInterceptor,
