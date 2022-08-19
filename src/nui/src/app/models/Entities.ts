@@ -1,37 +1,37 @@
-export interface IUser {
+export interface User {
   Id: number;
   Name: string;
   License: string;
   Admin: boolean;
   Callsign: string;
-  Department?: IDepartment;
-  Division?: IDivision;
-  Rank?: IRank;
+  Department?: Department;
+  Division?: Division;
+  Rank?: Rank;
   DepartmentId?: number;
   DivisionId?: number;
   RankId?: number;
 }
 
-export interface IDepartment {
+export interface Department {
   Id: number;
   Name: string;
   Callsign: string;
   CallsignFormat: string;
   MaxUsers: number;
-  Users?: IUser[];
-  Divisions?: IDivision[];
-  Ranks?: IRank[];
+  Users?: User[];
+  Divisions?: Division[];
+  Ranks?: Rank[];
   UserCount?: number;
-  DefaultRank?: IRank;
+  DefaultRank?: Rank;
   DefaultRankId?: number;
 }
 
-export interface IDivision {
+export interface Division {
   Id: number;
   Name: string;
 }
 
-export interface IRank {
+export interface Rank {
   Id: number;
   Name: string;
   Permission: {

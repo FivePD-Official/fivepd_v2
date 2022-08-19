@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngxs/store';
-import { UserStateModel } from '../../store/user.state';
 import { Observable } from 'rxjs';
-import { IUser } from '@interfaces';
-import { AppStateModel } from '../../store/app.state';
-import { WindowService } from '../../services/window.service';
+import { User } from '@models';
+import { WindowService } from '@services/window.service';
 import { GlobalState } from '@store';
 
 @Component({
@@ -14,7 +12,7 @@ import { GlobalState } from '@store';
 })
 export class HeaderComponent implements OnInit {
 
-  user$: Observable<IUser>;
+  user$: Observable<User>;
   currentStatus: string = '10-0';
   isStatusSelectOpened: boolean = false;
   statusList = ['10-1', '10-2', '10-3', '10-4'];

@@ -2,9 +2,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { GlobalState } from '@store';
 import { Store } from '@ngxs/store';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
-import { SetMdtPath, ToggleSidebarCollapse } from '../../store/app.actions';
-import { SetUser, TogglePanicMode } from '../../store/user.actions';
-import { IUser } from '@interfaces';
+import { SetMdtPath, ToggleSidebarCollapse } from '@store/app.actions';
+import { TogglePanicMode } from '@store/user.actions';
 
 interface Route {
   title: string;

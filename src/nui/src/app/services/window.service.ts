@@ -62,7 +62,6 @@ export class WindowService {
 
   private onMenuOpen(res: MenuShowEvent): void {
     this.show();
-    console.log(res)
     this._router.navigate(['menu', res.menuId]);
   }
 }

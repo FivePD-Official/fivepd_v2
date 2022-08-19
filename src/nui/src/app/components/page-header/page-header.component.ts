@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import type { Localization, Paths, PropButton } from '@interfaces';
+import type { Localization, Paths, PropButton } from '@models';
 
 @Component({
   selector: 'app-page-header',

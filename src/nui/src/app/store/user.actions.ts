@@ -1,8 +1,8 @@
-﻿import { IUser } from '@interfaces';
+﻿import { User } from '@models';
 
 export class SetUser {
   static readonly type = '[user] set user';
-  constructor(public payload: IUser) {}
+  constructor(public payload: User) {}
 }
 
 export class TogglePanicMode {

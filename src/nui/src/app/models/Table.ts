@@ -1,4 +1,4 @@
-import { ActionResponse } from '@interfaces';
+import { ActionResponse } from '@models';
 
 export interface Column<T> {
   header: string;
@@ -23,7 +23,7 @@ export interface FormattedRowItem<T> {
 
 export type FormattedRow<T> = FormattedRowItem<T>[];
 
-export type TableCellActions<T> = TableCellActionButton<T> | TableCellActionSelect<T>; 
+export type TableCellActions<T> = TableCellActionButton<T> | TableCellActionSelect<T>;
 
 export interface TableCellAction {
   type: 'button' | 'select';

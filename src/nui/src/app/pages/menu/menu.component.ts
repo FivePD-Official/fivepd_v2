@@ -1,11 +1,10 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MenuItemType, NuiEventType } from '@enums';
-import { Menu, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
+import { BaseNuiEvent, Menu, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
 import { ActivatedRoute } from '@angular/router';
-import { MenuService } from '../../services/menu.service';
-import { EventService } from '../../services/event.service';
-import { BaseNuiEvent } from '@interfaces';
-import { Observable, Subscription } from 'rxjs';
+import { MenuService } from '@services/menu.service';
+import { EventService } from '@services/event.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-menu',

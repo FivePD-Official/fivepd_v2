@@ -5,11 +5,11 @@
     "baseUrl": "./",
     "paths": {
       "@utils": ["src/app/utils"],
-      "@interfaces": ["src/app/interfaces"],
       "@enums": ["src/app/enums"],
-      "@services": ["src/app/services"],
+      "@services/*": ["src/app/services/*"],
       "@models": ["src/app/models"],
       "@store": ["src/app/store"],
+      "@store/*": ["src/app/store/*"],
     },
     "outDir": "./dist/",
     "forceConsistentCasingInFileNames": true,

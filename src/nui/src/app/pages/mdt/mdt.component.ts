@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Modal, ModalService } from '../../services/modal.service';
-import { GlobalState } from '@store';
-import { Select, Store } from '@ngxs/store';
-import { AppState } from '../../store/app.state';
+import { Modal, ModalService } from '@services/modal.service';
+import { Select } from '@ngxs/store';
+import { AppState } from '@store/app.state';
 import { Observable } from 'rxjs';
 
 @Component({

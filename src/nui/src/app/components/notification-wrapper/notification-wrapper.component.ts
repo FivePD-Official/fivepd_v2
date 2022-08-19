@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NotificationService } from '../../services/notification.service';
+import { NotificationService } from '@services/notification.service';
 import { Subscription } from 'rxjs';
 
 type NotificationWithTimer = Notification & { timer: number; exit: boolean };
