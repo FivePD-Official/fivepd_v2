@@ -22,5 +22,7 @@ namespace FivePD.Common.Localization
         public WarningLocalizations Warning { get; set; } = new WarningLocalizations();
 
         public NuiLocalization Nui { get; set; } = new NuiLocalization();
+
+        public PlayerStatusLocalization PlayerStatus { get; set; } = new PlayerStatusLocalization();
     }
 }

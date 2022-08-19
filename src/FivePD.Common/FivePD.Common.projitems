@@ -33,6 +33,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiErrors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiLabels.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiLocalization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\PlayerStatus\OffDutyLocalization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\PlayerStatus\OnDutyLocalization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Localization\PlayerStatus\PlayerStatusLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\TrafficStopLocalization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\WarningLocalizations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />

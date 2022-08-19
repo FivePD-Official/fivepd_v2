@@ -122,6 +122,11 @@ namespace FivePD.Gamemode.Client
 
             var provider = services.Build();
 
+            // Load localizations EARLY!!!
+            var localizationService = provider.Resolve<ILocalizationService>();
+            localizationService.RegisterEventHandlers();
+            localizationService.LoadDefaultLocalization();
+
             var screenDecorService = provider.Resolve<IScreenDecorService>();
             screenDecorService.Version = "v2.0.0";
             screenDecorService.ProtectionNotice = true;
@@ -139,10 +144,6 @@ namespace FivePD.Gamemode.Client
 
             var trafficStopService = provider.Resolve<ITrafficStopService>();
             trafficStopService.RegisterKeybinds();
-
-            var localizationService = provider.Resolve<ILocalizationService>();
-            localizationService.RegisterEventHandlers();
-            localizationService.LoadDefaultLocalization();
 
             var radialMenuService = provider.Resolve<IRadialMenuService>();
             radialMenuService.RegisterEvents();
