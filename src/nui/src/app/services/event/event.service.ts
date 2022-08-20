@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { filter, Observable, ReplaySubject } from 'rxjs';
-import { BaseNuiEvent, IUser } from '@interfaces';
+import { BaseNuiEvent, User } from '@models';
 import { NuiEventType } from '@enums';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { HttpClient } from '@angular/common/http';
-import { SetUser } from '../store/user.actions';
+import { SetUser } from '@store/user.actions';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class EventService {
 
-  @Dispatch() setUser = (user: IUser) => new SetUser(user);
+  @Dispatch() setUser = (user: User) => new SetUser(user);
 
   private _events$ = new ReplaySubject<BaseNuiEvent>(10);
 

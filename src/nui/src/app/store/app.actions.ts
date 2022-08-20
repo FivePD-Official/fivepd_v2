@@ -1,5 +1,5 @@
 ﻿import { IListItem } from './app.state';
-import { Localization } from '@interfaces';
+import { Localization } from '@models';
 
 export class SetAvailableLocales {
   static readonly type = '[app] set available locales';

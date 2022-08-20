@@ -1,4 +1,4 @@
-import type { IDateInput } from '@interfaces';
+import type { IDateInput } from '@models';
 import { DateFormat } from '@enums';
 
 export type FormFields = null | { [key: string]: unknown; };
@@ -46,7 +46,7 @@ export const formatFormEvent = (event: any): FormFields => {
     if (!e.name) {
       continue;
     }
-    
+
     const split = e.name.split('-');
     if (split.length > 1) {
       if (!fields.hasOwnProperty(split[0])) {
@@ -64,6 +64,6 @@ export const formatFormEvent = (event: any): FormFields => {
       }
     }
   }
-  
+
   return fields;
 }

@@ -10,6 +10,7 @@
       "@models": ["src/app/models"],
       "@store": ["src/app/store"],
       "@store/*": ["src/app/store/*"],
+      "@validators/*": ["src/app/validators/*"],
     },
     "outDir": "./dist/",
     "forceConsistentCasingInFileNames": true,
@@ -28,7 +29,8 @@
     "module": "es2020",
     "lib": [
       "es2020",
-      "dom"
+      "dom",
+      "DOM.Iterable"
     ],
     "esModuleInterop": true,
   },

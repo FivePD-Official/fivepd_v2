@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { FormFields } from '@utils';
-import { InputField } from '@interfaces';
+import { InputField } from '@models';
 
 interface ModalButton {
   theme: 'primary' | 'secondary' | 'danger';

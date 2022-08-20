@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { User } from '@models';
-import { WindowService } from '@services/window.service';
+import { WindowService } from '@services/window/window.service';
 import { GlobalState } from '@store';
 
 @Component({

@@ -7,6 +7,10 @@ export interface ActionResponse {
   Params: Record<string, string>;
 }
 
+export interface NameTakenResponse {
+  Taken: boolean;
+}
+
 export interface BaseNuiEvent {
   type: string;
 }

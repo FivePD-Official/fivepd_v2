@@ -88,6 +88,7 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Edit] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Delete] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.CheckIfDepartmentNameTaken] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CheckIfDepartmentNameTaken);
 
             this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.EditDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDivisionFromNui);
@@ -822,6 +823,21 @@ namespace FivePD.Gamemode.Server.Services
                     Title = "Nui.Errors.UnexpectedError",
                     Description = "Nui.Errors.DatabaseAccess",
                 }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void CheckIfDepartmentNameTaken(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<NameTakenRequest>();
+                var departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name); // TODO: make it case sensitive?
+                networkCallbackDelegate.Invoke(new NameTakenResponse(departmentExists != null).ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new NameTakenResponse(false).ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }

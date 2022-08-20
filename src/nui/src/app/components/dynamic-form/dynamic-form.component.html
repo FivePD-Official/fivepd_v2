@@ -1,0 +1,10 @@
+<form [formGroup]="form">
+  <p *ngIf="title" class="form-title">{{ title }}</p>
+  <p *ngIf="subtitle" class="form-subtitle">{{ subtitle }}</p>
+  <app-dynamic-form-input
+    *ngFor="let field of formFields"
+    [field]="field"
+    [form]="form"
+  ></app-dynamic-form-input>
+  <app-button [label]="'Save'" (onClick)="internalOnSubmit()"></app-button>
+</form>

@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ClientEvents, NuiEventType } from '@enums';
-import { EventService } from './event.service';
-import { BaseNuiEvent, IUser, MenuShowEvent } from '@interfaces';
+import { EventService } from '@services/event/event.service';
+import { BaseNuiEvent, User, MenuShowEvent } from '@models';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
-import { SetUser } from '../store/user.actions';
+import { SetUser } from '@store/user.actions';
 import { Select } from '@ngxs/store';
-import { AppState } from '../store/app.state';
+import { AppState } from '@store/app.state';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ import { AppState } from '../store/app.state';
 export class WindowService {
 
   @Select(AppState.previousMdtPath) previousMdtPath$!: Observable<string[]>;
-  @Dispatch() setUser = (user: IUser) => new SetUser(user);
+  @Dispatch() setUser = (user: User) => new SetUser(user);
 
   visible: boolean = false; // TODO: this is only needed because of the close event spam
   previousMdtPath: string[] = ['mdt', 'dashboard'];
@@ -51,13 +51,12 @@ export class WindowService {
 
   private onClose(): void {
     this.hide();
-    this._router.navigate(['/']);
   }
 
   private onMdtOpen(): void {
     this.show();
     this._router.navigate([...this.previousMdtPath]);
-    this._http.post<IUser>(ClientEvents.GetPlayerDetails, {}).subscribe(res => this.setUser(res));
+    this._http.post<User>(ClientEvents.GetPlayerDetails, {}).subscribe(res => this.setUser(res));
   }
 
   private onMenuOpen(res: MenuShowEvent): void {

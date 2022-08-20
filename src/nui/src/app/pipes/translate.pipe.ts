@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { LocalizationService } from '@services/localization.service';
+import { LocalizationService } from '@services/localization/localization.service';
 import getKeyFromObjectPath from 'lodash-es/get';
 
 @Pipe({

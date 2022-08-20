@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { EventService } from '@services/event.service';
+import { EventService } from '@services/event/event.service';
 import { NuiEventType } from '@enums';
 import { Localization } from '@models';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { SetLocalization } from '@store/app.actions';
 import { HttpClient } from '@angular/common/http';
-import { WindowService } from '@services/window.service';
-import { LocalizationService } from '@services/localization.service';
+import { WindowService } from '@services/window/window.service';
+import { LocalizationService } from '@services/localization/localization.service';
 
 @Component({
   selector: 'app-root',

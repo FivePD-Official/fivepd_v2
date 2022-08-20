@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { EventService } from './event.service';
-import { MenuObjectsEvent, RadialMenu, RadialMenuObjectsEvent, UpdateMenuItemEvent } from '@interfaces';
+import { EventService } from '@services/event/event.service';
+import { MenuObjectsEvent, RadialMenu, RadialMenuObjectsEvent, UpdateMenuItemEvent } from '@models';
 import { MenuItemType, NuiEventType } from '@enums';
 import { Menu, MenuButtonItem, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
 

@@ -5,7 +5,7 @@ import {
   HttpEvent,
   HttpInterceptor, HttpResponse
 } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 
 @Injectable()
 export class CustomHttpInterceptor implements HttpInterceptor {
@@ -35,9 +35,10 @@ export class CustomHttpInterceptor implements HttpInterceptor {
           });
         }
         return event;
-      })
+      }),
+      tap(res => {
+        // TODO: Show ActionResponse notification
+      }),
     );
-
-    return next.handle(apiReq);
   }
 }

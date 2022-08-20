@@ -40,3 +40,11 @@ export interface Rank {
     SetCallsign: boolean;
   };
 }
+
+export interface Page<T> {
+  CurrentPage: number;
+  Items: T[];
+  PageCount: number;
+  PageSize: number;
+  ItemCount: number;
+}

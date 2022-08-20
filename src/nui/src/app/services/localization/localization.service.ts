@@ -1,8 +1,8 @@
 import { Injectable, SecurityContext } from '@angular/core';
-import { defaultLocalization, Localization, LocalizationChangeEvent, Paths } from '@interfaces';
+import { defaultLocalization, Localization, LocalizationChangeEvent, Paths } from '@models';
 import { ClientEvents, NuiEventType } from '@enums';
 import { HttpClient } from '@angular/common/http';
-import { EventService } from './event.service';
+import { EventService } from '@services/event/event.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import getKeyFromObjectPath from 'lodash-es/get';
 
