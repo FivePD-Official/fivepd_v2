@@ -36,6 +36,21 @@ namespace FivePD.Gamemode.Server
             using var writer = new StringWriter();
             this._formatter.Format(logEvent, writer);
             var message = writer.ToString();
+
+            // It's no proper syntax highlighting, but for
+            // now, let's set the entire message's color
+            // based on the log level.
+            message = logEvent.Level switch
+            {
+                LogEventLevel.Verbose => $"^5{message}^0",
+                LogEventLevel.Debug => $"^5{message}^0",
+                LogEventLevel.Information => $"^4{message}^0",
+                LogEventLevel.Warning => $"^3{message}^0",
+                LogEventLevel.Error => $"^1{message}^0",
+                LogEventLevel.Fatal => $"^1{message}^0",
+                _ => message,
+            };
+
             Debug.Write(message);
         }
     }
