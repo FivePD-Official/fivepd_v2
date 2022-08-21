@@ -42,6 +42,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\FDutyStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FEntityType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FObservableSubscription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPoliceEventPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FGender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPed.cs" />

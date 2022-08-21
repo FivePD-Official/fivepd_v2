@@ -21,7 +21,6 @@ namespace FivePD.Gamemode.Client.Services
     public class ScreenDecorService : IScreenDecorService
     {
         private readonly ITickService _tickService;
-        private readonly ILocalPlayerService _localPlayerService;
         private readonly ILocalizationService _localizationService;
 
         private string _text;
@@ -39,8 +38,11 @@ namespace FivePD.Gamemode.Client.Services
         public ScreenDecorService(ITickService tickService, ILocalPlayerService localPlayerService, ILocalizationService localizationService)
         {
             this._tickService = tickService;
-            this._localPlayerService = localPlayerService;
             this._localizationService = localizationService;
+
+            // Subscribe to duty status changes.
+            localPlayerService.Player.DutyStatus
+                .Subscribe(status => this.DutyStatus = status);
         }
 
         /**
