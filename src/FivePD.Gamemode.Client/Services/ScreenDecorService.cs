@@ -8,6 +8,7 @@ using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Builders;
+using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
 using Cfx = CitizenFX.Core.Native;
@@ -20,20 +21,68 @@ namespace FivePD.Gamemode.Client.Services
     public class ScreenDecorService : IScreenDecorService
     {
         private readonly ITickService _tickService;
+        private readonly ILocalizationService _localizationService;
 
-        /**
-         * <summary>Initializes a new instance of the <see cref="ScreenDecorService"/> class.</summary>
-         * <param name="tickService">The <see cref="ITickService" /> to use.</param>
-         */
-        public ScreenDecorService(ITickService tickService)
+        private string _text;
+
+        private string _version = string.Empty;
+        private FDutyStatus _dutyStatus = FDutyStatus.OffDuty;
+        private bool _showProtectionNotice;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScreenDecorService"/> class.
+        /// </summary>
+        /// <param name="tickService">The ITickService to use.</param>
+        /// <param name="localPlayerService">The ILocalPlayerService to use.</param>
+        /// <param name="localizationService">The ILocalizationService to use.</param>
+        public ScreenDecorService(ITickService tickService, ILocalPlayerService localPlayerService, ILocalizationService localizationService)
         {
             this._tickService = tickService;
+            this._localizationService = localizationService;
+
+            // Subscribe to duty status changes.
+            localPlayerService.Player.DutyStatus
+                .Subscribe(status => this.DutyStatus = status);
         }
 
         /**
          * <inheritdoc />
          */
-        public string TextToDraw { get; set; } = string.Empty;
+        public string Version
+        {
+            get => this._version;
+            set
+            {
+                this._version = value;
+                this.BuildText();
+            }
+        }
+
+        /**
+         * <inheritdoc />
+         */
+        public FDutyStatus DutyStatus
+        {
+            get => this._dutyStatus;
+            set
+            {
+                this._dutyStatus = value;
+                this.BuildText();
+            }
+        }
+
+        /**
+         * <inheritdoc />
+         */
+        public bool ProtectionNotice
+        {
+            get => this._showProtectionNotice;
+            set
+            {
+                this._showProtectionNotice = value;
+                this.BuildText();
+            }
+        }
 
         /**
          * <inheritdoc />
@@ -51,31 +100,37 @@ namespace FivePD.Gamemode.Client.Services
             this._tickService.OnTick -= this.DrawOnScreen;
         }
 
-        /**
-         * <inheritdoc />
-         */
-        public void SetTextToDraw(bool isLoading, bool hasError)
+        private void BuildText()
         {
-            var formattedTextBuilder = new GtaStyleText()
-                .White("FivePD")
+            // Header
+            var text = new GtaStyleText()
+                .White("Five")
                 .Blue("PD")
-                .White(" - v2.0.0 - ");
+                .White(" " + this._version + "\n");
 
-#if DEBUG
-            formattedTextBuilder = formattedTextBuilder.White("Development Build - ").Red("DO NOT DISTRIBUTE");
-#endif
+            // Duty status display
+            text = text
+                .White(this.DutyStatusToString(this._dutyStatus) + "\n");
 
-            if (isLoading)
+            // Protection notice
+            if (this._showProtectionNotice)
             {
-                formattedTextBuilder.White(" - ").Yellow("Loading...");
+                text = text
+                    .Red("Protected Build - Do Not Distribute");
             }
 
-            if (hasError)
-            {
-                formattedTextBuilder.White(" - ").Red("An unknown error occured, contact the server owner.");
-            }
+            this._text = text.Build();
+        }
 
-            this.TextToDraw = formattedTextBuilder.Build();
+        private string DutyStatusToString(FDutyStatus dutyStatus)
+        {
+            return dutyStatus switch
+            {
+                FDutyStatus.OffDuty => this._localizationService.CurrentLocalization.PlayerStatus.OffDuty.Generic,
+                FDutyStatus.OnDutyAndReceiving => this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.GenericReceiving,
+                FDutyStatus.OnDutyAndNotReceiving => this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.GenericNotReceiving,
+                _ => "Unknown",
+            };
         }
 
         private Task DrawOnScreen()
@@ -89,7 +144,7 @@ namespace FivePD.Gamemode.Client.Services
             Cfx.API.SetTextDropShadow();
             Cfx.API.SetTextOutline();
             Cfx.API.SetTextEntry("STRING");
-            Cfx.API.AddTextComponentString(this.TextToDraw);
+            Cfx.API.AddTextComponentString(this._text);
             Cfx.API.DrawText(0.005f, 0.005f);
 
             return Task.FromResult(0);

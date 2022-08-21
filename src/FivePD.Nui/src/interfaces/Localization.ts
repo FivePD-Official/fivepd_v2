@@ -147,6 +147,23 @@ export interface Localization {
       EditRankExistsWithNameTitle: string;
       RankExistsWithNameDescription: string;
     }
+  },
+  PlayerStatus: {
+    OnDuty: {
+      GenericNotReceiving: string;
+      GenericReceiving: string;
+      OptionA: string;
+      OptionB: string;
+      OptionC: string;
+      OptionD: string;
+    },
+    OffDuty: {
+      Generic: string;
+      OptionA: string;
+      OptionB: string;
+      OptionC: string;
+      OptionD: string;
+    }
   }
 }
 
@@ -296,6 +313,23 @@ export const defaultLocalization: Localization = {
       CreateRankExistsWithNameTitle: '',
       EditRankExistsWithNameTitle: '',
       RankExistsWithNameDescription: '',
+    }
+  },
+  PlayerStatus: {
+    OnDuty: {
+      GenericNotReceiving: '',
+      GenericReceiving: '',
+      OptionA: '',
+      OptionB: '',
+      OptionC: '',
+      OptionD: '',
+    },
+    OffDuty: {
+      Generic: '',
+      OptionA: '',
+      OptionB: '',
+      OptionC: '',
+      OptionD: '',
     }
   }
 }

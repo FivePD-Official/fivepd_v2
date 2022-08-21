@@ -7,10 +7,12 @@
 using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Services;
+using FivePD.Gamemode.Client.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3241
@@ -114,10 +116,20 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<TrafficStopService>()
                 .As<ITrafficStopService>();
 
+            services
+                .RegisterType<LocalPlayerService>()
+                .As<ILocalPlayerService>();
+
             var provider = services.Build();
 
+            // Load localizations EARLY!!!
+            var localizationService = provider.Resolve<ILocalizationService>();
+            localizationService.RegisterEventHandlers();
+            localizationService.LoadDefaultLocalization();
+
             var screenDecorService = provider.Resolve<IScreenDecorService>();
-            screenDecorService.SetTextToDraw(true, false);
+            screenDecorService.Version = "v2.0.0";
+            screenDecorService.ProtectionNotice = true;
             screenDecorService.BeginTextDraw();
 
             var keybindService = provider.Resolve<IKeybindService>();
@@ -133,10 +145,6 @@ namespace FivePD.Gamemode.Client
             var trafficStopService = provider.Resolve<ITrafficStopService>();
             trafficStopService.RegisterKeybinds();
 
-            var localizationService = provider.Resolve<ILocalizationService>();
-            localizationService.RegisterEventHandlers();
-            localizationService.LoadDefaultLocalization();
-
             var radialMenuService = provider.Resolve<IRadialMenuService>();
             radialMenuService.RegisterEvents();
             radialMenuService.CreateMenus();
@@ -146,8 +154,6 @@ namespace FivePD.Gamemode.Client
             menuService.RegisterEvents();
             menuService.CreateMenus();
             menuService.RegisterMenuKeybinds();
-
-            screenDecorService.SetTextToDraw(false, false);
         }
 
         private void OnTickAdd(Func<Task> task)
