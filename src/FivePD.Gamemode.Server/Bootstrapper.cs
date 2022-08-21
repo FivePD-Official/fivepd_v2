@@ -66,7 +66,7 @@ namespace FivePD.Gamemode.Server
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.CfxDebugSink("[{Timestamp:HH:mm:ss} FivePD:{SourceIdentifier} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .WriteTo.File(
-                    $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/Server-.txt",
+                    $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/FivePD-GS-Log-.txt",
                     rollingInterval: RollingInterval.Day,
                     rollOnFileSizeLimit: true,
                     retainedFileCountLimit: 7)
@@ -75,6 +75,7 @@ namespace FivePD.Gamemode.Server
 
             // Creates log context for bootstrapping.
             this._bootstrapLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
+            this._bootstrapLogger.Information("Starting FivePD Gamemode Server...");
 
             // Enqueue pre-bootstrap phase.
             this._phases.Add(this.PerformPreBootstrapPhase, false);
@@ -146,7 +147,28 @@ namespace FivePD.Gamemode.Server
             this._stopwatch.Restart();
 
             // Run the phase
-            phase.Key();
+            try
+            {
+                phase.Key();
+            }
+            catch (Exception e)
+            {
+                // Problem? Stop the gamemode.
+                this.Tick -= this.RunNextPhase;
+
+                // Log the problem
+                this._bootstrapLogger.Fatal("An error occurred during bootstrapping and the gamemode has halted to prevent further issues.");
+                this._bootstrapLogger.Fatal("Exception: {exception}", e.Message);
+                this._bootstrapLogger.Debug("Stacktrace: {stacktrace}", e.StackTrace);
+                if (e.InnerException != null)
+                {
+                    this._bootstrapLogger.Debug("Inner exception: {innerException}", e.InnerException);
+                }
+
+                this._bootstrapLogger.Fatal("There is an error above that caused FivePD to stop");
+
+                return Task.CompletedTask;
+            }
 
             // Once completed, log the phase duration
             this._stopwatch.Stop();
@@ -352,10 +374,7 @@ namespace FivePD.Gamemode.Server
             }
             catch (Exception e)
             {
-                log?.Fatal("The configured database is invalid or offline. Verify the connection settings in the /Config/database.json file and try again. Inner error: {Error}", e.Message);
-
-                this.StopGamemode();
-                return;
+                throw new DatabaseUsageException("The configured database is invalid or offline. Verify the connection settings in the /Config/database.json file and try again.", e);
             }
 
             // Check for dev mode. If enabled, register the utilities
