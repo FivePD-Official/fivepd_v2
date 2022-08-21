@@ -6,20 +6,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
 using CitizenFX.Core;
-using FivePD.Common.Attributes;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Common.Models
 {
     /// <summary>
-    /// A stateful item that can
-    /// be observed.
+    /// Represents a single stateful datum in
+    /// the gamemode. A property defined with
+    /// this type will be automatically persisted
+    /// assuming the property's class is of the
+    /// <see cref="FStatefulContainer"/> type.
     /// </summary>
-    /// <typeparam name="T">The type of data to watch.</typeparam>
+    /// <typeparam name="T">The serializable type
+    /// being persisted.</typeparam>
     #pragma warning disable SA1649
     public class FObservable<T> : IDisposable
     #pragma warning restore SA1649
@@ -33,7 +33,7 @@ namespace FivePD.Common.Models
         private int _stateBagChangeHandler;
         #endif
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FObservable{T}"/> class.
@@ -56,13 +56,9 @@ namespace FivePD.Common.Models
         }
 
         /// <summary>
-        /// Finalizes an instance of the FObservable{T} class.
+        /// Finalizes an instance of the <see cref="FObservable{T}"/> class.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1643:DestructorSummaryDocumentationMustBeginWithStandardText", Justification = "Reviewed.")]
-        ~FObservable()
-        {
-            this.Dispose(false);
-        }
+        ~FObservable() => this.Dispose(false);
 
         /// <summary>
         /// Gets or sets the current value.
@@ -73,6 +69,10 @@ namespace FivePD.Common.Models
 
             set
             {
+                // Can (should) only set values from the server.
+                #if !IS_GAMEMODE_SERVER
+                throw new InvalidOperationException("Cannot set the value of an observable from the client. Instead, send a command to the server to set the value.");
+                #else
                 var currentVal = this.Value;
 
                 // If the currentVal and the new value are the same, do nothing.
@@ -84,14 +84,20 @@ namespace FivePD.Common.Models
                 // Set the value in the state bag and notify observers.
                 this._stateBag[this._key] = value;
                 this.NotifyObservers(value);
+                #endif
             }
         }
 
         /// <summary>
-        /// Subscribe to changes.
-        /// </summary>
+        /// Observes the current value and calls the
+        /// specified action when it changes. This
+        /// method will provide the current value
+        /// immediately when subscribed. Disposing
+        /// of the returned <see cref="IDisposable"/>
+        /// will unsubscribe the observer.</summary>
         /// <param name="observer">The action to subscribe.</param>
-        /// <returns>Dispose to unsub.</returns>
+        /// <returns>An <see cref="IDisposable"/> to
+        /// use to unsubscribe.</returns>
         public IDisposable Subscribe(Action<T> observer)
         {
             this._observers.Add(observer);
@@ -99,7 +105,19 @@ namespace FivePD.Common.Models
             // Updates the new observer with the current value.
             observer.Invoke(this.Value);
 
-            return null;
+            return new FObservableSubscription<T>(this, observer);
+        }
+
+        /// <summary>
+        /// Unsubscribes the given observer.
+        /// </summary>
+        /// <param name="action">The action to unsubscribe.</param>
+        public void Unsubscribe(Action<T> action)
+        {
+            // Removes the given action from the list of observers.
+            this._observers.Remove(action);
+
+            Debug.WriteLine("removed...");
         }
 
         /// <inheritdoc />
@@ -112,9 +130,17 @@ namespace FivePD.Common.Models
         /// <summary>
         /// Dispose of the observable.
         /// </summary>
-        /// <param name="disposing">If we're disposing.</param>
+        /// <param name="disposing">If we're disposing
+        /// manually.</param>
         protected virtual void Dispose(bool disposing)
         {
+            // If we're manually disposing...
+            if (disposing)
+            {
+                // Remove all observers.
+                this._observers.Clear();
+            }
+
             // Check to see if Dispose has already been called.
             if (!this._disposed)
             {
@@ -122,7 +148,6 @@ namespace FivePD.Common.Models
                 #if !IS_GAMEMODE_SERVER
                 if (this._stateBagChangeHandler != 0)
                 {
-                    Debug.WriteLine("Cleaning up handler");
                     Cfx.API.RemoveStateBagChangeHandler(this._stateBagChangeHandler);
                 }
                 #endif

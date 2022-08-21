@@ -154,11 +154,6 @@ namespace FivePD.Gamemode.Client
             menuService.RegisterEvents();
             menuService.CreateMenus();
             menuService.RegisterMenuKeybinds();
-
-            FPlayer.FromNetId(Game.Player.ServerId).DutyStatus.Subscribe(status =>
-            {
-                screenDecorService.DutyStatus = status;
-            });
         }
 
         private void OnTickAdd(Func<Task> task)
