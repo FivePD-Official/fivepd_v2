@@ -7,10 +7,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Attributes;
 using FivePD.Common.Models;
@@ -36,12 +39,17 @@ namespace FivePD.Gamemode.Server
     // ReSharper disable once UnusedType.Global
     public class Bootstrapper : BaseScript
     {
-        private const string SentryDsn = "https://a304ee75321740359328f5f3b3fbb98c@o983555.ingest.sentry.io/6455831";
+        private readonly string _sentryDsn = "https://a304ee75321740359328f5f3b3fbb98c@o983555.ingest.sentry.io/6455831";
+        private readonly Dictionary<Action, bool> _phases = new Dictionary<Action, bool>();
+        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly ILogger _bootstrapLogger;
 
-        private readonly ServiceProvider _provider;
-        private readonly IDisposable _sentryClient;
+        private ServiceProvider _provider;
+        private IDisposable _sentryClient;
 
         private bool _isStopped;
+        private Dictionary<Assembly, AddonDefinition> _assembliesWithDefinitions;
+        private ITransaction _bootstrapTransaction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
@@ -49,19 +57,112 @@ namespace FivePD.Gamemode.Server
         /// </summary>
         public Bootstrapper()
         {
+            // Prepare the server for development if applicable.
             #if DEBUG
             ConfigureForDevelopment();
             #endif
 
-            var globalLoggerConfig = new LoggerConfiguration()
+            // Register logger.
+            Log.Logger = new LoggerConfiguration()
                 .WriteTo.CfxDebugSink("[{Timestamp:HH:mm:ss} FivePD:{SourceIdentifier} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .WriteTo.File(
                     $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/Server-.txt",
                     rollingInterval: RollingInterval.Day,
                     rollOnFileSizeLimit: true,
                     retainedFileCountLimit: 7)
-                .MinimumLevel.Verbose();
+                .MinimumLevel.Verbose()
+                .CreateLogger();
 
+            // Creates log context for bootstrapping.
+            this._bootstrapLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
+
+            // Enqueue pre-bootstrap phase.
+            this._phases.Add(this.PerformPreBootstrapPhase, false);
+
+            // Enqueue addon location phase.
+            this._phases.Add(this.PerformAddonLocationPhase, false);
+
+            // Enqueue service location phase.
+            this._phases.Add(this.PerformServiceLocationPhase, false);
+
+            // Enqueue post-bootstrap phase.
+            this._phases.Add(this.PerformPostBootstrapPhase, false);
+
+            // Enqueue addon startup phase.
+            this._phases.Add(this.PerformAddonEnqueuePhase, false);
+
+            // Begin running phases.
+            this.Tick += this.RunNextPhase;
+        }
+
+        /// <summary>
+        /// Terminates the gamemode.
+        /// </summary>
+        internal void StopGamemode()
+        {
+            this.OnStopped();
+        }
+
+        #if DEBUG
+        /// <summary>
+        /// Configures pre-run settings for development mode.
+        /// This logic runs before the gamemode has been initialized.
+        /// </summary>
+        private static void ConfigureForDevelopment()
+        {
+            // Disables client-side script entity spawning
+            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
+        }
+        #endif
+
+        /// <summary>
+        /// Runs the next phase in the bootstrap process.
+        /// Will unregister the tick event if all phases
+        /// have been completed.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that completes
+        /// when a phase is ran.</returns>
+        private Task RunNextPhase()
+        {
+            // Get the first phase that isn't completed (second parameter is not true)
+            var phase = this._phases.FirstOrDefault(x => !x.Value);
+
+            // If no phase is found, we're done
+            if (phase.Key == null)
+            {
+                // Log that we're done
+                Log.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
+
+                // Stop trying to run phases
+                this.Tick -= this.RunNextPhase;
+                return Task.CompletedTask;
+            }
+
+            #if DEBUG
+            this._bootstrapLogger.Information("Running bootstrap phase: {phase}", phase.Key.Method.Name);
+            #endif
+
+            // Begin timing the phase
+            this._stopwatch.Restart();
+
+            // Run the phase
+            phase.Key();
+
+            // Once completed, log the phase duration
+            this._stopwatch.Stop();
+            this._bootstrapLogger.Information("Bootstrap phase completed in {duration}ms", this._stopwatch.ElapsedMilliseconds);
+
+            // Mark the phase as completed
+            this._phases[phase.Key] = true;
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Performs pre-startup tasks.
+        /// </summary>
+        private void PerformPreBootstrapPhase()
+        {
             // todo: validate certs for sentry and our in-house api
             #pragma warning disable S4830
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
@@ -70,7 +171,7 @@ namespace FivePD.Gamemode.Server
             // Register Sentry for error logging
             this._sentryClient = SentrySdk.Init(o =>
             {
-                o.Dsn = SentryDsn;
+                o.Dsn = this._sentryDsn;
                 o.TracesSampleRate = 1.0;
                 #if DEBUG
                 o.Debug = true;
@@ -88,12 +189,18 @@ namespace FivePD.Gamemode.Server
             });
 
             // Begin startup Sentry transaction
-            var transaction = SentrySdk.StartTransaction(
+            this._bootstrapTransaction = SentrySdk.StartTransaction(
                 "bootstrap",
                 "bootstrap-gamemode",
                 "Gamemode Bootstrapping");
+        }
 
-            var addonLoadSpan = transaction.StartChild("bootstrap-addons", "Bootstrapping for addon subsystem");
+        /// <summary>
+        /// Locates addons and their definitions.
+        /// </summary>
+        private void PerformAddonLocationPhase()
+        {
+            var span = this._bootstrapTransaction.StartChild("bootstrap-addon-location", "Addon location bootstrapping");
 
             /*
              * Gamemode addons have full(ish) access to the complete suite of services
@@ -102,24 +209,20 @@ namespace FivePD.Gamemode.Server
              * parameter, a logger, so we create it early.
              */
 
-            Log.Logger = globalLoggerConfig.CreateLogger();
-
-            var preInitLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
-
-            preInitLogger.Information(
+            this._bootstrapLogger.Information(
                 "Bootstrapping gamemode server version {@Version}",
                 Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
             var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
 
-            var assembliesWithDefinitions = new Dictionary<Assembly, AddonDefinition>();
+            this._assembliesWithDefinitions = new Dictionary<Assembly, AddonDefinition>();
 
             var allAddons = addonLocator.GetAddons().ToList();
 
             // Load addon assemblies
             foreach (var addon in allAddons)
             {
-                preInitLogger.Information(
+                this._bootstrapLogger.Information(
                     "Registering addon {@AddonName} version {@AddonVersion}",
                     addon.FriendlyName,
                     addon.FriendlyVersion);
@@ -127,12 +230,19 @@ namespace FivePD.Gamemode.Server
                 foreach (var assembly in addon.Assemblies)
                 {
                     var asm = Assembly.Load(assembly);
-                    assembliesWithDefinitions.Add(asm, addon);
+                    this._assembliesWithDefinitions.Add(asm, addon);
                 }
             }
 
-            addonLoadSpan.Finish();
-            var serviceInitSpan = transaction.StartChild("bootstrap-services", "Bootstrapping for services");
+            span.Finish();
+        }
+
+        /// <summary>
+        /// Locates and registers services.
+        /// </summary>
+        private void PerformServiceLocationPhase()
+        {
+            var span = this._bootstrapTransaction.StartChild("bootstrap-service-location", "Service location bootstrapping");
 
             var services = new ServiceCollection();
 
@@ -169,15 +279,25 @@ namespace FivePD.Gamemode.Server
 
             // Find and register addons
             services.Scan(scan => scan
-                .FromAssemblies(assembliesWithDefinitions.Keys)
+                .FromAssemblies(this._assembliesWithDefinitions.Keys)
                 .AddClasses(classes => classes.AssignableTo<IGamemodeAddon>())
                 .AsSelfWithInterfaces()
                 .WithSingletonLifetime());
 
             this._provider = services.BuildServiceProvider();
 
+            span.Finish();
+        }
+
+        /// <summary>
+        /// Performs post-startup tasks.
+        /// </summary>
+        private void PerformPostBootstrapPhase()
+        {
+            var span = this._bootstrapTransaction.StartChild("bootstrap-post", "Post-bootstrapping");
+
             var addonMetadataService = this._provider.GetService<IAddonMetadataService>();
-            foreach (var assembly in assembliesWithDefinitions)
+            foreach (var assembly in this._assembliesWithDefinitions)
             {
                 addonMetadataService?.RegisterAddonAssemblyWithDefinition(assembly.Key, assembly.Value);
             }
@@ -249,41 +369,24 @@ namespace FivePD.Gamemode.Server
             var tickQueueService = this._provider.GetService<ITickQueueService>();
             this.Tick += tickQueueService!.OnTick;
 
+            span.Finish();
+            this._bootstrapTransaction.Finish();
+        }
+
+        /// <summary>
+        /// Enqueues addon startup tasks.
+        /// </summary>
+        private void PerformAddonEnqueuePhase()
+        {
+            var tickQueueService = this._provider.GetService<ITickQueueService>();
+
             // Grab an instance of every addon entrypoint
             foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
             {
                 // Lazy load it
                 tickQueueService.Enqueue(() => addon.OnStarted());
             }
-
-            serviceInitSpan.Finish();
-            transaction.Finish();
-
-            // Being that the thread is about to be free for the first time, enqueued addon starts will run here
-            log?.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
         }
-
-        /// <summary>
-        /// Terminates the gamemode.
-        /// </summary>
-        [NoUsage]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void StopGamemode()
-        {
-            this.OnStopped();
-        }
-
-        #if DEBUG
-        /// <summary>
-        /// Configures pre-run settings for development mode.
-        /// This logic runs before the gamemode has been initialized.
-        /// </summary>
-        private static void ConfigureForDevelopment()
-        {
-            // Disables client-side script entity spawning
-            Cfx.API.SetRoutingBucketEntityLockdownMode(0, "relaxed");
-        }
-        #endif
 
         /// <summary>
         /// Called when the gamemode is being stopped. Handles cleanup.
@@ -319,15 +422,6 @@ namespace FivePD.Gamemode.Server
             {
                 // Doesn't matter at this point
             }
-        }
-
-        // TEMPORARY: Use while we do not have a proper way to go on duty.
-        // /setduty <0,1,2> corresponding to an FDutyStatus value
-        [Command("setduty")]
-        private void TemporarySetDutyCommand(Player cfxPlayer, string[] args)
-        {
-            var player = FPlayer.FromNetId(cfxPlayer.Handle);
-            player.DutyStatus.Value = (FDutyStatus)uint.Parse(args[0]);
         }
 
         /// <summary>
@@ -369,6 +463,15 @@ namespace FivePD.Gamemode.Server
                 log.Warning(
                     "Do not enable development mode on public servers. Only enable development mode when developing addons for FivePD. Development mode allows bad actors to exploit FivePD. This is VERY dangerous");
             }
+        }
+
+        // TEMPORARY: Use while we do not have a proper way to go on duty.
+        // /setduty <0,1,2> corresponding to an FDutyStatus value
+        [Command("setduty")]
+        private void TemporarySetDutyCommand(Player cfxPlayer, string[] args)
+        {
+            var player = FPlayer.FromNetId(cfxPlayer.Handle);
+            player.DutyStatus.Value = (FDutyStatus)uint.Parse(args[0]);
         }
     }
 }
