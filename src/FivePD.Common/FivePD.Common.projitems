@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\NoUsageAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Attributes\StatefulItemAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\FPedBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\FVehicleBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\DatabaseConfig.cs" />
