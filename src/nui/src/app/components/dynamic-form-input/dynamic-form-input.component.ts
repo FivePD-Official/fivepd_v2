@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { DropdownItem, FormInputBase } from '@models';
+import getKeyFromObjectPath from 'lodash-es/get';
+import { LocalizationService } from '@services/localization/localization.service';
 
 @Component({
   selector: 'app-dynamic-form-input',
@@ -13,18 +15,18 @@ export class DynamicFormInputComponent implements OnInit {
   @Input() field!: FormInputBase<string>;
 
   label: string = '';
+  helpLabel: string = '';
 
   dropdownOpen: boolean = false;
   dropdownSelectedItem: { key: number, label: string } = { key: -1, label: '' };
   dropdownFilteredItems: DropdownItem[] = [];
 
-  constructor() { }
+  constructor(
+    private _localization: LocalizationService,
+  ) { }
 
   ngOnInit(): void {
-    this.label = this.field.label;
-    if (this.field.required) {
-      this.label = `${this.field.label}*`;
-    }
+    this.setLabels();
     if (this.field.dropdownOptions?.items) {
       this.dropdownFilteredItems = this.field.dropdownOptions.items;
       this.dropdownSelectedItem.label = this.field.dropdownOptions.label;
@@ -57,6 +59,16 @@ export class DynamicFormInputComponent implements OnInit {
     if (selectedItem.key !== this.field.dropdownOptions?.selectedItem) {
       this.dropdownFilteredItems.unshift({ key: -1, label: this.field.dropdownOptions!.label });
     }
+  }
+
+  private setLabels(): void {
+    this.field.label = this._localization.translate(this.field.label);
+    this.label = this.field.label;
+    if (this.field.required) {
+      this.label = `${this.field.label}*`;
+    }
+
+    this.helpLabel = this._localization.translate(this.field.helpLabel);
   }
 
 }

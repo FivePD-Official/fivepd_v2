@@ -36,12 +36,10 @@ export class DepartmentService {
     });
   }
 
-  checkIfDepartmentNameTaken(name: string): Observable<boolean> {
+  checkIfDepartmentNameTaken(name: string): Observable<NameTakenResponse> {
     return this._http.post<NameTakenResponse>('fivepd:department:checkIfDepartmentNameTaken', {
       Name: name,
-    }).pipe(
-      switchMap(res => of(res.Taken))
-    );
+    });
   }
 
   joinDepartment(id: number): Observable<ActionResponse> {

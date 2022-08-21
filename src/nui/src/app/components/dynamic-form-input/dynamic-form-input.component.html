@@ -65,13 +65,15 @@
     </div>
   </ng-container>
 
-  <span *ngIf="field.helpLabel" class="help-label" [innerHTML]="field.helpLabel | safeHtml"></span>
+  <span *ngIf="helpLabel" class="help-label" [innerHTML]="helpLabel | safeHtml"></span>
 
+  <!--  TODO: translate-->
   <div class="input-errors" *ngIf="(control.invalid && (control.dirty || control.touched)) && control.errors">
     <p *ngIf="control.errors['required']">{{ field.label }} is required.</p>
     <p *ngIf="control.errors['min']">{{ field.label }} is min {{ field.options['min'] }}.</p>
     <p *ngIf="control.errors['max']">{{ field.label }} is max {{ field.options['max'] }}.</p>
-    <p *ngIf="control.errors['nameTaken']">This name is taken.</p>
+    <p *ngIf="control.errors['nameTaken']">This name is taken. ???</p>
+    <p *ngIf="control.errors['pattern']">The format is incorrect. ???</p>
   </div>
 
 </div>

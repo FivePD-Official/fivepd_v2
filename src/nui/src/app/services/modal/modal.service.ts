@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { FormFields } from '@utils';
-import { InputField } from '@models';
+import { FormInputBase, InputField } from '@models';
 
 interface ModalButton {
   theme: 'primary' | 'secondary' | 'danger';
@@ -11,16 +11,16 @@ interface ModalButton {
 export interface Modal {
   title: string;
   description?: string;
+  fields?: FormInputBase<any>[];
   buttons: {
     cancel: ModalButton;
     submit: ModalButton;
   };
-  inputs?: InputField[];
 }
 
 export interface ModalReturn {
   success: boolean;
-  inputFields?: FormFields,
+  value?: object;
 }
 
 @Injectable({
@@ -44,13 +44,13 @@ export class ModalService {
     });
   }
 
-  public submit(fields?: FormFields): void {
+  public submit(value?: object): void {
     this.modal$.next(null);
     const data: ModalReturn = {
       success: true,
     };
-    if (fields) {
-      data.inputFields = fields;
+    if (value) {
+      data.value = value;
     }
     this._modalResponse$.next(data);
   }

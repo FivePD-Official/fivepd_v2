@@ -27,23 +27,19 @@ export class DynamicFormComponent implements OnInit {
         });
         formControl = new FormGroup(nestedGroup);
       } else {
+        const validators = field.validators;
         if (field.required) {
           if (field.type === 'dropdown') {
-            field.validators.push((control) => control.value === -1 ? { 'required': true } : null);
+            validators.push((control) => control.value === -1 ? { 'required': true } : null);
+          } else {
+            validators.push(Validators.required);
           }
-
-          formControl = new FormControl(
-            field.value || (field.type === 'checkbox' ? false : ''),
-            [Validators.required, ...field.validators],
-            [...field.asyncValidators]
-          );
-        } else {
-          formControl = new FormControl(
-            field.value || (field.type === 'checkbox' ? false : ''),
-            field.validators,
-            field.asyncValidators
-          );
         }
+        formControl = new FormControl(
+          field.value || (field.type === 'checkbox' ? false : ''),
+          validators,
+          field.asyncValidators
+        );
       }
       group[field.key] = formControl;
     });

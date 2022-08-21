@@ -1,2 +1,3 @@
-<app-page-header title="Nui.Labels.Dashboard"></app-page-header>
-<app-dynamic-form [formFields]="formFields" (onSubmit)="onSubmit($event)"></app-dynamic-form>
+<app-page-header title="Nui.Labels.Dashboard">
+  <app-button [label]="'Nui.Actions.CreateDepartment' | translate" theme="secondary" (onClick)="onCreateDepartment()"></app-button>
+</app-page-header>

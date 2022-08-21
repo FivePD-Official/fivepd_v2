@@ -1,10 +1,6 @@
 <div
   class="notification"
-  [ngClass]="{
-    'exit': exit,
-    'notification-error': notification.type === 'error',
-    'notification-success': notification.type === 'success'
-  }
+  [ngClass]="{ 'exit': exit, 'notification-error': notification.type === 'error', 'notification-success': notification.type === 'success' }
 ">
   <div class="notification-header">
     <div *ngIf="notification.type === 'success'" class="icon icon-success">

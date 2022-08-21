@@ -1,21 +1,17 @@
 import { Injectable } from '@angular/core';
 import { AsyncValidatorFn } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, first, map, Observable, of, switchMap, tap } from 'rxjs';
-import { BaseValidator } from './base-validator';
+import { debounceTime, distinctUntilChanged, first, map, Observable, switchMap } from 'rxjs';
+import { NameTakenResponse } from '@models';
 
 @Injectable()
-export class GenericNameValidator extends BaseValidator {
+export class GenericNameValidator {
 
-  constructor() {
-    super();
-  }
-
-  static override create(nameValidatorFn: (name: string) => Observable<boolean>): AsyncValidatorFn {
+  static get(nameValidatorFn: (name: string) => Observable<NameTakenResponse>): AsyncValidatorFn {
     return control => control.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(value => nameValidatorFn(value)),
-      map((unique: boolean) => unique ? { 'nameTaken': true } : null),
+      map(unique => unique.Taken ? { 'nameTaken': true } : null),
       first(),
     );
   }

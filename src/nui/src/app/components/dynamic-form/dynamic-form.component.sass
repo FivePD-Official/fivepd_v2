@@ -6,6 +6,8 @@ form
   max-width: 350px
   width: 100%
   justify-self: center
+  &.max-width-none
+    max-width: none
 
   .form-title
     font-size: 22px
@@ -23,3 +25,19 @@ form
 
   button
     width: 100%
+
+  .buttons-wrapper
+    width: 100%
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: flex-end
+    margin-top: 20px
+
+    .buttons
+      width: 50%
+      display: flex
+      flex-direction: row
+      align-items: center
+      justify-content: flex-end
+      gap: 10px

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Checkbox, Dropdown, FormInputBase, CheckboxGroup, NumberInput, TextInput } from '../../../models/form-input-base';
-import { Validators } from '@angular/forms';
+import { FormInputBase, NumberInput, TextInput } from '@models';
 import { GenericNameValidator } from '@validators/generic-name-validator';
 import { DepartmentService } from '@services/entity/department.service';
+import { LocalizationService } from '@services/localization/localization.service';
+import { Validators } from '@angular/forms';
+import { ModalService } from '@services/modal/modal.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,65 +15,81 @@ export class DashboardComponent implements OnInit {
 
   formFields: FormInputBase<any>[] = [
     new TextInput({
-      key: 'test',
-      placeholder: 'test Placeholder',
-      label: 'Test label',
+      key: 'Name',
       required: true,
-      asyncValidators: [GenericNameValidator.create((value) => this._department.checkIfDepartmentNameTaken(value))],
+      label: 'Nui.Labels.Name',
+      asyncValidators: [GenericNameValidator.get((value) => this._department.checkIfDepartmentNameTaken(value))],
+    }),
+    new TextInput({
+      key: 'Callsign',
+      label: 'Nui.Labels.Callsign',
+      helpLabel: 'Nui.Labels.CallsignHelpLabel',
+      validators: [Validators.pattern('^[a-zA-Z]+$')]
+    }),
+    new TextInput({
+      key: 'CallsignFormat',
+      required: true,
+      label: 'Nui.Labels.CallsignFormat',
+      helpLabel: `
+        ${this._localization.translate('Nui.Labels.CallsignFormatHelpLabel')} ${this._localization.translate('Nui.Labels.AvailableCharacters')}: <br/>
+        <table>
+          <tr>
+            <td><b>L</b><td>
+            <td>(${this._localization.translate('Nui.Labels.Letter')})<td>
+          </tr>
+          <tr>
+            <td><b>N</b><td>
+            <td>(${this._localization.translate('Nui.Labels.Number')})<td>
+          </tr>
+          <tr>
+            <td><b>-</b><td>
+            <td>(${this._localization.translate('Nui.Labels.Dash')})<td>
+          </tr>
+        </table>
+      `,
+      validators: [Validators.pattern('^[NL0-9-*]{1,10}$')],
     }),
     new NumberInput({
-      key: 'test2',
-      placeholder: 'test Placeholder 2',
-      label: 'Test label 2',
+      key: 'MaxUsers',
       required: true,
-      validators: [Validators.min(0), Validators.max(10)],
+      label: 'Nui.Labels.MaxNumberOfMembers',
+      helpLabel: 'Nui.Labels.MaxNumberOfMembersHelpLabel',
+      validators: [Validators.min(0)],
       options: {
         min: 0,
-        max: 10,
       }
     }),
-    new Checkbox({
-      key: 'checkbox',
-      label: 'Checkbox test',
-    }),
-    new Dropdown({
-      key: 'dropdown-key',
-      label: 'Dropdown label',
-      required: false,
-      helpLabel: 'this is a help label',
-      dropdownOptions: {
-        label: 'Default label',
-        size: 'normal',
-        items: [
-          { key: 0, label: 'Value 1' },
-          { key: 1, label: 'Value 2' },
-        ]
-      }
-    }),
-    new CheckboxGroup({
-      key: 'groupKey',
-      label: 'Permissions',
-      checkboxGroup: [
-        new Checkbox({
-          key: 'permission1',
-          label: 'Permission 1',
-        }),
-        new Checkbox({
-          key: 'permission2',
-          label: 'Permission 2',
-        }),
-      ]
-    })
-  ]
+  ];
 
   constructor(
     private _department: DepartmentService,
+    private _localization: LocalizationService,
+    private _modal: ModalService,
   ) { }
 
   ngOnInit(): void {
   }
 
-  onSubmit(formValue: object) {
-    console.log(formValue)
+  onCreateDepartment(): void {
+    this._modal.open({
+      title: 'Nui.Actions.CreateDepartment',
+      fields: this.formFields,
+      buttons: {
+        cancel: {
+          theme: 'secondary',
+          label: 'Nui.Actions.Cancel'
+        },
+        submit: {
+          theme: 'primary',
+          label: 'Nui.Actions.Create'
+        }
+      }
+    }).subscribe(modalRes => {
+      if (modalRes.success) {
+        this._department.createDepartment(modalRes.value!).subscribe(res => {
+          console.log('create res', res)
+        });
+      }
+    })
   }
 }

@@ -29,8 +29,9 @@ export class LocalizationService {
     return this._localization;
   }
 
-  translate(path: Paths<Localization>): string {
-    return getKeyFromObjectPath(this._localization, path);
+  translate(path: Paths<Localization> | string, params: Record<string, string> = {}): string {
+    const translation = getKeyFromObjectPath(this._localization, path, path);
+    return this.replaceParams(translation, params);
   }
 
   private async set(localization: Localization): Promise<void> {
@@ -49,5 +50,12 @@ export class LocalizationService {
         resolve();
       });
     });
+  }
+
+  private replaceParams(text: string, params: Record<string, string>): string {
+    for (const [key, value] of Object.entries(params)) {
+      text = text.replace(`{{${key}}}`, `<b>${value}</b>`);
+    }
+    return text;
   }
 }

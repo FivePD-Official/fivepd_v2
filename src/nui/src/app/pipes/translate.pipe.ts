@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { LocalizationService } from '@services/localization/localization.service';
 import getKeyFromObjectPath from 'lodash-es/get';
+import { Localization, Paths } from '@models';
 
 @Pipe({
   name: 'translate',
@@ -12,7 +13,7 @@ export class TranslatePipe implements PipeTransform {
     private _localization: LocalizationService,
   ) { }
 
-  transform(path: string, ...args: string[]): string {
+  transform(path: Paths<Localization> | string, ...args: string[]): string {
     return getKeyFromObjectPath(this._localization.get(), path);
   }
 

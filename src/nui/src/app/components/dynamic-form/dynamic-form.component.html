@@ -1,4 +1,4 @@
-<form [formGroup]="form">
+<form [formGroup]="form" [ngClass]="{ 'max-width-none': content.children.length }" (ngSubmit)="internalOnSubmit()">
   <p *ngIf="title" class="form-title">{{ title }}</p>
   <p *ngIf="subtitle" class="form-subtitle">{{ subtitle }}</p>
   <app-dynamic-form-input
@@ -6,5 +6,8 @@
     [field]="field"
     [form]="form"
   ></app-dynamic-form-input>
-  <app-button [label]="'Save'" (onClick)="internalOnSubmit()"></app-button>
+  <app-button *ngIf="!content.children.length" [label]="'Save'" type="submit"></app-button>
+  <div class="buttons-wrapper" #content>
+    <ng-content></ng-content>
+  </div>
 </form>

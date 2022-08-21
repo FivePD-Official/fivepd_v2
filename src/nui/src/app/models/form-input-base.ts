@@ -1,4 +1,6 @@
 ﻿import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
+import { Paths } from './_dev/nested-object-keys';
+import { Localization } from './localization';
 
 export interface DropdownItem {
   key: number;
@@ -9,7 +11,7 @@ interface FormInputBaseModel<T> {
   type: 'text' | 'number' | 'checkbox' | 'dropdown' | 'checkboxGroup';
   value: T | undefined;
   key: string;
-  label: string;
+  label: Paths<Localization> | string;
   helpLabel: string;
   placeholder: string;
   required: boolean;

@@ -12,5 +12,5 @@ export * from './Table';
 export * from './Button';
 export * from './request';
 export * from './Notification';
-export * from './Localization';
 export * from './form-input-base';
+export * from './localization';

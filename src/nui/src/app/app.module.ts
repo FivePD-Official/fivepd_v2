@@ -34,6 +34,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DynamicFormInputComponent } from './components/dynamic-form-input/dynamic-form-input.component';
 import { DepartmentService } from '@services/entity/department.service';
 import { GenericNameValidator } from '@validators/generic-name-validator';
+import { ModalComponent } from './components/modal/modal.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { GenericNameValidator } from '@validators/generic-name-validator';
     NotificationComponent,
     ButtonComponent,
     DynamicFormComponent,
-    DynamicFormInputComponent
+    DynamicFormInputComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,

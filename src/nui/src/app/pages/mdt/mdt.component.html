@@ -8,5 +8,5 @@
     </div>
   </div>
   <app-notification-wrapper></app-notification-wrapper>
-<!--  <Modal v-if="currentModal" :modal="currentModal" />-->
+  <app-modal *ngIf="currentModal" [modal]="currentModal"></app-modal>
 </div>

@@ -1,0 +1,39 @@
+<div class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <p class="title">{{ modal.title | translate }}</p>
+      <p *ngIf="modal.description" class="description" [innerHtml]="modal.description | safeHtml"></p>
+    </div>
+    <app-dynamic-form *ngIf="modal.fields?.length" [formFields]="modal.fields!" (onSubmit)="onSubmit($event)">
+      <div class="buttons-wrapper">
+        <div class="buttons">
+          <app-button
+            [theme]="modal.buttons.cancel.theme"
+            [label]="modal.buttons.cancel.label | translate"
+            (onClick)="modalService.close()">
+          </app-button>
+          <app-button
+            type="submit"
+            [theme]="modal.buttons.submit.theme"
+            [label]="modal.buttons.submit.label | translate">
+          </app-button>
+        </div>
+      </div>
+    </app-dynamic-form>
+    <div *ngIf="!modal.fields?.length" class="buttons-wrapper">
+      <div class="buttons">
+        <app-button
+          [theme]="modal.buttons.cancel.theme"
+          [label]="modal.buttons.cancel.label | translate"
+          (onClick)="modalService.close()">
+        </app-button>
+        <app-button
+          type="submit"
+          [theme]="modal.buttons.submit.theme"
+          [label]="modal.buttons.submit.label | translate"
+          (onClick)="onSubmit()">
+        </app-button>
+      </div>
+    </div>
+  </div>
+</div>
