@@ -29,6 +29,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Sentry;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Gamemode.Server
 {
@@ -40,8 +41,14 @@ namespace FivePD.Gamemode.Server
     public class Bootstrapper : BaseScript
     {
         private readonly string _sentryDsn = "https://a304ee75321740359328f5f3b3fbb98c@o983555.ingest.sentry.io/6455831";
+        private readonly List<string> _startupQuotes = new List<string>
+        {
+            "Understand, our police officers put their lives on the line for us every single day.\nThey’ve got a tough job to do to maintain public safety and hold accountable those who break the law.\n\n— Barack Obama",
+        };
+
         private readonly Dictionary<Action, bool> _phases = new Dictionary<Action, bool>();
         private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly Random _random = new Random();
         private readonly ILogger _bootstrapLogger;
 
         private ServiceProvider _provider;
@@ -132,7 +139,11 @@ namespace FivePD.Gamemode.Server
             if (phase.Key == null)
             {
                 // Log that we're done
-                Log.Information("Gamemode server bootstrapping has completed. Preparing addon initialization");
+                this._bootstrapLogger.Information("Gamemode server bootstrapping has completed");
+
+                // Grab a random quote and display it (console only)
+                var quote = this._startupQuotes[this._random.Next(0, this._startupQuotes.Count)];
+                Debug.WriteLine("\n" + quote + "\n");
 
                 // Stop trying to run phases
                 this.Tick -= this.RunNextPhase;
@@ -196,7 +207,7 @@ namespace FivePD.Gamemode.Server
                 o.Dsn = this._sentryDsn;
                 o.TracesSampleRate = 1.0;
                 #if DEBUG
-                o.Debug = true;
+                o.Debug = Cfx.API.GetConvar("sv_enableFivepdSentryDebug", "false") == "true";
                 o.DiagnosticLogger = new SerilogSentryDiagnosticLogger();
                 o.Environment = "development";
                 #endif
