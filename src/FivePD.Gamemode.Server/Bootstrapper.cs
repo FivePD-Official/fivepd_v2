@@ -139,7 +139,7 @@ namespace FivePD.Gamemode.Server
             if (phase.Key == null)
             {
                 // Log that we're done
-                this._bootstrapLogger.Information("Gamemode server bootstrapping has completed");
+                this._bootstrapLogger.Information("FivePD Gamemode Server bootstrapping has completed");
 
                 // Grab a random quote and display it (console only)
                 var quote = this._startupQuotes[this._random.Next(0, this._startupQuotes.Count)];
