@@ -1,10 +1,9 @@
-import type { IDateInput } from '@models';
 import { DateFormat } from '@enums';
 
 export type FormFields = null | { [key: string]: unknown; };
 
-export const createBirthdateInputList = (dateFormat: DateFormat): IDateInput[] => {
-  let inputs: IDateInput[] = [];
+export const createBirthdateInputList = (dateFormat: DateFormat): any[] => {
+  let inputs: any[] = [];
   switch (dateFormat as DateFormat) {
     case DateFormat.DMY: {
       inputs = [

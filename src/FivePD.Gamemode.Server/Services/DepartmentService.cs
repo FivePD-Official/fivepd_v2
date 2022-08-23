@@ -84,8 +84,8 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.GetDivisions] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentDivisionsForNui);
 
             this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Edit] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Delete] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.CheckIfDepartmentNameTaken] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CheckIfDepartmentNameTaken);
@@ -895,11 +895,12 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private void PlayerJoinDepartmentFromNui([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
+        private void PlayerJoinDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
+            var request = expandoObject.ConvertTo<JoinOrLeaveDepartmentRequest>();
             var department = this._databaseContext.Departments
                 .Include(department => department.Users)
-                .FirstOrDefault(department => department.Id == departmentId);
+                .FirstOrDefault(department => department.Id == request.DepartmentId);
 
             try
             {
@@ -943,7 +944,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private void PlayerLeaveDepartmentFromNui([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
+        private void PlayerLeaveDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             var playerDepartment = this.FindUserByLicense(player).Department;
 

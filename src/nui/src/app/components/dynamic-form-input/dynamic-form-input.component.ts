@@ -1,7 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup, NgModel } from '@angular/forms';
 import { DropdownItem, FormInputBase } from '@models';
-import getKeyFromObjectPath from 'lodash-es/get';
 import { LocalizationService } from '@services/localization/localization.service';
 
 @Component({
@@ -11,11 +10,16 @@ import { LocalizationService } from '@services/localization/localization.service
 })
 export class DynamicFormInputComponent implements OnInit {
 
-  @Input() form!: FormGroup;
+  @Input() withoutForm: boolean = false;
+  @Input() form?: FormGroup;
   @Input() field!: FormInputBase<string>;
 
+  @Output() onChange = new EventEmitter();
+
   label: string = '';
+  placeholder: string = '';
   helpLabel: string = '';
+  pseudoFormControl = new FormControl('');
 
   dropdownOpen: boolean = false;
   dropdownSelectedItem: { key: number, label: string } = { key: -1, label: '' };
@@ -26,6 +30,11 @@ export class DynamicFormInputComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if (!this.form) {
+      this.form = new FormGroup({
+        [this.field.key]: this.pseudoFormControl,
+      });
+    }
     this.setLabels();
     if (this.field.dropdownOptions?.items) {
       this.dropdownFilteredItems = this.field.dropdownOptions.items;
@@ -38,12 +47,12 @@ export class DynamicFormInputComponent implements OnInit {
       } else {
         this.field.dropdownOptions.selectedItem = -1;
       }
-      this.form.controls[this.field.key].patchValue(this.field.dropdownOptions.selectedItem);
+      this.form?.controls[this.field.key].patchValue(this.field.dropdownOptions.selectedItem);
     }
   }
 
   get control() {
-    return this.form.controls[this.field.key];
+    return this.form?.controls[this.field.key] ?? this.pseudoFormControl;
   }
 
   onDropdownSelect(selectItem: DropdownItem): void {
@@ -52,7 +61,7 @@ export class DynamicFormInputComponent implements OnInit {
   }
 
   private setSelectedItem(selectedItem: DropdownItem) {
-    this.form.controls[this.field.key].patchValue(selectedItem.key);
+    this.form?.controls[this.field.key].patchValue(selectedItem.key);
     this.dropdownSelectedItem = selectedItem;
     this.dropdownFilteredItems = this.field.dropdownOptions!.items!.filter(item => item.key !== selectedItem.key);
 
@@ -69,6 +78,7 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     this.helpLabel = this._localization.translate(this.field.helpLabel);
+    this.placeholder = this._localization.translate(this.field.placeholder);
   }
 
 }

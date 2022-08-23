@@ -22,7 +22,6 @@ export class SidebarComponent implements OnInit {
 
   @Dispatch() togglePanicMode = () => new TogglePanicMode(!this.isPanicModeActive);
   @Dispatch() toggleSidebarCollapse = () => new ToggleSidebarCollapse(!this.isSidebarCollapsed);
-  @Dispatch() setMdtPath = (path: string[]) => new SetMdtPath(path);
 
   isSidebarCollapsed: boolean = false;
   isPanicModeActive: boolean = false;
@@ -86,10 +85,6 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  setPathInState(path: string): void {
-    this.setMdtPath(path.split('/'));
   }
 
 }

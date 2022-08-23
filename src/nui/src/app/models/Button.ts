@@ -1,15 +1,9 @@
-import { ActionResponse } from '@models';
-
-interface Button {
+﻿export interface Button {
   label: string;
-  link?: string;
+  theme?: 'primary' | 'secondary' | 'small' | 'danger';
+  type?: 'button' | 'submit';
   show: () => boolean;
-}
-
-export interface PropButton extends Button {
-  onClick: () => void;
-}
-
-export interface PropButtonWithResponse extends Button {
-  onClick: (onResponse: (response: ActionResponse) => void) => void;
+  disabled?: boolean;
+  link?: string[];
+  onClick?: () => any;
 }

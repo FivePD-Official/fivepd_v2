@@ -1,4 +1,4 @@
-<div [formGroup]="form" class="input-box">
+<div [formGroup]="form!" class="input-box">
   <label
     *ngIf="field.label && field.type !== 'checkbox'"
     class="input-label"
@@ -10,8 +10,8 @@
 
   <ng-container [ngSwitch]="true">
 
-    <input *ngSwitchCase="field.type === 'text'" [formControlName]="field.key" [attr.id]="field.key" type="text" />
-    <input *ngSwitchCase="field.type === 'number'" [formControlName]="field.key" [attr.id]="field.key" type="number" />
+    <input *ngSwitchCase="field.type === 'text'" [formControlName]="field.key" [attr.id]="field.key" type="text" [attr.placeholder]="placeholder" (input)="onChange.emit($event)" />
+    <input *ngSwitchCase="field.type === 'number'" [formControlName]="field.key" [attr.id]="field.key" type="number" [attr.placeholder]="placeholder" (input)="onChange.emit($event)" />
 
     <div
       *ngSwitchCase="field.type === 'dropdown'"

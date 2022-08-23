@@ -4,6 +4,7 @@ import { MdtComponent } from './pages/mdt/mdt.component';
 import { BlankComponent } from './pages/blank/blank.component';
 import { MenuComponent } from './pages/menu/menu.component';
 import { DashboardComponent } from './pages/mdt/dashboard/dashboard.component';
+import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
 
 const routes: Routes = [
   {
@@ -40,11 +41,10 @@ const routes: Routes = [
       },
       {
         path: 'departments',
-        component: DashboardComponent,
         children: [
           {
             path: ':id',
-            component: DashboardComponent
+            component: DepartmentsViewComponent
           }
         ]
       }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, switchMap } from 'rxjs';
-import { ActionResponse, Department, Division, NameTakenResponse, Page, Rank, User } from '@models';
+import { ActionResponse, Collation, Department, Division, NameTakenResponse, Page, Rank, User } from '@models';
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +12,17 @@ export class DepartmentService {
     private _http: HttpClient,
   ) { }
 
-  getDepartment(id: number): Observable<Department> {
+  getDepartment(id: number | string): Observable<Department> {
+    if (typeof id === 'string') {
+      id = parseInt(id);
+    }
     return this._http.post<Department>('fivepd:department:getById', {
       DepartmentId: id,
     });
   }
 
-  getDepartments(): Observable<Page<Department>> {
-    return this._http.post<Page<Department>>('fivepd:department:list', {});
+  getDepartments(departmentsRequest?: Collation): Observable<Page<Department>> {
+    return this._http.post<Page<Department>>('fivepd:department:list', departmentsRequest);
   }
 
   createDepartment(department: object): Observable<ActionResponse> {
@@ -54,21 +57,12 @@ export class DepartmentService {
     });
   }
 
-  createRank(departmentId: number, name: Rank['Name'], permission: Rank['Permission']): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:department:createRank', {
-      DepartmentId: departmentId,
-      Name: name,
-      Permission: permission,
-    });
+  createRank(rank: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:department:createRank', rank);
   }
 
-  editRank(departmentId: number, rankId: number, name: Rank['Name'], permission: Rank['Permission']): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:department:editRank', {
-      DepartmentId: departmentId,
-      RankId: rankId,
-      Name: name,
-      Permission: permission,
-    });
+  editRank(rank: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:department:editRank', rank);
   }
 
   deleteRank(id: number): Observable<ActionResponse> {
@@ -98,10 +92,10 @@ export class DepartmentService {
     });
   }
 
-  getRanks(id: number): Observable<Page<Rank>> {
+  getRanks(departmentId: number, collation?: Collation): Observable<Page<Rank>> {
     return this._http.post<Page<Rank>>('fivepd:department:getRanks', {
-      DepartmentId: id,
-      // TODO: Filters
+      DepartmentId: departmentId,
+      ...collation
     });
   }
 

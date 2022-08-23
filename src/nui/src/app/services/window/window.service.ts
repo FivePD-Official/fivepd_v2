@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ClientEvents, NuiEventType } from '@enums';
 import { EventService } from '@services/event/event.service';
 import { BaseNuiEvent, User, MenuShowEvent } from '@models';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { SetUser } from '@store/user.actions';
@@ -27,7 +27,9 @@ export class WindowService {
     private _router: Router,
   ) {
     this._event.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => this.onClose()) // TODO: investigate why this subscription spams after the first close event
-    this._event.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => this.onMdtOpen());
+    this._event.onEvent<BaseNuiEvent>(NuiEventType.Mdt).pipe(
+      tap(() => this._http.post<User>(ClientEvents.GetPlayerDetails, {}).subscribe(res => this.setUser(res)))
+    ).subscribe(() => this.onMdtOpen());
     this._event.onEvent<MenuShowEvent>(NuiEventType.MenuView).subscribe(res => this.onMenuOpen(res));
     // this._event.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(res => this.onMenuOpen(res));
 
@@ -56,7 +58,6 @@ export class WindowService {
   private onMdtOpen(): void {
     this.show();
     this._router.navigate([...this.previousMdtPath]);
-    this._http.post<User>(ClientEvents.GetPlayerDetails, {}).subscribe(res => this.setUser(res));
   }
 
   private onMenuOpen(res: MenuShowEvent): void {

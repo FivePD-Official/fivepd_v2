@@ -1,6 +1,6 @@
-import { ActionResponse } from '@models';
+import { ActionResponse, Localization, Paths } from '@models';
 
-export interface Column<T> {
+export interface ColumnOptions<T> {
   header: string;
   accessorKey?: Extract<keyof T, string>;
   filter?: {
@@ -9,8 +9,33 @@ export interface Column<T> {
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
   actions?: TableCellActions<T>[];
-  show?: () => boolean;
+  show?: boolean;
 }
+
+export class Column<T> {
+
+  header: string = '';
+  accessorKey?: Extract<keyof T, string>;
+  filter?: {
+    label: Paths<Localization> | string;
+  };
+  linkResolver?: (item: T) => string;
+  valueResolver?: (item: T) => string;
+  actions?: TableCellActions<T>[];
+  show: boolean;
+
+  constructor(options: ColumnOptions<T>) {
+    this.header = options.header;
+    this.accessorKey = options.accessorKey;
+    this.filter = options.filter;
+    this.linkResolver = options.linkResolver;
+    this.valueResolver = options.valueResolver;
+    this.actions = options.actions;
+    this.show = options.show ?? true;
+  }
+
+}
+
 
 export type ColumnDef<T> = Column<T>[];
 
@@ -31,7 +56,7 @@ export interface TableCellAction {
 }
 
 export interface TableCellActionButton<T> extends TableCellAction {
-  onClick: (item: T, onResponse: (response: ActionResponse) => void) => void;
+  onClick: (item: T) => void;
 }
 
 export interface TableCellActionSelect<T> extends TableCellAction {

@@ -33,8 +33,9 @@ import { DynamicFormComponent } from './components/dynamic-form/dynamic-form.com
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DynamicFormInputComponent } from './components/dynamic-form-input/dynamic-form-input.component';
 import { DepartmentService } from '@services/entity/department.service';
-import { GenericNameValidator } from '@validators/generic-name-validator';
 import { ModalComponent } from './components/modal/modal.component';
+import { GridComponent } from './components/grid/grid.component';
+import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,9 @@ import { ModalComponent } from './components/modal/modal.component';
     ButtonComponent,
     DynamicFormComponent,
     DynamicFormInputComponent,
-    ModalComponent
+    ModalComponent,
+    GridComponent,
+    DepartmentsViewComponent,
   ],
   imports: [
     BrowserModule,

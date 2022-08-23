@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { FormFields } from '@utils';
-import { FormInputBase, InputField } from '@models';
+import { filter, Observable, Subject } from 'rxjs';
+import { FormInputBase, Localization, Paths } from '@models';
 
 interface ModalButton {
   theme: 'primary' | 'secondary' | 'danger';
-  label: string;
+  label: Paths<Localization>;
 }
 
-export interface Modal {
-  title: string;
+export interface ModalOptions {
+  title: Paths<Localization>;
   description?: string;
   fields?: FormInputBase<any>[];
   buttons: {
@@ -18,9 +17,41 @@ export interface Modal {
   };
 }
 
-export interface ModalReturn {
+export interface ModalResponse {
   success: boolean;
-  value?: object;
+  value?: { [key: string]: any; };
+}
+
+class Modal {
+
+  title: ModalOptions['title'];
+  description?: ModalOptions['description'];
+  fields?: ModalOptions['fields'];
+  buttons: ModalOptions['buttons'];
+
+  private response$: Observable<ModalResponse>;
+
+  constructor(modal: ModalOptions, modalResponse: Observable<ModalResponse>) {
+    this.title = modal.title;
+    this.description = modal.description;
+    this.fields = modal.fields;
+    this.buttons = modal.buttons;
+    this.response$ = modalResponse;
+  }
+
+  onSuccess(handler: (response: ModalResponse) => void): Modal {
+    this.response$.pipe(
+      filter(response => response.success),
+    ).subscribe(response => handler(response))
+    return this;
+  }
+
+  onCancel(handler: (response: ModalResponse) => void): Modal {
+    this.response$.pipe(
+      filter(response => !response.success),
+    ).subscribe(response => handler(response))
+    return this;
+  }
 }
 
 @Injectable({
@@ -29,12 +60,13 @@ export interface ModalReturn {
 export class ModalService {
 
   public readonly modal$ = new Subject<Modal | null>();
-  private _modalResponse$ = new Subject<ModalReturn>();
+  private _modalResponse$ = new Subject<ModalResponse>();
 
-  public open(inputObj: Modal): Observable<ModalReturn> {
-    this.modal$.next(inputObj);
-    this._modalResponse$ = new Subject<ModalReturn>();
-    return this._modalResponse$.asObservable();
+  public open(inputObj: ModalOptions): Modal {
+    this._modalResponse$ = new Subject<ModalResponse>();
+    const modal = new Modal(inputObj, this._modalResponse$.asObservable());
+    this.modal$.next(modal);
+    return modal;
   }
 
   public close(): void {
@@ -46,7 +78,7 @@ export class ModalService {
 
   public submit(value?: object): void {
     this.modal$.next(null);
-    const data: ModalReturn = {
+    const data: ModalResponse = {
       success: true,
     };
     if (value) {
@@ -55,7 +87,7 @@ export class ModalService {
     this._modalResponse$.next(data);
   }
 
-  public onOpen(): Subject<Modal | null> {
-    return this.modal$;
+  onOpen(): Observable<Modal | null> {
+    return this.modal$.asObservable();
   }
 }

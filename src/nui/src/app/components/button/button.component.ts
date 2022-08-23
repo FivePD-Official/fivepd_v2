@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { Button } from '@models';
 
 @Component({
   selector: 'app-button',
@@ -8,12 +9,12 @@ import { Router } from '@angular/router';
 })
 export class ButtonComponent implements OnInit {
 
-  @Input() label: string = '';
-  @Input() theme: 'primary' | 'secondary' | 'small' | 'danger' = 'primary';
-  @Input() type?: 'button' | 'submit' = 'button';
+  @Input() label: Button['label'] = '';
+  @Input() theme: Button['theme'] = 'primary';
+  @Input() type?: Button['type'] = 'button';
   @Input() show: boolean = true;
-  @Input() disabled: boolean = false;
-  @Input() link?: string[];
+  @Input() disabled: Button['disabled'] = false;
+  @Input() link?: Button['link'];
   @Output() onClick = new EventEmitter();
 
   constructor(

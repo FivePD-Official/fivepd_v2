@@ -1,4 +1,4 @@
-﻿import { Action, State, StateContext } from '@ngxs/store';
+﻿import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { Injectable } from '@angular/core';
 import { User } from '@models';
 import { SetUser, TogglePanicMode } from './user.actions';
@@ -20,6 +20,11 @@ export interface UserStateModel {
 export class UserState {
 
   constructor() {}
+
+  @Selector([UserState])
+  static details(state: UserStateModel): User {
+    return state.details;
+  }
 
   @Action(SetUser)
   setUser({ patchState, dispatch }: StateContext<UserStateModel>, { payload }: SetUser) {

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import type { Localization, Paths, PropButton } from '@models';
+import type { Localization, Paths } from '@models';
 
 @Component({
   selector: 'app-page-header',
@@ -8,9 +8,8 @@ import type { Localization, Paths, PropButton } from '@models';
 })
 export class PageHeaderComponent implements OnInit {
 
-  @Input() title: Paths<Localization> = '';
+  @Input() title: string = '';
   @Input() centerTitle?: boolean;
-  @Input() buttons?: PropButton[];
 
   constructor() { }
 

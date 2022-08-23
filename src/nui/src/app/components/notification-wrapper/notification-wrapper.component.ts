@@ -30,15 +30,15 @@ export class NotificationWrapperComponent implements OnInit, OnDestroy {
     });
 
     this.intervalId = setInterval(() => {
-      const notificationsCopy = [...this.notifications];
-      notificationsCopy.forEach((notification) => {
+      this.notifications.forEach((notification) => {
         if (notification.timer === 4) {
           notification.exit = true;
+          notification.timer++;
         } else {
           notification.timer++;
         }
       });
-      this.notifications = notificationsCopy.filter((x) => x.timer !== 5);
+      this.notifications = this.notifications.filter((x) => x.timer !== 5);
     }, 1000);
   }
 
@@ -46,6 +46,7 @@ export class NotificationWrapperComponent implements OnInit, OnDestroy {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+    this.notifications = [];
     this.notifications$?.unsubscribe();
   }
 }

@@ -12,8 +12,8 @@ interface FormInputBaseModel<T> {
   value: T | undefined;
   key: string;
   label: Paths<Localization> | string;
-  helpLabel: string;
-  placeholder: string;
+  helpLabel: Paths<Localization> | string;
+  placeholder: Paths<Localization> | string;
   required: boolean;
   readonly: boolean;
   options: Record<string, any>;
