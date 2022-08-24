@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Button } from '@models';
 
@@ -7,7 +7,7 @@ import { Button } from '@models';
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.sass']
 })
-export class ButtonComponent implements OnInit {
+export class ButtonComponent implements OnInit, OnChanges {
 
   @Input() label: Button['label'] = '';
   @Input() theme: Button['theme'] = 'primary';
@@ -17,14 +17,21 @@ export class ButtonComponent implements OnInit {
   @Input() link?: Button['link'];
   @Output() onClick = new EventEmitter();
 
+  className: object = {};
+
   constructor(
     private _router: Router,
   ) { }
 
   ngOnInit(): void {
+    this.className = this.setClassName();
   }
 
-  get className() {
+  ngOnChanges(): void {
+    this.className = this.setClassName();
+  }
+
+  setClassName(): object {
     if (this.disabled) {
       return {
         'button--disabled': true

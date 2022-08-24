@@ -1,5 +1,4 @@
 export * from './NuiEventType';
-export * from './ClientEvents';
 
 export enum MenuItemType {
   Button,

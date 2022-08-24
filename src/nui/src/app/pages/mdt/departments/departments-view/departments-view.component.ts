@@ -1,16 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { Button, Checkbox, CheckboxGroup, Collation, Column, Department, Page, Rank, TextInput, User } from '@models';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Collation,
+  Column,
+  Department,
+  Division,
+  DropdownItem,
+  Page,
+  Rank,
+  TextInput,
+  User
+} from '@models';
 import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
 import { UserState } from '@store/user.state';
-import { Observable, tap } from 'rxjs';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
 import { Select } from '@ngxs/store';
 import { replaceParams } from '@utils';
 import { ModalService } from '@services/modal/modal.service';
+import { UserService } from '@services/user/user.service';
 
 interface FormattedRank extends Rank {
   Permissions: string;
+}
+
+interface FormattedUser extends User {
+  RankName: string;
+  DivisionName: string;
+}
+
+interface FormattedDepartment extends Department {
+  Ranks?: FormattedRank[];
+  Users?: FormattedUser[];
 }
 
 @Component({
@@ -18,14 +42,15 @@ interface FormattedRank extends Rank {
   templateUrl: './departments-view.component.html',
   styleUrls: ['./departments-view.component.sass']
 })
-export class DepartmentsViewComponent implements OnInit {
+export class DepartmentsViewComponent implements OnInit, OnDestroy {
+
+  onDestroy$ = new Subject<void>();
 
   user?: User;
   @Select(UserState.details) user$!: Observable<User>;
 
   department?: Department;
-
-  rank: any;
+  isUserInDepartment: boolean = false;
 
   ranks?: Page<FormattedRank>;
   ranksButtons: Button[] = [
@@ -76,7 +101,9 @@ export class DepartmentsViewComponent implements OnInit {
           Name: res.value!['Name'],
           Permission: res.value!['Permission']
         }).subscribe(createRes => {
-          this.getRanks();
+          if (createRes.Status) {
+            this.getRanks();
+          }
         });
       })
     }
@@ -98,7 +125,7 @@ export class DepartmentsViewComponent implements OnInit {
     }),
     new Column<FormattedRank>({
       header: this._localization.translate('Nui.Labels.Actions'),
-      show: this.user?.Admin ?? false,
+      show: () => this.user?.Admin ?? false,
       actions: [
         {
           type: 'button',
@@ -111,10 +138,10 @@ export class DepartmentsViewComponent implements OnInit {
                 cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
                 submit: { theme: 'danger', label: 'Nui.Actions.Delete' },
               },
-            }).onSuccess(res => {
+            }).onSuccess(() => {
               this._departmentService.deleteRank(rank.Id).subscribe(deleteRes => {
                 if (deleteRes.Status) {
-                  this.getRanks();
+                  this.getRanks(true);
                 }
               });
             });
@@ -122,7 +149,7 @@ export class DepartmentsViewComponent implements OnInit {
         },
         {
           type: 'button',
-          label: 'Nui.Actions.Edit',
+          label: this._localization.translate('Nui.Actions.Edit'),
           onClick: rank => {
             this._modal.open({
               title: 'Nui.Labels.EditRankTitle',
@@ -154,10 +181,174 @@ export class DepartmentsViewComponent implements OnInit {
                 RankId: rank.Id,
                 Name: res.value!['Name'],
                 Permission: res.value!['Permission']
-              }).subscribe();
+              }).subscribe(editRes => {
+                if (editRes.Status) {
+                  this.getRanks(true);
+                }
+              });
             });
           }
         },
+      ]
+    })
+  ];
+
+  users?: Page<FormattedUser>;
+  usersCollation: Collation = {
+    Page: 1,
+  };
+  usersColumns: Column<FormattedUser>[] = [
+    new Column<FormattedUser>({
+      header:  this._localization.translate('Nui.Labels.Name'),
+      accessorKey: 'Name',
+      filter: {
+        label:  this._localization.translate('Nui.Labels.SearchByName'),
+      },
+    }),
+    new Column<FormattedUser>({
+      header:  this._localization.translate('Nui.Labels.Rank'),
+      accessorKey: 'RankName',
+      show: () => !this.user?.Admin ?? false,
+    }),
+    new Column<FormattedUser>({
+      header:  this._localization.translate('Nui.Labels.Division'),
+      accessorKey: 'DivisionName',
+      show: () => !this.user?.Admin ?? false,
+    }),
+    new Column<FormattedUser>({
+      header:  this._localization.translate('Nui.Labels.Rank'),
+      show: () => this.user?.Admin ?? false,
+      actions: [
+        {
+          type: 'select',
+          label:  this._localization.translate('Nui.Labels.NoRank'),
+          selectedItemResolver: (user, dropdownItemKey) => user.RankId === dropdownItemKey,
+          items: () => this.ranksDropdown,
+          onSelect: (user, selectedId) => {
+            this._userService.changeRank({
+              UserId: user.Id,
+              IdToChange: selectedId,
+            }).subscribe();
+          }
+        }
+      ]
+    }),
+    new Column<FormattedUser>({
+      header:  this._localization.translate('Nui.Labels.Division'),
+      show: () => this.user?.Admin ?? false,
+      actions: [
+        {
+          type: 'select',
+          label: this._localization.translate('Nui.Labels.NoDivision'),
+          selectedItemResolver: (user, dropdownItemKey) => user.DivisionId === dropdownItemKey,
+          items: () => this.divisionsDropdown,
+          onSelect: (user, selectedId) => {
+            this._userService.changeDivision({
+              UserId: user.Id,
+              IdToChange: selectedId,
+            }).subscribe();
+          }
+        },
+      ]
+    })
+  ];
+
+  divisions?: Page<Division>;
+  divisionsCollation: Collation = {
+    Page: 1,
+  };
+  divisionsButtons: Button[] = [
+    {
+      label: this._localization.translate('Nui.Actions.CreateDivision'),
+      onClick: () => this._modal.open({
+        title: 'Nui.Actions.CreateDivision',
+        fields: [
+          new TextInput({
+            key: 'Name',
+            label: 'Nui.Labels.Name',
+            placeholder: 'Nui.Labels.Name',
+            required: true,
+          })
+        ],
+        buttons: {
+          cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
+          submit: { theme: 'primary', label: 'Nui.Actions.Create' },
+        },
+      }).onSuccess(res => {
+        this._departmentService.createDivision({
+          DepartmentId: this.department?.Id,
+          Name: res.value!['Name']
+        }).subscribe(createRes => {
+          if (createRes.Status) {
+            this.getDivisions(true);
+          }
+        });
+      }),
+      show: () => this.user?.Admin ?? false,
+    }
+  ];
+
+  divisionsColumns: Column<Division>[] = [
+    new Column<Division>({
+      header: this._localization.translate('Nui.Labels.Name'),
+      accessorKey: 'Name',
+      filter: {
+        label: this._localization.translate('Nui.Labels.SearchByName'),
+      },
+    }),
+    new Column<Division>({
+      header: this._localization.translate('Nui.Labels.Actions'),
+      show: () => this.user?.Admin ?? false,
+      actions: [
+        {
+          type: 'button',
+          label: this._localization.translate('Nui.Actions.Delete'),
+          onClick: division => this._modal.open({
+            title: 'Nui.Labels.DeleteDivisionTitle',
+            description: replaceParams('Nui.Labels.DeleteDivisionDescription', {'division': `<b>${division.Name}</b>`}),
+            buttons: {
+              cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel'},
+              submit: { theme: 'danger', label: 'Nui.Actions.Delete'},
+            },
+          }).onSuccess(() => {
+            this._departmentService.deleteDivision(division.Id).subscribe(deleteRes => {
+              if (deleteRes.Status) {
+                this.getDivisions(true);
+              }
+            });
+          })
+        },
+        {
+          type: 'button',
+          label: this._localization.translate('Nui.Actions.Edit'),
+          onClick: division => {
+            this._modal.open({
+              title: 'Nui.Labels.EditDivision',
+              fields: [
+                new TextInput({
+                  key: 'Name',
+                  label: 'Nui.Labels.Name',
+                  placeholder: 'Nui.Labels.Name',
+                  required: true,
+                  value: division.Name,
+                })
+              ],
+              buttons: {
+                cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
+                submit: { theme: 'primary', label: 'Nui.Actions.Save' },
+              },
+            }).onSuccess(res => {
+              this._departmentService.editDivision({
+                DivisionId: division.Id,
+                Name: res.value!['Name'],
+              }).subscribe(editRes => {
+                if (editRes.Status) {
+                  this.getDivisions(true);
+                }
+              });
+            })
+          }
+        }
       ]
     })
   ];
@@ -167,32 +358,67 @@ export class DepartmentsViewComponent implements OnInit {
     private _route: ActivatedRoute,
     private _localization: LocalizationService,
     private _departmentService: DepartmentService,
+    private _userService: UserService,
     private _modal: ModalService
   ) { }
 
   ngOnInit(): void {
-    this.user$.subscribe(user => this.user = user);
-    this._route.params.subscribe(params => {
+    this.user$.pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe(user => {
+      this.user = user;
+      this.setIsUserInDepartment();
+    });
+
+    this._route.params.pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe(() => {
       this.getDepartment();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
+  }
+
+  setIsUserInDepartment(): void {
+    this.isUserInDepartment = this.user?.DepartmentId === this.department?.Id;
   }
 
   get title(): string {
     return `${this._localization.translate('Nui.Labels.Department')} ${(this.department?.Name ? '(' + this.department?.Name + ')' : '')}`;
   }
 
-  get isUserInDepartment(): boolean {
-    return this.user?.DepartmentId === this.department?.Id;
+  get ranksDropdown(): DropdownItem[] {
+    return this.department?.Ranks?.map(rank => {
+      return {
+        key: rank.Id,
+        label: rank.Name,
+      };
+    }) ?? [];
   }
 
-  getDepartment(): void {
+  get divisionsDropdown(): DropdownItem[] {
+    return this.department?.Divisions?.map(division => {
+      return {
+        key: division.Id,
+        label: division.Name,
+      };
+    }) ?? [];
+  }
+
+  getDepartment(remapUsers: boolean = false): void {
     this._departmentService.getDepartment(this._route.snapshot.params['id']).subscribe(res => {
       this.department = res;
       this.getRanks();
+      this.getDivisions();
+      this.getUsers();
+      this.setIsUserInDepartment();
     });
   }
 
-  getRanks(): void {
+  getRanks(remapUsers: boolean = false): void {
     if (!this.department) {
       return;
     }
@@ -205,8 +431,41 @@ export class DepartmentsViewComponent implements OnInit {
         };
       });
       this.ranks = res as Page<FormattedRank>;
-      console.log(this.department)
-      console.log(this.ranks)
+
+      if (remapUsers) {
+        this.getDepartment(true);
+      }
+    });
+  }
+
+  getDivisions(remapUsers: boolean = false): void {
+    if (!this.department) {
+      return;
+    }
+
+    this._departmentService.getDivisions(this.department.Id).subscribe(res => {
+      this.divisions = res;
+
+      if (remapUsers) {
+        this.getDepartment(true);
+      }
+    });
+  }
+
+  getUsers(): void {
+    if (!this.department) {
+      return;
+    }
+
+    this._departmentService.getDepartmentUsers(this.department.Id).subscribe(res => {
+      res.Items = res.Items.map(user => {
+        return {
+          ...user,
+          RankName: this.department?.Ranks?.find(rank => rank.Id === user.RankId)?.Name ?? '-',
+          DivisionName: this.department?.Divisions?.find(division => division.Id === user.DivisionId)?.Name ?? '-',
+        };
+      });
+      this.users = res as Page<FormattedUser>;
     });
   }
 
@@ -215,16 +474,29 @@ export class DepartmentsViewComponent implements OnInit {
     this.getRanks();
   }
 
+  onDivisionsCollationChange(collation: Collation): void {
+    this.divisionsCollation = collation;
+    this.getDivisions();
+  }
+
+  onUsersCollationChange(collation: Collation): void {
+    this.usersCollation = collation;
+    this.getUsers();
+  }
+
   joinDepartment(): void {
-    this._departmentService.joinDepartment(this.department!.Id).subscribe(() => {
-      // TODO: Get user data
+    this._departmentService.joinDepartment(this.department!.Id).subscribe(res => {
+      if (res.Status) {
+        this._userService.getData();
+        this.getUsers();
+      }
     });
   }
 
   leaveDepartment(): void {
     this._departmentService.leaveDepartment(this.department!.Id).subscribe(res => {
       if (res.Status) {
-        // TODO: Get user data
+        this._userService.getData();
         this._router.navigate(['mdt', 'dashboard']);
       }
     });

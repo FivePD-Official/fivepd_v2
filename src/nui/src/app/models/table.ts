@@ -9,7 +9,7 @@ export interface ColumnOptions<T> {
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
   actions?: TableCellActions<T>[];
-  show?: boolean;
+  show?: () => boolean;
 }
 
 export class Column<T> {
@@ -22,7 +22,7 @@ export class Column<T> {
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
   actions?: TableCellActions<T>[];
-  show: boolean;
+  show: () => boolean;
 
   constructor(options: ColumnOptions<T>) {
     this.header = options.header;
@@ -31,13 +31,10 @@ export class Column<T> {
     this.linkResolver = options.linkResolver;
     this.valueResolver = options.valueResolver;
     this.actions = options.actions;
-    this.show = options.show ?? true;
+    this.show = options.show ? options.show : () => true;
   }
 
 }
-
-
-export type ColumnDef<T> = Column<T>[];
 
 export interface FormattedRowItem<T> {
   value: string;
@@ -60,13 +57,13 @@ export interface TableCellActionButton<T> extends TableCellAction {
 }
 
 export interface TableCellActionSelect<T> extends TableCellAction {
-  selectedItemResolver: (item: T, itemId: number) => boolean;
+  selectedItemResolver: (item: T, dropdownItemKey: number) => boolean;
   items: () => TableCellActionSelectItem[];
   onSelect: (item: T, selectedId: number, onResponse: (response: ActionResponse) => void) => void;
 }
 
 interface TableCellActionSelectItem {
-  id: number;
+  key: number;
   label: string;
   selected?: boolean;
 }

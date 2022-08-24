@@ -80,7 +80,7 @@ export class DepartmentService {
   }
 
   deleteDivision(id: number): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:department:createDivision', {
+    return this._http.post<ActionResponse>('fivepd:department:deleteDivision', {
       DivisionId: id,
     });
   }

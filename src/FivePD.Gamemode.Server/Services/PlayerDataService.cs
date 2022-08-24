@@ -182,7 +182,7 @@ namespace FivePD.Gamemode.Server.Services
                 }
 
                 Division division;
-                if (playerChangeRequest.IdToChange == 0)
+                if (playerChangeRequest.IdToChange == -1)
                 {
                     user.DivisionId = null;
                     division = null;
@@ -247,7 +247,7 @@ namespace FivePD.Gamemode.Server.Services
                 }
 
                 Rank rank;
-                if (playerChangeRequest.IdToChange == 0)
+                if (playerChangeRequest.IdToChange == -1)
                 {
                     user.RankId = null;
                     rank = null;

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, NgModel } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { DropdownItem, FormInputBase } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 
@@ -12,7 +12,7 @@ export class DynamicFormInputComponent implements OnInit {
 
   @Input() withoutForm: boolean = false;
   @Input() form?: FormGroup;
-  @Input() field!: FormInputBase<string>;
+  @Input() field!: FormInputBase<any>;
 
   @Output() onChange = new EventEmitter();
 
@@ -36,19 +36,24 @@ export class DynamicFormInputComponent implements OnInit {
       });
     }
     this.setLabels();
-    if (this.field.dropdownOptions?.items) {
-      this.dropdownFilteredItems = this.field.dropdownOptions.items;
-      this.dropdownSelectedItem.label = this.field.dropdownOptions.label;
-      if (this.field.dropdownOptions.selectedItem) {
-        const item = this.field.dropdownOptions.items.find(x => x.key === this.field.dropdownOptions?.selectedItem);
+    if (this.field.dropdownOptions) {
+      const { items, selectedItemResolver, label } = this.field.dropdownOptions;
+      this.dropdownFilteredItems = items;
+      this.dropdownSelectedItem.label = label;
+
+      if (selectedItemResolver) {
+        const item = items.find(item => selectedItemResolver(item.key));
         if (item) {
           this.setSelectedItem(item);
         }
       } else {
-        this.field.dropdownOptions.selectedItem = -1;
+        this.form?.controls[this.field.key].patchValue(-1);
       }
-      this.form?.controls[this.field.key].patchValue(this.field.dropdownOptions.selectedItem);
     }
+
+    this.form?.controls[this.field.key].valueChanges.subscribe(value => {
+      this.onChange.emit(value);
+    });
   }
 
   get control() {
@@ -61,12 +66,18 @@ export class DynamicFormInputComponent implements OnInit {
   }
 
   private setSelectedItem(selectedItem: DropdownItem) {
+    if (!this.field.dropdownOptions) {
+      return;
+    }
+
+    const { items, label } = this.field.dropdownOptions;
+
     this.form?.controls[this.field.key].patchValue(selectedItem.key);
     this.dropdownSelectedItem = selectedItem;
-    this.dropdownFilteredItems = this.field.dropdownOptions!.items!.filter(item => item.key !== selectedItem.key);
+    this.dropdownFilteredItems = items.filter(item => item.key !== selectedItem.key);
 
-    if (selectedItem.key !== this.field.dropdownOptions?.selectedItem) {
-      this.dropdownFilteredItems.unshift({ key: -1, label: this.field.dropdownOptions!.label });
+    if (selectedItem.key !== -1) {
+      this.dropdownFilteredItems.unshift({ key: -1, label: label });
     }
   }
 

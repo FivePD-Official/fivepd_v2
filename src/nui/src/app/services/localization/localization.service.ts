@@ -1,6 +1,6 @@
 import { Injectable, SecurityContext } from '@angular/core';
 import { defaultLocalization, Localization, LocalizationChangeEvent, Paths } from '@models';
-import { ClientEvents, NuiEventType } from '@enums';
+import { NuiEventType } from '@enums';
 import { HttpClient } from '@angular/common/http';
 import { EventService } from '@services/event/event.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -22,7 +22,7 @@ export class LocalizationService {
   }
 
   load(): void {
-    this._http.post<Localization>(ClientEvents.GetLocalizationFromNui, {}).subscribe(localization => this.set(localization));
+    this._http.post<Localization>('fivepd:localization:getLocalizationFromNui', {}).subscribe(localization => this.set(localization));
   }
 
   get(): Localization {

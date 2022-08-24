@@ -1,6 +1,6 @@
 <app-page-header [title]="title">
-  <app-button [label]="'Nui.Actions.Join' | translate" [show]="!isUserInDepartment" (onClick)="joinDepartment()"></app-button>
-  <app-button [label]="'Nui.Actions.Join' | translate" [show]="isUserInDepartment" (onClick)="leaveDepartment()"></app-button>
+  <app-button [label]="'Nui.Actions.Join' | translate" [show]="!isUserInDepartment" theme="secondary" (onClick)="joinDepartment()"></app-button>
+  <app-button [label]="'Nui.Actions.Leave' | translate" [show]="isUserInDepartment" theme="secondary" (onClick)="leaveDepartment()"></app-button>
 </app-page-header>
 
 <ng-container *ngIf="user?.Admin ?? false; else notAdmin">
@@ -21,6 +21,17 @@
 <!--      @on-change="onRankAndDivisionChange"-->
 <!--    />-->
 <!--  </Grid>-->
+  <app-columns *ngIf="department" [columns]="2">
+    <div>form</div>
+    <app-grid
+      [title]="'Nui.Labels.Divisions' | translate"
+      [buttons]="divisionsButtons"
+      [data]="divisions"
+      [columns]="divisionsColumns"
+      (onCollationChange)="onDivisionsCollationChange($event)"
+      (onCellAction)="getDivisions()"
+    ></app-grid>
+  </app-columns>
   <app-grid
     [title]="'Nui.Labels.Ranks' | translate"
     [buttons]="ranksButtons"
@@ -32,31 +43,30 @@
 </ng-container>
 
 <ng-template #notAdmin>
-<!--  <Grid v-if="department" :columns="2">-->
-<!--    <app-grid-->
-<!--      [title]="'Nui.Labels.Ranks' | translate"-->
-<!--      [buttons]="ranksButtons"-->
-<!--      [data]="ranks"-->
-<!--      [columns]="ranksColumns"-->
-<!--      (onCollationChange)="onRanksCollationChange($event)"-->
-<!--      (onCellAction)="getRanks()"-->
-<!--    ></app-grid>-->
-<!--    <Table-->
-<!--      :render-key="renderKeyOnRouteChange"-->
-<!--      :title="state.global.localization.Nui.Labels.Divisions"-->
-<!--      :buttons="divisionsButtons"-->
-<!--      :columns="divisionsColumns"-->
-<!--      :data-request="requestDepartmentDivisions"-->
-<!--      @on-change="onRankAndDivisionChange"-->
-<!--    />-->
-<!--  </Grid>-->
+  <app-columns *ngIf="department" [columns]="2">
+    <app-grid
+      [title]="'Nui.Labels.Ranks' | translate"
+      [buttons]="ranksButtons"
+      [data]="ranks"
+      [columns]="ranksColumns"
+      (onCollationChange)="onRanksCollationChange($event)"
+      (onCellAction)="getRanks()"
+    ></app-grid>
+    <app-grid
+      [title]="'Nui.Labels.Divisions' | translate"
+      [buttons]="divisionsButtons"
+      [data]="divisions"
+      [columns]="divisionsColumns"
+      (onCollationChange)="onDivisionsCollationChange($event)"
+      (onCellAction)="getDivisions()"
+    ></app-grid>
+  </app-columns>
 </ng-template>
 
-<!--<Table-->
-<!--  v-if="department"-->
-<!--  :render-key="renderKey"-->
-<!--  :title="state.global.localization.Nui.Labels.Members"-->
-<!--  :columns="usersColumnDef"-->
-<!--  :data-request="requestDepartmentUsers"-->
-<!--  :data-mapper="mapDepartmentUsers"-->
-<!--/>-->
+<app-grid
+  [title]="'Nui.Labels.Members' | translate"
+  [data]="users"
+  [columns]="usersColumns"
+  (onCollationChange)="onUsersCollationChange($event)"
+  (onCellAction)="getUsers()"
+></app-grid>

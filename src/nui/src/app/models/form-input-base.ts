@@ -19,7 +19,7 @@ interface FormInputBaseModel<T> {
   options: Record<string, any>;
   dropdownOptions: {
     label: string;
-    selectedItem?: number;
+    selectedItemResolver?: (dropdownItemKey: number) => boolean;
     items: DropdownItem[];
     size: 'small' | 'normal';
   } | null;

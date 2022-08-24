@@ -28,7 +28,7 @@
         *ngFor="let column of formattedColumns"
         class="table-cell"
       >
-        <app-dynamic-form-input *ngIf="column.filter" [field]="getFilterInput(column)" (onChange)="onFilterFormChange(column.accessorKey, $event.target.value)"></app-dynamic-form-input>
+        <app-dynamic-form-input *ngIf="column.filter" [field]="getFilterInput(column)" (onChange)="onFilterFormChange(column.accessorKey, $event)"></app-dynamic-form-input>
       </div>
     </form>
 
@@ -53,6 +53,7 @@
               (onClick)="tableCellActionButtonClick(action, item)"
             >
             </app-button>
+            <app-dynamic-form-input *ngIf="action.type === 'select'" [field]="getSelectField(action, item)" (onChange)="onTableCellActionSelect(action, item, $event)"></app-dynamic-form-input>
 <!--            <Select-->
 <!--              v-else-if="action.type === 'select'"-->
 <!--              :default-item="{ id: 0, label: action.label }"-->

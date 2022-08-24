@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ClientEvents, NuiEventType } from '@enums';
+import { NuiEventType } from '@enums';
 import { EventService } from '@services/event/event.service';
-import { BaseNuiEvent, User, MenuShowEvent } from '@models';
-import { Observable, tap } from 'rxjs';
+import { BaseNuiEvent, MenuShowEvent } from '@models';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { Dispatch } from '@ngxs-labs/dispatch-decorator';
-import { SetUser } from '@store/user.actions';
 import { Select } from '@ngxs/store';
 import { AppState } from '@store/app.state';
+import { UserService } from '@services/user/user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +15,6 @@ import { AppState } from '@store/app.state';
 export class WindowService {
 
   @Select(AppState.previousMdtPath) previousMdtPath$!: Observable<string[]>;
-  @Dispatch() setUser = (user: User) => new SetUser(user);
 
   visible: boolean = false; // TODO: this is only needed because of the close event spam
   previousMdtPath: string[] = ['mdt', 'dashboard'];
@@ -25,11 +23,13 @@ export class WindowService {
     private _http: HttpClient,
     private _event: EventService,
     private _router: Router,
+    private _userService: UserService,
   ) {
     this._event.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => this.onClose()) // TODO: investigate why this subscription spams after the first close event
-    this._event.onEvent<BaseNuiEvent>(NuiEventType.Mdt).pipe(
-      tap(() => this._http.post<User>(ClientEvents.GetPlayerDetails, {}).subscribe(res => this.setUser(res)))
-    ).subscribe(() => this.onMdtOpen());
+    this._event.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+      this._userService.getData();
+      this.onMdtOpen();
+    });
     this._event.onEvent<MenuShowEvent>(NuiEventType.MenuView).subscribe(res => this.onMenuOpen(res));
     // this._event.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(res => this.onMenuOpen(res));
 

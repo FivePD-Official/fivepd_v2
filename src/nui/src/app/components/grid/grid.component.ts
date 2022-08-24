@@ -1,15 +1,19 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
   Button,
-  Collation, Column,
-  ColumnDef, FormattedRow,
-  FormattedRowItem, FormInputBase,
+  Collation,
+  Column, Dropdown,
+  FormattedRow,
+  FormattedRowItem,
+  FormInputBase,
   Page,
   TableCellAction,
   TableCellActionButton,
-  TableCellActionSelect, TextInput
+  TableCellActionSelect,
+  TextInput
 } from '@models';
-import { debounceTime, Observable, Subject } from 'rxjs';
+import { debounceTime, Subject } from 'rxjs';
+import { Form } from '@angular/forms';
 
 @Component({
   selector: 'app-grid',
@@ -69,8 +73,21 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     });
   }
 
+  getSelectField(action: any, item: FormattedRowItem<T>): FormInputBase<number> {
+    return new Dropdown({
+      key: '#',
+      dropdownOptions: {
+        label: action.label,
+        items: action.items(),
+        size: 'small',
+        selectedItemResolver: (dropdownItemKey) => action.selectedItemResolver(item.originalItem, dropdownItemKey),
+      },
+      required: false,
+    });
+  }
+
   setFormattedColumns(columns: Column<T>): void {
-    this.formattedColumns = this.columns.filter(column => column.show);
+    this.formattedColumns = this.columns.filter(column => column.show());
   }
 
   setFormattedRows(data: FormattedRow<T>[]): void {
@@ -78,7 +95,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       const row: FormattedRow<any> = [];
 
       for (const value of Object.values(this.columns)) {
-        if (!value.show) {
+        if (!value.show()) {
           continue;
         }
 
@@ -163,17 +180,13 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     this.onCollationChange.emit(this.collation);
   }
 
-  tableCellActionButtonClick(action: TableCellAction, item: FormattedRowItem<any>) {
+  tableCellActionButtonClick(action: TableCellAction, item: FormattedRowItem<T>): void {
     (action as TableCellActionButton<any>).onClick(item.originalItem);
   }
 
-  tableCellActionSelect(action: TableCellAction, item: FormattedRowItem<any>, selectedId: number) {
-    (action as TableCellActionSelect<any>).onSelect(item.originalItem, selectedId, res => {
-      if (res.Status) {
-        // TODO this.requestData(this.filter);
-        this.onCellAction.emit();
-      }
-    });
+  onTableCellActionSelect(action: any, item: FormattedRowItem<T>, selectedItemKey: number): void {
+    console.log('change', selectedItemKey)
+    action.onSelect(item.originalItem, selectedItemKey);
   }
 
   headerButtonOnClick(button: Button): void {

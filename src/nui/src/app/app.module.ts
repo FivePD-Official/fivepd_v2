@@ -36,6 +36,8 @@ import { DepartmentService } from '@services/entity/department.service';
 import { ModalComponent } from './components/modal/modal.component';
 import { GridComponent } from './components/grid/grid.component';
 import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
+import { UserService } from '@services/user/user.service';
+import { ColumnsComponent } from './components/columns/columns.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +59,7 @@ import { DepartmentsViewComponent } from './pages/mdt/departments/departments-vi
     ModalComponent,
     GridComponent,
     DepartmentsViewComponent,
+    ColumnsComponent,
   ],
   imports: [
     BrowserModule,
@@ -81,6 +84,7 @@ import { DepartmentsViewComponent } from './pages/mdt/departments/departments-vi
     LocalizationService,
     NotificationService,
     DepartmentService,
+    UserService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomHttpInterceptor,

@@ -47,7 +47,8 @@ export class AppComponent implements OnInit {
   onLoad(): void {
     window.addEventListener('load', () => {
 
-      document.head.innerHTML = document.head.innerHTML + '<base href="/Libraries/FivePD.Terminal/"/>';
+      // TODO: Not working, change this in the index.html with the pipeline
+      document.head.innerHTML = document.head.innerHTML + '<base href="/Libraries/FivePD.Nui/"/>';
       document.body.style.display = 'none';
 
       const style = document.createElement('style');
