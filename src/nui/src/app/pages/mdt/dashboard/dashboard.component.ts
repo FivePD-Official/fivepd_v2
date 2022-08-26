@@ -9,6 +9,7 @@ import { replaceParams } from '@utils';
 import { Select } from '@ngxs/store';
 import { UserState } from '@store/user.state';
 import { Observable } from 'rxjs';
+import { UserService } from '@services/user/user.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -60,29 +61,27 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
-          onClick: department => {
-            this._modal.open({
-              title: 'Nui.Labels.DeleteDepartmentTitle',
-              description: replaceParams(this._localization.translate('Nui.Labels.DeleteDepartmentDescription'), { 'department': `<b>${department.Name}</b>`}),
-              buttons: {
-                cancel: {
-                  theme: 'secondary',
-                  label: 'Nui.Actions.Cancel',
-                },
-                submit: {
-                  theme: 'danger',
-                  label: 'Nui.Actions.Delete',
-                },
+          onClick: department => this._modal.open({
+            title: 'Nui.Labels.DeleteDepartmentTitle',
+            description: replaceParams(this._localization.translate('Nui.Labels.DeleteDepartmentDescription'), { 'department': `<b>${department.Name}</b>`}),
+            buttons: {
+              cancel: {
+                theme: 'secondary',
+                label: 'Nui.Actions.Cancel',
               },
-            }).onSuccess(res => {
-              this._department.deleteDepartment(department.Id).subscribe(res => {
-                if (res.Status) {
-                  this.getDepartments();
-                  // requestAndCommitUserData();
-                }
-              });
-            })
-          }
+              submit: {
+                theme: 'danger',
+                label: 'Nui.Actions.Delete',
+              },
+            },
+          }).onSuccess(() => {
+            this._department.deleteDepartment(department.Id).subscribe(res => {
+              if (res.Status) {
+                this.getDepartments();
+                this._userService.getData();
+              }
+            });
+          })
         },
       ]
     })
@@ -92,6 +91,7 @@ export class DashboardComponent implements OnInit {
     private _department: DepartmentService,
     private _localization: LocalizationService,
     private _modal: ModalService,
+    private _userService: UserService,
   ) { }
 
   ngOnInit(): void {

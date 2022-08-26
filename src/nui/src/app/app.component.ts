@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
     this.onLoad();
     this._router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      filter(event => event.url !== '/')
+      filter(event => event.url !== '/' && event.url.startsWith('/mdt'))
     ).subscribe(event => {
       this.setMdtPath(event.url.split('/'));
     });

@@ -128,22 +128,27 @@
       "SetCallsign": "Set callsign"
     },
     "Errors": {
-      "DatabaseAccess": "A database error occured. Please try again later.",
       "CreateDepartmentExistsWithNameTitle": "Couldn't create department",
-      "EditDepartmentExistsWithNameTitle": "Couldn't edit department",
-      "DepartmentExistsWithNameDescription": "A department with this name already exists.",
-      "DepartmentJoin": "Couldn't join {{department}}.",
-      "DepartmentFullTitle": "Couldn't join department",
-      "DepartmentFullDescription": "The selected department is full.",
-      "DepartmentCreate": "Couldn't create the department.",
       "CreateDivisionExistsWithNameTitle": "Couldn't create division",
-      "EditDivisionExistsWithNameTitle": "Couldn't rename division",
-      "DivisionExistsWithNameDescription": "A division with this name already exists.",
-      "UnexpectedError": "Unexpected error",
-      "PleaseTryAgainLater": "Please try again later.",
       "CreateRankExistsWithNameTitle": "Couldn't create rank",
+      "DatabaseAccess": "A database error occured. Please try again later.",
+      "DepartmentCreate": "Couldn't create the department.",
+      "DepartmentExistsWithNameDescription": "A department with this name already exists.",
+      "DepartmentFullDescription": "The selected department is full.",
+      "DepartmentFullTitle": "Couldn't join department",
+      "DepartmentJoin": "Couldn't join {{department}}.",
+      "DivisionExistsWithNameDescription": "A division with this name already exists.",
+      "EditDepartmentExistsWithNameTitle": "Couldn't edit department",
+      "EditDivisionExistsWithNameTitle": "Couldn't rename division",
       "EditRankExistsWithNameTitle": "Couldn't edit rank",
-      "RankExistsWithNameDescription": "A rank with this name already exists."
+      "FieldRequired": "Required.",
+      "FieldNameTaken": "Name taken.",
+      "FieldFormat": "The format is incorrect.",
+      "FieldMin": "The minimum value is {{value}}.",
+      "FieldMax": "The maximum value is {{value}}.",
+      "PleaseTryAgainLater": "Please try again later.",
+      "RankExistsWithNameDescription": "A rank with this name already exists.",
+      "UnexpectedError": "Unexpected error"
     }
   }
 }

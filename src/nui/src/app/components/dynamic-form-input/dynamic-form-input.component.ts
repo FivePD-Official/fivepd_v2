@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { DropdownItem, FormInputBase } from '@models';
+import { Dropdown, DropdownItem, FormInputBase } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 
 @Component({
@@ -51,7 +51,7 @@ export class DynamicFormInputComponent implements OnInit {
       }
     }
 
-    this.form?.controls[this.field.key].valueChanges.subscribe(value => {
+    this.form?.controls[this.field.key]?.valueChanges?.subscribe(value => {
       this.onChange.emit(value);
     });
   }
@@ -65,19 +65,30 @@ export class DynamicFormInputComponent implements OnInit {
     this.setSelectedItem(selectItem);
   }
 
-  private setSelectedItem(selectedItem: DropdownItem) {
+  private setSelectedItem(selectedItem: DropdownItem): void {
     if (!this.field.dropdownOptions) {
       return;
     }
 
-    const { items, label } = this.field.dropdownOptions;
-
     this.form?.controls[this.field.key].patchValue(selectedItem.key);
     this.dropdownSelectedItem = selectedItem;
-    this.dropdownFilteredItems = items.filter(item => item.key !== selectedItem.key);
+    this.filterDropdownItems();
 
     if (selectedItem.key !== -1) {
-      this.dropdownFilteredItems.unshift({ key: -1, label: label });
+      this.dropdownFilteredItems.unshift({ key: -1, label: this.field.dropdownOptions.label });
+    }
+
+    const control = this.form?.controls[this.field.key];
+    if (control?.value === this.field.value) {
+      control?.markAsPristine();
+    } else {
+      control?.markAsDirty();
+    }
+  }
+
+  private filterDropdownItems(): void {
+    if (this.field.dropdownOptions?.items) {
+      this.dropdownFilteredItems = this.field.dropdownOptions.items.filter(item => item.key !== this.dropdownSelectedItem.key);
     }
   }
 

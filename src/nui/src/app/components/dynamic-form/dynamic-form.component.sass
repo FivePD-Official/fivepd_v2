@@ -9,16 +9,23 @@ form
   &.max-width-none
     max-width: none
 
-  .form-title
-    font-size: 22px
-    font-weight: 700
-    color: var(--clr-text-primary)
-    margin-bottom: 5px
+  .form-header
+    margin-bottom: 15px
 
-  .form-subtitle
-    font-size: 16px
-    color: var(--clr-text-secondary)
-    margin-bottom: 25px
+    .form-title
+      font-size: 22px
+      font-weight: 700
+      color: var(--clr-text-primary)
+      margin-bottom: 5px
+
+    .form-subtitle
+      font-size: 16px
+      color: var(--clr-text-secondary)
+
+  .form-columns
+    display: grid
+    gap: 30px
+    width: 100%
 
   app-dynamic-form-input
     width: 100%
@@ -33,6 +40,10 @@ form
     align-items: center
     justify-content: flex-end
     margin-top: 20px
+    &.buttons-wrapper--left
+      justify-content: flex-start
+    &.buttons-wrapper--right
+      justify-content: flex-end
 
     .buttons
       width: 50%

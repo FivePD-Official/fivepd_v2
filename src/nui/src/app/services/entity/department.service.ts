@@ -39,9 +39,11 @@ export class DepartmentService {
     });
   }
 
-  checkIfDepartmentNameTaken(name: string): Observable<NameTakenResponse> {
+  checkIfDepartmentNameTaken(name: string, departmentId: number = -1, checkForDepartmentId: boolean = false): Observable<NameTakenResponse> {
     return this._http.post<NameTakenResponse>('fivepd:department:checkIfDepartmentNameTaken', {
       Name: name,
+      DepartmentId: departmentId,
+      CheckForDepartmentId: checkForDepartmentId,
     });
   }
 
@@ -85,10 +87,10 @@ export class DepartmentService {
     });
   }
 
-  getDepartmentUsers(id: number): Observable<Page<User>> {
+  getDepartmentUsers(id: number, collation?: Collation): Observable<Page<User>> {
     return this._http.post<Page<User>>('fivepd:department:getUsers', {
       DepartmentId: id,
-      // TODO: Filters
+      ...collation
     });
   }
 
@@ -99,10 +101,10 @@ export class DepartmentService {
     });
   }
 
-  getDivisions(id: number): Observable<Page<Division>> {
+  getDivisions(id: number, collation?: Collation): Observable<Page<Division>> {
     return this._http.post<Page<Division>>('fivepd:department:getDivisions', {
       DepartmentId: id,
-      // TODO: Filters
+      ...collation
     });
   }
 }

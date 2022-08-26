@@ -130,22 +130,27 @@ export interface Localization {
       SetCallsign: string;
     },
     Errors: {
-      DatabaseAccess: string;
       CreateDepartmentExistsWithNameTitle: string;
-      EditDepartmentExistsWithNameTitle: string;
-      DepartmentExistsWithNameDescription: string;
-      DepartmentJoin: string;
-      DepartmentFullTitle: string;
-      DepartmentFullDescription: string;
-      DepartmentCreate: string;
       CreateDivisionExistsWithNameTitle: string;
-      EditDivisionExistsWithNameTitle: string;
-      DivisionExistsWithNameDescription: string;
-      UnexpectedError: string;
-      PleaseTryAgainLater: string;
       CreateRankExistsWithNameTitle: string;
+      DatabaseAccess: string;
+      DepartmentCreate: string;
+      DepartmentExistsWithNameDescription: string;
+      DepartmentFullDescription: string;
+      DepartmentFullTitle: string;
+      DepartmentJoin: string;
+      DivisionExistsWithNameDescription: string;
+      EditDepartmentExistsWithNameTitle: string;
+      EditDivisionExistsWithNameTitle: string;
       EditRankExistsWithNameTitle: string;
+      FieldRequired: string;
+      FieldNameTaken: string;
+      FieldFormat: string;
+      FieldMin: string;
+      FieldMax: string;
+      PleaseTryAgainLater: string;
       RankExistsWithNameDescription: string;
+      UnexpectedError: string;
     }
   }
 }
@@ -280,22 +285,27 @@ export const defaultLocalization: Localization = {
       SetCallsign: '',
     },
     Errors: {
-      DatabaseAccess: '',
       CreateDepartmentExistsWithNameTitle: '',
-      EditDepartmentExistsWithNameTitle: '',
-      DepartmentExistsWithNameDescription: '',
-      DepartmentJoin: '',
-      DepartmentFullTitle: '',
-      DepartmentFullDescription: '',
-      DepartmentCreate: '',
       CreateDivisionExistsWithNameTitle: '',
-      EditDivisionExistsWithNameTitle: '',
-      DivisionExistsWithNameDescription: '',
-      UnexpectedError: '',
-      PleaseTryAgainLater: '',
       CreateRankExistsWithNameTitle: '',
+      DatabaseAccess: '',
+      DepartmentCreate: '',
+      DepartmentExistsWithNameDescription: '',
+      DepartmentFullDescription: '',
+      DepartmentFullTitle: '',
+      DepartmentJoin: '',
+      DivisionExistsWithNameDescription: '',
+      EditDepartmentExistsWithNameTitle: '',
+      EditDivisionExistsWithNameTitle: '',
       EditRankExistsWithNameTitle: '',
+      FieldRequired: '',
+      FieldNameTaken: '',
+      FieldFormat: '',
+      FieldMin: '',
+      FieldMax: '',
+      PleaseTryAgainLater: '',
       RankExistsWithNameDescription: '',
+      UnexpectedError: '',
     }
   }
 }

@@ -2,6 +2,11 @@
 import { Paths } from './_dev/nested-object-keys';
 import { Localization } from './localization';
 
+export interface FormSubmitEvent {
+  value: object;
+  markAsPristine: () => void;
+}
+
 export interface DropdownItem {
   key: number;
   label: string;

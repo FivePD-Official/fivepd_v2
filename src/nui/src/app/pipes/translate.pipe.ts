@@ -13,8 +13,8 @@ export class TranslatePipe implements PipeTransform {
     private _localization: LocalizationService,
   ) { }
 
-  transform(path: Paths<Localization> | string, ...args: string[]): string {
-    return getKeyFromObjectPath(this._localization.get(), path);
+  transform(path: Paths<Localization> | string, params: Record<string, string> = {}): string {
+    return this._localization.translate(path, params, false);
   }
 
 }

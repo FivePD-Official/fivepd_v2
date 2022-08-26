@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalOptions, ModalService } from '@services/modal/modal.service';
+import { FormSubmitEvent } from '@models';
 
 @Component({
   selector: 'app-modal',
@@ -17,9 +18,9 @@ export class ModalComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onSubmit(value?: object): void {
-    if (value) {
-      this.modalService.submit(value);
+  onSubmit(submitEvent?: FormSubmitEvent): void {
+    if (submitEvent?.value) {
+      this.modalService.submit(submitEvent.value);
     } else {
       this.modalService.submit();
     }

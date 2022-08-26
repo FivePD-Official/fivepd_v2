@@ -7,7 +7,8 @@ import {
   Column,
   Department,
   Division,
-  DropdownItem,
+  Dropdown,
+  DropdownItem, FormInputBase, FormSubmitEvent, NumberInput,
   Page,
   Rank,
   TextInput,
@@ -22,6 +23,8 @@ import { Select } from '@ngxs/store';
 import { replaceParams } from '@utils';
 import { ModalService } from '@services/modal/modal.service';
 import { UserService } from '@services/user/user.service';
+import { GenericNameValidator } from '@validators/generic-name-validator';
+import { Validators } from '@angular/forms';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -102,7 +105,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           Permission: res.value!['Permission']
         }).subscribe(createRes => {
           if (createRes.Status) {
-            this.getRanks();
+            this.getRanks(true);
           }
         });
       })
@@ -287,7 +290,6 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       show: () => this.user?.Admin ?? false,
     }
   ];
-
   divisionsColumns: Column<Division>[] = [
     new Column<Division>({
       header: this._localization.translate('Nui.Labels.Name'),
@@ -353,6 +355,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     })
   ];
 
+  departmentSettingsForm: FormInputBase<any>[] = [];
+
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
@@ -408,13 +412,14 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     }) ?? [];
   }
 
-  getDepartment(remapUsers: boolean = false): void {
+  getDepartment(): void {
     this._departmentService.getDepartment(this._route.snapshot.params['id']).subscribe(res => {
       this.department = res;
       this.getRanks();
       this.getDivisions();
       this.getUsers();
       this.setIsUserInDepartment();
+      this.createDepartmentSettingsForm();
     });
   }
 
@@ -433,7 +438,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       this.ranks = res as Page<FormattedRank>;
 
       if (remapUsers) {
-        this.getDepartment(true);
+        this.getDepartment();
       }
     });
   }
@@ -443,11 +448,11 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this._departmentService.getDivisions(this.department.Id).subscribe(res => {
+    this._departmentService.getDivisions(this.department.Id, this.divisionsCollation).subscribe(res => {
       this.divisions = res;
 
       if (remapUsers) {
-        this.getDepartment(true);
+        this.getDepartment();
       }
     });
   }
@@ -457,7 +462,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this._departmentService.getDepartmentUsers(this.department.Id).subscribe(res => {
+    this._departmentService.getDepartmentUsers(this.department.Id, this.usersCollation).subscribe(res => {
       res.Items = res.Items.map(user => {
         return {
           ...user,
@@ -502,6 +507,18 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     });
   }
 
+  onDepartmentSettingsSubmit(event: FormSubmitEvent): void {
+    this._departmentService.editDepartment({
+      DepartmentId: this.department!.Id,
+      ...event.value
+    }).subscribe(res => {
+      if (res.Status) {
+        this.getDepartment();
+        event.markAsPristine();
+      }
+    });
+  }
+
   private rankPermissionResolver(rank: Rank): string {
     let permissions = '';
 
@@ -518,4 +535,70 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     return permissions.length ? permissions.slice(0, -2) : '-';
   }
 
+  private createDepartmentSettingsForm(): void {
+    if (!this.department) {
+      return;
+    }
+
+    this.departmentSettingsForm  = [
+      new TextInput({
+        key: 'Name',
+        required: true,
+        label: 'Nui.Labels.Name',
+        asyncValidators: [GenericNameValidator.get((value) => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
+        value: this.department.Name,
+      }),
+      new NumberInput({
+        key: 'MaxUsers',
+        label: 'Nui.Labels.MaxNumberOfMembers',
+        required: true,
+        value: this.department.MaxUsers,
+        helpLabel: 'Nui.Labels.MaxNumberOfMembersHelpLabel',
+      }),
+      new Dropdown({
+        key: 'DefaultRankId',
+        label: 'Nui.Labels.DefaultRank',
+        required: false,
+        value: this.department.DefaultRankId ?? -1,
+        helpLabel: 'Nui.Labels.DefaultRankDescription',
+        dropdownOptions: {
+          label: this._localization.translate('Nui.Labels.NoDefaultRank'),
+          selectedItemResolver: (item) => item === this.department!.DefaultRankId,
+          items: this.ranksDropdown,
+          size: 'normal',
+        },
+      }),
+      new TextInput({
+        key: 'Callsign',
+        label: 'Nui.Labels.Callsign',
+        helpLabel: 'Nui.Labels.CallsignHelpLabel',
+        validators: [Validators.pattern('^[a-zA-Z]+$')],
+        value: this.department.Callsign,
+      }),
+      new TextInput({
+        key: 'CallsignFormat',
+        required: true,
+        label: 'Nui.Labels.CallsignFormat',
+        helpLabel: `
+            ${this._localization.translate('Nui.Labels.CallsignFormatHelpLabel')} ${this._localization.translate('Nui.Labels.AvailableCharacters')}: <br/>
+            <table>
+              <tr>
+                <td><b>L</b><td>
+                <td>(${this._localization.translate('Nui.Labels.Letter')})<td>
+              </tr>
+              <tr>
+                <td><b>N</b><td>
+                <td>(${this._localization.translate('Nui.Labels.Number')})<td>
+              </tr>
+              <tr>
+                <td><b>-</b><td>
+                <td>(${this._localization.translate('Nui.Labels.Dash')})<td>
+              </tr>
+            </table>
+          `,
+        validators: [Validators.pattern('^[NL0-9-*]{1,10}$')],
+        value: this.department.CallsignFormat
+      }),
+    ];
+  }
 }

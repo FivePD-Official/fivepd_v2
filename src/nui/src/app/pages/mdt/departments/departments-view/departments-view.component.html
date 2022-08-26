@@ -4,25 +4,15 @@
 </app-page-header>
 
 <ng-container *ngIf="user?.Admin ?? false; else notAdmin">
-<!--  <Grid v-if="department" :columns="2">-->
-<!--    <EditableForm-->
-<!--      :render-key="renderKey"-->
-<!--      :title="state.global.localization.Nui.Labels.DepartmentSettings"-->
-<!--      :submit-button-label="state.global.localization.Nui.Actions.Save"-->
-<!--      :on-submit="onDepartmentSettingsSubmit"-->
-<!--      :fields="departmentSettingsFields"-->
-<!--    />-->
-<!--    <Table-->
-<!--      :render-key="renderKeyOnRouteChange"-->
-<!--      :title="state.global.localization.Nui.Labels.Divisions"-->
-<!--      :buttons="divisionsButtons"-->
-<!--      :columns="divisionsColumns"-->
-<!--      :data-request="requestDepartmentDivisions"-->
-<!--      @on-change="onRankAndDivisionChange"-->
-<!--    />-->
-<!--  </Grid>-->
   <app-columns *ngIf="department" [columns]="2">
-    <div>form</div>
+    <app-dynamic-form *ngIf="departmentSettingsForm"
+      [title]="'Nui.Labels.DepartmentSettings' | translate"
+      [formFields]="departmentSettingsForm"
+      [columns]="2"
+      [limitWidth]="false"
+      [disableSubmitWithOriginalValue]="true"
+      (onSubmit)="onDepartmentSettingsSubmit($event)"
+    ></app-dynamic-form>
     <app-grid
       [title]="'Nui.Labels.Divisions' | translate"
       [buttons]="divisionsButtons"

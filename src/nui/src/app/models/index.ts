@@ -9,7 +9,7 @@ export * from './nui-event-responses';
 export * from './entities';
 export * from './request';
 export * from './notification';
-export * from './form-input-base';
+export * from './form';
 export * from './localization';
 export * from './table';
 export * from './button';

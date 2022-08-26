@@ -781,7 +781,7 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
-                if (editDepartmentRequest.DefaultRankId != 0)
+                if (editDepartmentRequest.DefaultRankId != -1)
                 {
                     var defaultRank = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == editDepartmentRequest.DefaultRankId);
                     if (defaultRank is null)
@@ -801,7 +801,7 @@ namespace FivePD.Gamemode.Server.Services
                 department.Callsign = string.IsNullOrEmpty(editDepartmentRequest.Callsign) ? editDepartmentRequest.Name.ToAcronym() : editDepartmentRequest.Callsign;
                 department.CallsignFormat = editDepartmentRequest.CallsignFormat;
                 department.MaxUsers = editDepartmentRequest.MaxUsers;
-                department.DefaultRankId = editDepartmentRequest.DefaultRankId == 0 ? (int?)null : editDepartmentRequest.DefaultRankId;
+                department.DefaultRankId = editDepartmentRequest.DefaultRankId == -1 ? (int?)null : editDepartmentRequest.DefaultRankId;
                 this._databaseContext.SaveChanges();
                 this.DepartmentEdited?.Invoke(this, department);
                 networkCallbackDelegate.Invoke(new ActionResponse
@@ -832,7 +832,16 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var request = expandoObject.ConvertTo<NameTakenRequest>();
-                var departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name); // TODO: make it case sensitive?
+                Department departmentExists;
+                if (request.CheckForDepartmentId)
+                {
+                    departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name && department.Id != request.DepartmentId);
+                }
+                else
+                {
+                    departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
+                }
+
                 networkCallbackDelegate.Invoke(new NameTakenResponse(departmentExists != null).ToString());
             }
             catch (Exception e)

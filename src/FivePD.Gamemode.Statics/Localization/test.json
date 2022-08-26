@@ -128,22 +128,27 @@
       "SetCallsign": "T: Set callsign"
     },
     "Errors": {
-      "DatabaseAccess": "T: A database error occured. Please try again later.",
       "CreateDepartmentExistsWithNameTitle": "T: Couldn't create department",
-      "EditDepartmentExistsWithNameTitle": "T: Couldn't edit department",
-      "DepartmentExistsWithNameDescription": "T: A department with this name already exists.",
-      "DepartmentJoin": "T: Couldn't join {{department}}.",
-      "DepartmentFullTitle": "T: Couldn't join department",
-      "DepartmentFullDescription": "T: The selected department is full.",
-      "DepartmentCreate": "T: Couldn't create the department.",
       "CreateDivisionExistsWithNameTitle": "T: Couldn't create division",
-      "EditDivisionExistsWithNameTitle": "T: Couldn't rename division",
-      "DivisionExistsWithNameDescription": "T: A division with this name already exists.",
-      "UnexpectedError": "T: Unexpected error",
-      "PleaseTryAgainLater": "T: Please try again later.",
       "CreateRankExistsWithNameTitle": "T: Couldn't create rank",
+      "DatabaseAccess": "T: A database error occured. Please try again later.",
+      "DepartmentCreate": "T: Couldn't create the department.",
+      "DepartmentExistsWithNameDescription": "T: A department with this name already exists.",
+      "DepartmentFullDescription": "T: The selected department is full.",
+      "DepartmentFullTitle": "T: Couldn't join department",
+      "DepartmentJoin": "T: Couldn't join {{department}}.",
+      "DivisionExistsWithNameDescription": "T: A division with this name already exists.",
+      "EditDepartmentExistsWithNameTitle": "T: Couldn't edit department",
+      "EditDivisionExistsWithNameTitle": "T: Couldn't rename division",
       "EditRankExistsWithNameTitle": "T: Couldn't edit rank",
-      "RankExistsWithNameDescription": "T: A rank with this name already exists."
+      "FieldRequired": "T: Required.",
+      "FieldNameTaken": "T: Name taken.",
+      "FieldFormat": "T: The format is incorrect.",
+      "FieldMin": "T: The minimum value is {{value}}.",
+      "FieldMax": "T: The maximum value is {{value}}.",
+      "PleaseTryAgainLater": "T: Please try again later.",
+      "RankExistsWithNameDescription": "T: A rank with this name already exists.",
+      "UnexpectedError": "T: Unexpected error"
     }
   }
 }
