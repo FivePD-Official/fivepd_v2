@@ -18,7 +18,8 @@ export class NotificationWrapperComponent implements OnInit, OnDestroy {
 
   constructor(
     private _notification: NotificationService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.notifications$ = this._notification.onShow().subscribe((notification) => {
@@ -28,17 +29,27 @@ export class NotificationWrapperComponent implements OnInit, OnDestroy {
         exit: false,
       });
     });
+    this._notification.show({
+      title: 'title',
+      description: 'sadas',
+      type: 'success'
+    })
+    this._notification.show({
+      title: 'title',
+      description: 'sadas',
+      type: 'error'
+    })
 
     this.intervalId = setInterval(() => {
       this.notifications.forEach((notification) => {
         if (notification.timer === 4) {
-          notification.exit = true;
+          // notification.exit = true;
           notification.timer++;
         } else {
           notification.timer++;
         }
       });
-      this.notifications = this.notifications.filter((x) => x.timer !== 5);
+      // this.notifications = this.notifications.filter((x) => x.timer !== 5);
     }, 1000);
   }
 

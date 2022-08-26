@@ -4,14 +4,10 @@
 ">
   <div class="notification-header">
     <div *ngIf="notification.type === 'success'" class="icon icon-success">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
+      <div class="icon-inner" app-icon name="Check"></div>
     </div>
     <div *ngIf="notification.type === 'error'" class="icon icon-error">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
+      <div class="icon-inner" app-icon name="XMark"></div>
     </div>
     <p class="title">
       {{ notification.title }}

@@ -57,7 +57,7 @@
           flex-direction: row
           align-items: center
 
-          svg
+          .icon ::ng-deep svg
             margin-left: 10px
             height: 20px
             color: var(--clr-text-tertiary)
@@ -126,12 +126,12 @@
           background: var(--clr-bg-80)
           cursor: pointer
         &:disabled
-          svg, span
+          .icon ::ng-deep svg, span
             color: var(--clr-text-tertiary)
         &.active
           background: var(--clr-bg-40)
 
-        svg
+        .icon ::ng-deep svg
           height: 22px
           color: var(--clr-text-primary)
 

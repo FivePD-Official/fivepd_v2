@@ -13,3 +13,4 @@ export * from './form-input-base';
 export * from './localization';
 export * from './table';
 export * from './button';
+export * from './icon';

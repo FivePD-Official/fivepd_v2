@@ -38,6 +38,7 @@ import { GridComponent } from './components/grid/grid.component';
 import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
 import { UserService } from '@services/user/user.service';
 import { ColumnsComponent } from './components/columns/columns.component';
+import { IconComponent } from './components/icon/icon.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { ColumnsComponent } from './components/columns/columns.component';
     GridComponent,
     DepartmentsViewComponent,
     ColumnsComponent,
+    IconComponent,
   ],
   imports: [
     BrowserModule,

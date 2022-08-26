@@ -39,9 +39,7 @@
       <div *ngFor="let item of row" class="table-cell">
         <a [routerLink]="item.link" *ngIf="item.link && !item.actions">
           {{ item.value }}
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
+          <div class="icon" app-icon name="Link"></div>
         </a>
         <p *ngIf="!item.link && !item.actions">{{ item.value }}</p>
         <div *ngIf="!item.link && item.actions" class="table-cell-actions">
@@ -54,14 +52,6 @@
             >
             </app-button>
             <app-dynamic-form-input *ngIf="action.type === 'select'" [field]="getSelectField(action, item)" (onChange)="onTableCellActionSelect(action, item, $event)"></app-dynamic-form-input>
-<!--            <Select-->
-<!--              v-else-if="action.type === 'select'"-->
-<!--              :default-item="{ id: 0, label: action.label }"-->
-<!--              :items="(action as TableCellActionSelect<any>).items"-->
-<!--              :selected-item-resolver="(selectItem) => (action as TableCellActionSelect<any>).selectedItemResolver(item.originalItem, selectItem.id)"-->
-<!--              :on-select="(selected) => tableCellActionSelect(action, item, selected.id)"-->
-<!--              size="small"-->
-<!--            />-->
           </ng-container>
         </div>
       </div>
@@ -70,17 +60,13 @@
     <div *ngIf="formattedRows?.length; else noData" class="table-pagination">
       <div class="pagination-inner">
         <button [disabled]="collation.Page === 1" (click)="toPreviousPage()">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
+          <div class="icon" app-icon name="ChevronLeft"></div>
         </button>
         <button *ngIf="collation.Page > 1" (click)="toPage(collation.Page - 1)"><span>{{ collation.Page - 1 }}</span></button>
         <button class="active"><span>{{ collation.Page }}</span></button>
         <button *ngIf="collation.Page < (data ? data!.PageCount : 1)" (click)="toPage(collation.Page + 1)"><span>{{ collation.Page + 1 }}</span></button>
         <button [disabled]="collation.Page === (data ? data!.PageCount : 1)" (click)="toNextPage()">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
+          <div class="icon" app-icon name="ChevronRight"></div>
         </button>
       </div>
     </div>

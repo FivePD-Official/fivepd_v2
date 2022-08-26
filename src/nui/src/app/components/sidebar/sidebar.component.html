@@ -7,7 +7,7 @@
       [routerLinkActiveOptions]="{ exact: false }"
     >
       <div *ngIf="item.show" class="link">
-        <div class="icon" [innerHtml]="item.icon | safeHtml"></div>
+        <div class="icon" app-icon [name]="item.icon"></div>
         <p>{{ item.title }}</p>
       </div>
     </a>
@@ -16,24 +16,18 @@
   <div class="buttons">
     <button
       class="panic-btn"
-      [ngClass]="{ 'panic-btn--active': isPanicModeActive }"
+      [ngClass]="{ 'collapsed': isSidebarCollapsed, 'panic-btn--active': isPanicModeActive }"
       (click)="togglePanicMode()"
     >
       <span *ngIf="!isSidebarCollapsed">{{ isPanicModeActive ? 'cancel' : 'panic' }}</span>
-      <svg *ngIf="isSidebarCollapsed && !isPanicModeActive; else icon2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
+      <div class="icon" app-icon *ngIf="!isPanicModeActive; else icon2" name="Warning"></div>
       <ng-template #icon2>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <div class="icon" app-icon name="XMark"></div>
       </ng-template>
     </button>
 
     <button class="collapse-btn" [ngClass]="{ 'collapsed': isSidebarCollapsed }" (click)="toggleSidebarCollapse()">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
-      </svg>
+      <div class="icon" app-icon name="ArrowLeft"></div>
       <span>Collapse</span>
     </button>
   </div>

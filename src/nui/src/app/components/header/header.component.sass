@@ -59,7 +59,7 @@ header
           font-weight: 700
           color: var(--clr-blue)
 
-        svg
+        ::ng-deep svg
           height: 20px
           margin-left: 10px
           color: var(--clr-blue)
@@ -105,7 +105,7 @@ header
           &::before
             border-bottom-left-radius: 0
             border-bottom-right-radius: 0
-          svg
+          .icon ::ng-deep svg
             transform: rotate(180deg)
 
     .user
@@ -124,9 +124,9 @@ header
       border-left: 1px solid var(--clr-border)
       background: transparent
       cursor: pointer
-      &:hover svg
+      &:hover ::ng-deep svg
         color: var(--clr-text)
 
-      svg
+      ::ng-deep svg
         height: 30px
         color: var(--clr-gray)
