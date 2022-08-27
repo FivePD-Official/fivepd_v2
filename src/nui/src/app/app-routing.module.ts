@@ -5,6 +5,9 @@ import { BlankComponent } from './pages/blank/blank.component';
 import { MenuComponent } from './pages/menu/menu.component';
 import { DashboardComponent } from './pages/mdt/dashboard/dashboard.component';
 import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
+import {
+  CitizenDatabaseIndexComponent
+} from './pages/mdt/citizen-database/citizen-database-index/citizen-database-index.component';
 
 const routes: Routes = [
   {
@@ -33,7 +36,12 @@ const routes: Routes = [
       },
       {
         path: 'citizen-database',
-        component: DashboardComponent
+        children: [
+          {
+            path: '',
+            component: CitizenDatabaseIndexComponent
+          }
+        ]
       },
       {
         path: 'vehicle-database',

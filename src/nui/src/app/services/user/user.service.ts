@@ -16,7 +16,7 @@ export class UserService {
     private _http: HttpClient,
   ) { }
 
-  getData(): void {
+  refreshData(): void {
     this._http.post<User>('fivepd:player:getDetails', {}).subscribe(res => {
       this.setUser(res);
     });

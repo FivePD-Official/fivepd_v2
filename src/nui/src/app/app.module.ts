@@ -39,6 +39,9 @@ import { DepartmentsViewComponent } from './pages/mdt/departments/departments-vi
 import { UserService } from '@services/user/user.service';
 import { ColumnsComponent } from './components/columns/columns.component';
 import { IconComponent } from './components/icon/icon.component';
+import {
+  CitizenDatabaseIndexComponent
+} from './pages/mdt/citizen-database/citizen-database-index/citizen-database-index.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +65,7 @@ import { IconComponent } from './components/icon/icon.component';
     DepartmentsViewComponent,
     ColumnsComponent,
     IconComponent,
+    CitizenDatabaseIndexComponent,
   ],
   imports: [
     BrowserModule,

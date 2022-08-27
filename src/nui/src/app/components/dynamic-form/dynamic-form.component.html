@@ -1,5 +1,5 @@
 <form [formGroup]="form" [ngClass]="{ 'max-width-none': !limitWidth }" (ngSubmit)="internalOnSubmit()">
-  <div class="form-header">
+  <div class="form-header" *ngIf="title || subtitle">
     <p *ngIf="title" class="form-title">{{ title }}</p>
     <p *ngIf="subtitle" class="form-subtitle">{{ subtitle }}</p>
   </div>
@@ -12,10 +12,10 @@
       ></app-dynamic-form-input>
     </div>
   </div>
-  <div *ngIf="!content.children.length" class="buttons-wrapper" [ngClass]="{ 'buttons-wrapper--left': buttonAlignment === 'left', 'buttons-wrapper--right': buttonAlignment === 'right' }">
-    <app-button [label]="'Nui.Actions.Save' | translate" type="submit" [disabled]="disableSubmitWithOriginalValue && (form.pristine)"></app-button>
+  <div *ngIf="!content.children.length" class="buttons-wrapper" [ngClass]="{ 'buttons-wrapper--left': buttonAlignment === 'left', 'buttons-wrapper--right': buttonAlignment === 'right', 'buttons-wrapper--full': buttonAlignment === 'full' }">
+    <app-button [label]="submitButtonLabel || ('Nui.Actions.Save' | translate)" type="submit" [disabled]="disableSubmitWithOriginalValue && (form.pristine)"></app-button>
   </div>
-  <div class="buttons-wrapper" #content>
+  <div class="button-wrapper--ngcontent" #content>
     <ng-content></ng-content>
   </div>
 </form>

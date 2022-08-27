@@ -1,5 +1,5 @@
 <div class="modal-backdrop">
-  <div class="modal">
+  <div class="modal" #modalContainer>
     <div class="modal-header">
       <p class="title">{{ modal.title | translate }}</p>
       <p *ngIf="modal.description" class="description" [innerHtml]="modal.description | safeHtml"></p>

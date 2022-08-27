@@ -98,6 +98,7 @@ namespace FivePD.Common.Builders
 
             int day = this._random.Next(1, maxDay);
 
+            // TODO: Refactor to DateTime
             this.Birthdate = new Date(year, month, day);
             return this;
         }

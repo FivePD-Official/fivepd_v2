@@ -78,7 +78,7 @@ export class DashboardComponent implements OnInit {
             this._department.deleteDepartment(department.Id).subscribe(res => {
               if (res.Status) {
                 this.getDepartments();
-                this._userService.getData();
+                this._userService.refreshData();
               }
             });
           })

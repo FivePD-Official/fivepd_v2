@@ -17,7 +17,8 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   @Input() columns: number = 1;
   @Input() limitWidth: boolean = true;
   @Input() disableSubmitWithOriginalValue: boolean = false;
-  @Input() buttonAlignment: 'left' | 'right' = 'right';
+  @Input() buttonAlignment: 'left' | 'right' | 'full' = 'right';
+  @Input() submitButtonLabel: string = '';
 
   @Output() onSubmit = new EventEmitter<FormSubmitEvent>();
 

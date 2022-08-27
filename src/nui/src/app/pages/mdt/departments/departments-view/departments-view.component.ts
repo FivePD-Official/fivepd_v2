@@ -8,7 +8,10 @@ import {
   Department,
   Division,
   Dropdown,
-  DropdownItem, FormInputBase, FormSubmitEvent, NumberInput,
+  DropdownItem,
+  FormInputBase,
+  FormSubmitEvent,
+  NumberInput,
   Page,
   Rank,
   TextInput,
@@ -18,7 +21,7 @@ import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
 import { UserState } from '@store/user.state';
-import { Observable, Subject, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { Select } from '@ngxs/store';
 import { replaceParams } from '@utils';
 import { ModalService } from '@services/modal/modal.service';
@@ -33,11 +36,6 @@ interface FormattedRank extends Rank {
 interface FormattedUser extends User {
   RankName: string;
   DivisionName: string;
-}
-
-interface FormattedDepartment extends Department {
-  Ranks?: FormattedRank[];
-  Users?: FormattedUser[];
 }
 
 @Component({
@@ -307,7 +305,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           label: this._localization.translate('Nui.Actions.Delete'),
           onClick: division => this._modal.open({
             title: 'Nui.Labels.DeleteDivisionTitle',
-            description: replaceParams('Nui.Labels.DeleteDivisionDescription', {'division': `<b>${division.Name}</b>`}),
+            description: replaceParams(this._localization.translate('Nui.Labels.DeleteDivisionDescription'), {'division': `<b>${division.Name}</b>`}),
             buttons: {
               cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel'},
               submit: { theme: 'danger', label: 'Nui.Actions.Delete'},
@@ -492,7 +490,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   joinDepartment(): void {
     this._departmentService.joinDepartment(this.department!.Id).subscribe(res => {
       if (res.Status) {
-        this._userService.getData();
+        this._userService.refreshData();
         this.getUsers();
       }
     });
@@ -501,7 +499,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   leaveDepartment(): void {
     this._departmentService.leaveDepartment(this.department!.Id).subscribe(res => {
       if (res.Status) {
-        this._userService.getData();
+        this._userService.refreshData();
         this._router.navigate(['mdt', 'dashboard']);
       }
     });
@@ -514,6 +512,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     }).subscribe(res => {
       if (res.Status) {
         this.getDepartment();
+        this._userService.refreshData();
         event.markAsPristine();
       }
     });

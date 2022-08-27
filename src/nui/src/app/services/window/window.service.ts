@@ -27,7 +27,7 @@ export class WindowService {
   ) {
     this._event.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => this.onClose()) // TODO: investigate why this subscription spams after the first close event
     this._event.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
-      this._userService.getData();
+      this._userService.refreshData();
       this.onMdtOpen();
     });
     this._event.onEvent<MenuShowEvent>(NuiEventType.MenuView).subscribe(res => this.onMenuOpen(res));

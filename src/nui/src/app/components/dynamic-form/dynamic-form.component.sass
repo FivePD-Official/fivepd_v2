@@ -10,7 +10,7 @@ form
     max-width: none
 
   .form-header
-    margin-bottom: 15px
+    margin-bottom: 25px
 
     .form-title
       font-size: 22px
@@ -29,8 +29,14 @@ form
 
   app-dynamic-form-input
     width: 100%
+    display: block
+    &:not(:last-of-type)
+      margin-bottom: 20px
 
   button
+    width: 100%
+
+  .button-wrapper--ngcontent
     width: 100%
 
   .buttons-wrapper
@@ -39,11 +45,16 @@ form
     flex-direction: row
     align-items: center
     justify-content: flex-end
-    margin-top: 20px
+    margin-top: 30px
     &.buttons-wrapper--left
       justify-content: flex-start
     &.buttons-wrapper--right
       justify-content: flex-end
+    &.buttons-wrapper--full
+      justify-content: flex-start
+
+      app-button
+        width: 100%
 
     .buttons
       width: 50%
