@@ -68,3 +68,9 @@ export interface SoundEvent extends BaseNuiEvent {
 export interface SoundSpeakEvent extends BaseNuiEvent {
   textToPlay: string;
 }
+
+export interface TimerBarEvent extends BaseNuiEvent {
+  show: boolean;
+  title: string;
+  timeToHold: number;
+}

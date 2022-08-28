@@ -42,6 +42,8 @@ import { IconComponent } from './components/icon/icon.component';
 import {
   CitizenDatabaseIndexComponent
 } from './pages/mdt/citizen-database/citizen-database-index/citizen-database-index.component';
+import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
+import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +68,8 @@ import {
     ColumnsComponent,
     IconComponent,
     CitizenDatabaseIndexComponent,
+    RadialMenuComponent,
+    TimerBarComponent,
   ],
   imports: [
     BrowserModule,

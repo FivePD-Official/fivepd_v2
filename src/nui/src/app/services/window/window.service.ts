@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NuiEventType } from '@enums';
 import { EventService } from '@services/event/event.service';
-import { BaseNuiEvent, MenuShowEvent } from '@models';
+import { BaseNuiEvent, MenuShowEvent, TimerBarEvent } from '@models';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { AppState } from '@store/app.state';
 import { UserService } from '@services/user/user.service';
+import { TimerBarComponent } from '../../pages/timer-bar/timer-bar.component';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,8 @@ export class WindowService {
       this.onMdtOpen();
     });
     this._event.onEvent<MenuShowEvent>(NuiEventType.MenuView).subscribe(res => this.onMenuOpen(res));
-    // this._event.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(res => this.onMenuOpen(res));
+    this._event.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(res => this.onRadialMenuOpen(res));
+    this._event.onEvent<TimerBarEvent>(NuiEventType.TimerBar).subscribe(res => this.onTimerBarEvent(res));
 
     this.previousMdtPath$.subscribe(value => this.previousMdtPath = value);
   }
@@ -63,5 +65,19 @@ export class WindowService {
   private onMenuOpen(res: MenuShowEvent): void {
     this.show();
     this._router.navigate(['menu', res.menuId]);
+  }
+
+  private onRadialMenuOpen(res: MenuShowEvent): void {
+    this.show();
+    this._router.navigate(['radial-menu', res.menuId]);
+  }
+
+  private onTimerBarEvent(res: TimerBarEvent): void {
+    if (res.show) {
+      this.show();
+      this._router.navigate(['timer-bar']);
+    } else {
+      this.hide();
+    }
   }
 }
