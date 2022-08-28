@@ -8,6 +8,8 @@ import { DepartmentsViewComponent } from './pages/mdt/departments/departments-vi
 import {
   CitizenDatabaseIndexComponent
 } from './pages/mdt/citizen-database/citizen-database-index/citizen-database-index.component';
+import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
+import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 
 const routes: Routes = [
   {
@@ -18,10 +20,14 @@ const routes: Routes = [
     path: 'menu/:id',
     component: MenuComponent
   },
-  // {
-  //   path: 'radial-menu/:id',
-  //   component: MenuComponent
-  // },
+  {
+    path: 'radial-menu/:id',
+    component: RadialMenuComponent
+  },
+  {
+    path: 'timer-bar',
+    component: TimerBarComponent
+  },
   {
     path: 'mdt',
     component: MdtComponent,

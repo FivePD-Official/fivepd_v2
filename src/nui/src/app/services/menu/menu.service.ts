@@ -21,8 +21,11 @@ export class MenuService {
   }
 
   getMenuById(id: string): Menu {
-    console.log('menus', this._menus)
     return this._menus.find(menu => menu.id === id)!;
+  }
+
+  getRadialMenuById(id: string): RadialMenu {
+    return this._radialMenus.find(menu => menu.Id === id)!;
   }
 
   private onRadialMenuObjectsEvent(res: RadialMenuObjectsEvent): void {

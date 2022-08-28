@@ -163,9 +163,10 @@ namespace FivePD.Gamemode.Client.Services
             Cfx.API.SetNuiFocus(false, false);
             this.SendMessage(new JObject
             {
-                { "showTimerBar", true },
-                { "timerBarTitle", "test" },
-                { "timerBarTimeToHold", timeToHoldInMs },
+                { "type", Events.NuiEventType.TimerBar },
+                { "show", true },
+                { "title", "test" },
+                { "timeToHold", timeToHoldInMs },
             });
         }
 

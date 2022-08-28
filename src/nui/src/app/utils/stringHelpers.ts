@@ -4,7 +4,3 @@
     }
     return text;
 };
-
-export const toSentence = (...params: string[]): string => {
-    return params.join(' ');
-};

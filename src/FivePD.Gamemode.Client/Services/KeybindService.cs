@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
@@ -106,7 +107,8 @@ namespace FivePD.Gamemode.Client.Services
                 holdableKeybind.ClearTimer();
                 this._nuiService.SendMessage(new JObject
                 {
-                    { "showTimerBar", false },
+                    { "type", Events.NuiEventType.TimerBar },
+                    { "show", false },
                 });
                 this._actions.Remove(holdableKeybind);
             }
@@ -159,7 +161,8 @@ namespace FivePD.Gamemode.Client.Services
                 item.ClearTimer();
                 this._nuiService.SendMessage(new JObject
                 {
-                    { "showTimerBar", false },
+                    { "type", Events.NuiEventType.TimerBar },
+                    { "show", false },
                 });
                 this._actions.Remove(item);
             }
