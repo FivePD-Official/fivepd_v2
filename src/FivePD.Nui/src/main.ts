@@ -1,22 +1,12 @@
-import { createApp } from 'vue';
-import App from './App.vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import routes from './routes';
-import directives from './directives';
-import { store } from './store';
+import { enableProdMode } from '@angular/core';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-});
+import { AppModule } from './app/app.module';
+import { environment } from './environments/environment';
 
-const app = createApp(App);
-
-for (const item of Object.entries(directives)) {
-  app.directive(item[0], item[1]);
+if (environment.production) {
+  enableProdMode();
 }
 
-app
-  .use(router)
-  .use(store)
-  .mount('#app');
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));

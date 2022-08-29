@@ -72,7 +72,7 @@ namespace FivePD.JsonGenerator
             formattedInterface = Regex.Replace(formattedInterface, "\"", string.Empty);
             var formattedObject = Regex.Replace(formattedInterface, "string;", "'',");
             var stringToWrite = $"// The content of this file is auto-generated, do not edit it manually.\n\nexport interface Localization {formattedInterface}\n\nexport const defaultLocalization: Localization = {formattedObject}";
-            File.WriteAllText($"{rootPath}/../nui/src/app/models/localization.ts", stringToWrite);
+            File.WriteAllText($"{rootPath}/../FivePD.Nui/src/app/models/localization.ts", stringToWrite);
         }
 
         private static void CreateDirectories()
