@@ -22,13 +22,17 @@ namespace FivePD.Gamemode.Client.Services
     public class NuiService : INuiService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
+        private readonly ILoggerService _loggerService;
         private bool _isNuiOpened;
 
         /// <summary>Initializes a new instance of the <see cref="NuiService"/> class.</summary>
-        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>>
-        public NuiService(EventHandlerDictionary eventHandlerDictionary)
+        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
+        /// <param name="loggerService">The <see cref="ILoggerService"/> to use.</param>
+        /// >
+        public NuiService(EventHandlerDictionary eventHandlerDictionary, ILoggerService loggerService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
+            this._loggerService = loggerService;
         }
 
         /// <summary>
@@ -42,10 +46,20 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
+            // Listens for NUI close event
             this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.Close, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 this.Hide();
                 cb.Invoke(string.Empty);
+            }));
+
+            // Listens for NUI status checks
+            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.ClientReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            {
+                this._loggerService.Info("Starting FivePD NUI...");
+
+                // If we can hear this, we're ready
+                cb.Invoke(true);
             }));
 
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.List);

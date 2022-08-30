@@ -26,23 +26,21 @@ const viewType = ref<string>('');
 const currentMenuId = ref<string>('#');
 const audioMap = new Map<string, HTMLAudioElement | SpeechSynthesisUtterance>();
 
-window.addEventListener('load', () => {
+const isDev = import.meta.env.MODE === 'development';
 
-  const isDev = import.meta.env.MODE === 'development';
+document.head.innerHTML = document.head.innerHTML + '<base href=' + (isDev ? '' : '/Libraries/FivePD.Terminal/') + '/>';
+document.body.style.display = 'none';
 
-  document.head.innerHTML = document.head.innerHTML + '<base href=' + (isDev ? '' : '/Libraries/FivePD.Terminal/') + '/>';
-  document.body.style.display = 'none';
+window.addEventListener('message', event => eventService.next(event.data));
+window.addEventListener('keydown', (event) => {
+  if (event.code === 'Escape') {
+    hideNui();
+    viewType.value = '';
+  }
+});
 
-  window.addEventListener('message', event => eventService.next(event.data));
-  window.addEventListener('keydown', (event) => {
-    if (event.code === 'Escape') {
-      hideNui();
-      viewType.value = '';
-    }
-  });
-
-  const style = document.createElement('style');
-  style.appendChild(document.createTextNode(`\
+const style = document.createElement('style');
+style.appendChild(document.createTextNode(`\
     @font-face {
       font-family: 'Satoshi';
       src: url('${isDev ? '' : '../'}Satoshi-Variable.woff2') format('woff2');
@@ -51,13 +49,12 @@ window.addEventListener('load', () => {
       font-style: normal;
     }
   `));
-  document.head.appendChild(style);
+document.head.appendChild(style);
 
-  router.push('/');
+router.push('/');
 
-  sendAvailabilityToClient();
-  loadLocalization();
-});
+sendAvailabilityToClient();
+loadLocalization();
 
 eventService.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(event => {
   const menus: Menu[] = [];
