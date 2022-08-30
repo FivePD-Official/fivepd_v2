@@ -26,7 +26,7 @@ namespace FivePD.Gamemode.Client.Services
     /// <inheritdoc />
     public class TrafficStopService : ITrafficStopService
     {
-        private readonly IKeybindService _keybindService;
+        private readonly IControlService _controlService;
         private readonly IPoliceEventService _policeEventService;
         private readonly INotificationService _notificationService;
         private readonly IVehicleService _vehicleService;
@@ -35,14 +35,14 @@ namespace FivePD.Gamemode.Client.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="TrafficStopService"/> class.
         /// </summary>
-        /// <param name="keybindService">The <see cref="IKeybindService"/> to use.</param>
+        /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
         /// <param name="policeEventService">The <see cref="IPoliceEventService"/> to use.</param>
         /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
         /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
         /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
-        public TrafficStopService(IKeybindService keybindService, IPoliceEventService policeEventService, INotificationService notificationService, IVehicleService vehicleService, ILocalizationService localizationService)
+        public TrafficStopService(IControlService controlService, IPoliceEventService policeEventService, INotificationService notificationService, IVehicleService vehicleService, ILocalizationService localizationService)
         {
-            this._keybindService = keybindService;
+            this._controlService = controlService;
             this._policeEventService = policeEventService;
             this._notificationService = notificationService;
             this._vehicleService = vehicleService;
@@ -52,7 +52,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterKeybinds()
         {
-            this._keybindService.RegisterHoldableKeybind(
+            this._controlService.RegisterMomentaryKeybind(
                 KeybindIdentifiers.TrafficStopToggle,
                 string.Empty,
                 "LSHIFT",

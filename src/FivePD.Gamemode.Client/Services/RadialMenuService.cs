@@ -24,7 +24,7 @@ namespace FivePD.Gamemode.Client.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly INuiService _nuiService;
-        private readonly IKeybindService _keybindService;
+        private readonly IControlService _controlService;
         private readonly ITickService _tickService;
         private readonly List<RadialMenu> _menus = new List<RadialMenu>();
         private bool _isAnyMenuVisible;
@@ -33,13 +33,13 @@ namespace FivePD.Gamemode.Client.Services
         /// <summary>Initializes a new instance of the <see cref="RadialMenuService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
         /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
-        /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
+        /// <param name="controlService">The <see cref="IControlService" /> to use.</param>
         /// <param name="tickService">The <see cref="ITickService" /> to use.</param>
-        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService, IKeybindService keybindService, ITickService tickService)
+        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService, IControlService controlService, ITickService tickService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._nuiService = nuiService;
-            this._keybindService = keybindService;
+            this._controlService = controlService;
             this._tickService = tickService;
         }
 
@@ -114,7 +114,7 @@ namespace FivePD.Gamemode.Client.Services
                     this._nuiService.Hide();
                 }
 
-                this._keybindService.RegisterKeybind($"fivepd:openRadialMenu_${menu.Id}", "-", menu.Key, OnPress, OnRelease);
+                this._controlService.RegisterKeybind($"fivepd:openRadialMenu_${menu.Id}", "-", menu.Key, OnPress, OnRelease);
 
                 foreach (var item in menu.Items)
                 {

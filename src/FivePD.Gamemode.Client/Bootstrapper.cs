@@ -6,18 +6,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Services;
-using FivePD.Gamemode.Client.Utilities;
 using Cfx = CitizenFX.Core.Native;
-using Debug = CitizenFX.Core.Debug;
 
 #pragma warning disable S3241
 #pragma warning disable CS4014
@@ -140,6 +136,11 @@ namespace FivePD.Gamemode.Client
                 .IsSingleton();
 
             services
+                .RegisterType<DevUtilitiesService>()
+                .As<IDevUtilitiesService>()
+                .IsSingleton();
+
+            services
                 .RegisterType<ConfigService>()
                 .As<IConfigService>();
 
@@ -165,8 +166,8 @@ namespace FivePD.Gamemode.Client
                 .As<ISoundService>();
 
             services
-                .RegisterType<KeybindService>()
-                .As<IKeybindService>()
+                .RegisterType<ControlService>()
+                .As<IControlService>()
                 .IsSingleton();
 
             services
@@ -202,6 +203,11 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<LocalPlayerService>()
                 .As<ILocalPlayerService>();
 
+            services
+                .RegisterType<InteractionService>()
+                .As<IInteractionService>()
+                .IsSingleton();
+
             this._serviceProvider = services.Build();
         }
 
@@ -217,18 +223,11 @@ namespace FivePD.Gamemode.Client
             screenDecorService.ProtectionNotice = true;
             screenDecorService.BeginTextDraw();
 
-            var keybindService = this._serviceProvider.Resolve<IKeybindService>();
+            var keybindService = this._serviceProvider.Resolve<IControlService>();
             keybindService.Register(this._serviceProvider);
 
             var nuiService = this._serviceProvider.Resolve<INuiService>();
             nuiService.RegisterEventHandlers();
-
-            var pedService = this._serviceProvider.Resolve<IPedService>();
-            pedService.RegisterEvents();
-            pedService.RegisterKeybinds();
-
-            var trafficStopService = this._serviceProvider.Resolve<ITrafficStopService>();
-            trafficStopService.RegisterKeybinds();
 
             var radialMenuService = this._serviceProvider.Resolve<IRadialMenuService>();
             radialMenuService.RegisterEvents();
@@ -239,6 +238,9 @@ namespace FivePD.Gamemode.Client
             menuService.RegisterEvents();
             menuService.CreateMenus();
             menuService.RegisterMenuKeybinds();
+
+            var interactionService = this._serviceProvider.Resolve<IInteractionService>();
+            interactionService.RegisterKeybinds();
         }
 
         private void OnTickAdd(Func<Task> task)

@@ -12,7 +12,7 @@ namespace FivePD.Gamemode.Client.Interfaces
     /// <summary>
     /// Used to register keybindings.
     /// </summary>
-    public interface IKeybindService
+    public interface IControlService
     {
         /// <summary>
         /// Finds all methods with the Keybind attribute
@@ -22,7 +22,7 @@ namespace FivePD.Gamemode.Client.Interfaces
         public void Register(ServiceProvider provider);
 
         /// <summary>
-        /// Registers a keybind and the given method to be invoked on press.
+        /// Registers a method to be ran on keybind press.
         /// </summary>
         /// <param name="id">The id of this keybind.</param>
         /// <param name="description">The description of this keybind.</param>
@@ -32,7 +32,8 @@ namespace FivePD.Gamemode.Client.Interfaces
         public void RegisterKeybind(string id, string description, string key, Action onPress = null, Action onRelease = null);
 
         /// <summary>
-        /// Registers a holdable keybind and the given method to be invoked on press.
+        /// Registers a method to be ran on keybind press. A momentary keybind
+        /// also supports a release method to be ran on key release.
         /// </summary>
         /// <param name="id">The id of this keybind.</param>
         /// <param name="description">The description of this keybind.</param>
@@ -41,10 +42,10 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// <param name="onPress">The method that'll be invoked on press.</param>
         /// <param name="onRelease">The method that'll be invoked on release.</param>
         /// <param name="canInvokeOnPress">The onPress method will only be invoked if this method returns true.</param>
-        public void RegisterHoldableKeybind(string id, string description, string key, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null);
+        public void RegisterMomentaryKeybind(string id, string description, string key, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null);
 
         /// <summary>
-        /// Registers a mouse keybind and the given method to be invoked on press.
+        /// Registers a method to be ran on keybind press.
         /// </summary>
         /// <param name="id">The id of this keybind.</param>
         /// <param name="description">The description of this keybind.</param>
