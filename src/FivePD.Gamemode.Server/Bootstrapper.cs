@@ -286,6 +286,7 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IServiceWithEvents, VehicleService>();
             services.AddSingleton<IServiceWithEvents, TrafficStopService>();
             services.AddSingleton<IServiceWithEvents, LocalizationService>();
+            services.AddSingleton<IServiceWithEvents, PlayerDataService>();
 
             // Find and register core services
             services.AddSingleton(Log.Logger);

@@ -45,27 +45,24 @@ export class AppComponent implements OnInit {
   }
 
   onLoad(): void {
-    window.addEventListener('load', () => {
+    // TODO: Not working, change this in the index.html with the pipeline
+    // document.head.innerHTML = document.head.innerHTML + '<base href="/Libraries/FivePD.Nui/"/>';
+    document.body.style.display = 'none';
 
-      // TODO: Not working, change this in the index.html with the pipeline
-      // document.head.innerHTML = document.head.innerHTML + '<base href="/Libraries/FivePD.Nui/"/>';
-      document.body.style.display = 'none';
+    const style = document.createElement('style');
+    style.appendChild(document.createTextNode(`\
+      @font-face {
+        font-family: 'Satoshi';
+        src: url('../assets/Satoshi-Variable.woff2') format('woff2');
+        font-weight: 300 900;
+        font-display: block;
+        font-style: normal;
+      }
+    `));
+    document.head.appendChild(style);
 
-      const style = document.createElement('style');
-      style.appendChild(document.createTextNode(`\
-        @font-face {
-          font-family: 'Satoshi';
-          src: url('../assets/Satoshi-Variable.woff2') format('woff2');
-          font-weight: 300 900;
-          font-display: block;
-          font-style: normal;
-        }
-      `));
-      document.head.appendChild(style);
-
-      this.sendAvailabilityToClient();
-      this._localization.load();
-    });
+    this.sendAvailabilityToClient();
+    this._localization.load();
   }
 
   sendAvailabilityToClient(): void {

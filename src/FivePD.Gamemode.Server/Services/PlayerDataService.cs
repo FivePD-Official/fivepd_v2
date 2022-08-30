@@ -25,7 +25,7 @@ namespace FivePD.Gamemode.Server.Services
     /**
      * <inheritdoc />
      */
-    public class PlayerDataService : IPlayerDataService
+    public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly DatabaseContext _databaseContext;
@@ -51,7 +51,8 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public event EventHandler<Division> PlayerDivisionChanged;
 
-        private void RegisterEvents()
+        /// <inheritdoc />
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
             this._eventHandlerDictionary[Events.Player.GetDetails] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.GetPlayerDetails);
@@ -118,7 +119,6 @@ namespace FivePD.Gamemode.Server.Services
                     .Include(user => user.Division)
                     .Include(user => user.Rank)
                     .FirstOrDefault(user => user.License == license);
-
                 networkCallbackDelegate.Invoke(user is null ? null : Converter.SerializeObjectWithoutReferenceLoop(user));
             }
             catch (Exception e)

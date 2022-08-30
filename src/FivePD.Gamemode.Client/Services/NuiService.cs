@@ -24,6 +24,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly ILoggerService _loggerService;
         private bool _isNuiOpened;
+        private bool _ready;
 
         /// <summary>Initializes a new instance of the <see cref="NuiService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
@@ -57,6 +58,7 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.ClientReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 this._loggerService.Info("Starting FivePD NUI...");
+                this._ready = true;
 
                 // If we can hear this, we're ready
                 cb.Invoke(true);
@@ -199,6 +201,11 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void Show(string type, string menuId = "#", bool hasFocus = true, bool hasCursor = true)
         {
+            if (!this._ready)
+            {
+                return;
+            }
+
             if (this._isNuiOpened && type != Events.NuiEventType.Mdt)
             {
                 this.Hide();
