@@ -99,6 +99,11 @@ namespace FivePD.Common
             /// </summary>
             public const string IsNuiReady = "fivepd:nui:isNuiReady";
 
+            /// <summary>
+            /// Invoked by the client when ready for the Nui.
+            /// </summary>
+            public const string ClientReady = "ready";
+
             /// <summary>Closes the Nui.</summary>
             public const string Close = "close";
 
