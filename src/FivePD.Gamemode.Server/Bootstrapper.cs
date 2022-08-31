@@ -44,6 +44,10 @@ namespace FivePD.Gamemode.Server
         private readonly List<string> _startupQuotes = new List<string>
         {
             "Understand, our police officers put their lives on the line for us every single day.\nThey’ve got a tough job to do to maintain public safety and hold accountable those who break the law.\n\n— Barack Obama",
+            "Good people sleep peaceably in their beds at night only\nbecause rough men stand ready to do violence on their behalf.\n\n— George Orwell",
+            "My heroes are those who risk their lives every day to protect our world and\nmake it a better place – police, firefighters, and members of the armed forces.\n\n— Sidney Sheldon",
+            "Heroes don’t always wear capes.\n\n— Unknown",
+            "A true police officer fights not because he hates what’s in front of him,\nbut because he loves who stands behind him.\n\n— Unknown",
         };
 
         private readonly Dictionary<Action, bool> _phases = new Dictionary<Action, bool>();
