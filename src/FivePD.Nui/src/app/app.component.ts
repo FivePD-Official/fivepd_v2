@@ -69,8 +69,4 @@ export class AppComponent implements OnInit {
     this._http.post(NuiEventType.IsNuiReady, {}).subscribe();
   }
 
-  setPathInState(path: string): void {
-    this.setMdtPath(path.split('/'));
-  }
-
 }

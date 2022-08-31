@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormInputBase, FormSubmitEvent } from '@models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import deepEqual from 'fast-deep-equal/es6';
@@ -45,7 +45,8 @@ export class DynamicFormComponent implements OnInit, OnChanges {
         if (field.required) {
           if (field.type === 'dropdown') {
             validators.push((control) => control.value === -1 ? { 'required': true } : null);
-          } else {
+          }
+          else {
             validators.push(Validators.required);
           }
         }
@@ -71,13 +72,15 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
     this.originalFormValue = this.form.value;
 
-    this.form.valueChanges.subscribe(() => {
-      if (deepEqual(this.originalFormValue, this.form.value)) {
-        this.form.markAsPristine();
-      } else {
-        this.form.markAsDirty();
-      }
-    });
+    if (this.disableSubmitWithOriginalValue) {
+      this.form.valueChanges.subscribe(() => {
+        if (deepEqual(this.originalFormValue, this.form.value)) {
+          this.form.markAsPristine();
+        } else {
+          this.form.markAsDirty();
+        }
+      });
+    }
   }
 
   ngOnChanges(): void {
@@ -95,9 +98,15 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
   internalOnSubmit(): void {
     this.form.markAllAsTouched();
+    console.log('invalid: ', this.form.invalid)
+    console.log(this.form.value)
     if (this.form.invalid) {
       return;
     }
+
+    console.log('works')
+
+    return
 
     this.onSubmit.emit({
       value: this.form.value,

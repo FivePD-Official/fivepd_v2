@@ -45,6 +45,7 @@ import {
 import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
+import { DateMaskDirective } from './directives/date-mask.directive';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
     RadialMenuComponent,
     TimerBarComponent,
     ClickOutsideDirective,
+    DateMaskDirective,
   ],
   imports: [
     BrowserModule,

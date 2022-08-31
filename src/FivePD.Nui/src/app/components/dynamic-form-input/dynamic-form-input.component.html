@@ -10,8 +10,30 @@
 
   <ng-container [ngSwitch]="true">
 
-    <input *ngSwitchCase="field.type === 'text'" [formControlName]="field.key" [attr.id]="field.key" type="text" [attr.placeholder]="placeholder" (input)="onChange.emit($event)" />
-    <input *ngSwitchCase="field.type === 'number'" [formControlName]="field.key" [attr.id]="field.key" type="number" [attr.placeholder]="placeholder" (input)="onChange.emit($event)" />
+    <input type="text"
+      *ngSwitchCase="field.type === 'text'"
+      [formControlName]="field.key"
+      [attr.id]="field.key"
+      [attr.placeholder]="placeholder"
+      (input)="onChange.emit($event)"
+    />
+    <input type="number"
+      *ngSwitchCase="field.type === 'number'"
+      [formControlName]="field.key"
+      [attr.id]="field.key"
+      [attr.placeholder]="placeholder"
+      (input)="onChange.emit($event)"
+    />
+    <input type="text"
+       inputmode="numeric"
+       *ngSwitchCase="field.type === 'date'"
+       [formControlName]="field.key"
+       [attr.id]="field.key"
+       [attr.placeholder]="placeholder"
+       [appDateMask]="form"
+       (input)="onChange.emit($event)"
+    />
+    <h1>{{ control.invalid }}</h1>
 
     <div
       *ngSwitchCase="field.type === 'dropdown'"
@@ -74,6 +96,7 @@
     <p *ngIf="control.errors['max']">{{ 'Nui.Errors.FieldMax' | translate: { 'value': field.options['max'] } }}</p>
     <p *ngIf="control.errors['nameTaken']">{{ 'Nui.Errors.FieldNameTaken' | translate }}</p>
     <p *ngIf="control.errors['pattern']">{{ 'Nui.Errors.FieldFormat' | translate }}</p>
+    <p *ngIf="control.errors['invalidDate']">Invalid date. MM/DD/YYYY ??</p>
   </div>
 
 </div>

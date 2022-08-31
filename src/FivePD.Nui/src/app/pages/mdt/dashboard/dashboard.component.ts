@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Button, Collation, Column, Department, NumberInput, Page, TextInput, User } from '@models';
+import { Button, Collation, Column, DateInput, Department, NumberInput, Page, TextInput, User } from '@models';
 import { GenericNameValidator } from '@validators/generic-name-validator';
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';

@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Dropdown, DropdownItem, FormInputBase } from '@models';
+import { DropdownItem, FormInputBase } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 
 @Component({
@@ -35,6 +35,7 @@ export class DynamicFormInputComponent implements OnInit {
         [this.field.key]: this.pseudoFormControl,
       });
     }
+
     this.setLabels();
     if (this.field.dropdownOptions) {
       const { items, selectedItemResolver, label } = this.field.dropdownOptions;
@@ -47,11 +48,11 @@ export class DynamicFormInputComponent implements OnInit {
           this.setSelectedItem(item);
         }
       } else {
-        this.form?.controls[this.field.key].patchValue(-1);
+        this.control?.patchValue(-1);
       }
     }
 
-    this.form?.controls[this.field.key]?.valueChanges?.subscribe(value => {
+    this.control?.valueChanges?.subscribe(value => {
       this.onChange.emit(value);
     });
   }
@@ -61,7 +62,7 @@ export class DynamicFormInputComponent implements OnInit {
   }
 
   onDropdownSelect(selectItem: DropdownItem): void {
-    // this.dropdownOpen = false;
+    this.dropdownOpen = false;
     this.setSelectedItem(selectItem);
   }
 
