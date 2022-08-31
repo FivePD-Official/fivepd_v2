@@ -1,61 +1,61 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { GlobalState } from '@store';
 import { Store } from '@ngxs/store';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { ToggleSidebarCollapse } from '@store/app.actions';
 import { TogglePanicMode } from '@store/user.actions';
-import { IconType } from '@models';
+import { IconType, User } from '@models';
 
 interface Route {
   title: string;
-  path: string;
+  path: () => string;
   icon: IconType;
-  show: boolean;
+  show: () => boolean;
 }
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.sass'],
-  // encapsulation: ViewEncapsulation.None,
 })
 export class SidebarComponent implements OnInit {
 
   @Dispatch() togglePanicMode = () => new TogglePanicMode(!this.isPanicModeActive);
   @Dispatch() toggleSidebarCollapse = () => new ToggleSidebarCollapse(!this.isSidebarCollapsed);
 
+  user?: User;
   isSidebarCollapsed: boolean = false;
   isPanicModeActive: boolean = false;
   routes: Route[] = [
     {
       title: 'Dashboard',
-      path: '/mdt/dashboard',
+      path: () => '/mdt/dashboard',
       icon: IconType.Squares,
-      show: true,
+      show: () => true,
     },
     {
       title: 'CitizenDatabase',
-      path: '/mdt/citizen-database',
+      path: () => '/mdt/citizen-database',
       icon: IconType.Identification,
-      show: true,
+      show: () => true,
     },
     {
       title: 'VehicleDatabase',
-      path: '/mdt/vehicle-database',
+      path: () => '/mdt/vehicle-database',
       icon: IconType.Truck,
-      show: true,
+      show: () => true,
     },
     {
       title: 'Settings',
-      path: '/mdt/settings',
+      path: () => '/mdt/settings',
       icon: IconType.Cog,
-      show: true,
+      show: () => true,
     },
     {
       title: 'MyDepartment',
-      path: `/mdt/departments/${0}`,
+      path: () => `/mdt/departments/${this.user?.DepartmentId}`,
       icon: IconType.Users,
-      show: true,
+      show: () => !!this.user?.Department ?? false,
     },
   ];
 
@@ -65,6 +65,7 @@ export class SidebarComponent implements OnInit {
     this._store.subscribe((res: GlobalState) => {
       this.isSidebarCollapsed = res.app.isSidebarCollapsed;
       this.isPanicModeActive = res.user.isPanicModeActive;
+      this.user = res.user.details;
     });
   }
 

@@ -98,15 +98,10 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
   internalOnSubmit(): void {
     this.form.markAllAsTouched();
-    console.log('invalid: ', this.form.invalid)
-    console.log(this.form.value)
+    // console.log('invalid: ', this.form.invalid)
     if (this.form.invalid) {
       return;
     }
-
-    console.log('works')
-
-    return
 
     this.onSubmit.emit({
       value: this.form.value,

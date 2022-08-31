@@ -2,11 +2,11 @@
   <div class="links">
     <a
       *ngFor="let item of routes"
-      [routerLink]="item.path"
+      [routerLink]="item.path()"
       [routerLinkActive]="'active'"
       [routerLinkActiveOptions]="{ exact: false }"
     >
-      <div *ngIf="item.show" class="link">
+      <div *ngIf="item.show()" class="link">
         <div class="icon" app-icon [name]="item.icon"></div>
         <p>{{ item.title }}</p>
       </div>
