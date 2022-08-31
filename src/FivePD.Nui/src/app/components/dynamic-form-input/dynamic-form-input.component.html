@@ -33,7 +33,6 @@
        [appDateMask]="form"
        (input)="onChange.emit($event)"
     />
-    <h1>{{ control.invalid }}</h1>
 
     <div
       *ngSwitchCase="field.type === 'dropdown'"
