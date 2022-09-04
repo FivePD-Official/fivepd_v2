@@ -8,7 +8,7 @@
     >
       <div *ngIf="item.show()" class="link">
         <div class="icon" app-icon [name]="item.icon"></div>
-        <p>{{ item.title }}</p>
+        <p>{{ item.title | translate }}</p>
       </div>
     </a>
   </div>

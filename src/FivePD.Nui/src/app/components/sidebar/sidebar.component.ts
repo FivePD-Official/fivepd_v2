@@ -4,10 +4,10 @@ import { Store } from '@ngxs/store';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { ToggleSidebarCollapse } from '@store/app.actions';
 import { TogglePanicMode } from '@store/user.actions';
-import { IconType, User } from '@models';
+import { IconType, Localization, Paths, User } from '@models';
 
 interface Route {
-  title: string;
+  title: Paths<Localization>;
   path: () => string;
   icon: IconType;
   show: () => boolean;
@@ -28,31 +28,31 @@ export class SidebarComponent implements OnInit {
   isPanicModeActive: boolean = false;
   routes: Route[] = [
     {
-      title: 'Dashboard',
+      title: 'Nui.Labels.Dashboard',
       path: () => '/mdt/dashboard',
       icon: IconType.Squares,
       show: () => true,
     },
     {
-      title: 'CitizenDatabase',
+      title: 'Nui.Labels.CitizenDatabase',
       path: () => '/mdt/citizen-database',
       icon: IconType.Identification,
       show: () => true,
     },
     {
-      title: 'VehicleDatabase',
+      title: 'Nui.Labels.VehicleDatabase',
       path: () => '/mdt/vehicle-database',
       icon: IconType.Truck,
       show: () => true,
     },
     {
-      title: 'Settings',
+      title: 'Nui.Labels.Settings',
       path: () => '/mdt/settings',
       icon: IconType.Cog,
       show: () => true,
     },
     {
-      title: 'MyDepartment',
+      title: 'Nui.Labels.MyDepartment',
       path: () => `/mdt/departments/${this.user?.DepartmentId}`,
       icon: IconType.Users,
       show: () => !!this.user?.Department ?? false,
