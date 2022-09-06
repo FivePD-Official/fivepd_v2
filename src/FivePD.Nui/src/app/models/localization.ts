@@ -169,6 +169,23 @@ export interface Localization {
       OptionC: string;
       OptionD: string;
     }
+  },
+  PlayerStatus: {
+    OnDuty: {
+      GenericNotReceiving: string;
+      GenericReceiving: string;
+      OptionA: string;
+      OptionB: string;
+      OptionC: string;
+      OptionD: string;
+    },
+    OffDuty: {
+      Generic: string;
+      OptionA: string;
+      OptionB: string;
+      OptionC: string;
+      OptionD: string;
+    }
   }
 }
 
@@ -323,6 +340,23 @@ export const defaultLocalization: Localization = {
       PleaseTryAgainLater: '',
       RankExistsWithNameDescription: '',
       UnexpectedError: '',
+    }
+  },
+  PlayerStatus: {
+    OnDuty: {
+      GenericNotReceiving: '',
+      GenericReceiving: '',
+      OptionA: '',
+      OptionB: '',
+      OptionC: '',
+      OptionD: '',
+    },
+    OffDuty: {
+      Generic: '',
+      OptionA: '',
+      OptionB: '',
+      OptionC: '',
+      OptionD: '',
     }
   },
   PlayerStatus: {
