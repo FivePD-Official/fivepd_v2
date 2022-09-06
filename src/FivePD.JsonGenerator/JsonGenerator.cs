@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Localization;
 using Newtonsoft.Json;
@@ -26,7 +28,7 @@ namespace FivePD.JsonGenerator
         };
 
         private static string rootPath = "../FivePD.Gamemode.Statics";
-        private static bool createTestLocalization = true;
+        private static bool dev = true;
 
         /// <summary>
         /// Generates JSON files from the given types..
@@ -40,15 +42,16 @@ namespace FivePD.JsonGenerator
             if (args.Length > 0 && !string.IsNullOrEmpty(args[0]))
             {
                 rootPath = args[0];
-                createTestLocalization = false;
+                dev = false;
             }
 
             CreateDirectories();
 
             Write(typeof(Localization), "Localization/en.json");
-            if (createTestLocalization)
+            if (dev)
             {
                 Write(CreateLocalizationTestData(new Localization()) as Localization, "Localization/test.json");
+                CreateNuiLocalizationInterface();
             }
 
             Write(CreateDefaultDatabase(), "Config/database.json");
@@ -60,6 +63,16 @@ namespace FivePD.JsonGenerator
             Copy("TextFiles/LastNames.txt", "Config/LastNames.txt");
             Copy("TextFiles/MaleFirstNames.txt", "Config/MaleFirstNames.txt");
             Copy("TextFiles/FemaleFirstNames.txt", "Config/FemaleFirstNames.txt");
+        }
+
+        private static void CreateNuiLocalizationInterface()
+        {
+            var data = JsonConvert.SerializeObject(Activator.CreateInstance(typeof(Localization)), Formatting.Indented);
+            var formattedInterface = Regex.Replace(data, "(:.*\".*)", ": string;");
+            formattedInterface = Regex.Replace(formattedInterface, "\"", string.Empty);
+            var formattedObject = Regex.Replace(formattedInterface, "string;", "'',");
+            var stringToWrite = $"// The content of this file is auto-generated, do not edit it manually.\n\nexport interface Localization {formattedInterface}\n\nexport const defaultLocalization: Localization = {formattedObject}";
+            File.WriteAllText($"{rootPath}/../FivePD.Nui/src/app/models/localization.ts", stringToWrite);
         }
 
         private static void CreateDirectories()

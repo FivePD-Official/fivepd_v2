@@ -18,7 +18,6 @@ using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.Requests;
 using FivePD.Gamemode.Server.Models.Responses;
-using FivePD.Gamemode.Server.NuiModels;
 using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 
@@ -84,10 +83,11 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.GetDivisions] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentDivisionsForNui);
 
             this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, int, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Edit] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDepartmentFromNui);
             this._eventHandlerDictionary[Events.Department.Delete] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDepartmentFromNui);
+            this._eventHandlerDictionary[Events.Department.CheckIfDepartmentNameTaken] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CheckIfDepartmentNameTaken);
 
             this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
             this._eventHandlerDictionary[Events.Department.EditDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDivisionFromNui);
@@ -780,7 +780,7 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
-                if (editDepartmentRequest.DefaultRankId != 0)
+                if (editDepartmentRequest.DefaultRankId != -1)
                 {
                     var defaultRank = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == editDepartmentRequest.DefaultRankId);
                     if (defaultRank is null)
@@ -800,7 +800,7 @@ namespace FivePD.Gamemode.Server.Services
                 department.Callsign = string.IsNullOrEmpty(editDepartmentRequest.Callsign) ? editDepartmentRequest.Name.ToAcronym() : editDepartmentRequest.Callsign;
                 department.CallsignFormat = editDepartmentRequest.CallsignFormat;
                 department.MaxUsers = editDepartmentRequest.MaxUsers;
-                department.DefaultRankId = editDepartmentRequest.DefaultRankId == 0 ? (int?)null : editDepartmentRequest.DefaultRankId;
+                department.DefaultRankId = editDepartmentRequest.DefaultRankId == -1 ? (int?)null : editDepartmentRequest.DefaultRankId;
                 this._databaseContext.SaveChanges();
                 this.DepartmentEdited?.Invoke(this, department);
                 networkCallbackDelegate.Invoke(new ActionResponse
@@ -822,6 +822,30 @@ namespace FivePD.Gamemode.Server.Services
                     Title = "Nui.Errors.UnexpectedError",
                     Description = "Nui.Errors.DatabaseAccess",
                 }.ToString());
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        private void CheckIfDepartmentNameTaken(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<NameTakenRequest>();
+                Department departmentExists;
+                if (request.CheckForDepartmentId)
+                {
+                    departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name && department.Id != request.DepartmentId);
+                }
+                else
+                {
+                    departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
+                }
+
+                networkCallbackDelegate.Invoke(new NameTakenResponse(departmentExists != null).ToString());
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(new NameTakenResponse(false).ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -879,11 +903,12 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private void PlayerJoinDepartmentFromNui([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
+        private void PlayerJoinDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
+            var request = expandoObject.ConvertTo<JoinOrLeaveDepartmentRequest>();
             var department = this._databaseContext.Departments
                 .Include(department => department.Users)
-                .FirstOrDefault(department => department.Id == departmentId);
+                .FirstOrDefault(department => department.Id == request.DepartmentId);
 
             try
             {
@@ -927,7 +952,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private void PlayerLeaveDepartmentFromNui([FromSource] Player player, int departmentId, NetworkCallbackDelegate networkCallbackDelegate)
+        private void PlayerLeaveDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             var playerDepartment = this.FindUserByLicense(player).Department;
 

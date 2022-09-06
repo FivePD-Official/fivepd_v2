@@ -1,28 +1,44 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "target": "esnext",
-    "useDefineForClassFields": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "strict": true,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["/*"],
-      "@utils": ["utils"],
-      "@interfaces": ["interfaces"],
-      "@store": ["store"],
-      "@directives": ["directives"],
-      "@hooks": ["hooks"],
-      "@enums": ["enums"],
-      "@services": ["services"],
-      "@models": ["models"],
-    }
+      "@utils": ["src/app/utils"],
+      "@enums": ["src/app/enums"],
+      "@services/*": ["src/app/services/*"],
+      "@models": ["src/app/models"],
+      "@store": ["src/app/store"],
+      "@store/*": ["src/app/store/*"],
+      "@validators/*": ["src/app/validators/*"],
+    },
+    "outDir": "./dist/",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2020",
+    "module": "es2020",
+    "lib": [
+      "es2020",
+      "dom",
+      "DOM.Iterable"
+    ],
+    "esModuleInterop": true,
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true,
+    "allowSyntheticDefaultImports": true
+  }
 }

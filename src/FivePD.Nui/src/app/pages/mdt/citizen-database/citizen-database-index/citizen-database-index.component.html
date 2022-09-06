@@ -1,0 +1,16 @@
+<app-page-header [title]="'Nui.Labels.CitizenDatabase' | translate"></app-page-header>
+<div class="content">
+  <app-dynamic-form
+    title="Search"
+    subtitle="All fields are optional. If empty, every citizen will be displayed."
+    submitButtonLabel="Search"
+    buttonAlignment="full"
+    [formFields]="formFields"
+    (onSubmit)="onSearchSubmit($event)"
+  ></app-dynamic-form>
+
+  <app-grid
+    [columns]="citizensColumns"
+    [data]="citizens"
+  ></app-grid>
+</div>

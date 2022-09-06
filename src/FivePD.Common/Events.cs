@@ -213,6 +213,11 @@ namespace FivePD.Common
             public const string Create = "fivepd:department:create";
 
             /// <summary>
+            /// Used when a user creates a department in the NUI.
+            /// </summary>
+            public const string CheckIfDepartmentNameTaken = "fivepd:department:checkIfDepartmentNameTaken";
+
+            /// <summary>
             /// Used when a user joins a department in the NUI.
             /// </summary>
             public const string Join = "fivepd:department:join";

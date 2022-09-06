@@ -1,0 +1,53 @@
+.grid
+  display: grid
+  grid: 1fr / repeat(3, 1fr)
+  gap: 40px
+  margin-bottom: 40px
+
+  .grid-item
+    width: 100%
+    height: 100%
+
+    .grid-item--content
+      position: relative
+      display: flex
+      width: 100%
+      height: 240px
+      margin-top: 15px
+      border-radius: var(--radius)
+      background-color: var(--clr-bg-secondary)
+      padding: 20px
+
+      .no-data
+        position: absolute
+        top: 50%
+        left: 50%
+        transform: translate(-50%,-50%)
+        font-size: 20px
+        font-weight: 500
+        color: var(--clr-text-secondary)
+        text-align: center
+        max-width: 25ch
+
+  .grid-item--details
+    ul
+      width: 100%
+      height: 100%
+      list-style: none
+      padding: 0
+      display: grid
+      grid: repeat(2, 1fr) / repeat(2, 1fr)
+      align-items: flex-start
+      gap: 20px
+
+      li
+        p
+          font-size: 18px
+          font-weight: 500
+          color: var(--clr-text-tertiary)
+          margin-bottom: 5px
+
+          + p
+            font-size: 20px
+            font-weight: 400
+            color: var(--clr-text-primary)

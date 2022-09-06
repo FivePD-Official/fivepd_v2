@@ -24,6 +24,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly ILoggerService _loggerService;
         private bool _isNuiOpened;
+        private bool _ready;
 
         /// <summary>Initializes a new instance of the <see cref="NuiService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
@@ -57,7 +58,7 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.ClientReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 this._loggerService.Info("Starting FivePD NUI...");
-
+                this._ready = true;
                 // If we can hear this, we're ready
                 cb.Invoke(true);
             }));
@@ -73,11 +74,12 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.DeleteRank);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.EditRank);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CreateRank);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Join);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<int>(Events.Department.Leave);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Join);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Leave);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Edit);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Delete);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Create);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CheckIfDepartmentNameTaken);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.GetDetails);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeDivision);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeRank);
@@ -176,9 +178,10 @@ namespace FivePD.Gamemode.Client.Services
             Cfx.API.SetNuiFocus(false, false);
             this.SendMessage(new JObject
             {
-                { "showTimerBar", true },
-                { "timerBarTitle", "test" },
-                { "timerBarTimeToHold", timeToHoldInMs },
+                { "type", Events.NuiEventType.TimerBar },
+                { "show", true },
+                { "title", "test" },
+                { "timeToHold", timeToHoldInMs },
             });
         }
 
@@ -197,6 +200,11 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void Show(string type, string menuId = "#", bool hasFocus = true, bool hasCursor = true)
         {
+            if (!this._ready)
+            {
+                return;
+            }
+
             if (this._isNuiOpened && type != Events.NuiEventType.Mdt)
             {
                 this.Hide();

@@ -1,0 +1,193 @@
+.input-box
+  width: 100%
+
+  .input-label
+    display: block
+    font-size: 16px
+    font-weight: 500
+    color: var(--clr-text-secondary)
+    margin-bottom: 5px
+    &.input-label--checkbox
+      margin-bottom: 0
+      cursor: pointer
+      &:hover ~ .checkbox-inner input
+        border-color: var(--clr-gray)
+
+  input
+    height: 40px
+    width: 100%
+    border: 2px solid var(--clr-bg-40)
+    background: transparent
+    border-radius: var(--radius-sm)
+    padding: 0 15px
+    font-size: 16px
+    color: var(--clr-text-secondary)
+    &::placeholder
+      color: var(--clr-text-tertiary)
+    &:hover, &:focus
+      border-color: var(--clr-gray)
+    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+      appearance: none
+      -webkit-appearance: none
+
+  .help-label
+    display: block
+    font-size: 16px
+    color: var(--clr-text-tertiary)
+    margin-top: 5px
+
+  .input-errors
+    margin-top: 5px
+
+    p
+      display: block
+      font-size: 16px
+      font-weight: 500
+      color: var(--clr-red)
+
+  .inputs
+    display: grid
+    grid: 1fr / repeat(3, 1fr)
+    gap: 5px
+
+  .checkbox-group
+    margin-top: 10px
+    display: flex
+    flex-direction: column
+    align-items: flex-start
+
+    .checkbox
+      margin-bottom: 10px
+      flex-direction: row-reverse
+      justify-content: flex-end
+
+      .checkbox-inner
+        margin-right: 10px
+
+  .checkbox
+    display: flex
+    width: 100%
+    flex-direction: row
+    align-items: center
+    justify-content: space-between
+
+    .checkbox-inner
+      position: relative
+      width: 26px
+      height: 26px
+
+      svg
+        position: absolute
+        top: 50%
+        left: 50%
+        transform: translate(-50%,-50%)
+        height: 22px
+        opacity: 0
+        color: white
+        z-index: var(--layer-10)
+        pointer-events: none
+
+      input
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        border: 2px solid var(--clr-bg-40)
+        border-radius: var(--radius-sm)
+        z-index: var(--layer-0)
+        appearance: none
+        -webkit-appearance: none
+        background: transparent
+        padding: 0
+        cursor: pointer
+        &:hover, &:focus
+          border-color: var(--clr-gray)
+        &:checked
+          border-color: var(--clr-text-secondary)
+          & ~ svg
+            opacity: 1
+
+    .checkbox-label
+      font-size: 16px
+      color: var(--clr-text-tertiary)
+      cursor: pointer
+      margin-bottom: 0
+
+.dropdown
+  position: relative
+  &.dropdown--normal
+    height: 40px
+    .dropdown-selected-item
+      border: 1px solid var(--clr-bg-40)
+      background: transparent
+  &.dropdown--small
+    height: 35px
+
+  input
+    display: none
+
+  .dropdown-selected-item
+    height: 35px
+    border-radius: var(--radius-sm)
+    padding: 0 15px
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: space-between
+    background: var(--clr-bg-20)
+    cursor: pointer
+    &:hover
+      background: var(--clr-bg-40)
+
+    p
+      font-size: 16px
+      color: var(--clr-text-secondary)
+
+    svg
+      height: 20px
+      margin-left: 15px
+      color: var(--clr-text-secondary)
+
+  .dropdown-items
+    position: relative
+    display: none
+    flex-direction: column
+    align-items: center
+    width: 100%
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
+    z-index: var(--layer-100)
+
+    .item
+      width: 100%
+      height: 35px
+      padding: 0 15px
+      display: flex
+      flex-direction: row
+      align-items: center
+      justify-content: flex-start
+      background: var(--clr-bg-20)
+      background: var(--clr-bg-20)
+      border: none
+      outline: none
+      cursor: pointer
+      &:last-of-type
+        border-bottom-left-radius: var(--radius-sm)
+        border-bottom-right-radius: var(--radius-sm)
+      &:hover
+        background: var(--clr-bg-40)
+
+      p
+        font-size: 16px
+        color: var(--clr-text-secondary)
+
+  &.dropdown--open
+    .dropdown-selected-item
+      border-bottom-left-radius: 0
+      border-bottom-right-radius: 0
+
+      svg
+        transform: rotate(180deg)
+
+    .dropdown-items
+      display: flex

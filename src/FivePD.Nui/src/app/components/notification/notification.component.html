@@ -1,0 +1,17 @@
+<div
+  class="notification"
+  [ngClass]="{ 'exit': exit, 'notification-error': notification.type === 'error', 'notification-success': notification.type === 'success' }
+">
+  <div class="notification-header">
+    <div *ngIf="notification.type === 'success'" class="icon icon-success">
+      <div class="icon-inner" app-icon name="Check"></div>
+    </div>
+    <div *ngIf="notification.type === 'error'" class="icon icon-error">
+      <div class="icon-inner" app-icon name="XMark"></div>
+    </div>
+    <p class="title">
+      {{ notification.title }}
+    </p>
+  </div>
+  <p class="description" [innerHtml]="notification.description"></p>
+</div>

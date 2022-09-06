@@ -1,9 +1,9 @@
-﻿<component name="ProjectRunConfigurationManager">
+﻿﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Start NUI Development Server" type="js.build_tools.npm">
     <package-json value="$PROJECT_DIR$/src/FivePD.Nui/package.json" />
     <command value="run" />
     <scripts>
-      <script value="dev" />
+      <script value="start" />
     </scripts>
     <node-interpreter value="project" />
     <envs />

@@ -1,0 +1,113 @@
+button
+  position: relative
+  width: 100%
+  height: 40px
+  border: none
+  border-radius: var(--radius-sm)
+  font-size: 18px
+  cursor: pointer
+  background: transparent
+  padding: 0 25px
+  display: flex
+  flex-direction: row
+  align-items: center
+  justify-content: center
+  white-space: nowrap
+  &.button--primary
+    &::before
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      border-radius: var(--radius-sm)
+      opacity: 1
+      background: var(--clr-blue)
+      z-index: var(--layer-0)
+    &::after
+      content: ''
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translate(-50%,-50%)
+      width: calc(100% + 6px)
+      height: calc(100% + 6px)
+      border-radius: calc(var(--radius-sm) + 3px)
+      opacity: 0
+      background: var(--clr-blue)
+      z-index: var(--layer-0)
+    &:hover
+      &::before
+        opacity: .75
+    &:focus::after
+      opacity: .4
+  &.button--danger
+    &::before
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      border-radius: var(--radius-sm)
+      opacity: 1
+      background: var(--clr-red)
+      z-index: var(--layer-0)
+    &::after
+      content: ''
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translate(-50%,-50%)
+      width: calc(100% + 6px)
+      height: calc(100% + 6px)
+      border-radius: calc(var(--radius-sm) + 3px)
+      opacity: 0
+      background: var(--clr-red)
+      z-index: var(--layer-0)
+    &:hover
+      &::before
+        opacity: .75
+    &:focus::after
+      opacity: .4
+
+  &.button--secondary
+    border: 2px solid var(--clr-text-tertiary)
+    &::before
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      border-radius: var(--radius-sm)
+      opacity: 0
+      background: var(--clr-text-tertiary)
+      z-index: var(--layer-0)
+    &:hover
+      border-color: var(--clr-text-secondary)
+    &:focus::before
+      opacity: .2
+
+  &.button--small
+    height: 35px
+    font-size: 16px
+    border: 2px solid var(--clr-bg-80)
+    &:hover, &:focus
+      border-color: var(--clr-text-tertiary)
+
+    span
+      color: var(--clr-text-secondary)
+
+  &.button--disabled
+    cursor: not-allowed
+    background: var(--clr-bg-20)
+
+    span
+      color: var(--clr-text-tertiary)
+
+  span
+    position: relative
+    z-index: var(--layer-10)
+    color: var(--clr-text-primary)

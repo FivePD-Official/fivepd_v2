@@ -1,0 +1,62 @@
+<app-page-header [title]="title">
+  <app-button [label]="'Nui.Actions.Join' | translate" [show]="!isUserInDepartment" theme="secondary" (onClick)="joinDepartment()"></app-button>
+  <app-button [label]="'Nui.Actions.Leave' | translate" [show]="isUserInDepartment" theme="secondary" (onClick)="leaveDepartment()"></app-button>
+</app-page-header>
+
+<ng-container *ngIf="user?.Admin ?? false; else notAdmin">
+  <app-columns *ngIf="department" [columns]="2">
+    <app-dynamic-form *ngIf="departmentSettingsForm"
+      [title]="'Nui.Labels.DepartmentSettings' | translate"
+      [formFields]="departmentSettingsForm"
+      [columns]="2"
+      [limitWidth]="false"
+      [disableSubmitWithOriginalValue]="true"
+      (onSubmit)="onDepartmentSettingsSubmit($event)"
+    ></app-dynamic-form>
+    <app-grid
+      [title]="'Nui.Labels.Divisions' | translate"
+      [buttons]="divisionsButtons"
+      [data]="divisions"
+      [columns]="divisionsColumns"
+      (onCollationChange)="onDivisionsCollationChange($event)"
+      (onCellAction)="getDivisions()"
+    ></app-grid>
+  </app-columns>
+  <app-grid
+    [title]="'Nui.Labels.Ranks' | translate"
+    [buttons]="ranksButtons"
+    [data]="ranks"
+    [columns]="ranksColumns"
+    (onCollationChange)="onRanksCollationChange($event)"
+    (onCellAction)="getRanks()"
+  ></app-grid>
+</ng-container>
+
+<ng-template #notAdmin>
+  <app-columns *ngIf="department" [columns]="2">
+    <app-grid
+      [title]="'Nui.Labels.Ranks' | translate"
+      [buttons]="ranksButtons"
+      [data]="ranks"
+      [columns]="ranksColumns"
+      (onCollationChange)="onRanksCollationChange($event)"
+      (onCellAction)="getRanks()"
+    ></app-grid>
+    <app-grid
+      [title]="'Nui.Labels.Divisions' | translate"
+      [buttons]="divisionsButtons"
+      [data]="divisions"
+      [columns]="divisionsColumns"
+      (onCollationChange)="onDivisionsCollationChange($event)"
+      (onCellAction)="getDivisions()"
+    ></app-grid>
+  </app-columns>
+</ng-template>
+
+<app-grid
+  [title]="'Nui.Labels.Members' | translate"
+  [data]="users"
+  [columns]="usersColumns"
+  (onCollationChange)="onUsersCollationChange($event)"
+  (onCellAction)="getUsers()"
+></app-grid>

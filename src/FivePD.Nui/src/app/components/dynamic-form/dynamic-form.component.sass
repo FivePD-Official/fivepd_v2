@@ -1,0 +1,65 @@
+form
+  position: relative
+  display: flex
+  flex-direction: column
+  align-items: flex-start
+  max-width: 350px
+  width: 100%
+  justify-self: center
+  &.max-width-none
+    max-width: none
+
+  .form-header
+    margin-bottom: 25px
+
+    .form-title
+      font-size: 22px
+      font-weight: 700
+      color: var(--clr-text-primary)
+      margin-bottom: 5px
+
+    .form-subtitle
+      font-size: 16px
+      color: var(--clr-text-secondary)
+
+  .form-columns
+    display: grid
+    gap: 30px
+    width: 100%
+
+  app-dynamic-form-input
+    width: 100%
+    display: block
+    &:not(:last-of-type)
+      margin-bottom: 20px
+
+  button
+    width: 100%
+
+  .button-wrapper--ngcontent
+    width: 100%
+
+  .buttons-wrapper
+    width: 100%
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: flex-end
+    margin-top: 30px
+    &.buttons-wrapper--left
+      justify-content: flex-start
+    &.buttons-wrapper--right
+      justify-content: flex-end
+    &.buttons-wrapper--full
+      justify-content: flex-start
+
+      app-button
+        width: 100%
+
+    .buttons
+      width: 50%
+      display: flex
+      flex-direction: row
+      align-items: center
+      justify-content: flex-end
+      gap: 10px

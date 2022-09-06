@@ -1,0 +1,33 @@
+<div class="menu" *ngIf="menu">
+  <div class="menu-header">
+    <p>{{ menu.useLocalization ? (menu.title | translate) : menu.title }}</p>
+  </div>
+  <div class="menu-items">
+    <div class="selector"></div>
+
+    <div *ngFor="let item of menuItems || []" class="menu-item" [ngClass]="{ 'menu-item--disabled': !item.enabled }">
+      <p class="title">{{ menu.useLocalization ? (item.title | translate) : item.title }}</p>
+
+      <div *ngIf="item.type === MenuItemType.Toggle" class="menu-item-toggle" [ngClass]="{ 'checked': $any(item).checked }">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+
+      <div *ngIf="item.type === MenuItemType.List" class="menu-item-list">
+        <svg xmlns="http://www.w3.org/2000/svg" class="left-arrow" [ngClass]="{ 'arrow-disabled': $any(item).currentIndex === 0}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <div class="list-wrapper">
+          <div class="list-wrapper-item-inner" [ngClass]="getMarqueeClass($any(item))">
+            <p>{{ $any(item).items[$any(item).currentIndex] }}</p>
+          </div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="right-arrow" [ngClass]="{ 'arrow-disabled': $any(item).currentIndex === $any(item).items.length - 1 }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+
+    </div>
+  </div>
+</div>

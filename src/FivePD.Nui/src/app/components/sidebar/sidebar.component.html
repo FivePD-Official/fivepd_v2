@@ -1,0 +1,34 @@
+<aside [ngClass]="{ 'collapsed': isSidebarCollapsed }">
+  <div class="links">
+    <a
+      *ngFor="let item of routes"
+      [routerLink]="item.path()"
+      [routerLinkActive]="'active'"
+      [routerLinkActiveOptions]="{ exact: false }"
+    >
+      <div *ngIf="item.show()" class="link">
+        <div class="icon" app-icon [name]="item.icon"></div>
+        <p>{{ item.title | translate }}</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="buttons">
+    <button
+      class="panic-btn"
+      [ngClass]="{ 'collapsed': isSidebarCollapsed, 'panic-btn--active': isPanicModeActive }"
+      (click)="togglePanicMode()"
+    >
+      <span *ngIf="!isSidebarCollapsed">{{ isPanicModeActive ? 'cancel' : 'panic' }}</span>
+      <div class="icon" app-icon *ngIf="!isPanicModeActive; else icon2" name="Warning"></div>
+      <ng-template #icon2>
+        <div class="icon" app-icon name="XMark"></div>
+      </ng-template>
+    </button>
+
+    <button class="collapse-btn" [ngClass]="{ 'collapsed': isSidebarCollapsed }" (click)="toggleSidebarCollapse()">
+      <div class="icon" app-icon name="ArrowLeft"></div>
+      <span>Collapse</span>
+    </button>
+  </div>
+</aside>

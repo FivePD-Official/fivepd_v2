@@ -1,0 +1,21 @@
+<form [formGroup]="form" [ngClass]="{ 'max-width-none': !limitWidth }" (ngSubmit)="internalOnSubmit()">
+  <div class="form-header" *ngIf="title || subtitle">
+    <p *ngIf="title" class="form-title">{{ title }}</p>
+    <p *ngIf="subtitle" class="form-subtitle">{{ subtitle }}</p>
+  </div>
+  <div class="form-columns" *ngIf="form && formFieldColumns.length" [ngStyle]="{ grid: columnsGridStyle }">
+    <div class="form-column" *ngFor="let col of formFieldColumns">
+      <app-dynamic-form-input
+        *ngFor="let field of col"
+        [field]="field"
+        [form]="form"
+      ></app-dynamic-form-input>
+    </div>
+  </div>
+  <div *ngIf="!content.children.length" class="buttons-wrapper" [ngClass]="{ 'buttons-wrapper--left': buttonAlignment === 'left', 'buttons-wrapper--right': buttonAlignment === 'right', 'buttons-wrapper--full': buttonAlignment === 'full' }">
+    <app-button [label]="submitButtonLabel || ('Nui.Actions.Save' | translate)" type="submit" [disabled]="disableSubmitWithOriginalValue && (form.pristine)"></app-button>
+  </div>
+  <div class="button-wrapper--ngcontent" #content>
+    <ng-content></ng-content>
+  </div>
+</form>

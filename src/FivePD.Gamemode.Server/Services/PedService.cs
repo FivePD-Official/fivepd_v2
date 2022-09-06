@@ -10,11 +10,12 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Attributes;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
+using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
-using FivePD.Gamemode.Server.NuiModels;
+using FivePD.Gamemode.Server.Models.Requests;
+using FivePD.Gamemode.Server.QueryHelpers;
 using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
@@ -63,43 +64,34 @@ namespace FivePD.Gamemode.Server.Services
             Debug.WriteLine($"{fPed}");
         }
 
-        private void Search(ExpandoObject searchFieldsObject, NetworkCallbackDelegate networkCallbackDelegate)
+        private void Search(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
-            var searchFields = JsonConvert.DeserializeObject<PedSearchFields>(JsonConvert.SerializeObject(searchFieldsObject));
-            if (searchFields is null)
+            var request = expandoObject.ConvertTo<PedSearchRequest>();
+
+            var pedsQueryable = this._peds.AsQueryable();
+
+            if (!string.IsNullOrEmpty(request.Firstname))
             {
-                networkCallbackDelegate.Invoke(string.Empty);
-                return;
+                pedsQueryable = pedsQueryable.Where(ped => ped.Value.Firstname.ToLower().Contains(request.Firstname.ToLower()));
             }
 
-            var peds = this._peds.AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchFields.Firstname))
+            if (!string.IsNullOrEmpty(request.Lastname))
             {
-                peds = peds.Where(ped => ped.Value.Firstname.ToLower().Contains(searchFields.Firstname.ToLower()));
+                pedsQueryable = pedsQueryable.Where(ped => ped.Value.Lastname.ToLower().Contains(request.Lastname.ToLower()));
             }
 
-            if (!string.IsNullOrEmpty(searchFields.Lastname))
+            // TODO: Maybe use proper paging? Return all peds if the search params are empty?
+            var peds = pedsQueryable.Select(ped => ped.Value).ToList();
+            var page = new Page<FPed>
             {
-                peds = peds.Where(ped => ped.Value.Lastname.ToLower().Contains(searchFields.Lastname.ToLower()));
-            }
+                Items = peds,
+                CurrentPage = 1,
+                ItemCount = peds.Count,
+                PageCount = 1,
+                PageSize = peds.Count,
+            };
 
-            if (searchFields.Birthdate.Day != 0)
-            {
-                peds = peds.Where(ped => ped.Value.Birthdate.Day == searchFields.Birthdate.Day);
-            }
-
-            if (searchFields.Birthdate.Month != 0)
-            {
-                peds = peds.Where(ped => ped.Value.Birthdate.Month == searchFields.Birthdate.Month);
-            }
-
-            if (searchFields.Birthdate.Year != 0)
-            {
-                peds = peds.Where(ped => ped.Value.Birthdate.Year == searchFields.Birthdate.Year);
-            }
-
-            networkCallbackDelegate.Invoke(JsonConvert.SerializeObject(peds.Select(ped => ped.Value)));
+            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
         }
     }
 }

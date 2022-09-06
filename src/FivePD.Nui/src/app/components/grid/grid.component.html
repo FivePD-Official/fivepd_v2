@@ -1,0 +1,78 @@
+<div class="table-container">
+  <div class="table-container-header">
+    <p class="common-title">{{ title }}</p>
+    <div *ngIf="buttons" class="buttons">
+      <app-button
+        *ngFor="let button of buttons"
+        theme="secondary"
+        [link]="button.link"
+        [label]="button.label"
+        [show]="button.show()"
+        (onClick)="headerButtonOnClick(button)"
+      ></app-button>
+    </div>
+  </div>
+
+  <div class="common-bg table">
+    <div class="table-row table-header">
+      <div
+        *ngFor="let column of formattedColumns"
+        class="table-cell"
+      >
+        <p>{{ column.header }}</p>
+      </div>
+    </div>
+
+    <form *ngIf="isAnyColumnFilterable" class="table-row table-filter">
+      <div
+        *ngFor="let column of formattedColumns"
+        class="table-cell"
+      >
+        <app-dynamic-form-input *ngIf="column.filter" [field]="getFilterInput(column)" (onChange)="onFilterFormChange(column.accessorKey, $event)"></app-dynamic-form-input>
+      </div>
+    </form>
+
+    <div
+      *ngFor="let row of formattedRows"
+      class="table-row"
+    >
+      <div *ngFor="let item of row" class="table-cell">
+        <a [routerLink]="item.link" *ngIf="item.link && !item.actions">
+          {{ item.value }}
+          <div class="icon" app-icon name="Link"></div>
+        </a>
+        <p *ngIf="!item.link && !item.actions">{{ item.value }}</p>
+        <div *ngIf="!item.link && item.actions" class="table-cell-actions">
+          <ng-container *ngFor="let action of item.actions">
+            <app-button
+              *ngIf="action.type === 'button'"
+              theme="small"
+              [label]="action.label"
+              (onClick)="tableCellActionButtonClick(action, item)"
+            >
+            </app-button>
+            <app-dynamic-form-input *ngIf="action.type === 'select'" [field]="getSelectField(action, item)" (onChange)="onTableCellActionSelect(action, item, $event)"></app-dynamic-form-input>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="formattedRows?.length; else noData" class="table-pagination">
+      <div class="pagination-inner">
+        <button [disabled]="collation.Page === 1" (click)="toPreviousPage()">
+          <div class="icon" app-icon name="ChevronLeft"></div>
+        </button>
+        <button *ngIf="collation.Page > 1" (click)="toPage(collation.Page - 1)"><span>{{ collation.Page - 1 }}</span></button>
+        <button class="active"><span>{{ collation.Page }}</span></button>
+        <button *ngIf="collation.Page < (data ? data!.PageCount : 1)" (click)="toPage(collation.Page + 1)"><span>{{ collation.Page + 1 }}</span></button>
+        <button [disabled]="collation.Page === (data ? data!.PageCount : 1)" (click)="toNextPage()">
+          <div class="icon" app-icon name="ChevronRight"></div>
+        </button>
+      </div>
+    </div>
+
+    <ng-template #noData>
+      <p class="no-data">{{ 'Nui.Labels.NoDataToDisplay' | translate }}</p>
+    </ng-template>
+  </div>
+</div>

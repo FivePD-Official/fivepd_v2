@@ -1,0 +1,16 @@
+﻿export enum IconType {
+  Squares = 'Squares',
+  Identification = 'Identification',
+  Truck = 'Truck',
+  Cog = 'Cog',
+  Users = 'Users',
+  Check = 'Check',
+  XMark = 'XMark',
+  ArrowLeft = 'ArrowLeft',
+  ChevronLeft = 'ChevronLeft',
+  ChevronRight = 'ChevronRight',
+  ChevronUp = 'ChevronUp',
+  ChevronDown = 'ChevronDown',
+  Warning = 'Warning',
+  Link = 'Link',
+}

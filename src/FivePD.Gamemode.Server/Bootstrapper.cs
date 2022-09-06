@@ -6,16 +6,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common.Attributes;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.Database;
@@ -290,6 +286,7 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IServiceWithEvents, VehicleService>();
             services.AddSingleton<IServiceWithEvents, TrafficStopService>();
             services.AddSingleton<IServiceWithEvents, LocalizationService>();
+            services.AddSingleton<IServiceWithEvents, PlayerDataService>();
 
             // Find and register core services
             services.AddSingleton(Log.Logger);
