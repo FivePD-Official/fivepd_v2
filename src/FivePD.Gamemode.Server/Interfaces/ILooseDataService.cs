@@ -21,9 +21,16 @@ namespace FivePD.Gamemode.Server.Interfaces
             where TS : LooseDataSet
             where TE : LooseDataEntity;
 
-        public T GetEntity<T>(int id);
+        public void UpdateEntity<T>(T entityToUpdate)
+            where T : LooseDataEntity;
 
-        public void DeleteEntity<TS, TE>(int id)
+        public void DeleteEntity<T>(int id)
+            where T : LooseDataSet;
+
+        public T GetEntity<T>(int id)
+            where T : LooseDataEntity;
+
+        public List<TE> GetEntities<TS, TE>()
             where TS : LooseDataSet
             where TE : LooseDataEntity;
     }

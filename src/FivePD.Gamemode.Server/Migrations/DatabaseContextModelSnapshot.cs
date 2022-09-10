@@ -245,7 +245,8 @@ namespace FivePD.Gamemode.Server.Migrations
 
                     b.HasOne("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataEntity", "Entity")
                         .WithMany("Values")
-                        .HasForeignKey("EntityId");
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.Rank", b =>

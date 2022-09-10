@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Interfaces;
@@ -27,30 +28,33 @@ namespace FivePD.Gamemode.Server.Services
             this._looseDataService = looseDataService;
         }
 
+        public void AddArrestReport(ArrestReport arrestReport)
+        {
+            this._looseDataService.AddEntity<ArrestReportSet, ArrestReport>(arrestReport);
+        }
+
+        public void UpdateArrestReport(ArrestReport arrestReport)
+        {
+            this._looseDataService.UpdateEntity(arrestReport);
+        }
+
+        public void DeleteArrestReport(int id)
+        {
+            this._looseDataService.DeleteEntity<ArrestReportSet>(id);
+        }
+
         public ArrestReport GetById(int id)
         {
             return this._looseDataService.GetEntity<ArrestReport>(id);
         }
 
+        public List<ArrestReport> GetArrestReports()
+        {
+            return this._looseDataService.GetEntities<ArrestReportSet, ArrestReport>();
+        }
+
         public void RegisterEvents()
         {
-#pragma warning disable S125
-
-            // var test = this.GetById(2);
-            // Debug.WriteLine($"Id - {test.Id}");
-            // Debug.WriteLine($"Narrative - {test.Narrative}");
-            // Debug.WriteLine($"Weapons - {test.Weapons}");
-            // Debug.WriteLine($"AddressOfArrest - {test.AddressOfArrest}");
-            // Debug.WriteLine($"DateOfArrest - {test.DateOfArrest}");
-            this._looseDataService.DeleteEntity<ArrestReportSet, ArrestReport>(5);
-
-            // this._looseDataService.AddEntity<ArrestReportSet, ArrestReport>(new ArrestReport
-            // {
-            //     Narrative = "Narrative",
-            //     Weapons = "Weapons",
-            //     AddressOfArrest = "Addressofarrest",
-            //     DateOfArrest = DateTime.Now,
-            // });
             this._looseDataService.RegisterSetWithAttributes<ArrestReportSet>(new List<LooseDataAttribute>
             {
                 new LooseDataAttribute
