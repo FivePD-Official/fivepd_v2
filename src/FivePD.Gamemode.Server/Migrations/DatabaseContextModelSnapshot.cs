@@ -64,6 +64,93 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.ToTable("Divisions");
                 });
 
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataAttribute", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HelpLabel")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Label")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Options")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Placeholder")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("SetId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SetId");
+
+                    b.ToTable("LooseDataAttributes");
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("SetId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SetId");
+
+                    b.ToTable("LooseDataEntities");
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataSet", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LooseDataSets");
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttributeId");
+
+                    b.HasIndex("EntityId");
+
+                    b.ToTable("LooseDataValues");
+                });
+
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.Rank", b =>
                 {
                     b.Property<int>("Id")
@@ -134,6 +221,31 @@ namespace FivePD.Gamemode.Server.Migrations
                         .WithMany("Divisions")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataAttribute", b =>
+                {
+                    b.HasOne("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataSet", "Set")
+                        .WithMany("Attributes")
+                        .HasForeignKey("SetId");
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataEntity", b =>
+                {
+                    b.HasOne("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataSet", "Set")
+                        .WithMany("Entities")
+                        .HasForeignKey("SetId");
+                });
+
+            modelBuilder.Entity("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataValue", b =>
+                {
+                    b.HasOne("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataAttribute", "Attribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId");
+
+                    b.HasOne("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataEntity", "Entity")
+                        .WithMany("Values")
+                        .HasForeignKey("EntityId");
                 });
 
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.Rank", b =>

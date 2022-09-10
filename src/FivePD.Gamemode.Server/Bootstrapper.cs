@@ -19,6 +19,7 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -280,6 +281,8 @@ namespace FivePD.Gamemode.Server
             var services = new ServiceCollection();
 
             // Find and register services that use event handlers
+            services.AddSingleton<IServiceWithEvents, ReportService>();
+
             services.AddSingleton<IServiceWithEvents, DepartmentService>();
             services.AddSingleton<IServiceWithEvents, EntityService>();
             services.AddSingleton<IServiceWithEvents, PedService>();
@@ -294,6 +297,9 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton(this.Players);
 
             services.AddDbContext<DatabaseContext>();
+
+            services.AddSingleton<ILooseDataService, LooseDataService>();
+            services.AddSingleton<IReportService, ReportService>();
 
             services.AddSingleton<IDepartmentService, DepartmentService>();
             services.AddSingleton<IFileHandlerService, FileHandlerService>();
