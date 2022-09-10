@@ -59,6 +59,7 @@ namespace FivePD.Gamemode.Client.Services
             {
                 this._loggerService.Info("Starting FivePD NUI...");
                 this._ready = true;
+
                 // If we can hear this, we're ready
                 cb.Invoke(true);
             }));

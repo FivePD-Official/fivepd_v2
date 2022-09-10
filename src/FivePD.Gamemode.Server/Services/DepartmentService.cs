@@ -96,13 +96,6 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Department.DeleteRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteRankFromNui);
             this._eventHandlerDictionary[Events.Department.EditRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditRankFromNui);
             this._eventHandlerDictionary[Events.Department.CreateRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateRankFromNui);
-
-            var d = this.GetDepartmentById(5, false, true);
-            if (d != null)
-            {
-                Debug.WriteLine($"{d.Ranks is null} - {d.Ranks?.Count()}");
-                Debug.WriteLine($"{d.Divisions is null} - {d.Divisions?.Count()}");
-            }
         }
 
         /// <inheritdoc />
