@@ -43,10 +43,10 @@
     </ItemGroup>
     <Target Name="CopyStatics" BeforeTargets="CopyFilesToOutputDirectory" DependsOnTargets="CopyStaticsDebug;CopyStaticsRelease" />
     <Target Name="CopyStaticsDebug" Condition=" '$(Configuration)' == 'Debug' ">
-        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'$(ProjectDir)..\dev\FXServer-Data\resources\fivepd\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'$(ProjectDir)..\..\dev\FXServer-Data\resources\fivepd\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     </Target>
     <Target Name="CopyStaticsRelease" Condition=" '$(Configuration)' == 'Release' ">
-        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'$(ProjectDir)..\build-public\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+        <Copy SourceFiles="@(StaticFiles)" DestinationFiles="@(StaticFiles->'$(ProjectDir)..\..\build-public\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     </Target>
 
     <ItemGroup>

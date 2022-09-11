@@ -14,7 +14,7 @@ namespace FivePD.Gamemode.Server.Interfaces
 {
     public interface ILooseDataService
     {
-        public void RegisterSetWithAttributes<T>(List<LooseDataAttribute> attributes)
+        public void RegisterSetAttributes<T>(List<LooseDataAttribute> attributes)
             where T : LooseDataSet;
 
         public void AddEntity<TS, TE>(TE entityToAdd)

@@ -84,6 +84,9 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.GetDetails);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeDivision);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeRank);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetSets);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetEntity);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetEntities);
         }
 
         /// <inheritdoc />

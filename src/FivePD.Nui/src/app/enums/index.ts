@@ -11,3 +11,12 @@ export enum DateFormat {
   MDY,
   YMD
 }
+
+export enum Gender {
+  Male,
+  Female,
+}
+
+export enum SetId {
+  ArrestReport = 'fivepd_arrest_report',
+}

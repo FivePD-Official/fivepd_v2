@@ -281,6 +281,7 @@ namespace FivePD.Gamemode.Server
             var services = new ServiceCollection();
 
             // Find and register services that use event handlers
+            services.AddSingleton<IServiceWithEvents, LooseDataService>();
             services.AddSingleton<IServiceWithEvents, ReportService>();
 
             services.AddSingleton<IServiceWithEvents, DepartmentService>();

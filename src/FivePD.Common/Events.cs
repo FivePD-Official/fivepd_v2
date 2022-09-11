@@ -288,5 +288,26 @@ namespace FivePD.Common
             /// </summary>
             public const string ChangeRank = "fivepd:player:changeRank";
         }
+
+        /// <summary>
+        /// Contains definitions for player related events.
+        /// </summary>
+        public abstract class LooseData
+        {
+            /// <summary>
+            /// asd.
+            /// </summary>
+            public const string GetSets = "fivepd:looseData:getSets";
+
+            /// <summary>
+            /// asd2.
+            /// </summary>
+            public const string GetEntity = "fivepd:looseData:getEntity";
+
+            /// <summary>
+            /// asd3.
+            /// </summary>
+            public const string GetEntities = "fivepd:looseData:getEntities";
+        }
     }
 }

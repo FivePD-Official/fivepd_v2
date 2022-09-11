@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
+using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Models.LooseDataSet;
 
 #pragma warning disable CS1591
@@ -21,5 +22,15 @@ namespace FivePD.Gamemode.Server.Models
         public string Weapons { get; set; }
 
         public string Narrative { get; set; }
+
+        public string ArresteeName { get; set; }
+
+        public DateTime ArresteeBirthdate { get; set; }
+
+        public int ArresteeAge { get; set; }
+
+        public FGender ArresteeGender { get; set; }
+
+        public string ArresteeRace { get; set; }
     }
 }

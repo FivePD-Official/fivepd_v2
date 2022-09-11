@@ -1,3 +1,5 @@
+import { Gender } from '@enums';
+
 export interface User {
   Id: number;
   Name: string;
@@ -47,4 +49,22 @@ export interface Page<T> {
   PageCount: number;
   PageSize: number;
   ItemCount: number;
+}
+
+export interface LooseDataEntity {
+  Id: number;
+  SetId: string;
+}
+
+export interface ArrestReport extends LooseDataEntity {
+  [key: string]: any;
+  DateOfArrest: string; // TODO Convert to date
+  AddressOfArrest: string;
+  Weapons: string;
+  Narrative: string;
+  ArresteeName: string;
+  ArresteeBirthdate: string; // TODO Convert to date
+  ArresteeAge: number;
+  ArresteeGender: Gender;
+  ArresteeRace: string;
 }

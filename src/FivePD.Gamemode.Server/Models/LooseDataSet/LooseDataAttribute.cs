@@ -4,6 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 #pragma warning disable CS1591
@@ -38,6 +39,11 @@ namespace FivePD.Gamemode.Server.Models.LooseDataSet
 
         public string HelpLabel { get; set; }
 
-        public JObject Options { get; set; }
+        public AttributeOptions Options { get; set; }
+
+        public class AttributeOptions
+        {
+            public Dictionary<int, string> Items { get; set; }
+        }
     }
 }

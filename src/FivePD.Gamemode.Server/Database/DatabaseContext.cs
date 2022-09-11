@@ -135,7 +135,7 @@ namespace FivePD.Gamemode.Server.Database
                 type.Property(t => t.Options)
                     .HasConversion(
                         v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
-                        v => JsonConvert.DeserializeObject<JObject>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                        v => JsonConvert.DeserializeObject<LooseDataAttribute.AttributeOptions>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
             });
 
             modelBuilder.Entity<LooseDataEntity>(type =>

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { NuiEventType } from '@enums';
+import { NuiEventType, SetId } from '@enums';
 import { Localization } from '@models';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { SetLocalization, SetMdtPath } from '@store/app.actions';
@@ -9,6 +9,7 @@ import { WindowService } from '@services/window/window.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { LooseDataService } from '@services/loose-data/loose-data.service';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,7 @@ export class AppComponent implements OnInit {
     private _window: WindowService,
     private _localization: LocalizationService,
     private _router: Router,
+    private _looseData: LooseDataService,
   ) {}
 
   ngOnInit(): void {
@@ -34,6 +36,12 @@ export class AppComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       filter(event => event.url !== '/' && event.url.startsWith('/mdt'))
     ).subscribe(event => {
+      this._looseData.getEntities(SetId.ArrestReport).subscribe(res => {
+        console.log('getEntities', res)
+      })
+      this._looseData.getEntity(SetId.ArrestReport, 15).subscribe(res => {
+        console.log('getEntity', res)
+      })
       this.setMdtPath(event.url.split('/'));
     });
     window.addEventListener('message', event => this._event.next(event.data));
@@ -63,6 +71,7 @@ export class AppComponent implements OnInit {
 
     this.sendAvailabilityToClient();
     this._localization.load();
+    this._looseData.loadSets();
   }
 
   sendAvailabilityToClient(): void {

@@ -4,15 +4,11 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.LooseDataSet;
-using Newtonsoft.Json.Linq;
 
 #pragma warning disable CS1591
 #pragma warning disable SA1600
@@ -55,7 +51,7 @@ namespace FivePD.Gamemode.Server.Services
 
         public void RegisterEvents()
         {
-            this._looseDataService.RegisterSetWithAttributes<ArrestReportSet>(new List<LooseDataAttribute>
+            this._looseDataService.RegisterSetAttributes<ArrestReportSet>(new List<LooseDataAttribute>
             {
                 new LooseDataAttribute
                 {
@@ -112,9 +108,13 @@ namespace FivePD.Gamemode.Server.Services
                     Label = "Gender of arrestee",
                     DataType = LooseDataAttribute.LooseDataType.Integer,
                     Required = true,
-                    Options = new JObject
+                    Options = new LooseDataAttribute.AttributeOptions
                     {
-                        { "items", new JArray(FGender.Male, FGender.Female) },
+                        Items = new Dictionary<int, string>
+                        {
+                            { (int)FGender.Male, "Male" },
+                            { (int)FGender.Female, "Female" },
+                        },
                     },
                 },
                 new LooseDataAttribute
