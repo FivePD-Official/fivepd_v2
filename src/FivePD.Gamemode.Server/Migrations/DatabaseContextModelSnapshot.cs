@@ -70,6 +70,9 @@ namespace FivePD.Gamemode.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("AddonId")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<int>("DataType")
                         .HasColumnType("int");
 

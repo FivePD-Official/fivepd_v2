@@ -29,6 +29,8 @@ namespace FivePD.Gamemode.Server.Models.LooseDataSet
 
         public LooseDataType DataType { get; set; }
 
+        public string AddonId { get; set; }
+
         public string Name { get; set; }
 
         public bool Required { get; set; }

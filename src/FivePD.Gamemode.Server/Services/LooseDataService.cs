@@ -33,6 +33,7 @@ namespace FivePD.Gamemode.Server.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly DatabaseContext _databaseContext;
+        private Dictionary<Type, string> _activeSetTypes;
 
         public LooseDataService(EventHandlerDictionary eventHandlerDictionary, DatabaseContext databaseContext)
         {
@@ -52,20 +53,32 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var setIdAttr = typeof(TS).GetCustomAttribute<LooseDataSetIdAttribute>();
+                this._activeSetTypes ??= Assembly
+                    .GetExecutingAssembly()
+                    .GetTypes()
+                    .Where(type => type.IsClass && type.IsSubclassOf(typeof(LooseDataSet)))
+                    .ToDictionary(type => type, type => type.Assembly.GetName().Name);
+
+                var setType = typeof(TS);
+                var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
                 if (setIdAttr is null)
                 {
                     return;
                 }
 
                 var set = this._databaseContext.LooseDataSets
-                    .Include(s => s.Attributes)
-                    .FirstOrDefault(s => s.Id == setIdAttr.Id);
+                    .Include(set => set.Attributes)
+                    .FirstOrDefault(set => set.Id == setIdAttr.Id);
                 if (set is null)
                 {
                     set = Activator.CreateInstance<TS>();
                     set.Id = setIdAttr.Id;
                     this._databaseContext.LooseDataSets.Add(set);
+                }
+
+                foreach (var attr in attributes)
+                {
+                    attr.AddonId = this._activeSetTypes[setType];
                 }
 
                 if (set.Attributes != null && set.Attributes.Any())
@@ -305,12 +318,7 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             var attributeValueMap = new Dictionary<string, object>();
-            foreach (var attr in entity.Set.Attributes)
-            {
-                attributeValueMap[attr.Name] = null;
-            }
-
-            foreach (var value in entity.Values)
+            foreach (var value in entity.Values.Where(a => this._activeSetTypes.ContainsValue(a.Attribute.AddonId)))
             {
                 attributeValueMap[value.Attribute.Name] = JsonConvert.DeserializeObject(value.Value);
             }

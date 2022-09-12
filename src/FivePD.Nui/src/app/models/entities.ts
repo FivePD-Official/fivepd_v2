@@ -52,6 +52,7 @@ export interface Page<T> {
 }
 
 export interface LooseDataEntity {
+  [key: string]: any;
   Id: number;
   SetId: string;
 }

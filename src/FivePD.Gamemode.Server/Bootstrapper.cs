@@ -357,14 +357,6 @@ namespace FivePD.Gamemode.Server
             // Register shutdown routine listener
             this.EventHandlers["onResourceStop"] += new Action(this.OnStopped);
 
-            // Register all event listeners for services
-            foreach (var service in this._provider.GetServices<IServiceWithEvents>())
-            {
-                log?.Debug("Registering event handlers for {Service}", service.GetType());
-
-                service.RegisterEvents();
-            }
-
             try
             {
                 var db = this._provider.GetService<DatabaseContext>();
@@ -394,6 +386,14 @@ namespace FivePD.Gamemode.Server
             catch (Exception e)
             {
                 throw new DatabaseUsageException("The configured database is invalid or offline. Verify the connection settings in the /Config/database.json file and try again.", e);
+            }
+
+            // Register all event listeners for services
+            foreach (var service in this._provider.GetServices<IServiceWithEvents>())
+            {
+                log?.Debug("Registering event handlers for {Service}", service.GetType());
+
+                service.RegisterEvents();
             }
 
             // Check for dev mode. If enabled, register the utilities
