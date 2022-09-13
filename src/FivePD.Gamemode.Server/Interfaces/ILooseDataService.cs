@@ -36,7 +36,7 @@ namespace FivePD.Gamemode.Server.Interfaces
         public void UpdateEntity<TE>(TE entityToUpdate)
             where TE : LooseDataEntity;
 
-        public void DeleteEntity<TE>(int id)
+        public void DeleteEntity<TE>(TE entityToDelete)
             where TE : LooseDataEntity;
 
         public TE GetEntity<TE>(int id)

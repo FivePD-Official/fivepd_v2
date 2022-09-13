@@ -50,9 +50,9 @@ namespace FivePD.Gamemode.Server.Services
             this._looseDataService.UpdateEntity(arrestReport);
         }
 
-        public void DeleteArrestReport(int id)
+        public void DeleteArrestReport(ArrestReport arrestReport)
         {
-            this._looseDataService.DeleteEntity<ArrestReport>(id);
+            this._looseDataService.DeleteEntity(arrestReport);
         }
 
         public ArrestReport GetArrestReport(int id)

@@ -16,7 +16,6 @@ using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
-using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Models.Requests;
 using Microsoft.EntityFrameworkCore;
@@ -251,7 +250,7 @@ namespace FivePD.Gamemode.Server.Services
             return this.GetEntitiesWithOptionalType<TS, TE>(null, null);
         }
 
-        public void DeleteEntity<TE>(int id)
+        public void DeleteEntity<TE>(TE entityToDelete)
             where TE : LooseDataEntity
         {
             try
@@ -259,7 +258,7 @@ namespace FivePD.Gamemode.Server.Services
                 var entity = this._databaseContext.LooseDataEntities
                     .Include(entity => entity.Values)
                     .Include(entity => entity.Set)
-                    .FirstOrDefault(entity => entity.Id == id);
+                    .FirstOrDefault(entity => entity.Id == entityToDelete.Id);
                 if (entity is null)
                 {
                     return;

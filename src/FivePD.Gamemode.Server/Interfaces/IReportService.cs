@@ -25,7 +25,7 @@ namespace FivePD.Gamemode.Server.Interfaces
 
         public void UpdateArrestReport(ArrestReport arrestReport);
 
-        public void DeleteArrestReport(int id);
+        public void DeleteArrestReport(ArrestReport arrestReport);
 
         public ArrestReport GetArrestReport(int id);
 
