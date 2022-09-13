@@ -5,7 +5,6 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 
 #pragma warning disable CS1591
 #pragma warning disable SA1600

@@ -16,6 +16,7 @@ using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Models.Requests;
 using Microsoft.EntityFrameworkCore;
@@ -27,18 +28,39 @@ using Newtonsoft.Json;
 #pragma warning disable SA1512
 #pragma warning disable SA1515
 
+#pragma warning disable SA1649
+
 namespace FivePD.Gamemode.Server.Services
 {
     public class LooseDataService : ILooseDataService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly DatabaseContext _databaseContext;
+        private readonly List<LooseDataEntityObservable> _observables = new List<LooseDataEntityObservable>();
         private Dictionary<Type, string> _activeSetTypes;
 
         public LooseDataService(EventHandlerDictionary eventHandlerDictionary, DatabaseContext databaseContext)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._databaseContext = databaseContext;
+        }
+
+        public IDisposable OnAdd<TE>(Action<TE> observer)
+            where TE : LooseDataEntity
+        {
+            return this.OnEvent(LooseDataEntityObservableType.Add, observer);
+        }
+
+        public IDisposable OnEdit<TE>(Action<TE> observer)
+            where TE : LooseDataEntity
+        {
+            return this.OnEvent(LooseDataEntityObservableType.Edit, observer);
+        }
+
+        public IDisposable OnDelete<TE>(Action<TE> observer)
+            where TE : LooseDataEntity
+        {
+            return this.OnEvent(LooseDataEntityObservableType.Delete, observer);
         }
 
         public void RegisterEvents()
@@ -53,6 +75,7 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
+                // TODO ? AddonMetadataService.GetExecutingAddonDefinition()
                 this._activeSetTypes ??= Assembly
                     .GetExecutingAssembly()
                     .GetTypes()
@@ -154,8 +177,10 @@ namespace FivePD.Gamemode.Server.Services
                     .ToList();
 
                 this._databaseContext.LooseDataValues.AddRange(values);
-                this._databaseContext.LooseDataEntities.Add(entity);
+                var entityEntry = this._databaseContext.LooseDataEntities.Add(entity);
                 this._databaseContext.SaveChanges();
+
+                this.InvokeEvent(LooseDataEntityObservableType.Add, this.MapEntityWithOptionalType<TE>(null, entityEntry.Entity));
             }
             catch (Exception e)
             {
@@ -163,13 +188,13 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        public void UpdateEntity<T>(T entityToUpdate)
-            where T : LooseDataEntity
+        public void UpdateEntity<TE>(TE entityToUpdate)
+            where TE : LooseDataEntity
         {
             try
             {
-                var type = typeof(T);
-                var originalEntity = this.GetEntity<T>(entityToUpdate.Id);
+                var type = typeof(TE);
+                var originalEntity = this.GetEntity<TE>(entityToUpdate.Id);
 
                 var set = this._databaseContext.LooseDataSets.FirstOrDefault(set => set.Id == originalEntity.SetId);
                 if (set is null)
@@ -205,6 +230,7 @@ namespace FivePD.Gamemode.Server.Services
                 }
 
                 this._databaseContext.SaveChanges();
+                this.InvokeEvent(LooseDataEntityObservableType.Edit, this.GetEntity<TE>(entityToUpdate.Id));
             }
             catch (Exception e)
             {
@@ -212,10 +238,10 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        public T GetEntity<T>(int id)
-            where T : LooseDataEntity
+        public TE GetEntity<TE>(int id)
+            where TE : LooseDataEntity
         {
-            return this.GetEntityWithOptionalType<T>(null, id);
+            return this.GetEntityWithOptionalType<TE>(null, id);
         }
 
         public List<TE> GetEntities<TS, TE>()
@@ -225,27 +251,14 @@ namespace FivePD.Gamemode.Server.Services
             return this.GetEntitiesWithOptionalType<TS, TE>(null, null);
         }
 
-        public void DeleteEntity<TS>(int id)
-            where TS : LooseDataSet
+        public void DeleteEntity<TE>(int id)
+            where TE : LooseDataEntity
         {
             try
             {
-                var setIdAttr = typeof(TS).GetCustomAttribute<LooseDataSetIdAttribute>();
-                if (setIdAttr is null)
-                {
-                    return;
-                }
-
-                var set = this._databaseContext.LooseDataSets
-                    .Include(set => set.Attributes)
-                    .FirstOrDefault(set => set.Id == setIdAttr.Id);
-                if (set is null)
-                {
-                    return;
-                }
-
                 var entity = this._databaseContext.LooseDataEntities
                     .Include(entity => entity.Values)
+                    .Include(entity => entity.Set)
                     .FirstOrDefault(entity => entity.Id == id);
                 if (entity is null)
                 {
@@ -254,6 +267,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 this._databaseContext.LooseDataEntities.Remove(entity);
                 this._databaseContext.SaveChanges();
+                this.InvokeEvent(LooseDataEntityObservableType.Delete, this.MapEntityWithOptionalType<TE>(null, entity));
             }
             catch (Exception e)
             {
@@ -261,8 +275,8 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private T GetEntityWithOptionalType<T>(Type type, int id)
-            where T : LooseDataEntity
+        private TE GetEntityWithOptionalType<TE>(Type type, int id)
+            where TE : LooseDataEntity
         {
             try
             {
@@ -273,8 +287,8 @@ namespace FivePD.Gamemode.Server.Services
                     .ThenInclude(set => set.Attributes)
                     .FirstOrDefault(entity => entity.Id == id);
 
-                var s = entity is null ? default : this.MapEntityWithOptionalType<T>(type, entity);
-                return s;
+                var mappedEntity = entity is null ? default : this.MapEntityWithOptionalType<TE>(type, entity);
+                return mappedEntity;
             }
             catch (Exception e)
             {
@@ -309,8 +323,8 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private T MapEntityWithOptionalType<T>(Type entityType, LooseDataEntity entity)
-            where T : LooseDataEntity
+        private TE MapEntityWithOptionalType<TE>(Type entityType, LooseDataEntity entity)
+            where TE : LooseDataEntity
         {
             if (entity.Set?.Attributes is null || entity.Values is null)
             {
@@ -326,7 +340,7 @@ namespace FivePD.Gamemode.Server.Services
             attributeValueMap["Id"] = entity.Id;
             attributeValueMap["SetId"] = entity.SetId;
 
-            var mappedEntity = entityType is null ? Activator.CreateInstance<T>() : Activator.CreateInstance(entityType);
+            var mappedEntity = entityType is null ? Activator.CreateInstance<TE>() : Activator.CreateInstance(entityType);
             var mappedEntityType = mappedEntity.GetType();
             foreach (var item in attributeValueMap)
             {
@@ -347,7 +361,7 @@ namespace FivePD.Gamemode.Server.Services
                 propertyInfo.SetValue(mappedEntity, value, null);
             }
 
-            return (T)mappedEntity;
+            return (TE)mappedEntity;
         }
 
         private void GetSets(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
@@ -431,6 +445,30 @@ namespace FivePD.Gamemode.Server.Services
                 .FirstOrDefault(type => type.Name == setType.GetCustomAttribute<LooseDataEntityModelAttribute>().ClassName);
 
             return new Tuple<Type, Type>(setType, entityType);
+        }
+
+        private IDisposable OnEvent<TE>(LooseDataEntityObservableType observableType, Action<TE> observer)
+            where TE : LooseDataEntity
+        {
+            var type = typeof(TE);
+            var observable = this._observables.FirstOrDefault(o => o.EntityType == type && o.Type == observableType);
+            if (observable is null)
+            {
+                observable = new LooseDataEntityObservable(type, observableType);
+                this._observables.Add(observable);
+            }
+
+            return observable.Subscribe(entity =>
+            {
+                observer?.Invoke(entity as TE);
+            });
+        }
+
+        private void InvokeEvent<TE>(LooseDataEntityObservableType observableType, TE entity)
+            where TE : LooseDataEntity
+        {
+            var observable = this._observables.FirstOrDefault(o => o.Type == observableType && o.EntityType == typeof(TE));
+            observable?.InvokeObservers(entity);
         }
     }
 }

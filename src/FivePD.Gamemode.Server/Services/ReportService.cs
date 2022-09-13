@@ -4,8 +4,8 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System;
 using System.Collections.Generic;
-using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
@@ -25,6 +25,21 @@ namespace FivePD.Gamemode.Server.Services
             this._looseDataService = looseDataService;
         }
 
+        public IDisposable OnArrestReportAdd(Action<ArrestReport> observer)
+        {
+            return this._looseDataService.OnAdd(observer);
+        }
+
+        public IDisposable OnArrestReportEdit(Action<ArrestReport> observer)
+        {
+            return this._looseDataService.OnEdit(observer);
+        }
+
+        public IDisposable OnArrestReportDelete(Action<ArrestReport> observer)
+        {
+            return this._looseDataService.OnDelete(observer);
+        }
+
         public void AddArrestReport(ArrestReport arrestReport)
         {
             this._looseDataService.AddEntity<ArrestReportSet, ArrestReport>(arrestReport);
@@ -37,10 +52,10 @@ namespace FivePD.Gamemode.Server.Services
 
         public void DeleteArrestReport(int id)
         {
-            this._looseDataService.DeleteEntity<ArrestReportSet>(id);
+            this._looseDataService.DeleteEntity<ArrestReport>(id);
         }
 
-        public ArrestReport GetById(int id)
+        public ArrestReport GetArrestReport(int id)
         {
             return this._looseDataService.GetEntity<ArrestReport>(id);
         }
@@ -125,6 +140,12 @@ namespace FivePD.Gamemode.Server.Services
                     DataType = LooseDataAttribute.LooseDataType.String,
                     Required = true,
                 },
+            });
+
+            this._looseDataService.AddEntity<ArrestReportSet, ArrestReport>(new ArrestReport
+            {
+                Narrative = "test 123",
+                Weapons = "weapons",
             });
         }
     }
