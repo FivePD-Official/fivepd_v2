@@ -14,6 +14,8 @@ namespace FivePD.Gamemode.Server.Models.LooseDataSet
 {
     public class LooseDataAttribute
     {
+        public const string AddedByAdminAddonId = "admin";
+
         public enum LooseDataType
         {
             String,

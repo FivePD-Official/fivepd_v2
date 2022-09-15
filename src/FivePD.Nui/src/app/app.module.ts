@@ -46,6 +46,8 @@ import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { DateMaskDirective } from './directives/date-mask.directive';
+import { SettingsComponent } from './pages/mdt/settings/settings.component';
+import { LooseDataService } from '@services/loose-data/loose-data.service';
 
 @NgModule({
   declarations: [
@@ -74,6 +76,7 @@ import { DateMaskDirective } from './directives/date-mask.directive';
     TimerBarComponent,
     ClickOutsideDirective,
     DateMaskDirective,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,
@@ -99,6 +102,7 @@ import { DateMaskDirective } from './directives/date-mask.directive';
     NotificationService,
     DepartmentService,
     UserService,
+    LooseDataService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomHttpInterceptor,

@@ -16,6 +16,8 @@ namespace FivePD.Common.Localization
 
         public string Create { get; set; } = "Create";
 
+        public string CreateAttribute { get; set; } = "Create attribute";
+
         public string CreateDepartment { get; set; } = "Create department";
 
         public string CreateDivision { get; set; } = "Create division";
@@ -36,8 +38,8 @@ namespace FivePD.Common.Localization
 
         public string Save { get; set; } = "Save";
 
-        public string SetRank { get; set; } = "Set rank";
-
         public string SetCallsign { get; set; } = "Set callsign";
+
+        public string SetRank { get; set; } = "Set rank";
     }
 }

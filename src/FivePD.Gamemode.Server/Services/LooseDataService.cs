@@ -18,7 +18,11 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Models.Requests;
+using FivePD.Gamemode.Server.Models.Responses;
+using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 
 #pragma warning disable CS1591
@@ -64,9 +68,13 @@ namespace FivePD.Gamemode.Server.Services
 
         public void RegisterEvents()
         {
-            this._eventHandlerDictionary[Events.LooseData.GetSets] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetSets);
+            this._eventHandlerDictionary[Events.LooseData.GetSets] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetSetsFromNui);
             this._eventHandlerDictionary[Events.LooseData.GetEntity] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetEntityFromNui);
             this._eventHandlerDictionary[Events.LooseData.GetEntities] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetEntitiesFromNui);
+            this._eventHandlerDictionary[Events.LooseData.GetSetAttributes] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetSetAttributesFromNui);
+            this._eventHandlerDictionary[Events.LooseData.AddSetAttribute] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.AddSetAttributeFromNui);
+            this._eventHandlerDictionary[Events.LooseData.EditSetAttribute] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditSetAttributeFromNui);
+            this._eventHandlerDictionary[Events.LooseData.DeleteSetAttribute] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteSetAttributeFromNui);
         }
 
         public void RegisterSetAttributes<TS>(List<LooseDataAttribute> attributes)
@@ -331,6 +339,11 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             var attributeValueMap = new Dictionary<string, object>();
+            foreach (var attr in entity.Set.Attributes)
+            {
+                attributeValueMap[attr.Name] = null;
+            }
+
             foreach (var value in entity.Values.Where(a => this._activeSetTypes.ContainsValue(a.Attribute.AddonId)))
             {
                 attributeValueMap[value.Attribute.Name] = JsonConvert.DeserializeObject(value.Value);
@@ -363,11 +376,31 @@ namespace FivePD.Gamemode.Server.Services
             return (TE)mappedEntity;
         }
 
-        private void GetSets(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        private void GetSetAttributesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<GetSetRequest>();
+                var page = this._databaseContext.LooseDataAttributes
+                    .AsNoTracking()
+                    .Include(attr => attr.Set)
+                    .Where(attr => attr.Set.Id == request.SetId)
+                    .Paginate(request.Page, new Filters<LooseDataAttribute>());
+
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.Invoke(null);
+            }
+        }
+
+        private void GetSetsFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
             {
                 var set = this._databaseContext.LooseDataSets
+                    .AsNoTracking()
                     .Include(set => set.Attributes)
                     .ToList();
 
@@ -376,6 +409,133 @@ namespace FivePD.Gamemode.Server.Services
             catch (Exception)
             {
                 networkCallbackDelegate.Invoke(null);
+            }
+        }
+
+        private void AddSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<AddSetAttributeRequest>();
+                var set = this._databaseContext.LooseDataSets
+                    .Include(set => set.Attributes)
+                    .FirstOrDefault(set => set.Id == request.SetId);
+                if (set is null)
+                {
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
+                }
+
+                if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
+                {
+                    networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.CreateAttributeExistsWithNameTitle", "Nui.Errors.AttributeExistsWithNameDescription");
+                    return;
+                }
+
+                request.Attribute.AddonId = LooseDataAttribute.AddedByAdminAddonId;
+                set.Attributes.Add(request.Attribute);
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulCreate", "Nui.Labels.SuccessfulAttributeCreate", new Dictionary<string, string>
+                {
+                    { "attribute", request.Attribute.Name },
+                });
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.InvokeWithUnexpectedError();
+            }
+        }
+
+        private void EditSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<EditSetAttributeRequest>();
+
+                var set = this._databaseContext.LooseDataSets
+                    .Include(set => set.Attributes)
+                    .FirstOrDefault(set => set.Id == request.SetId);
+                if (set is null)
+                {
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
+                }
+
+                if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
+                {
+                    networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.CreateAttributeExistsWithNameTitle", "Nui.Errors.AttributeExistsWithNameDescription");
+                    return;
+                }
+
+                var attribute = this._databaseContext.LooseDataAttributes
+                    .FirstOrDefault(attr => attr.Id == request.Attribute.Id);
+                if (attribute is null)
+                {
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
+                }
+
+                var attributeOldName = attribute.Name;
+                attribute.Name = request.Attribute.Name;
+                attribute.Label = request.Attribute.Label;
+                attribute.HelpLabel = request.Attribute.HelpLabel;
+                attribute.Placeholder = request.Attribute.Placeholder;
+                attribute.Required = request.Attribute.Required;
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulEdit", "Nui.Labels.SuccessfulAttributeEdit", new Dictionary<string, string>
+                {
+                    { "attribute", attributeOldName },
+                });
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.InvokeWithUnexpectedError();
+            }
+        }
+
+        private void DeleteSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<DeleteSetAttributeRequest>();
+                var set = this._databaseContext.LooseDataSets
+                    .Include(set => set.Attributes)
+                    .Include(set => set.Entities)
+                    .ThenInclude(entities => entities.Values)
+                    .FirstOrDefault(set => set.Id == request.SetId);
+                if (set is null)
+                {
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
+                }
+
+                var attributeToDelete = this._databaseContext.LooseDataAttributes
+                    .FirstOrDefault(attr => attr.Id == request.AttributeId);
+                if (attributeToDelete is null)
+                {
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
+                }
+
+                foreach (var entity in set.Entities)
+                {
+                    foreach (var value in entity.Values.Where(value => value.Attribute.Id == request.AttributeId))
+                    {
+                        this._databaseContext.LooseDataValues.Remove(value);
+                    }
+                }
+
+                var attributeName = attributeToDelete.Name;
+                this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulDelete", "Nui.Labels.SuccessfulAttributeDelete", new Dictionary<string, string>
+                {
+                    { "attribute", attributeName },
+                });
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.InvokeWithUnexpectedError();
             }
         }
 

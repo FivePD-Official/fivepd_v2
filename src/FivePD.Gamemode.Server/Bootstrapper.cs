@@ -280,43 +280,56 @@ namespace FivePD.Gamemode.Server
 
             var services = new ServiceCollection();
 
-            // Find and register services that use event handlers
-            services.AddSingleton<IServiceWithEvents, LooseDataService>();
-            services.AddSingleton<IServiceWithEvents, ReportService>();
-
-            services.AddSingleton<IServiceWithEvents, DepartmentService>();
-            services.AddSingleton<IServiceWithEvents, EntityService>();
-            services.AddSingleton<IServiceWithEvents, PedService>();
-            services.AddSingleton<IServiceWithEvents, VehicleService>();
-            services.AddSingleton<IServiceWithEvents, TrafficStopService>();
-            services.AddSingleton<IServiceWithEvents, LocalizationService>();
-            services.AddSingleton<IServiceWithEvents, PlayerDataService>();
-
             // Find and register core services
             services.AddSingleton(Log.Logger);
             services.AddSingleton(this.EventHandlers);
             services.AddSingleton(this.Players);
-
             services.AddDbContext<DatabaseContext>();
 
-            services.AddSingleton<ILooseDataService, LooseDataService>();
-            services.AddSingleton<IReportService, ReportService>();
-
-            services.AddSingleton<IDepartmentService, DepartmentService>();
             services.AddSingleton<IFileHandlerService, FileHandlerService>();
-            services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IConfigService, ConfigService>();
             services.AddSingleton<ICommandService, CommandService>();
             services.AddSingleton<IAddonMetadataService, AddonMetadataService>();
             services.AddTransient<IAddonLoggerService, AddonLoggerService>();
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
-            services.AddSingleton<IEntityService, EntityService>();
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
-            services.AddSingleton<IPedService, PedService>();
-            services.AddSingleton<IVehicleService, VehicleService>();
-            services.AddSingleton<ITrafficStopService, TrafficStopService>();
-            services.AddSingleton<IPlayerDataService, PlayerDataService>();
+
+            services.AddSingleton<LocalizationService>();
+            services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LocalizationService>());
+
+            services.AddSingleton<LooseDataService>();
+            services.AddSingleton<ILooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LooseDataService>());
+
+            services.AddSingleton<ReportService>();
+            services.AddSingleton<IReportService>(provider => provider.GetRequiredService<ReportService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ReportService>());
+
+            services.AddSingleton<DepartmentService>();
+            services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DepartmentService>());
+
+            services.AddSingleton<EntityService>();
+            services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<EntityService>());
+
+            services.AddSingleton<PedService>();
+            services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PedService>());
+
+            services.AddSingleton<VehicleService>();
+            services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<VehicleService>());
+
+            services.AddSingleton<TrafficStopService>();
+            services.AddSingleton<ITrafficStopService>(provider => provider.GetRequiredService<TrafficStopService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<TrafficStopService>());
+
+            services.AddSingleton<PlayerDataService>();
+            services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PlayerDataService>());
 
             // Find and register addons
             services.Scan(scan => scan

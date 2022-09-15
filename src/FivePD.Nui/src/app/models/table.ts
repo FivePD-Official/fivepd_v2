@@ -47,16 +47,17 @@ export type FormattedRow<T> = FormattedRowItem<T>[];
 
 export type TableCellActions<T> = TableCellActionButton<T> | TableCellActionSelect<T>;
 
-export interface TableCellAction {
+export interface TableCellAction<T> {
   type: 'button' | 'select';
   label: string;
+  show?: (item: T) => boolean;
 }
 
-export interface TableCellActionButton<T> extends TableCellAction {
+export interface TableCellActionButton<T> extends TableCellAction<T> {
   onClick: (item: T) => void;
 }
 
-export interface TableCellActionSelect<T> extends TableCellAction {
+export interface TableCellActionSelect<T> extends TableCellAction<T> {
   selectedItemResolver: (item: T, dropdownItemKey: number) => boolean;
   items: () => TableCellActionSelectItem[];
   onSelect: (item: T, selectedId: number, onResponse: (response: ActionResponse) => void) => void;

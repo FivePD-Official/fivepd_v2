@@ -40,75 +40,91 @@ export interface Localization {
       Acronym: string;
       Actions: string;
       ActiveCalls: string;
+      AddedBy: string;
       Address: string;
+      ArrestReportAttributes: string;
       AssignedCall: string;
       AvailableCharacters: string;
+      Bool: string;
       Callsign: string;
-      CallsignHelpLabel: string;
       CallsignFormat: string;
       CallsignFormatHelpLabel: string;
+      CallsignHelpLabel: string;
       Capacity: string;
       CitizenDatabase: string;
       Dash: string;
       Dashboard: string;
+      DateTime: string;
+      DefaultRank: string;
+      DefaultRankDescription: string;
+      DeleteAttributeDescription: string;
+      DeleteAttributeTitle: string;
+      DeleteDepartmentDescription: string;
+      DeleteDepartmentTitle: string;
+      DeleteDivisionDescription: string;
+      DeleteDivisionTitle: string;
+      DeleteRankDescription: string;
+      DeleteRankTitle: string;
       Department: string;
       Departments: string;
       DepartmentSettings: string;
-      DeleteDepartmentTitle: string;
-      DeleteDepartmentDescription: string;
-      DeleteDivisionTitle: string;
-      DeleteDivisionDescription: string;
-      DeleteRankTitle: string;
-      DeleteRankDescription: string;
-      DefaultRank: string;
-      DefaultRankDescription: string;
-      EditDivision: string;
-      EditRankTitle: string;
       Division: string;
       Divisions: string;
+      EditAttributeTitle: string;
+      EditDivision: string;
+      EditRankTitle: string;
+      HelpLabel: string;
+      Integer: string;
+      Label: string;
       Letter: string;
       MaxNumberOfMembers: string;
       MaxNumberOfMembersHelpLabel: string;
       Members: string;
-      MyDetails: string;
       MyDepartment: string;
+      MyDetails: string;
       Name: string;
       NewDepartment: string;
       NoAssignedCall: string;
       NoDataToDisplay: string;
-      NotInDepartment: string;
-      NoLimit: string;
-      NoDivision: string;
-      NoRank: string;
       NoDefaultRank: string;
+      NoDivision: string;
+      NoLimit: string;
+      NoRank: string;
+      NotInDepartment: string;
       Number: string;
       Permissions: string;
+      Placeholder: string;
       Rank: string;
       Ranks: string;
-      SearchByName: string;
+      Required: string;
       SearchByCallsign: string;
+      SearchByName: string;
       Settings: string;
       Statistics: string;
       Status: string;
-      SuccessfulJoin: string;
-      SuccessfulLeave: string;
-      SuccessfulCreate: string;
+      String: string;
+      SuccessfulAttributeCreate: string;
+      SuccessfulAttributeDelete: string;
+      SuccessfulAttributeEdit: string;
       SuccessfulChange: string;
+      SuccessfulCreate: string;
       SuccessfulDelete: string;
-      SuccessfulEdit: string;
+      SuccessfulDepartmentCreate: string;
+      SuccessfulDepartmentDelete: string;
+      SuccessfulDepartmentEdit: string;
       SuccessfulDepartmentJoin: string;
       SuccessfulDepartmentLeave: string;
-      SuccessfulDepartmentCreate: string;
-      SuccessfulDepartmentEdit: string;
-      SuccessfulDepartmentDelete: string;
+      SuccessfulDivisionCreate: string;
       SuccessfulDivisionDelete: string;
       SuccessfulDivisionEdit: string;
-      SuccessfulDivisionCreate: string;
-      SuccessfulRankDelete: string;
-      SuccessfulRankEdit: string;
-      SuccessfulRankCreate: string;
+      SuccessfulEdit: string;
+      SuccessfulJoin: string;
+      SuccessfulLeave: string;
       SuccessfulPlayerDivisionChange: string;
       SuccessfulPlayerRankChange: string;
+      SuccessfulRankCreate: string;
+      SuccessfulRankDelete: string;
+      SuccessfulRankEdit: string;
       Type: string;
       Units: string;
       VehicleDatabase: string;
@@ -116,6 +132,7 @@ export interface Localization {
     Actions: {
       Cancel: string;
       Create: string;
+      CreateAttribute: string;
       CreateDepartment: string;
       CreateDivision: string;
       CreateRank: string;
@@ -126,10 +143,12 @@ export interface Localization {
       Leave: string;
       Rename: string;
       Save: string;
-      SetRank: string;
       SetCallsign: string;
+      SetRank: string;
     },
     Errors: {
+      AttributeExistsWithNameDescription: string;
+      CreateAttributeExistsWithNameTitle: string;
       CreateDepartmentExistsWithNameTitle: string;
       CreateDivisionExistsWithNameTitle: string;
       CreateRankExistsWithNameTitle: string;
@@ -143,11 +162,11 @@ export interface Localization {
       EditDepartmentExistsWithNameTitle: string;
       EditDivisionExistsWithNameTitle: string;
       EditRankExistsWithNameTitle: string;
-      FieldRequired: string;
-      FieldNameTaken: string;
       FieldFormat: string;
-      FieldMin: string;
       FieldMax: string;
+      FieldMin: string;
+      FieldNameTaken: string;
+      FieldRequired: string;
       PleaseTryAgainLater: string;
       RankExistsWithNameDescription: string;
       UnexpectedError: string;
@@ -212,75 +231,91 @@ export const defaultLocalization: Localization = {
       Acronym: '',
       Actions: '',
       ActiveCalls: '',
+      AddedBy: '',
       Address: '',
+      ArrestReportAttributes: '',
       AssignedCall: '',
       AvailableCharacters: '',
+      Bool: '',
       Callsign: '',
-      CallsignHelpLabel: '',
       CallsignFormat: '',
       CallsignFormatHelpLabel: '',
+      CallsignHelpLabel: '',
       Capacity: '',
       CitizenDatabase: '',
       Dash: '',
       Dashboard: '',
+      DateTime: '',
+      DefaultRank: '',
+      DefaultRankDescription: '',
+      DeleteAttributeDescription: '',
+      DeleteAttributeTitle: '',
+      DeleteDepartmentDescription: '',
+      DeleteDepartmentTitle: '',
+      DeleteDivisionDescription: '',
+      DeleteDivisionTitle: '',
+      DeleteRankDescription: '',
+      DeleteRankTitle: '',
       Department: '',
       Departments: '',
       DepartmentSettings: '',
-      DeleteDepartmentTitle: '',
-      DeleteDepartmentDescription: '',
-      DeleteDivisionTitle: '',
-      DeleteDivisionDescription: '',
-      DeleteRankTitle: '',
-      DeleteRankDescription: '',
-      DefaultRank: '',
-      DefaultRankDescription: '',
-      EditDivision: '',
-      EditRankTitle: '',
       Division: '',
       Divisions: '',
+      EditAttributeTitle: '',
+      EditDivision: '',
+      EditRankTitle: '',
+      HelpLabel: '',
+      Integer: '',
+      Label: '',
       Letter: '',
       MaxNumberOfMembers: '',
       MaxNumberOfMembersHelpLabel: '',
       Members: '',
-      MyDetails: '',
       MyDepartment: '',
+      MyDetails: '',
       Name: '',
       NewDepartment: '',
       NoAssignedCall: '',
       NoDataToDisplay: '',
-      NotInDepartment: '',
-      NoLimit: '',
-      NoDivision: '',
-      NoRank: '',
       NoDefaultRank: '',
+      NoDivision: '',
+      NoLimit: '',
+      NoRank: '',
+      NotInDepartment: '',
       Number: '',
       Permissions: '',
+      Placeholder: '',
       Rank: '',
       Ranks: '',
-      SearchByName: '',
+      Required: '',
       SearchByCallsign: '',
+      SearchByName: '',
       Settings: '',
       Statistics: '',
       Status: '',
-      SuccessfulJoin: '',
-      SuccessfulLeave: '',
-      SuccessfulCreate: '',
+      String: '',
+      SuccessfulAttributeCreate: '',
+      SuccessfulAttributeDelete: '',
+      SuccessfulAttributeEdit: '',
       SuccessfulChange: '',
+      SuccessfulCreate: '',
       SuccessfulDelete: '',
-      SuccessfulEdit: '',
+      SuccessfulDepartmentCreate: '',
+      SuccessfulDepartmentDelete: '',
+      SuccessfulDepartmentEdit: '',
       SuccessfulDepartmentJoin: '',
       SuccessfulDepartmentLeave: '',
-      SuccessfulDepartmentCreate: '',
-      SuccessfulDepartmentEdit: '',
-      SuccessfulDepartmentDelete: '',
+      SuccessfulDivisionCreate: '',
       SuccessfulDivisionDelete: '',
       SuccessfulDivisionEdit: '',
-      SuccessfulDivisionCreate: '',
-      SuccessfulRankDelete: '',
-      SuccessfulRankEdit: '',
-      SuccessfulRankCreate: '',
+      SuccessfulEdit: '',
+      SuccessfulJoin: '',
+      SuccessfulLeave: '',
       SuccessfulPlayerDivisionChange: '',
       SuccessfulPlayerRankChange: '',
+      SuccessfulRankCreate: '',
+      SuccessfulRankDelete: '',
+      SuccessfulRankEdit: '',
       Type: '',
       Units: '',
       VehicleDatabase: '',
@@ -288,6 +323,7 @@ export const defaultLocalization: Localization = {
     Actions: {
       Cancel: '',
       Create: '',
+      CreateAttribute: '',
       CreateDepartment: '',
       CreateDivision: '',
       CreateRank: '',
@@ -298,10 +334,12 @@ export const defaultLocalization: Localization = {
       Leave: '',
       Rename: '',
       Save: '',
-      SetRank: '',
       SetCallsign: '',
+      SetRank: '',
     },
     Errors: {
+      AttributeExistsWithNameDescription: '',
+      CreateAttributeExistsWithNameTitle: '',
       CreateDepartmentExistsWithNameTitle: '',
       CreateDivisionExistsWithNameTitle: '',
       CreateRankExistsWithNameTitle: '',
@@ -315,11 +353,11 @@ export const defaultLocalization: Localization = {
       EditDepartmentExistsWithNameTitle: '',
       EditDivisionExistsWithNameTitle: '',
       EditRankExistsWithNameTitle: '',
-      FieldRequired: '',
-      FieldNameTaken: '',
       FieldFormat: '',
-      FieldMin: '',
       FieldMax: '',
+      FieldMin: '',
+      FieldNameTaken: '',
+      FieldRequired: '',
       PleaseTryAgainLater: '',
       RankExistsWithNameDescription: '',
       UnexpectedError: '',

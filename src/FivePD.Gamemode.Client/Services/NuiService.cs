@@ -87,6 +87,10 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetSets);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetEntity);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetEntities);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetSetAttributes);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.AddSetAttribute);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.EditSetAttribute);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.DeleteSetAttribute);
         }
 
         /// <inheritdoc />

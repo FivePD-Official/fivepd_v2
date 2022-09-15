@@ -300,6 +300,26 @@ namespace FivePD.Common
             public const string GetSets = "fivepd:looseData:getSets";
 
             /// <summary>
+            /// qwe.
+            /// </summary>
+            public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
+
+            /// <summary>
+            /// asd2.
+            /// </summary>
+            public const string AddSetAttribute = "fivepd:looseData:addSetAttribute";
+
+            /// <summary>
+            /// asd2.
+            /// </summary>
+            public const string EditSetAttribute = "fivepd:looseData:editSetAttribute";
+
+            /// <summary>
+            /// asd2.
+            /// </summary>
+            public const string DeleteSetAttribute = "fivepd:looseData:deleteSetAttribute";
+
+            /// <summary>
             /// asd2.
             /// </summary>
             public const string GetEntity = "fivepd:looseData:getEntity";

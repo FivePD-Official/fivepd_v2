@@ -141,12 +141,6 @@ namespace FivePD.Gamemode.Server.Services
                     Required = true,
                 },
             });
-
-            this._looseDataService.AddEntity<ArrestReportSet, ArrestReport>(new ArrestReport
-            {
-                Narrative = "test 123",
-                Weapons = "weapons",
-            });
         }
     }
 }

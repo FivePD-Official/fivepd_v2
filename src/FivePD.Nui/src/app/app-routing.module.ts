@@ -10,6 +10,7 @@ import {
 } from './pages/mdt/citizen-database/citizen-database-index/citizen-database-index.component';
 import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
+import { SettingsComponent } from './pages/mdt/settings/settings.component';
 
 const routes: Routes = [
   {
@@ -38,7 +39,7 @@ const routes: Routes = [
       },
       {
         path: 'settings',
-        component: DashboardComponent
+        component: SettingsComponent
       },
       {
         path: 'citizen-database',

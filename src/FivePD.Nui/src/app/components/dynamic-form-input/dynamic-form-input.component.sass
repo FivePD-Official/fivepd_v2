@@ -119,10 +119,21 @@
   &.dropdown--normal
     height: 40px
     .dropdown-selected-item
-      border: 1px solid var(--clr-bg-40)
+      border: 2px solid var(--clr-bg-40)
       background: transparent
   &.dropdown--small
     height: 35px
+    .dropdown-selected-item
+      background: var(--clr-bg-20)
+  &.dropdown--readonly
+    .dropdown-selected-item
+      cursor: not-allowed
+      &:hover
+        background: transparent
+      p
+        color: var(--clr-text-tertiary)
+      svg
+        display: none
 
   input
     display: none
@@ -135,7 +146,6 @@
     flex-direction: row
     align-items: center
     justify-content: space-between
-    background: var(--clr-bg-20)
     cursor: pointer
     &:hover
       background: var(--clr-bg-40)
