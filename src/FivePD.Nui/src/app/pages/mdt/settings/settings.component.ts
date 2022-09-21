@@ -14,9 +14,9 @@ import {
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { SetId } from '@enums';
 import { ModalService } from '@services/modal/modal.service';
-import { UserState } from '@store/user.state';
-import { Observable } from 'rxjs';
-import { Select } from '@ngxs/store';
+import { UserState, UserStateModel } from '@store/user.state';
+import { Subject, takeUntil } from 'rxjs';
+import { Store } from '@ngxs/store';
 import { LocalizationService } from '@services/localization/localization.service';
 
 @Component({
@@ -26,8 +26,9 @@ import { LocalizationService } from '@services/localization/localization.service
 })
 export class SettingsComponent implements OnInit {
 
+  onDestroy$ = new Subject<void>();
+
   user?: User;
-  @Select(UserState.details) user$!: Observable<User>;
 
   arrestReportAttributes?: Page<SetAttribute>;
   arrestReportAttributesCollation: Collation = {
@@ -123,6 +124,11 @@ export class SettingsComponent implements OnInit {
                 label: this._localization.translate('Nui.Labels.Required'),
                 value: item.Required
               }),
+              new Checkbox({
+                key: 'ShowInGrid',
+                label: this._localization.translate('Nui.Labels.ShowInGrid'),
+                value: item.ShowInGrid
+              }),
             ]
           }).onSuccess(modalRes => {
             this._looseData.editSetAttribute(SetId.ArrestReport, {
@@ -132,6 +138,7 @@ export class SettingsComponent implements OnInit {
               HelpLabel: modalRes.value!['HelpLabel'],
               Placeholder: modalRes.value!['Placeholder'],
               Required: modalRes.value!['Required'],
+              ShowInGrid: modalRes.value!['ShowInGrid'],
             }).subscribe(res => {
               if (res.Status) {
                 this.getArrestReportAttributes();
@@ -213,6 +220,10 @@ export class SettingsComponent implements OnInit {
               key: 'Required',
               label: this._localization.translate('Nui.Labels.Required'),
             }),
+            new Checkbox({
+              key: 'ShowInGrid',
+              label: this._localization.translate('Nui.Labels.ShowInGrid'),
+            }),
           ]
         }).onSuccess(modalRes => {
           this._looseData.addSetAttribute(SetId.ArrestReport, {
@@ -222,6 +233,7 @@ export class SettingsComponent implements OnInit {
             HelpLabel: modalRes.value!['HelpLabel'],
             Placeholder: modalRes.value!['Placeholder'],
             Required: modalRes.value!['Required'],
+            ShowInGrid: modalRes.value!['ShowInGrid'],
           }).subscribe(() => {
             this.arrestReportAttributesCollation.Page = 1;
             this.getArrestReportAttributes();
@@ -235,15 +247,23 @@ export class SettingsComponent implements OnInit {
     private _looseData: LooseDataService,
     private _modal: ModalService,
     private _localization: LocalizationService,
+    private _store: Store,
   ) { }
 
   ngOnInit(): void {
-    this.user$.subscribe(user => {
-      this.user = user;
-      if (user.Admin) {
+    this._store.select(UserState).pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe((user: UserStateModel) => {
+      this.user = user.details;
+      if (user.details.Admin) {
         this.getArrestReportAttributes();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.onDestroy$.next();
+    this.onDestroy$.unsubscribe();
   }
 
   getArrestReportAttributes(): void {

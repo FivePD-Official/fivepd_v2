@@ -37,7 +37,8 @@
       class="table-row"
     >
       <div *ngFor="let item of row" class="table-cell">
-        <a [routerLink]="item.link" *ngIf="item.link && !item.actions">
+        <p *ngIf="item.link && !item.actions && !item.value">-</p>
+        <a [routerLink]="item.link" *ngIf="item.link && !item.actions && item.value">
           {{ item.value }}
           <div class="icon" app-icon name="Link"></div>
         </a>

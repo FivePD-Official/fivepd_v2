@@ -43,6 +43,7 @@ export interface Localization {
       AddedBy: string;
       Address: string;
       ArrestReportAttributes: string;
+      ArrestReports: string;
       AssignedCall: string;
       AvailableCharacters: string;
       Bool: string;
@@ -57,6 +58,8 @@ export interface Localization {
       DateTime: string;
       DefaultRank: string;
       DefaultRankDescription: string;
+      DeleteArrestReportDescription: string;
+      DeleteArrestReportTitle: string;
       DeleteAttributeDescription: string;
       DeleteAttributeTitle: string;
       DeleteDepartmentDescription: string;
@@ -96,10 +99,13 @@ export interface Localization {
       Placeholder: string;
       Rank: string;
       Ranks: string;
+      Reports: string;
       Required: string;
       SearchByCallsign: string;
       SearchByName: string;
       Settings: string;
+      ShowInGrid: string;
+      ShowInGridHelpLabel: string;
       Statistics: string;
       Status: string;
       String: string;
@@ -118,6 +124,9 @@ export interface Localization {
       SuccessfulDivisionDelete: string;
       SuccessfulDivisionEdit: string;
       SuccessfulEdit: string;
+      SuccessfulEntityCreate: string;
+      SuccessfulEntityDelete: string;
+      SuccessfulEntityEdit: string;
       SuccessfulJoin: string;
       SuccessfulLeave: string;
       SuccessfulPlayerDivisionChange: string;
@@ -234,6 +243,7 @@ export const defaultLocalization: Localization = {
       AddedBy: '',
       Address: '',
       ArrestReportAttributes: '',
+      ArrestReports: '',
       AssignedCall: '',
       AvailableCharacters: '',
       Bool: '',
@@ -248,6 +258,8 @@ export const defaultLocalization: Localization = {
       DateTime: '',
       DefaultRank: '',
       DefaultRankDescription: '',
+      DeleteArrestReportDescription: '',
+      DeleteArrestReportTitle: '',
       DeleteAttributeDescription: '',
       DeleteAttributeTitle: '',
       DeleteDepartmentDescription: '',
@@ -287,10 +299,13 @@ export const defaultLocalization: Localization = {
       Placeholder: '',
       Rank: '',
       Ranks: '',
+      Reports: '',
       Required: '',
       SearchByCallsign: '',
       SearchByName: '',
       Settings: '',
+      ShowInGrid: '',
+      ShowInGridHelpLabel: '',
       Statistics: '',
       Status: '',
       String: '',
@@ -309,6 +324,9 @@ export const defaultLocalization: Localization = {
       SuccessfulDivisionDelete: '',
       SuccessfulDivisionEdit: '',
       SuccessfulEdit: '',
+      SuccessfulEntityCreate: '',
+      SuccessfulEntityDelete: '',
+      SuccessfulEntityEdit: '',
       SuccessfulJoin: '',
       SuccessfulLeave: '',
       SuccessfulPlayerDivisionChange: '',

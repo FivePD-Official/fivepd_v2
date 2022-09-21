@@ -19,6 +19,6 @@ namespace FivePD.Gamemode.Server.Models.LooseDataSet
 
         public LooseDataSet Set { get; set; }
 
-        public IEnumerable<LooseDataValue> Values { get; set; }
+        public IList<LooseDataValue> Values { get; set; }
     }
 }

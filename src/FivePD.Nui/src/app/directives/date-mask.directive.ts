@@ -14,7 +14,7 @@ export class DateMaskDirective implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setValue();
-    this.valueChange$ = this.model.control?.valueChanges.subscribe(value => this.setValue(value));
+    // this.valueChange$ = this.model.control?.valueChanges.subscribe(value => this.setValue(value));
   }
 
   ngOnDestroy(): void {
@@ -28,6 +28,9 @@ export class DateMaskDirective implements OnInit, OnDestroy {
 
   setValue(value?: any): void {
     let newValue = value || this.model.value;
+    if (!newValue) {
+      return;
+    }
 
     if (newValue instanceof Date) {
       const year = newValue.getFullYear();
@@ -53,7 +56,13 @@ export class DateMaskDirective implements OnInit, OnDestroy {
     }
 
     this.model.control?.setErrors({ 'invalidDate': false });
-    this.model.control?.setValue(new Date(newValue));
+
+    const split = newValue.split('/');
+    const year = parseInt(split[2]);
+    const month = parseInt(split[0]) - 1;
+    const day = parseInt(split[1]);
+    this.model.control?.setValue(new Date(Date.UTC(year, month, day)));
+
     this.model!.valueAccessor?.writeValue(newValue);
     this.appDateMask?.updateValueAndValidity();
   }

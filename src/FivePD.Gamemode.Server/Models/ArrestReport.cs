@@ -15,6 +15,12 @@ namespace FivePD.Gamemode.Server.Models
 {
     public class ArrestReport : LooseDataEntity
     {
+        public int DepartmentId { get; set; }
+
+        public Department Department { get; set; }
+
+        public DateTime DateOfSubmit { get; set; }
+
         public DateTime DateOfArrest { get; set; }
 
         public string AddressOfArrest { get; set; }

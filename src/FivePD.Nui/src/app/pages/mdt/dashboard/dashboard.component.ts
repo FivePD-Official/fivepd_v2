@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Button, Collation, Column, DateInput, Department, NumberInput, Page, TextInput, User } from '@models';
+import { Button, Collation, Column, Department, NumberInput, Page, TextInput, User } from '@models';
 import { GenericNameValidator } from '@validators/generic-name-validator';
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
 import { ModalService } from '@services/modal/modal.service';
-import { replaceParams } from '@utils';
 import { Select } from '@ngxs/store';
 import { UserState } from '@store/user.state';
 import { Observable } from 'rxjs';
@@ -63,7 +62,7 @@ export class DashboardComponent implements OnInit {
           label: this._localization.translate('Nui.Actions.Delete'),
           onClick: department => this._modal.open({
             title: 'Nui.Labels.DeleteDepartmentTitle',
-            description: replaceParams(this._localization.translate('Nui.Labels.DeleteDepartmentDescription'), { 'department': `<b>${department.Name}</b>`}),
+            description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', { department: `<b>${department.Name}</b>` }),
             buttons: {
               cancel: {
                 theme: 'secondary',

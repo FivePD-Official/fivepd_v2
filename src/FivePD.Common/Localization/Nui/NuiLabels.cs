@@ -24,6 +24,8 @@ namespace FivePD.Common.Localization
 
         public string ArrestReportAttributes { get; set; } = "Arrest report attributes";
 
+        public string ArrestReports { get; set; } = "Arrest reports";
+
         public string AssignedCall { get; set; } = "Assigned call";
 
         public string AvailableCharacters { get; set; } = "Available characters";
@@ -51,6 +53,10 @@ namespace FivePD.Common.Localization
         public string DefaultRank { get; set; } = "Default rank";
 
         public string DefaultRankDescription { get; set; } = "The rank of new members will be automatically set to the default rank.";
+
+        public string DeleteArrestReportDescription { get; set; } = "Are you sure you want to delete this arrest report? You can't undo this action.";
+
+        public string DeleteArrestReportTitle { get; set; } = "Delete arrest report";
 
         public string DeleteAttributeDescription { get; set; } = "Are you sure you want to delete {{attribute}}? You can't undo this action.";
 
@@ -130,6 +136,8 @@ namespace FivePD.Common.Localization
 
         public string Ranks { get; set; } = "Ranks";
 
+        public string Reports { get; set; } = "Reports";
+
         public string Required { get; set; } = "Required";
 
         public string SearchByCallsign { get; set; } = "Search by callsign";
@@ -137,6 +145,10 @@ namespace FivePD.Common.Localization
         public string SearchByName { get; set; } = "Search by name";
 
         public string Settings { get; set; } = "Settings";
+
+        public string ShowInGrid { get; set; } = "ShowInGrid";
+
+        public string ShowInGridHelpLabel { get; set; } = "Specifies whether to display this field in grid columns or not.";
 
         public string Statistics { get; set; } = "Statistics";
 
@@ -173,6 +185,12 @@ namespace FivePD.Common.Localization
         public string SuccessfulDivisionEdit { get; set; } = "{{division}} has been successfully edited.";
 
         public string SuccessfulEdit { get; set; } = "Successful edit";
+
+        public string SuccessfulEntityCreate { get; set; } = "Item has been successfully created.";
+
+        public string SuccessfulEntityDelete { get; set; } = "Item has been successfully edited.";
+
+        public string SuccessfulEntityEdit { get; set; } = "Item has been successfully edited.";
 
         public string SuccessfulJoin { get; set; } = "Successful join";
 

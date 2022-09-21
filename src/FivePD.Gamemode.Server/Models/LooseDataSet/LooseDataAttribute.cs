@@ -34,7 +34,13 @@ namespace FivePD.Gamemode.Server.Models.LooseDataSet
 
         public string Name { get; set; }
 
+        public int Order { get; set; }
+
         public bool Required { get; set; }
+
+        public bool Readonly { get; set; }
+
+        public bool ShowInGrid { get; set; }
 
         public string Placeholder { get; set; }
 

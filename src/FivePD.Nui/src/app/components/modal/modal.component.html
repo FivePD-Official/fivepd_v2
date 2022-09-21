@@ -1,10 +1,16 @@
 <div class="modal-backdrop">
-  <div class="modal" #modalContainer>
+  <div class="modal" [ngClass]="{ 'modal-wide': modal.columns ? modal.columns > 1 : false }" #modalContainer>
     <div class="modal-header">
       <p class="title">{{ modal.title | translate }}</p>
       <p *ngIf="modal.description" class="description" [innerHtml]="modal.description | safeHtml"></p>
     </div>
-    <app-dynamic-form *ngIf="modal.fields?.length" [formFields]="modal.fields!" [limitWidth]="false" (onSubmit)="onSubmit($event)">
+    <app-dynamic-form
+      *ngIf="modal.fields?.length"
+      [formFields]="modal.fields!"
+      [limitWidth]="false"
+      (onSubmit)="onSubmit($event)"
+      [columns]="modal.columns || 1"
+    >
       <div class="buttons-wrapper">
         <div class="buttons">
           <app-button

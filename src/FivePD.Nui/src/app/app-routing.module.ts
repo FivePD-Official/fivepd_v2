@@ -11,6 +11,7 @@ import {
 import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 import { SettingsComponent } from './pages/mdt/settings/settings.component';
+import { ReportsComponent } from './pages/mdt/reports/reports.component';
 
 const routes: Routes = [
   {
@@ -36,6 +37,10 @@ const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent
+      },
+      {
+        path: 'reports',
+        component: ReportsComponent
       },
       {
         path: 'settings',

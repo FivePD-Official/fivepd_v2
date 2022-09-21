@@ -11,6 +11,7 @@ export interface ModalOptions {
   title: Paths<Localization>;
   description?: string;
   fields?: FormInputBase<any>[];
+  formColumns?: number;
   buttons: {
     cancel: ModalButton;
     submit: ModalButton;
@@ -22,12 +23,13 @@ export interface ModalResponse {
   value?: { [key: string]: any; };
 }
 
-class Modal {
+export class Modal {
 
   title: ModalOptions['title'];
   description?: ModalOptions['description'];
   fields?: ModalOptions['fields'];
   buttons: ModalOptions['buttons'];
+  columns?: ModalOptions['formColumns'];
 
   private response$: Observable<ModalResponse>;
 
@@ -36,6 +38,7 @@ class Modal {
     this.description = modal.description;
     this.fields = modal.fields;
     this.buttons = modal.buttons;
+    this.columns = modal.formColumns;
     this.response$ = modalResponse;
   }
 

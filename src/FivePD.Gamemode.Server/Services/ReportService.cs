@@ -71,10 +71,29 @@ namespace FivePD.Gamemode.Server.Services
             {
                 new LooseDataAttribute
                 {
+                    Name = "DepartmentId",
+                    Label = "Department",
+                    DataType = LooseDataAttribute.LooseDataType.Integer,
+                    Required = false,
+                    ShowInGrid = false,
+                    Readonly = true,
+                },
+                new LooseDataAttribute
+                {
+                    Name = "DateOfSubmit",
+                    Label = "Date of submit",
+                    DataType = LooseDataAttribute.LooseDataType.DateTime,
+                    Required = false,
+                    ShowInGrid = true,
+                    Readonly = true,
+                },
+                new LooseDataAttribute
+                {
                     Name = "DateOfArrest",
                     Label = "Date of arrest",
                     DataType = LooseDataAttribute.LooseDataType.DateTime,
                     Required = true,
+                    ShowInGrid = true,
                 },
                 new LooseDataAttribute
                 {
@@ -103,6 +122,8 @@ namespace FivePD.Gamemode.Server.Services
                     Label = "Name of arrestee",
                     DataType = LooseDataAttribute.LooseDataType.String,
                     Required = true,
+                    ShowInGrid = true,
+                    Order = 1,
                 },
                 new LooseDataAttribute
                 {

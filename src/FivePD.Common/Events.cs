@@ -295,14 +295,14 @@ namespace FivePD.Common
         public abstract class LooseData
         {
             /// <summary>
-            /// asd.
+            /// qwe.
             /// </summary>
-            public const string GetSets = "fivepd:looseData:getSets";
+            public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
 
             /// <summary>
             /// qwe.
             /// </summary>
-            public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
+            public const string GetSetAttributesPageable = "fivepd:looseData:getSetAttributesPageable";
 
             /// <summary>
             /// asd2.
@@ -328,6 +328,21 @@ namespace FivePD.Common
             /// asd3.
             /// </summary>
             public const string GetEntities = "fivepd:looseData:getEntities";
+
+            /// <summary>
+            /// asd3.
+            /// </summary>
+            public const string AddEntity = "fivepd:looseData:addEntity";
+
+            /// <summary>
+            /// asd3.
+            /// </summary>
+            public const string EditEntity = "fivepd:looseData:editEntity";
+
+            /// <summary>
+            /// asd3.
+            /// </summary>
+            public const string DeleteEntity = "fivepd:looseData:deleteEntity";
         }
     }
 }

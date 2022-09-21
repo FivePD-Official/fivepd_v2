@@ -21,12 +21,6 @@ namespace FivePD.Gamemode.Client.Interfaces
         public event NuiService.OnHide OnNuiHide;
 
         /// <summary>
-        /// asd.
-        /// </summary>
-        /// <returns>asd2.</returns>
-        public bool Ready();
-
-        /// <summary>
         /// Registers all necessary NUI events for the MDT and menus.
         /// </summary>
         public void RegisterEventHandlers();

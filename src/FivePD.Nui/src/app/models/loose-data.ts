@@ -6,8 +6,11 @@
 export interface SetAttribute {
   Id: number;
   Name: string;
+  Order?: number;
   DataType: number;
   Required: boolean;
+  Readonly?: boolean;
+  ShowInGrid?: boolean;
   Label?: string;
   HelpLabel?: string;
   Placeholder?: string;

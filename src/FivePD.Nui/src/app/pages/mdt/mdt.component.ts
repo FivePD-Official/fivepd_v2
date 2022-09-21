@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalOptions, ModalService } from '@services/modal/modal.service';
+import { Modal, ModalService } from '@services/modal/modal.service';
 import { Select } from '@ngxs/store';
 import { AppState } from '@store/app.state';
 import { Observable } from 'rxjs';
@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 export class MdtComponent implements OnInit {
 
   @Select(AppState.isSidebarCollapsed) isSidebarCollapsed$!: Observable<boolean>;
-  currentModal: ModalOptions | null = null;
+  currentModal: Modal | null = null;
 
   constructor(
     private modalService: ModalService,

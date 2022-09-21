@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { ModalOptions, ModalService } from '@services/modal/modal.service';
+import { Modal, ModalOptions, ModalService } from '@services/modal/modal.service';
 import { FormSubmitEvent } from '@models';
 
 type RemoveFocusTrap = () => void;
@@ -11,7 +11,7 @@ type RemoveFocusTrap = () => void;
 })
 export class ModalComponent implements OnInit, AfterViewInit {
 
-  @Input() modal!: ModalOptions;
+  @Input() modal!: Modal;
 
   @ViewChild('modalContainer') modalContainer!: ElementRef;
   removeFocusTrap?: RemoveFocusTrap;

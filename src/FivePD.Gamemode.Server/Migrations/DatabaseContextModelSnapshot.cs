@@ -88,14 +88,23 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.Property<string>("Options")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
                     b.Property<string>("Placeholder")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Readonly")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("Required")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("SetId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("ShowInGrid")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 

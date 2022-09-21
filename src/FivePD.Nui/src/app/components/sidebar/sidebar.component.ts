@@ -46,6 +46,12 @@ export class SidebarComponent implements OnInit {
       show: () => true,
     },
     {
+      title: 'Nui.Labels.Reports',
+      path: () => '/mdt/reports',
+      icon: IconType.Report,
+      show: () => true,
+    },
+    {
       title: 'Nui.Labels.Settings',
       path: () => '/mdt/settings',
       icon: IconType.Cog,

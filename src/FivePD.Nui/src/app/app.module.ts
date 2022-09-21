@@ -48,6 +48,7 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { DateMaskDirective } from './directives/date-mask.directive';
 import { SettingsComponent } from './pages/mdt/settings/settings.component';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
+import { ReportsComponent } from './pages/mdt/reports/reports.component';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { LooseDataService } from '@services/loose-data/loose-data.service';
     ClickOutsideDirective,
     DateMaskDirective,
     SettingsComponent,
+    ReportsComponent,
   ],
   imports: [
     BrowserModule,

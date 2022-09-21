@@ -121,7 +121,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       }
 
       return row;
-    }) ?? []
+    }) ?? [];
   };
 
   onFilterFormChange(accessorKey: string | undefined, value: string | number): void {

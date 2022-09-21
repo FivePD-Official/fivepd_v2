@@ -36,12 +36,6 @@ export class AppComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       filter(event => event.url !== '/' && event.url.startsWith('/mdt'))
     ).subscribe(event => {
-      // this._looseData.getEntities(SetId.ArrestReport).subscribe(res => {
-      //   console.log('getEntities', res)
-      // })
-      this._looseData.getEntity(SetId.ArrestReport, 15).subscribe(res => {
-        console.log('getEntity', res)
-      })
       this.setMdtPath(event.url.split('/'));
     });
     window.addEventListener('message', event => this._event.next(event.data));
@@ -71,7 +65,6 @@ export class AppComponent implements OnInit {
 
     this.sendAvailabilityToClient();
     this._localization.load();
-    this._looseData.getSets();
   }
 
   sendAvailabilityToClient(): void {

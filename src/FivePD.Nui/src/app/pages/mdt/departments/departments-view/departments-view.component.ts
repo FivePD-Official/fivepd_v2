@@ -23,7 +23,6 @@ import { LocalizationService } from '@services/localization/localization.service
 import { UserState } from '@store/user.state';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { Select } from '@ngxs/store';
-import { replaceParams } from '@utils';
 import { ModalService } from '@services/modal/modal.service';
 import { UserService } from '@services/user/user.service';
 import { GenericNameValidator } from '@validators/generic-name-validator';
@@ -134,7 +133,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           onClick: rank => {
             this._modal.open({
               title: 'Nui.Labels.DeleteRankTitle',
-              description: replaceParams(this._localization.translate('Nui.Labels.DeleteRankDescription'), { 'rank': `<b>${rank.Name}</b>`}),
+              description: this._localization.translate('Nui.Labels.DeleteRankDescription', { rank: `<b>${rank.Name}</b>`}),
               buttons: {
                 cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
                 submit: { theme: 'danger', label: 'Nui.Actions.Delete' },
@@ -305,7 +304,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           label: this._localization.translate('Nui.Actions.Delete'),
           onClick: division => this._modal.open({
             title: 'Nui.Labels.DeleteDivisionTitle',
-            description: replaceParams(this._localization.translate('Nui.Labels.DeleteDivisionDescription'), {'division': `<b>${division.Name}</b>`}),
+            description: this._localization.translate('Nui.Labels.DeleteDivisionDescription', { division: `<b>${division.Name}</b>` }),
             buttons: {
               cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel'},
               submit: { theme: 'danger', label: 'Nui.Actions.Delete'},

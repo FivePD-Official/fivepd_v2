@@ -1,4 +1,4 @@
-import { Gender } from '@enums';
+import { SetAttribute } from './loose-data';
 
 export interface User {
   Id: number;
@@ -57,15 +57,12 @@ export interface LooseDataEntity {
   SetId: string;
 }
 
-export interface ArrestReport extends LooseDataEntity {
-  [key: string]: any;
-  DateOfArrest: string; // TODO Convert to date
-  AddressOfArrest: string;
-  Weapons: string;
-  Narrative: string;
-  ArresteeName: string;
-  ArresteeBirthdate: string; // TODO Convert to date
-  ArresteeAge: number;
-  ArresteeGender: Gender;
-  ArresteeRace: string;
+export interface LooseDataEntityWrapper {
+  entity: LooseDataEntity;
+  attributes: SetAttribute[];
+}
+
+export interface LooseDataEntityPageWrapper {
+  page: Page<LooseDataEntity>;
+  attributes: SetAttribute[];
 }
