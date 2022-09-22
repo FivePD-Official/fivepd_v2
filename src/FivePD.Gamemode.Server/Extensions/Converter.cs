@@ -39,17 +39,5 @@ namespace FivePD.Gamemode.Server.Extensions
         {
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(expandoObject));
         }
-
-        /// <summary>
-        /// Serializes, then deserializes an <see cref="ExpandoObject"/> into <typeparamref name="T"/>.
-        /// </summary>
-        /// <param name="expandoObject">The object to convert.</param>
-        /// <param name="type">The type to convert.</param>
-        /// <typeparam name="T">The type to convert the object.</typeparam>
-        /// <returns>The converted object.</returns>
-        public static T ConvertTo<T>(this ExpandoObject expandoObject, Type type)
-        {
-            return (T)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(expandoObject), type);
-        }
     }
 }

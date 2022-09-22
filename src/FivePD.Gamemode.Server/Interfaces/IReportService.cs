@@ -7,28 +7,31 @@
 using System;
 using System.Collections.Generic;
 using FivePD.Gamemode.Server.Models;
-
-#pragma warning disable CS1591
-#pragma warning disable SA1600
+using FivePD.Gamemode.Server.Models.LooseDataSet;
 
 namespace FivePD.Gamemode.Server.Interfaces
 {
+    /// <summary>
+    /// Provides easy access to reportable entities through <see cref="ILooseDataService"/>.
+    /// </summary>
     public interface IReportService
     {
-        public IDisposable OnArrestReportAdd(Action<ArrestReport> observer);
+#pragma warning disable SA1600
+#pragma warning disable CS1591
+        public IDisposable OnArrestReportAdd(Action<LooseDataEntity> observer);
 
-        public IDisposable OnArrestReportEdit(Action<ArrestReport> observer);
+        public IDisposable OnArrestReportEdit(Action<LooseDataEntity> observer);
 
-        public IDisposable OnArrestReportDelete(Action<ArrestReport> observer);
+        public IDisposable OnArrestReportDelete(Action<LooseDataEntity> observer);
 
-        public void AddArrestReport(ArrestReport arrestReport);
+        public void AddArrestReport(LooseDataEntity arrestReport);
 
-        public void UpdateArrestReport(ArrestReport arrestReport);
+        public void UpdateArrestReport(LooseDataEntity arrestReport);
 
-        public void DeleteArrestReport(ArrestReport arrestReport);
+        public void DeleteArrestReport(LooseDataEntity arrestReport);
 
-        public ArrestReport GetArrestReport(int id);
+        public LooseDataEntity GetArrestReport(int id);
 
-        public List<ArrestReport> GetArrestReports();
+        public List<LooseDataEntity> GetArrestReports();
     }
 }

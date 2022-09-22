@@ -52,17 +52,21 @@ export interface Page<T> {
 }
 
 export interface LooseDataEntity {
-  [key: string]: any;
   Id: number;
   SetId: string;
+  MappedValues: Record<string, any>;
+}
+
+export interface MappedLooseDataEntity extends Omit<LooseDataEntity, 'MappedValues'> {
+  [key: string]: any;
 }
 
 export interface LooseDataEntityWrapper {
-  entity: LooseDataEntity;
+  entity: MappedLooseDataEntity;
   attributes: SetAttribute[];
 }
 
 export interface LooseDataEntityPageWrapper {
-  page: Page<LooseDataEntity>;
+  page: Page<MappedLooseDataEntity>;
   attributes: SetAttribute[];
 }

@@ -37,7 +37,7 @@ export class DateMaskDirective implements OnInit, OnDestroy {
       const month = newValue.getMonth();
       const date = newValue.getDate();
 
-      const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+      const formattedMonth = month < 10 ? `0${month + 1}` : `${month + 1}`;
       const formattedDate = date < 10 ? `0${date}` : `${date}`;
 
       newValue = `${formattedMonth}/${formattedDate}/${year}`;

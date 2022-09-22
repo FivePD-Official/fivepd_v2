@@ -5,7 +5,7 @@ import {
   AddSetAttribute, AttributeDataType,
   Collation,
   EditSetAttribute,
-  LooseDataEntity, LooseDataEntityPageWrapper, LooseDataEntityWrapper,
+  LooseDataEntity, LooseDataEntityPageWrapper, LooseDataEntityWrapper, MappedLooseDataEntity,
   Page,
   SetAttribute
 } from '@models';
@@ -78,7 +78,7 @@ export class LooseDataService {
         ...collation,
       }).pipe(
         map(page => {
-          page.Items = page.Items.map(entity => this.mapEntity(setId, entity))
+          page.Items = page.Items.map(entity => this.mapEntity(setId, entity)) as LooseDataEntity[];
           return {
             page: page,
             attributes: this.getSetAttributes(setId),
@@ -95,9 +95,10 @@ export class LooseDataService {
     });
   }
 
-  editEntity(setId: SetId, entity: object): Observable<ActionResponse> {
+  editEntity(setId: SetId, entityId: number, entity: object): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:looseData:editEntity', {
       SetId: setId,
+      EntityId: entityId,
       Entity: entity,
     });
   }
@@ -117,21 +118,26 @@ export class LooseDataService {
     );
   }
 
-  private mapEntity(setId: SetId, entity: LooseDataEntity): LooseDataEntity {
+  private mapEntity(setId: SetId, entity: LooseDataEntity): MappedLooseDataEntity {
     const set = this.getSetAttributes(setId);
-    for (const [key, value] of Object.entries(entity)) {
+    const mappedEntity: MappedLooseDataEntity = {
+      Id: entity.Id,
+      SetId: entity.SetId,
+      ...entity.MappedValues,
+    };
+
+    for (const [key, value] of Object.entries(entity.MappedValues)) {
       const attr = set.find(s => s.Name === key);
       if (!attr) {
         continue;
       }
 
       if (attr.DataType === AttributeDataType.DateTime) {
-        // @ts-ignore
-        entity[key] = new Date(value);
+        mappedEntity[key] = new Date(value);
       }
     }
 
-    return entity;
+    return mappedEntity;
   }
 
 }

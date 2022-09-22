@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Button, Collation, Column, LooseDataEntity, Page, User } from '@models';
+import { Button, Collation, Column, LooseDataEntity, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { SetId } from '@enums';
 import { Subject, takeUntil } from 'rxjs';
@@ -48,8 +48,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
   arrestReportCollation: Collation = {
     Page: 1,
   };
-  arrestReports?: Page<LooseDataEntity>;
-  arrestReportColumns: Column<LooseDataEntity>[] = [];
+  arrestReports?: Page<MappedLooseDataEntity>;
+  arrestReportColumns: Column<MappedLooseDataEntity>[] = [];
 
   constructor(
     private _store: Store,
@@ -74,11 +74,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   getArrestReports(): void {
     this._looseData.getEntities(SetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
+      console.log(wrapper)
       this.arrestReports = mapPageEntities(wrapper.page);
       this.arrestReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
           index: 1,
-          item: new Column<LooseDataEntity>({
+          item: new Column<MappedLooseDataEntity>({
             header: 'Department',
             valueResolver: item => item['Department'] ? item['Department']['Name'] : undefined,
             linkResolver: item => item['Department'] ? `/mdt/departments/${item['Department']['Id']}` : '#',
@@ -103,7 +104,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
                     fields: mapAttributesToFields(this._looseData.getSetAttributes(SetId.ArrestReport), newItem.entity),
                     formColumns: 2,
                   }).onSuccess(modalRes => {
-                    this._looseData.editEntity(SetId.ArrestReport, {
+                    this._looseData.editEntity(SetId.ArrestReport, newItem.entity.Id, {
                       ...newItem.entity,
                       ...modalRes.value!,
                     }).subscribe(res => {

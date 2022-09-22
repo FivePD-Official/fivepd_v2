@@ -24,13 +24,13 @@ namespace FivePD.Gamemode.Server.Models.LooseDataSet
     {
         private readonly List<Action<LooseDataEntity>> _observers = new List<Action<LooseDataEntity>>();
 
-        public LooseDataEntityObservable(Type entityType, LooseDataEntityObservableType type)
+        public LooseDataEntityObservable(Type setType, LooseDataEntityObservableType type)
         {
-            this.EntityType = entityType;
+            this.SetType = setType;
             this.Type = type;
         }
 
-        public Type EntityType { get; }
+        public Type SetType { get; }
 
         public LooseDataEntityObservableType Type { get; }
 

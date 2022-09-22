@@ -64,22 +64,22 @@ namespace FivePD.Gamemode.Server.Database
         public DbSet<Rank> Ranks { get; set; }
 
         /// <summary>
-        /// Gets or sets a.
+        /// Gets or sets the table containing the dynamic data sets.
         /// </summary>
         public DbSet<LooseDataSet> LooseDataSets { get; set; }
 
         /// <summary>
-        /// Gets or sets b.
+        /// Gets or sets the table containing the dynamic entities.
         /// </summary>
         public DbSet<LooseDataEntity> LooseDataEntities { get; set; }
 
         /// <summary>
-        /// Gets or sets c.
+        /// Gets or sets the table containing the attributes of the dynamic data sets.
         /// </summary>
         public DbSet<LooseDataAttribute> LooseDataAttributes { get; set; }
 
         /// <summary>
-        /// Gets or sets d.
+        /// Gets or sets the table containing the values of dynamic entities.
         /// </summary>
         public DbSet<LooseDataValue> LooseDataValues { get; set; }
 

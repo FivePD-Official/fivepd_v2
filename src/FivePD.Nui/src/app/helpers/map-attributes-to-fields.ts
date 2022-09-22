@@ -6,13 +6,13 @@
   DropdownOptions,
   FormInputBase,
   FormInputBaseOptions,
-  LooseDataEntity,
+  LooseDataEntity, MappedLooseDataEntity,
   NumberInput,
   SetAttribute,
   TextInput
 } from '@models';
 
-export function mapAttributesToFields(attributes: SetAttribute[], entity?: LooseDataEntity): FormInputBase<any>[] {
+export function mapAttributesToFields(attributes: SetAttribute[], entity?: MappedLooseDataEntity): FormInputBase<any>[] {
   const fields: FormInputBase<any>[] = [];
   for (const attr of attributes.filter(a => !a.Readonly)) {
     const options: FormInputBaseOptions<any> = {

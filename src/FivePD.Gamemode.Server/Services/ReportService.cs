@@ -25,44 +25,44 @@ namespace FivePD.Gamemode.Server.Services
             this._looseDataService = looseDataService;
         }
 
-        public IDisposable OnArrestReportAdd(Action<ArrestReport> observer)
+        public IDisposable OnArrestReportAdd(Action<LooseDataEntity> observer)
         {
-            return this._looseDataService.OnAdd(observer);
+            return this._looseDataService.OnAdd<ArrestReportSet>(observer);
         }
 
-        public IDisposable OnArrestReportEdit(Action<ArrestReport> observer)
+        public IDisposable OnArrestReportEdit(Action<LooseDataEntity> observer)
         {
-            return this._looseDataService.OnEdit(observer);
+            return this._looseDataService.OnEdit<ArrestReportSet>(observer);
         }
 
-        public IDisposable OnArrestReportDelete(Action<ArrestReport> observer)
+        public IDisposable OnArrestReportDelete(Action<LooseDataEntity> observer)
         {
-            return this._looseDataService.OnDelete(observer);
+            return this._looseDataService.OnDelete<ArrestReportSet>(observer);
         }
 
-        public void AddArrestReport(ArrestReport arrestReport)
+        public void AddArrestReport(LooseDataEntity arrestReport)
         {
-            this._looseDataService.AddEntity<ArrestReportSet, ArrestReport>(arrestReport);
+            this._looseDataService.AddEntity<ArrestReportSet>(arrestReport);
         }
 
-        public void UpdateArrestReport(ArrestReport arrestReport)
+        public void UpdateArrestReport(LooseDataEntity arrestReport)
         {
             this._looseDataService.UpdateEntity(arrestReport);
         }
 
-        public void DeleteArrestReport(ArrestReport arrestReport)
+        public void DeleteArrestReport(LooseDataEntity arrestReport)
         {
             this._looseDataService.DeleteEntity(arrestReport);
         }
 
-        public ArrestReport GetArrestReport(int id)
+        public LooseDataEntity GetArrestReport(int id)
         {
-            return this._looseDataService.GetEntity<ArrestReport>(id);
+            return this._looseDataService.GetEntity(id);
         }
 
-        public List<ArrestReport> GetArrestReports()
+        public List<LooseDataEntity> GetArrestReports()
         {
-            return this._looseDataService.GetEntities<ArrestReportSet, ArrestReport>();
+            return this._looseDataService.GetEntities<ArrestReportSet>();
         }
 
         public void RegisterEvents()

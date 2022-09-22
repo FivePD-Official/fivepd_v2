@@ -15,6 +15,8 @@ namespace FivePD.Gamemode.Server.Models.Requests
     {
         public string SetId { get; set; }
 
+        public int EntityId { get; set; }
+
         public ExpandoObject Entity { get; set; }
     }
 }

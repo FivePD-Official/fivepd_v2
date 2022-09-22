@@ -1,6 +1,6 @@
-﻿import { LooseDataEntity, Page } from '@models';
+﻿import { MappedLooseDataEntity, Page } from '@models';
 
-export function mapPageEntities(page: Page<LooseDataEntity>): Page<LooseDataEntity> {
+export function mapPageEntities(page: Page<MappedLooseDataEntity>): Page<MappedLooseDataEntity> {
   page.Items = page.Items.map(entity => {
     for (const [key, value] of Object.entries(entity)) {
       if (value instanceof Date) {

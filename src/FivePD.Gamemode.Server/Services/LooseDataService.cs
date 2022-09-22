@@ -45,22 +45,19 @@ namespace FivePD.Gamemode.Server.Services
             this._databaseContext = databaseContext;
         }
 
-        public IDisposable OnAdd<TE>(Action<TE> observer)
-            where TE : LooseDataEntity
+        public IDisposable OnAdd<TS>(Action<LooseDataEntity> observer)
         {
-            return this.OnEvent(LooseDataEntityObservableType.Add, observer);
+            return this.OnEvent<TS>(LooseDataEntityObservableType.Add, observer);
         }
 
-        public IDisposable OnEdit<TE>(Action<TE> observer)
-            where TE : LooseDataEntity
+        public IDisposable OnEdit<TS>(Action<LooseDataEntity> observer)
         {
-            return this.OnEvent(LooseDataEntityObservableType.Edit, observer);
+            return this.OnEvent<TS>(LooseDataEntityObservableType.Edit, observer);
         }
 
-        public IDisposable OnDelete<TE>(Action<TE> observer)
-            where TE : LooseDataEntity
+        public IDisposable OnDelete<TS>(Action<LooseDataEntity> observer)
         {
-            return this.OnEvent(LooseDataEntityObservableType.Delete, observer);
+            return this.OnEvent<TS>(LooseDataEntityObservableType.Delete, observer);
         }
 
         public void RegisterEvents()
@@ -148,21 +145,19 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        public void AddEntity<TS, TE>(TE entityToAdd)
+        public void AddEntity<TS>(LooseDataEntity entityToAdd)
             where TS : LooseDataSet
-            where TE : LooseDataEntity
         {
             try
             {
                 var setType = typeof(TS);
-                var entityType = typeof(TE);
                 var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
                 if (setIdAttr is null)
                 {
                     return;
                 }
 
-                this.InternalAddEntity(setIdAttr.Id, entityType, entityToAdd);
+                this.InternalAddEntity(setIdAttr.Id, entityToAdd, entityToAdd.MappedValues);
             }
             catch (Exception e)
             {
@@ -170,15 +165,17 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        public void UpdateEntity<TE>(TE entityToUpdate)
-            where TE : LooseDataEntity
+        public void UpdateEntity(LooseDataEntity entityToUpdate)
         {
             try
             {
-                var type = typeof(TE);
-                var originalEntity = this.GetEntity<TE>(entityToUpdate.Id);
+                var originalEntity = this.GetEntity(entityToUpdate.Id);
+                if (originalEntity is null)
+                {
+                    throw new ArgumentException("No entity exist with the given id");
+                }
 
-                this.InternalUpdateEntity(originalEntity.SetId, type, originalEntity, entityToUpdate);
+                this.InternalUpdateEntity(originalEntity.SetId, originalEntity.Id, entityToUpdate.MappedValues);
             }
             catch (Exception e)
             {
@@ -186,21 +183,18 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        public TE GetEntity<TE>(int id)
-            where TE : LooseDataEntity
+        public LooseDataEntity GetEntity(int id)
         {
-            return this.GetEntityWithOptionalType<TE>(null, id);
+            return this.GetEntityWithOptionalType(id);
         }
 
-        public List<TE> GetEntities<TS, TE>()
+        public List<LooseDataEntity> GetEntities<TS>()
             where TS : LooseDataSet
-            where TE : LooseDataEntity
         {
-            return this.GetEntitiesWithOptionalType<TS, TE>(null, null);
+            return this.GetEntitiesWithOptionalType<TS>(null);
         }
 
-        public void DeleteEntity<TE>(TE entityToDelete)
-            where TE : LooseDataEntity
+        public void DeleteEntity(LooseDataEntity entityToDelete)
         {
             try
             {
@@ -215,7 +209,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 this._databaseContext.LooseDataEntities.Remove(entity);
                 this._databaseContext.SaveChanges();
-                this.InvokeEvent(LooseDataEntityObservableType.Delete, this.MapEntityWithOptionalType<TE>(null, entity));
+                this.InvokeEvent(LooseDataEntityObservableType.Delete, this.FindSetTypeById(entity.Set.Id), this.MapEntityWithOptionalType(entity));
             }
             catch (Exception e)
             {
@@ -223,8 +217,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private TE GetEntityWithOptionalType<TE>(Type type, int id)
-            where TE : LooseDataEntity
+        private LooseDataEntity GetEntityWithOptionalType(int id)
         {
             try
             {
@@ -235,7 +228,7 @@ namespace FivePD.Gamemode.Server.Services
                     .ThenInclude(set => set.Attributes)
                     .FirstOrDefault(entity => entity.Id == id);
 
-                var mappedEntity = entity is null ? default : this.MapEntityWithOptionalType<TE>(type, entity);
+                var mappedEntity = entity is null ? null : this.MapEntityWithOptionalType(entity);
                 return mappedEntity;
             }
             catch (Exception e)
@@ -244,16 +237,15 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private List<TE> GetEntitiesWithOptionalType<TS, TE>(Type setType, Type entityType)
+        private List<LooseDataEntity> GetEntitiesWithOptionalType<TS>(Type setType)
             where TS : LooseDataSet
-            where TE : LooseDataEntity
         {
             try
             {
                 var setIdAttr = (setType ?? typeof(TS)).GetCustomAttribute<LooseDataSetIdAttribute>();
                 if (setIdAttr is null)
                 {
-                    return new List<TE>();
+                    return new List<LooseDataEntity>();
                 }
 
                 var entities = this._databaseContext.LooseDataEntities
@@ -263,7 +255,7 @@ namespace FivePD.Gamemode.Server.Services
                     .Where(entity => entity.Set.Id == setIdAttr.Id)
                     .ToList();
 
-                return entities.Select(entity => this.MapEntityWithOptionalType<TE>(entityType, entity)).ToList();
+                return entities.Select(this.MapEntityWithOptionalType).ToList();
             }
             catch (Exception e)
             {
@@ -271,13 +263,11 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private Page<LooseDataEntity> GetEntitiesPage<TS, TE>(Type setType, Type entityType, int pageNumber, Filters<LooseDataEntity> filters)
-            where TS : LooseDataSet
-            where TE : LooseDataEntity
+        private Page<LooseDataEntity> GetEntitiesPage(Type setType, int pageNumber, Filters<LooseDataEntity> filters)
         {
             try
             {
-                var setIdAttr = (setType ?? typeof(TS)).GetCustomAttribute<LooseDataSetIdAttribute>();
+                var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
                 if (setIdAttr is null)
                 {
                     return new Page<LooseDataEntity>();
@@ -290,7 +280,7 @@ namespace FivePD.Gamemode.Server.Services
                     .Where(entity => entity.Set.Id == setIdAttr.Id)
                     .Paginate(pageNumber, filters);
 
-                page.Items = page.Items.Select(entity => this.MapEntityWithOptionalType<TE>(entityType, entity)).ToList();
+                page.Items = page.Items.Select(this.MapEntityWithOptionalType).ToList();
                 return page;
             }
             catch (Exception)
@@ -299,60 +289,27 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private TE MapEntityWithOptionalType<TE>(Type entityType, LooseDataEntity entity)
-            where TE : LooseDataEntity
+        private LooseDataEntity MapEntityWithOptionalType(LooseDataEntity entity)
         {
             if (entity.Set?.Attributes is null || entity.Values is null)
             {
                 return default;
             }
 
-            var attributeValueMap = new Dictionary<string, object>();
-            foreach (var attr in entity.Set.Attributes)
+            entity.MappedValues = new Dictionary<string, object>();
+            foreach (var value in entity.Values.Where(a => a.Attribute.AddonId == LooseDataAttribute.AddedByAdminAddonId || this._activeSetTypes.ContainsValue(a.Attribute.AddonId)))
             {
-                attributeValueMap[attr.Name] = null;
+                var deserializedValue = JsonConvert.DeserializeObject(value.Value);
+                entity.MappedValues[value.Attribute.Name] = deserializedValue;
             }
 
-            foreach (var value in entity.Values.Where(a => this._activeSetTypes.ContainsValue(a.Attribute.AddonId)))
+            if (entity.MappedValues.ContainsKey("DepartmentId"))
             {
-                attributeValueMap[value.Attribute.Name] = JsonConvert.DeserializeObject(value.Value);
+                var department = this._databaseContext.Departments.FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
+                entity.MappedValues["Department"] = department;
             }
 
-            attributeValueMap["Id"] = entity.Id;
-            attributeValueMap["SetId"] = entity.SetId;
-
-            var mappedEntity = entityType is null ? Activator.CreateInstance<TE>() : Activator.CreateInstance(entityType);
-            var mappedEntityType = mappedEntity.GetType();
-            foreach (var item in attributeValueMap)
-            {
-                if (item.Value is null)
-                {
-                    continue;
-                }
-
-                var propertyInfo = mappedEntityType.GetProperty(item.Key);
-                if (propertyInfo is null)
-                {
-                    continue;
-                }
-
-                var value = propertyInfo.PropertyType.IsEnum
-                    ? Enum.Parse(propertyInfo.PropertyType, item.Value.ToString())
-                    : Convert.ChangeType(item.Value, propertyInfo.PropertyType);
-                propertyInfo.SetValue(mappedEntity, value, null);
-            }
-
-            if (attributeValueMap.ContainsKey("DepartmentId"))
-            {
-                var propertyInfo = mappedEntityType.GetProperty("Department");
-                if (propertyInfo != null)
-                {
-                    var item = this._databaseContext.Departments.FirstOrDefault(dept => dept.Id == (attributeValueMap["DepartmentId"] as long? ?? 0));
-                    propertyInfo.SetValue(mappedEntity, Convert.ChangeType(item, propertyInfo.PropertyType), null);
-                }
-            }
-
-            return (TE)mappedEntity;
+            return entity;
         }
 
         private void GetSetAttributesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
@@ -547,14 +504,14 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var request = expandoObject.ConvertTo<GetSetEntityRequest>();
-                var types = this.FindSetTypesFromId(request.SetId);
-                if (types?.Item1 is null || types.Item2 is null)
+                var setType = this.FindSetTypeById(request.SetId);
+                if (setType is null)
                 {
                     networkCallbackDelegate.Invoke(null);
                     return;
                 }
 
-                var entity = this.GetEntityWithOptionalType<LooseDataEntity>(types.Item2, request.Id);
+                var entity = this.GetEntityWithOptionalType(request.Id);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entity));
             }
             catch (Exception)
@@ -568,15 +525,15 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var request = expandoObject.ConvertTo<GetSetEntitiesRequest>();
-                var types = this.FindSetTypesFromId(request.SetId);
-                if (types?.Item1 is null || types.Item2 is null)
+                var setType = this.FindSetTypeById(request.SetId);
+                if (setType is null)
                 {
                     networkCallbackDelegate.Invoke(null);
                     return;
                 }
 
                 var filters = new Filters<LooseDataEntity>();
-                var entities = this.GetEntitiesPage<LooseDataSet, LooseDataEntity>(types.Item1, types.Item2, request.Page, filters);
+                var entities = this.GetEntitiesPage(setType, request.Page, filters);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entities));
             }
             catch (Exception)
@@ -590,15 +547,14 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var request = expandoObject.ConvertTo<AddEntityRequest>();
-                var types = this.FindSetTypesFromId(request.SetId);
-                if (types?.Item1 is null || types.Item2 is null)
+                var setType = this.FindSetTypeById(request.SetId);
+                if (setType is null)
                 {
                     networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
-                var entityToAdd = request.Entity.ConvertTo<LooseDataEntity>(types.Item2);
-                var addedEntity = this.InternalAddEntity(request.SetId, types.Item2, entityToAdd);
+                var addedEntity = this.InternalAddEntity(request.SetId, new LooseDataEntity(), new Dictionary<string, object>(request.Entity));
                 if (addedEntity is null)
                 {
                     networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -618,16 +574,14 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var request = expandoObject.ConvertTo<AddEntityRequest>();
-                var types = this.FindSetTypesFromId(request.SetId);
-                if (types?.Item1 is null || types.Item2 is null)
+                var setType = this.FindSetTypeById(request.SetId);
+                if (setType is null)
                 {
                     networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
-                var entityToUpdate = request.Entity.ConvertTo<LooseDataEntity>(types.Item2);
-                var originalEntity = this.GetEntityWithOptionalType<LooseDataEntity>(types.Item2, entityToUpdate.Id);
-                this.InternalUpdateEntity(request.SetId, types.Item2, originalEntity, entityToUpdate);
+                this.InternalUpdateEntity(request.SetId, request.EntityId, new Dictionary<string, object>(request.Entity));
                 networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulEdit", "Nui.Label.SuccessfulEntityEdit");
             }
             catch (Exception)
@@ -641,8 +595,8 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var request = expandoObject.ConvertTo<DeleteEntityRequest>();
-                var types = this.FindSetTypesFromId(request.SetId);
-                if (types?.Item1 is null || types.Item2 is null)
+                var setType = this.FindSetTypeById(request.SetId);
+                if (setType is null)
                 {
                     networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
@@ -658,7 +612,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 this._databaseContext.LooseDataEntities.Remove(entityToDelete);
                 this._databaseContext.SaveChanges();
-                this.InvokeEvent(LooseDataEntityObservableType.Delete, entityToDelete);
+                this.InvokeEvent(LooseDataEntityObservableType.Delete, setType, entityToDelete);
                 networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulDelete", "Nui.Labels.SuccessfulEntityDelete");
             }
             catch (Exception)
@@ -667,56 +621,50 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private LooseDataEntity InternalAddEntity<TE>(string setId, Type entityType, TE entityToAdd)
-            where TE : LooseDataEntity
+        private LooseDataEntity InternalAddEntity(string setId, LooseDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)
         {
-            var foundSet = this._databaseContext.LooseDataSets
+            var set = this._databaseContext.LooseDataSets
                 .Include(s => s.Attributes)
                 .FirstOrDefault(s => s.Id == setId);
-            if (foundSet is null)
+            if (set is null)
             {
                 return null;
             }
 
             var attributeValueMap = new Dictionary<LooseDataAttribute, object>();
-            foreach (var attr in foundSet.Attributes)
+            foreach (var attr in set.Attributes)
             {
                 attributeValueMap[attr] = null;
             }
 
-            var properties = entityType.GetProperties();
-            foreach (var property in properties)
+            foreach (var value in valuesToAdd)
             {
-                var attribute = foundSet.Attributes.FirstOrDefault(a => a.Name == property.Name);
+                var attribute = set.Attributes.FirstOrDefault(a => a.Name == value.Key);
                 if (attribute is null)
                 {
                     continue;
                 }
 
-                attributeValueMap[attribute] = property.GetValue(entityToAdd, null);
+                attributeValueMap[attribute] = value.Value;
             }
 
-            var entity = new LooseDataEntity
-            {
-                Set = foundSet,
-            };
             var values = attributeValueMap.Select(item => new LooseDataValue
                 {
                     Attribute = item.Key,
-                    Entity = entity,
+                    Entity = entityToAdd,
                     Value = JsonConvert.SerializeObject(item.Value),
                 })
                 .ToList();
 
+            entityToAdd.Set = set;
             this._databaseContext.LooseDataValues.AddRange(values);
-            var entityEntry = this._databaseContext.LooseDataEntities.Add(entity);
+            var entityEntry = this._databaseContext.LooseDataEntities.Add(entityToAdd);
             this._databaseContext.SaveChanges();
-            this.InvokeEvent(LooseDataEntityObservableType.Add, this.MapEntityWithOptionalType<LooseDataEntity>(entityType, entityEntry.Entity));
+            this.InvokeEvent(LooseDataEntityObservableType.Add, this.FindSetTypeById(setId), this.MapEntityWithOptionalType(entityEntry.Entity));
             return entityEntry.Entity;
         }
 
-        private void InternalUpdateEntity<TE>(string setId, Type entityType, TE originalEntity, TE entityToUpdate)
-            where TE : LooseDataEntity
+        private void InternalUpdateEntity(string setId, int entityId, Dictionary<string, object> newValues)
         {
             var set = this._databaseContext.LooseDataSets.FirstOrDefault(set => set.Id == setId);
             if (set is null)
@@ -725,26 +673,25 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             var attributeValueMap = new Dictionary<string, object>();
-            foreach (var name in set.Attributes.Select(attr => attr.Name))
+            foreach (var attr in set.Attributes)
             {
-                attributeValueMap[name] = entityType.GetProperty(name)?.GetValue(originalEntity);
+                attributeValueMap[attr.Name] = null;
             }
 
-            var properties = entityType.GetProperties();
-            foreach (var property in properties)
+            foreach (var value in newValues)
             {
-                var attribute = set.Attributes.FirstOrDefault(a => a.Name == property.Name);
+                var attribute = set.Attributes.FirstOrDefault(a => a.Name == value.Key);
                 if (attribute is null)
                 {
                     continue;
                 }
 
-                attributeValueMap[attribute.Name] = property.GetValue(entityToUpdate, null);
+                attributeValueMap[attribute.Name] = value.Value;
             }
 
             var entityValues = this._databaseContext.LooseDataValues
                 .Include(value => value.Entity)
-                .Where(value => value.Entity.Id == originalEntity.Id)
+                .Where(value => value.Entity.Id == entityId)
                 .ToList();
             foreach (var dataValue in entityValues)
             {
@@ -752,7 +699,7 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             this._databaseContext.SaveChanges();
-            this.InvokeEvent(LooseDataEntityObservableType.Edit, this.GetEntityWithOptionalType<LooseDataEntity>(entityType, entityToUpdate.Id));
+            this.InvokeEvent(LooseDataEntityObservableType.Edit, this.FindSetTypeById(setId), this.GetEntityWithOptionalType(entityId));
         }
 
         /// <summary>
@@ -760,31 +707,21 @@ namespace FivePD.Gamemode.Server.Services
         /// </summary>
         /// <param name="setId">The id of the given set.</param>
         /// <returns>A tuple containing the set's and the entity's type in this order.</returns>
-        private Tuple<Type, Type> FindSetTypesFromId(string setId)
+        private Type FindSetTypeById(string setId)
         {
             var assemblyTypes = Assembly.GetExecutingAssembly().GetTypes();
-            var setType = assemblyTypes
+            var type = assemblyTypes
                 .Where(type => type.IsClass)
                 .Where(type => type.GetCustomAttribute<LooseDataSetIdAttribute>() != null)
                 .FirstOrDefault(type => type.GetCustomAttribute<LooseDataSetIdAttribute>().Id == setId);
 
-            if (setType is null)
-            {
-                return new Tuple<Type, Type>(null, null);
-            }
-
-            var entityType = assemblyTypes
-                .Where(type => type.IsClass)
-                .FirstOrDefault(type => type.Name == setType.GetCustomAttribute<LooseDataEntityModelAttribute>().ClassName);
-
-            return new Tuple<Type, Type>(setType, entityType);
+            return type;
         }
 
-        private IDisposable OnEvent<TE>(LooseDataEntityObservableType observableType, Action<TE> observer)
-            where TE : LooseDataEntity
+        private IDisposable OnEvent<TS>(LooseDataEntityObservableType observableType, Action<LooseDataEntity> observer)
         {
-            var type = typeof(TE);
-            var observable = this._observables.FirstOrDefault(o => o.EntityType == type && o.Type == observableType);
+            var type = typeof(TS);
+            var observable = this._observables.FirstOrDefault(o => o.SetType == type && o.Type == observableType);
             if (observable is null)
             {
                 observable = new LooseDataEntityObservable(type, observableType);
@@ -793,14 +730,13 @@ namespace FivePD.Gamemode.Server.Services
 
             return observable.Subscribe(entity =>
             {
-                observer?.Invoke(entity as TE);
+                observer?.Invoke(entity);
             });
         }
 
-        private void InvokeEvent<TE>(LooseDataEntityObservableType observableType, TE entity)
-            where TE : LooseDataEntity
+        private void InvokeEvent(LooseDataEntityObservableType observableType, Type setType, LooseDataEntity entity)
         {
-            var observable = this._observables.FirstOrDefault(o => o.Type == observableType && o.EntityType == typeof(TE));
+            var observable = this._observables.FirstOrDefault(o => o.Type == observableType && o.SetType == setType);
             observable?.InvokeObservers(entity);
         }
     }

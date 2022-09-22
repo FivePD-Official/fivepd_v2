@@ -6,44 +6,92 @@
 
 using System;
 using System.Collections.Generic;
+using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Models.LooseDataSet;
-
-#pragma warning disable CS1591
-#pragma warning disable SA1600
-
-#pragma warning disable SA1649
 
 namespace FivePD.Gamemode.Server.Interfaces
 {
+    /// <summary>
+    /// Handles the dynamic data sets and entities.
+    /// </summary>
     public interface ILooseDataService
     {
+        /// <summary>
+        /// Registers attributes to the given dynamic data set type.
+        /// </summary>
+        /// <param name="attributes">The attributes to register.</param>
+        /// <typeparam name="TS">The type of the set.</typeparam>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
         public void RegisterSetAttributes<TS>(List<LooseDataAttribute> attributes)
             where TS : LooseDataSet;
 
-        public IDisposable OnAdd<TE>(Action<TE> observer)
-            where TE : LooseDataEntity;
+        /// <summary>
+        /// Fires when an entity is added to the given <typeparamref name="TS"/> set
+        /// either via the API or the NUI.
+        /// </summary>
+        /// <param name="observer">The action that will executed upon firing with the added entity.</param>
+        /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
+        /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
+        public IDisposable OnAdd<TS>(Action<LooseDataEntity> observer);
 
-        public IDisposable OnEdit<TE>(Action<TE> observer)
-            where TE : LooseDataEntity;
+        /// <summary>
+        /// Fires when an entity in the given <typeparamref name="TS"/> set is edited
+        /// either via the API or the NUI.
+        /// </summary>
+        /// <param name="observer">The action that will executed upon firing with the edited entity.</param>
+        /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
+        /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
+        public IDisposable OnEdit<TS>(Action<LooseDataEntity> observer);
 
-        public IDisposable OnDelete<TE>(Action<TE> observer)
-            where TE : LooseDataEntity;
+        /// <summary>
+        /// Fires when an entity from the given <typeparamref name="TS"/> set is deleted
+        /// either via the API or the NUI.
+        /// </summary>
+        /// <param name="observer">The action that will executed upon fire deleted entity.</param>
+        /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
+        /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
+        public IDisposable OnDelete<TS>(Action<LooseDataEntity> observer);
 
-        public void AddEntity<TS, TE>(TE entityToAdd)
-            where TS : LooseDataSet
-            where TE : LooseDataEntity;
+        /// <summary>
+        /// Inserts an entity into the database with all its
+        /// values mapped to the attributes of the given set.
+        /// If a property doesn't exist as an attribute it won't be saved.
+        /// </summary>
+        /// <param name="entityToAdd">The entity to insert.</param>
+        /// <typeparam name="TS">The type of the set where the entity should be inserted.</typeparam>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void AddEntity<TS>(LooseDataEntity entityToAdd)
+            where TS : LooseDataSet;
 
-        public void UpdateEntity<TE>(TE entityToUpdate)
-            where TE : LooseDataEntity;
+        /// <summary>
+        /// Updates the values of the entity in the database.
+        /// </summary>
+        /// <param name="entityToUpdate">The entity to update.</param>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void UpdateEntity(LooseDataEntity entityToUpdate);
 
-        public void DeleteEntity<TE>(TE entityToDelete)
-            where TE : LooseDataEntity;
+        /// <summary>
+        /// Deletes an entity.
+        /// </summary>
+        /// <param name="entityToDelete">The entity to delete.</param>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void DeleteEntity(LooseDataEntity entityToDelete);
 
-        public TE GetEntity<TE>(int id)
-            where TE : LooseDataEntity;
+        /// <summary>
+        /// Finds and maps the first entity with the given id.
+        /// </summary>
+        /// <param name="id">The id of the entity.</param>
+        /// <returns>The first entity with the given id.</returns>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public LooseDataEntity GetEntity(int id);
 
-        public List<TE> GetEntities<TS, TE>()
-            where TS : LooseDataSet
-            where TE : LooseDataEntity;
+        /// <summary>
+        /// Finds and maps all entities of the given set.
+        /// </summary>
+        /// <typeparam name="TS">The type of the set which entities are needed.</typeparam>
+        /// <returns>All entities of the set.</returns>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public List<LooseDataEntity> GetEntities<TS>()
+            where TS : LooseDataSet;
     }
 }
