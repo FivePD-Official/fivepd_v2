@@ -4,25 +4,26 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using FivePD.Common.Models;
-
-#pragma warning disable CS1591
-#pragma warning disable SA1600
-#pragma warning disable S125
-#pragma warning disable SA1512
-#pragma warning disable SA1515
-#pragma warning disable SA1649
-#pragma warning disable SA1602
-
 namespace FivePD.Gamemode.Server.Models.LooseDataSet
 {
+    /// <summary>
+    /// Defines the possible types of <see cref="LooseDataEntityObservable"/>.
+    /// </summary>
     public enum LooseDataEntityObservableType
     {
+        /// <summary>
+        /// Fires when an entity has been added to a set.
+        /// </summary>
         Add,
+
+        /// <summary>
+        /// Fires when an entity has been edited in a set.
+        /// </summary>
         Edit,
+
+        /// <summary>
+        /// Fires when an entity has been deleted from a set.
+        /// </summary>
         Delete,
     }
 }

@@ -11,60 +11,71 @@ using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.LooseDataSet;
 
-#pragma warning disable CS1591
-#pragma warning disable SA1600
-
 namespace FivePD.Gamemode.Server.Services
 {
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IReportService" />
     public class ReportService : IReportService, IServiceWithEvents
     {
         private readonly ILooseDataService _looseDataService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReportService"/> class.
+        /// </summary>
+        /// <param name="looseDataService">The <see cref="ILooseDataService"/> to use.</param>
         public ReportService(ILooseDataService looseDataService)
         {
             this._looseDataService = looseDataService;
         }
 
+        /// <inheritdoc />
         public IDisposable OnArrestReportAdd(Action<LooseDataEntity> observer)
         {
             return this._looseDataService.OnAdd<ArrestReportSet>(observer);
         }
 
+        /// <inheritdoc />
         public IDisposable OnArrestReportEdit(Action<LooseDataEntity> observer)
         {
             return this._looseDataService.OnEdit<ArrestReportSet>(observer);
         }
 
+        /// <inheritdoc />
         public IDisposable OnArrestReportDelete(Action<LooseDataEntity> observer)
         {
             return this._looseDataService.OnDelete<ArrestReportSet>(observer);
         }
 
+        /// <inheritdoc />
         public void AddArrestReport(LooseDataEntity arrestReport)
         {
             this._looseDataService.AddEntity<ArrestReportSet>(arrestReport);
         }
 
+        /// <inheritdoc />
         public void UpdateArrestReport(LooseDataEntity arrestReport)
         {
             this._looseDataService.UpdateEntity(arrestReport);
         }
 
+        /// <inheritdoc />
         public void DeleteArrestReport(LooseDataEntity arrestReport)
         {
             this._looseDataService.DeleteEntity(arrestReport);
         }
 
+        /// <inheritdoc />
         public LooseDataEntity GetArrestReport(int id)
         {
             return this._looseDataService.GetEntity(id);
         }
 
+        /// <inheritdoc />
         public List<LooseDataEntity> GetArrestReports()
         {
             return this._looseDataService.GetEntities<ArrestReportSet>();
         }
 
+        /// <inheritdoc />
         public void RegisterEvents()
         {
             this._looseDataService.RegisterSetAttributes<ArrestReportSet>(new List<LooseDataAttribute>

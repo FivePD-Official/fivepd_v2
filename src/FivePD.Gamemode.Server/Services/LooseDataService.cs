@@ -22,16 +22,9 @@ using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-#pragma warning disable CS1591
-#pragma warning disable SA1600
-#pragma warning disable S125
-#pragma warning disable SA1512
-#pragma warning disable SA1515
-
-#pragma warning disable SA1649
-
 namespace FivePD.Gamemode.Server.Services
 {
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.ILooseDataService" />
     public class LooseDataService : ILooseDataService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
@@ -39,27 +32,36 @@ namespace FivePD.Gamemode.Server.Services
         private readonly List<LooseDataEntityObservable> _observables = new List<LooseDataEntityObservable>();
         private Dictionary<Type, string> _activeSetTypes;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LooseDataService"/> class.
+        /// </summary>
+        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+        /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
         public LooseDataService(EventHandlerDictionary eventHandlerDictionary, DatabaseContext databaseContext)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._databaseContext = databaseContext;
         }
 
+        /// <inheritdoc />
         public IDisposable OnAdd<TS>(Action<LooseDataEntity> observer)
         {
             return this.OnEvent<TS>(LooseDataEntityObservableType.Add, observer);
         }
 
+        /// <inheritdoc />
         public IDisposable OnEdit<TS>(Action<LooseDataEntity> observer)
         {
             return this.OnEvent<TS>(LooseDataEntityObservableType.Edit, observer);
         }
 
+        /// <inheritdoc />
         public IDisposable OnDelete<TS>(Action<LooseDataEntity> observer)
         {
             return this.OnEvent<TS>(LooseDataEntityObservableType.Delete, observer);
         }
 
+        /// <inheritdoc />
         public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.LooseData.GetEntity] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetEntityFromNui);
@@ -74,6 +76,7 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.LooseData.DeleteSetAttribute] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteSetAttributeFromNui);
         }
 
+        /// <inheritdoc />
         public void RegisterSetAttributes<TS>(List<LooseDataAttribute> attributes)
             where TS : LooseDataSet
         {
@@ -145,6 +148,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        /// <inheritdoc />
         public void AddEntity<TS>(LooseDataEntity entityToAdd)
             where TS : LooseDataSet
         {
@@ -165,6 +169,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        /// <inheritdoc />
         public void UpdateEntity(LooseDataEntity entityToUpdate)
         {
             try
@@ -183,17 +188,20 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        /// <inheritdoc />
         public LooseDataEntity GetEntity(int id)
         {
             return this.GetEntityWithOptionalType(id);
         }
 
+        /// <inheritdoc />
         public List<LooseDataEntity> GetEntities<TS>()
             where TS : LooseDataSet
         {
             return this.GetEntitiesWithOptionalType<TS>(null);
         }
 
+        /// <inheritdoc />
         public void DeleteEntity(LooseDataEntity entityToDelete)
         {
             try
@@ -307,6 +315,12 @@ namespace FivePD.Gamemode.Server.Services
             {
                 var department = this._databaseContext.Departments.FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
                 entity.MappedValues["Department"] = department;
+            }
+
+            if (entity.MappedValues.ContainsKey("UserId"))
+            {
+                var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
+                entity.MappedValues["User"] = user;
             }
 
             return entity;
@@ -702,11 +716,6 @@ namespace FivePD.Gamemode.Server.Services
             this.InvokeEvent(LooseDataEntityObservableType.Edit, this.FindSetTypeById(setId), this.GetEntityWithOptionalType(entityId));
         }
 
-        /// <summary>
-        /// Finds the set and entity types from the set's id.
-        /// </summary>
-        /// <param name="setId">The id of the given set.</param>
-        /// <returns>A tuple containing the set's and the entity's type in this order.</returns>
         private Type FindSetTypeById(string setId)
         {
             var assemblyTypes = Assembly.GetExecutingAssembly().GetTypes();
