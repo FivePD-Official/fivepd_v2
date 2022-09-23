@@ -1,13 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Button, Collation, Column, LooseDataEntity, MappedLooseDataEntity, Page, User } from '@models';
+import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { SetId } from '@enums';
+import { DefaultSetId, SetId } from '@enums';
 import { Subject, takeUntil } from 'rxjs';
 import { UserState } from '@store/user.state';
 import { Store } from '@ngxs/store';
 import { mapAttributesToFields, mapAttributesToGridColumns, mapPageEntities } from '@helpers';
 import { LocalizationService } from '@services/localization/localization.service';
 import { ModalService } from '@services/modal/modal.service';
+import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
+import { SidebarComponent } from '../../../components/sidebar/sidebar.component';
+import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
+import { ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 
 @Component({
   selector: 'app-reports',
@@ -24,16 +28,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
       type: 'button',
       label: this._localization.translate('Nui.Actions.Create'),
       show: () => !!this.user?.Department,
-      onClick: () => this._modal.open({
+      onClick: () => this._modal.open(ModalFormComponent, {
           title: 'Nui.Actions.Create',
           buttons: {
             cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
             submit: { theme: 'primary', label: 'Nui.Actions.Create' },
           },
-          fields: mapAttributesToFields(this._looseData.getSetAttributes(SetId.ArrestReport)),
-          formColumns: 2,
+          fields: mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport)),
+          columns: 2,
         }).onSuccess(modalRes => {
-          this._looseData.addEntity(SetId.ArrestReport, {
+          this._looseData.addEntity(DefaultSetId.ArrestReport, {
             DepartmentId: this.user!.DepartmentId,
             DateOfSubmit: new Date(),
             ...modalRes.value!,
@@ -73,7 +77,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   getArrestReports(): void {
-    this._looseData.getEntities(SetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
+    this._looseData.getEntities(DefaultSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
       console.log(wrapper)
       this.arrestReports = mapPageEntities(wrapper.page);
       this.arrestReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
@@ -93,18 +97,29 @@ export class ReportsComponent implements OnInit, OnDestroy {
           actions: [
             {
               type: 'button',
-              label: this._localization.translate('Nui.Actions.Edit'),
+              label: this._localization.translate('Nui.Actions.View'),
               show: () => true,
-              onClick: item => this._looseData.getEntity(SetId.ArrestReport, item.Id).subscribe(newItem => this._modal.open({
+              onClick: entity => {
+                this._modal.open(ModalEntityViewComponent, {
+                  title: 'Nui.Labels.ArrestReport',
+                  columns: 2,
+                }, new Map<any, any>().set(ENTITY, entity));
+              }
+            },
+            {
+              type: 'button',
+              label: this._localization.translate('Nui.Actions.Edit'),
+              show: () => this.user?.Admin ?? false,
+              onClick: item => this._looseData.getEntity(DefaultSetId.ArrestReport, item.Id).subscribe(newItem => this._modal.open(ModalFormComponent, {
                     title: 'Nui.Actions.Edit',
                     buttons: {
                       cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
                       submit: { theme: 'primary', label: 'Nui.Actions.Save' },
                     },
-                    fields: mapAttributesToFields(this._looseData.getSetAttributes(SetId.ArrestReport), newItem.entity),
-                    formColumns: 2,
+                    fields: mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport), newItem.entity),
+                    columns: 2,
                   }).onSuccess(modalRes => {
-                    this._looseData.editEntity(SetId.ArrestReport, newItem.entity.Id, {
+                    this._looseData.editEntity(DefaultSetId.ArrestReport, newItem.entity.Id, {
                       ...newItem.entity,
                       ...modalRes.value!,
                     }).subscribe(res => {
@@ -118,8 +133,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
             {
               type: 'button',
               label: this._localization.translate('Nui.Actions.Delete'),
-              show: () => true,
-              onClick: item => this._modal.open({
+              show: () => this.user?.Admin ?? false,
+              onClick: item => this._modal.open(ModalFormComponent, {
                   title: 'Nui.Labels.DeleteArrestReportTitle',
                   description: this._localization.translate('Nui.Labels.DeleteArrestReportDescription'),
                   buttons: {
@@ -127,7 +142,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
                     submit: { theme: 'danger', label: 'Nui.Actions.Delete' },
                   },
                 }).onSuccess(() => {
-                  this._looseData.deleteEntity(SetId.ArrestReport, item.Id).subscribe(res => {
+                  this._looseData.deleteEntity(DefaultSetId.ArrestReport, item.Id).subscribe(res => {
                     if (res.Status) {
                       this.getArrestReports();
                     }
@@ -135,7 +150,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
                 })
             }
           ],
-          show: () => this.user?.Admin ?? false,
+          show: () => true,
         }
       );
     });

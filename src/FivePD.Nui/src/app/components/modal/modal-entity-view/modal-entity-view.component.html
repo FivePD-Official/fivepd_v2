@@ -1,0 +1,8 @@
+<div class="columns" *ngIf="entityValueColumns.length" [ngStyle]="{ grid: columnsGridStyle }">
+  <div class="column" *ngFor="let col of entityValueColumns">
+    <div class="column-item" *ngFor="let item of col">
+      <p class="name">{{ item.name }}</p>
+      <p class="value">{{ item.value }}</p>
+    </div>
+  </div>
+</div>

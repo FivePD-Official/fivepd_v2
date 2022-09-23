@@ -40,6 +40,7 @@
       "ActiveCalls": "T: Active calls",
       "AddedBy": "T: Added by",
       "Address": "T: Address",
+      "ArrestReport": "T: Arrest report",
       "ArrestReportAttributes": "T: Arrest report attributes",
       "ArrestReports": "T: Arrest reports",
       "AssignedCall": "T: Assigned call",
@@ -151,7 +152,8 @@
       "Rename": "T: Rename",
       "Save": "T: Save",
       "SetCallsign": "T: Set callsign",
-      "SetRank": "T: Set rank"
+      "SetRank": "T: Set rank",
+      "View": "T: View"
     },
     "Errors": {
       "AttributeExistsWithNameDescription": "T: A division with this name already exists.",

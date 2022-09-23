@@ -17,6 +17,8 @@ export enum Gender {
   Female,
 }
 
-export enum SetId {
+export enum DefaultSetId {
   ArrestReport = 'fivepd_arrest_report',
 }
+
+export type SetId = DefaultSetId | string;

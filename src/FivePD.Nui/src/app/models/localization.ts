@@ -42,6 +42,7 @@ export interface Localization {
       ActiveCalls: string;
       AddedBy: string;
       Address: string;
+      ArrestReport: string;
       ArrestReportAttributes: string;
       ArrestReports: string;
       AssignedCall: string;
@@ -154,6 +155,7 @@ export interface Localization {
       Save: string;
       SetCallsign: string;
       SetRank: string;
+      View: string;
     },
     Errors: {
       AttributeExistsWithNameDescription: string;
@@ -242,6 +244,7 @@ export const defaultLocalization: Localization = {
       ActiveCalls: '',
       AddedBy: '',
       Address: '',
+      ArrestReport: '',
       ArrestReportAttributes: '',
       ArrestReports: '',
       AssignedCall: '',
@@ -354,6 +357,7 @@ export const defaultLocalization: Localization = {
       Save: '',
       SetCallsign: '',
       SetRank: '',
+      View: '',
     },
     Errors: {
       AttributeExistsWithNameDescription: '',

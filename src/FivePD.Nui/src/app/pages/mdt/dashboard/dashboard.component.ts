@@ -9,6 +9,7 @@ import { Select } from '@ngxs/store';
 import { UserState } from '@store/user.state';
 import { Observable } from 'rxjs';
 import { UserService } from '@services/user/user.service';
+import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -60,7 +61,7 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
-          onClick: department => this._modal.open({
+          onClick: department => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.DeleteDepartmentTitle',
             description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', { department: `<b>${department.Name}</b>` }),
             buttons: {
@@ -110,7 +111,7 @@ export class DashboardComponent implements OnInit {
   }
 
   tryCreateDepartment(): void {
-    this._modal.open({
+    this._modal.open(ModalFormComponent, {
       title: 'Nui.Actions.CreateDepartment',
       fields: [
         new TextInput({

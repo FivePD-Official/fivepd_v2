@@ -12,12 +12,13 @@ import {
   User
 } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { SetId } from '@enums';
+import { DefaultSetId, SetId } from '@enums';
 import { ModalService } from '@services/modal/modal.service';
 import { UserState, UserStateModel } from '@store/user.state';
 import { Subject, takeUntil } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { LocalizationService } from '@services/localization/localization.service';
+import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 
 @Component({
   selector: 'app-settings',
@@ -71,7 +72,7 @@ export class SettingsComponent implements OnInit {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           show: item => item.AddonId === 'admin',
-          onClick: item => this._modal.open({
+          onClick: item => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.EditAttributeTitle',
             buttons: {
               cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
@@ -131,7 +132,7 @@ export class SettingsComponent implements OnInit {
               }),
             ]
           }).onSuccess(modalRes => {
-            this._looseData.editSetAttribute(SetId.ArrestReport, {
+            this._looseData.editSetAttribute(DefaultSetId.ArrestReport, {
               Id: item.Id,
               Name: modalRes.value!['Name'],
               Label: modalRes.value!['Label'],
@@ -150,7 +151,7 @@ export class SettingsComponent implements OnInit {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
           show: item => item.AddonId === 'admin',
-          onClick: item => this._modal.open({
+          onClick: item => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.DeleteAttributeTitle',
             description: this._localization.translate('Nui.Labels.DeleteAttributeDescription', { attribute: item.Name }),
             buttons: {
@@ -158,7 +159,7 @@ export class SettingsComponent implements OnInit {
               submit: { theme: 'danger', label: 'Nui.Actions.Delete' },
             },
           }).onSuccess(() => {
-            this._looseData.deleteSetAttribute(SetId.ArrestReport, item.Id).subscribe(res => {
+            this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id).subscribe(res => {
               if (res.Status) {
                 this.arrestReportAttributesCollation.Page = 1;
                 this.getArrestReportAttributes();
@@ -174,7 +175,7 @@ export class SettingsComponent implements OnInit {
       label: this._localization.translate('Nui.Actions.CreateAttribute'),
       show: () => true,
       onClick: () => {
-        this._modal.open({
+        this._modal.open(ModalFormComponent, {
           title: 'Nui.Actions.CreateAttribute',
           buttons: {
             cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
@@ -226,7 +227,7 @@ export class SettingsComponent implements OnInit {
             }),
           ]
         }).onSuccess(modalRes => {
-          this._looseData.addSetAttribute(SetId.ArrestReport, {
+          this._looseData.addSetAttribute(DefaultSetId.ArrestReport, {
             Name: modalRes.value!['Name'],
             DataType: modalRes.value!['DataType'],
             Label: modalRes.value!['Label'],
@@ -267,7 +268,7 @@ export class SettingsComponent implements OnInit {
   }
 
   getArrestReportAttributes(): void {
-    this._looseData.getSetAttributesPage(SetId.ArrestReport, this.arrestReportAttributesCollation).subscribe(res => {
+    this._looseData.getSetAttributesPage(DefaultSetId.ArrestReport, this.arrestReportAttributesCollation).subscribe(res => {
       this.arrestReportAttributes = res;
     });
   }

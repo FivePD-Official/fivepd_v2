@@ -1,96 +1,69 @@
-import { Injectable } from '@angular/core';
-import { filter, Observable, Subject } from 'rxjs';
-import { FormInputBase, Localization, Paths } from '@models';
-
-interface ModalButton {
-  theme: 'primary' | 'secondary' | 'danger';
-  label: Paths<Localization>;
-}
-
-export interface ModalOptions {
-  title: Paths<Localization>;
-  description?: string;
-  fields?: FormInputBase<any>[];
-  formColumns?: number;
-  buttons: {
-    cancel: ModalButton;
-    submit: ModalButton;
-  };
-}
-
-export interface ModalResponse {
-  success: boolean;
-  value?: { [key: string]: any; };
-}
-
-export class Modal {
-
-  title: ModalOptions['title'];
-  description?: ModalOptions['description'];
-  fields?: ModalOptions['fields'];
-  buttons: ModalOptions['buttons'];
-  columns?: ModalOptions['formColumns'];
-
-  private response$: Observable<ModalResponse>;
-
-  constructor(modal: ModalOptions, modalResponse: Observable<ModalResponse>) {
-    this.title = modal.title;
-    this.description = modal.description;
-    this.fields = modal.fields;
-    this.buttons = modal.buttons;
-    this.columns = modal.formColumns;
-    this.response$ = modalResponse;
-  }
-
-  onSuccess(handler: (response: ModalResponse) => void): Modal {
-    this.response$.pipe(
-      filter(response => response.success),
-    ).subscribe(response => handler(response))
-    return this;
-  }
-
-  onCancel(handler: (response: ModalResponse) => void): Modal {
-    this.response$.pipe(
-      filter(response => !response.success),
-    ).subscribe(response => handler(response))
-    return this;
-  }
-}
+import { ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type } from '@angular/core';
+import { ModalOptions, ModalRef } from '@models';
+import { ModalComponent } from '../../components/modal/modal.component';
+import { ModalInjector } from '@services/modal/modal-injector';
+import { EXTRA_OBJECTS_TO_INJECT } from '../../components/modal/extra-objects-token';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModalService {
 
-  public readonly modal$ = new Subject<Modal | null>();
-  private _modalResponse$ = new Subject<ModalResponse>();
+  constructor(
+    private _appRef: ApplicationRef,
+    private _injector: EnvironmentInjector
+  ) { }
 
-  public open(inputObj: ModalOptions): Modal {
-    this._modalResponse$ = new Subject<ModalResponse>();
-    const modal = new Modal(inputObj, this._modalResponse$.asObservable());
-    this.modal$.next(modal);
-    return modal;
-  }
+  public open(componentType: Type<any>, options: ModalOptions, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef {
+    const modalRef = this.appendModalComponentToMainView(options, extraObjectsToInject);
 
-  public close(): void {
-    this.modal$.next(null);
-    this._modalResponse$.next({
-      success: false
-    });
-  }
-
-  public submit(value?: object): void {
-    this.modal$.next(null);
-    const data: ModalResponse = {
-      success: true,
+    const modalComponent = modalRef.modalComponentRef.instance;
+    modalComponent.childComponentType = componentType;
+    modalComponent.title = options.title;
+    modalComponent.description = options.description || '';
+    modalComponent.fields = options.fields || [];
+    modalComponent.buttons = options.buttons || {
+      cancel: { theme: 'secondary', label: '' },
+      submit: { theme: 'secondary', label: '' },
     };
-    if (value) {
-      data.value = value;
-    }
-    this._modalResponse$.next(data);
+    modalComponent.columns = options.columns || 1;
+
+    return modalRef;
   }
 
-  onOpen(): Observable<Modal | null> {
-    return this.modal$.asObservable();
+  private appendModalComponentToMainView(options: ModalOptions, extraObjectsToInject: Map<any, any>): ModalRef {
+    const modalRef = new ModalRef(options);
+
+    extraObjectsToInject.set(ModalRef, modalRef);
+    extraObjectsToInject.set(EXTRA_OBJECTS_TO_INJECT, extraObjectsToInject);
+
+    const componentRef = createComponent(ModalComponent, {
+      environmentInjector: this._injector,
+      elementInjector: new ModalInjector(this._injector, extraObjectsToInject),
+    });
+
+    const mdtView = document.querySelector('.mdt-view');
+    if (!mdtView) {
+      // @ts-ignore
+      // There might be some future plans to use modals for menus as well,
+      // but for now we'll only use this in the MDT view.
+      return null;
+    }
+
+    mdtView.appendChild(componentRef.location.nativeElement);
+    this._appRef.attachView(componentRef.hostView);
+
+    modalRef.modalComponentRef = componentRef;
+
+    modalRef.result.subscribe(() => {
+      this.removeModalComponentFromMdtView(modalRef.modalComponentRef);
+    });
+
+    return modalRef;
+  }
+
+  private removeModalComponentFromMdtView(componentRef: ComponentRef<ModalComponent>) {
+    this._appRef.detachView(componentRef.hostView);
+    componentRef.destroy();
   }
 }

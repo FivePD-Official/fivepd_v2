@@ -15,3 +15,4 @@ export * from './table';
 export * from './button';
 export * from './icon';
 export * from './loose-data';
+export * from './modal';

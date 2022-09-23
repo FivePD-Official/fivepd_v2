@@ -22,6 +22,8 @@ namespace FivePD.Common.Localization
 
         public string Address { get; set; } = "Address";
 
+        public string ArrestReport { get; set; } = "Arrest report";
+
         public string ArrestReportAttributes { get; set; } = "Arrest report attributes";
 
         public string ArrestReports { get; set; } = "Arrest reports";

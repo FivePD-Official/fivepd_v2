@@ -49,6 +49,8 @@ import { DateMaskDirective } from './directives/date-mask.directive';
 import { SettingsComponent } from './pages/mdt/settings/settings.component';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { ReportsComponent } from './pages/mdt/reports/reports.component';
+import { ModalFormComponent } from './components/modal/modal-form/modal-form.component';
+import { ModalEntityViewComponent } from './components/modal/modal-entity-view/modal-entity-view.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +81,8 @@ import { ReportsComponent } from './pages/mdt/reports/reports.component';
     DateMaskDirective,
     SettingsComponent,
     ReportsComponent,
+    ModalFormComponent,
+    ModalEntityViewComponent,
   ],
   imports: [
     BrowserModule,

@@ -27,6 +27,7 @@ import { ModalService } from '@services/modal/modal.service';
 import { UserService } from '@services/user/user.service';
 import { GenericNameValidator } from '@validators/generic-name-validator';
 import { Validators } from '@angular/forms';
+import { ModalFormComponent } from '../../../../components/modal/modal-form/modal-form.component';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -57,7 +58,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     {
       label: this._localization.translate('Nui.Actions.CreateRank'),
       show: () => this.user?.Admin ?? false,
-      onClick: () => this._modal.open({
+      onClick: () => this._modal.open(ModalFormComponent, {
         title: 'Nui.Actions.CreateRank',
         fields: [
           new TextInput({
@@ -131,7 +132,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
           onClick: rank => {
-            this._modal.open({
+            this._modal.open(ModalFormComponent, {
               title: 'Nui.Labels.DeleteRankTitle',
               description: this._localization.translate('Nui.Labels.DeleteRankDescription', { rank: `<b>${rank.Name}</b>`}),
               buttons: {
@@ -151,7 +152,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           onClick: rank => {
-            this._modal.open({
+            this._modal.open(ModalFormComponent, {
               title: 'Nui.Labels.EditRankTitle',
               fields: [
                 new TextInput({
@@ -260,7 +261,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   divisionsButtons: Button[] = [
     {
       label: this._localization.translate('Nui.Actions.CreateDivision'),
-      onClick: () => this._modal.open({
+      onClick: () => this._modal.open(ModalFormComponent, {
         title: 'Nui.Actions.CreateDivision',
         fields: [
           new TextInput({
@@ -302,7 +303,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
-          onClick: division => this._modal.open({
+          onClick: division => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.DeleteDivisionTitle',
             description: this._localization.translate('Nui.Labels.DeleteDivisionDescription', { division: `<b>${division.Name}</b>` }),
             buttons: {
@@ -321,7 +322,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           onClick: division => {
-            this._modal.open({
+            this._modal.open(ModalFormComponent, {
               title: 'Nui.Labels.EditDivision',
               fields: [
                 new TextInput({

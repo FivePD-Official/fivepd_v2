@@ -41,5 +41,7 @@ namespace FivePD.Common.Localization
         public string SetCallsign { get; set; } = "Set callsign";
 
         public string SetRank { get; set; } = "Set rank";
+
+        public string View { get; set; } = "View";
     }
 }
