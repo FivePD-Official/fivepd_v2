@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FivePD.Gamemode.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220910150812_LooseData")]
+    [Migration("20220923195713_LooseData")]
     partial class LooseData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,9 @@ namespace FivePD.Gamemode.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("AddonId")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<int>("DataType")
                         .HasColumnType("int");
 
@@ -87,14 +90,23 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.Property<string>("Options")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
                     b.Property<string>("Placeholder")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Readonly")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("Required")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("SetId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("ShowInGrid")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 
@@ -247,7 +259,8 @@ namespace FivePD.Gamemode.Server.Migrations
 
                     b.HasOne("FivePD.Gamemode.Server.Models.LooseDataSet.LooseDataEntity", "Entity")
                         .WithMany("Values")
-                        .HasForeignKey("EntityId");
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FivePD.Gamemode.Server.Models.Rank", b =>

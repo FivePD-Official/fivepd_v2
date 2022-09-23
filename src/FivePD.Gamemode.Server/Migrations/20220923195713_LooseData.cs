@@ -12,7 +12,7 @@ namespace FivePD.Gamemode.Server.Migrations
                 name: "LooseDataSets",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
+                    Id = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,8 +27,12 @@ namespace FivePD.Gamemode.Server.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     SetId = table.Column<string>(nullable: true),
                     DataType = table.Column<int>(nullable: false),
+                    AddonId = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
+                    Order = table.Column<int>(nullable: false),
                     Required = table.Column<bool>(nullable: false),
+                    Readonly = table.Column<bool>(nullable: false),
+                    ShowInGrid = table.Column<bool>(nullable: false),
                     Placeholder = table.Column<string>(nullable: true),
                     Label = table.Column<string>(nullable: true),
                     HelpLabel = table.Column<string>(nullable: true),
@@ -88,7 +92,7 @@ namespace FivePD.Gamemode.Server.Migrations
                         column: x => x.EntityId,
                         principalTable: "LooseDataEntities",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
