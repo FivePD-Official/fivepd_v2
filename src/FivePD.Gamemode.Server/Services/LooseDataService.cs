@@ -30,7 +30,7 @@ namespace FivePD.Gamemode.Server.Services
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly DatabaseContext _databaseContext;
         private readonly List<LooseDataEntityObservable> _observables = new List<LooseDataEntityObservable>();
-        private Dictionary<Type, string> _activeSetTypes;
+        private readonly Dictionary<Type, string> _activeSetTypes = new Dictionary<Type, string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LooseDataService"/> class.
@@ -82,14 +82,20 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                // TODO ? AddonMetadataService.GetExecutingAddonDefinition()
-                this._activeSetTypes ??= Assembly
-                    .GetExecutingAssembly()
-                    .GetTypes()
-                    .Where(type => type.IsClass && type.IsSubclassOf(typeof(LooseDataSet)))
-                    .ToDictionary(type => type, type => type.Assembly.GetName().Name);
+                var assemblyName = this.GetExecutingAssemblyName();
+                if (string.IsNullOrEmpty(assemblyName))
+                {
+                    return;
+                }
+
+                if (assemblyName == "CitizenFX.Core")
+                {
+                    assemblyName = "FivePD.Gamemode.Server.net";
+                }
 
                 var setType = typeof(TS);
+                this._activeSetTypes[setType] = assemblyName;
+
                 var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
                 if (setIdAttr is null)
                 {
@@ -747,6 +753,27 @@ namespace FivePD.Gamemode.Server.Services
         {
             var observable = this._observables.FirstOrDefault(o => o.Type == observableType && o.SetType == setType);
             observable?.InvokeObservers(entity);
+        }
+
+        private string GetExecutingAssemblyName()
+        {
+            // Technically, the executing assembly is the server gamemode. Sort through the stack trace and find a ref. to the actual addon
+            foreach (var frame in new System.Diagnostics.StackTrace().GetFrames())
+            {
+                try
+                {
+                    if (frame.GetMethod().DeclaringType!.Assembly != Assembly.GetExecutingAssembly())
+                    {
+                        return frame.GetMethod().DeclaringType!.Assembly.GetName().Name;
+                    }
+                }
+                catch (Exception)
+                {
+                    // Continues when frame assembly is null
+                }
+            }
+
+            return null;
         }
     }
 }
