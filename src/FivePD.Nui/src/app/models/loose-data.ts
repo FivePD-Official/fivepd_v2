@@ -19,10 +19,11 @@ export interface SetAttribute {
 }
 
 export enum AttributeDataType {
-  String,
+  ShortString,
+  LongString,
   Integer,
   Bool,
-  DateTime,
+  Date,
 }
 
 export interface SetAttributeOptions {

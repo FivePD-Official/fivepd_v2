@@ -8,7 +8,7 @@
   FormInputBaseOptions,
   LooseDataEntity, MappedLooseDataEntity,
   NumberInput,
-  SetAttribute,
+  SetAttribute, Textarea,
   TextInput
 } from '@models';
 
@@ -28,8 +28,10 @@ export function mapAttributesToFields(attributes: SetAttribute[], entity?: Mappe
     }
 
     let inputField: FormInputBase<any> | undefined;
-    if (attr.DataType === AttributeDataType.String) {
+    if (attr.DataType === AttributeDataType.ShortString) {
       inputField = new TextInput(options);
+    } else if (attr.DataType === AttributeDataType.LongString) {
+      inputField = new Textarea(options);
     } else if (attr.DataType === AttributeDataType.Integer) {
       if (attr.Options?.Items) {
         const dropdownOptions: DropdownOptions = {
@@ -56,7 +58,7 @@ export function mapAttributesToFields(attributes: SetAttribute[], entity?: Mappe
       }
     } else if (attr.DataType === AttributeDataType.Bool) {
       inputField = new Checkbox(options);
-    } else if (attr.DataType === AttributeDataType.DateTime) {
+    } else if (attr.DataType === AttributeDataType.Date) {
       inputField = new DateInput(options);
     }
 

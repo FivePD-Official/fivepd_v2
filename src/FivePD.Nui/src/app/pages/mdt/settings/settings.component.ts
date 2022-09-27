@@ -46,10 +46,11 @@ export class SettingsComponent implements OnInit {
       show: () => true,
       valueResolver: attr => {
         switch (attr.DataType) {
-          case AttributeDataType.String: return this._localization.translate('Nui.Labels.String');
-          case AttributeDataType.Integer: return this._localization.translate('Nui.Labels.Integer');
-          case AttributeDataType.Bool: return this._localization.translate('Nui.Labels.Boolean');
-          case AttributeDataType.DateTime: return this._localization.translate('Nui.Labels.DateTime');
+          case AttributeDataType.ShortString: return this._localization.translate('Nui.Labels.ShortString');
+          case AttributeDataType.LongString: return this._localization.translate('Nui.Labels.LongString');
+          case AttributeDataType.Integer: return this._localization.translate('Nui.Labels.WholeNumber');
+          case AttributeDataType.Bool: return this._localization.translate('Nui.Labels.Checkbox');
+          case AttributeDataType.Date: return this._localization.translate('Nui.Labels.Date');
           default: return '-';
         }
       },
@@ -95,10 +96,11 @@ export class SettingsComponent implements OnInit {
                   label: this._localization.translate('Nui.Labels.Type'),
                   selectedItemResolver: itemKey => item.DataType === itemKey,
                   items: [
-                    { key: AttributeDataType.String, label: this._localization.translate('Nui.Labels.String') },
-                    { key: AttributeDataType.Integer, label: this._localization.translate('Nui.Labels.Integer') },
-                    { key: AttributeDataType.Bool, label: this._localization.translate('Nui.Labels.Boolean') },
-                    { key: AttributeDataType.DateTime, label: this._localization.translate('Nui.Labels.DateTime') },
+                    { key: AttributeDataType.ShortString, label: this._localization.translate('Nui.Labels.ShortString') },
+                    { key: AttributeDataType.LongString, label: this._localization.translate('Nui.Labels.LongString') },
+                    { key: AttributeDataType.Integer, label: this._localization.translate('Nui.Labels.WholeNumber') },
+                    { key: AttributeDataType.Bool, label: this._localization.translate('Nui.Labels.Checkbox') },
+                    { key: AttributeDataType.Date, label: this._localization.translate('Nui.Labels.Date') },
                   ]
                 }
               }),
@@ -195,10 +197,11 @@ export class SettingsComponent implements OnInit {
                 size: 'normal',
                 label: this._localization.translate('Nui.Labels.Type'),
                 items: [
-                  { key: AttributeDataType.String, label: this._localization.translate('Nui.Labels.String') },
-                  { key: AttributeDataType.Integer, label: this._localization.translate('Nui.Labels.Integer') },
-                  { key: AttributeDataType.Bool, label: this._localization.translate('Nui.Labels.Boolean') },
-                  { key: AttributeDataType.DateTime, label: this._localization.translate('Nui.Labels.DateTime') },
+                  { key: AttributeDataType.ShortString, label: this._localization.translate('Nui.Labels.ShortString') },
+                  { key: AttributeDataType.LongString, label: this._localization.translate('Nui.Labels.LongString') },
+                  { key: AttributeDataType.Integer, label: this._localization.translate('Nui.Labels.WholeNumber') },
+                  { key: AttributeDataType.Bool, label: this._localization.translate('Nui.Labels.Checkbox') },
+                  { key: AttributeDataType.Date, label: this._localization.translate('Nui.Labels.Date') },
                 ]
               }
             }),

@@ -90,7 +90,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 if (assemblyName == "CitizenFX.Core")
                 {
-                    assemblyName = "FivePD.Gamemode.Server.net";
+                    assemblyName = "FivePD Gamemode";
                 }
 
                 var setType = typeof(TS);
@@ -133,7 +133,7 @@ namespace FivePD.Gamemode.Server.Services
                                 Entity = entity,
                                 Attribute = addedAttributeEntry.Entity,
                                 Value = JsonConvert.SerializeObject(
-                                    attr.DataType == LooseDataAttribute.LooseDataType.DateTime
+                                    attr.DataType == LooseDataAttribute.LooseDataType.Date
                                     ? DateTime.Now
                                     : (object)null),
                             };
@@ -408,7 +408,7 @@ namespace FivePD.Gamemode.Server.Services
                         Entity = entity,
                         Attribute = addedAttributeEntry.Entity,
                         Value = JsonConvert.SerializeObject(
-                            request.Attribute.DataType == LooseDataAttribute.LooseDataType.DateTime
+                            request.Attribute.DataType == LooseDataAttribute.LooseDataType.Date
                                 ? DateTime.Now
                                 : (object)null),
                     };
@@ -602,7 +602,7 @@ namespace FivePD.Gamemode.Server.Services
                 }
 
                 this.InternalUpdateEntity(request.SetId, request.EntityId, new Dictionary<string, object>(request.Entity));
-                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulEdit", "Nui.Label.SuccessfulEntityEdit");
+                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulEdit", "Nui.Labels.SuccessfulEntityEdit");
             }
             catch (Exception)
             {

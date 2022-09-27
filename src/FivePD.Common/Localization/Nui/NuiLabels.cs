@@ -32,8 +32,6 @@ namespace FivePD.Common.Localization
 
         public string AvailableCharacters { get; set; } = "Available characters";
 
-        public string Bool { get; set; } = "Boolean";
-
         public string Callsign { get; set; } = "Callsign";
 
         public string CallsignFormat { get; set; } = "Callsign format";
@@ -44,13 +42,15 @@ namespace FivePD.Common.Localization
 
         public string Capacity { get; set; } = "Capacity";
 
+        public string Checkbox { get; set; } = "Checkbox";
+
         public string CitizenDatabase { get; set; } = "Citizen database";
 
         public string Dash { get; set; } = "Dash";
 
         public string Dashboard { get; set; } = "Dashboard";
 
-        public string DateTime { get; set; } = "DateTime";
+        public string Date { get; set; } = "Date";
 
         public string DefaultRank { get; set; } = "Default rank";
 
@@ -94,11 +94,11 @@ namespace FivePD.Common.Localization
 
         public string HelpLabel { get; set; } = "Help label";
 
-        public string Integer { get; set; } = "Integer";
-
         public string Label { get; set; } = "Label";
 
         public string Letter { get; set; } = "Letter";
+
+        public string LongString { get; set; } = "Long text";
 
         public string MaxNumberOfMembers { get; set; } = "Max number of members";
 
@@ -148,15 +148,15 @@ namespace FivePD.Common.Localization
 
         public string Settings { get; set; } = "Settings";
 
-        public string ShowInGrid { get; set; } = "ShowInGrid";
+        public string ShortString { get; set; } = "Short text";
+
+        public string ShowInGrid { get; set; } = "Show in grid view";
 
         public string ShowInGridHelpLabel { get; set; } = "Specifies whether to display this field in grid columns or not.";
 
         public string Statistics { get; set; } = "Statistics";
 
         public string Status { get; set; } = "Status";
-
-        public string String { get; set; } = "String";
 
         public string SuccessfulAttributeCreate { get; set; } = "{{attribute}} has been successfully created.";
 
@@ -213,5 +213,7 @@ namespace FivePD.Common.Localization
         public string Units { get; set; } = "Units";
 
         public string VehicleDatabase { get; set; } = "Vehicle database";
+
+        public string WholeNumber { get; set; } = "Whole number";
     }
 }

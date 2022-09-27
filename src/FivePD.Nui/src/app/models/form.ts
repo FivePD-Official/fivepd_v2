@@ -20,7 +20,7 @@ export interface DropdownOptions {
 }
 
 interface FormInputBaseModel<T> {
-  type: 'text' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'checkboxGroup';
+  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'checkboxGroup';
   value: T | undefined;
   key: string;
   label: Paths<Localization> | string;
@@ -82,6 +82,12 @@ export abstract class FormInputBase<T> {
 export class TextInput extends FormInputBase<string> {
   constructor(options: FormInputBaseOptions<string>) {
     super('text', options);
+  }
+}
+
+export class Textarea extends FormInputBase<string> {
+  constructor(options: FormInputBaseOptions<string>) {
+    super('textarea', options);
   }
 }
 

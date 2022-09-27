@@ -44,6 +44,8 @@ namespace FivePD.Common.Localization
 
         public string FieldFormat { get; set; } = "The format is incorrect.";
 
+        public string FieldInvalidDate { get; set; } = "Invalid date. Format: MM/DD/YYYY";
+
         public string FieldMax { get; set; } = "The maximum value is {{value}}.";
 
         public string FieldMin { get; set; } = "The minimum value is {{value}}.";

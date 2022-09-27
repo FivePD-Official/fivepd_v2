@@ -34,6 +34,14 @@
        (input)="onChange.emit($event)"
     />
 
+    <textarea
+      *ngSwitchCase="field.type === 'textarea'"
+      [attr.id]="field.key"
+      [formControlName]="field.key"
+      [attr.placeholder]="placeholder"
+      (input)="onChange.emit($event)"
+    ></textarea>
+
     <div
       *ngSwitchCase="field.type === 'dropdown'"
       class="dropdown"
@@ -100,7 +108,7 @@
     <p *ngIf="control.errors['max']">{{ 'Nui.Errors.FieldMax' | translate: { 'value': field.options['max'] } }}</p>
     <p *ngIf="control.errors['nameTaken']">{{ 'Nui.Errors.FieldNameTaken' | translate }}</p>
     <p *ngIf="control.errors['pattern']">{{ 'Nui.Errors.FieldFormat' | translate }}</p>
-    <p *ngIf="control.errors['invalidDate']">Invalid date. MM/DD/YYYY ??</p>
+    <p *ngIf="control.errors['invalidDate']">{{ 'Nui.Errors.FieldInvalidDate' | translate }}</p>
   </div>
 
 </div>

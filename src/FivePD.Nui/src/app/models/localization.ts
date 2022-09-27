@@ -47,16 +47,16 @@ export interface Localization {
       ArrestReports: string;
       AssignedCall: string;
       AvailableCharacters: string;
-      Bool: string;
       Callsign: string;
       CallsignFormat: string;
       CallsignFormatHelpLabel: string;
       CallsignHelpLabel: string;
       Capacity: string;
+      Checkbox: string;
       CitizenDatabase: string;
       Dash: string;
       Dashboard: string;
-      DateTime: string;
+      Date: string;
       DefaultRank: string;
       DefaultRankDescription: string;
       DeleteArrestReportDescription: string;
@@ -78,9 +78,9 @@ export interface Localization {
       EditDivision: string;
       EditRankTitle: string;
       HelpLabel: string;
-      Integer: string;
       Label: string;
       Letter: string;
+      LongString: string;
       MaxNumberOfMembers: string;
       MaxNumberOfMembersHelpLabel: string;
       Members: string;
@@ -105,11 +105,11 @@ export interface Localization {
       SearchByCallsign: string;
       SearchByName: string;
       Settings: string;
+      ShortString: string;
       ShowInGrid: string;
       ShowInGridHelpLabel: string;
       Statistics: string;
       Status: string;
-      String: string;
       SuccessfulAttributeCreate: string;
       SuccessfulAttributeDelete: string;
       SuccessfulAttributeEdit: string;
@@ -138,6 +138,7 @@ export interface Localization {
       Type: string;
       Units: string;
       VehicleDatabase: string;
+      WholeNumber: string;
     },
     Actions: {
       Cancel: string;
@@ -174,6 +175,7 @@ export interface Localization {
       EditDivisionExistsWithNameTitle: string;
       EditRankExistsWithNameTitle: string;
       FieldFormat: string;
+      FieldInvalidDate: string;
       FieldMax: string;
       FieldMin: string;
       FieldNameTaken: string;
@@ -249,16 +251,16 @@ export const defaultLocalization: Localization = {
       ArrestReports: '',
       AssignedCall: '',
       AvailableCharacters: '',
-      Bool: '',
       Callsign: '',
       CallsignFormat: '',
       CallsignFormatHelpLabel: '',
       CallsignHelpLabel: '',
       Capacity: '',
+      Checkbox: '',
       CitizenDatabase: '',
       Dash: '',
       Dashboard: '',
-      DateTime: '',
+      Date: '',
       DefaultRank: '',
       DefaultRankDescription: '',
       DeleteArrestReportDescription: '',
@@ -280,9 +282,9 @@ export const defaultLocalization: Localization = {
       EditDivision: '',
       EditRankTitle: '',
       HelpLabel: '',
-      Integer: '',
       Label: '',
       Letter: '',
+      LongString: '',
       MaxNumberOfMembers: '',
       MaxNumberOfMembersHelpLabel: '',
       Members: '',
@@ -307,11 +309,11 @@ export const defaultLocalization: Localization = {
       SearchByCallsign: '',
       SearchByName: '',
       Settings: '',
+      ShortString: '',
       ShowInGrid: '',
       ShowInGridHelpLabel: '',
       Statistics: '',
       Status: '',
-      String: '',
       SuccessfulAttributeCreate: '',
       SuccessfulAttributeDelete: '',
       SuccessfulAttributeEdit: '',
@@ -340,6 +342,7 @@ export const defaultLocalization: Localization = {
       Type: '',
       Units: '',
       VehicleDatabase: '',
+      WholeNumber: '',
     },
     Actions: {
       Cancel: '',
@@ -376,6 +379,7 @@ export const defaultLocalization: Localization = {
       EditDivisionExistsWithNameTitle: '',
       EditRankExistsWithNameTitle: '',
       FieldFormat: '',
+      FieldInvalidDate: '',
       FieldMax: '',
       FieldMin: '',
       FieldNameTaken: '',

@@ -25,24 +25,29 @@ namespace FivePD.Gamemode.Server.Models.LooseDataSet
         public enum LooseDataType
         {
             /// <summary>
-            /// String.
+            /// This type will display a text input field in forms.
             /// </summary>
-            String,
+            ShortString,
 
             /// <summary>
-            /// Integer.
+            /// This type will display a textarea in forms.
+            /// </summary>
+            LongString,
+
+            /// <summary>
+            /// This type will display a number input field in forms.
             /// </summary>
             Integer,
 
             /// <summary>
-            /// Bool.
+            /// This type will display a checkbox in forms.
             /// </summary>
             Bool,
 
             /// <summary>
-            /// DateTime.
+            /// This type will display a date input field in forms.
             /// </summary>
-            DateTime,
+            Date,
         }
 
         /// <summary>

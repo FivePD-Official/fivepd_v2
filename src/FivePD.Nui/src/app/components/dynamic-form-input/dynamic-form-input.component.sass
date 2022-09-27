@@ -13,7 +13,7 @@
       &:hover ~ .checkbox-inner input
         border-color: var(--clr-gray)
 
-  input
+  input, textarea
     height: 40px
     width: 100%
     border: 2px solid var(--clr-bg-40)
@@ -29,6 +29,13 @@
     &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
       appearance: none
       -webkit-appearance: none
+
+  textarea
+    min-height: 100px
+    max-height: 250px
+    padding: 15px
+    resize: vertical
+    transition: none
 
   .help-label
     display: block

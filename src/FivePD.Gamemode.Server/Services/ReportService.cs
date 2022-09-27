@@ -93,7 +93,7 @@ namespace FivePD.Gamemode.Server.Services
                 {
                     Name = "DateOfSubmit",
                     Label = "Date of submit",
-                    DataType = LooseDataAttribute.LooseDataType.DateTime,
+                    DataType = LooseDataAttribute.LooseDataType.Date,
                     Required = false,
                     ShowInGrid = true,
                     Readonly = true,
@@ -102,7 +102,7 @@ namespace FivePD.Gamemode.Server.Services
                 {
                     Name = "DateOfArrest",
                     Label = "Date of arrest",
-                    DataType = LooseDataAttribute.LooseDataType.DateTime,
+                    DataType = LooseDataAttribute.LooseDataType.Date,
                     Required = true,
                     ShowInGrid = true,
                 },
@@ -110,28 +110,28 @@ namespace FivePD.Gamemode.Server.Services
                 {
                     Name = "AddressOfArrest",
                     Label = "Address of arrest",
-                    DataType = LooseDataAttribute.LooseDataType.String,
+                    DataType = LooseDataAttribute.LooseDataType.ShortString,
                     Required = true,
                 },
                 new LooseDataAttribute
                 {
                     Name = "Weapons",
                     Label = "Weapons",
-                    DataType = LooseDataAttribute.LooseDataType.String,
+                    DataType = LooseDataAttribute.LooseDataType.ShortString,
                     Required = false,
                 },
                 new LooseDataAttribute
                 {
                     Name = "Narrative",
                     Label = "Narrative",
-                    DataType = LooseDataAttribute.LooseDataType.String,
+                    DataType = LooseDataAttribute.LooseDataType.LongString,
                     Required = true,
                 },
                 new LooseDataAttribute
                 {
                     Name = "ArresteeName",
                     Label = "Name of arrestee",
-                    DataType = LooseDataAttribute.LooseDataType.String,
+                    DataType = LooseDataAttribute.LooseDataType.ShortString,
                     Required = true,
                     ShowInGrid = true,
                     Order = 1,
@@ -140,7 +140,7 @@ namespace FivePD.Gamemode.Server.Services
                 {
                     Name = "ArresteeBirthdate",
                     Label = "Birthdate of arrestee",
-                    DataType = LooseDataAttribute.LooseDataType.DateTime,
+                    DataType = LooseDataAttribute.LooseDataType.Date,
                     Required = true,
                 },
                 new LooseDataAttribute
@@ -169,7 +169,7 @@ namespace FivePD.Gamemode.Server.Services
                 {
                     Name = "ArresteeRace",
                     Label = "Race of arrestee",
-                    DataType = LooseDataAttribute.LooseDataType.String,
+                    DataType = LooseDataAttribute.LooseDataType.ShortString,
                     Required = true,
                 },
             });

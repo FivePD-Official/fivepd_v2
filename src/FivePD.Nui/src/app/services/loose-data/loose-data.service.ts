@@ -132,7 +132,7 @@ export class LooseDataService {
         continue;
       }
 
-      if (attr.DataType === AttributeDataType.DateTime) {
+      if (attr.DataType === AttributeDataType.Date) {
         mappedEntity[key] = new Date(value);
       }
     }
