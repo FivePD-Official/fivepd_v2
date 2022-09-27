@@ -26,6 +26,31 @@ namespace FivePD.Gamemode.Server.Interfaces
             where TS : LooseDataSet;
 
         /// <summary>
+        /// Updates the attribute of the given name
+        /// with the values of <paramref name="newAttributeValues"/>.
+        /// Can't update another addon's attribute or change its data type.
+        /// </summary>
+        /// <param name="attributeName">The attribute's name to delete.</param>
+        /// <param name="newAttributeValues">The new values of the attribute.</param>
+        /// <typeparam name="TS">The set to delete the attribute from.</typeparam>
+        /// <exception cref="ArgumentException">When the executing addon tries to delete another addon's attribute.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void UpdateSetAttribute<TS>(string attributeName, LooseDataAttribute newAttributeValues)
+            where TS : LooseDataSet;
+
+        /// <summary>
+        /// Deletes an attribute with the given name
+        /// from the <typeparam name="TS"></typeparam> set.
+        /// Can't delete another addon's attribute.
+        /// </summary>
+        /// <param name="attributeName">The attribute's name to delete.</param>
+        /// <typeparam name="TS">The set to delete the attribute from.</typeparam>
+        /// <exception cref="ArgumentException">When the executing addon tries to delete another addon's attribute.</exception>
+        /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
+        public void DeleteSetAttribute<TS>(string attributeName)
+            where TS : LooseDataSet;
+
+        /// <summary>
         /// Fires when an entity is added to the given <typeparamref name="TS"/> set
         /// either via the API or the NUI.
         /// </summary>

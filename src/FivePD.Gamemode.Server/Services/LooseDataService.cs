@@ -155,6 +155,108 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
+        public void UpdateSetAttribute<TS>(string attributeName, LooseDataAttribute newAttributeValues)
+            where TS : LooseDataSet
+        {
+            try
+            {
+                var assemblyName = this.GetExecutingAssemblyName();
+                if (string.IsNullOrEmpty(assemblyName))
+                {
+                    return;
+                }
+
+                var setType = typeof(TS);
+                if (!this._activeSetTypes.ContainsKey(setType))
+                {
+                    return;
+                }
+
+                var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+                if (setIdAttr is null)
+                {
+                    return;
+                }
+
+                var attributeToUpdate = this._databaseContext.LooseDataAttributes
+                    .FirstOrDefault(attr => attr.Name == attributeName);
+                if (attributeToUpdate is null)
+                {
+                    return;
+                }
+
+                if (attributeToUpdate.AddonId == "FivePD Gamemode" || attributeToUpdate.AddonId != assemblyName)
+                {
+                    throw new ArgumentException("Can't update attribute of a different addon");
+                }
+
+                attributeToUpdate.Name = newAttributeValues.Name;
+                attributeToUpdate.Label = newAttributeValues.Label;
+                attributeToUpdate.HelpLabel = newAttributeValues.HelpLabel;
+                attributeToUpdate.Placeholder = newAttributeValues.Placeholder;
+                attributeToUpdate.Options = newAttributeValues.Options;
+                attributeToUpdate.Readonly = newAttributeValues.Readonly;
+                attributeToUpdate.Required = newAttributeValues.Required;
+                attributeToUpdate.Order = newAttributeValues.Order;
+                attributeToUpdate.ShowInGrid = newAttributeValues.ShowInGrid;
+                this._databaseContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        /// <inheritdoc />
+        public void DeleteSetAttribute<TS>(string attributeName)
+            where TS : LooseDataSet
+        {
+            try
+            {
+                var assemblyName = this.GetExecutingAssemblyName();
+                if (string.IsNullOrEmpty(assemblyName))
+                {
+                    return;
+                }
+
+                var setType = typeof(TS);
+                if (!this._activeSetTypes.ContainsKey(setType))
+                {
+                    return;
+                }
+
+                var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+                if (setIdAttr is null)
+                {
+                    return;
+                }
+
+                var attributeToDelete = this._databaseContext.LooseDataAttributes
+                    .FirstOrDefault(attr => attr.Name == attributeName);
+                if (attributeToDelete is null)
+                {
+                    return;
+                }
+
+                if (attributeToDelete.AddonId == "FivePD Gamemode" || attributeToDelete.AddonId != assemblyName)
+                {
+                    throw new ArgumentException("Can't delete attribute of a different addon");
+                }
+
+                var valuesToDelete = this._databaseContext.LooseDataValues
+                    .Include(value => value.Attribute)
+                    .Where(value => value.Attribute.Id == attributeToDelete.Id);
+                this._databaseContext.LooseDataValues.RemoveRange(valuesToDelete);
+                this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
+                this._databaseContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        /// <inheritdoc />
         public void AddEntity<TS>(LooseDataEntity entityToAdd)
             where TS : LooseDataSet
         {
