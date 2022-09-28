@@ -176,6 +176,7 @@ export class SettingsComponent implements OnInit {
     {
       label: this._localization.translate('Nui.Actions.CreateAttribute'),
       show: () => true,
+      disabled: () => false,
       onClick: () => {
         this._modal.open(ModalFormComponent, {
           title: 'Nui.Actions.CreateAttribute',

@@ -44,6 +44,7 @@ export interface Localization {
       Address: string;
       ArrestReport: string;
       ArrestReportAttributes: string;
+      ArrestReportCreationTooltip: string;
       ArrestReports: string;
       AssignedCall: string;
       AvailableCharacters: string;
@@ -248,6 +249,7 @@ export const defaultLocalization: Localization = {
       Address: '',
       ArrestReport: '',
       ArrestReportAttributes: '',
+      ArrestReportCreationTooltip: '',
       ArrestReports: '',
       AssignedCall: '',
       AvailableCharacters: '',

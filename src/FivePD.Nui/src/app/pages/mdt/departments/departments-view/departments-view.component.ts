@@ -58,6 +58,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     {
       label: this._localization.translate('Nui.Actions.CreateRank'),
       show: () => this.user?.Admin ?? false,
+      disabled: () => false,
       onClick: () => this._modal.open(ModalFormComponent, {
         title: 'Nui.Actions.CreateRank',
         fields: [
@@ -261,6 +262,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   divisionsButtons: Button[] = [
     {
       label: this._localization.translate('Nui.Actions.CreateDivision'),
+      show: () => this.user?.Admin ?? false,
+      disabled: () => false,
       onClick: () => this._modal.open(ModalFormComponent, {
         title: 'Nui.Actions.CreateDivision',
         fields: [
@@ -285,7 +288,6 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           }
         });
       }),
-      show: () => this.user?.Admin ?? false,
     }
   ];
   divisionsColumns: Column<Division>[] = [

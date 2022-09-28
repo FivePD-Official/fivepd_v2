@@ -42,6 +42,7 @@
       "Address": "T: Address",
       "ArrestReport": "T: Arrest report",
       "ArrestReportAttributes": "T: Arrest report attributes",
+      "ArrestReportCreationTooltip": "T: You can only create arrest reports if you're in a department.",
       "ArrestReports": "T: Arrest reports",
       "AssignedCall": "T: Assigned call",
       "AvailableCharacters": "T: Available characters",

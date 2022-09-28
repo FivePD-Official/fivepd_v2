@@ -10,6 +10,7 @@ export interface ColumnOptions<T> {
   valueResolver?: (item: T) => string;
   actions?: TableCellActions<T>[];
   show?: () => boolean;
+  disabled?: () => boolean;
 }
 
 export class Column<T> {
@@ -51,6 +52,7 @@ export interface TableCellAction<T> {
   type: 'button' | 'select';
   label: string;
   show?: (item: T) => boolean;
+  disabled?: (item: T) => boolean;
 }
 
 export interface TableCellActionButton<T> extends TableCellAction<T> {

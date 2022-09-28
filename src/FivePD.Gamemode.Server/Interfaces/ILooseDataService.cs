@@ -40,7 +40,7 @@ namespace FivePD.Gamemode.Server.Interfaces
 
         /// <summary>
         /// Deletes an attribute with the given name
-        /// from the <typeparam name="TS"></typeparam> set.
+        /// from the <typeparamref name="TS"></typeparamref> set.
         /// Can't delete another addon's attribute.
         /// </summary>
         /// <param name="attributeName">The attribute's name to delete.</param>

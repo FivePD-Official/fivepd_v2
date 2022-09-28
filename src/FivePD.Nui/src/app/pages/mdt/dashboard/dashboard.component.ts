@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
     {
       label: this._localization.translate('Nui.Actions.CreateDepartment'),
       show: () => this.user?.Admin ?? false,
+      disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
     }
   ];
@@ -61,6 +62,8 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
+          show: () => true,
+          disabled: () => false,
           onClick: department => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.DeleteDepartmentTitle',
             description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', { department: `<b>${department.Name}</b>` }),

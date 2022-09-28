@@ -26,6 +26,8 @@ namespace FivePD.Common.Localization
 
         public string ArrestReportAttributes { get; set; } = "Arrest report attributes";
 
+        public string ArrestReportCreationTooltip { get; set; } = "You can only create arrest reports if you're in a department.";
+
         public string ArrestReports { get; set; } = "Arrest reports";
 
         public string AssignedCall { get; set; } = "Assigned call";

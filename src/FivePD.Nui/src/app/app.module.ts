@@ -51,6 +51,7 @@ import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { ReportsComponent } from './pages/mdt/reports/reports.component';
 import { ModalFormComponent } from './components/modal/modal-form/modal-form.component';
 import { ModalEntityViewComponent } from './components/modal/modal-entity-view/modal-entity-view.component';
+import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
 
 @NgModule({
   declarations: [
@@ -98,6 +99,17 @@ import { ModalEntityViewComponent } from './components/modal/modal-entity-view/m
     NgxsReduxDevtoolsPluginModule.forRoot(),
     ReactiveFormsModule,
     FormsModule,
+    TippyModule.forRoot({
+      defaultVariation: 'custom',
+      variations: {
+        custom: {
+          ...tooltipVariation,
+          theme: 'custom',
+          arrow: false,
+          animation: false,
+        }
+      }
+    }),
   ],
   providers: [
     WindowService,

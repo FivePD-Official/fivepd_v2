@@ -27,7 +27,13 @@ export class ReportsComponent implements OnInit, OnDestroy {
     {
       type: 'button',
       label: this._localization.translate('Nui.Actions.Create'),
-      show: () => !!this.user?.Department,
+      show: () => true,
+      disabled: () => !this.user?.Department,
+      tooltip: {
+        enabled: () => !this.user?.Department,
+        text: this._localization.translate('Nui.Labels.ArrestReportCreationTooltip'),
+        placement: 'left',
+      },
       onClick: () => this._modal.open(ModalFormComponent, {
           title: 'Nui.Actions.Create',
           buttons: {
@@ -78,7 +84,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   getArrestReports(): void {
     this._looseData.getEntities(DefaultSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
-      console.log(wrapper)
       this.arrestReports = mapPageEntities(wrapper.page);
       this.arrestReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
@@ -94,6 +99,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
       this.arrestReportColumns.push(
         {
           header: 'Actions',
+          show: () => true,
           actions: [
             {
               type: 'button',
@@ -150,7 +156,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
                 })
             }
           ],
-          show: () => true,
         }
       );
     });

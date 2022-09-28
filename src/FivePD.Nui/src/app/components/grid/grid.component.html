@@ -8,6 +8,10 @@
         [link]="button.link"
         [label]="button.label"
         [show]="button.show()"
+        [disabled]="button.disabled()"
+        [tippy]="button.tooltip?.text ?? ''"
+        [isEnabled]="button.tooltip?.enabled ? button.tooltip!.enabled() : false"
+        [placement]="button.tooltip?.placement ?? 'top'"
         (onClick)="headerButtonOnClick(button)"
       ></app-button>
     </div>

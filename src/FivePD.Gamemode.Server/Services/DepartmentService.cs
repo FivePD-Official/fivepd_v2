@@ -952,26 +952,14 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 this.RemovePlayerFromDepartment(player);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulLeave",
-                    Description = "Nui.Labels.SuccessfulDepartmentLeave",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulLeave", "Nui.Labels.SuccessfulDepartmentLeave", new Dictionary<string, string>
                     {
                         { "department", playerDepartment!.Name },
-                    },
-                }.ToString());
+                    });
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
-                throw new DatabaseUsageException("Failed to access database", e);
+                networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.UnexpectedError", "Nui.Errors.DatabaseAccess");
             }
         }
 
