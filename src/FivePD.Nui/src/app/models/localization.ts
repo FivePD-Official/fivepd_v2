@@ -89,6 +89,7 @@ export interface Localization {
       MyDetails: string;
       Name: string;
       NewDepartment: string;
+      No: string;
       NoAssignedCall: string;
       NoDataToDisplay: string;
       NoDefaultRank: string;
@@ -140,6 +141,7 @@ export interface Localization {
       Units: string;
       VehicleDatabase: string;
       WholeNumber: string;
+      Yes: string;
     },
     Actions: {
       Cancel: string;
@@ -294,6 +296,7 @@ export const defaultLocalization: Localization = {
       MyDetails: '',
       Name: '',
       NewDepartment: '',
+      No: '',
       NoAssignedCall: '',
       NoDataToDisplay: '',
       NoDefaultRank: '',
@@ -345,6 +348,7 @@ export const defaultLocalization: Localization = {
       Units: '',
       VehicleDatabase: '',
       WholeNumber: '',
+      Yes: '',
     },
     Actions: {
       Cancel: '',

@@ -116,6 +116,8 @@ namespace FivePD.Common.Localization
 
         public string NewDepartment { get; set; } = "New department";
 
+        public string No { get; set; } = "No";
+
         public string NoAssignedCall { get; set; } = "You're not assigned to a call at the moment.";
 
         public string NoDataToDisplay { get; set; } = "No data to display.";
@@ -217,5 +219,7 @@ namespace FivePD.Common.Localization
         public string VehicleDatabase { get; set; } = "Vehicle database";
 
         public string WholeNumber { get; set; } = "Whole number";
+
+        public string Yes { get; set; } = "Yes";
     }
 }

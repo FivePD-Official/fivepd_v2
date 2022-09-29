@@ -87,6 +87,7 @@
       "MyDetails": "My details",
       "Name": "Name",
       "NewDepartment": "New department",
+      "No": "No",
       "NoAssignedCall": "You're not assigned to a call at the moment.",
       "NoDataToDisplay": "No data to display.",
       "NoDefaultRank": "No default rank",
@@ -137,7 +138,8 @@
       "Type": "Type",
       "Units": "Units",
       "VehicleDatabase": "Vehicle database",
-      "WholeNumber": "Whole number"
+      "WholeNumber": "Whole number",
+      "Yes": "Yes"
     },
     "Actions": {
       "Cancel": "Cancel",

@@ -109,7 +109,7 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
         currentFocus = e.target as HTMLElement;
       } else {
         if (currentFocus === firstFocusableEl) {
-          lastFocusableEl.focus();
+          lastFocusableEl?.focus();
         } else {
           firstFocusableEl?.focus();
         }

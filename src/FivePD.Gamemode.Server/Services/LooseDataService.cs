@@ -299,7 +299,7 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public LooseDataEntity GetEntity(int id)
         {
-            return this.GetEntityWithOptionalType(id);
+            return this.InternalGetEntity(id);
         }
 
         /// <inheritdoc />
@@ -325,7 +325,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 this._databaseContext.LooseDataEntities.Remove(entity);
                 this._databaseContext.SaveChanges();
-                this.InvokeEvent(LooseDataEntityObservableType.Delete, this.FindSetTypeById(entity.Set.Id), this.MapEntityWithOptionalType(entity));
+                this.InvokeEvent(LooseDataEntityObservableType.Delete, this.FindSetTypeById(entity.Set.Id), this.MapEntity(entity));
             }
             catch (Exception e)
             {
@@ -333,7 +333,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private LooseDataEntity GetEntityWithOptionalType(int id)
+        private LooseDataEntity InternalGetEntity(int id)
         {
             try
             {
@@ -344,7 +344,7 @@ namespace FivePD.Gamemode.Server.Services
                     .ThenInclude(set => set.Attributes)
                     .FirstOrDefault(entity => entity.Id == id);
 
-                var mappedEntity = entity is null ? null : this.MapEntityWithOptionalType(entity);
+                var mappedEntity = entity is null ? null : this.MapEntity(entity);
                 return mappedEntity;
             }
             catch (Exception e)
@@ -371,7 +371,7 @@ namespace FivePD.Gamemode.Server.Services
                     .Where(entity => entity.Set.Id == setIdAttr.Id)
                     .ToList();
 
-                return entities.Select(this.MapEntityWithOptionalType).ToList();
+                return entities.Select(this.MapEntity).ToList();
             }
             catch (Exception e)
             {
@@ -396,7 +396,7 @@ namespace FivePD.Gamemode.Server.Services
                     .Where(entity => entity.Set.Id == setIdAttr.Id)
                     .Paginate(pageNumber, filters);
 
-                page.Items = page.Items.Select(this.MapEntityWithOptionalType).ToList();
+                page.Items = page.Items.Select(this.MapEntity).ToList();
                 return page;
             }
             catch (Exception)
@@ -405,7 +405,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
-        private LooseDataEntity MapEntityWithOptionalType(LooseDataEntity entity)
+        private LooseDataEntity MapEntity(LooseDataEntity entity)
         {
             if (entity.Set?.Attributes is null || entity.Values is null)
             {
@@ -633,7 +633,7 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
-                var entity = this.GetEntityWithOptionalType(request.Id);
+                var entity = this.InternalGetEntity(request.Id);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entity));
             }
             catch (Exception)
@@ -782,7 +782,7 @@ namespace FivePD.Gamemode.Server.Services
             this._databaseContext.LooseDataValues.AddRange(values);
             var entityEntry = this._databaseContext.LooseDataEntities.Add(entityToAdd);
             this._databaseContext.SaveChanges();
-            this.InvokeEvent(LooseDataEntityObservableType.Add, this.FindSetTypeById(setId), this.MapEntityWithOptionalType(entityEntry.Entity));
+            this.InvokeEvent(LooseDataEntityObservableType.Add, this.FindSetTypeById(setId), this.MapEntity(entityEntry.Entity));
             return entityEntry.Entity;
         }
 
@@ -821,7 +821,7 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             this._databaseContext.SaveChanges();
-            this.InvokeEvent(LooseDataEntityObservableType.Edit, this.FindSetTypeById(setId), this.GetEntityWithOptionalType(entityId));
+            this.InvokeEvent(LooseDataEntityObservableType.Edit, this.FindSetTypeById(setId), this.InternalGetEntity(entityId));
         }
 
         private Type FindSetTypeById(string setId)

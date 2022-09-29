@@ -58,7 +58,7 @@ export class SettingsComponent implements OnInit {
     {
       header: this._localization.translate('Nui.Labels.Required'),
       show: () => true,
-      accessorKey: 'Required',
+      valueResolver: item => this._localization.translate(item.Required ? 'Nui.Labels.Yes' : 'Nui.Labels.No'),
     },
     {
       header: this._localization.translate('Nui.Labels.AddedBy'),
