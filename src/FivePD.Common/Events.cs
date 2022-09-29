@@ -290,57 +290,57 @@ namespace FivePD.Common
         }
 
         /// <summary>
-        /// Contains definitions for player related events.
+        /// Contains definitions for dynamic loose data related events.
         /// </summary>
         public abstract class LooseData
         {
             /// <summary>
-            /// qwe.
+            /// Used to get a set's attributes.
             /// </summary>
             public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
 
             /// <summary>
-            /// qwe.
+            /// Used to get a set's attributes in pageable format.
             /// </summary>
             public const string GetSetAttributesPageable = "fivepd:looseData:getSetAttributesPageable";
 
             /// <summary>
-            /// asd2.
+            /// Used to add a new set attribute.
             /// </summary>
             public const string AddSetAttribute = "fivepd:looseData:addSetAttribute";
 
             /// <summary>
-            /// asd2.
+            /// Used to edit a set attribute.
             /// </summary>
             public const string EditSetAttribute = "fivepd:looseData:editSetAttribute";
 
             /// <summary>
-            /// asd2.
+            /// Used to delete a set attribute.
             /// </summary>
             public const string DeleteSetAttribute = "fivepd:looseData:deleteSetAttribute";
 
             /// <summary>
-            /// asd2.
+            /// Used to get an entity from a given set.
             /// </summary>
             public const string GetEntity = "fivepd:looseData:getEntity";
 
             /// <summary>
-            /// asd3.
+            /// Used get all entities of a given set.
             /// </summary>
             public const string GetEntities = "fivepd:looseData:getEntities";
 
             /// <summary>
-            /// asd3.
+            /// Used to add an entity to a given set.
             /// </summary>
             public const string AddEntity = "fivepd:looseData:addEntity";
 
             /// <summary>
-            /// asd3.
+            /// Used to edit an entity.
             /// </summary>
             public const string EditEntity = "fivepd:looseData:editEntity";
 
             /// <summary>
-            /// asd3.
+            /// Used to delete an entity.
             /// </summary>
             public const string DeleteEntity = "fivepd:looseData:deleteEntity";
         }
