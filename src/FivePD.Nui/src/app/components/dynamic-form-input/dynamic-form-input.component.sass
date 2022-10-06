@@ -13,7 +13,7 @@
       &:hover ~ .checkbox-inner input
         border-color: var(--clr-gray)
 
-  input
+  input, textarea
     height: 40px
     width: 100%
     border: 2px solid var(--clr-bg-40)
@@ -29,6 +29,13 @@
     &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
       appearance: none
       -webkit-appearance: none
+
+  textarea
+    min-height: 100px
+    max-height: 250px
+    padding: 15px
+    resize: vertical
+    transition: none
 
   .help-label
     display: block
@@ -119,10 +126,21 @@
   &.dropdown--normal
     height: 40px
     .dropdown-selected-item
-      border: 1px solid var(--clr-bg-40)
+      border: 2px solid var(--clr-bg-40)
       background: transparent
   &.dropdown--small
     height: 35px
+    .dropdown-selected-item
+      background: var(--clr-bg-20)
+  &.dropdown--readonly
+    .dropdown-selected-item
+      cursor: not-allowed
+      &:hover
+        background: transparent
+      p
+        color: var(--clr-text-tertiary)
+      svg
+        display: none
 
   input
     display: none
@@ -135,7 +153,6 @@
     flex-direction: row
     align-items: center
     justify-content: space-between
-    background: var(--clr-bg-20)
     cursor: pointer
     &:hover
       background: var(--clr-bg-40)

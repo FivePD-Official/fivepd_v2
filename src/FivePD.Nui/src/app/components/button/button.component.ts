@@ -13,7 +13,7 @@ export class ButtonComponent implements OnInit, OnChanges {
   @Input() theme: Button['theme'] = 'primary';
   @Input() type?: Button['type'] = 'button';
   @Input() show: boolean = true;
-  @Input() disabled: Button['disabled'] = false;
+  @Input() disabled: boolean = false;
   @Input() link?: Button['link'];
   @Output() onClick = new EventEmitter();
 

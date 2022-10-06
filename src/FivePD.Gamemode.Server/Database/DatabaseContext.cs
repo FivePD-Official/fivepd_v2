@@ -6,7 +6,10 @@
 
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.LooseDataSet;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FivePD.Gamemode.Server.Database
 {
@@ -60,6 +63,26 @@ namespace FivePD.Gamemode.Server.Database
         /// </summary>
         public DbSet<Rank> Ranks { get; set; }
 
+        /// <summary>
+        /// Gets or sets the table containing the dynamic data sets.
+        /// </summary>
+        public DbSet<LooseDataSet> LooseDataSets { get; set; }
+
+        /// <summary>
+        /// Gets or sets the table containing the dynamic entities.
+        /// </summary>
+        public DbSet<LooseDataEntity> LooseDataEntities { get; set; }
+
+        /// <summary>
+        /// Gets or sets the table containing the attributes of the dynamic data sets.
+        /// </summary>
+        public DbSet<LooseDataAttribute> LooseDataAttributes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the table containing the values of dynamic entities.
+        /// </summary>
+        public DbSet<LooseDataValue> LooseDataValues { get; set; }
+
         /// <inheritdoc />
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -100,6 +123,32 @@ namespace FivePD.Gamemode.Server.Database
             modelBuilder.Entity<Rank>()
                 .OwnsOne(rank => rank.Permission)
                 .WithOwner();
+
+            modelBuilder.Entity<LooseDataSet>(type =>
+            {
+                type.HasMany(t => t.Entities);
+                type.HasMany(t => t.Attributes);
+            });
+
+            modelBuilder.Entity<LooseDataAttribute>(type =>
+            {
+                type.Property(t => t.Options)
+                    .HasConversion(
+                        v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                        v => JsonConvert.DeserializeObject<LooseDataAttribute.AttributeOptions>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+            });
+
+            modelBuilder.Entity<LooseDataEntity>(type =>
+            {
+                type.HasOne(t => t.Set);
+                type.HasMany(t => t.Values).WithOne(x => x.Entity).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<LooseDataValue>(type =>
+            {
+                type.HasOne(t => t.Attribute);
+                type.HasOne(t => t.Entity);
+            });
         }
     }
 }

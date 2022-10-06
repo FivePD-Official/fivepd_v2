@@ -1,3 +1,7 @@
+@import '~tippy.js/dist/tippy.css'
+@import '~tippy.js/themes/light.css'
+@import '~tippy.js/animations/scale.css'
+
 \:root
   --clr-red: #FF3E45
   --clr-blue: #178EE9
@@ -86,3 +90,14 @@ div[app-icon]
   flex-direction: column
   align-items: center
   justify-content: center
+
+.tippy-box[data-theme~='custom']
+  background-color: var(--clr-bg-40)
+  color: var(--clr-text-primary)
+  font-size: 16px
+  font-weight: 500
+  border-radius: var(--radius-sm)
+  padding: 5px
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
+  & > .tippy-arrow::before
+    border-top-color: var(--clr-bg-40)

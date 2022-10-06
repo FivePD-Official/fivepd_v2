@@ -11,3 +11,14 @@ export enum DateFormat {
   MDY,
   YMD
 }
+
+export enum Gender {
+  Male,
+  Female,
+}
+
+export enum DefaultSetId {
+  ArrestReport = 'fivepd_arrest_report',
+}
+
+export type SetId = DefaultSetId | string;

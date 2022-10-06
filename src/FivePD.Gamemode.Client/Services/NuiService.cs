@@ -59,6 +59,7 @@ namespace FivePD.Gamemode.Client.Services
             {
                 this._loggerService.Info("Starting FivePD NUI...");
                 this._ready = true;
+
                 // If we can hear this, we're ready
                 cb.Invoke(true);
             }));
@@ -83,6 +84,16 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.GetDetails);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeDivision);
             this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeRank);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetEntity);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetEntities);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.AddEntity);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.EditEntity);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.DeleteEntity);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetSetAttributes);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetSetAttributesPageable);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.AddSetAttribute);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.EditSetAttribute);
+            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.DeleteSetAttribute);
         }
 
         /// <inheritdoc />

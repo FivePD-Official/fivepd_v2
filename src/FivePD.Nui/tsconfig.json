@@ -4,7 +4,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@utils": ["src/app/utils"],
+      "@helpers": ["src/app/helpers"],
       "@enums": ["src/app/enums"],
       "@services/*": ["src/app/services/*"],
       "@models": ["src/app/models"],

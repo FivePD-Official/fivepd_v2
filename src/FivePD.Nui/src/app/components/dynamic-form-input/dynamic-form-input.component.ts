@@ -45,7 +45,7 @@ export class DynamicFormInputComponent implements OnInit {
       if (selectedItemResolver) {
         const item = items.find(item => selectedItemResolver(item.key));
         if (item) {
-          this.setSelectedItem(item);
+          this.setSelectedItem(item, true);
         }
       } else {
         this.control?.patchValue(-1);
@@ -61,12 +61,20 @@ export class DynamicFormInputComponent implements OnInit {
     return this.form?.controls[this.field.key] ?? this.pseudoFormControl;
   }
 
+  toggleDropdown(): void {
+    if (this.field.readonly) {
+      return;
+    }
+
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
   onDropdownSelect(selectItem: DropdownItem): void {
     this.dropdownOpen = false;
     this.setSelectedItem(selectItem);
   }
 
-  private setSelectedItem(selectedItem: DropdownItem): void {
+  private setSelectedItem(selectedItem: DropdownItem, isCalledAtInit: boolean = false): void {
     if (!this.field.dropdownOptions) {
       return;
     }
@@ -79,11 +87,13 @@ export class DynamicFormInputComponent implements OnInit {
       this.dropdownFilteredItems.unshift({ key: -1, label: this.field.dropdownOptions.label });
     }
 
-    const control = this.form?.controls[this.field.key];
-    if (control?.value === this.field.value) {
-      control?.markAsPristine();
-    } else {
-      control?.markAsDirty();
+    if (!isCalledAtInit) {
+      const control = this.form?.controls[this.field.key];
+      if (control?.value === this.field.value) {
+        control?.markAsPristine();
+      } else {
+        control?.markAsDirty();
+      }
     }
   }
 

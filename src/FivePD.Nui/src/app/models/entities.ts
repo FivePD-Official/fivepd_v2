@@ -1,3 +1,5 @@
+import { SetAttribute } from './loose-data';
+
 export interface User {
   Id: number;
   Name: string;
@@ -47,4 +49,24 @@ export interface Page<T> {
   PageCount: number;
   PageSize: number;
   ItemCount: number;
+}
+
+export interface LooseDataEntity {
+  Id: number;
+  SetId: string;
+  MappedValues: Record<string, any>;
+}
+
+export interface MappedLooseDataEntity extends Omit<LooseDataEntity, 'MappedValues'> {
+  [key: string]: any;
+}
+
+export interface LooseDataEntityWrapper {
+  entity: MappedLooseDataEntity;
+  attributes: SetAttribute[];
+}
+
+export interface LooseDataEntityPageWrapper {
+  page: Page<MappedLooseDataEntity>;
+  attributes: SetAttribute[];
 }

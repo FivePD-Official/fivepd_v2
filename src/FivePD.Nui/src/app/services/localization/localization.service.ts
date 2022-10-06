@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { EventService } from '@services/event/event.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import getKeyFromObjectPath from 'lodash-es/get';
+import { replaceParams } from '@helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,7 @@ export class LocalizationService {
 
   translate(path: Paths<Localization> | string, params: Record<string, string> = {}, boldParams: boolean = true): string {
     const translation = getKeyFromObjectPath(this._localization, path, path);
-    return this.replaceParams(translation, params, boldParams);
+    return replaceParams(translation, params, boldParams);
   }
 
   private async set(localization: Localization): Promise<void> {
@@ -50,12 +51,5 @@ export class LocalizationService {
         resolve();
       });
     });
-  }
-
-  private replaceParams(text: string, params: Record<string, string>, boldParams: boolean = true): string {
-    for (const [key, value] of Object.entries(params)) {
-      text = text.replace(`{{${key}}}`, boldParams ? `<b>${value}</b>` : value);
-    }
-    return text;
   }
 }

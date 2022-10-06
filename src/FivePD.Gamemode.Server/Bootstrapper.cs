@@ -19,6 +19,7 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -279,37 +280,56 @@ namespace FivePD.Gamemode.Server
 
             var services = new ServiceCollection();
 
-            // Find and register services that use event handlers
-            services.AddSingleton<IServiceWithEvents, DepartmentService>();
-            services.AddSingleton<IServiceWithEvents, EntityService>();
-            services.AddSingleton<IServiceWithEvents, PedService>();
-            services.AddSingleton<IServiceWithEvents, VehicleService>();
-            services.AddSingleton<IServiceWithEvents, TrafficStopService>();
-            services.AddSingleton<IServiceWithEvents, LocalizationService>();
-            services.AddSingleton<IServiceWithEvents, PlayerDataService>();
-
             // Find and register core services
             services.AddSingleton(Log.Logger);
             services.AddSingleton(this.EventHandlers);
             services.AddSingleton(this.Players);
-
             services.AddDbContext<DatabaseContext>();
 
-            services.AddSingleton<IDepartmentService, DepartmentService>();
             services.AddSingleton<IFileHandlerService, FileHandlerService>();
-            services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IConfigService, ConfigService>();
             services.AddSingleton<ICommandService, CommandService>();
             services.AddSingleton<IAddonMetadataService, AddonMetadataService>();
             services.AddTransient<IAddonLoggerService, AddonLoggerService>();
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
-            services.AddSingleton<IEntityService, EntityService>();
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
-            services.AddSingleton<IPedService, PedService>();
-            services.AddSingleton<IVehicleService, VehicleService>();
-            services.AddSingleton<ITrafficStopService, TrafficStopService>();
-            services.AddSingleton<IPlayerDataService, PlayerDataService>();
+
+            services.AddSingleton<LocalizationService>();
+            services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LocalizationService>());
+
+            services.AddSingleton<LooseDataService>();
+            services.AddSingleton<ILooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LooseDataService>());
+
+            services.AddSingleton<ReportService>();
+            services.AddSingleton<IReportService>(provider => provider.GetRequiredService<ReportService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ReportService>());
+
+            services.AddSingleton<DepartmentService>();
+            services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DepartmentService>());
+
+            services.AddSingleton<EntityService>();
+            services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<EntityService>());
+
+            services.AddSingleton<PedService>();
+            services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PedService>());
+
+            services.AddSingleton<VehicleService>();
+            services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<VehicleService>());
+
+            services.AddSingleton<TrafficStopService>();
+            services.AddSingleton<ITrafficStopService>(provider => provider.GetRequiredService<TrafficStopService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<TrafficStopService>());
+
+            services.AddSingleton<PlayerDataService>();
+            services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PlayerDataService>());
 
             // Find and register addons
             services.Scan(scan => scan
@@ -350,14 +370,6 @@ namespace FivePD.Gamemode.Server
             // Register shutdown routine listener
             this.EventHandlers["onResourceStop"] += new Action(this.OnStopped);
 
-            // Register all event listeners for services
-            foreach (var service in this._provider.GetServices<IServiceWithEvents>())
-            {
-                log?.Debug("Registering event handlers for {Service}", service.GetType());
-
-                service.RegisterEvents();
-            }
-
             try
             {
                 var db = this._provider.GetService<DatabaseContext>();
@@ -387,6 +399,14 @@ namespace FivePD.Gamemode.Server
             catch (Exception e)
             {
                 throw new DatabaseUsageException("The configured database is invalid or offline. Verify the connection settings in the /Config/database.json file and try again.", e);
+            }
+
+            // Register all event listeners for services
+            foreach (var service in this._provider.GetServices<IServiceWithEvents>())
+            {
+                log?.Debug("Registering event handlers for {Service}", service.GetType());
+
+                service.RegisterEvents();
             }
 
             // Check for dev mode. If enabled, register the utilities

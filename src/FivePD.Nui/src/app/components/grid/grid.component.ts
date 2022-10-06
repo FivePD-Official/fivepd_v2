@@ -121,7 +121,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       }
 
       return row;
-    }) ?? []
+    }) ?? [];
   };
 
   onFilterFormChange(accessorKey: string | undefined, value: string | number): void {
@@ -179,7 +179,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     this.onCollationChange.emit(this.collation);
   }
 
-  tableCellActionButtonClick(action: TableCellAction, item: FormattedRowItem<T>): void {
+  tableCellActionButtonClick(action: TableCellAction<T>, item: FormattedRowItem<T>): void {
     (action as TableCellActionButton<any>).onClick(item.originalItem);
   }
 

@@ -12,8 +12,15 @@ export interface DropdownItem {
   label: string;
 }
 
+export interface DropdownOptions {
+  label: string;
+  selectedItemResolver?: (dropdownItemKey: number) => boolean;
+  items: DropdownItem[];
+  size: 'small' | 'normal';
+}
+
 interface FormInputBaseModel<T> {
-  type: 'text' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'checkboxGroup';
+  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'checkboxGroup';
   value: T | undefined;
   key: string;
   label: Paths<Localization> | string;
@@ -22,18 +29,13 @@ interface FormInputBaseModel<T> {
   required: boolean;
   readonly: boolean;
   options: Record<string, any>;
-  dropdownOptions: {
-    label: string;
-    selectedItemResolver?: (dropdownItemKey: number) => boolean;
-    items: DropdownItem[];
-    size: 'small' | 'normal';
-  } | null;
+  dropdownOptions: DropdownOptions | undefined;
   validators: ValidatorFn[];
   asyncValidators: AsyncValidatorFn[];
   checkboxGroup: Checkbox[];
 }
 
-type FormInputBaseOptions<T> = {
+export type FormInputBaseOptions<T> = {
   [P in keyof Omit<FormInputBaseModel<T>, 'type'>]?: FormInputBaseModel<T>[P];
 };
 
@@ -65,7 +67,7 @@ export abstract class FormInputBase<T> {
     this.placeholder = options.placeholder || '';
     this.required = !!options.required;
     this.readonly = !!options.readonly;
-    this.dropdownOptions = options.dropdownOptions || null;
+    this.dropdownOptions = options.dropdownOptions || undefined;
     this.options = options.options || {};
     this.validators = options.validators || [];
     this.asyncValidators = options.asyncValidators || [];
@@ -80,6 +82,12 @@ export abstract class FormInputBase<T> {
 export class TextInput extends FormInputBase<string> {
   constructor(options: FormInputBaseOptions<string>) {
     super('text', options);
+  }
+}
+
+export class Textarea extends FormInputBase<string> {
+  constructor(options: FormInputBaseOptions<string>) {
+    super('textarea', options);
   }
 }
 

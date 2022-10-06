@@ -46,6 +46,12 @@ import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { DateMaskDirective } from './directives/date-mask.directive';
+import { SettingsComponent } from './pages/mdt/settings/settings.component';
+import { LooseDataService } from '@services/loose-data/loose-data.service';
+import { ReportsComponent } from './pages/mdt/reports/reports.component';
+import { ModalFormComponent } from './components/modal/modal-form/modal-form.component';
+import { ModalEntityViewComponent } from './components/modal/modal-entity-view/modal-entity-view.component';
+import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
 
 @NgModule({
   declarations: [
@@ -74,6 +80,10 @@ import { DateMaskDirective } from './directives/date-mask.directive';
     TimerBarComponent,
     ClickOutsideDirective,
     DateMaskDirective,
+    SettingsComponent,
+    ReportsComponent,
+    ModalFormComponent,
+    ModalEntityViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -89,6 +99,17 @@ import { DateMaskDirective } from './directives/date-mask.directive';
     NgxsReduxDevtoolsPluginModule.forRoot(),
     ReactiveFormsModule,
     FormsModule,
+    TippyModule.forRoot({
+      defaultVariation: 'custom',
+      variations: {
+        custom: {
+          ...tooltipVariation,
+          theme: 'custom',
+          arrow: false,
+          animation: false,
+        }
+      }
+    }),
   ],
   providers: [
     WindowService,
@@ -99,6 +120,7 @@ import { DateMaskDirective } from './directives/date-mask.directive';
     NotificationService,
     DepartmentService,
     UserService,
+    LooseDataService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomHttpInterceptor,

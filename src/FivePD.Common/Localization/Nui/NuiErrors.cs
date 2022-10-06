@@ -12,6 +12,10 @@ namespace FivePD.Common.Localization
 {
     public class NuiErrors
     {
+        public string AttributeExistsWithNameDescription { get; set; } = "A division with this name already exists.";
+
+        public string CreateAttributeExistsWithNameTitle { get; set; } = "Couldn't create rank";
+
         public string CreateDepartmentExistsWithNameTitle { get; set; } = "Couldn't create department";
 
         public string CreateDivisionExistsWithNameTitle { get; set; } = "Couldn't create division";
@@ -38,15 +42,17 @@ namespace FivePD.Common.Localization
 
         public string EditRankExistsWithNameTitle { get; set; } = "Couldn't edit rank";
 
-        public string FieldRequired { get; set; } = "Required.";
-
-        public string FieldNameTaken { get; set; } = "Name taken.";
-
         public string FieldFormat { get; set; } = "The format is incorrect.";
+
+        public string FieldInvalidDate { get; set; } = "Invalid date. Format: MM/DD/YYYY";
+
+        public string FieldMax { get; set; } = "The maximum value is {{value}}.";
 
         public string FieldMin { get; set; } = "The minimum value is {{value}}.";
 
-        public string FieldMax { get; set; } = "The maximum value is {{value}}.";
+        public string FieldNameTaken { get; set; } = "Name taken.";
+
+        public string FieldRequired { get; set; } = "Required.";
 
         public string PleaseTryAgainLater { get; set; } = "Please try again later.";
 

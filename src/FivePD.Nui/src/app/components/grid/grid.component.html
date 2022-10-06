@@ -8,6 +8,10 @@
         [link]="button.link"
         [label]="button.label"
         [show]="button.show()"
+        [disabled]="button.disabled()"
+        [tippy]="button.tooltip?.text ?? ''"
+        [isEnabled]="button.tooltip?.enabled ? button.tooltip!.enabled() : false"
+        [placement]="button.tooltip?.placement ?? 'top'"
         (onClick)="headerButtonOnClick(button)"
       ></app-button>
     </div>
@@ -37,7 +41,8 @@
       class="table-row"
     >
       <div *ngFor="let item of row" class="table-cell">
-        <a [routerLink]="item.link" *ngIf="item.link && !item.actions">
+        <p *ngIf="item.link && !item.actions && !item.value">-</p>
+        <a [routerLink]="item.link" *ngIf="item.link && !item.actions && item.value">
           {{ item.value }}
           <div class="icon" app-icon name="Link"></div>
         </a>
@@ -45,13 +50,16 @@
         <div *ngIf="!item.link && item.actions" class="table-cell-actions">
           <ng-container *ngFor="let action of item.actions">
             <app-button
-              *ngIf="action.type === 'button'"
+              *ngIf="action.type === 'button' && (action.show ? action.show(item.originalItem) : true)"
               theme="small"
               [label]="action.label"
-              (onClick)="tableCellActionButtonClick(action, item)"
-            >
+              (onClick)="tableCellActionButtonClick(action, item)">
             </app-button>
-            <app-dynamic-form-input *ngIf="action.type === 'select'" [field]="getSelectField(action, item)" (onChange)="onTableCellActionSelect(action, item, $event)"></app-dynamic-form-input>
+            <app-dynamic-form-input
+              *ngIf="action.type === 'select' && (action.show ? action.show(item.originalItem) : true)"
+              [field]="getSelectField(action, item)"
+              (onChange)="onTableCellActionSelect(action, item, $event)">
+            </app-dynamic-form-input>
           </ng-container>
         </div>
       </div>

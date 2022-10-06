@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { NuiEventType } from '@enums';
+import { NuiEventType, SetId } from '@enums';
 import { Localization } from '@models';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { SetLocalization, SetMdtPath } from '@store/app.actions';
@@ -9,6 +9,7 @@ import { WindowService } from '@services/window/window.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { LooseDataService } from '@services/loose-data/loose-data.service';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,7 @@ export class AppComponent implements OnInit {
     private _window: WindowService,
     private _localization: LocalizationService,
     private _router: Router,
+    private _looseData: LooseDataService,
   ) {}
 
   ngOnInit(): void {

@@ -13,4 +13,5 @@
   ChevronDown = 'ChevronDown',
   Warning = 'Warning',
   Link = 'Link',
+  Report = 'Report',
 }

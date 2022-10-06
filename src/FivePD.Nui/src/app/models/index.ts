@@ -14,3 +14,6 @@ export * from './localization';
 export * from './table';
 export * from './button';
 export * from './icon';
+export * from './loose-data';
+export * from './modal';
+export * from './tooltip';
