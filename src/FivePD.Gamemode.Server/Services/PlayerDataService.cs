@@ -10,6 +10,7 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
@@ -54,9 +55,6 @@ namespace FivePD.Gamemode.Server.Services
         public void RegisterEvents()
         {
             this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
-            this._eventHandlerDictionary[Events.Player.GetDetails] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.GetPlayerDetails);
-            this._eventHandlerDictionary[Events.Player.ChangeDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.ChangePlayerDivisionFromNui);
-            this._eventHandlerDictionary[Events.Player.ChangeRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.ChangePlayerRankFromNui);
             this.CreateDataForOnlinePlayers();
         }
 
@@ -101,6 +99,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Player.GetDetails, true)]
         private void GetPlayerDetails([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             var license = player.Identifiers["license"];
@@ -127,6 +126,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Player.ChangeDivision)]
         private void ChangePlayerDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -192,6 +192,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Player.ChangeRank)]
         private void ChangePlayerRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try

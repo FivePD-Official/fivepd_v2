@@ -24,10 +24,9 @@ using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services
 {
-    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.ILooseDataService" />
-    public class LooseDataService : ILooseDataService, IServiceWithEvents
+    /// <inheritdoc />
+    public class LooseDataService : ILooseDataService
     {
-        private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly DatabaseContext _databaseContext;
         private readonly List<LooseDataEntityObservable> _observables = new List<LooseDataEntityObservable>();
         private readonly Dictionary<Type, string> _activeSetTypes = new Dictionary<Type, string>();
@@ -35,11 +34,9 @@ namespace FivePD.Gamemode.Server.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="LooseDataService"/> class.
         /// </summary>
-        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
         /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
-        public LooseDataService(EventHandlerDictionary eventHandlerDictionary, DatabaseContext databaseContext)
+        public LooseDataService(DatabaseContext databaseContext)
         {
-            this._eventHandlerDictionary = eventHandlerDictionary;
             this._databaseContext = databaseContext;
         }
 
@@ -59,21 +56,6 @@ namespace FivePD.Gamemode.Server.Services
         public IDisposable OnDelete<TS>(Action<LooseDataEntity> observer)
         {
             return this.OnEvent<TS>(LooseDataEntityObservableType.Delete, observer);
-        }
-
-        /// <inheritdoc />
-        public void RegisterEvents()
-        {
-            this._eventHandlerDictionary[Events.LooseData.GetEntity] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetEntityFromNui);
-            this._eventHandlerDictionary[Events.LooseData.GetEntities] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetEntitiesFromNui);
-            this._eventHandlerDictionary[Events.LooseData.AddEntity] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.AddEntityFromNui);
-            this._eventHandlerDictionary[Events.LooseData.EditEntity] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.UpdateEntityFromNui);
-            this._eventHandlerDictionary[Events.LooseData.DeleteEntity] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteEntityFromNui);
-            this._eventHandlerDictionary[Events.LooseData.GetSetAttributes] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetSetAttributesFromNui);
-            this._eventHandlerDictionary[Events.LooseData.GetSetAttributesPageable] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetSetAttributesPageableFromNui);
-            this._eventHandlerDictionary[Events.LooseData.AddSetAttribute] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.AddSetAttributeFromNui);
-            this._eventHandlerDictionary[Events.LooseData.EditSetAttribute] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditSetAttributeFromNui);
-            this._eventHandlerDictionary[Events.LooseData.DeleteSetAttribute] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteSetAttributeFromNui);
         }
 
         /// <inheritdoc />
@@ -434,6 +416,7 @@ namespace FivePD.Gamemode.Server.Services
             return entity;
         }
 
+        [UIEvent(Events.UI.LooseData.GetSetAttributes)]
         private void GetSetAttributesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -457,6 +440,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.GetSetAttributesPageable)]
         private void GetSetAttributesPageableFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -476,6 +460,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.AddSetAttribute)]
         private void AddSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -528,6 +513,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.EditSetAttribute)]
         private void EditSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -575,6 +561,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.DeleteSetAttribute)]
         private void DeleteSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -621,6 +608,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.GetEntity)]
         private void GetEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -642,6 +630,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.GetEntities)]
         private void GetEntitiesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -664,6 +653,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.AddEntity)]
         private void AddEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -691,6 +681,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.EditEntity)]
         private void UpdateEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -712,6 +703,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.LooseData.DeleteEntity)]
         private void DeleteEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try

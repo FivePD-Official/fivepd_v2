@@ -11,6 +11,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Extensions;
+using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
@@ -23,20 +24,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FivePD.Gamemode.Server.Services
 {
-    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IDepartmentService" />
-    public class DepartmentService : IDepartmentService, IServiceWithEvents
+    /// <inheritdoc />
+    public class DepartmentService : IDepartmentService
     {
-        private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly DatabaseContext _databaseContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DepartmentService"/> class.
         /// </summary>
-        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
         /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
-        public DepartmentService(EventHandlerDictionary eventHandlerDictionary, DatabaseContext databaseContext)
+        public DepartmentService(DatabaseContext databaseContext)
         {
-            this._eventHandlerDictionary = eventHandlerDictionary;
             this._databaseContext = databaseContext;
         }
 
@@ -72,31 +70,6 @@ namespace FivePD.Gamemode.Server.Services
 
         /// <inheritdoc />
         public event EventHandler<Division> PlayerDivisionDeleted;
-
-        /// <inheritdoc/>
-        public void RegisterEvents()
-        {
-            this._eventHandlerDictionary[Events.Department.List] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentsForNui);
-            this._eventHandlerDictionary[Events.Department.GetById] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentByIdForNui);
-            this._eventHandlerDictionary[Events.Department.GetUsers] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentUsersForNui);
-            this._eventHandlerDictionary[Events.Department.GetRanks] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentRanksForNui);
-            this._eventHandlerDictionary[Events.Department.GetDivisions] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.GetDepartmentDivisionsForNui);
-
-            this._eventHandlerDictionary[Events.Department.Create] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.Join] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.PlayerJoinDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.Leave] += new Action<Player, ExpandoObject, NetworkCallbackDelegate>(this.PlayerLeaveDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.Edit] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.Delete] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDepartmentFromNui);
-            this._eventHandlerDictionary[Events.Department.CheckIfDepartmentNameTaken] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CheckIfDepartmentNameTaken);
-
-            this._eventHandlerDictionary[Events.Department.DeleteDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteDivisionFromNui);
-            this._eventHandlerDictionary[Events.Department.EditDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditDivisionFromNui);
-            this._eventHandlerDictionary[Events.Department.CreateDivision] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateDivisionFromNui);
-
-            this._eventHandlerDictionary[Events.Department.DeleteRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.DeleteRankFromNui);
-            this._eventHandlerDictionary[Events.Department.EditRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.EditRankFromNui);
-            this._eventHandlerDictionary[Events.Department.CreateRank] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.CreateRankFromNui);
-        }
 
         /// <inheritdoc />
         public Department CreateDepartment(Department department)
@@ -259,6 +232,7 @@ namespace FivePD.Gamemode.Server.Services
             this.RemovePlayerFromDepartment(this.FindUserByLicense(player));
         }
 
+        [UIEvent(Events.UI.Department.List)]
         private void GetDepartmentsForNui(ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -284,6 +258,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.GetById)]
         private void GetDepartmentByIdForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -303,6 +278,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.GetUsers)]
         private void GetDepartmentUsersForNui(ExpandoObject departmentUsersRequestString, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -323,6 +299,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.GetRanks)]
         private void GetDepartmentRanksForNui(ExpandoObject departmentRanksRequestString, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -343,6 +320,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.GetDivisions)]
         private void GetDepartmentDivisionsForNui(ExpandoObject departmentDivisionsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -363,6 +341,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.Create)]
         private void CreateDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -406,6 +385,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.DeleteDivision)]
         private void DeleteDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -457,6 +437,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.EditDivision)]
         private void EditDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -513,6 +494,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.CreateDivision)]
         private void CreateDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -571,6 +553,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.DeleteRank)]
         private void DeleteRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -628,6 +611,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.EditRank)]
         private void EditRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -685,6 +669,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.CreateRank)]
         private void CreateRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -744,6 +729,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.Edit)]
         private void EditDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -819,6 +805,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.CheckIfDepartmentNameTaken)]
         private void CheckIfDepartmentNameTaken(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -843,6 +830,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.Delete)]
         private void DeleteDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             try
@@ -896,6 +884,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.Join, true)]
         private void PlayerJoinDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             var request = expandoObject.ConvertTo<JoinOrLeaveDepartmentRequest>();
@@ -945,6 +934,7 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.Leave, true)]
         private void PlayerLeaveDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             var playerDepartment = this.FindUserByLicense(player).Department;

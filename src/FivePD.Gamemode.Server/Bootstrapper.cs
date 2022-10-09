@@ -294,22 +294,20 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
             services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
+            services.AddSingleton<ILooseDataService, LooseDataService>();
+            services.AddSingleton<IDepartmentService, DepartmentService>();
+
+            services.AddSingleton<UIService>();
+            services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<UIService>());
 
             services.AddSingleton<LocalizationService>();
             services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LocalizationService>());
 
-            services.AddSingleton<LooseDataService>();
-            services.AddSingleton<ILooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
-            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LooseDataService>());
-
             services.AddSingleton<ReportService>();
             services.AddSingleton<IReportService>(provider => provider.GetRequiredService<ReportService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ReportService>());
-
-            services.AddSingleton<DepartmentService>();
-            services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
-            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DepartmentService>());
 
             services.AddSingleton<EntityService>();
             services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());

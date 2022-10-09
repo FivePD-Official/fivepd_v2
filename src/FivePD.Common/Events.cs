@@ -178,171 +178,177 @@ namespace FivePD.Common
         }
 
         /// <summary>
-        /// Contains definitions for department related events.
+        /// Contains definitions for all NUI -> C -> S -> C -> NUI events.
         /// </summary>
-        public abstract class Department
+        public abstract class UI
         {
             /// <summary>
-            /// Used to request all departments for listing in the NUI.
+            /// Contains definitions for player related events.
             /// </summary>
-            public const string List = "fivepd:department:list";
+            public abstract class Player
+            {
+                /// <summary>
+                /// Used to request all departments for listing in the NUI.
+                /// </summary>
+                public const string GetDetails = "fivepd:player:getDetails";
+
+                /// <summary>
+                /// Used to change a player's division.
+                /// </summary>
+                public const string ChangeDivision = "fivepd:player:changeDivision";
+
+                /// <summary>
+                /// Used to change a player's rank.
+                /// </summary>
+                public const string ChangeRank = "fivepd:player:changeRank";
+            }
 
             /// <summary>
-            /// Used to request a department by its id.
+            /// Contains definitions for department related events.
             /// </summary>
-            public const string GetById = "fivepd:department:getById";
+            public abstract class Department
+            {
+                /// <summary>
+                /// Used to request all departments for listing in the NUI.
+                /// </summary>
+                public const string List = "fivepd:department:list";
+
+                /// <summary>
+                /// Used to request a department by its id.
+                /// </summary>
+                public const string GetById = "fivepd:department:getById";
+
+                /// <summary>
+                /// Used to request the users of a department.
+                /// </summary>
+                public const string GetUsers = "fivepd:department:getUsers";
+
+                /// <summary>
+                /// Used to request the ranks of a department.
+                /// </summary>
+                public const string GetRanks = "fivepd:department:getRanks";
+
+                /// <summary>
+                /// Used to request the divisions of a department.
+                /// </summary>
+                public const string GetDivisions = "fivepd:department:getDivisions";
+
+                /// <summary>
+                /// Used when a user creates a department in the NUI.
+                /// </summary>
+                public const string Create = "fivepd:department:create";
+
+                /// <summary>
+                /// Used when a user creates a department in the NUI.
+                /// </summary>
+                public const string CheckIfDepartmentNameTaken = "fivepd:department:checkIfDepartmentNameTaken";
+
+                /// <summary>
+                /// Used when a user joins a department in the NUI.
+                /// </summary>
+                public const string Join = "fivepd:department:join";
+
+                /// <summary>
+                /// Used when a user leaves a department in the NUI.
+                /// </summary>
+                public const string Leave = "fivepd:department:leave";
+
+                /// <summary>
+                /// Used to edit a department's settings.
+                /// </summary>
+                public const string Edit = "fivepd:department:edit";
+
+                /// <summary>
+                /// Used to delete a department.
+                /// </summary>
+                public const string Delete = "fivepd:department:delete";
+
+                /// <summary>
+                /// Used to delete a division from a department.
+                /// </summary>
+                public const string DeleteDivision = "fivepd:department:deleteDivision";
+
+                /// <summary>
+                /// Used to rename a division in a department.
+                /// </summary>
+                public const string EditDivision = "fivepd:department:renameDivision";
+
+                /// <summary>
+                /// Used to create a division in a department.
+                /// </summary>
+                public const string CreateDivision = "fivepd:department:createDivision";
+
+                /// <summary>
+                /// Used to delete a rank from a department.
+                /// </summary>
+                public const string DeleteRank = "fivepd:department:deleteRank";
+
+                /// <summary>
+                /// Used to edit a rank in a department.
+                /// </summary>
+                public const string EditRank = "fivepd:department:editRank";
+
+                /// <summary>
+                /// Used to create a rank in a department.
+                /// </summary>
+                public const string CreateRank = "fivepd:department:createRank";
+            }
 
             /// <summary>
-            /// Used to request the users of a department.
+            /// Contains definitions for dynamic loose data related events.
             /// </summary>
-            public const string GetUsers = "fivepd:department:getUsers";
+            public abstract class LooseData
+            {
+                /// <summary>
+                /// Used to get a set's attributes.
+                /// </summary>
+                public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
 
-            /// <summary>
-            /// Used to request the ranks of a department.
-            /// </summary>
-            public const string GetRanks = "fivepd:department:getRanks";
+                /// <summary>
+                /// Used to get a set's attributes in pageable format.
+                /// </summary>
+                public const string GetSetAttributesPageable = "fivepd:looseData:getSetAttributesPageable";
 
-            /// <summary>
-            /// Used to request the divisions of a department.
-            /// </summary>
-            public const string GetDivisions = "fivepd:department:getDivisions";
+                /// <summary>
+                /// Used to add a new set attribute.
+                /// </summary>
+                public const string AddSetAttribute = "fivepd:looseData:addSetAttribute";
 
-            /// <summary>
-            /// Used when a user creates a department in the NUI.
-            /// </summary>
-            public const string Create = "fivepd:department:create";
+                /// <summary>
+                /// Used to edit a set attribute.
+                /// </summary>
+                public const string EditSetAttribute = "fivepd:looseData:editSetAttribute";
 
-            /// <summary>
-            /// Used when a user creates a department in the NUI.
-            /// </summary>
-            public const string CheckIfDepartmentNameTaken = "fivepd:department:checkIfDepartmentNameTaken";
+                /// <summary>
+                /// Used to delete a set attribute.
+                /// </summary>
+                public const string DeleteSetAttribute = "fivepd:looseData:deleteSetAttribute";
 
-            /// <summary>
-            /// Used when a user joins a department in the NUI.
-            /// </summary>
-            public const string Join = "fivepd:department:join";
+                /// <summary>
+                /// Used to get an entity from a given set.
+                /// </summary>
+                public const string GetEntity = "fivepd:looseData:getEntity";
 
-            /// <summary>
-            /// Used when a user leaves a department in the NUI.
-            /// </summary>
-            public const string Leave = "fivepd:department:leave";
+                /// <summary>
+                /// Used get all entities of a given set.
+                /// </summary>
+                public const string GetEntities = "fivepd:looseData:getEntities";
 
-            /// <summary>
-            /// Used to edit a department's settings.
-            /// </summary>
-            public const string Edit = "fivepd:department:edit";
+                /// <summary>
+                /// Used to add an entity to a given set.
+                /// </summary>
+                public const string AddEntity = "fivepd:looseData:addEntity";
 
-            /// <summary>
-            /// Used to delete a department.
-            /// </summary>
-            public const string Delete = "fivepd:department:delete";
+                /// <summary>
+                /// Used to edit an entity.
+                /// </summary>
+                public const string EditEntity = "fivepd:looseData:editEntity";
 
-            /// <summary>
-            /// Used to delete a division from a department.
-            /// </summary>
-            public const string DeleteDivision = "fivepd:department:deleteDivision";
-
-            /// <summary>
-            /// Used to rename a division in a department.
-            /// </summary>
-            public const string EditDivision = "fivepd:department:renameDivision";
-
-            /// <summary>
-            /// Used to create a division in a department.
-            /// </summary>
-            public const string CreateDivision = "fivepd:department:createDivision";
-
-            /// <summary>
-            /// Used to delete a rank from a department.
-            /// </summary>
-            public const string DeleteRank = "fivepd:department:deleteRank";
-
-            /// <summary>
-            /// Used to edit a rank in a department.
-            /// </summary>
-            public const string EditRank = "fivepd:department:editRank";
-
-            /// <summary>
-            /// Used to create a rank in a department.
-            /// </summary>
-            public const string CreateRank = "fivepd:department:createRank";
-        }
-
-        /// <summary>
-        /// Contains definitions for player related events.
-        /// </summary>
-        public abstract class Player
-        {
-            /// <summary>
-            /// Used to request all departments for listing in the NUI.
-            /// </summary>
-            public const string GetDetails = "fivepd:player:getDetails";
-
-            /// <summary>
-            /// Used to change a player's division.
-            /// </summary>
-            public const string ChangeDivision = "fivepd:player:changeDivision";
-
-            /// <summary>
-            /// Used to change a player's rank.
-            /// </summary>
-            public const string ChangeRank = "fivepd:player:changeRank";
-        }
-
-        /// <summary>
-        /// Contains definitions for dynamic loose data related events.
-        /// </summary>
-        public abstract class LooseData
-        {
-            /// <summary>
-            /// Used to get a set's attributes.
-            /// </summary>
-            public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
-
-            /// <summary>
-            /// Used to get a set's attributes in pageable format.
-            /// </summary>
-            public const string GetSetAttributesPageable = "fivepd:looseData:getSetAttributesPageable";
-
-            /// <summary>
-            /// Used to add a new set attribute.
-            /// </summary>
-            public const string AddSetAttribute = "fivepd:looseData:addSetAttribute";
-
-            /// <summary>
-            /// Used to edit a set attribute.
-            /// </summary>
-            public const string EditSetAttribute = "fivepd:looseData:editSetAttribute";
-
-            /// <summary>
-            /// Used to delete a set attribute.
-            /// </summary>
-            public const string DeleteSetAttribute = "fivepd:looseData:deleteSetAttribute";
-
-            /// <summary>
-            /// Used to get an entity from a given set.
-            /// </summary>
-            public const string GetEntity = "fivepd:looseData:getEntity";
-
-            /// <summary>
-            /// Used get all entities of a given set.
-            /// </summary>
-            public const string GetEntities = "fivepd:looseData:getEntities";
-
-            /// <summary>
-            /// Used to add an entity to a given set.
-            /// </summary>
-            public const string AddEntity = "fivepd:looseData:addEntity";
-
-            /// <summary>
-            /// Used to edit an entity.
-            /// </summary>
-            public const string EditEntity = "fivepd:looseData:editEntity";
-
-            /// <summary>
-            /// Used to delete an entity.
-            /// </summary>
-            public const string DeleteEntity = "fivepd:looseData:deleteEntity";
+                /// <summary>
+                /// Used to delete an entity.
+                /// </summary>
+                public const string DeleteEntity = "fivepd:looseData:deleteEntity";
+            }
         }
     }
 }
