@@ -6,6 +6,7 @@
 
 using System;
 using System.Dynamic;
+using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
@@ -48,52 +49,60 @@ namespace FivePD.Gamemode.Client.Services
         public void RegisterEventHandlers()
         {
             // Listens for NUI close event
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.Close, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                this.Hide();
-                cb.Invoke(string.Empty);
-            }));
+            this._eventHandlerDictionary.AddNuiEvent(
+                Events.NuiEventType.Close,
+                new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+                {
+                    this.Hide();
+                    cb.Invoke(string.Empty);
+                }));
 
             // Listens for NUI status checks
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.ClientReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            this._eventHandlerDictionary.AddNuiEvent(
+                Events.NuiEventType.ClientReady,
+                new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+                {
+                    this._loggerService.Info("Starting FivePD NUI...");
+                    this._ready = true;
+
+                    // If we can hear this, we're ready
+                    cb.Invoke(true);
+                }));
+
+            this.RegisterUIEvents(new[]
             {
-                this._loggerService.Info("Starting FivePD NUI...");
-                this._ready = true;
-
-                // If we can hear this, we're ready
-                cb.Invoke(true);
-            }));
-
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.List);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetById);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetUsers);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetRanks);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.GetDivisions);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.DeleteDivision);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.EditDivision);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CreateDivision);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.DeleteRank);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.EditRank);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CreateRank);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Join);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Leave);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Edit);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Delete);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.Create);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Department.CheckIfDepartmentNameTaken);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.GetDetails);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeDivision);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.Player.ChangeRank);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetEntity);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetEntities);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.AddEntity);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.EditEntity);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.DeleteEntity);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetSetAttributes);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.GetSetAttributesPageable);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.AddSetAttribute);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.EditSetAttribute);
-            this._eventHandlerDictionary.AddNuiEventServerResponse<ExpandoObject>(Events.LooseData.DeleteSetAttribute);
+                Events.UI.Department.List,
+                Events.UI.Department.List,
+                Events.UI.Department.GetById,
+                Events.UI.Department.GetUsers,
+                Events.UI.Department.GetRanks,
+                Events.UI.Department.GetDivisions,
+                Events.UI.Department.DeleteDivision,
+                Events.UI.Department.EditDivision,
+                Events.UI.Department.CreateDivision,
+                Events.UI.Department.DeleteRank,
+                Events.UI.Department.EditRank,
+                Events.UI.Department.CreateRank,
+                Events.UI.Department.Join,
+                Events.UI.Department.Leave,
+                Events.UI.Department.Edit,
+                Events.UI.Department.Delete,
+                Events.UI.Department.Create,
+                Events.UI.Department.CheckIfDepartmentNameTaken,
+                Events.UI.Player.GetDetails,
+                Events.UI.Player.ChangeDivision,
+                Events.UI.Player.ChangeRank,
+                Events.UI.LooseData.GetEntity,
+                Events.UI.LooseData.GetEntities,
+                Events.UI.LooseData.AddEntity,
+                Events.UI.LooseData.EditEntity,
+                Events.UI.LooseData.DeleteEntity,
+                Events.UI.LooseData.GetSetAttributes,
+                Events.UI.LooseData.GetSetAttributesPageable,
+                Events.UI.LooseData.AddSetAttribute,
+                Events.UI.LooseData.EditSetAttribute,
+                Events.UI.LooseData.DeleteSetAttribute,
+            });
         }
 
         /// <inheritdoc />
@@ -230,6 +239,14 @@ namespace FivePD.Gamemode.Client.Services
                 { "menuId", menuId },
             });
             Cfx.API.SetNuiFocus(hasFocus, hasCursor);
+        }
+
+        private void RegisterUIEvents(string[] events)
+        {
+            foreach (var e in events)
+            {
+                this._eventHandlerDictionary.AddUIEventServerResponse<ExpandoObject>(e);
+            }
         }
     }
 }
