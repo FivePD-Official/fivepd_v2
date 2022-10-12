@@ -24,6 +24,6 @@ namespace FivePD.Common.Models
         /// <summary>
         /// Will display a checkbox.
         /// </summary>
-        Toggle,
+        Checkbox,
     }
 }

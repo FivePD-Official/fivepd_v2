@@ -64,30 +64,39 @@ namespace FivePD.Gamemode.Client.Services
 
                 foreach (var item in menu.Items)
                 {
-                    if (item.Type == MenuItemType.List)
+                    switch (item.Type)
                     {
-                        this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnListItemSelect}:{item.Hashcode}", new Action<int, CallbackDelegate>(
-                            (index, cb) =>
-                            {
-                                BaseScript.TriggerServerEvent(Events.UI.Menu.OnListItemSelect, item.Hashcode, index);
-                                cb.Invoke(string.Empty);
-                            }));
+                        case MenuItemType.List:
+                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnListSelect}:{item.Hashcode}", new Action<int, CallbackDelegate>(
+                                (index, cb) =>
+                                {
+                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnListSelect, item.Hashcode, index);
+                                    cb.Invoke(string.Empty);
+                                }));
 
-                        this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnListIndexChange}:{item.Hashcode}", new Action<int, CallbackDelegate>(
-                            (index, cb) =>
-                            {
-                                BaseScript.TriggerServerEvent(Events.UI.Menu.OnListIndexChange, item.Hashcode, index);
-                                cb.Invoke(string.Empty);
-                            }));
-                    }
-                    else
-                    {
-                        this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnItemSelect}:{item.Hashcode}", new Action<int, CallbackDelegate>(
-                            (index, cb) =>
-                            {
-                                BaseScript.TriggerServerEvent(Events.UI.Menu.OnItemSelect, item.Hashcode, index);
-                                cb.Invoke(string.Empty);
-                            }));
+                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnListIndexChange}:{item.Hashcode}", new Action<int, CallbackDelegate>(
+                                (index, cb) =>
+                                {
+                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnListIndexChange, item.Hashcode, index);
+                                    cb.Invoke(string.Empty);
+                                }));
+                            break;
+                        case MenuItemType.Checkbox:
+                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnCheckboxSelect}:{item.Hashcode}", new Action<bool, CallbackDelegate>(
+                                (@checked, cb) =>
+                                {
+                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnCheckboxSelect, item.Hashcode, @checked);
+                                    cb.Invoke(string.Empty);
+                                }));
+                            break;
+                        case MenuItemType.Button:
+                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnButtonSelect}:{item.Hashcode}", new Action<int, CallbackDelegate>(
+                                (_, cb) =>
+                                {
+                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnButtonSelect, item.Hashcode);
+                                    cb.Invoke(string.Empty);
+                                }));
+                            break;
                     }
                 }
             }

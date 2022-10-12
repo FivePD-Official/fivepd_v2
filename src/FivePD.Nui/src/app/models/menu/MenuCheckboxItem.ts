@@ -1,5 +1,6 @@
 import { MenuItemType } from '@enums';
 import { MenuItem } from './MenuItem';
+import { MenuListItem } from './MenuListItem';
 
 export class MenuCheckboxItem extends MenuItem {
 
@@ -11,6 +12,10 @@ export class MenuCheckboxItem extends MenuItem {
 
   toggle(): void {
     this.checked = !this.checked;
+  }
+
+  override onPress() {
+    this.postRequest(`fivepd:menu:onCheckboxSelect:${this.hashcode}`, this.checked);
   }
 
 }

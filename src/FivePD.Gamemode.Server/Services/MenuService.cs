@@ -18,6 +18,7 @@ using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.UIModels;
+using FivePD.Gamemode.Server.UIModels.Interfaces;
 using FivePD.Gamemode.Server.UIModels.Menus;
 using Newtonsoft.Json.Linq;
 
@@ -45,8 +46,9 @@ namespace FivePD.Gamemode.Server.Services
         public void RegisterEvents()
         {
             this.Register<DutyMenu>();
-            this._eventHandlerDictionary[Events.UI.Menu.OnItemSelect] += new Action<Player, string>(this.OnItemSelect);
-            this._eventHandlerDictionary[Events.UI.Menu.OnListItemSelect] += new Action<Player, string, int>(this.OnListItemSelect);
+            this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string>(this.OnButtonSelect);
+            this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, bool>(this.OnCheckboxSelect);
+            this._eventHandlerDictionary[Events.UI.Menu.OnListSelect] += new Action<Player, string, int>(this.OnListSelect);
             this._eventHandlerDictionary[Events.UI.Menu.OnListIndexChange] += new Action<Player, string, int>(this.OnListIndexChange);
         }
 
@@ -120,51 +122,63 @@ namespace FivePD.Gamemode.Server.Services
             });
         }
 
-        private void OnItemSelect([FromSource] Player player, string hashcode)
+        private void OnButtonSelect([FromSource] Player player, string hashcode)
         {
-            this.InvokeItemEvent("RaiseOnItemSelect", player, hashcode, -1);
+            var menuItem = this.FindMenuItem(hashcode);
+            if (menuItem is null)
+            {
+                return;
+            }
+
+            var fPlayer = FPlayer.FromNetId(player.Handle);
+            var casted = (IMenuButtonItemWithEvents)menuItem;
+            casted?.RaiseOnSelect(fPlayer);
         }
 
-        private void OnListItemSelect([FromSource] Player player, string hashcode, int index)
+        private void OnCheckboxSelect([FromSource] Player player, string hashcode, bool @checked)
         {
-            this.InvokeItemEvent("RaiseOnListItemSelect", player, hashcode, index);
+            var menuItem = this.FindMenuItem(hashcode);
+            if (menuItem is null)
+            {
+                return;
+            }
+
+            var fPlayer = FPlayer.FromNetId(player.Handle);
+            var casted = (IMenuCheckboxItemWithEvents)menuItem;
+            casted?.RaiseOnSelect(fPlayer, @checked);
+        }
+
+        private void OnListSelect([FromSource] Player player, string hashcode, int index)
+        {
+            var menuItem = this.FindMenuItem(hashcode);
+            if (menuItem is null)
+            {
+                return;
+            }
+
+            var fPlayer = FPlayer.FromNetId(player.Handle);
+            var casted = (IMenuListItemWithEvents)(menuItem as MenuListItem);
+            casted?.RaiseOnSelect(fPlayer, index);
         }
 
         private void OnListIndexChange([FromSource] Player player, string hashcode, int index)
         {
-            this.InvokeItemEvent("RaiseOnListIndexChange", player, hashcode, index);
+            var menuItem = this.FindMenuItem(hashcode);
+            if (menuItem is null)
+            {
+                return;
+            }
+
+            var fPlayer = FPlayer.FromNetId(player.Handle);
+            var casted = (IMenuListItemWithEvents)(menuItem as MenuListItem);
+            casted?.RaiseOnIndexChange(fPlayer, index);
         }
 
-        private void InvokeItemEvent(string methodName, Player player, string hashcode, int index)
+        private MenuItem FindMenuItem(string hashcode)
         {
-            var menuItem = this._menus.Values
+            return this._menus.Values
                 .Select(m => m.Items.FirstOrDefault(x => x.GetHashCode().ToString() == hashcode))
                 .FirstOrDefault(found => found != null);
-
-            var methodInfo = this.GetPrivateMethod(menuItem, methodName);
-            var fPlayer = FPlayer.FromNetId(player.Handle);
-
-            object[] parameters;
-            // Not the best solution, but for now it should fine.
-            // We only have two types of events, one with only the player
-            // and the other is with the player and the selected index.
-            if (methodInfo.GetParameters().Length == 1)
-            {
-                parameters = new object[] { fPlayer };
-            }
-            else
-            {
-                parameters = new object[] { fPlayer, index };
-            }
-
-            methodInfo.Invoke(menuItem, parameters);
-        }
-
-        private MethodInfo GetPrivateMethod(object objectVariable, string methodName)
-        {
-#pragma warning disable S3011
-            return objectVariable.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-#pragma warning restore S3011
         }
     }
 }

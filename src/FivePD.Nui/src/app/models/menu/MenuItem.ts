@@ -1,7 +1,7 @@
 import { MenuItemType } from '@enums';
 import { MenuListItem } from './MenuListItem';
 
-export class MenuItem {
+export abstract class MenuItem {
 
   public title: string;
   public enabled = true;
@@ -10,7 +10,7 @@ export class MenuItem {
   private readonly _description: string;
   private readonly _hashcode: string;
 
-  constructor(title: string, description: string, hashcode: string, type: MenuItemType) {
+  protected constructor(title: string, description: string, hashcode: string, type: MenuItemType) {
     this.title = title;
     this._description = description;
     this._hashcode = hashcode;
@@ -29,16 +29,7 @@ export class MenuItem {
     return this._hashcode;
   }
 
-  onPress(): void {
-    if (this._type === MenuItemType.List) {
-      const menuItemList = ((this as unknown)) as MenuListItem;
-      if (menuItemList.items.length) {
-        this.postRequest(`fivepd:menu:onListItemSelect:${this._hashcode}`, menuItemList.currentIndex);
-      }
-    } else {
-      this.postRequest(`fivepd:menu:onItemSelect:${this._hashcode}`, -1);
-    }
-  }
+  abstract onPress(): void;
 
   protected postRequest(path: string, index: any): void {
     fetch(`https://fivepd/${path}`, {

@@ -5,14 +5,15 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using FivePD.Common.Models;
+using FivePD.Gamemode.Server.UIModels.Interfaces;
 
 #pragma warning disable S3264
 #pragma warning disable CS0067
 
 namespace FivePD.Gamemode.Server.UIModels
 {
-    /// <inheritdoc />
-    public class MenuButtonItem : MenuItem
+    /// <inheritdoc cref="FivePD.Gamemode.Server.UIModels.MenuItem" />
+    public class MenuButtonItem : MenuItem, IMenuButtonItemWithEvents
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuButtonItem"/> class.
@@ -25,13 +26,20 @@ namespace FivePD.Gamemode.Server.UIModels
         }
 
         /// <summary>
+        /// Used for firing the item selection event.
+        /// </summary>
+        /// <param name="player">The player who invoked this event.</param>
+        public delegate void ButtonSelect(FPlayer player);
+
+        /// <summary>
         /// Fires when the item has been selected.
         /// </summary>
-        public event ItemSelect OnItemSelect;
+        public event ButtonSelect OnSelect;
 
-        private void RaiseOnItemSelect(FPlayer player)
+        /// <inheritdoc/>
+        void IMenuButtonItemWithEvents.RaiseOnSelect(FPlayer player)
         {
-            this.OnItemSelect?.Invoke(player);
+            this.OnSelect?.Invoke(player);
         }
     }
 }

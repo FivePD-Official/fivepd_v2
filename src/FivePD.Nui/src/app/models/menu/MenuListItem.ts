@@ -27,4 +27,8 @@ export class MenuListItem extends MenuItem {
     this.postRequest(`fivepd:menu:onListIndexChange:${this.hashcode}`, this.currentIndex);
   }
 
+  override onPress() {
+    this.postRequest(`fivepd:menu:onListSelect:${this.hashcode}`, this.currentIndex);
+  }
+
 }

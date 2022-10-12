@@ -6,12 +6,12 @@
 
 using System.Collections.Generic;
 using FivePD.Common.Models;
-using FivePD.Gamemode.Server.UIModels;
+using FivePD.Gamemode.Server.UIModels.Interfaces;
 
-namespace FivePD.Gamemode.Client.Models
+namespace FivePD.Gamemode.Server.UIModels
 {
-    /// <inheritdoc />
-    public class MenuListItem : MenuItem
+    /// <inheritdoc cref="FivePD.Gamemode.Server.UIModels.MenuItem" />
+    public class MenuListItem : MenuItem, IMenuListItemWithEvents
     {
         private List<string> _items;
 
@@ -39,17 +39,17 @@ namespace FivePD.Gamemode.Client.Models
         /// </summary>
         /// <param name="player">The player who invoked this event.</param>
         /// <param name="index">The selected item's index.</param>
-        public delegate void ListItemSelect(FPlayer player, int index);
+        public delegate void ListSelect(FPlayer player, int index);
 
         /// <summary>
         /// Fires when the selected item in the list changes.
         /// </summary>
-        public event ListIndexChange OnListIndexChange;
+        public event ListIndexChange OnIndexChange;
 
         /// <summary>
         /// Fires when the item has been selected.
         /// </summary>
-        public event ListItemSelect OnListItemSelect;
+        public event ListSelect OnSelect;
 
         /// <summary>
         /// Gets the items.
@@ -66,14 +66,16 @@ namespace FivePD.Gamemode.Client.Models
             this.UpdateItem("items", this._items);
         }
 
-        private void RaiseOnListIndexChange(FPlayer player, int index)
+        /// <inheritdoc />
+        void IMenuListItemWithEvents.RaiseOnIndexChange(FPlayer player, int index)
         {
-            this.OnListIndexChange?.Invoke(player, index);
+            this.OnIndexChange?.Invoke(player, index);
         }
 
-        private void RaiseOnListItemSelect(FPlayer player, int index)
+        /// <inheritdoc />
+        void IMenuListItemWithEvents.RaiseOnSelect(FPlayer player, int index)
         {
-            this.OnListItemSelect?.Invoke(player, index);
+            this.OnSelect?.Invoke(player, index);
         }
     }
 }

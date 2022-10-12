@@ -39,12 +39,6 @@ namespace FivePD.Gamemode.Server.UIModels
         }
 
         /// <summary>
-        /// Used for firing the item selection event.
-        /// </summary>
-        /// <param name="player">The player who invoked this event.</param>
-        public delegate void ItemSelect(FPlayer player);
-
-        /// <summary>
         /// Gets or sets the title the item.
         /// </summary>
         public string Title

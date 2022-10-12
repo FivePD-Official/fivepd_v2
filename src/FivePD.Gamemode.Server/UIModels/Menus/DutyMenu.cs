@@ -57,9 +57,9 @@ namespace FivePD.Gamemode.Server.UIModels.Menus
             if (this._dutyMenuConfig.DutyToggle.Enabled)
             {
                 this._dutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
-                this._dutyCheckboxItem.OnItemSelect += player =>
+                this._dutyCheckboxItem.OnSelect += (player, @checked) =>
                 {
-                    Debug.WriteLine($"PRESSED _dutyCheckboxItem - {player.GetUnderlyingPlayer().Name}");
+                    Debug.WriteLine($"_dutyCheckboxItem.OnSelect - {player.GetUnderlyingPlayer().Name} - {@checked}");
                 };
                 items.Add(this._dutyCheckboxItem);
             }
@@ -70,7 +70,7 @@ namespace FivePD.Gamemode.Server.UIModels.Menus
                     "DutyMenu.SpawnVehicle.Title",
                     "DutyMenu.SpawnVehicle.Description",
                     this._configService.GetVehiclesConfig().Police.Select(vehicle => vehicle.Name).ToList());
-                this._spawnVehicleListItem.OnListItemSelect += (player, index) =>
+                this._spawnVehicleListItem.OnSelect += (player, index) =>
                 {
                     // var policeVehicle = this._policeVehicles.ElementAt(index);
                     // this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
@@ -84,7 +84,7 @@ namespace FivePD.Gamemode.Server.UIModels.Menus
                     "DutyMenu.GetLoadout.Title",
                     "DutyMenu.GetLoadout.Description",
                     this._configService.GetLoadoutsConfig().Select(x => x.Title).ToList());
-                this._getLoadoutListItem.OnListItemSelect += (player, index) =>
+                this._getLoadoutListItem.OnSelect += (player, index) =>
                 {
                     // var loadout = this._loadouts.ElementAt(index);
                     //
@@ -113,8 +113,9 @@ namespace FivePD.Gamemode.Server.UIModels.Menus
                 "DutyMenu.ChangeLanguage.Title",
                 "DutyMenu.ChangeLanguage.Description",
                 this._localizationService.GetLocales().Select(x => x.Title).ToList());
-            this._changeLanguageListItem.OnListItemSelect += (player, index) =>
+            this._changeLanguageListItem.OnSelect += (player, index) =>
             {
+                Debug.WriteLine($"_changeLanguageListItem.OnSelect - {player.GetUnderlyingPlayer().Name} - {index}");
                 // var locale = this._localizationService.Locales.ElementAt(index);
                 // this._localizationService.LoadLocalization(locale.Key);
                 // this._nuiService.SendMessage(new JObject
@@ -122,6 +123,10 @@ namespace FivePD.Gamemode.Server.UIModels.Menus
                 //     { "type", Events.NuiEventType.LocalizationChange },
                 //     { "data", JObject.FromObject(this._localizationService.CurrentLocalization) },
                 // });
+            };
+            this._changeLanguageListItem.OnIndexChange += (player, index) =>
+            {
+                Debug.WriteLine($"_changeLanguageListItem.OnIndexChange - {player.GetUnderlyingPlayer().Name} - {index}");
             };
             items.Add(this._changeLanguageListItem);
 

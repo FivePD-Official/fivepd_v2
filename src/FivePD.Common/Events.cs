@@ -352,12 +352,17 @@ namespace FivePD.Common
                 /// <summary>
                 /// Used to request all menus.
                 /// </summary>
-                public const string OnItemSelect = "fivepd:menu:onItemSelect";
+                public const string OnButtonSelect = "fivepd:menu:onButtonSelect";
 
                 /// <summary>
                 /// Used to request all menus.
                 /// </summary>
-                public const string OnListItemSelect = "fivepd:menu:onListItemSelect";
+                public const string OnCheckboxSelect = "fivepd:menu:onCheckboxSelect";
+
+                /// <summary>
+                /// Used to request all menus.
+                /// </summary>
+                public const string OnListSelect = "fivepd:menu:onListSelect";
 
                 /// <summary>
                 /// Used to request all menus.
