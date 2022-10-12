@@ -15,15 +15,15 @@ export interface BaseNuiEvent {
   type: string;
 }
 
-export interface MenuObjectsEvent extends BaseNuiEvent {
-  data: {
+export interface GetAllMenusResponse extends BaseNuiEvent {
+  Menus: {
+    Hashcode: string;
     Title: string;
     UseLocalization: boolean;
-    Id: string;
     Items: {
+      Hashcode: string;
       Title: string;
       Description: string;
-      Hashcode: string;
       Type: number;
       Items?: string[];
     }[];

@@ -5,6 +5,8 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
+using FivePD.Common.Models;
+using FivePD.Gamemode.Server.UIModels;
 
 namespace FivePD.Gamemode.Client.Models
 {
@@ -28,14 +30,16 @@ namespace FivePD.Gamemode.Client.Models
         /// <summary>
         /// Used for firing the selected item change event.
         /// </summary>
+        /// <param name="player">The player who invoked this event.</param>
         /// <param name="index">The currently displayed item's index.</param>
-        public delegate void ListIndexChange(int index);
+        public delegate void ListIndexChange(FPlayer player, int index);
 
         /// <summary>
         /// Used for firing the item selection event.
         /// </summary>
+        /// <param name="player">The player who invoked this event.</param>
         /// <param name="index">The selected item's index.</param>
-        public delegate void ListItemSelect(int index);
+        public delegate void ListItemSelect(FPlayer player, int index);
 
         /// <summary>
         /// Fires when the selected item in the list changes.
@@ -53,11 +57,6 @@ namespace FivePD.Gamemode.Client.Models
         public List<string> Items => this._items;
 
         /// <summary>
-        /// Gets the currently displayed item's index.
-        /// </summary>
-        public int CurrentIndex { get; private set; }
-
-        /// <summary>
         /// Sets the list's items.
         /// </summary>
         /// <param name="items">The new items of the list.</param>
@@ -67,15 +66,14 @@ namespace FivePD.Gamemode.Client.Models
             this.UpdateItem("items", this._items);
         }
 
-        private void RaiseOnListIndexChange(int index)
+        private void RaiseOnListIndexChange(FPlayer player, int index)
         {
-            this.CurrentIndex = index;
-            this.OnListIndexChange?.Invoke(index);
+            this.OnListIndexChange?.Invoke(player, index);
         }
 
-        private void RaiseOnListItemSelect(int index)
+        private void RaiseOnListItemSelect(FPlayer player, int index)
         {
-            this.OnListItemSelect?.Invoke(index);
+            this.OnListItemSelect?.Invoke(player, index);
         }
     }
 }

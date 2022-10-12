@@ -4,10 +4,13 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using CitizenFX.Core;
+using FivePD.Common.Models;
+
 #pragma warning disable S3264
 #pragma warning disable CS0067
 
-namespace FivePD.Gamemode.Client.Models
+namespace FivePD.Gamemode.Server.UIModels
 {
     /// <inheritdoc />
     public class MenuCheckboxItem : MenuItem
@@ -42,10 +45,10 @@ namespace FivePD.Gamemode.Client.Models
             }
         }
 
-        private void RaiseOnItemSelect()
+        private void RaiseOnItemSelect(FPlayer player)
         {
             this._checked = !this._checked;
-            this.OnItemSelect?.Invoke();
+            this.OnItemSelect?.Invoke(player);
         }
     }
 }

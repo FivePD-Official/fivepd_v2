@@ -58,6 +58,12 @@ namespace FivePD.Gamemode.Server.Services
             return this._defaultLocalization;
         }
 
+        /// <inheritdoc />
+        public List<Locale> GetLocales()
+        {
+            return this._locales;
+        }
+
         /// <summary>
         /// Finds and loads all translation files located in fivepd/Localization.
         /// </summary>

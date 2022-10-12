@@ -4,10 +4,12 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using FivePD.Common.Models;
+
 #pragma warning disable S3264
 #pragma warning disable CS0067
 
-namespace FivePD.Gamemode.Client.Models
+namespace FivePD.Gamemode.Server.UIModels
 {
     /// <inheritdoc />
     public class MenuButtonItem : MenuItem
@@ -27,9 +29,9 @@ namespace FivePD.Gamemode.Client.Models
         /// </summary>
         public event ItemSelect OnItemSelect;
 
-        private void RaiseOnItemSelect()
+        private void RaiseOnItemSelect(FPlayer player)
         {
-            this.OnItemSelect?.Invoke();
+            this.OnItemSelect?.Invoke(player);
         }
     }
 }

@@ -4,6 +4,8 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using System.Collections.Generic;
+using FivePD.Common;
 using FivePD.Common.Localization;
 
 namespace FivePD.Gamemode.Server.Interfaces
@@ -18,5 +20,11 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <returns>The default english localization.</returns>
         public Localization GetDefaultLocalization();
+
+        /// <summary>
+        /// Gets the available locales.
+        /// </summary>
+        /// <returns>The available locales.</returns>
+        public List<Locale> GetLocales();
     }
 }

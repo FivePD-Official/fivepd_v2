@@ -33,14 +33,14 @@ export class MenuItem {
     if (this._type === MenuItemType.List) {
       const menuItemList = ((this as unknown)) as MenuListItem;
       if (menuItemList.items.length) {
-        this.postRequest(`fivepd:menu:trigger_item_${this._hashcode}`, menuItemList.currentIndex);
+        this.postRequest(`fivepd:menu:onListItemSelect:${this._hashcode}`, menuItemList.currentIndex);
       }
     } else {
-      this.postRequest(`fivepd:menu:trigger_item_${this._hashcode}`, -1);
+      this.postRequest(`fivepd:menu:onItemSelect:${this._hashcode}`, -1);
     }
   }
 
-  protected postRequest(path: string, index: number): void {
+  protected postRequest(path: string, index: any): void {
     fetch(`https://fivepd/${path}`, {
       body: index as unknown as BodyInit,
       method: 'POST',

@@ -15,15 +15,5 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Registers the necessary events for the menus.
         /// </summary>
         public void RegisterEvents();
-
-        /// <summary>
-        /// Creates all menu objects.
-        /// </summary>
-        public void CreateMenus();
-
-        /// <summary>
-        /// Registers all menus' keybind and its items' actions.
-        /// </summary>
-        public void RegisterMenuKeybinds();
     }
 }

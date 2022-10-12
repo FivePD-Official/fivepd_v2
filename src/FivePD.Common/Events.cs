@@ -95,11 +95,6 @@ namespace FivePD.Common
         public abstract class NuiEventType
         {
             /// <summary>
-            /// Invoked from the Nui when it's initialized..
-            /// </summary>
-            public const string IsNuiReady = "fivepd:nui:isNuiReady";
-
-            /// <summary>
             /// Invoked by the client when ready for the Nui.
             /// </summary>
             public const string ClientReady = "ready";
@@ -139,12 +134,6 @@ namespace FivePD.Common
 
             /// <summary>Sends the current localization to the Nui.</summary>
             public const string LocalizationChange = "localization:change";
-
-            /// <summary>Sends all menus to the Nui.</summary>
-            public const string SendMenuObjects = "send:menus";
-
-            /// <summary>Sends all radial menus to the Nui.</summary>
-            public const string SendRadialMenuObjects = "send:radialMenus";
 
             /// <summary>Sends radial menu control events (mouse move up, down, select) to the Nui.</summary>
             public const string RadialMenuControl = "radial_menu:control";
@@ -348,6 +337,32 @@ namespace FivePD.Common
                 /// Used to delete an entity.
                 /// </summary>
                 public const string DeleteEntity = "fivepd:looseData:deleteEntity";
+            }
+
+            /// <summary>
+            /// Contains all menu related events.
+            /// </summary>
+            public abstract class Menu
+            {
+                /// <summary>
+                /// Used to request all menus.
+                /// </summary>
+                public const string GetAll = "fivepd:menu:getAll";
+
+                /// <summary>
+                /// Used to request all menus.
+                /// </summary>
+                public const string OnItemSelect = "fivepd:menu:onItemSelect";
+
+                /// <summary>
+                /// Used to request all menus.
+                /// </summary>
+                public const string OnListItemSelect = "fivepd:menu:onListItemSelect";
+
+                /// <summary>
+                /// Used to request all menus.
+                /// </summary>
+                public const string OnListIndexChange = "fivepd:menu:onListIndexChange";
             }
         }
     }

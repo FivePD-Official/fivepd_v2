@@ -19,7 +19,6 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
-using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -328,6 +327,12 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<PlayerDataService>();
             services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PlayerDataService>());
+
+            services.AddSingleton<IUIService, UIService>();
+
+            services.AddSingleton<MenuService>();
+            services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<MenuService>());
 
             // Find and register addons
             services.Scan(scan => scan

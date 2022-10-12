@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { MenuObjectsEvent, RadialMenu, RadialMenuObjectsEvent, UpdateMenuItemEvent } from '@models';
+import { GetAllMenusResponse, RadialMenu, RadialMenuObjectsEvent, UpdateMenuItemEvent } from '@models';
 import { MenuItemType, NuiEventType } from '@enums';
 import { Menu, MenuButtonItem, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +15,26 @@ export class MenuService {
 
   constructor(
     private _event: EventService,
+    private _http: HttpClient,
   ) {
-    this._event.onEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(res => this.onRadialMenuObjectsEvent(res));
-    this._event.onEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(res => this.onUpdateMenuItemEvent(res));
-    this._event.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(res => this.setMenusEvent(res));
+    // this._event.onEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(res => this.onRadialMenuObjectsEvent(res));
+    // this._event.onEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(res => this.onUpdateMenuItemEvent(res));
+    // this._event.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(res => this.setMenusEvent(res));
+  }
+
+  load(): void {
+    if (this._menus.length) {
+      return;
+    }
+
+    this._http.post<GetAllMenusResponse>('fivepd:menu:getAll', {}).subscribe(menus => {
+      console.log(menus);
+      this.setMenusEvent(menus);
+    });
   }
 
   getMenuById(id: string): Menu {
-    return this._menus.find(menu => menu.id === id)!;
+    return this._menus.find(menu => menu.hashcode === id)!;
   }
 
   getRadialMenuById(id: string): RadialMenu {
@@ -32,9 +45,9 @@ export class MenuService {
     this._radialMenus = res.data;
   }
 
-  private setMenusEvent(res: MenuObjectsEvent): void {
+  private setMenusEvent(res: GetAllMenusResponse): void {
     const menus: Menu[] = [];
-    for (const menu of res.data) {
+    for (const menu of res.Menus) {
       const menuItems: MenuItem[] = [];
       for (const item of menu.Items) {
         let _item: MenuItem | undefined;
@@ -57,9 +70,10 @@ export class MenuService {
           menuItems.push(_item as MenuItem);
         }
       }
-      menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
+      menus.push(new Menu(menu.Hashcode, menu.Title, menu.UseLocalization, menuItems));
     }
-    console.log('menu creation', res, menus)
+
+    console.log(menus)
     this._menus = menus;
   }
 

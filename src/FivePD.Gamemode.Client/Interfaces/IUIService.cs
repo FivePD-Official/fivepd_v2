@@ -13,12 +13,12 @@ namespace FivePD.Gamemode.Client.Interfaces
     /// Provides the necessary methods to toggle the NUI
     /// and to switch between MDT views and menus.
     /// </summary>
-    public interface INuiService
+    public interface IUIService
     {
         /// <summary>
         /// Triggers when the Nui has been hidden.
         /// </summary>
-        public event NuiService.OnHide OnNuiHide;
+        public event UIService.OnHide OnNuiHide;
 
         /// <summary>
         /// Registers all necessary NUI events for the MDT and menus.

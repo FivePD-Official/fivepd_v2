@@ -6,25 +6,23 @@
 
 using System.Collections.Generic;
 
-namespace FivePD.Gamemode.Client.Models
+namespace FivePD.Gamemode.Server.UIModels
 {
     /// <summary>
-    /// A Nui menu.
+    /// Defines a UI menu.
     /// </summary>
     public abstract class Menu
     {
-        private List<MenuItem> _items;
+        private List<MenuItem> _items = new List<MenuItem>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Menu"/> class.
         /// </summary>
-        /// <param name="id">The id of the menu.</param>
         /// <param name="title">The title of the menu.</param>
         /// <param name="key">The keybind of this menu.</param>
         /// <param name="useLocalization">Determines whether this menu's Title should be used as a key for localizations.</param>
-        protected Menu(string id, string title, string key, bool useLocalization)
+        protected Menu(string title, string key, bool useLocalization)
         {
-            this.Id = id;
             this.Title = title;
             this.Key = key;
             this.UseLocalization = useLocalization;
@@ -34,11 +32,6 @@ namespace FivePD.Gamemode.Client.Models
         /// Gets the items.
         /// </summary>
         public List<MenuItem> Items => this._items;
-
-        /// <summary>
-        /// Gets the identifier of the menu.
-        /// </summary>
-        public string Id { get; }
 
         /// <summary>
         /// Gets the title of the menu.

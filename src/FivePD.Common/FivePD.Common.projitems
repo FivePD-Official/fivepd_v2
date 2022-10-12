@@ -49,7 +49,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\FStatefulContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FVehicle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BasePoliceEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MenuItemType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Responses\GetMenusResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
   </ItemGroup>
 </Project>

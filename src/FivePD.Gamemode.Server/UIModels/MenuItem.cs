@@ -4,15 +4,17 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using FivePD.Common;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using CitizenFX.Core;
+using FivePD.Common.Models;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3264
 #pragma warning disable CS0067
 
-namespace FivePD.Gamemode.Client.Models
+#pragma warning disable S125
+#pragma warning disable SA1515
+
+namespace FivePD.Gamemode.Server.UIModels
 {
     /// <summary>
     /// Represents a normal menu item in the Nui.
@@ -39,28 +41,8 @@ namespace FivePD.Gamemode.Client.Models
         /// <summary>
         /// Used for firing the item selection event.
         /// </summary>
-        public delegate void ItemSelect();
-
-        /// <summary>
-        /// The type of the item.
-        /// </summary>
-        public enum MenuItemType
-        {
-            /// <summary>
-            /// Will only trigger an action on press.
-            /// </summary>
-            Button,
-
-            /// <summary>
-            /// Will display a select from which the user can select a value.
-            /// </summary>
-            List,
-
-            /// <summary>
-            /// Will display a checkbox.
-            /// </summary>
-            Toggle,
-        }
+        /// <param name="player">The player who invoked this event.</param>
+        public delegate void ItemSelect(FPlayer player);
 
         /// <summary>
         /// Gets or sets the title the item.
@@ -106,13 +88,13 @@ namespace FivePD.Gamemode.Client.Models
         /// <param name="value">The value which will be set to the given field.</param>
         protected void UpdateItem<T>(string fieldname, T value)
         {
-            Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
-            {
-                { "type", Events.NuiEventType.UpdateMenuItem },
-                { "hashcode", this.GetHashCode().ToString() },
-                { "fieldname", fieldname },
-                { "value", JToken.FromObject(value) },
-            }));
+            // Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
+            // {
+            //     { "type", Events.NuiEventType.UpdateMenuItem },
+            //     { "hashcode", this.GetHashCode().ToString() },
+            //     { "fieldname", fieldname },
+            //     { "value", JToken.FromObject(value) },
+            // }));
         }
     }
 }
