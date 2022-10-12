@@ -51,25 +51,19 @@ namespace FivePD.Gamemode.Server.Services
             foreach (var methodInfo in methodInfos)
             {
                 var attribute = methodInfo.GetCustomAttribute<UIEventAttribute>();
-
-                var obj = this._serviceProvider.GetService(methodInfo.DeclaringType?.GetInterfaces()[0]);
+                var interfaceType = methodInfo.DeclaringType?
+                    .GetInterfaces()
+                    .FirstOrDefault(type => type != typeof(IServiceWithEvents));
+                var obj = this._serviceProvider.GetService(interfaceType);
                 if (obj is null)
                 {
                     throw new ArgumentException($"Can't register event method '{attribute.Event}'. Make sure that its declaring type has an interface and has been registered as a service.");
                 }
 
-                Delegate eventDelegate;
-                if (attribute.WithPlayer)
-                {
-                    eventDelegate = Delegate.CreateDelegate(
-                        typeof(Action<Player, ExpandoObject, NetworkCallbackDelegate>), obj, methodInfo);
-                }
-                else
-                {
-                    eventDelegate = Delegate.CreateDelegate(typeof(Action<ExpandoObject, NetworkCallbackDelegate>), obj, methodInfo);
-                }
-
-                this._eventHandlerDictionary[attribute.Event] += eventDelegate;
+                var type = attribute.WithPlayer
+                    ? typeof(Action<Player, ExpandoObject, NetworkCallbackDelegate>)
+                    : typeof(Action<ExpandoObject, NetworkCallbackDelegate>);
+                this._eventHandlerDictionary[attribute.Event] += Delegate.CreateDelegate(type, obj, methodInfo);
             }
         }
     }
