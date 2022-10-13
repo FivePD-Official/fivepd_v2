@@ -13,7 +13,7 @@ using FivePD.Common.UIModels.Interfaces;
 namespace FivePD.Common.UIModels
 {
     /// <inheritdoc cref="MenuItem" />
-    public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents, IPublicMenuCheckboxItem
+    public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuCheckboxItem"/> class.

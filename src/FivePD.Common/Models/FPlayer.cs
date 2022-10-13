@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
-using FivePD.Common.Attributes;
+using FivePD.Common.Interfaces;
 using FivePD.Common.UIModels;
 using Cfx = CitizenFX.Core.Native;
 
@@ -113,14 +113,16 @@ namespace FivePD.Common.Models
         }
 
         /// <summary>
-        /// asdad.
+        /// Gets the menu with the type of <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="T">TTT.</typeparam>
-        /// <returns>Returns.</returns>
-        public T GetMenu<T>()
+        /// <param name="type">The type of the menu2.</param>
+        /// <typeparam name="T">The type of the menu.</typeparam>
+        /// <returns>Returns a menu or null.</returns>
+        public T GetMenu<T>(Type type = null)
             where T : Menu
         {
-            return (T)this._menus.FirstOrDefault(m => m.GetType() == typeof(T));
+            type ??= typeof(T);
+            return (T)this._menus.FirstOrDefault(m => m.GetType() == type);
         }
 
         /// <inheritdoc />

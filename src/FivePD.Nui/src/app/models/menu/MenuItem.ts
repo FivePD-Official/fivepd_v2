@@ -3,26 +3,22 @@ import { MenuListItem } from './MenuListItem';
 
 export abstract class MenuItem {
 
-  public title: string;
-  public enabled = true;
+  public Title: string;
+  public Enabled = true;
+  public Description: string;
 
   private readonly _type: MenuItemType;
-  private readonly _description: string;
   private readonly _hashcode: string;
 
   protected constructor(title: string, description: string, hashcode: string, type: MenuItemType) {
-    this.title = title;
-    this._description = description;
+    this.Title = title;
+    this.Description = description;
     this._hashcode = hashcode;
     this._type = type;
   }
 
   get type(): MenuItemType {
     return this._type;
-  }
-
-  get description(): string {
-    return this._description;
   }
 
   get hashcode(): string {

@@ -18,8 +18,7 @@ export class MenuService {
     private _http: HttpClient,
   ) {
     // this._event.onEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(res => this.onRadialMenuObjectsEvent(res));
-    // this._event.onEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(res => this.onUpdateMenuItemEvent(res));
-    // this._event.onEvent<MenuObjectsEvent>(NuiEventType.SendMenuObjects).subscribe(res => this.setMenusEvent(res));
+    this._event.onEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(res => this.onUpdateMenuItemEvent(res));
   }
 
   load(): void {
@@ -28,8 +27,7 @@ export class MenuService {
     }
 
     this._http.post<GetAllMenusResponse>('fivepd:menu:getAll', {}).subscribe(menus => {
-      console.log(menus);
-      this.setMenusEvent(menus);
+      this.createMenus(menus);
     });
   }
 
@@ -45,7 +43,7 @@ export class MenuService {
     this._radialMenus = res.data;
   }
 
-  private setMenusEvent(res: GetAllMenusResponse): void {
+  private createMenus(res: GetAllMenusResponse): void {
     const menus: Menu[] = [];
     for (const menu of res.Menus) {
       const menuItems: MenuItem[] = [];
@@ -73,7 +71,6 @@ export class MenuService {
       menus.push(new Menu(menu.Hashcode, menu.Title, menu.UseLocalization, menuItems));
     }
 
-    console.log(menus)
     this._menus = menus;
   }
 
@@ -81,8 +78,8 @@ export class MenuService {
     for (const menu of this._menus) {
       for (const item of menu.items) {
         if (item.hashcode === res.hashcode) {
-          if (Reflect.has(item, res.fieldname)) {
-            Reflect.set(item, res.fieldname, res.value);
+          if (Reflect.has(item, res.property)) {
+            Reflect.set(item, res.property, res.value);
           }
           break;
         }

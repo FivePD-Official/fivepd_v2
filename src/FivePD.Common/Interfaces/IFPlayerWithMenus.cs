@@ -4,30 +4,30 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System;
 using System.Collections.Generic;
 using FivePD.Common.Attributes;
 using FivePD.Common.UIModels;
 
-namespace FivePD.Common
+namespace FivePD.Common.Interfaces
 {
     /// <summary>
-    /// asd.
+    /// Defines the methods which can be used
+    /// to modify a player's menus.
     /// </summary>
     [NoUsage]
     public interface IFPlayerWithMenus
     {
         /// <summary>
-        /// qwe.
+        /// Sets the given menus for the player.
         /// </summary>
-        /// <param name="menus">qweqwe.</param>
+        /// <param name="menus">The new menus.</param>
         void SetMenus(List<Menu> menus);
 
         /// <summary>
-        /// qwe.
+        /// Finds the first menu item with the given hashcode.
         /// </summary>
-        /// <param name="hashcode">qweqwe2.</param>
-        /// <returns>the.</returns>
+        /// <param name="hashcode">The menu item's hashcode.</param>
+        /// <returns>The found menu item.</returns>
         MenuItem FindMenuItem(string hashcode);
     }
 }

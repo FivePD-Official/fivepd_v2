@@ -10,16 +10,16 @@ using FivePD.Common.Models;
 namespace FivePD.Common.UIModels.Interfaces
 {
     /// <summary>
-    /// asd.
+    /// Defines the events of <see cref="MenuCheckboxItem"/>.
     /// </summary>
     [NoUsage]
     public interface IMenuCheckboxItemWithEvents
     {
         /// <summary>
-        /// qwe.
+        /// Raises the OnSelect event.
         /// </summary>
-        /// <param name="player">Player.</param>
-        /// <param name="checked">checked.</param>
+        /// <param name="player">The player who invoked this event.</param>
+        /// <param name="checked">The value of the checkbox.</param>
         void RaiseOnSelect(FPlayer player, bool @checked);
     }
 }

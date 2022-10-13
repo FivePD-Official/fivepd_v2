@@ -15,9 +15,6 @@ using FivePD.Gamemode.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450
-#pragma warning disable CS4014
-#pragma warning disable S3241
-
 #pragma warning disable S125
 #pragma warning disable SA1515
 
@@ -26,13 +23,13 @@ namespace FivePD.Gamemode.Server.UIModels
     /// <inheritdoc />
     public class DutyMenu : Menu
     {
+#pragma warning disable SA1201
         private readonly IConfigService _configService;
+#pragma warning restore SA1201
         private readonly ILocalizationService _localizationService;
+        private readonly IMenuService _menuService;
         private readonly DutyMenuConfig _dutyMenuConfig;
 
-        private MenuCheckboxItem _dutyCheckboxItem;
-        private MenuListItem _spawnVehicleListItem;
-        private MenuListItem _getLoadoutListItem;
         private MenuListItem _changeLanguageListItem;
 
         /// <summary>
@@ -40,32 +37,31 @@ namespace FivePD.Gamemode.Server.UIModels
         /// </summary>
         /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
         /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
-        public DutyMenu(IConfigService configService, ILocalizationService localizationService)
+        /// <param name="menuService">The <see cref="IMenuService"/> to use.</param>
+        public DutyMenu(IConfigService configService, ILocalizationService localizationService, IMenuService menuService)
             : base("DutyMenu.Title", "F10", true)
         {
             this._configService = configService;
             this._localizationService = localizationService;
+            this._menuService = menuService;
             this._dutyMenuConfig = configService.GetMenuConfig().DutyMenu;
             this.SetItems(this.CreateItems());
         }
 
         /// <summary>
-        /// Gets qweqwe.
+        /// Gets the duty checkbox item.
         /// </summary>
-        /// <returns>asdasd.</returns>
-        public IPublicMenuCheckboxItem DutyCheckboxItem => this._dutyCheckboxItem;
+        public MenuCheckboxItem DutyCheckboxItem { get; private set; }
 
         /// <summary>
-        /// Gets qweqwe.
+        /// Gets the vehicle spawner item.
         /// </summary>
-        /// <returns>asdasd.</returns>
-        public IPublicMenuListItem SpawnVehicleItem => this._spawnVehicleListItem;
+        public MenuListItem SpawnVehicleListItem { get; private set; }
 
         /// <summary>
-        /// Gets qweqwe.
+        /// Gets the loadout spawner item.
         /// </summary>
-        /// <returns>asdasd.</returns>
-        public IPublicMenuListItem LoadoutItem => this._getLoadoutListItem;
+        public MenuListItem GetLoadoutListItem { get; private set; }
 
         private List<MenuItem> CreateItems()
         {
@@ -73,35 +69,37 @@ namespace FivePD.Gamemode.Server.UIModels
 
             if (this._dutyMenuConfig.DutyToggle.Enabled)
             {
-                this._dutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
-                this._dutyCheckboxItem.OnSelect += (player, @checked) =>
+                this.DutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
+                this.DutyCheckboxItem.OnSelect += (player, @checked) =>
                 {
                     player.DutyStatus.Value = @checked ? FDutyStatus.OnDutyAndReceiving : FDutyStatus.OffDuty;
+                    var dutyMenu = player.GetMenu<DutyMenu>();
+                    this._menuService.UpdateMenuItem<DutyMenu>(player, () => dutyMenu.DutyCheckboxItem, d => d.Title, @checked ? "Checked" : "Not checked");
                 };
-                items.Add(this._dutyCheckboxItem);
+                items.Add(this.DutyCheckboxItem);
             }
 
             if (this._dutyMenuConfig.SpawnVehicle.Enabled)
             {
-                this._spawnVehicleListItem = new MenuListItem(
+                this.SpawnVehicleListItem = new MenuListItem(
                     "DutyMenu.SpawnVehicle.Title",
                     "DutyMenu.SpawnVehicle.Description",
                     this._configService.GetVehiclesConfig().Police.Select(vehicle => vehicle.Name).ToList());
-                this._spawnVehicleListItem.OnSelect += (player, index) =>
+                this.SpawnVehicleListItem.OnSelect += (player, index) =>
                 {
                     // var policeVehicle = this._policeVehicles.ElementAt(index);
                     // this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
                 };
-                items.Add(this._spawnVehicleListItem);
+                items.Add(this.SpawnVehicleListItem);
             }
 
             if (this._dutyMenuConfig.GetLoadout.Enabled)
             {
-                this._getLoadoutListItem = new MenuListItem(
+                this.GetLoadoutListItem = new MenuListItem(
                     "DutyMenu.GetLoadout.Title",
                     "DutyMenu.GetLoadout.Description",
                     this._configService.GetLoadoutsConfig().Select(x => x.Title).ToList());
-                this._getLoadoutListItem.OnSelect += (player, index) =>
+                this.GetLoadoutListItem.OnSelect += (player, index) =>
                 {
                     // var loadout = this._loadouts.ElementAt(index);
                     //
@@ -123,7 +121,7 @@ namespace FivePD.Gamemode.Server.UIModels
                     //     }
                     // }
                 };
-                items.Add(this._getLoadoutListItem);
+                items.Add(this.GetLoadoutListItem);
             }
 
             this._changeLanguageListItem = new MenuListItem(

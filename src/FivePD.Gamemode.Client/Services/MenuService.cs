@@ -49,6 +49,11 @@ namespace FivePD.Gamemode.Client.Services
                 var response = JsonConvert.DeserializeObject<GetMenusResponse>(data);
                 this.RegisterMenuKeybinds(response);
             });
+
+            this._eventHandlerDictionary[Events.NuiEventType.UpdateMenuItem] += new Action<string>(data =>
+            {
+                this._uiService.SendMessage(data);
+            });
         }
 
         private void RegisterMenuKeybinds(GetMenusResponse response)

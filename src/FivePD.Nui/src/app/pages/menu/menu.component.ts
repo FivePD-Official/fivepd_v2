@@ -80,7 +80,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     else this.currentItemIndex = this.menuItems.length - 1;
 
     const currentItem = this.menuItems[this.currentItemIndex];
-    if (!currentItem.enabled) {
+    if (!currentItem.Enabled) {
       this.onMenuUp();
       return;
     }
@@ -101,7 +101,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const currentItem = this.menuItems[this.currentItemIndex];
-    if (!currentItem.enabled) {
+    if (!currentItem.Enabled) {
       this.onMenuDown();
       return;
     }
@@ -124,7 +124,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const currentItem = this.menuItems[this.currentItemIndex];
-    if (!currentItem.enabled) {
+    if (!currentItem.Enabled) {
       return;
     }
 

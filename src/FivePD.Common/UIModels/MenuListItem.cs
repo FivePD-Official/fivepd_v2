@@ -11,7 +11,7 @@ using FivePD.Common.UIModels.Interfaces;
 namespace FivePD.Common.UIModels
 {
     /// <inheritdoc cref="MenuItem" />
-    public class MenuListItem : MenuItem, IMenuListItemWithEvents, IPublicMenuListItem
+    public class MenuListItem : MenuItem, IMenuListItemWithEvents
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuListItem"/> class.

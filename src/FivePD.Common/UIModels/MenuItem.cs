@@ -4,9 +4,7 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using CitizenFX.Core;
 using FivePD.Common.Models;
-using FivePD.Common.UIModels.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3264
@@ -20,7 +18,7 @@ namespace FivePD.Common.UIModels
     /// <summary>
     /// Represents a normal menu item in the Nui.
     /// </summary>
-    public abstract class MenuItem : IPublicMenuItem
+    public abstract class MenuItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuItem"/> class.
@@ -55,22 +53,5 @@ namespace FivePD.Common.UIModels
         /// Gets the type.
         /// </summary>
         public MenuItemType Type { get; }
-
-        /// <summary>
-        /// Updates a menu item's given field with the passed value.
-        /// </summary>
-        /// <typeparam name="T">The type of the new value.</typeparam>
-        /// <param name="fieldname">The field's name to update.</param>
-        /// <param name="value">The value which will be set to the given field.</param>
-        protected void UpdateItem<T>(string fieldname, T value)
-        {
-            // Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
-            // {
-            //     { "type", Events.NuiEventType.UpdateMenuItem },
-            //     { "hashcode", this.GetHashCode().ToString() },
-            //     { "fieldname", fieldname },
-            //     { "value", JToken.FromObject(value) },
-            // }));
-        }
     }
 }

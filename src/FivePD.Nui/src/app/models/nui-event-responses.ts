@@ -57,7 +57,7 @@ export interface RadialMenuControlEvent extends BaseNuiEvent {
 
 export interface UpdateMenuItemEvent extends BaseNuiEvent {
   hashcode: string;
-  fieldname: string;
+  property: string;
   value: any;
 }
 

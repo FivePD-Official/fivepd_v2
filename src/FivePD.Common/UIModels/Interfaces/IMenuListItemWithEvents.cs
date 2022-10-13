@@ -10,23 +10,23 @@ using FivePD.Common.Models;
 namespace FivePD.Common.UIModels.Interfaces
 {
     /// <summary>
-    /// asd.
+    /// Defines the events of <see cref="MenuListItem"/>.
     /// </summary>
     [NoUsage]
     public interface IMenuListItemWithEvents
     {
         /// <summary>
-        /// qweqwe.
+        /// Raises the OnIndexChange event.
         /// </summary>
-        /// <param name="player">A.</param>
-        /// <param name="index">B.</param>
+        /// <param name="player">The player who invoked this event.</param>
+        /// <param name="index">The currently selected index.</param>
         public void RaiseOnIndexChange(FPlayer player, int index);
 
         /// <summary>
-        /// qweqwe2.
+        /// Raises the OnSelect event.
         /// </summary>
-        /// <param name="player">A.</param>
-        /// <param name="index">B.</param>
+        /// <param name="player">The player who invoked this event.</param>
+        /// <param name="index">The currently selected index.</param>
         void RaiseOnSelect(FPlayer player, int index);
     }
 }

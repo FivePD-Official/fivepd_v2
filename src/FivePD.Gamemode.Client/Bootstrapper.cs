@@ -175,9 +175,10 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<MenuService>()
                 .As<IMenuService>();
 
-            services
-                .RegisterType<RadialMenuService>()
-                .As<IRadialMenuService>();
+            // TODO: I'm not sure about radial menus.
+            // services
+            //     .RegisterType<RadialMenuService>()
+            //     .As<IRadialMenuService>();
 
             services
                 .RegisterType<PedService>()

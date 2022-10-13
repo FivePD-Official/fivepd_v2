@@ -23,7 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IFPlayerWithMenus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFPlayerWithMenus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\ErrorLocalizations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Localization.cs" />
@@ -54,10 +54,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Responses\GetMenusResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuButtonItemWithEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IPublicMenuCheckboxItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuItemWithFPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuCheckboxItemWithEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IPublicMenuItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IPublicMenuListItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuListItemWithEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Menu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuButtonItem.cs" />

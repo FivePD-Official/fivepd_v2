@@ -10,15 +10,15 @@ using FivePD.Common.Models;
 namespace FivePD.Common.UIModels.Interfaces
 {
     /// <summary>
-    /// asd.
+    /// Defines the events of <see cref="MenuButtonItem"/>.
     /// </summary>
     [NoUsage]
     public interface IMenuButtonItemWithEvents
     {
         /// <summary>
-        /// qwe.
+        /// Raises the OnSelect event.
         /// </summary>
-        /// <param name="player">Player.</param>
+        /// <param name="player">The player who invoked this event.</param>
         void RaiseOnSelect(FPlayer player);
     }
 }

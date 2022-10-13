@@ -8,8 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Interfaces;
 using FivePD.Common.Models;
 using FivePD.Common.Responses;
 using FivePD.Common.UIModels;
@@ -18,22 +21,23 @@ using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.UIModels;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-#pragma warning disable CS1591
-#pragma warning disable SA1600
-
-#pragma warning disable S125
-#pragma warning disable SA1515
 
 namespace FivePD.Gamemode.Server.Services
 {
+    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IMenuService" />
     public class MenuService : IMenuService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<Type, string> _menus = new Dictionary<Type, string>(); // Menu type, menu key
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MenuService"/> class.
+        /// </summary>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
+        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
         public MenuService(IServiceProvider serviceProvider, EventHandlerDictionary eventHandlerDictionary)
         {
             this._serviceProvider = serviceProvider;
@@ -75,15 +79,102 @@ namespace FivePD.Gamemode.Server.Services
             this._menus.Add(type, menu.Key);
         }
 
+        /// <inheritdoc />
+        public void UpdateMenuItem<TMenu>(FPlayer player, Expression<Func<MenuItem>> menuItem, Expression<Func<MenuItem, object>> property, object value)
+            where TMenu : Menu
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            var menuItemMember = (menuItem.Body as MemberExpression)?.Member;
+            var propertyMember = (property.Body as MemberExpression)?.Member;
+            if (menuItemMember is null || propertyMember is null)
+            {
+                return;
+            }
+
+            var menu = player.GetMenu<Menu>(typeof(TMenu));
+            var actualMenuItemMember = this.GetMember(typeof(TMenu), menuItemMember.Name);
+            var actualPropertyMember = this.GetMember(typeof(MenuItem), propertyMember.Name);
+            if (actualMenuItemMember is null || actualPropertyMember is null)
+            {
+                return;
+            }
+
+            var propertyObj = this.GetValueOfProperty(actualMenuItemMember, menu);
+            if (propertyObj is null)
+            {
+                return;
+            }
+
+            this.SetValueOfProperty(actualPropertyMember, propertyObj, value);
+            BaseScript.TriggerClientEvent(player.GetUnderlyingPlayer(), Events.NuiEventType.UpdateMenuItem, JsonConvert.SerializeObject(new JObject
+            {
+                { "type", Events.NuiEventType.UpdateMenuItem },
+                { "hashcode", propertyObj.GetHashCode().ToString() },
+                { "property", propertyMember.Name },
+                { "value", JToken.FromObject(value) },
+            }));
+        }
+
+        private MemberInfo GetMember(Type type, string memberName)
+        {
+            return type
+                .GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Cast<MemberInfo>()
+                .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                .FirstOrDefault(x => x.Name == memberName);
+        }
+
+        private object GetValueOfProperty(MemberInfo member, object target)
+        {
+            return member.MemberType switch
+            {
+                MemberTypes.Field => ((FieldInfo)member).GetValue(target),
+                MemberTypes.Property => ((PropertyInfo)member).GetValue(target),
+                _ => null,
+            };
+        }
+
+        private void SetValueOfProperty(MemberInfo member, object target, object value)
+        {
+            try
+            {
+                switch (member.MemberType)
+                {
+                    case MemberTypes.Field:
+                        ((FieldInfo)member).SetValue(target, value);
+                        break;
+                    case MemberTypes.Property:
+                        ((PropertyInfo)member).SetValue(target, value);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Error while updating menu item value: {e}");
+            }
+        }
+
         private T CreateMenuInstance<T>(Type type = null)
             where T : Menu
         {
             type ??= typeof(T);
             var parameters = type.GetConstructors()[0].GetParameters();
-            var menu = (Menu)Activator.CreateInstance(
-                type,
-                parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
-            return (T)menu;
+            try
+            {
+                var menu = (Menu)Activator.CreateInstance(
+                    type,
+                    parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
+                return (T)menu;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"ERROR: {e}");
+                return null;
+            }
         }
 
         [UIEvent(Events.UI.Menu.GetAll, true)]
@@ -129,7 +220,6 @@ namespace FivePD.Gamemode.Server.Services
 
             var fPlayer = (IFPlayerWithMenus)FPlayer.FromNetId(player.Handle);
             fPlayer.SetMenus(menus);
-
             networkCallbackDelegate.InvokeWithJson(response);
         }
 
