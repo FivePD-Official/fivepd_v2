@@ -347,22 +347,22 @@ namespace FivePD.Common
                 public const string GetAll = "fivepd:menu:getAll";
 
                 /// <summary>
-                /// Used to request all menus.
+                /// Used to invoke the OnSelect event of buttons.
                 /// </summary>
                 public const string OnButtonSelect = "fivepd:menu:onButtonSelect";
 
                 /// <summary>
-                /// Used to request all menus.
+                /// Used to invoke the OnSelect event of checkboxes.
                 /// </summary>
                 public const string OnCheckboxSelect = "fivepd:menu:onCheckboxSelect";
 
                 /// <summary>
-                /// Used to request all menus.
+                /// Used to invoke the OnSelect event of lists.
                 /// </summary>
                 public const string OnListSelect = "fivepd:menu:onListSelect";
 
                 /// <summary>
-                /// Used to request all menus.
+                /// Used to invoke the OnIndexChange event of lists.
                 /// </summary>
                 public const string OnListIndexChange = "fivepd:menu:onListIndexChange";
 

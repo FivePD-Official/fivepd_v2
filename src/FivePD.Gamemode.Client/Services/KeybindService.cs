@@ -24,18 +24,18 @@ namespace FivePD.Gamemode.Client.Services
     public class KeybindService : IKeybindService
     {
         private readonly ITickService _tickService;
-        private readonly IUIService _iuiService;
+        private readonly IUIService _uiService;
         private readonly List<HoldableKeybind> _actions = new List<HoldableKeybind>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeybindService"/> class.
         /// </summary>
         /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-        /// <param name="iuiService">The <see cref="IUIService"/> to use.</param>
-        public KeybindService(ITickService tickService, IUIService iuiService)
+        /// <param name="uiService">The <see cref="IUIService"/> to use.</param>
+        public KeybindService(ITickService tickService, IUIService uiService)
         {
             this._tickService = tickService;
-            this._iuiService = iuiService;
+            this._uiService = uiService;
         }
 
         /// <inheritdoc />
@@ -94,7 +94,7 @@ namespace FivePD.Gamemode.Client.Services
                     return;
                 }
 
-                this._iuiService.ShowTimerBar(timeToHoldInMs);
+                this._uiService.ShowTimerBar(timeToHoldInMs);
                 this._actions.Add(holdableKeybind);
             }
 
@@ -106,7 +106,7 @@ namespace FivePD.Gamemode.Client.Services
                 }
 
                 holdableKeybind.ClearTimer();
-                this._iuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.TimerBar },
                     { "show", false },
@@ -160,7 +160,7 @@ namespace FivePD.Gamemode.Client.Services
             foreach (var item in toBeRemoved)
             {
                 item.ClearTimer();
-                this._iuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.TimerBar },
                     { "show", false },

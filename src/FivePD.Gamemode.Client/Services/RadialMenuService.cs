@@ -23,7 +23,7 @@ namespace FivePD.Gamemode.Client.Services
     public class RadialMenuService : IRadialMenuService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IUIService _iuiService;
+        private readonly IUIService _uiService;
         private readonly IKeybindService _keybindService;
         private readonly ITickService _tickService;
         // private readonly List<RadialMenu> _menus = new List<RadialMenu>();
@@ -32,13 +32,13 @@ namespace FivePD.Gamemode.Client.Services
 
         /// <summary>Initializes a new instance of the <see cref="RadialMenuService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="iuiService">The <see cref="IUIService" /> to use.</param>
+        /// <param name="uiService">The <see cref="IUIService" /> to use.</param>
         /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
         /// <param name="tickService">The <see cref="ITickService" /> to use.</param>
-        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, IUIService iuiService, IKeybindService keybindService, ITickService tickService)
+        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, IUIService uiService, IKeybindService keybindService, ITickService tickService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._iuiService = iuiService;
+            this._uiService = uiService;
             this._keybindService = keybindService;
             this._tickService = tickService;
         }
@@ -46,7 +46,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._iuiService.OnNuiHide += () =>
+            this._uiService.OnNuiHide += () =>
             {
                 this._isAnyMenuVisible = false;
                 this._tickService.OnTick -= this.DisableMouseMovement;
@@ -182,7 +182,7 @@ namespace FivePD.Gamemode.Client.Services
             var coordinates = this.GetMouseCoordinates();
             if (Cfx.API.IsDisabledControlJustPressed(2, 237))
             {
-                this._iuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.RadialMenuControl },
                     { "control", "down" },
@@ -192,7 +192,7 @@ namespace FivePD.Gamemode.Client.Services
             }
             else if (Cfx.API.IsDisabledControlJustReleased(2, 237))
             {
-                this._iuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.RadialMenuControl },
                     { "control", "up" },
@@ -203,7 +203,7 @@ namespace FivePD.Gamemode.Client.Services
 
             if (Math.Abs(coordinates.X - this._lastMousePosition.X) > 1 && Math.Abs(coordinates.Y - this._lastMousePosition.Y) > 1)
             {
-                this._iuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.RadialMenuControl },
                     { "control", "up" },

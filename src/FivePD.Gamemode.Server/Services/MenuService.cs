@@ -163,18 +163,9 @@ namespace FivePD.Gamemode.Server.Services
         {
             type ??= typeof(T);
             var parameters = type.GetConstructors()[0].GetParameters();
-            try
-            {
-                var menu = (Menu)Activator.CreateInstance(
-                    type,
-                    parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
-                return (T)menu;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"ERROR: {e}");
-                return null;
-            }
+            return (T)Activator.CreateInstance(
+                type,
+                parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
         }
 
         [UIEvent(Events.UI.Menu.GetAll, true)]
