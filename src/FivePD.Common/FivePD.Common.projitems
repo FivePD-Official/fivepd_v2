@@ -54,7 +54,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Responses\GetMenusResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuButtonItemWithEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuItemWithFPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuCheckboxItemWithEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuListItemWithEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Menu.cs" />
