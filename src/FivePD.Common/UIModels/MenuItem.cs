@@ -6,6 +6,7 @@
 
 using CitizenFX.Core;
 using FivePD.Common.Models;
+using FivePD.Common.UIModels.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3264
@@ -19,11 +20,8 @@ namespace FivePD.Common.UIModels
     /// <summary>
     /// Represents a normal menu item in the Nui.
     /// </summary>
-    public abstract class MenuItem
+    public abstract class MenuItem : IPublicMenuItem
     {
-        private string _title;
-        private bool _enabled;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuItem"/> class.
         /// </summary>
@@ -32,42 +30,26 @@ namespace FivePD.Common.UIModels
         /// <param name="type">The type of this item.</param>
         protected MenuItem(string title, string description, MenuItemType type)
         {
-            this._title = title;
-            this._enabled = true;
+            this.Title = title;
+            this.Enabled = true;
             this.Description = description;
             this.Type = type;
         }
 
         /// <summary>
-        /// Gets or sets the title the item.
+        /// Gets or sets the title.
         /// </summary>
-        public string Title
-        {
-            get => this._title;
-            set
-            {
-                this._title = value;
-                this.UpdateItem("title", this._title);
-            }
-        }
+        public string Title { get; set; }
 
         /// <summary>
-        /// Gets the description.
+        /// Gets or sets the description.
         /// </summary>
-        public string Description { get; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the item is clickable.
         /// </summary>
-        public bool Enabled
-        {
-            get => this._enabled;
-            set
-            {
-                this._enabled = value;
-                this.UpdateItem("enabled", this._enabled);
-            }
-        }
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets the type.

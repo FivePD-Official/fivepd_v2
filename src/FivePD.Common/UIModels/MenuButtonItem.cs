@@ -12,7 +12,7 @@ using FivePD.Common.UIModels.Interfaces;
 
 namespace FivePD.Common.UIModels
 {
-    /// <inheritdoc cref="FivePD.Common.UIModels.MenuItem" />
+    /// <inheritdoc cref="MenuItem" />
     public class MenuButtonItem : MenuItem, IMenuButtonItemWithEvents
     {
         /// <summary>

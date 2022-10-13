@@ -10,11 +10,9 @@ using FivePD.Common.UIModels.Interfaces;
 
 namespace FivePD.Common.UIModels
 {
-    /// <inheritdoc cref="FivePD.Common.UIModels.MenuItem" />
-    public class MenuListItem : MenuItem, IMenuListItemWithEvents
+    /// <inheritdoc cref="MenuItem" />
+    public class MenuListItem : MenuItem, IMenuListItemWithEvents, IPublicMenuListItem
     {
-        private List<string> _items;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuListItem"/> class.
         /// </summary>
@@ -24,7 +22,7 @@ namespace FivePD.Common.UIModels
         public MenuListItem(string title, string description, List<string> items)
             : base(title, description, MenuItemType.List)
         {
-            this._items = items;
+            this.Items = items;
         }
 
         /// <summary>
@@ -52,24 +50,14 @@ namespace FivePD.Common.UIModels
         public event ListSelect OnSelect;
 
         /// <summary>
-        /// Gets the items.
+        /// Gets or sets the items.
         /// </summary>
-        public List<string> Items => this._items;
+        public List<string> Items { get; set; }
 
         /// <summary>
-        /// Gets the index.
+        /// Gets or sets the index.
         /// </summary>
-        public int CurrentIndex { get; private set; }
-
-        /// <summary>
-        /// Sets the list's items.
-        /// </summary>
-        /// <param name="items">The new items of the list.</param>
-        public void SetItems(List<string> items)
-        {
-            this._items = items;
-            this.UpdateItem("items", this._items);
-        }
+        public int CurrentIndex { get; set; }
 
         /// <inheritdoc />
         void IMenuListItemWithEvents.RaiseOnIndexChange(FPlayer player, int index)

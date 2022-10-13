@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common.ConfigModels.MenuConfigs;
+using FivePD.Common.Models;
 using FivePD.Common.UIModels;
+using FivePD.Common.UIModels.Interfaces;
 using FivePD.Gamemode.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
@@ -47,6 +49,24 @@ namespace FivePD.Gamemode.Server.UIModels
             this.SetItems(this.CreateItems());
         }
 
+        /// <summary>
+        /// Gets qweqwe.
+        /// </summary>
+        /// <returns>asdasd.</returns>
+        public IPublicMenuCheckboxItem DutyCheckboxItem => this._dutyCheckboxItem;
+
+        /// <summary>
+        /// Gets qweqwe.
+        /// </summary>
+        /// <returns>asdasd.</returns>
+        public IPublicMenuListItem SpawnVehicleItem => this._spawnVehicleListItem;
+
+        /// <summary>
+        /// Gets qweqwe.
+        /// </summary>
+        /// <returns>asdasd.</returns>
+        public IPublicMenuListItem LoadoutItem => this._getLoadoutListItem;
+
         private List<MenuItem> CreateItems()
         {
             var items = new List<MenuItem>();
@@ -56,9 +76,7 @@ namespace FivePD.Gamemode.Server.UIModels
                 this._dutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
                 this._dutyCheckboxItem.OnSelect += (player, @checked) =>
                 {
-                    var dutyMenu = player.GetMenu<DutyMenu>();
-                    Debug.WriteLine($"_changeLanguageListItem.CurrentIndex - {dutyMenu._changeLanguageListItem.CurrentIndex}");
-                    Debug.WriteLine($"_dutyCheckboxItem.OnSelect - {player.GetUnderlyingPlayer().Name} - {@checked}");
+                    player.DutyStatus.Value = @checked ? FDutyStatus.OnDutyAndReceiving : FDutyStatus.OffDuty;
                 };
                 items.Add(this._dutyCheckboxItem);
             }

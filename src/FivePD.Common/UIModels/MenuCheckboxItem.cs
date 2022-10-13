@@ -12,8 +12,8 @@ using FivePD.Common.UIModels.Interfaces;
 
 namespace FivePD.Common.UIModels
 {
-    /// <inheritdoc cref="FivePD.Common.UIModels.MenuItem" />
-    public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents
+    /// <inheritdoc cref="MenuItem" />
+    public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents, IPublicMenuCheckboxItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuCheckboxItem"/> class.
@@ -38,9 +38,9 @@ namespace FivePD.Common.UIModels
         public event CheckboxSelect OnSelect;
 
         /// <summary>
-        /// Gets a value indicating whether asd.
+        /// Gets or sets a value indicating whether asd.
         /// </summary>
-        public bool Checked { get; private set; }
+        public bool Checked { get; set; }
 
         /// <inheritdoc/>
         void IMenuCheckboxItemWithEvents.RaiseOnSelect(FPlayer player, bool @checked)

@@ -184,10 +184,5 @@ namespace FivePD.Gamemode.Server.Services
             var casted = (IMenuListItemWithEvents)(menuItem as MenuListItem);
             casted?.RaiseOnIndexChange(fPlayer, index);
         }
-
-        private MenuItem FindMenuItem(string hashcode)
-        {
-            return new MenuButtonItem("asd", hashcode);
-        }
     }
 }
