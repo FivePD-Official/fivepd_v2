@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { GetAllMenusResponse, RadialMenu, RadialMenuObjectsEvent, UpdateMenuItemEvent } from '@models';
+import {
+  GetAllMenusResponse,
+  Menu,
+  MenuButtonItem,
+  MenuCheckboxItem,
+  MenuItem,
+  MenuListItem,
+  RadialMenu,
+  RadialMenuObjectsEvent,
+  UpdateMenuItemEvent
+} from '@models';
 import { MenuItemType, NuiEventType } from '@enums';
-import { Menu, MenuButtonItem, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({

@@ -10,7 +10,7 @@ export enum NuiEventType {
   MenuLeft = 'menu:control_left',
   MenuRight = 'menu:control_right',
   MenuSelect = 'menu:control_select',
-  UpdateMenuItem = 'menu:update_item',
+  UpdateMenuItem = 'fivepd:menu:update_item',
   LocalizationChange = 'localization:change',
   RadialMenuControl = 'radial_menu:control',
   PlaySound = 'sound:play',

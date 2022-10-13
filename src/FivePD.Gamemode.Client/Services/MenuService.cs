@@ -50,7 +50,7 @@ namespace FivePD.Gamemode.Client.Services
                 this.RegisterMenuKeybinds(response);
             });
 
-            this._eventHandlerDictionary[Events.NuiEventType.UpdateMenuItem] += new Action<string>(data =>
+            this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuItem] += new Action<string>(data =>
             {
                 this._uiService.SendMessage(data);
             });
