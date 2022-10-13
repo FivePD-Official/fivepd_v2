@@ -5,14 +5,14 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using FivePD.Common.Models;
-using FivePD.Gamemode.Server.UIModels.Interfaces;
+using FivePD.Common.UIModels.Interfaces;
 
 #pragma warning disable S3264
 #pragma warning disable CS0067
 
-namespace FivePD.Gamemode.Server.UIModels
+namespace FivePD.Common.UIModels
 {
-    /// <inheritdoc cref="FivePD.Gamemode.Server.UIModels.MenuItem" />
+    /// <inheritdoc cref="FivePD.Common.UIModels.MenuItem" />
     public class MenuButtonItem : MenuItem, IMenuButtonItemWithEvents
     {
         /// <summary>

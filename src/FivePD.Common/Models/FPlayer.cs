@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common.Attributes;
+using FivePD.Common.UIModels;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Common.Models
@@ -20,9 +21,10 @@ namespace FivePD.Common.Models
      * functionality for easier interactions
      * with the framework.</summary>
      */
-    public class FPlayer : FStatefulContainer
+    public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     {
         private static List<FPlayer> _cachedPlayers = new List<FPlayer>();
+        private List<Menu> _menus = new List<Menu>();
 
         /**
          * <summary>Initializes a new instance of the <see cref="FPlayer"/> class.</summary>
@@ -110,10 +112,35 @@ namespace FivePD.Common.Models
             return $"player:{this.NetId}";
         }
 
+        /// <summary>
+        /// asdad.
+        /// </summary>
+        /// <typeparam name="T">TTT.</typeparam>
+        /// <returns>Returns.</returns>
+        public T GetMenu<T>()
+            where T : Menu
+        {
+            return (T)this._menus.FirstOrDefault(m => m.GetType() == typeof(T));
+        }
+
         /// <inheritdoc />
         public override StateBag GetStateBag()
         {
             return this.GetUnderlyingPlayer().State;
+        }
+
+        /// <inheritdoc/>
+        void IFPlayerWithMenus.SetMenus(List<Menu> menus)
+        {
+            this._menus = menus;
+        }
+
+        /// <inheritdoc/>
+        MenuItem IFPlayerWithMenus.FindMenuItem(string hashcode)
+        {
+            return this._menus
+                .Select(m => m.Items.FirstOrDefault(x => x.GetHashCode().ToString() == hashcode))
+                .FirstOrDefault(found => found != null);
         }
 
         #pragma warning disable S3011

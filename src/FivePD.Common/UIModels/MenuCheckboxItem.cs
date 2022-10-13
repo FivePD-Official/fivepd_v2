@@ -4,16 +4,15 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using CitizenFX.Core;
 using FivePD.Common.Models;
-using FivePD.Gamemode.Server.UIModels.Interfaces;
+using FivePD.Common.UIModels.Interfaces;
 
 #pragma warning disable S3264
 #pragma warning disable CS0067
 
-namespace FivePD.Gamemode.Server.UIModels
+namespace FivePD.Common.UIModels
 {
-    /// <inheritdoc cref="FivePD.Gamemode.Server.UIModels.MenuItem" />
+    /// <inheritdoc cref="FivePD.Common.UIModels.MenuItem" />
     public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents
     {
         /// <summary>
@@ -38,9 +37,15 @@ namespace FivePD.Gamemode.Server.UIModels
         /// </summary>
         public event CheckboxSelect OnSelect;
 
+        /// <summary>
+        /// Gets a value indicating whether asd.
+        /// </summary>
+        public bool Checked { get; private set; }
+
         /// <inheritdoc/>
         void IMenuCheckboxItemWithEvents.RaiseOnSelect(FPlayer player, bool @checked)
         {
+            this.Checked = @checked;
             this.OnSelect?.Invoke(player, @checked);
         }
     }

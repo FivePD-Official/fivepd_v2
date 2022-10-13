@@ -6,11 +6,11 @@
 
 using System.Collections.Generic;
 using FivePD.Common.Models;
-using FivePD.Gamemode.Server.UIModels.Interfaces;
+using FivePD.Common.UIModels.Interfaces;
 
-namespace FivePD.Gamemode.Server.UIModels
+namespace FivePD.Common.UIModels
 {
-    /// <inheritdoc cref="FivePD.Gamemode.Server.UIModels.MenuItem" />
+    /// <inheritdoc cref="FivePD.Common.UIModels.MenuItem" />
     public class MenuListItem : MenuItem, IMenuListItemWithEvents
     {
         private List<string> _items;
@@ -57,6 +57,11 @@ namespace FivePD.Gamemode.Server.UIModels
         public List<string> Items => this._items;
 
         /// <summary>
+        /// Gets the index.
+        /// </summary>
+        public int CurrentIndex { get; private set; }
+
+        /// <summary>
         /// Sets the list's items.
         /// </summary>
         /// <param name="items">The new items of the list.</param>
@@ -69,6 +74,7 @@ namespace FivePD.Gamemode.Server.UIModels
         /// <inheritdoc />
         void IMenuListItemWithEvents.RaiseOnIndexChange(FPlayer player, int index)
         {
+            this.CurrentIndex = index;
             this.OnIndexChange?.Invoke(player, index);
         }
 

@@ -4,19 +4,22 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
+using FivePD.Common.Attributes;
 using FivePD.Common.Models;
 
-namespace FivePD.Gamemode.Server.UIModels.Interfaces
+namespace FivePD.Common.UIModels.Interfaces
 {
     /// <summary>
     /// asd.
     /// </summary>
-    public interface IMenuButtonItemWithEvents
+    [NoUsage]
+    public interface IMenuCheckboxItemWithEvents
     {
         /// <summary>
         /// qwe.
         /// </summary>
         /// <param name="player">Player.</param>
-        void RaiseOnSelect(FPlayer player);
+        /// <param name="checked">checked.</param>
+        void RaiseOnSelect(FPlayer player, bool @checked);
     }
 }

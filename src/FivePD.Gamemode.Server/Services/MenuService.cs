@@ -8,18 +8,16 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
 using FivePD.Common.Responses;
-using FivePD.Gamemode.Client.Models;
+using FivePD.Common.UIModels;
+using FivePD.Common.UIModels.Interfaces;
 using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.UIModels;
-using FivePD.Gamemode.Server.UIModels.Interfaces;
-using FivePD.Gamemode.Server.UIModels.Menus;
 using Newtonsoft.Json.Linq;
 
 #pragma warning disable CS1591
@@ -34,7 +32,7 @@ namespace FivePD.Gamemode.Server.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IServiceProvider _serviceProvider;
-        private readonly Dictionary<Type, Menu> _menus = new Dictionary<Type, Menu>();
+        private readonly Dictionary<Type, string> _menus = new Dictionary<Type, string>(); // Menu type, menu key
 
         public MenuService(IServiceProvider serviceProvider, EventHandlerDictionary eventHandlerDictionary)
         {
@@ -57,17 +55,14 @@ namespace FivePD.Gamemode.Server.Services
             where T : Menu
         {
             var type = typeof(T);
-            var parameters = type.GetConstructors()[0].GetParameters();
-            var menu = (Menu)Activator.CreateInstance(
-                type,
-                parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
+            var menu = this.CreateMenuInstance<T>();
 
             if (this._menus.ContainsKey(type))
             {
                 throw new ArgumentException($"A menu with the same type has been already registered: {type}");
             }
 
-            if (this._menus.Any(m => m.Value.Key == menu.Key))
+            if (this._menus.Any(m => m.Value == menu.Key))
             {
                 throw new ArgumentException("Can't register menu due to conflicting key");
             }
@@ -77,14 +72,30 @@ namespace FivePD.Gamemode.Server.Services
                 throw new ArgumentException("Can't register menu, the Title is null or empty");
             }
 
-            this._menus.Add(type, menu);
+            this._menus.Add(type, menu.Key);
         }
 
-        [UIEvent(Events.UI.Menu.GetAll)]
-        private void UIGetAllMenus(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        private T CreateMenuInstance<T>(Type type = null)
+            where T : Menu
         {
-            var menus = new List<GetMenusResponse.UIMenuResponse>();
-            foreach (var menu in this._menus.Values)
+            type ??= typeof(T);
+            var parameters = type.GetConstructors()[0].GetParameters();
+            var menu = (Menu)Activator.CreateInstance(
+                type,
+                parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
+            return (T)menu;
+        }
+
+        [UIEvent(Events.UI.Menu.GetAll, true)]
+        private void UIGetMenus([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            var menus = this._menus.Keys.Select(this.CreateMenuInstance<Menu>).ToList();
+
+            var response = new GetMenusResponse
+            {
+                Menus = new List<GetMenusResponse.UIMenuResponse>(),
+            };
+            foreach (var menu in menus)
             {
                 var items = new List<GetMenusResponse.UIMenuResponse.UIMenuItemResponse>();
                 foreach (var item in menu.Items)
@@ -106,7 +117,7 @@ namespace FivePD.Gamemode.Server.Services
                     });
                 }
 
-                menus.Add(new GetMenusResponse.UIMenuResponse
+                response.Menus.Add(new GetMenusResponse.UIMenuResponse
                 {
                     Hashcode = menu.GetHashCode().ToString(),
                     Key = menu.Key,
@@ -116,69 +127,67 @@ namespace FivePD.Gamemode.Server.Services
                 });
             }
 
-            networkCallbackDelegate.InvokeWithJson(new GetMenusResponse
-            {
-                Menus = menus,
-            });
+            var fPlayer = (IFPlayerWithMenus)FPlayer.FromNetId(player.Handle);
+            fPlayer.SetMenus(menus);
+
+            networkCallbackDelegate.InvokeWithJson(response);
         }
 
         private void OnButtonSelect([FromSource] Player player, string hashcode)
         {
-            var menuItem = this.FindMenuItem(hashcode);
+            var fPlayer = FPlayer.FromNetId(player.Handle);
+            var menuItem = ((IFPlayerWithMenus)fPlayer).FindMenuItem(hashcode);
             if (menuItem is null)
             {
                 return;
             }
 
-            var fPlayer = FPlayer.FromNetId(player.Handle);
             var casted = (IMenuButtonItemWithEvents)menuItem;
-            casted?.RaiseOnSelect(fPlayer);
+            casted.RaiseOnSelect(fPlayer);
         }
 
         private void OnCheckboxSelect([FromSource] Player player, string hashcode, bool @checked)
         {
-            var menuItem = this.FindMenuItem(hashcode);
+            var fPlayer = FPlayer.FromNetId(player.Handle);
+            var menuItem = ((IFPlayerWithMenus)fPlayer).FindMenuItem(hashcode);
             if (menuItem is null)
             {
                 return;
             }
 
-            var fPlayer = FPlayer.FromNetId(player.Handle);
             var casted = (IMenuCheckboxItemWithEvents)menuItem;
-            casted?.RaiseOnSelect(fPlayer, @checked);
+            casted.RaiseOnSelect(fPlayer, @checked);
         }
 
         private void OnListSelect([FromSource] Player player, string hashcode, int index)
         {
-            var menuItem = this.FindMenuItem(hashcode);
+            var fPlayer = FPlayer.FromNetId(player.Handle);
+            var menuItem = ((IFPlayerWithMenus)fPlayer).FindMenuItem(hashcode);
             if (menuItem is null)
             {
                 return;
             }
 
-            var fPlayer = FPlayer.FromNetId(player.Handle);
             var casted = (IMenuListItemWithEvents)(menuItem as MenuListItem);
             casted?.RaiseOnSelect(fPlayer, index);
         }
 
         private void OnListIndexChange([FromSource] Player player, string hashcode, int index)
         {
-            var menuItem = this.FindMenuItem(hashcode);
+            var fPlayer = FPlayer.FromNetId(player.Handle);
+            var menuItem = ((IFPlayerWithMenus)fPlayer).FindMenuItem(hashcode);
             if (menuItem is null)
             {
                 return;
             }
 
-            var fPlayer = FPlayer.FromNetId(player.Handle);
             var casted = (IMenuListItemWithEvents)(menuItem as MenuListItem);
             casted?.RaiseOnIndexChange(fPlayer, index);
         }
 
         private MenuItem FindMenuItem(string hashcode)
         {
-            return this._menus.Values
-                .Select(m => m.Items.FirstOrDefault(x => x.GetHashCode().ToString() == hashcode))
-                .FirstOrDefault(found => found != null);
+            return new MenuButtonItem("asd", hashcode);
         }
     }
 }

@@ -6,7 +6,7 @@
 
 using System.Collections.Generic;
 
-namespace FivePD.Gamemode.Server.UIModels
+namespace FivePD.Common.UIModels
 {
     /// <summary>
     /// Defines a UI menu.

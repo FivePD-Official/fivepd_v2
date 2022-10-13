@@ -6,13 +6,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
-using FivePD.Gamemode.Client.Models;
+using FivePD.Common.UIModels;
 using FivePD.Gamemode.Server.Interfaces;
-using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450
@@ -22,7 +19,7 @@ using Cfx = CitizenFX.Core.Native;
 #pragma warning disable S125
 #pragma warning disable SA1515
 
-namespace FivePD.Gamemode.Server.UIModels.Menus
+namespace FivePD.Gamemode.Server.UIModels
 {
     /// <inheritdoc />
     public class DutyMenu : Menu
@@ -59,6 +56,8 @@ namespace FivePD.Gamemode.Server.UIModels.Menus
                 this._dutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
                 this._dutyCheckboxItem.OnSelect += (player, @checked) =>
                 {
+                    var dutyMenu = player.GetMenu<DutyMenu>();
+                    Debug.WriteLine($"_changeLanguageListItem.CurrentIndex - {dutyMenu._changeLanguageListItem.CurrentIndex}");
                     Debug.WriteLine($"_dutyCheckboxItem.OnSelect - {player.GetUnderlyingPlayer().Name} - {@checked}");
                 };
                 items.Add(this._dutyCheckboxItem);

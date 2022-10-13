@@ -7,7 +7,7 @@
 using FivePD.Common.Attributes;
 using FivePD.Common.Models;
 
-namespace FivePD.Gamemode.Server.UIModels.Interfaces
+namespace FivePD.Common.UIModels.Interfaces
 {
     /// <summary>
     /// asd.
