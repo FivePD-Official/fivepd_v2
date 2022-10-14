@@ -41,7 +41,7 @@ namespace FivePD.Gamemode.Server.UIModels
             this._configService = configService;
             this._localizationService = localizationService;
             this._dutyMenuConfig = configService.GetMenuConfig().DutyMenu;
-            this.SetItems(this.CreateItems());
+            this.Items = this.CreateItems();
         }
 
         /// <summary>

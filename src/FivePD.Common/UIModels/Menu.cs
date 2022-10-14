@@ -13,8 +13,6 @@ namespace FivePD.Common.UIModels
     /// </summary>
     public abstract class Menu
     {
-        private List<MenuItem> _items = new List<MenuItem>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Menu"/> class.
         /// </summary>
@@ -29,9 +27,9 @@ namespace FivePD.Common.UIModels
         }
 
         /// <summary>
-        /// Gets the items.
+        /// Gets or sets the items.
         /// </summary>
-        public List<MenuItem> Items => this._items;
+        public List<MenuItem> Items { get; protected set; } = new List<MenuItem>();
 
         /// <summary>
         /// Gets the title of the menu.
@@ -47,14 +45,5 @@ namespace FivePD.Common.UIModels
         /// Gets a value indicating whether this menu's Title should be used as a key for localizations.
         /// </summary>
         public bool UseLocalization { get; }
-
-        /// <summary>
-        /// Sets the items.
-        /// </summary>
-        /// <param name="items">The items of this menu.</param>
-        protected void SetItems(List<MenuItem> items)
-        {
-            this._items = items;
-        }
     }
 }
