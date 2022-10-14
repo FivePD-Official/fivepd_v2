@@ -57,10 +57,7 @@ namespace FivePD.Gamemode.Client.Services
                 cb.Invoke(this.CurrentLocalization);
             }));
 
-            this._eventHandlerDictionary[Events.UI.Player.LocalizationChange] += new Action<string>(data =>
-            {
-                this._uiService.SendMessage(data);
-            });
+            this._eventHandlerDictionary[Events.UI.Player.LocalizationChange] += new Action<string>(data => this._uiService.SendMessage(data));
         }
 
         /// <inheritdoc />

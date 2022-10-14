@@ -37,7 +37,7 @@ namespace FivePD.Gamemode.Client.Extensions
         /// <param name="eventHandlerDictionary">The event handler dictionary to add the event for.</param>
         /// <param name="eventName">The event's name.</param>
         /// <param name="onResponse">This action will get invoked with the response from the server.</param>
-        public static void AddUIEventServerResponse(this EventHandlerDictionary eventHandlerDictionary, string eventName, Action<string> onResponse = null)
+        public static void AddUIToServerEvent(this EventHandlerDictionary eventHandlerDictionary, string eventName, Action<string> onResponse = null)
         {
             Cfx.API.RegisterNuiCallbackType(eventName);
             eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>

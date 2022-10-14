@@ -110,13 +110,12 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             this.SetValueOfProperty(actualPropertyMember, propertyObj, value);
-            BaseScript.TriggerClientEvent(player.GetUnderlyingPlayer(), Events.UI.Menu.UpdateMenuItem, JsonConvert.SerializeObject(new JObject
+            player.TriggerEvent(Events.UI.Menu.UpdateMenuItem, new JObject
             {
-                { "type", Events.UI.Menu.UpdateMenuItem },
                 { "hashcode", propertyObj.GetHashCode().ToString() },
                 { "property", propertyMember.Name },
                 { "value", JToken.FromObject(value) },
-            }));
+            });
         }
 
         private MemberInfo GetMember(Type type, string memberName)

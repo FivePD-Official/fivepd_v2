@@ -12,6 +12,7 @@ using FivePD.Common.ConfigModels.MenuConfigs;
 using FivePD.Common.Models;
 using FivePD.Common.UIModels;
 using FivePD.Common.UIModels.Interfaces;
+using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -131,11 +132,10 @@ namespace FivePD.Gamemode.Server.UIModels
                 this._localizationService.GetLocales().Select(x => x.Title).ToList());
             this._changeLanguageListItem.OnSelect += (player, index) =>
             {
-                player.GetUnderlyingPlayer().TriggerEvent(Events.UI.Player.LocalizationChange, JsonConvert.SerializeObject(new JObject
+                player.TriggerEvent(Events.UI.Player.LocalizationChange, new JObject
                 {
-                    { "type", Events.UI.Player.LocalizationChange },
                     { "data", JObject.FromObject(this._localizationService.GetLocalization(index)) },
-                }));
+                });
             };
             this._changeLanguageListItem.OnIndexChange += (player, index) =>
             {

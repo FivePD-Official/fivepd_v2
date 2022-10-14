@@ -243,7 +243,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             foreach (var e in events)
             {
-                this._eventHandlerDictionary.AddUIEventServerResponse(e);
+                this._eventHandlerDictionary.AddUIToServerEvent(e);
             }
         }
     }

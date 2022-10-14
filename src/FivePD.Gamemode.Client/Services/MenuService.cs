@@ -44,16 +44,13 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._eventHandlerDictionary.AddUIEventServerResponse(Events.UI.Menu.GetAll, data =>
+            this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
             {
                 var response = JsonConvert.DeserializeObject<GetMenusResponse>(data);
                 this.RegisterMenuKeybinds(response);
             });
 
-            this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuItem] += new Action<string>(data =>
-            {
-                this._uiService.SendMessage(data);
-            });
+            this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
         }
 
         private void RegisterMenuKeybinds(GetMenusResponse response)
