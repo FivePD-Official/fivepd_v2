@@ -7,11 +7,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
 using FivePD.Common.Models;
 using FivePD.Common.UIModels;
 using FivePD.Common.UIModels.Interfaces;
 using FivePD.Gamemode.Server.Interfaces;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450
@@ -73,7 +76,6 @@ namespace FivePD.Gamemode.Server.UIModels
                 this.DutyCheckboxItem.OnSelect += (player, @checked) =>
                 {
                     player.DutyStatus.Value = @checked ? FDutyStatus.OnDutyAndReceiving : FDutyStatus.OffDuty;
-                    this._menuService.UpdateMenuItem<DutyMenu>(player, menu => menu.DutyCheckboxItem, item => item.Title, @checked ? "Checked" : "Not checked");
                 };
                 items.Add(this.DutyCheckboxItem);
             }
@@ -129,18 +131,15 @@ namespace FivePD.Gamemode.Server.UIModels
                 this._localizationService.GetLocales().Select(x => x.Title).ToList());
             this._changeLanguageListItem.OnSelect += (player, index) =>
             {
-                Debug.WriteLine($"_changeLanguageListItem.OnSelect - {player.GetUnderlyingPlayer().Name} - {index}");
-                // var locale = this._localizationService.Locales.ElementAt(index);
-                // this._localizationService.LoadLocalization(locale.Key);
-                // this._nuiService.SendMessage(new JObject
-                // {
-                //     { "type", Events.NuiEventType.LocalizationChange },
-                //     { "data", JObject.FromObject(this._localizationService.CurrentLocalization) },
-                // });
+                player.GetUnderlyingPlayer().TriggerEvent(Events.UI.Player.LocalizationChange, JsonConvert.SerializeObject(new JObject
+                {
+                    { "type", Events.UI.Player.LocalizationChange },
+                    { "data", JObject.FromObject(this._localizationService.GetLocalization(index)) },
+                }));
             };
             this._changeLanguageListItem.OnIndexChange += (player, index) =>
             {
-                Debug.WriteLine($"_changeLanguageListItem.OnIndexChange - {player.GetUnderlyingPlayer().Name} - {index}");
+                // Debug.WriteLine($"_changeLanguageListItem.OnIndexChange - {player.GetUnderlyingPlayer().Name} - {index}");
             };
             items.Add(this._changeLanguageListItem);
 

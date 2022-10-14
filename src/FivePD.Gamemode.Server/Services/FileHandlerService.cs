@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using CitizenFX.Core;
 using FivePD.Common.Exceptions;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;

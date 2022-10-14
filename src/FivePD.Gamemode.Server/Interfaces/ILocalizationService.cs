@@ -26,5 +26,19 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <returns>The available locales.</returns>
         public List<Locale> GetLocales();
+
+        /// <summary>
+        /// Gets the localization with the given locale.
+        /// </summary>
+        /// <param name="locale">The locale of the localization.</param>
+        /// <returns>The localization object.</returns>
+        public Localization GetLocalization(string locale);
+
+        /// <summary>
+        /// Gets the localization at the given index.
+        /// </summary>
+        /// <param name="index">The index of the locale.</param>
+        /// <returns>The localization object.</returns>
+        public Localization GetLocalization(int index);
     }
 }

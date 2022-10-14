@@ -129,9 +129,6 @@ namespace FivePD.Common
             /// <summary>Selects the current item.</summary>
             public const string MenuSelect = "menu:control_select";
 
-            /// <summary>Sends the current localization to the Nui.</summary>
-            public const string LocalizationChange = "localization:change";
-
             /// <summary>Sends radial menu control events (mouse move up, down, select) to the Nui.</summary>
             public const string RadialMenuControl = "radial_menu:control";
 
@@ -187,6 +184,11 @@ namespace FivePD.Common
                 /// Used to change a player's rank.
                 /// </summary>
                 public const string ChangeRank = "fivepd:player:changeRank";
+
+                /// <summary>
+                /// Used to change the localization of the UI.
+                /// </summary>
+                public const string LocalizationChange = "fivepd:player:localizationChange";
             }
 
             /// <summary>

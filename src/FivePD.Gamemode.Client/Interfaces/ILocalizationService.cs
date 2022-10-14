@@ -4,9 +4,6 @@
 // the intellectual property of GTAPoliceMods unless otherwise
 // noted by a license provided. Do not copy or redistribute.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using FivePD.Common;
 using FivePD.Common.Localization;
 
 namespace FivePD.Gamemode.Client.Interfaces
@@ -17,11 +14,6 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface ILocalizationService
     {
         /// <summary>
-        /// Gets all available locales.
-        /// </summary>
-        public List<Locale> Locales { get; }
-
-        /// <summary>
         /// Gets the currently set localization.
         /// </summary>
         public Localization CurrentLocalization { get; }
@@ -30,12 +22,6 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Register all localization related event handlers.
         /// </summary>
         public void RegisterEventHandlers();
-
-        /// <summary>
-        /// Finds and loads all translation files located in fivepd/Localization.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public Task<List<Locale>> LoadAvailableLocales();
 
         /// <summary>
         /// Loads the default localization file.
