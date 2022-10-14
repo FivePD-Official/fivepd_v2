@@ -50,14 +50,14 @@ namespace FivePD.Common.UIModels
         public event ListSelect OnSelect;
 
         /// <summary>
-        /// Gets or sets the items.
+        /// Gets the items.
         /// </summary>
-        public List<string> Items { get; set; }
+        public List<string> Items { get; }
 
         /// <summary>
-        /// Gets or sets the index.
+        /// Gets the index.
         /// </summary>
-        public int CurrentIndex { get; set; }
+        public int CurrentIndex { get; private set; }
 
         /// <inheritdoc />
         void IMenuListItemWithEvents.RaiseOnIndexChange(FPlayer player, int index)

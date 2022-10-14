@@ -35,19 +35,19 @@ namespace FivePD.Common.UIModels
         }
 
         /// <summary>
-        /// Gets or sets the title.
+        /// Gets the title.
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get; }
 
         /// <summary>
-        /// Gets or sets the description.
+        /// Gets the description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the item is clickable.
+        /// Gets a value indicating whether the item is clickable.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled { get; }
 
         /// <summary>
         /// Gets the type.

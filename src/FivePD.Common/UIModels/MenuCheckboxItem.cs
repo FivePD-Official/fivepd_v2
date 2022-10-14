@@ -38,9 +38,9 @@ namespace FivePD.Common.UIModels
         public event CheckboxSelect OnSelect;
 
         /// <summary>
-        /// Gets or sets a value indicating whether asd.
+        /// Gets a value indicating whether asd.
         /// </summary>
-        public bool Checked { get; set; }
+        public bool Checked { get; private set; }
 
         /// <inheritdoc/>
         void IMenuCheckboxItemWithEvents.RaiseOnSelect(FPlayer player, bool @checked)
