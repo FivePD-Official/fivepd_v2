@@ -73,8 +73,7 @@ namespace FivePD.Gamemode.Server.UIModels
                 this.DutyCheckboxItem.OnSelect += (player, @checked) =>
                 {
                     player.DutyStatus.Value = @checked ? FDutyStatus.OnDutyAndReceiving : FDutyStatus.OffDuty;
-                    var dutyMenu = player.GetMenu<DutyMenu>();
-                    this._menuService.UpdateMenuItem<DutyMenu>(player, () => dutyMenu.DutyCheckboxItem, d => d.Title, @checked ? "Checked" : "Not checked");
+                    this._menuService.UpdateMenuItem<DutyMenu>(player, menu => menu.DutyCheckboxItem, item => item.Title, @checked ? "Checked" : "Not checked");
                 };
                 items.Add(this.DutyCheckboxItem);
             }

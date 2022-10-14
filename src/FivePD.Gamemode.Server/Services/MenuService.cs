@@ -80,7 +80,7 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        public void UpdateMenuItem<TMenu>(FPlayer player, Expression<Func<MenuItem>> menuItem, Expression<Func<MenuItem, object>> property, object value)
+        public void UpdateMenuItem<TMenu>(FPlayer player, Expression<Func<TMenu, MenuItem>> item, Expression<Func<MenuItem, object>> property, object value)
             where TMenu : Menu
         {
             if (value is null)
@@ -88,7 +88,7 @@ namespace FivePD.Gamemode.Server.Services
                 return;
             }
 
-            var menuItemMember = (menuItem.Body as MemberExpression)?.Member;
+            var menuItemMember = (item.Body as MemberExpression)?.Member;
             var propertyMember = (property.Body as MemberExpression)?.Member;
             if (menuItemMember is null || propertyMember is null)
             {
