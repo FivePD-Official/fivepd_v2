@@ -113,13 +113,13 @@ export class SettingsComponent implements OnInit {
               new TextInput({
                 key: 'HelpLabel',
                 label: this._localization.translate('Nui.Labels.HelpLabel'),
-                required: true,
+                required: false,
                 value: item.HelpLabel
               }),
               new TextInput({
                 key: 'Placeholder',
                 label: this._localization.translate('Nui.Labels.Placeholder'),
-                required: true,
+                required: false,
                 value: item.Placeholder
               }),
               new Checkbox({
@@ -214,12 +214,12 @@ export class SettingsComponent implements OnInit {
             new TextInput({
               key: 'HelpLabel',
               label: this._localization.translate('Nui.Labels.HelpLabel'),
-              required: true,
+              required: false,
             }),
             new TextInput({
               key: 'Placeholder',
               label: this._localization.translate('Nui.Labels.Placeholder'),
-              required: true,
+              required: false,
             }),
             new Checkbox({
               key: 'Required',

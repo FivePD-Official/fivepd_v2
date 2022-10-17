@@ -502,6 +502,7 @@ namespace FivePD.Gamemode.Server.Services
                     entity.Values.Add(value);
                 }
 
+                this._databaseContext.SaveChanges();
                 networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulCreate", "Nui.Labels.SuccessfulAttributeCreate", new Dictionary<string, string>
                 {
                     { "attribute", request.Attribute.Name },

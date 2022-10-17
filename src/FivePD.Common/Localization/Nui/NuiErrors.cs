@@ -12,9 +12,9 @@ namespace FivePD.Common.Localization
 {
     public class NuiErrors
     {
-        public string AttributeExistsWithNameDescription { get; set; } = "A division with this name already exists.";
+        public string AttributeExistsWithNameDescription { get; set; } = "An attribute with this name already exists.";
 
-        public string CreateAttributeExistsWithNameTitle { get; set; } = "Couldn't create rank";
+        public string CreateAttributeExistsWithNameTitle { get; set; } = "Couldn't create attribute";
 
         public string CreateDepartmentExistsWithNameTitle { get; set; } = "Couldn't create department";
 

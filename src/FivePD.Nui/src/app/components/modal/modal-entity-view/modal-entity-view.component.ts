@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { ENTITY } from './entity-token';
-import { LooseDataEntityWrapper, MappedLooseDataEntity, ModalRef } from '@models';
+import { AttributeDataType, LooseDataEntityWrapper, MappedLooseDataEntity, ModalRef } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { formatDate } from '@helpers';
 
@@ -46,10 +46,29 @@ export class ModalEntityViewComponent implements OnInit {
         value = formatDate(value);
       }
 
-      let name = attr.Label ?? '-';
-      if (name === 'DepartmentId' && entityWrapper.entity['Department']) {
+      let name = attr.Label ?? '<Missing label>';
+      // Replace dedicated field IDs with their Name
+      if (name === 'Department' && entityWrapper.entity['Department']) {
         name = 'Department';
         value = entityWrapper.entity['Department']['Name'] ?? '-';
+      }
+      if (name === 'User' && entityWrapper.entity['User']) {
+        name = 'User';
+        value = entityWrapper.entity['User']['Name'] ?? '-';
+      }
+
+      // Replace enum index with value
+      if (attr.Options?.Items) {
+        value = attr.Options.Items[value];
+      }
+
+      // In case of strings replace empty value with a dash
+      if (
+        (attr.DataType === AttributeDataType.ShortString ||
+        attr.DataType === AttributeDataType.LongString) &&
+        !value
+      ) {
+        value = '-';
       }
 
       values.push({
