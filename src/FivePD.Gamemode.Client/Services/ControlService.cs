@@ -20,18 +20,18 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Client.Services
 {
     /// <inheritdoc />
-    public class KeybindService : IKeybindService
+    public class ControlService : IControlService
     {
         private readonly ITickService _tickService;
         private readonly INuiService _nuiService;
         private readonly List<HoldableKeybind> _actions = new List<HoldableKeybind>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="KeybindService"/> class.
+        /// Initializes a new instance of the <see cref="ControlService"/> class.
         /// </summary>
         /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
         /// <param name="nuiService">The <see cref="INuiService"/> to use.</param>
-        public KeybindService(ITickService tickService, INuiService nuiService)
+        public ControlService(ITickService tickService, INuiService nuiService)
         {
             this._tickService = tickService;
             this._nuiService = nuiService;
@@ -80,7 +80,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void RegisterHoldableKeybind(string id, string description, string key, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
+        public void RegisterMomentaryKeybind(string id, string description, string key, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
         {
             var holdableKeybind = new HoldableKeybind(onPress, (int)Math.Floor(timeToHoldInMs * 0.05));
             var isInvokable = false;

@@ -29,7 +29,7 @@ namespace FivePD.Gamemode.Client.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly INuiService _nuiService;
-        private readonly IKeybindService _keybindService;
+        private readonly IControlService _controlService;
         private readonly ILocalizationService _localizationService;
         private readonly IConfigService _configService;
         private readonly IEntityService _entityService;
@@ -41,7 +41,7 @@ namespace FivePD.Gamemode.Client.Services
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
         /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
-        /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
+        /// <param name="controlService">The <see cref="IControlService" /> to use.</param>
         /// <param name="localizationService">The <see cref="ILocalizationService" /> to use.</param>
         /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
         /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
@@ -49,7 +49,7 @@ namespace FivePD.Gamemode.Client.Services
         public MenuService(
             EventHandlerDictionary eventHandlerDictionary,
             INuiService nuiService,
-            IKeybindService keybindService,
+            IControlService controlService,
             ILocalizationService localizationService,
             IConfigService configService,
             IEntityService entityService,
@@ -57,7 +57,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._nuiService = nuiService;
-            this._keybindService = keybindService;
+            this._controlService = controlService;
             this._localizationService = localizationService;
             this._configService = configService;
             this._entityService = entityService;
@@ -95,7 +95,7 @@ namespace FivePD.Gamemode.Client.Services
                     this._nuiService.Show(Events.NuiEventType.MenuView, menu.Id, false, false);
                 }
 
-                this._keybindService.RegisterKeybind($"fivepd:openMenu_${menu.Id}", "-", menu.Key, OnPress);
+                this._controlService.RegisterKeybind($"fivepd:openMenu_${menu.Id}", "-", menu.Key, OnPress);
 
                 foreach (var item in menu.Items)
                 {

@@ -23,17 +23,17 @@ namespace FivePD.Gamemode.Client.Services
     public class PedService : IPedService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IKeybindService _keybindService;
+        private readonly IControlService _controlService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PedService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-        /// <param name="keybindService">The <see cref="IKeybindService"/> to use.</param>
-        public PedService(EventHandlerDictionary eventHandlerDictionary, IKeybindService keybindService)
+        /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
+        public PedService(EventHandlerDictionary eventHandlerDictionary, IControlService controlService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._keybindService = keybindService;
+            this._controlService = controlService;
         }
 
         /// <inheritdoc />
@@ -45,7 +45,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterKeybinds()
         {
-            this._keybindService.RegisterHoldableKeybind(
+            this._controlService.RegisterMomentaryKeybind(
                 KeybindIdentifiers.StopPed,
                 "sd",
                 "E",

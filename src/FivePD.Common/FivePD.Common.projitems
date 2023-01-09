@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Localization\WarningLocalizations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FDutyStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FEntityType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservableSubscription.cs" />
