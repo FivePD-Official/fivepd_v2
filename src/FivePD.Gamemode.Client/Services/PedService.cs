@@ -1,6 +1,4 @@
-﻿using System;
-using System.Dynamic;
-using System.Linq;
+﻿using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
@@ -17,17 +15,14 @@ namespace FivePD.Gamemode.Client.Services
     public class PedService : IPedService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IControlService _controlService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PedService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-        /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
-        public PedService(EventHandlerDictionary eventHandlerDictionary, IControlService controlService)
+        public PedService(EventHandlerDictionary eventHandlerDictionary)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._controlService = controlService;
         }
 
         /// <inheritdoc />
@@ -37,60 +32,38 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void RegisterKeybinds()
+        public void StopPed(Ped ped, bool handsUp = false)
         {
-            this._controlService.RegisterMomentaryKeybind(
-                KeybindIdentifiers.StopPed,
-                "sd",
-                "E",
-                1500,
-                this.StopPed,
-                null,
-                () => !Game.PlayerPed.IsInVehicle());
+            this.GeneratePed(ped);
+
+            ped.BlockPermanentEvents = true;
+
+            if (handsUp)
+            {
+                var sequence = new TaskSequence();
+                sequence.AddTask.HandsUp(-1);
+                sequence.Close();
+                ped.Task.PerformSequence(sequence);
+            }
+
+            ped.PlayAmbientSpeech("GENERIC_SHOCKED_MED");
+
+            ped.CreateBlip(BlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
+            ped.SetRelationShip(Relationship.Companion);
         }
 
         /// <inheritdoc />
-        public void StopPed()
+        public void PedLeaveVehicleWithHandsUp(Ped ped)
         {
-            var ped = Game.Player.GetTargetedEntity() as Ped;
-            var hasPlayerAimed = false;
-            if (ped is null)
-            {
-                ped = this.FindClosestAlivePed(Game.PlayerPed, 5f);
-                if (ped is null)
-                {
-                    return;
-                }
-            }
-            else
-            {
-                if (!ped.IsInRangeOf(Game.PlayerPed.Position, 20f) || !ped.HasHumanHash())
-                {
-                    return;
-                }
+            ped.BlockPermanentEvents = true;
 
-                hasPlayerAimed = true;
-            }
+            var sequence = new TaskSequence();
+            sequence.AddTask.LeaveVehicle(ped.CurrentVehicle, false);
+            sequence.AddTask.HandsUp(-1);
+            sequence.Close();
+            ped.Task.PerformSequence(sequence);
 
-            this.GeneratePed(ped);
-
-            ped.KeepTask(true);
-            ped.CreateBlip(BlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
-            ped.SetRelationShip(Relationship.Companion);
-            Cfx.API.DoesEntityBelongToThisScript(ped.Handle, true); // TODO: Is this needed?
-
-            // TODO: Create a custom TaskSequence wrapper as an extension.
-            ped.Task.ClearAllImmediately();
-            TaskSequence ts = new TaskSequence();
-            ts.AddTask.TurnTo(Game.PlayerPed);
-            ts.AddTask.StandStill(-1);
-            ts.Close();
-            ped.Task.PerformSequence(ts);
-
-            if (hasPlayerAimed)
-            {
-                // TODO: If the ped is in a vehicle exit and hands up.
-            }
+            ped.PlayAmbientSpeech("GENERIC_SHOCKED_MED");
         }
 
         /// <inheritdoc />
@@ -99,25 +72,6 @@ namespace FivePD.Gamemode.Client.Services
             var fPedBuilder = new FPedBuilder(ped.NetworkId)
                 .WithGender((FGender)ped.Gender);
             BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
-        }
-
-        private Ped FindClosestAlivePed(Entity entity, float withinRange = 0)
-        {
-            var peds = World
-                .GetAllPeds()
-                .Where(ped => ped.HasHumanHash())
-                .Where(ped => !ped.IsPlayer)
-                .Where(ped => !ped.IsDead)
-                .Where(ped => !ped.IsInVehicle());
-
-            if (withinRange != 0)
-            {
-                peds = peds.Where(ped => ped.IsInRangeOf(entity.Position, withinRange));
-            }
-
-            return peds
-                .OrderBy(ped => World.GetDistance(ped.Position, entity.Position))
-                .FirstOrDefault();
         }
     }
 }

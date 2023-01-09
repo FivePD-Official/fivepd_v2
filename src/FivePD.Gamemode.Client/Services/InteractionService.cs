@@ -5,10 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System;
-using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common.Builders;
-using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
 using Cfx = CitizenFX.Core.Native;
@@ -21,19 +18,21 @@ namespace FivePD.Gamemode.Client.Services
         private const float BaseInteractionDistance = 10.0f;
         private readonly IControlService _controlService;
         private readonly IDevUtilitiesService _devUtilitiesService;
+        private readonly IPedService _pedService;
 
         /// <summary>
         /// Initializes a new instance of
         /// the <see cref="InteractionService"/> class.
         /// </summary>
-        /// <param name="controlService">The
-        /// <see cref="IControlService"/> to use.</param>
-        /// <param name="devUtilitiesService">The
-        /// <see cref="IDevUtilitiesService"/> to use.</param>
-        public InteractionService(IControlService controlService, IDevUtilitiesService devUtilitiesService)
+        /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
+        /// <param name="devUtilitiesService">The <see cref="IDevUtilitiesService"/> to use.</param>
+        /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
+        public InteractionService(IControlService controlService, IDevUtilitiesService devUtilitiesService,
+            IPedService pedService)
         {
             this._controlService = controlService;
             this._devUtilitiesService = devUtilitiesService;
+            this._pedService = pedService;
         }
 
         /// <inheritdoc />
@@ -95,15 +94,20 @@ namespace FivePD.Gamemode.Client.Services
 
             if (ped != null)
             {
-                if (ped.IsInVehicle())
+                if (ped.IsDead)
                 {
-                    // Targeting a ped in a vehicle.
-                    PedLeaveVehicleWithHandsUp(ped);
+                    // TODO
                     return;
                 }
 
-                // Targeting a ped out of a vehicle.
-                PedStopAndHandsUp(ped);
+                if (ped.IsInVehicle())
+                {
+                    // Targeting a ped in a vehicle.
+                    this._pedService.PedLeaveVehicleWithHandsUp(ped);
+                    return;
+                }
+
+                this._pedService.StopPed(ped);
             }
 
             // Let's try and get a vehicle.
@@ -209,31 +213,6 @@ namespace FivePD.Gamemode.Client.Services
                 Y = (float)((float)Math.Cos(num) * (double)num3),
                 Z = (float)Math.Sin(num2),
             };
-        }
-
-        private static void PedLeaveVehicleWithHandsUp(Ped ped)
-        {
-            ped.BlockPermanentEvents = true;
-
-            var sequence = new TaskSequence();
-            sequence.AddTask.LeaveVehicle(ped.CurrentVehicle, false);
-            sequence.AddTask.HandsUp(-1);
-            sequence.Close();
-            ped.Task.PerformSequence(sequence);
-
-            ped.PlayAmbientSpeech("GENERIC_SHOCKED_MED");
-        }
-
-        private static void PedStopAndHandsUp(Ped ped)
-        {
-            ped.BlockPermanentEvents = true;
-
-            var sequence = new TaskSequence();
-            sequence.AddTask.HandsUp(-1);
-            sequence.Close();
-            ped.Task.PerformSequence(sequence);
-
-            ped.PlayAmbientSpeech("GENERIC_SHOCKED_MED");
         }
     }
 }
