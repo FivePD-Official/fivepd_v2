@@ -27,7 +27,9 @@ namespace FivePD.Gamemode.Client.Services
         /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
         /// <param name="devUtilitiesService">The <see cref="IDevUtilitiesService"/> to use.</param>
         /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
-        public InteractionService(IControlService controlService, IDevUtilitiesService devUtilitiesService,
+        public InteractionService(
+            IControlService controlService,
+            IDevUtilitiesService devUtilitiesService,
             IPedService pedService)
         {
             this._controlService = controlService;
