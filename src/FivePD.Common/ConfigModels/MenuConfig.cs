@@ -10,6 +10,6 @@ namespace FivePD.Common.ConfigModels
         /// <summary>
         /// Gets or sets the duty menu config.
         /// </summary>
-        public DutyMenuConfig DutyMenu { get; set; } = new DutyMenuConfig();
+        public DutyMenuConfig DutyMenu { get; set; } = new();
     }
 }

@@ -6,12 +6,12 @@
     <AssemblyTitle>FivePD.Gamemode.Client</AssemblyTitle>
     <Product>FivePD.JsonGenerator</Product>
     <Description>The FivePD Gamemode Clientside Library</Description>
-    <Copyright>Copyright © GTAPoliceMods 2021</Copyright>
+    <Copyright>Copyright © FivePD 2023</Copyright>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
     <DebugType>none</DebugType>
     <BuildDependsOn>$(BuildDependsOn);AfterBuildMigrated</BuildDependsOn>
-    <LangVersion>8</LangVersion>
+    <LangVersion>11</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputType>Exe</OutputType>

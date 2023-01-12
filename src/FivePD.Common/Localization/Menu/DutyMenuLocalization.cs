@@ -10,12 +10,12 @@ namespace FivePD.Common.Localization
     {
         public string Title { get; set; } = "Duty menu";
 
-        public MenuItemLocalization OnDuty { get; set; } = new MenuItemLocalization("On duty", "Description of on duty.");
+        public MenuItemLocalization OnDuty { get; set; } = new("On duty", "Description of on duty.");
 
-        public MenuItemLocalization GetLoadout { get; set; } = new MenuItemLocalization("Get loadout", "Description of get loadout");
+        public MenuItemLocalization GetLoadout { get; set; } = new("Get loadout", "Description of get loadout");
 
-        public MenuItemLocalization ChangeLanguage { get; set; } = new MenuItemLocalization("Change language", "Description of change language");
+        public MenuItemLocalization ChangeLanguage { get; set; } = new("Change language", "Description of change language");
 
-        public MenuItemLocalization SpawnVehicle { get; set; } = new MenuItemLocalization("Spawn vehicle", "Description of spawn vehicle");
+        public MenuItemLocalization SpawnVehicle { get; set; } = new("Spawn vehicle", "Description of spawn vehicle");
     }
 }

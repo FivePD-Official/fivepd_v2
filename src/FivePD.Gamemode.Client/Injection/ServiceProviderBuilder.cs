@@ -9,7 +9,7 @@ namespace FivePD.Gamemode.Client.Injection
      */
     public class ServiceProviderBuilder
     {
-        private readonly List<Registration> _registration = new List<Registration>();
+        private readonly List<Registration> _registration = new();
 
         /**
          * <summary>Registers type <typeparamref name="T"/> to this <see cref="ServiceProviderBuilder"/>.</summary>

@@ -60,7 +60,7 @@ namespace FivePD.Gamemode.Client.Services
 
         private void LogToConsole(LogLevel logLevel, string message, params dynamic[] parameters)
         {
-            StringBuilder extraData = new StringBuilder();
+            var extraData = new StringBuilder();
 
             // `null` was passed as the only parameter
             if (parameters is null)

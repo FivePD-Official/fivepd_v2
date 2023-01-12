@@ -180,8 +180,8 @@ namespace FivePD.Gamemode.Client.Extensions
         /// <returns>The human readable color name.</returns>
         public static string GetColorName(this Vehicle vehicle)
         {
-            int primary = 0;
-            int secondary = 0;
+            var primary = 0;
+            var secondary = 0;
             Cfx.API.GetVehicleColours(vehicle.Handle, ref primary, ref secondary);
 
             return VehicleColors.ContainsKey(primary) ? VehicleColors[primary] : "Unknown";

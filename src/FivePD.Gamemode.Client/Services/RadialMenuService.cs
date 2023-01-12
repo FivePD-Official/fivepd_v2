@@ -20,7 +20,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly INuiService _nuiService;
         private readonly IKeybindService _keybindService;
         private readonly ITickService _tickService;
-        private readonly List<RadialMenu> _menus = new List<RadialMenu>();
+        private readonly List<RadialMenu> _menus = new();
         private bool _isAnyMenuVisible;
         private MouseCoordinate _lastMousePosition;
 

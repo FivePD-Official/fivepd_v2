@@ -6,12 +6,12 @@
         <AssemblyTitle>FivePD.Gamemode.Server</AssemblyTitle>
         <Product>FivePD.Gamemode.Server</Product>
         <Description>The FivePD Gamemode Serverside Library</Description>
-        <Copyright>Copyright © GTAPoliceMods 2021</Copyright>
+        <Copyright>Copyright © FivePD 2023</Copyright>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
         <FileVersion>2.0.0.0</FileVersion>
         <DebugType>none</DebugType>
         <BuildDependsOn>$(BuildDependsOn);AfterBuildMigrated</BuildDependsOn>
-        <LangVersion>8</LangVersion>
+        <LangVersion>11</LangVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -62,6 +62,10 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" Cop="false" />
+        <PackageReference Include="PolySharp" Version="1.8.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.2.7" />
         <PackageReference Include="Scrutor" Version="4.1.0" />
         <PackageReference Include="Sentry" Version="3.18.0" />

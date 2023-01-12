@@ -11,7 +11,7 @@ namespace FivePD.Gamemode.Client.Services
     public class LocalPlayerService : ILocalPlayerService
     {
         private readonly ILocalizationService _localizationService;
-        private readonly Random _random = new Random();
+        private readonly Random _random = new();
 
         private readonly string[] _onDutyOptions;
         private readonly string[] _offDutyOptions;

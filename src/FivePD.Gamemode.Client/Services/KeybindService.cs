@@ -18,7 +18,7 @@ namespace FivePD.Gamemode.Client.Services
     {
         private readonly ITickService _tickService;
         private readonly INuiService _nuiService;
-        private readonly List<HoldableKeybind> _actions = new List<HoldableKeybind>();
+        private readonly List<HoldableKeybind> _actions = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeybindService"/> class.

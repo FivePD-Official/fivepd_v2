@@ -8,16 +8,16 @@
         /// <summary>
         /// Gets or sets the config of the duty status toggle item.
         /// </summary>
-        public MenuItemConfig DutyToggle { get; set; } = new MenuItemConfig();
+        public MenuItemConfig DutyToggle { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the config of the vehicle spawn item.
         /// </summary>
-        public MenuItemConfig SpawnVehicle { get; set; } = new MenuItemConfig();
+        public MenuItemConfig SpawnVehicle { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the config of the loadout spawner item.
         /// </summary>
-        public MenuItemConfig GetLoadout { get; set; } = new MenuItemConfig();
+        public MenuItemConfig GetLoadout { get; set; } = new();
     }
 }

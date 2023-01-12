@@ -10,7 +10,7 @@ namespace FivePD.Gamemode.Server.Services
     /// <inheritdoc />
     public class AddonMetadataService : IAddonMetadataService
     {
-        private readonly Dictionary<Assembly, AddonDefinition> _definitions = new Dictionary<Assembly, AddonDefinition>();
+        private readonly Dictionary<Assembly, AddonDefinition> _definitions = new();
 
         /// <inheritdoc />
         public void RegisterAddonAssemblyWithDefinition(Assembly assembly, AddonDefinition definition)

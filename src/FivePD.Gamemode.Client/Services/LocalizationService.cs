@@ -61,7 +61,7 @@ namespace FivePD.Gamemode.Client.Services
                 return this.Locales;
             }
 
-            int hasServerResponded = 0;
+            var hasServerResponded = 0;
             var now = DateTime.Now;
             var timeUntilFinishWait = now.AddMinutes(1);
 

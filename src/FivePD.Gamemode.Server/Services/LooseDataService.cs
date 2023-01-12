@@ -22,8 +22,8 @@ namespace FivePD.Gamemode.Server.Services
     public class LooseDataService : ILooseDataService
     {
         private readonly DatabaseContext _databaseContext;
-        private readonly List<LooseDataEntityObservable> _observables = new List<LooseDataEntityObservable>();
-        private readonly Dictionary<Type, string> _activeSetTypes = new Dictionary<Type, string>();
+        private readonly List<LooseDataEntityObservable> _observables = new();
+        private readonly Dictionary<Type, string> _activeSetTypes = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LooseDataService"/> class.

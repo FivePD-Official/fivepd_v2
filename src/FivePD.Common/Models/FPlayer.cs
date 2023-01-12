@@ -16,7 +16,7 @@ namespace FivePD.Common.Models
      */
     public class FPlayer : FStatefulContainer
     {
-        private static List<FPlayer> _cachedPlayers = new List<FPlayer>();
+        private static List<FPlayer> _cachedPlayers = new();
 
         /**
          * <summary>Initializes a new instance of the <see cref="FPlayer"/> class.</summary>

@@ -12,12 +12,12 @@ namespace FivePD.Gamemode.Server.Services
     /// <inheritdoc />
     public class FileHandlerService : IFileHandlerService
     {
-        private readonly ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> _cache = new();
 
         /// <inheritdoc />
         public List<string> LoadStringList(string path)
         {
-            string data = this.InternalLoadFile(path);
+            var data = this.InternalLoadFile(path);
 
             if (this._cache.ContainsKey(path))
             {
@@ -44,7 +44,7 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             Exception exception = null;
-            string data = this.InternalLoadFile(path);
+            var data = this.InternalLoadFile(path);
 
             if (string.IsNullOrEmpty(data))
             {

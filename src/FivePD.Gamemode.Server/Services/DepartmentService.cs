@@ -806,14 +806,7 @@ namespace FivePD.Gamemode.Server.Services
             {
                 var request = expandoObject.ConvertTo<NameTakenRequest>();
                 Department departmentExists;
-                if (request.CheckForDepartmentId)
-                {
-                    departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name && department.Id != request.DepartmentId);
-                }
-                else
-                {
-                    departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
-                }
+                departmentExists = request.CheckForDepartmentId ? this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name && department.Id != request.DepartmentId) : this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
 
                 networkCallbackDelegate.Invoke(new NameTakenResponse(departmentExists != null).ToString());
             }

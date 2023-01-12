@@ -26,7 +26,7 @@ namespace FivePD.Gamemode.Server.Models.Responses
         /// <summary>
         /// Gets or sets the params.
         /// </summary>
-        public Dictionary<string, string> Params { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Params { get; set; } = new();
 
         /// <inheritdoc />
         public override string ToString()
