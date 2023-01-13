@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FivePD.Gamemode.Server.Services
 {
     /**
-     * <inheritdoc />
+     * <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IPlayerDataService" />
      */
     public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     {
@@ -50,6 +50,27 @@ namespace FivePD.Gamemode.Server.Services
         {
             this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
             this.CreateDataForOnlinePlayers();
+        }
+
+        /// <inheritdoc/>
+        public User FindUserByLicense(Player player)
+        {
+            var license = player.Identifiers["license"];
+            if (string.IsNullOrEmpty(license))
+            {
+                return null;
+            }
+
+            try
+            {
+                return this._databaseContext.Users
+                    .Include(user => user.Department)
+                    .FirstOrDefault(user => user.License == license);
+            }
+            catch (Exception e)
+            {
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
         }
 
         private void CreateDataForOnlinePlayers()
