@@ -1,15 +1,17 @@
 import {
   AfterViewChecked,
   AfterViewInit,
-  ApplicationRef, ChangeDetectorRef,
+  ApplicationRef,
+  ChangeDetectorRef,
   Component,
-  ComponentRef, ContentChildren,
+  ComponentRef,
   createComponent,
   ElementRef,
-  EnvironmentInjector, Inject,
-  OnInit, QueryList, Renderer2,
+  EnvironmentInjector,
+  Inject,
+  OnInit,
   Type,
-  ViewChild, ViewChildren
+  ViewChild
 } from '@angular/core';
 import { ModalOptions, ModalRef } from '@models';
 import { ModalInjector } from '@services/modal/modal-injector';
@@ -85,6 +87,7 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
     });
     this.modalContent.nativeElement.appendChild(this.componentRef.location.nativeElement);
     this._appRef.attachView(this.componentRef.hostView);
+    this.trapFocus();
   }
 
   // TODO: Fix. The query results are empty after appending the component element.

@@ -42,11 +42,9 @@ export class ModalService {
       elementInjector: new ModalInjector(this._injector, extraObjectsToInject),
     });
 
-    const mdtView = document.querySelector('.mdt-view');
+    const mdtView = document.querySelector('#modal-container');
     if (!mdtView) {
       // @ts-ignore
-      // There might be some future plans to use modals for menus as well,
-      // but for now we'll only use this in the MDT view.
       return null;
     }
 

@@ -4,7 +4,7 @@
     <div *ngIf="buttons" class="buttons">
       <app-button
         *ngFor="let button of buttons"
-        theme="secondary"
+        variant="secondary"
         [link]="button.link"
         [label]="button.label"
         [show]="button.show()"
@@ -51,7 +51,7 @@
           <ng-container *ngFor="let action of item.actions">
             <app-button
               *ngIf="action.type === 'button' && (action.show ? action.show(item.originalItem) : true)"
-              theme="small"
+              size="sm"
               [label]="action.label"
               (onClick)="tableCellActionButtonClick(action, item)">
             </app-button>

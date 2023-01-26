@@ -1,3 +1,7 @@
+@tailwind base
+@tailwind components
+@tailwind utilities
+
 @import '~tippy.js/dist/tippy.css'
 @import '~tippy.js/themes/light.css'
 @import '~tippy.js/animations/scale.css'
@@ -36,17 +40,15 @@
   --page-header-height: 115px
 
 *
-  margin: 0
   outline: none
-  box-sizing: border-box
   user-select: none
   letter-spacing: 0.2px
-  -webkit-user-drag: none
-  -webkit-font-smoothing: subpixel-antialiased
-  font-family: 'Satoshi', 'Open Sans', 'Segoe UI', Roboto, sans-serif
   transition: var(--transition)
   &::before, &::after
     transition: var(--transition)
+
+.border-color
+  @apply border-zinc-700
 
 ::-webkit-scrollbar
   width: 10px

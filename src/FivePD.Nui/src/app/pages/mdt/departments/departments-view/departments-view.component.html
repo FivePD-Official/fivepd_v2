@@ -1,6 +1,6 @@
 <app-page-header [title]="title">
-  <app-button [label]="'Nui.Actions.Join' | translate" [show]="!isUserInDepartment" theme="secondary" (onClick)="joinDepartment()"></app-button>
-  <app-button [label]="'Nui.Actions.Leave' | translate" [show]="isUserInDepartment" theme="secondary" (onClick)="leaveDepartment()"></app-button>
+  <app-button [label]="'Nui.Actions.Join' | translate" [show]="!isUserInDepartment" variant="secondary" (onClick)="joinDepartment()"></app-button>
+  <app-button [label]="'Nui.Actions.Leave' | translate" [show]="isUserInDepartment" variant="secondary" (onClick)="leaveDepartment()"></app-button>
 </app-page-header>
 
 <ng-container *ngIf="user?.Admin ?? false; else notAdmin">
