@@ -60,12 +60,7 @@
   background: var(--clr-bg-80)
 
 app-root
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: center
-  width: 100vw
-  height: 100vh
+  @apply flex flex-col items-center justify-center w-screen h-screen
 
   .main-container
     position: relative
@@ -77,21 +72,10 @@ app-root
       width: 95vw
 
 .common-title
-  font-size: 22px
-  font-weight: 700
-  color: var(--clr-text-primary)
-
-.common-bg
-  border-radius: var(--radius)
-  background-color: var(--clr-bg-secondary)
-  padding: 20px
+  @apply text-xl font-bold text-zinc-200
 
 div[app-icon]
-  max-height: 25px
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: center
+  @apply max-h-[25px] flex flex-col items-center justify-center
 
 .tippy-box[data-theme~='custom']
   background-color: var(--clr-bg-40)

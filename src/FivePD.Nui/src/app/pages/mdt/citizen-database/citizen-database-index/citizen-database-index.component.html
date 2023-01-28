@@ -1,4 +1,4 @@
-<app-page-header [title]="'Nui.Labels.CitizenDatabase' | translate"></app-page-header>
+<app-page-header [title]="'Nui.Labels.CitizenDatabase' | translate"/>
 <div class="content">
   <app-dynamic-form
     title="Search"
@@ -7,10 +7,10 @@
     buttonAlignment="full"
     [formFields]="formFields"
     (onSubmit)="onSearchSubmit($event)"
-  ></app-dynamic-form>
+  />
 
   <app-grid
     [columns]="citizensColumns"
     [data]="citizens"
-  ></app-grid>
+  />
 </div>

@@ -1,4 +1,7 @@
 <div class="grid gap-10 grid-flow-row"
-     [ngStyle]="{ 'grid-template-columns': gridTemplateColumns }">
+     [ngStyle]="{
+       'grid-template-columns': gridTemplateColumns,
+       'grid-template-rows': gridTemplateRows
+     }">
   <ng-content></ng-content>
 </div>

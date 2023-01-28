@@ -7,15 +7,17 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ColumnsComponent implements OnInit {
 
-  @Input() rows: number = 1; // TODO?
+  @Input() rows: number = 1;
   @Input() columns: number = 1;
 
   gridTemplateColumns: string = '';
+  gridTemplateRows: string = '';
 
   constructor() { }
 
   ngOnInit(): void {
     this.gridTemplateColumns = `repeat(${this.columns}, 1fr)`;
+    this.gridTemplateRows = `repeat(${this.rows}, auto)`;
   }
 
 }

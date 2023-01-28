@@ -28,6 +28,7 @@ import { UserService } from '@services/user/user.service';
 import { GenericNameValidator } from '@validators/generic-name-validator';
 import { Validators } from '@angular/forms';
 import { ModalFormComponent } from '../../../../components/modal/modal-form/modal-form.component';
+import { NotificationService } from '@services/notification/notification.service';
 
 interface FormattedRank extends Rank {
   Permissions: string;

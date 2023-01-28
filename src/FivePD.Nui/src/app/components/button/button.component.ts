@@ -32,9 +32,9 @@ const variants: Record<ButtonVariants, string> = {
 
 const buttonVariants: Record<ButtonVariants, string> = {
   'primary': 'enabled:hover:before:opacity-75',
-  'secondary': 'enabled:hover:border-zinc-900 enabled:dark:hover:border-white',
-  'tertiary': 'enabled:hover:before:bg-zinc-200 enabled:hover:before:dark:bg-zinc-700',
-  'tertiary-bg': 'enabled:hover:before:bg-zinc-300 enabled:hover:before:dark:bg-zinc-600',
+  'secondary': 'enabled:hover:border-white',
+  'tertiary': 'enabled:hover:before:bg-zinc-700',
+  'tertiary-bg': 'enabled:hover:before:bg-zinc-600',
   'danger': 'enabled:hover:before:opacity-75',
 };
 

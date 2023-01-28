@@ -89,6 +89,7 @@ export interface Localization {
       MyDetails: string;
       Name: string;
       NewDepartment: string;
+      Next: string;
       No: string;
       NoAssignedCall: string;
       NoDataToDisplay: string;
@@ -100,6 +101,7 @@ export interface Localization {
       Number: string;
       Permissions: string;
       Placeholder: string;
+      Previous: string;
       Rank: string;
       Ranks: string;
       Reports: string;
@@ -296,6 +298,7 @@ export const defaultLocalization: Localization = {
       MyDetails: '',
       Name: '',
       NewDepartment: '',
+      Next: '',
       No: '',
       NoAssignedCall: '',
       NoDataToDisplay: '',
@@ -307,6 +310,7 @@ export const defaultLocalization: Localization = {
       Number: '',
       Permissions: '',
       Placeholder: '',
+      Previous: '',
       Rank: '',
       Ranks: '',
       Reports: '',

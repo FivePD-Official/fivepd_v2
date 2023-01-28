@@ -110,6 +110,8 @@ namespace FivePD.Common.Localization
 
         public string NewDepartment { get; set; } = "New department";
 
+        public string Next { get; set; } = "Next";
+
         public string No { get; set; } = "No";
 
         public string NoAssignedCall { get; set; } = "You're not assigned to a call at the moment.";
@@ -131,6 +133,8 @@ namespace FivePD.Common.Localization
         public string Permissions { get; set; } = "Permissions";
 
         public string Placeholder { get; set; } = "Placeholder";
+
+        public string Previous { get; set; } = "Previous";
 
         public string Rank { get; set; } = "Rank";
 
