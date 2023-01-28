@@ -1,210 +1,101 @@
+.input-label
+  @apply block font-medium text-zinc-200 mb-1.5
+  &.input-label--checkbox
+    @apply mb-0 cursor-pointer
+    &:hover ~ .checkbox-inner input
+      @apply border-primary
+
 .input-box
-  width: 100%
-
-  .input-label
-    display: block
-    font-size: 16px
-    font-weight: 500
-    color: var(--clr-text-secondary)
-    margin-bottom: 5px
-    &.input-label--checkbox
-      margin-bottom: 0
-      cursor: pointer
-      &:hover ~ .checkbox-inner input
-        border-color: var(--clr-gray)
-
   input, textarea
-    height: 40px
-    width: 100%
-    border: 2px solid var(--clr-bg-40)
-    background: transparent
-    border-radius: var(--radius-sm)
-    padding: 0 15px
-    font-size: 16px
-    color: var(--clr-text-secondary)
-    &::placeholder
-      color: var(--clr-text-tertiary)
-    &:hover, &:focus
-      border-color: var(--clr-gray)
+    @apply h-[40px] w-full border border-zinc-600 hover:border-zinc-400 focus:border-zinc-400 bg-transparent rounded-md px-3 text-zinc-300 placeholder:text-zinc-400
     &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
-      appearance: none
-      -webkit-appearance: none
+      @apply appearance-none
 
   textarea
-    min-height: 100px
-    max-height: 250px
-    padding: 15px
-    resize: vertical
-    transition: none
+    @apply min-h-[100px] max-h-[250px] p-3 resize-y transition-none
 
   .help-label
-    display: block
-    font-size: 16px
-    color: var(--clr-text-tertiary)
-    margin-top: 5px
+    @apply block text-zinc-400 mt-1.5
 
   .input-errors
-    margin-top: 5px
-
+    @apply mt-1
     p
-      display: block
-      font-size: 16px
-      font-weight: 500
-      color: var(--clr-red)
-
-  .inputs
-    display: grid
-    grid: 1fr / repeat(3, 1fr)
-    gap: 5px
+      @apply block font-medium text-red-600
 
   .checkbox-group
-    margin-top: 10px
-    display: flex
-    flex-direction: column
-    align-items: flex-start
+    @apply mt-2.5 flex flex-col items-start
 
     .checkbox
-      margin-bottom: 10px
-      flex-direction: row-reverse
-      justify-content: flex-end
+      @apply mb-2.5 flex-row-reverse justify-end
 
       .checkbox-inner
-        margin-right: 10px
+        @apply mr-2.5
 
   .checkbox
-    display: flex
-    width: 100%
-    flex-direction: row
-    align-items: center
-    justify-content: space-between
+    @apply w-full flex flex-row items-center justify-between
 
     .checkbox-inner
-      position: relative
-      width: 26px
-      height: 26px
+      @apply relative w-[26px] h-[26px]
 
       svg
-        position: absolute
-        top: 50%
-        left: 50%
-        transform: translate(-50%,-50%)
-        height: 22px
-        opacity: 0
-        color: white
-        z-index: var(--layer-10)
-        pointer-events: none
+        @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[22px] opacity-0 text-white z-10 pointer-events-none
 
       input
-        position: absolute
-        top: 0
-        left: 0
-        width: 100%
-        height: 100%
-        border: 2px solid var(--clr-bg-40)
-        border-radius: var(--radius-sm)
-        z-index: var(--layer-0)
-        appearance: none
-        -webkit-appearance: none
-        background: transparent
-        padding: 0
-        cursor: pointer
-        &:hover, &:focus
-          border-color: var(--clr-gray)
+        @apply absolute inset-0 w-full h-full border border-zinc-600 hover:border-zinc-400 checked:border-zinc-200 focus:border-zinc-400 rounded-md z-0 appearance-none bg-transparent p-0 cursor-pointer
         &:checked
-          border-color: var(--clr-text-secondary)
           & ~ svg
-            opacity: 1
+            @apply opacity-100
 
     .checkbox-label
-      font-size: 16px
-      color: var(--clr-text-tertiary)
-      cursor: pointer
-      margin-bottom: 0
+      @apply text-zinc-300 cursor-pointer mb-0
 
 .dropdown
-  position: relative
+  @apply relative
   &.dropdown--normal
-    height: 40px
+    @apply h-[40px]
     .dropdown-selected-item
-      border: 2px solid var(--clr-bg-40)
-      background: transparent
+      @apply border border-zinc-600 bg-transparent
   &.dropdown--small
-    height: 35px
+    @apply h-[35px]
     .dropdown-selected-item
-      background: var(--clr-bg-20)
+      @apply bg-zinc-700
+    &:hover .dropdown-selected-item
+      @apply bg-zinc-600
   &.dropdown--readonly
     .dropdown-selected-item
-      cursor: not-allowed
+      @apply cursor-not-allowed
       &:hover
-        background: transparent
+        @apply bg-transparent
       p
-        color: var(--clr-text-tertiary)
+        @apply text-zinc-400
       svg
-        display: none
+        @apply hidden
 
   input
-    display: none
+    @apply hidden
 
   .dropdown-selected-item
-    height: 35px
-    border-radius: var(--radius-sm)
-    padding: 0 15px
-    display: flex
-    flex-direction: row
-    align-items: center
-    justify-content: space-between
-    cursor: pointer
-    &:hover
-      background: var(--clr-bg-40)
+    @apply h-[35px] rounded-md px-3 flex flex-row items-center justify-between cursor-pointer hover:bg-zinc-800
 
     p
-      font-size: 16px
-      color: var(--clr-text-secondary)
+      @apply text-zinc-300
 
     svg
-      height: 20px
-      margin-left: 15px
-      color: var(--clr-text-secondary)
+      @apply h-[20px] ml-3 text-zinc-300
 
   .dropdown-items
-    position: relative
-    display: none
-    flex-direction: column
-    align-items: center
-    width: 100%
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
-    z-index: var(--layer-100)
+    @apply relative hidden flex-col items-center w-full drop-shadow z-50
 
     .item
-      width: 100%
-      height: 35px
-      padding: 0 15px
-      display: flex
-      flex-direction: row
-      align-items: center
-      justify-content: flex-start
-      background: var(--clr-bg-20)
-      background: var(--clr-bg-20)
-      border: none
-      outline: none
-      cursor: pointer
-      &:last-of-type
-        border-bottom-left-radius: var(--radius-sm)
-        border-bottom-right-radius: var(--radius-sm)
-      &:hover
-        background: var(--clr-bg-40)
-
+      @apply w-full h-[35px] px-3 flex flex-row items-center justify-start bg-zinc-700 hover:bg-zinc-600 border-none outline-none cursor-pointer last-of-type:rounded-bl-md last-of-type:rounded-br-md
       p
-        font-size: 16px
-        color: var(--clr-text-secondary)
+        @apply text-zinc-300
 
   &.dropdown--open
     .dropdown-selected-item
-      border-bottom-left-radius: 0
-      border-bottom-right-radius: 0
-
+      @apply rounded-bl-none rounded-br-none
       svg
-        transform: rotate(180deg)
+        @apply rotate-180
 
     .dropdown-items
-      display: flex
+      @apply flex

@@ -116,8 +116,6 @@ namespace FivePD.Common.Localization
 
         public string NoAssignedCall { get; set; } = "You're not assigned to a call at the moment.";
 
-        public string NoDataToDisplay { get; set; } = "No data to display.";
-
         public string NoDefaultRank { get; set; } = "No default rank";
 
         public string NoDivision { get; set; } = "No division";
@@ -125,6 +123,8 @@ namespace FivePD.Common.Localization
         public string NoLimit { get; set; } = "No limit";
 
         public string NoRank { get; set; } = "No rank";
+
+        public string NoResults { get; set; } = "No results";
 
         public string NotInDepartment { get; set; } = "You're not in a department.";
 

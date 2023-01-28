@@ -23,8 +23,8 @@ export class ModalService {
     modalComponent.description = options.description || '';
     modalComponent.fields = options.fields || [];
     modalComponent.buttons = options.buttons || {
-      cancel: { theme: 'secondary', label: '' },
-      submit: { theme: 'secondary', label: '' },
+      cancel: { variant: 'secondary', label: '' },
+      submit: { variant: 'secondary', label: '' },
     };
     modalComponent.columns = options.columns || 1;
 

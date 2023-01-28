@@ -1,13 +1,14 @@
-<app-page-header [title]="'Nui.Labels.Dashboard' | translate"></app-page-header>
+<app-page-header [title]="'Nui.Labels.Dashboard' | translate"/>
 
-<app-columns [rows]="2">
-  <app-columns [columns]="3">
+<app-container [rows]="2">
+  <app-container [columns]="3">
     <div class="grid-item grid-item--details">
       <p class="common-title">
         {{ 'Nui.Labels.MyDetails' | translate }}
       </p>
       <div class="grid-item--content">
-        <ul class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
+        <ul
+          class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
           <li>
             <p>{{ 'Nui.Labels.Department' | translate }}</p>
             <p>{{ (user$ | async)?.Department?.Name ?? '-' }}</p>
@@ -34,7 +35,7 @@
       </p>
       <div class="grid-item--content">
         <p *ngIf="!statistics" class="no-data">
-          {{ 'Nui.Labels.NoDataToDisplay' | translate }}
+          {{ 'Nui.Labels.NoResults' | translate }}
         </p>
       </div>
     </div>
@@ -49,7 +50,7 @@
         </p>
       </div>
     </div>
-  </app-columns>
+  </app-container>
 
   <app-grid
     [title]="'Nui.Labels.Departments' | translate"
@@ -57,6 +58,5 @@
     [data]="departments"
     [columns]="departmentsColumnDef"
     (onCollationChange)="onDepartmentsCollationChange($event)"
-    (onCellAction)="getDepartments()"
-  />
-</app-columns>
+    (onCellAction)="getDepartments()"/>
+</app-container>

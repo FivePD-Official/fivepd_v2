@@ -1,9 +1,8 @@
-<app-page-header [title]="'Nui.Labels.Reports' | translate"></app-page-header>
+<app-page-header [title]="'Nui.Labels.Reports' | translate"/>
 
 <app-grid
   [title]="'Nui.Labels.ArrestReports' | translate"
   [buttons]="arrestReportButtons"
   [data]="arrestReports"
   [columns]="arrestReportColumns"
-  (onCollationChange)="onArrestReportCollationChange($event)"
-></app-grid>
+  (onCollationChange)="onArrestReportCollationChange($event)"/>

@@ -1,12 +1,10 @@
 <aside class="w-full h-full border-r border-color flex flex-col items-center justify-between p-5 pt-10">
   <div class="w-full">
-    <a
-      *ngFor="let item of routes"
-      class="group decoration-0"
-      [routerLink]="item.path()"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: false }"
-    >
+    <a *ngFor="let item of routes"
+       class="group decoration-0"
+       [routerLink]="item.path()"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: false }">
       <div *ngIf="item.show()"
            class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
                   before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600

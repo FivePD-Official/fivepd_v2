@@ -76,8 +76,8 @@ export class SettingsComponent implements OnInit {
           onClick: item => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.EditAttributeTitle',
             buttons: {
-              cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-              submit: { theme: 'primary', label: 'Nui.Actions.Save' },
+              cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+              submit: { variant: 'primary', label: 'Nui.Actions.Save' },
             },
             fields: [
               new TextInput({
@@ -157,8 +157,8 @@ export class SettingsComponent implements OnInit {
             title: 'Nui.Labels.DeleteAttributeTitle',
             description: this._localization.translate('Nui.Labels.DeleteAttributeDescription', { attribute: item.Name }),
             buttons: {
-              cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-              submit: { theme: 'danger', label: 'Nui.Actions.Delete' },
+              cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+              submit: { variant: 'danger', label: 'Nui.Actions.Delete' },
             },
           }).onSuccess(() => {
             this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id).subscribe(res => {
@@ -181,8 +181,8 @@ export class SettingsComponent implements OnInit {
         this._modal.open(ModalFormComponent, {
           title: 'Nui.Actions.CreateAttribute',
           buttons: {
-            cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-            submit: { theme: 'primary', label: 'Nui.Actions.Create' },
+            cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+            submit: { variant: 'primary', label: 'Nui.Actions.Create' },
           },
           fields: [
             new TextInput({

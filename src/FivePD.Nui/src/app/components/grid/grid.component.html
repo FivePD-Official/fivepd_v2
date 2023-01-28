@@ -27,16 +27,15 @@
     <form *ngIf="isAnyColumnFilterable" class="table-row table-filter">
       <div *ngFor="let column of formattedColumns"
            class="table-cell">
-        <app-dynamic-form-input *ngIf="column.filter"
-                                [field]="getFilterInput(column)"
-                                (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
+        <app-dynamic-form-input
+          *ngIf="column.filter"
+          [field]="getFilterInput(column)"
+          (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
       </div>
     </form>
 
-    <div
-      *ngFor="let row of formattedRows"
-      class="table-row"
-    >
+    <div *ngFor="let row of formattedRows"
+         class="table-row">
       <div *ngFor="let item of row" class="table-cell">
         <p *ngIf="item.link && !item.actions && !item.value">-</p>
         <a *ngIf="item.link && !item.actions && item.value"
@@ -64,7 +63,7 @@
 
     <p *ngIf="!formattedRows?.length"
        class="text-zinc-400 block pt-2.5 pl-2.5">
-      {{ 'Nui.Labels.NoDataToDisplay' | translate }}
+      {{ 'Nui.Labels.NoResults' | translate }}
     </p>
 
     <div class="pagination flex flex-row items-center justify-end pt-4 mt-5 border-t border-color">

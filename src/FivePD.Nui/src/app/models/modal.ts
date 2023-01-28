@@ -4,9 +4,10 @@ import { Localization } from './localization';
 import { FormInputBase } from './form';
 import { ModalComponent } from '../components/modal/modal.component';
 import { filter, Observable, Subject } from 'rxjs';
+import { ButtonVariants } from './button';
 
 interface ModalButton {
-  theme: 'primary' | 'secondary' | 'danger';
+  variant: ButtonVariants;
   label: Paths<Localization>;
 }
 

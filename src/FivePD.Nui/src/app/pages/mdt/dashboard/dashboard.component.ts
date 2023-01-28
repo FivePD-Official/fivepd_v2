@@ -69,11 +69,11 @@ export class DashboardComponent implements OnInit {
             description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', { department: `<b>${department.Name}</b>` }),
             buttons: {
               cancel: {
-                theme: 'secondary',
+                variant: 'secondary',
                 label: 'Nui.Actions.Cancel',
               },
               submit: {
-                theme: 'danger',
+                variant: 'danger',
                 label: 'Nui.Actions.Delete',
               },
             },
@@ -166,11 +166,11 @@ export class DashboardComponent implements OnInit {
       ],
       buttons: {
         cancel: {
-          theme: 'secondary',
+          variant: 'secondary',
           label: 'Nui.Actions.Cancel'
         },
         submit: {
-          theme: 'primary',
+          variant: 'primary',
           label: 'Nui.Actions.Create'
         }
       }

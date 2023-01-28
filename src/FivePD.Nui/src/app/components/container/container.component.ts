@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-columns',
-  templateUrl: './columns.component.html',
-  styleUrls: ['./columns.component.sass']
+  selector: 'app-container',
+  templateUrl: './container.component.html',
+  styleUrls: ['./container.component.sass']
 })
-export class ColumnsComponent implements OnInit {
+export class ContainerComponent implements OnInit {
 
   @Input() rows: number = 1;
   @Input() columns: number = 1;

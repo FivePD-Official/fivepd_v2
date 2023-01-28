@@ -37,7 +37,7 @@ import { ModalComponent } from './components/modal/modal.component';
 import { GridComponent } from './components/grid/grid.component';
 import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
 import { UserService } from '@services/user/user.service';
-import { ColumnsComponent } from './components/columns/columns.component';
+import { ContainerComponent } from './components/container/container.component';
 import { IconComponent } from './components/icon/icon.component';
 import {
   CitizenDatabaseIndexComponent
@@ -73,7 +73,7 @@ import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
     ModalComponent,
     GridComponent,
     DepartmentsViewComponent,
-    ColumnsComponent,
+    ContainerComponent,
     IconComponent,
     CitizenDatabaseIndexComponent,
     RadialMenuComponent,

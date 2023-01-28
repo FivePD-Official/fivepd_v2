@@ -1,14 +1,15 @@
 <div id="main-overlay"
      class="fixed z-0 inset-0 w-screen h-screen bg-zinc-900 opacity-50">
 </div>
-<div id="modal-container" class="absolute top-1/2 -translate-y-1/2 w-full h-[90vh] bg-zinc-900 rounded-xl grid grid-rows-[80px_1fr] grid-cols-1">
-  <app-header></app-header>
+<div id="modal-container"
+     class="absolute top-1/2 -translate-y-1/2 w-full h-[90vh] bg-zinc-900 rounded-xl grid grid-rows-[80px_1fr] grid-cols-1">
+  <app-header/>
   <div class="grid grid-rows-1 grid-cols-[250px_1fr] overflow-hidden"
        [ngClass]="{ 'grid-cols-[90px_1fr]': isSidebarCollapsed$ | async }">
     <app-sidebar></app-sidebar>
     <div class="w-full h-full overflow-x-hidden p-0 pb-14 pl-14 pr-14">
-      <router-outlet></router-outlet>
+      <router-outlet/>
     </div>
   </div>
-  <app-notification-wrapper></app-notification-wrapper>
+  <app-notification-wrapper/>
 </div>

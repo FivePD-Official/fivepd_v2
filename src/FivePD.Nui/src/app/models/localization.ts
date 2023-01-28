@@ -92,11 +92,11 @@ export interface Localization {
       Next: string;
       No: string;
       NoAssignedCall: string;
-      NoDataToDisplay: string;
       NoDefaultRank: string;
       NoDivision: string;
       NoLimit: string;
       NoRank: string;
+      NoResults: string;
       NotInDepartment: string;
       Number: string;
       Permissions: string;
@@ -301,11 +301,11 @@ export const defaultLocalization: Localization = {
       Next: '',
       No: '',
       NoAssignedCall: '',
-      NoDataToDisplay: '',
       NoDefaultRank: '',
       NoDivision: '',
       NoLimit: '',
       NoRank: '',
+      NoResults: '',
       NotInDepartment: '',
       Number: '',
       Permissions: '',

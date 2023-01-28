@@ -27,17 +27,12 @@
 
   --radius-sm: 5px
   --radius: 10px
-  --radius-lg: 15px
 
   --transition: all 0.15s cubic-bezier(0.33, 1, 0.68, 1)
 
   --layer-0: 0
   --layer-10: 10
   --layer-100: 100
-  --layer-1000: 1000
-  --layer-max: 100000000
-
-  --page-header-height: 115px
 
 *
   outline: none
@@ -58,6 +53,9 @@
 
 ::-webkit-scrollbar-thumb
   background: var(--clr-bg-80)
+
+::selection
+  @apply text-white bg-primary
 
 app-root
   @apply flex flex-col items-center justify-center w-screen h-screen
