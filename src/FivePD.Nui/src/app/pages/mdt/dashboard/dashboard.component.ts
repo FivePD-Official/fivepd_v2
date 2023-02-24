@@ -104,7 +104,6 @@ export class DashboardComponent implements OnInit {
 
   getDepartments(): void {
     this._department.getDepartments(this.departmentsCollation).subscribe(res => {
-      res.PageCount = 10;
       this.departments = res;
     });
   }
