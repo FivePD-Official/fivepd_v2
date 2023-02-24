@@ -7,32 +7,7 @@
 @import '~tippy.js/animations/scale.css'
 
 \:root
-  --clr-red: #FF3E45
-  --clr-blue: #178EE9
-
-  --clr-border: #686464
-  --clr-border-secondary: transparent
-  --clr-gray: #686464
-  --clr-overlay: #1B1A1A
-  --clr-bg: #1B1A1A
-  --clr-bg-secondary: #222121
-  --clr-bg-5: #1F1E1E
-  --clr-bg-20: #2B2929
-  --clr-bg-40: #3A3838
-  --clr-bg-80: #585555
-  --clr-text: rgba(255,255,255,1)
-  --clr-text-primary: rgba(255,255,255,.9)
-  --clr-text-secondary: rgba(255,255,255,.7)
-  --clr-text-tertiary: rgba(255,255,255,.5)
-
-  --radius-sm: 5px
-  --radius: 10px
-
   --transition: all 0.15s cubic-bezier(0.33, 1, 0.68, 1)
-
-  --layer-0: 0
-  --layer-10: 10
-  --layer-100: 100
 
 *
   outline: none
@@ -52,7 +27,7 @@
   background: transparent
 
 ::-webkit-scrollbar-thumb
-  background: var(--clr-bg-80)
+  @apply bg-zinc-700
 
 ::selection
   @apply text-white bg-primary
@@ -76,12 +51,6 @@ div[app-icon]
   @apply max-h-[25px] flex flex-col items-center justify-center
 
 .tippy-box[data-theme~='custom']
-  background-color: var(--clr-bg-40)
-  color: var(--clr-text-primary)
-  font-size: 16px
-  font-weight: 500
-  border-radius: var(--radius-sm)
-  padding: 5px
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
+  @apply bg-zinc-700 text-zinc-200 text-sm font-medium rounded-lg p-1 shadow
   & > .tippy-arrow::before
-    border-top-color: var(--clr-bg-40)
+    @apply bg-zinc-700
