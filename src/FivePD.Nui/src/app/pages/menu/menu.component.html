@@ -1,30 +1,47 @@
-<div class="menu" *ngIf="menu">
-  <div class="menu-header">
-    <p>{{ menu.useLocalization ? (menu.title | translate) : menu.title }}</p>
+<div class="absolute top-[50px] bg-zinc-900 min-w-[300px] rounded-xl pb-4" *ngIf="menu">
+  <div class="flex flex-row items-center justify-start px-4 py-5">
+    <p class="font-medium text-zinc-100">{{ menu.useLocalization ? (menu.title | translate) : menu.title }}</p>
   </div>
-  <div class="menu-items">
-    <div class="selector"></div>
+  <div class="menu-items relative w-full flex flex-col items-start px-1">
+    <div id="selector"
+         class="absolute z-10 inset-0 w-full h-[40px] border-l-[3px] border-r-[3px] border-zinc-500
+                before:absolute before:z-10 before:inset-0 before:w-full before:h-full before:bg-white/[0.05]
+                [&.selector--on-select]:before:bg-primary/10 [&.selector--on-select]:border-primary"></div>
 
-    <div *ngFor="let item of menuItems || []" class="menu-item" [ngClass]="{ 'menu-item--disabled': !item.enabled }">
-      <p class="title">{{ menu.useLocalization ? (item.title | translate) : item.title }}</p>
+    <div *ngFor="let item of menuItems"
+         class="menu-item relative z-20 w-full h-[40px] flex flex-row items-center justify-between gap-6 mb-1 px-3"
+         [ngClass]="{ 'opacity-50': !item.enabled }">
+      <p class="text-zinc-400">{{ menu.useLocalization ? (item.title | translate) : item.title }}</p>
 
-      <div *ngIf="item.type === MenuItemType.Toggle" class="menu-item-toggle" [ngClass]="{ 'checked': $any(item).checked }">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      <div *ngIf="item.type === MenuItemType.Toggle"
+           class="w-[20px] h-[20px] border-2 border-zinc-500 rounded-md flex items-center justify-center transition-none"
+           [ngClass]="{ 'border-zinc-300': $any(item).checked }">
+        <svg class="h-[18px] opacity-0 text-zinc-300 transition-none"
+             [ngClass]="{ 'opacity-100': $any(item).checked }"
+             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
         </svg>
       </div>
 
-      <div *ngIf="item.type === MenuItemType.List" class="menu-item-list">
-        <svg xmlns="http://www.w3.org/2000/svg" class="left-arrow" [ngClass]="{ 'arrow-disabled': $any(item).currentIndex === 0}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      <div *ngIf="item.type === MenuItemType.List"
+           class="relative -mr-3 w-[calc(30px+100px+30px)] h-full grid grid-rows-1 grid-cols-[30px_1fr_30px] items-center justify-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="left-arrow h-[22px] text-zinc-300 transition-none [&.on-press]:text-primary"
+             [ngClass]="{ 'text-zinc-500': $any(item).currentIndex === 0}"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
-        <div class="list-wrapper">
-          <div class="list-wrapper-item-inner" [ngClass]="getMarqueeClass($any(item))">
-            <p>{{ $any(item).items[$any(item).currentIndex] }}</p>
+        <div class="relative w-full h-full overflow-hidden">
+          <div class="absolute z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row items-center"
+               [ngClass]="getMarqueeClass($any(item))">
+            <p class="whitespace-nowrap text-zinc-300">{{ $any(item).items[$any(item).currentIndex] }}</p>
           </div>
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="right-arrow" [ngClass]="{ 'arrow-disabled': $any(item).currentIndex === $any(item).items.length - 1 }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="right-arrow h-[22px] text-zinc-300 transition-none [&.on-press]:text-primary"
+             [ngClass]="{ 'text-zinc-500': $any(item).currentIndex === $any(item).items.length - 1 }"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
         </svg>
       </div>
 

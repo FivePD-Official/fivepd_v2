@@ -9,6 +9,8 @@ import { IconType } from '@models';
 export class IconComponent implements OnInit {
 
   @Input() name?: IconType | keyof typeof IconType;
+  @Input() className: string = '';
+  @Input() ngClassName: object = {};
   internalName?: string;
 
   constructor() { }

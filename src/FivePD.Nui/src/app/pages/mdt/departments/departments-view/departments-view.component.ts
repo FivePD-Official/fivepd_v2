@@ -28,6 +28,7 @@ import { UserService } from '@services/user/user.service';
 import { GenericNameValidator } from '@validators/generic-name-validator';
 import { Validators } from '@angular/forms';
 import { ModalFormComponent } from '../../../../components/modal/modal-form/modal-form.component';
+import { NotificationService } from '@services/notification/notification.service';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -89,11 +90,11 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         ],
         buttons: {
           cancel: {
-            theme: 'secondary',
+            variant: 'secondary',
             label: 'Nui.Actions.Cancel',
           },
           submit: {
-            theme: 'primary',
+            variant: 'primary',
             label: 'Nui.Actions.Create',
           },
         },
@@ -137,8 +138,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
               title: 'Nui.Labels.DeleteRankTitle',
               description: this._localization.translate('Nui.Labels.DeleteRankDescription', { rank: `<b>${rank.Name}</b>`}),
               buttons: {
-                cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-                submit: { theme: 'danger', label: 'Nui.Actions.Delete' },
+                cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+                submit: { variant: 'danger', label: 'Nui.Actions.Delete' },
               },
             }).onSuccess(() => {
               this._departmentService.deleteRank(rank.Id).subscribe(deleteRes => {
@@ -174,8 +175,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
                 }),
               ],
               buttons: {
-                cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-                submit: { theme: 'primary', label: 'Nui.Actions.Save' },
+                cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+                submit: { variant: 'primary', label: 'Nui.Actions.Save' },
               },
             }).onSuccess(res => {
               this._departmentService.editRank({
@@ -275,8 +276,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           })
         ],
         buttons: {
-          cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-          submit: { theme: 'primary', label: 'Nui.Actions.Create' },
+          cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+          submit: { variant: 'primary', label: 'Nui.Actions.Create' },
         },
       }).onSuccess(res => {
         this._departmentService.createDivision({
@@ -309,8 +310,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
             title: 'Nui.Labels.DeleteDivisionTitle',
             description: this._localization.translate('Nui.Labels.DeleteDivisionDescription', { division: `<b>${division.Name}</b>` }),
             buttons: {
-              cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel'},
-              submit: { theme: 'danger', label: 'Nui.Actions.Delete'},
+              cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel'},
+              submit: { variant: 'danger', label: 'Nui.Actions.Delete'},
             },
           }).onSuccess(() => {
             this._departmentService.deleteDivision(division.Id).subscribe(deleteRes => {
@@ -336,8 +337,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
                 })
               ],
               buttons: {
-                cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-                submit: { theme: 'primary', label: 'Nui.Actions.Save' },
+                cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+                submit: { variant: 'primary', label: 'Nui.Actions.Save' },
               },
             }).onSuccess(res => {
               this._departmentService.editDivision({
@@ -546,7 +547,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         key: 'Name',
         required: true,
         label: 'Nui.Labels.Name',
-        asyncValidators: [GenericNameValidator.get((value) => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
+        // TODO fix: asyncValidators: [GenericNameValidator.get((value) => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
       new NumberInput({

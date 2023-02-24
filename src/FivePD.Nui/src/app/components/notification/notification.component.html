@@ -1,17 +1,23 @@
-<div
-  class="notification"
-  [ngClass]="{ 'exit': exit, 'notification-error': notification.type === 'error', 'notification-success': notification.type === 'success' }
-">
-  <div class="notification-header">
-    <div *ngIf="notification.type === 'success'" class="icon icon-success">
-      <div class="icon-inner" app-icon name="Check"></div>
+<div class="relative bg-zinc-700 drop-shadow-lg p-4 rounded-lg mb-4 w-[350px] animate-slideIn"
+     [ngClass]="{ 'animate-slideOut': exit }">
+  <div class="flex flex-row items-center mb-2.5">
+    <div *ngIf="notification.type === 'success'"
+         class="relative flex flex-row items-center justify-center mr-2.5 w-[30px] h-[30px]
+                before:absolute before:inset-0 before:w-full before:h-full before:rounded-full before:bg-green-500/20">
+      <div app-icon name="Check" className="h-[17px] text-green-500"></div>
     </div>
-    <div *ngIf="notification.type === 'error'" class="icon icon-error">
-      <div class="icon-inner" app-icon name="XMark"></div>
+    <div *ngIf="notification.type === 'error'"
+         class="relative flex flex-row items-center justify-center mr-2.5 w-[30px] h-[30px]
+                before:absolute before:inset-0 before:w-full before:h-full before:rounded-full before:bg-red-500/20">
+      <div app-icon name="XMark" className="h-[17px] text-red-500"></div>
     </div>
-    <p class="title">
+    <p class="text-lg font-bold text-zinc-200"
+       [ngClass]="{
+         'text-green-600': notification.type === 'success',
+         'text-red-600': notification.type === 'error'
+       }">
       {{ notification.title }}
     </p>
   </div>
-  <p class="description" [innerHtml]="notification.description"></p>
+  <p class="text-zinc-200" [innerHtml]="notification.description"></p>
 </div>

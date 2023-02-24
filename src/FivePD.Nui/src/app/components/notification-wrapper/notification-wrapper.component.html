@@ -1,7 +1,6 @@
-<div class="wrapper">
+<div class="absolute bottom-5 right-10 overflow-hidden z-50 pointer-events-none">
   <app-notification
     *ngFor="let notification of notifications"
     [notification]="$any(notification)"
-    [exit]="notification.exit"
-  ></app-notification>
+    [exit]="notification.exit"/>
 </div>

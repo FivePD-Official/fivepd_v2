@@ -26,7 +26,10 @@ export class WindowService {
     private _router: Router,
     private _userService: UserService,
   ) {
-    this._event.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => this.onClose()) // TODO: investigate why this subscription spams after the first close event
+    this._event.onEvent<TimerBarEvent>('webpackInvalid' as NuiEventType).subscribe(() => this.hide());
+    this._event.onEvent<TimerBarEvent>('webpackOk' as NuiEventType).subscribe(() => this.hide());
+
+    this._event.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => this.hide()) // TODO: investigate why this subscription spams after the first close event
     this._event.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
       this._userService.refreshData();
       this.onMdtOpen();
@@ -51,10 +54,6 @@ export class WindowService {
     this.visible = false;
     document.body.style.display = 'none';
     this._http.post(NuiEventType.Close, {}).subscribe();
-  }
-
-  private onClose(): void {
-    this.hide();
   }
 
   private onMdtOpen(): void {

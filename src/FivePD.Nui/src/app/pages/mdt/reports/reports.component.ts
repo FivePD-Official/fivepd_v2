@@ -37,8 +37,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
       onClick: () => this._modal.open(ModalFormComponent, {
           title: 'Nui.Actions.Create',
           buttons: {
-            cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-            submit: { theme: 'primary', label: 'Nui.Actions.Create' },
+            cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+            submit: { variant: 'primary', label: 'Nui.Actions.Create' },
           },
           fields: mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport)),
           columns: 2,
@@ -119,8 +119,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
               onClick: item => this._looseData.getEntity(DefaultSetId.ArrestReport, item.Id).subscribe(newItem => this._modal.open(ModalFormComponent, {
                     title: 'Nui.Actions.Edit',
                     buttons: {
-                      cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-                      submit: { theme: 'primary', label: 'Nui.Actions.Save' },
+                      cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+                      submit: { variant: 'primary', label: 'Nui.Actions.Save' },
                     },
                     fields: mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport), newItem.entity),
                     columns: 2,
@@ -144,8 +144,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
                   title: 'Nui.Labels.DeleteArrestReportTitle',
                   description: this._localization.translate('Nui.Labels.DeleteArrestReportDescription'),
                   buttons: {
-                    cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-                    submit: { theme: 'danger', label: 'Nui.Actions.Delete' },
+                    cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
+                    submit: { variant: 'danger', label: 'Nui.Actions.Delete' },
                   },
                 }).onSuccess(() => {
                   this._looseData.deleteEntity(DefaultSetId.ArrestReport, item.Id).subscribe(res => {

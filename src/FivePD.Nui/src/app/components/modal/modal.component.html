@@ -1,18 +1,20 @@
-<div class="modal-backdrop">
-  <div
-    #modalContainer
-    class="modal"
-    [ngClass]="{ 'modal-wide': modalRef.options.columns ? modalRef.options.columns > 1 : false }"
-  >
-    <div class="modal-header">
-      <div class="modal-header-top">
-        <p class="title">{{ title | translate }}</p>
-        <button (click)="close()" class="close-btn">
-          <div class="icon" app-icon name="XMark"></div>
+<div class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl">
+  <div #modalContainer
+       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg bg-zinc-800 w-[500px]"
+       [ngClass]="{ 'w-[30vw]': modalRef.options.columns ? modalRef.options.columns > 1 : false }">
+    <div class="mb-4">
+      <div class="flex flex-row items-center justify-between">
+        <p class="text-xl font-bold text-zinc-100">{{ title | translate }}</p>
+        <button (click)="close()"
+                class="group flex flex-row items-center justify-between p-4 pr-0 rounded-full border-none cursor-pointer">
+          <div app-icon
+               name="XMark"
+               className="h-[22px] text-zinc-400 group-hover:text-white">
+          </div>
         </button>
       </div>
-      <p *ngIf="description" class="description" [innerHtml]="description | safeHtml"></p>
+      <p *ngIf="description" class="text-zinc-400 my-2" [innerHtml]="description | safeHtml"></p>
     </div>
-    <div class="modal-content" #modalContent></div>
+    <div class="modal-content" appModalContent #modalContent></div>
   </div>
 </div>
