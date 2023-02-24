@@ -1,7 +1,3 @@
-# GPMDS' FivePD
-
-*All code and assets contained in this repository are STRICTLY the intellectual property of GTAPoliceMods unless otherwise noted by a license provided. Do not copy or redistribute.*
-
 ### Running Migrations
 
 - Use the syntax `dotnet ef migrations add <MigrationName> --project .\FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj --startup-project .\FivePD.StartupProject\FivePD.StartupProject.csproj` from the root folder. Migrations require a startup project to run properly.
