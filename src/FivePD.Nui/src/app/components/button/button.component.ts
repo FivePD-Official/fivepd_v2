@@ -74,11 +74,6 @@ export class ButtonComponent implements OnInit, OnChanges {
   }
 
   private setClassName(): void {
-    if (this.disabled) {
-      // TODO: check colors
-      this.className = ['cursor-not-allowed', 'bg-zinc-700', 'text-zinc-400'];
-    }
-
     this.className = [
       variants[this.variant!],
       buttonVariants[this.variant!],
