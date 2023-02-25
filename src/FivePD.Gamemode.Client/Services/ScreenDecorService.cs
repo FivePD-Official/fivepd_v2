@@ -116,15 +116,17 @@ namespace FivePD.Gamemode.Client.Services
             this._text = text.Build();
         }
 
+        #pragma warning disable
         private string DutyStatusToString(FDutyStatus dutyStatus)
         {
-            return dutyStatus switch
-            {
-                FDutyStatus.OffDuty => this._localizationService.CurrentLocalization.PlayerStatus.OffDuty.Generic,
-                FDutyStatus.OnDutyAndReceiving => this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.GenericReceiving,
-                FDutyStatus.OnDutyAndNotReceiving => this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.GenericNotReceiving,
-                _ => "Unknown",
-            };
+            return "duty status";
+            // return dutyStatus switch
+            // {
+            //     FDutyStatus.OffDuty => this._localizationService.Get("PlayerStatus.OffDuty.Generic"),
+            //     FDutyStatus.OnDutyAndReceiving => this._localizationService.Get("PlayerStatus.OnDuty.GenericReceiving"),
+            //     FDutyStatus.OnDutyAndNotReceiving => this._localizationService.Get("PlayerStatus.OnDuty.GenericNotReceiving"),
+            //     _ => "Unknown",
+            // };
         }
 
         private Task DrawOnScreen()

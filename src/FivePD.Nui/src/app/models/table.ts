@@ -1,4 +1,4 @@
-import { ActionResponse, Localization, Paths } from '@models';
+import { ActionResponse } from '@models';
 
 export interface ColumnOptions<T> {
   header: string;
@@ -18,7 +18,7 @@ export class Column<T> {
   header: string = '';
   accessorKey?: Extract<keyof T, string>;
   filter?: {
-    label: Paths<Localization> | string;
+    label: string;
   };
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;

@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using FivePD.Common;
-using FivePD.Common.Localization;
 
 namespace FivePD.Gamemode.Client.Interfaces
 {
@@ -13,12 +11,12 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// <summary>
         /// Gets all available locales.
         /// </summary>
-        public List<Locale> Locales { get; }
+        public Dictionary<string, string> Locales { get; }
 
         /// <summary>
-        /// Gets the currently set localization.
+        /// Gets asd.
         /// </summary>
-        public Localization CurrentLocalization { get; }
+        public dynamic CurrentLocalization { get; }
 
         /// <summary>
         /// Register all localization related event handlers.
@@ -29,7 +27,7 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Finds and loads all translation files located in fivepd/Localization.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public Task<List<Locale>> LoadAvailableLocales();
+        public Task<Dictionary<string, string>> LoadLocalizations();
 
         /// <summary>
         /// Loads the default localization file.
@@ -41,5 +39,12 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// </summary>
         /// <param name="locale">The localization's key.</param>
         public void LoadLocalization(string locale);
+
+        /// <summary>
+        /// Gets a localization value by its key.
+        /// </summary>
+        /// <param name="key">The key of the localization to get.</param>
+        /// <returns>A localized value.</returns>
+        public string Get(string key);
     }
 }

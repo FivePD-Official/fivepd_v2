@@ -153,7 +153,7 @@ namespace FivePD.Gamemode.Server.Services
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
+                        Title = "UI.ERROR.UNEXPECTED",
                         Description = "Nui.Errors.DatabaseAccess",
                     }.ToString());
                     return;
@@ -173,7 +173,7 @@ namespace FivePD.Gamemode.Server.Services
                         networkCallbackDelegate.Invoke(new ActionResponse
                         {
                             Status = false,
-                            Title = "Nui.Errors.UnexpectedError",
+                            Title = "UI.ERROR.UNEXPECTED",
                             Description = "Nui.Errors.DatabaseAccess",
                         }.ToString());
                         return;
@@ -200,7 +200,7 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
+                    Title = "UI.ERROR.UNEXPECTED",
                     Description = "Nui.Errors.DatabaseAccess",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
@@ -219,7 +219,7 @@ namespace FivePD.Gamemode.Server.Services
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
+                        Title = "UI.ERROR.UNEXPECTED",
                         Description = "Nui.Errors.DatabaseAccess",
                     }.ToString());
                     return;
@@ -239,7 +239,7 @@ namespace FivePD.Gamemode.Server.Services
                         networkCallbackDelegate.Invoke(new ActionResponse
                         {
                             Status = false,
-                            Title = "Nui.Errors.UnexpectedError",
+                            Title = "UI.ERROR.UNEXPECTED",
                             Description = "Nui.Errors.DatabaseAccess",
                         }.ToString());
                         return;
@@ -266,7 +266,7 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
+                    Title = "UI.ERROR.UNEXPECTED",
                     Description = "Nui.Errors.DatabaseAccess",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);

@@ -206,10 +206,17 @@ namespace FivePD.Gamemode.Client
             localizationService.RegisterEventHandlers();
             localizationService.LoadDefaultLocalization();
 
-            var screenDecorService = this._serviceProvider.Resolve<IScreenDecorService>();
-            screenDecorService.Version = "v2.0.0";
-            screenDecorService.ProtectionNotice = true;
-            screenDecorService.BeginTextDraw();
+            try
+            {
+                var screenDecorService = this._serviceProvider.Resolve<IScreenDecorService>();
+                screenDecorService.Version = "v2.0.0";
+                screenDecorService.ProtectionNotice = true;
+                screenDecorService.BeginTextDraw();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"2 - {e.Message}");
+            }
 
             var keybindService = this._serviceProvider.Resolve<IKeybindService>();
             keybindService.Register(this._serviceProvider);

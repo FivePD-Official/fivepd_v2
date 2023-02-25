@@ -365,8 +365,8 @@ namespace FivePD.Gamemode.Server.Services
                 });
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulCreate",
-                    "Nui.Labels.SuccessfulDepartmentCreate",
+                    "UI.LABEL.SUCCESS.CREATE",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.CREATE",
                     new Dictionary<string, string>
                     {
                         { "department", createDepartmentRequest.Name },
@@ -376,8 +376,8 @@ namespace FivePD.Gamemode.Server.Services
             {
                 networkCallbackDelegate.InvokeWithResponse(
                     false,
-                    "Nui.Errors.CreateDepartmentExistsWithNameTitle",
-                    "Nui.Errors.DepartmentExistsWithNameDescription");
+                    "UI.ERROR.DEPARTMENT.CREATE.TITLE",
+                    "UI.ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
             }
             catch (Exception e)
             {

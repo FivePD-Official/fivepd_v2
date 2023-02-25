@@ -41,7 +41,7 @@ namespace FivePD.Gamemode.Server.Extensions
         /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
         public static void InvokeWithUnexpectedError(this NetworkCallbackDelegate networkCallbackDelegate)
         {
-            networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.UnexpectedError", "Nui.Errors.DatabaseAccess");
+            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.UNEXPECTED", "UI.ERROR.DATABASE_ACCESS.TITLE");
         }
     }
 }

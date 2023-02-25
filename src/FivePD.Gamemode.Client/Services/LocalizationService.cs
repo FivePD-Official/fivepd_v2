@@ -4,11 +4,9 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Exceptions;
-using FivePD.Common.Extensions;
-using FivePD.Common.Localization;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
@@ -20,65 +18,53 @@ namespace FivePD.Gamemode.Client.Services
     public class LocalizationService : ILocalizationService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IFileHandlerService _fileHandlerService;
-        private readonly ILoggerService _loggerService;
-        private readonly string _defaultLocale = "en";
+        private readonly INuiService _nuiService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizationService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="fileHandlerService">The <see cref="IFileHandlerService" /> to use.</param>
-        /// <param name="loggerService">The <see cref="ILoggerService" /> to use.</param>
-        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IFileHandlerService fileHandlerService, ILoggerService loggerService)
+        /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
+        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService)
         {
-            this.Locales = new List<Locale>();
+            this.Locales = new Dictionary<string, string>();
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._fileHandlerService = fileHandlerService;
-            this._loggerService = loggerService;
+            this._nuiService = nuiService;
         }
 
         /// <inheritdoc />
-        public List<Locale> Locales { get; }
+        public Dictionary<string, string> Locales { get; private set; }
 
         /// <inheritdoc />
-        public Localization CurrentLocalization { get; private set; }
+        public dynamic CurrentLocalization { get; private set; }
 
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
             this._eventHandlerDictionary.AddNuiEvent(Events.Localization.GetLocalizationFromNui, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
-                cb.Invoke(this.CurrentLocalization);
+                cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
             }));
         }
 
         /// <inheritdoc />
-        public async Task<List<Locale>> LoadAvailableLocales()
+        public async Task<Dictionary<string, string>> LoadLocalizations()
         {
-            if (this.Locales.Count > 0)
-            {
-                return this.Locales;
-            }
-
-            int hasServerResponded = 0;
+            var hasServerResponded = 0;
             var now = DateTime.Now;
             var timeUntilFinishWait = now.AddMinutes(1);
 
-            BaseScript.TriggerServerEvent(Events.Localization.GetAvailableLocalesFromServer, new Action<string>(locales =>
+            BaseScript.TriggerServerEvent(Events.Localization.GetAvailableLocalesFromServer, new Action<string>(localizations =>
             {
                 hasServerResponded = 1;
-                foreach (var item in JArray.Parse(locales))
-                {
-                    this.Locales.Add(new Locale(item["Key"].ToString(), item["Title"].ToString()));
-                }
+                this.Locales = JsonConvert.DeserializeObject<Dictionary<string, string>>(localizations);
             }));
 
             do
             {
                 if (DateTime.Compare(DateTime.Now, timeUntilFinishWait) > 0)
                 {
-                    return new List<Locale>();
+                    return new Dictionary<string, string>();
                 }
 
                 await BaseScript.Delay(1);
@@ -91,32 +77,42 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void LoadDefaultLocalization()
         {
-            this.LoadLocalization(this._defaultLocale);
+            this.LoadLocalization("en");
         }
 
         /// <inheritdoc />
         public void LoadLocalization(string locale)
         {
-            var path = $"/Localization/{locale}.json";
-            var file = this._fileHandlerService.LoadFile<Localization>(path, false);
+            BaseScript.TriggerServerEvent(
+                Events.Localization.GetLocalizationFromServer,
+                locale,
+                new Action<string>(localization =>
+                {
+                    this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
+                    this._nuiService.SendMessage(new JObject
+                    {
+                        { "type", Events.NuiEventType.LocalizationChange },
+                        { "data", JObject.FromObject(this.CurrentLocalization) },
+                    });
+                }));
+        }
 
-            if (file.Item2 is null)
+        /// <inheritdoc />
+        public string Get(string key)
+        {
+            var split = key.Split('.');
+            var currentObj = this.CurrentLocalization;
+            foreach (var item in split)
             {
-                this.CurrentLocalization = file.Item1;
-                return;
+                if (currentObj[item] is null)
+                {
+                    return string.Empty;
+                }
+
+                currentObj = currentObj[item];
             }
 
-            var exceptionMessage = file.Item2 switch
-            {
-                EmptyConfigException _ => this.CurrentLocalization.Warning.EmptyConfigException,
-                _ => this.CurrentLocalization.Warning.ConfigException,
-            };
-
-            this._loggerService.Warn(exceptionMessage.ReplaceParams(
-                new Dictionary<string, string>
-                {
-                    { "path", $"\"{path}\"" },
-                }));
+            return currentObj;
         }
     }
 }

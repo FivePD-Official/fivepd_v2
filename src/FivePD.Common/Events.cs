@@ -77,6 +77,11 @@ namespace FivePD.Common
             public const string GetAvailableLocalesFromServer = "fivepd:localization:getAvaibleLocalesFromServer";
 
             /// <summary>
+            /// Used to request localization from the server.
+            /// </summary>
+            public const string GetLocalizationFromServer = "fivepd:localization:getLocalizationFromServer";
+
+            /// <summary>
             /// Used to request localization from Nui.
             /// </summary>
             public const string GetLocalizationFromNui = "fivepd:localization:getLocalizationFromNui";

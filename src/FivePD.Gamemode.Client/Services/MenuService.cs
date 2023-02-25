@@ -141,14 +141,9 @@ namespace FivePD.Gamemode.Client.Services
             foreach (var key in keyCount.Where(key => key.Value > 0).Select(key => key.Key))
             {
                 var notificationText = new GtaStyleText().Red("[FivePD error]").NewLine().Reset().Build() +
-                   this._localizationService.CurrentLocalization.Error
-                       .MultipleMenusWithSameKey.ReplaceParams(
-                           new Dictionary<string, string>
-                           {
-                               { "key", new GtaStyleText().Red(key).Build() },
-                           },
-                           new GtaStyleText().Reset().Build());
+                                       this._localizationService.Get("ERROR");
 
+                // TODO show error, should be fixed with the menu refactor PR
                 this._notificationService.ShowNotification(notificationText);
             }
         }

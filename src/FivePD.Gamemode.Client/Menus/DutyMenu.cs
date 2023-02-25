@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
@@ -40,7 +41,7 @@ namespace FivePD.Gamemode.Client.Menus
         /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
         /// >
         public DutyMenu(ILocalizationService localizationService, INuiService nuiService, IConfigService configService, IEntityService entityService)
-            : base("duty_menu", "DutyMenu.Title", "F10", true)
+            : base("duty_menu", "DUTY_MENU.TITLE", "F10", true)
         {
             this._localizationService = localizationService;
             this._nuiService = nuiService;
@@ -59,13 +60,13 @@ namespace FivePD.Gamemode.Client.Menus
 
             if (this._config.DutyToggle.Enabled)
             {
-                this._dutyCheckboxItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
+                this._dutyCheckboxItem = new MenuCheckboxItem("DUTY_MENU.ITEM.ON_DUTY.TITLE", "DUTY_MENU.ITEM.ON_DUTY.DESCRIPTION");
                 items.Add(this._dutyCheckboxItem);
             }
 
             if (this._config.SpawnVehicle.Enabled)
             {
-                this._spawnVehicleListItem = new MenuListItem("DutyMenu.SpawnVehicle.Title", "DutyMenu.SpawnVehicle.Description", this._policeVehicles.Select(vehicle => vehicle.Name).ToList());
+                this._spawnVehicleListItem = new MenuListItem("DUTY_MENU.ITEM.SPAWN_VEHICLE.TITLE", "DUTY_MENU.ITEM.SPAWN_VEHICLE.DESCRIPTION", this._policeVehicles.Select(vehicle => vehicle.Name).ToList());
                 this._spawnVehicleListItem.OnListItemSelect += index =>
                 {
                     var policeVehicle = this._policeVehicles.ElementAt(index);
@@ -76,7 +77,7 @@ namespace FivePD.Gamemode.Client.Menus
 
             if (this._config.GetLoadout.Enabled)
             {
-                this._getLoadoutListItem = new MenuListItem("DutyMenu.GetLoadout.Title", "DutyMenu.GetLoadout.Description", this._loadouts.Select(x => x.Title).ToList());
+                this._getLoadoutListItem = new MenuListItem("DUTY_MENU.ITEM.GET_LOADOUT.TITLE", "DUTY_MENU.ITEM.GET_LOADOUT.DESCRIPTION", this._loadouts.Select(x => x.Title).ToList());
                 this._getLoadoutListItem.OnListItemSelect += index =>
                 {
                     var loadout = this._loadouts.ElementAt(index);
@@ -102,7 +103,7 @@ namespace FivePD.Gamemode.Client.Menus
                 items.Add(this._getLoadoutListItem);
             }
 
-            this._changeLanguageListItem = new MenuListItem("DutyMenu.ChangeLanguage.Title", "DutyMenu.ChangeLanguage.Description", this._localizationService.Locales.Select(x => x.Title).ToList());
+            this._changeLanguageListItem = new MenuListItem("DUTY_MENU.ITEM.CHANGE_LANGUAGE.TITLE", "DUTY_MENU.ITEM.CHANGE_LANGUAGE.DESCRIPTION", this._localizationService.Locales.Select(x => x.Value).ToList());
             this._changeLanguageListItem.OnListItemSelect += index =>
             {
                 var locale = this._localizationService.Locales.ElementAt(index);
@@ -120,8 +121,8 @@ namespace FivePD.Gamemode.Client.Menus
 
         private async Task WaitAndUpdateLocales()
         {
-            var locales = await this._localizationService.LoadAvailableLocales();
-            this._changeLanguageListItem.SetItems(locales.Select(locale => locale.Title).ToList());
+            var locales = await this._localizationService.LoadLocalizations();
+            this._changeLanguageListItem.SetItems(locales.Select(locale => locale.Value).ToList());
         }
     }
 }

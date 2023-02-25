@@ -1,6 +1,5 @@
 ﻿import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
 import { Paths } from './_dev/nested-object-keys';
-import { Localization } from './localization';
 
 export interface FormSubmitEvent {
   value: object;
@@ -23,9 +22,9 @@ interface FormInputBaseModel<T> {
   type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'checkboxGroup';
   value: T | undefined;
   key: string;
-  label: Paths<Localization> | string;
-  helpLabel: Paths<Localization> | string;
-  placeholder: Paths<Localization> | string;
+  label: string;
+  helpLabel: string;
+  placeholder: string;
   required: boolean;
   readonly: boolean;
   options: Record<string, any>;

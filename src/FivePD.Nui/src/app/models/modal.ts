@@ -1,6 +1,4 @@
 ﻿import { ComponentRef } from '@angular/core';
-import { Paths } from './_dev/nested-object-keys';
-import { Localization } from './localization';
 import { FormInputBase } from './form';
 import { ModalComponent } from '../components/modal/modal.component';
 import { filter, Observable, Subject } from 'rxjs';
@@ -8,11 +6,11 @@ import { ButtonVariants } from './button';
 
 interface ModalButton {
   variant: ButtonVariants;
-  label: Paths<Localization>;
+  label: string;
 }
 
 export interface ModalOptions {
-  title: Paths<Localization>;
+  title: string;
   description?: string;
   fields?: FormInputBase<any>[];
   columns?: number;

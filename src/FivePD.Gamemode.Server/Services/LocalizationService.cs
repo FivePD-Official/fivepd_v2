@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Attributes;
-using FivePD.Common.Exceptions;
-using FivePD.Common.Extensions;
-using FivePD.Common.Localization;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
-using Serilog;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services
@@ -17,105 +11,93 @@ namespace FivePD.Gamemode.Server.Services
     /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.ILocalizationService" />
     public class LocalizationService : ILocalizationService, IServiceWithEvents
     {
-        private readonly Localization _defaultLocalization;
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IFileHandlerService _fileHandlerService;
-        private readonly ILogger _logger;
-        private List<Locale> _locales;
+        private readonly IHttpService _httpService;
+        private readonly Dictionary<string, string> _localizationCache = new Dictionary<string, string>();
+        private dynamic _defaultLocalization;
+        private string _localizations;
 
         /// <summary>Initializes a new instance of the <see cref="LocalizationService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="fileHandlerService">The <see cref="IFileHandlerService" /> to use.</param>
-        /// <param name="logger">The <see cref="ILogger" /> to use.</param>
-        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IFileHandlerService fileHandlerService, ILogger logger)
+        /// <param name="httpService">The <see cref="IHttpService" /> to use.</param>
+        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IHttpService httpService)
         {
-            this._defaultLocalization = new Localization();
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._fileHandlerService = fileHandlerService;
-            this._logger = logger;
+            this._httpService = httpService;
         }
 
         /// <inheritdoc/>
         public void RegisterEvents()
         {
+            this._defaultLocalization = JsonConvert.DeserializeObject(this.GetLocalization("en"));
+            this.GetLocalizations();
+
             this._eventHandlerDictionary[Events.Localization.GetAvailableLocalesFromServer] += new Action<NetworkCallbackDelegate>(cb =>
             {
-                cb.Invoke(JsonConvert.SerializeObject(this._locales));
+                cb.Invoke(this._localizations);
             });
-            this.LoadAvailableLocales();
-            this.ValidateLocalizationFiles();
+            this._eventHandlerDictionary[Events.Localization.GetLocalizationFromServer] += new Action<string, NetworkCallbackDelegate>((key, cb) =>
+            {
+                this._localizationCache.TryGetValue(key, out var localization);
+                cb.Invoke(localization ?? this.GetLocalization(key));
+            });
         }
 
         /// <inheritdoc />
-        public Localization GetDefaultLocalization()
+        public string Get(string key)
         {
-            return this._defaultLocalization;
+            var split = key.Split('.');
+            var currentObj = this._defaultLocalization;
+            foreach (var item in split)
+            {
+                if (currentObj[item] is null)
+                {
+                    return string.Empty;
+                }
+
+                currentObj = currentObj[item];
+            }
+
+            return currentObj;
         }
 
-        /// <summary>
-        /// Finds and loads all translation files located in fivepd/Localization.
-        /// </summary>
-        private void LoadAvailableLocales()
+        private void GetLocalizations()
         {
             try
             {
-                this._locales = new List<Locale>();
-
-                var path = AppDomain.CurrentDomain.BaseDirectory + "/Localization/";
-                var files = Directory.GetFiles(path, "*.json");
-                foreach (var file in files)
+                var result = this._httpService.Client.GetAsync("/localizations").Result;
+                if (result.IsSuccessStatusCode)
                 {
-                    var fileName = Path.GetFileName(file).Split('.');
-                    this._locales.Add(new Locale(fileName[0], string.Empty));
-                }
-
-                if (this._locales.Count == 0)
-                {
-                    this._locales.Add(new Locale("en", "English"));
+                    var content = result.Content.ReadAsStringAsync().Result;
+                    this._localizations = content;
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.WriteLine("Error loading localization files: " + ex.Message);
+                Debug.WriteLine("Error loading localizations: " + e.Message);
             }
         }
 
-        /// <summary>
-        /// Validates all localization files, both with the Json and the Localization schema.
-        /// </summary>
-        private void ValidateLocalizationFiles()
+        private string GetLocalization(string key)
         {
-            foreach (var locale in this._locales)
+            try
             {
-                var path = $"/Localization/{locale.Key}.json";
-                var file = this._fileHandlerService.LoadFile<Localization>(path, false);
-
-                if (file.Item2 is null)
+                var result = this._httpService.Client.GetAsync($"/localizations/{key}").Result;
+                if (result.IsSuccessStatusCode)
                 {
-                    if (locale.Key != "en" && file.Item1.Title == "English")
-                    {
-                        locale.Title = "? " + locale.Key + " ?";
-                    }
-                    else
-                    {
-                        locale.Title = file.Item1.Title;
-                    }
-
-                    continue;
+                    var content = result.Content.ReadAsStringAsync().Result;
+                    this._localizationCache[key] = content;
+                    return content;
                 }
 
-                var exceptionMessage = file.Item2 switch
-                {
-                    EmptyConfigException _ => this._defaultLocalization.Warning.EmptyConfigException,
-                    _ => this._defaultLocalization.Warning.ConfigException,
-                };
-
-                this._logger.Warning(exceptionMessage.ReplaceParams(
-                    new Dictionary<string, string>
-                    {
-                        { "path", $"\"{path}\"" },
-                    }));
+                return null;
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Error loading localization ({key}): " + e.Message);
+            }
+
+            return null;
         }
     }
 }

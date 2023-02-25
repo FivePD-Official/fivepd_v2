@@ -37,47 +37,47 @@ export class SettingsComponent implements OnInit {
   };
   arrestReportAttributesColumns: Column<SetAttribute>[] = [
     {
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME'),
       show: () => true,
       accessorKey: 'Name',
     },
     {
-      header: this._localization.translate('Nui.Labels.Type'),
+      header: this._localization.translate('UI.LABEL.TYPE'),
       show: () => true,
       valueResolver: attr => {
         switch (attr.DataType) {
-          case AttributeDataType.ShortString: return this._localization.translate('Nui.Labels.ShortString');
-          case AttributeDataType.LongString: return this._localization.translate('Nui.Labels.LongString');
-          case AttributeDataType.Integer: return this._localization.translate('Nui.Labels.WholeNumber');
-          case AttributeDataType.Bool: return this._localization.translate('Nui.Labels.Checkbox');
-          case AttributeDataType.Date: return this._localization.translate('Nui.Labels.Date');
+          case AttributeDataType.ShortString: return this._localization.translate('UI.LABEL.SHORT_TEXT');
+          case AttributeDataType.LongString: return this._localization.translate('UI.LABEL.LONG_TEXT');
+          case AttributeDataType.Integer: return this._localization.translate('UI.LABEL.WHOLE_NUMBER');
+          case AttributeDataType.Bool: return this._localization.translate('UI.LABEL.CHECKBOX');
+          case AttributeDataType.Date: return this._localization.translate('UI.LABEL.DATE');
           default: return '-';
         }
       },
     },
     {
-      header: this._localization.translate('Nui.Labels.Required'),
+      header: this._localization.translate('UI.LABEL.REQUIRED'),
       show: () => true,
-      valueResolver: item => this._localization.translate(item.Required ? 'Nui.Labels.Yes' : 'Nui.Labels.No'),
+      valueResolver: item => this._localization.translate(item.Required ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
     },
     {
-      header: this._localization.translate('Nui.Labels.AddedBy'),
+      header: this._localization.translate('UI.LABEL.ADDED_BY'),
       show: () => true,
       accessorKey: 'AddonId',
     },
     {
-      header: this._localization.translate('Nui.Labels.Actions'),
+      header: this._localization.translate('UI.LABEL.ACTIONS'),
       show: () => this.user?.Admin ?? false,
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Edit'),
+          label: this._localization.translate('UI.ACTION.EDIT'),
           show: item => item.AddonId === 'admin',
           onClick: item => this._modal.open(ModalFormComponent, {
-            title: 'Nui.Labels.EditAttributeTitle',
+            title: 'UI.LABEL.ATTRIBUTE.EDIT',
             buttons: {
-              cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-              submit: { variant: 'primary', label: 'Nui.Actions.Save' },
+              cancel: { variant: 'secondary', label: 'UI.ACTION.CANCEL' },
+              submit: { variant: 'primary', label: 'UI.ACTION.SAVE' },
             },
             fields: [
               new TextInput({
@@ -93,43 +93,43 @@ export class SettingsComponent implements OnInit {
                 readonly: true,
                 dropdownOptions: {
                   size: 'normal',
-                  label: this._localization.translate('Nui.Labels.Type'),
+                  label: this._localization.translate('UI.LABEL.TYPE'),
                   selectedItemResolver: itemKey => item.DataType === itemKey,
                   items: [
-                    { key: AttributeDataType.ShortString, label: this._localization.translate('Nui.Labels.ShortString') },
-                    { key: AttributeDataType.LongString, label: this._localization.translate('Nui.Labels.LongString') },
-                    { key: AttributeDataType.Integer, label: this._localization.translate('Nui.Labels.WholeNumber') },
-                    { key: AttributeDataType.Bool, label: this._localization.translate('Nui.Labels.Checkbox') },
-                    { key: AttributeDataType.Date, label: this._localization.translate('Nui.Labels.Date') },
+                    { key: AttributeDataType.ShortString, label: this._localization.translate('UI.LABEL.SHORT_TEXT') },
+                    { key: AttributeDataType.LongString, label: this._localization.translate('UI.LABEL.LONG_TEXT') },
+                    { key: AttributeDataType.Integer, label: this._localization.translate('UI.LABEL.WHOLE_NUMBER') },
+                    { key: AttributeDataType.Bool, label: this._localization.translate('UI.LABEL.CHECKBOX') },
+                    { key: AttributeDataType.Date, label: this._localization.translate('UI.LABEL.DATE') },
                   ]
                 }
               }),
               new TextInput({
                 key: 'Label',
-                label: this._localization.translate('Nui.Labels.Label'),
+                label: this._localization.translate('UI.LABEL.LABEL'),
                 required: true,
                 value: item.Label
               }),
               new TextInput({
                 key: 'HelpLabel',
-                label: this._localization.translate('Nui.Labels.HelpLabel'),
+                label: this._localization.translate('UI.LABEL.HELP_LABEL'),
                 required: false,
                 value: item.HelpLabel
               }),
               new TextInput({
                 key: 'Placeholder',
-                label: this._localization.translate('Nui.Labels.Placeholder'),
+                label: this._localization.translate('UI.LABEL.PLACEHOLDER'),
                 required: false,
                 value: item.Placeholder
               }),
               new Checkbox({
                 key: 'Required',
-                label: this._localization.translate('Nui.Labels.Required'),
+                label: this._localization.translate('UI.LABEL.REQUIRED'),
                 value: item.Required
               }),
               new Checkbox({
                 key: 'ShowInGrid',
-                label: this._localization.translate('Nui.Labels.ShowInGrid'),
+                label: this._localization.translate('UI.LABEL.SHOW_IN_GRID'),
                 value: item.ShowInGrid
               }),
             ]
@@ -151,14 +151,14 @@ export class SettingsComponent implements OnInit {
         },
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Delete'),
+          label: this._localization.translate('UI.ACTION.DELETE'),
           show: item => item.AddonId === 'admin',
           onClick: item => this._modal.open(ModalFormComponent, {
-            title: 'Nui.Labels.DeleteAttributeTitle',
-            description: this._localization.translate('Nui.Labels.DeleteAttributeDescription', { attribute: item.Name }),
+            title: 'UI.LABEL.ATTRIBUTE.DELETE.TITLE',
+            description: this._localization.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', { attribute: item.Name }),
             buttons: {
-              cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-              submit: { variant: 'danger', label: 'Nui.Actions.Delete' },
+              cancel: { variant: 'secondary', label: 'UI.ACTION.CANCEL' },
+              submit: { variant: 'danger', label: 'UI.ACTION.DELETE' },
             },
           }).onSuccess(() => {
             this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id).subscribe(res => {
@@ -174,60 +174,60 @@ export class SettingsComponent implements OnInit {
   ];
   arrestReportAttributesButtons: Button[] = [
     {
-      label: this._localization.translate('Nui.Actions.CreateAttribute'),
+      label: this._localization.translate('UI.ACTION.CREATE_ATTRIBUTE'),
       show: () => true,
       disabled: () => false,
       onClick: () => {
         this._modal.open(ModalFormComponent, {
-          title: 'Nui.Actions.CreateAttribute',
+          title: 'UI.ACTION.CREATE_ATTRIBUTE',
           buttons: {
-            cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-            submit: { variant: 'primary', label: 'Nui.Actions.Create' },
+            cancel: { variant: 'secondary', label: 'UI.ACTION.CANCEL' },
+            submit: { variant: 'primary', label: 'UI.ACTION.CREATE' },
           },
           fields: [
             new TextInput({
               key: 'Name',
-              label: this._localization.translate('Nui.Labels.Name'),
+              label: this._localization.translate('UI.LABEL.NAME'),
               required: true,
             }),
             new Dropdown({
               key: 'DataType',
-              label: this._localization.translate('Nui.Labels.Type'),
+              label: this._localization.translate('UI.LABEL.TYPE'),
               required: true,
               dropdownOptions: {
                 size: 'normal',
-                label: this._localization.translate('Nui.Labels.Type'),
+                label: this._localization.translate('UI.LABEL.TYPE'),
                 items: [
-                  { key: AttributeDataType.ShortString, label: this._localization.translate('Nui.Labels.ShortString') },
-                  { key: AttributeDataType.LongString, label: this._localization.translate('Nui.Labels.LongString') },
-                  { key: AttributeDataType.Integer, label: this._localization.translate('Nui.Labels.WholeNumber') },
-                  { key: AttributeDataType.Bool, label: this._localization.translate('Nui.Labels.Checkbox') },
-                  { key: AttributeDataType.Date, label: this._localization.translate('Nui.Labels.Date') },
+                  { key: AttributeDataType.ShortString, label: this._localization.translate('UI.LABEL.SHORT_TEXT') },
+                  { key: AttributeDataType.LongString, label: this._localization.translate('UI.LABEL.LONG_TEXT') },
+                  { key: AttributeDataType.Integer, label: this._localization.translate('UI.LABEL.WHOLE_NUMBER') },
+                  { key: AttributeDataType.Bool, label: this._localization.translate('UI.LABEL.CHECKBOX') },
+                  { key: AttributeDataType.Date, label: this._localization.translate('UI.LABEL.DATE') },
                 ]
               }
             }),
             new TextInput({
               key: 'Label',
-              label: this._localization.translate('Nui.Labels.Label'),
+              label: this._localization.translate('UI.LABEL.LABEL'),
               required: true,
             }),
             new TextInput({
               key: 'HelpLabel',
-              label: this._localization.translate('Nui.Labels.HelpLabel'),
+              label: this._localization.translate('UI.LABEL.HELP_LABEL'),
               required: false,
             }),
             new TextInput({
               key: 'Placeholder',
-              label: this._localization.translate('Nui.Labels.Placeholder'),
+              label: this._localization.translate('UI.LABEL.PLACEHOLDER'),
               required: false,
             }),
             new Checkbox({
               key: 'Required',
-              label: this._localization.translate('Nui.Labels.Required'),
+              label: this._localization.translate('UI.LABEL.REQUIRED'),
             }),
             new Checkbox({
               key: 'ShowInGrid',
-              label: this._localization.translate('Nui.Labels.ShowInGrid'),
+              label: this._localization.translate('UI.LABEL.SHOW_IN_GRID'),
             }),
           ]
         }).onSuccess(modalRes => {

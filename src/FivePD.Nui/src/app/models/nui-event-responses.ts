@@ -1,6 +1,4 @@
-﻿import { Localization } from './localization';
-
-export interface ActionResponse {
+﻿export interface ActionResponse {
   Status: boolean;
   Title: string;
   Description: string;
@@ -42,7 +40,7 @@ export interface RadialMenuObjectsEvent extends BaseNuiEvent {
 }
 
 export interface LocalizationChangeEvent extends BaseNuiEvent {
-  data: Localization;
+  data: object;
 }
 
 export interface MenuShowEvent extends BaseNuiEvent {
