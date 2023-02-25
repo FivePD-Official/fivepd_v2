@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FivePD.Gamemode.Client.Interfaces
@@ -9,12 +10,17 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface ILocalizationService
     {
         /// <summary>
+        /// Fires when the localization has been changed.
+        /// </summary>
+        public event EventHandler<string> LocalizationChanged;
+
+        /// <summary>
         /// Gets all available locales.
         /// </summary>
         public Dictionary<string, string> Locales { get; }
 
         /// <summary>
-        /// Gets asd.
+        /// Gets the currently set localization.
         /// </summary>
         public dynamic CurrentLocalization { get; }
 

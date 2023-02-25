@@ -90,7 +90,7 @@ namespace FivePD.Gamemode.Client.Services
                 return;
             }
 
-            var stoppedVehicleBlip = stoppedVehicle.CreateBlip(BlipSprite.PersonalVehicleCar, FBlipColor.LemonGreen, this._localizationService.Get("A"));
+            var stoppedVehicleBlip = stoppedVehicle.CreateBlip(BlipSprite.PersonalVehicleCar, FBlipColor.LemonGreen, this._localizationService.Get("TRAFFIC_STOP.STOPPED_VEHICLE"));
             stoppedVehicleBlip.IsFlashing = true;
             this._vehicleService.GenerateVehicle(stoppedVehicle);
 
@@ -121,7 +121,7 @@ namespace FivePD.Gamemode.Client.Services
             }
 
             stoppedVehicleBlip.IsFlashing = false;
-            this._notificationService.ShowNotification(this._localizationService.Get("TrafficStop.WaitUntilStop"));
+            this._notificationService.ShowNotification(this._localizationService.Get("TRAFFIC_STOP.WAIT_UNTIL_STOP"));
 
             // TODO: Is this persistency thing needed with OneSync?
             stoppedVehicle.Driver.IsPersistence(true);
@@ -144,7 +144,7 @@ namespace FivePD.Gamemode.Client.Services
             }
 
             stoppedVehicle.Driver.Task.StandStill(-1);
-            this._notificationService.ShowNotification(this._localizationService.Get("TrafficStop.Proceed"));
+            this._notificationService.ShowNotification(this._localizationService.Get("TRAFFIC_STOP.PROCEED"));
         }
 
         /// <summary>

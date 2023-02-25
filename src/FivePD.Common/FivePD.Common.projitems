@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DynamicExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\ErrorLocalizations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Localization\Localization.cs" />

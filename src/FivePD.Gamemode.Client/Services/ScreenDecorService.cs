@@ -94,7 +94,10 @@ namespace FivePD.Gamemode.Client.Services
             this._tickService.OnTick -= this.DrawOnScreen;
         }
 
-        private void BuildText()
+        /**
+         * <inheritdoc />
+         */
+        public void BuildText()
         {
             // Header
             var text = new GtaStyleText()
@@ -103,8 +106,13 @@ namespace FivePD.Gamemode.Client.Services
                 .White(" " + this._version + "\n");
 
             // Duty status display
-            text = text
-                .White(this.DutyStatusToString(this._dutyStatus) + "\n");
+            var dutyStatus = this.DutyStatusToString(this._dutyStatus);
+            if (!string.IsNullOrEmpty(dutyStatus))
+            {
+                text = text
+                    .White(dutyStatus)
+                    .NewLine();
+            }
 
             // Protection notice
             if (this._showProtectionNotice)
@@ -116,17 +124,15 @@ namespace FivePD.Gamemode.Client.Services
             this._text = text.Build();
         }
 
-        #pragma warning disable
         private string DutyStatusToString(FDutyStatus dutyStatus)
         {
-            return "duty status";
-            // return dutyStatus switch
-            // {
-            //     FDutyStatus.OffDuty => this._localizationService.Get("PlayerStatus.OffDuty.Generic"),
-            //     FDutyStatus.OnDutyAndReceiving => this._localizationService.Get("PlayerStatus.OnDuty.GenericReceiving"),
-            //     FDutyStatus.OnDutyAndNotReceiving => this._localizationService.Get("PlayerStatus.OnDuty.GenericNotReceiving"),
-            //     _ => "Unknown",
-            // };
+            return dutyStatus switch
+            {
+                FDutyStatus.OffDuty => this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.GENERIC"),
+                FDutyStatus.OnDutyAndReceiving => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC_RECEIVING"),
+                FDutyStatus.OnDutyAndNotReceiving => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC_NOT_RECEIVING"),
+                _ => "Unknown",
+            };
         }
 
         private Task DrawOnScreen()

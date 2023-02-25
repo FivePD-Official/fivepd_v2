@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Utilities;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
@@ -33,10 +34,13 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
+        public event EventHandler<string> LocalizationChanged;
+
+        /// <inheritdoc />
         public Dictionary<string, string> Locales { get; private set; }
 
         /// <inheritdoc />
-        public dynamic CurrentLocalization { get; private set; }
+        public object CurrentLocalization { get; private set; }
 
         /// <inheritdoc />
         public void RegisterEventHandlers()
@@ -89,6 +93,7 @@ namespace FivePD.Gamemode.Client.Services
                 new Action<string>(localization =>
                 {
                     this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
+                    this.LocalizationChanged?.Invoke(this, locale);
                     this._nuiService.SendMessage(new JObject
                     {
                         { "type", Events.NuiEventType.LocalizationChange },
@@ -100,19 +105,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public string Get(string key)
         {
-            var split = key.Split('.');
-            var currentObj = this.CurrentLocalization;
-            foreach (var item in split)
-            {
-                if (currentObj[item] is null)
-                {
-                    return string.Empty;
-                }
-
-                currentObj = currentObj[item];
-            }
-
-            return currentObj;
+            return this.CurrentLocalization.GetValueByPath(key);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Utilities;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
@@ -14,7 +15,7 @@ namespace FivePD.Gamemode.Server.Services
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IHttpService _httpService;
         private readonly Dictionary<string, string> _localizationCache = new Dictionary<string, string>();
-        private dynamic _defaultLocalization;
+        private object _defaultLocalization;
         private string _localizations;
 
         /// <summary>Initializes a new instance of the <see cref="LocalizationService"/> class.</summary>
@@ -46,19 +47,7 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public string Get(string key)
         {
-            var split = key.Split('.');
-            var currentObj = this._defaultLocalization;
-            foreach (var item in split)
-            {
-                if (currentObj[item] is null)
-                {
-                    return string.Empty;
-                }
-
-                currentObj = currentObj[item];
-            }
-
-            return currentObj;
+            return this._defaultLocalization.GetValueByPath(key);
         }
 
         private void GetLocalizations()
