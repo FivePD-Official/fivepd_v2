@@ -13,6 +13,7 @@
     <Company>FivePD.Localization</Company>
     <RootNamespace>FivePD.Localization</RootNamespace>
     <OutputType>Exe</OutputType>
+    <SkipUnchangedFiles>false</SkipUnchangedFiles>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>.</OutputPath>

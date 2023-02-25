@@ -473,7 +473,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
                 {
-                    networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.CreateAttributeExistsWithNameTitle", "Nui.Errors.AttributeExistsWithNameDescription");
+                    networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.CREATE.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -497,7 +497,7 @@ namespace FivePD.Gamemode.Server.Services
                 }
 
                 this._databaseContext.SaveChanges();
-                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulCreate", "Nui.Labels.SuccessfulAttributeCreate", new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.ATTRIBUTE.SUCCESS.CREATE", new Dictionary<string, string>
                 {
                     { "attribute", request.Attribute.Name },
                 });
@@ -526,7 +526,7 @@ namespace FivePD.Gamemode.Server.Services
 
                 if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
                 {
-                    networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.CreateAttributeExistsWithNameTitle", "Nui.Errors.AttributeExistsWithNameDescription");
+                    networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -545,7 +545,7 @@ namespace FivePD.Gamemode.Server.Services
                 attribute.Placeholder = request.Attribute.Placeholder;
                 attribute.Required = request.Attribute.Required;
                 this._databaseContext.SaveChanges();
-                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulEdit", "Nui.Labels.SuccessfulAttributeEdit", new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ATTRIBUTE.SUCCESS.EDIT", new Dictionary<string, string>
                 {
                     { "attribute", attributeOldName },
                 });
@@ -592,7 +592,7 @@ namespace FivePD.Gamemode.Server.Services
                 var attributeName = attributeToDelete.Name;
                 this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
                 this._databaseContext.SaveChanges();
-                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulDelete", "Nui.Labels.SuccessfulAttributeDelete", new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
                 {
                     { "attribute", attributeName },
                 });
@@ -668,7 +668,7 @@ namespace FivePD.Gamemode.Server.Services
                     return;
                 }
 
-                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulCreate", "Nui.Label.SuccessfulEntityCreate");
+                networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
             }
             catch (Exception)
             {
@@ -690,7 +690,7 @@ namespace FivePD.Gamemode.Server.Services
                 }
 
                 this.InternalUpdateEntity(request.SetId, request.EntityId, new Dictionary<string, object>(request.Entity));
-                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulEdit", "Nui.Labels.SuccessfulEntityEdit");
+                networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
             }
             catch (Exception)
             {
@@ -722,7 +722,7 @@ namespace FivePD.Gamemode.Server.Services
                 this._databaseContext.LooseDataEntities.Remove(entityToDelete);
                 this._databaseContext.SaveChanges();
                 this.InvokeEvent(LooseDataEntityObservableType.Delete, setType, entityToDelete);
-                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulDelete", "Nui.Labels.SuccessfulEntityDelete");
+                networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
             }
             catch (Exception)
             {

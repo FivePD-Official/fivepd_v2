@@ -37,20 +37,20 @@ export class SettingsComponent implements OnInit {
   };
   arrestReportAttributesColumns: Column<SetAttribute>[] = [
     {
-      header: this._localization.translate('UI.LABEL.NAME'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       show: () => true,
       accessorKey: 'Name',
     },
     {
-      header: this._localization.translate('UI.LABEL.TYPE'),
+      header: this._localization.translate('UI.LABEL.TYPE.SINGULAR'),
       show: () => true,
       valueResolver: attr => {
         switch (attr.DataType) {
-          case AttributeDataType.ShortString: return this._localization.translate('UI.LABEL.SHORT_TEXT');
-          case AttributeDataType.LongString: return this._localization.translate('UI.LABEL.LONG_TEXT');
-          case AttributeDataType.Integer: return this._localization.translate('UI.LABEL.WHOLE_NUMBER');
-          case AttributeDataType.Bool: return this._localization.translate('UI.LABEL.CHECKBOX');
-          case AttributeDataType.Date: return this._localization.translate('UI.LABEL.DATE');
+          case AttributeDataType.ShortString: return this._localization.translate('UI.LABEL.SHORT_TEXT.SINGULAR');
+          case AttributeDataType.LongString: return this._localization.translate('UI.LABEL.LONG_TEXT.SINGULAR');
+          case AttributeDataType.Integer: return this._localization.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR');
+          case AttributeDataType.Bool: return this._localization.translate('UI.LABEL.CHECKBOX.SINGULAR');
+          case AttributeDataType.Date: return this._localization.translate('UI.LABEL.DATE.SINGULAR');
           default: return '-';
         }
       },
@@ -66,7 +66,7 @@ export class SettingsComponent implements OnInit {
       accessorKey: 'AddonId',
     },
     {
-      header: this._localization.translate('UI.LABEL.ACTIONS'),
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
       show: () => this.user?.Admin ?? false,
       actions: [
         {
@@ -93,26 +93,26 @@ export class SettingsComponent implements OnInit {
                 readonly: true,
                 dropdownOptions: {
                   size: 'normal',
-                  label: this._localization.translate('UI.LABEL.TYPE'),
+                  label: this._localization.translate('UI.LABEL.TYPE.SINGULAR'),
                   selectedItemResolver: itemKey => item.DataType === itemKey,
                   items: [
-                    { key: AttributeDataType.ShortString, label: this._localization.translate('UI.LABEL.SHORT_TEXT') },
-                    { key: AttributeDataType.LongString, label: this._localization.translate('UI.LABEL.LONG_TEXT') },
-                    { key: AttributeDataType.Integer, label: this._localization.translate('UI.LABEL.WHOLE_NUMBER') },
-                    { key: AttributeDataType.Bool, label: this._localization.translate('UI.LABEL.CHECKBOX') },
-                    { key: AttributeDataType.Date, label: this._localization.translate('UI.LABEL.DATE') },
+                    { key: AttributeDataType.ShortString, label: this._localization.translate('UI.LABEL.SHORT_TEXT.SINGULAR') },
+                    { key: AttributeDataType.LongString, label: this._localization.translate('UI.LABEL.LONG_TEXT.SINGULAR') },
+                    { key: AttributeDataType.Integer, label: this._localization.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR') },
+                    { key: AttributeDataType.Bool, label: this._localization.translate('UI.LABEL.CHECKBOX.SINGULAR') },
+                    { key: AttributeDataType.Date, label: this._localization.translate('UI.LABEL.DATE.SINGULAR') },
                   ]
                 }
               }),
               new TextInput({
                 key: 'Label',
-                label: this._localization.translate('UI.LABEL.LABEL'),
+                label: this._localization.translate('UI.LABEL.LABEL.SINGULAR'),
                 required: true,
                 value: item.Label
               }),
               new TextInput({
                 key: 'HelpLabel',
-                label: this._localization.translate('UI.LABEL.HELP_LABEL'),
+                label: this._localization.translate('UI.LABEL.HELP_LABEL.SINGULAR'),
                 required: false,
                 value: item.HelpLabel
               }),
@@ -129,7 +129,7 @@ export class SettingsComponent implements OnInit {
               }),
               new Checkbox({
                 key: 'ShowInGrid',
-                label: this._localization.translate('UI.LABEL.SHOW_IN_GRID'),
+                label: this._localization.translate('UI.LABEL.SHOW_IN_GRID.TITLE'),
                 value: item.ShowInGrid
               }),
             ]
@@ -187,33 +187,33 @@ export class SettingsComponent implements OnInit {
           fields: [
             new TextInput({
               key: 'Name',
-              label: this._localization.translate('UI.LABEL.NAME'),
+              label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
               required: true,
             }),
             new Dropdown({
               key: 'DataType',
-              label: this._localization.translate('UI.LABEL.TYPE'),
+              label: this._localization.translate('UI.LABEL.TYPE.SINGULAR'),
               required: true,
               dropdownOptions: {
                 size: 'normal',
-                label: this._localization.translate('UI.LABEL.TYPE'),
+                label: this._localization.translate('UI.LABEL.TYPE.SINGULAR'),
                 items: [
-                  { key: AttributeDataType.ShortString, label: this._localization.translate('UI.LABEL.SHORT_TEXT') },
-                  { key: AttributeDataType.LongString, label: this._localization.translate('UI.LABEL.LONG_TEXT') },
-                  { key: AttributeDataType.Integer, label: this._localization.translate('UI.LABEL.WHOLE_NUMBER') },
-                  { key: AttributeDataType.Bool, label: this._localization.translate('UI.LABEL.CHECKBOX') },
-                  { key: AttributeDataType.Date, label: this._localization.translate('UI.LABEL.DATE') },
+                  { key: AttributeDataType.ShortString, label: this._localization.translate('UI.LABEL.SHORT_TEXT.SINGULAR') },
+                  { key: AttributeDataType.LongString, label: this._localization.translate('UI.LABEL.LONG_TEXT.SINGULAR') },
+                  { key: AttributeDataType.Integer, label: this._localization.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR') },
+                  { key: AttributeDataType.Bool, label: this._localization.translate('UI.LABEL.CHECKBOX.SINGULAR') },
+                  { key: AttributeDataType.Date, label: this._localization.translate('UI.LABEL.DATE.SINGULAR') },
                 ]
               }
             }),
             new TextInput({
               key: 'Label',
-              label: this._localization.translate('UI.LABEL.LABEL'),
+              label: this._localization.translate('UI.LABEL.LABEL.SINGULAR'),
               required: true,
             }),
             new TextInput({
               key: 'HelpLabel',
-              label: this._localization.translate('UI.LABEL.HELP_LABEL'),
+              label: this._localization.translate('UI.LABEL.HELP_LABEL.SINGULAR'),
               required: false,
             }),
             new TextInput({
@@ -227,7 +227,8 @@ export class SettingsComponent implements OnInit {
             }),
             new Checkbox({
               key: 'ShowInGrid',
-              label: this._localization.translate('UI.LABEL.SHOW_IN_GRID'),
+              label: this._localization.translate('UI.LABEL.SHOW_IN_GRID.TITLE'),
+              helpLabel: this._localization.translate('UI.LABEL.SHOW_IN_GRID.HELP_LABEL')
             }),
           ]
         }).onSuccess(modalRes => {

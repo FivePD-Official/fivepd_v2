@@ -8,12 +8,12 @@
     <div class="buttons">
       <app-button
         [variant]="modalRef.options.buttons?.cancel?.variant ?? 'secondary'"
-        [label]="modalRef.options.buttons?.cancel?.label ?? 'Nui.Actions.Cancel' | translate"
+        [label]="modalRef.options.buttons?.cancel?.label ?? 'UI.ACTION.CANCEL' | translate"
         (onClick)="close()"/>
       <app-button
         type="submit"
         [variant]="modalRef.options.buttons?.submit?.variant ?? 'primary'"
-        [label]="modalRef.options.buttons?.submit?.label ?? 'Nui.Actions.Save' | translate"/>
+        [label]="modalRef.options.buttons?.submit?.label ?? 'UI.ACTION.SAVE' | translate"/>
     </div>
   </div>
 </app-dynamic-form>
@@ -21,12 +21,12 @@
   <div class="buttons">
     <app-button
       [variant]="modalRef.options.buttons?.cancel?.variant ?? 'secondary'"
-      [label]="modalRef.options.buttons?.cancel?.label ?? 'Nui.Actions.Cancel' | translate"
+      [label]="modalRef.options.buttons?.cancel?.label ?? 'UI.ACTION.CANCEL' | translate"
       (onClick)="close()"/>
     <app-button
       type="submit"
       [variant]="modalRef.options.buttons?.submit?.variant ?? 'primary'"
-      [label]="modalRef.options.buttons?.submit?.label ?? 'Nui.Actions.Save' | translate"
+      [label]="modalRef.options.buttons?.submit?.label ?? 'UI.ACTION.SAVE' | translate"
       (onClick)="submit()"/>
   </div>
 </div>

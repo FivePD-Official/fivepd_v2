@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit {
   departments?: Page<Department>;
   departmentsButtons: Button[] = [
     {
-      label: this._localization.translate('Nui.Actions.CreateDepartment'),
+      label: this._localization.translate('UI.ACTION.CREATE_DEPARTMENT'),
       show: () => this.user?.Admin ?? false,
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
@@ -37,44 +37,44 @@ export class DashboardComponent implements OnInit {
   };
   departmentsColumnDef: Column<Department>[] = [
     new Column<Department>({
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       accessorKey: 'Name',
       linkResolver: (item) => `/mdt/departments/${item.Id}`,
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByName'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
       }
     }),
     new Column<Department>({
-      header: this._localization.translate('Nui.Labels.Callsign'),
+      header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
       accessorKey: 'Callsign',
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByCallsign'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.CALLSIGN'),
       },
     }),
     new Column<Department>({
-      header: this._localization.translate('Nui.Labels.Capacity'),
+      header: this._localization.translate('UI.LABEL.CAPACITY.SINGULAR'),
       accessorKey: 'UserCount',
-      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('Nui.Labels.NoLimit')}` : `${item.UserCount} / ${item.MaxUsers}`,
+      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
     new Column<Department>({
-      header: this._localization.translate('Nui.Labels.Actions'),
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Delete'),
+          label: this._localization.translate('UI.ACTION.DELETE'),
           show: () => true,
           disabled: () => false,
           onClick: department => this._modal.open(ModalFormComponent, {
-            title: 'Nui.Labels.DeleteDepartmentTitle',
-            description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', { department: `<b>${department.Name}</b>` }),
+            title: 'UI.LABEL.DEPARTMENT.DELETE.TITLE',
+            description: this._localization.translate('UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION', { department: `<b>${department.Name}</b>` }),
             buttons: {
               cancel: {
                 variant: 'secondary',
-                label: 'Nui.Actions.Cancel',
+                label: 'UI.ACTION.CANCEL',
               },
               submit: {
                 variant: 'danger',
-                label: 'Nui.Actions.Delete',
+                label: 'UI.ACTION.DELETE',
               },
             },
           }).onSuccess(() => {
@@ -115,38 +115,38 @@ export class DashboardComponent implements OnInit {
 
   tryCreateDepartment(): void {
     this._modal.open(ModalFormComponent, {
-      title: 'Nui.Actions.CreateDepartment',
+      title: 'UI.ACTION.CREATE_DEPARTMENT',
       fields: [
         new TextInput({
           key: 'Name',
           required: true,
-          label: 'Nui.Labels.Name',
+          label: 'UI.LABEL.NAME.SINGULAR',
           asyncValidators: [GenericNameValidator.get((value) => this._department.checkIfDepartmentNameTaken(value))],
         }),
         new TextInput({
           key: 'Callsign',
-          label: 'Nui.Labels.Callsign',
-          helpLabel: 'Nui.Labels.CallsignHelpLabel',
+          label: 'UI.LABEL.CALLSIGN.TITLE',
+          helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
           validators: [Validators.pattern('^[a-zA-Z]+$')]
         }),
         new TextInput({
           key: 'CallsignFormat',
           required: true,
-          label: 'Nui.Labels.CallsignFormat',
+          label: 'UI.LABEL.CALLSIGN.FORMAT.TITLE',
           helpLabel: `
-            ${this._localization.translate('Nui.Labels.CallsignFormatHelpLabel')} ${this._localization.translate('Nui.Labels.AvailableCharacters')}: <br/>
+            ${this._localization.translate('UI.LABEL.CALLSIGN.FORMAT.HELP_LABEL')} ${this._localization.translate('UI.LABEL.AVAILABLE_CHARACTERS')}: <br/>
             <table>
               <tr>
                 <td><b>L</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Letter')})<td>
+                <td>(${this._localization.translate('UI.LABEL.LETTER.SINGULAR')})<td>
               </tr>
               <tr>
                 <td><b>N</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Number')})<td>
+                <td>(${this._localization.translate('UI.LABEL.NUMBER.SINGULAR')})<td>
               </tr>
               <tr>
                 <td><b>-</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Dash')})<td>
+                <td>(${this._localization.translate('UI.LABEL.DASH.SINGULAR')})<td>
               </tr>
             </table>
           `,
@@ -155,8 +155,8 @@ export class DashboardComponent implements OnInit {
         new NumberInput({
           key: 'MaxUsers',
           required: true,
-          label: 'Nui.Labels.MaxNumberOfMembers',
-          helpLabel: 'Nui.Labels.MaxNumberOfMembersHelpLabel',
+          label: 'UI.LABEL.MAX_MEMBERS.TITLE',
+          helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
           validators: [Validators.min(0)],
           options: {
             min: 0,
@@ -166,11 +166,11 @@ export class DashboardComponent implements OnInit {
       buttons: {
         cancel: {
           variant: 'secondary',
-          label: 'Nui.Actions.Cancel'
+          label: 'UI.ACTION.CANCEL'
         },
         submit: {
           variant: 'primary',
-          label: 'Nui.Actions.Create'
+          label: 'UI.ACTION.CREATE'
         }
       }
     }).onSuccess(modalRes => {

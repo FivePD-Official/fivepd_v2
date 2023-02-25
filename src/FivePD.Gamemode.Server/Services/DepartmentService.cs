@@ -413,8 +413,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.PlayerDivisionDeleted?.Invoke(this, divisionToDelete);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulDelete",
-                    "Nui.Labels.SuccessfulDivisionDelete",
+                    "UI.LABEL.SUCCESS.DELETE",
+                    "UI.LABEL.DIVISION.SUCCESS.DELETE",
                     new Dictionary<string, string>
                     {
                         { "division", divisionToDeleteName },
@@ -450,8 +450,8 @@ namespace FivePD.Gamemode.Server.Services
                 {
                     networkCallbackDelegate.InvokeWithResponse(
                         false,
-                        "Nui.Errors.EditDivisionExistsWithNameTitle",
-                        "Nui.Errors.DivisionExistsWithNameDescription");
+                        "UI.ERROR.DIVISION.EDIT.TITLE",
+                        "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -461,8 +461,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.PlayerDivisionEdited?.Invoke(this, divisionToEdit);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulEdit",
-                    "Nui.Labels.SuccessfulDivisionEdit",
+                    "UI.LABEL.SUCCESS.EDIT",
+                    "UI.LABEL.DIVISION.SUCCESS.EDIT",
                     new Dictionary<string, string>
                     {
                         { "division", divisionToEditOldName },
@@ -487,8 +487,8 @@ namespace FivePD.Gamemode.Server.Services
                 {
                     networkCallbackDelegate.InvokeWithResponse(
                         false,
-                        "Nui.Errors.CreateDivisionExistsWithNameTitle",
-                        "Nui.Errors.DivisionExistsWithNameDescription");
+                        "UI.ERROR.DIVISION.CREATE.TITLE",
+                        "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -508,8 +508,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.PlayerDivisionCreated?.Invoke(this, createdDivisionEntry.Entity);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulCreate",
-                    "Nui.Labels.SuccessfulDivisionCreate",
+                    "UI.LABEL.SUCCESS.CREATE",
+                    "UI.LABEL.DIVISION.SUCCESS.CREATE",
                     new Dictionary<string, string>
                     {
                         { "division", createDivisionRequest.Name },
@@ -554,8 +554,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.PlayerRankDeleted?.Invoke(this, rankToDelete);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulDelete",
-                    "Nui.Labels.SuccessfulRankDelete",
+                    "UI.LABEL.SUCCESS.DELETE",
+                    "UI.LABEL.RANK.SUCCESS.DELETE",
                     new Dictionary<string, string>
                     {
                         { "rank", rankToDeleteName },
@@ -585,7 +585,7 @@ namespace FivePD.Gamemode.Server.Services
                     rank.Name == editRankRequest.Name && rank.Department.Id == editRankRequest.DepartmentId && rank.Id != rankToEdit.Id);
                 if (rankExistsWithName != null)
                 {
-                    networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.EditRankExistsWithNameTitle", "Nui.Errors.RankExistsWithNameDescription");
+                    networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -596,8 +596,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.PlayerRankEdited?.Invoke(this, rankToEdit);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulEdit",
-                    "Nui.Labels.SuccessfulRankEdit",
+                    "UI.LABEL.SUCCESS.EDIT",
+                    "UI.LABEL.RANK.SUCCESS.EDIT",
                     new Dictionary<string, string>
                     {
                         { "rank", rankToEditOldName },
@@ -620,7 +620,7 @@ namespace FivePD.Gamemode.Server.Services
                     rank.Name == createRankRequest.Name && rank.Department.Id == createRankRequest.DepartmentId);
                 if (rankExistsWithName != null)
                 {
-                    networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.CreateRankExistsWithNameTitle", "Nui.Errors.RankExistsWithNameDescription");
+                    networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -642,8 +642,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.PlayerRankCreated?.Invoke(this, createdRankEntry.Entity);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulCreate",
-                    "Nui.Labels.SuccessfulRankCreate",
+                    "UI.LABEL.SUCCESS.CREATE",
+                    "UI.LABEL.RANK.SUCCESS.CREATE",
                     new Dictionary<string, string>
                     {
                         { "rank", createRankRequest.Name },
@@ -676,8 +676,8 @@ namespace FivePD.Gamemode.Server.Services
                 {
                     networkCallbackDelegate.InvokeWithResponse(
                         false,
-                        "Nui.Errors.EditDepartmentExistsWithNameTitle",
-                        "Nui.Errors.DepartmentExistsWithNameDescription");
+                        "UI.ERROR.DEPARTMENT.EDIT.TITLE",
+                        "UI.ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -703,8 +703,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.DepartmentEdited?.Invoke(this, department);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulEdit",
-                    "Nui.Labels.SuccessfulDepartmentEdit",
+                    "UI.LABEL.SUCCESS.EDIT",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.EDIT",
                     new Dictionary<string, string>
                     {
                         { "department", departmentOldName },
@@ -772,8 +772,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.DepartmentDeleted?.Invoke(this, department);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulDelete",
-                    "Nui.Labels.SuccessfulDepartmentDelete",
+                    "UI.LABEL.SUCCESS.DELETE",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.DELETE",
                     new Dictionary<string, string>
                     {
                         { "department", departmentOldName },
@@ -806,8 +806,8 @@ namespace FivePD.Gamemode.Server.Services
 
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulJoin",
-                    "Nui.Labels.SuccessfulDepartmentJoin",
+                    "UI.LABEL.SUCCESS.JOIN",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.JOIN",
                     new Dictionary<string, string>
                     {
                         { "department", department!.Name },
@@ -815,7 +815,7 @@ namespace FivePD.Gamemode.Server.Services
             }
             catch (DepartmentFullException)
             {
-                networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.DepartmentFullTitle", "Nui.Errors.DepartmentFullDescription");
+                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.DEPARTMENT.FULL.TITLE", "UI.ERROR.DEPARTMENT.FULL.DESCRIPTION");
             }
             catch (Exception e)
             {
@@ -834,8 +834,8 @@ namespace FivePD.Gamemode.Server.Services
                 this.RemovePlayerFromDepartment(player);
                 networkCallbackDelegate.InvokeWithResponse(
                     true,
-                    "Nui.Labels.SuccessfulLeave",
-                    "Nui.Labels.SuccessfulDepartmentLeave",
+                    "UI.LABEL.SUCCESS.LEAVE",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.LEAVE",
                     new Dictionary<string, string>
                     {
                         { "department", playerDepartment!.Name },
