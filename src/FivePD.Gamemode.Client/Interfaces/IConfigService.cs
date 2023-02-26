@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using FivePD.Common;
 using FivePD.Common.ConfigModels;
-using FivePD.Common.Localization;
 
 #pragma warning disable SA1618
 
