@@ -2,10 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   ActionResponse,
-  AddSetAttribute, AttributeDataType,
+  AddSetAttribute,
+  AttributeDataType,
   Collation,
   EditSetAttribute,
-  LooseDataEntity, LooseDataEntityPageWrapper, LooseDataEntityWrapper, MappedLooseDataEntity,
+  LooseDataEntity,
+  LooseDataEntityPageWrapper,
+  LooseDataEntityWrapper,
+  MappedLooseDataEntity,
   Page,
   SetAttribute
 } from '@models';
@@ -21,7 +25,8 @@ export class LooseDataService {
 
   constructor(
     private _http: HttpClient,
-  ) { }
+  ) {
+  }
 
   getSetAttributes(setId: SetId): SetAttribute[] {
     return this._sets[setId];

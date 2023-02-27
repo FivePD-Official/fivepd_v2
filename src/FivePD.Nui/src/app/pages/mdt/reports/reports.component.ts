@@ -1,17 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { DefaultSetId, SetId } from '@enums';
-import { Subject, takeUntil } from 'rxjs';
+import { DefaultSetId } from '@enums';
+import { filter, iif, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { UserState } from '@store/user.state';
 import { Store } from '@ngxs/store';
-import { mapAttributesToFields, mapAttributesToGridColumns, mapPageEntities } from '@helpers';
+import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
 import { LocalizationService } from '@services/localization/localization.service';
 import { ModalService } from '@services/modal/modal.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
-import { SidebarComponent } from '../../../components/sidebar/sidebar.component';
 import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
-import { ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
+import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 
 @Component({
   selector: 'app-reports',
@@ -35,24 +34,23 @@ export class ReportsComponent implements OnInit, OnDestroy {
         placement: 'left',
       },
       onClick: () => this._modal.open(ModalFormComponent, {
-          title: 'Nui.Actions.Create',
-          buttons: {
-            cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-            submit: { variant: 'primary', label: 'Nui.Actions.Create' },
-          },
-          fields: mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport)),
-          columns: 2,
-        }).onSuccess(modalRes => {
-          this._looseData.addEntity(DefaultSetId.ArrestReport, {
+        title: 'Nui.Actions.Create',
+        buttons: {
+          cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+          submit: {variant: 'primary', label: 'Nui.Actions.Create'},
+        },
+        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport)),
+        columns: 2,
+      }).result
+        .pipe(
+          filter(res => res.success),
+          switchMap(res => this._looseData.addEntity(DefaultSetId.ArrestReport, {
             DepartmentId: this.user!.DepartmentId,
             DateOfSubmit: new Date(),
-            ...modalRes.value!,
-          }).subscribe(res => {
-            if (res.Status) {
-              this.getArrestReports();
-            }
-          });
-        })
+            ...res.value!,
+          })),
+          filter(res => res.Status)
+        ).subscribe(() => this.getArrestReports())
     }
   ];
   arrestReportCollation: Collation = {
@@ -66,7 +64,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private _looseData: LooseDataService,
     private _localization: LocalizationService,
     private _modal: ModalService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this._store.select(UserState).pipe(
@@ -84,7 +83,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   getArrestReports(): void {
     this._looseData.getEntities(DefaultSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
-      this.arrestReports = mapPageEntities(wrapper.page);
+      this.arrestReports = wrapper.page;
       this.arrestReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
           index: 1,
@@ -109,51 +108,49 @@ export class ReportsComponent implements OnInit, OnDestroy {
                 this._modal.open(ModalEntityViewComponent, {
                   title: 'Nui.Labels.ArrestReport',
                   columns: 2,
-                }, new Map<any, any>().set(ENTITY, entity));
+                }, new Map().set(ENTITY, entity).set(ATTRIBUTES, wrapper.attributes));
               }
             },
             {
               type: 'button',
               label: this._localization.translate('Nui.Actions.Edit'),
               show: () => this.user?.Admin ?? false,
-              onClick: item => this._looseData.getEntity(DefaultSetId.ArrestReport, item.Id).subscribe(newItem => this._modal.open(ModalFormComponent, {
+              onClick: entity => {
+                this._modal.open(ModalFormComponent, {
                     title: 'Nui.Actions.Edit',
                     buttons: {
-                      cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-                      submit: { variant: 'primary', label: 'Nui.Actions.Save' },
+                      cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+                      submit: {variant: 'primary', label: 'Nui.Actions.Save'},
                     },
-                    fields: mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport), newItem.entity),
                     columns: 2,
-                  }).onSuccess(modalRes => {
-                    this._looseData.editEntity(DefaultSetId.ArrestReport, newItem.entity.Id, {
-                      ...newItem.entity,
-                      ...modalRes.value!,
-                    }).subscribe(res => {
-                      if (res.Status) {
-                        this.getArrestReports();
-                      }
-                    });
-                  })
-                )
+                    fields: newEntity => mapAttributesToFields(this._looseData.getSetAttributes(entity.SetId), newEntity)
+                  }, new Map().set(ENTITY, entity)
+                ).result
+                  .pipe(
+                    filter(res => res.success),
+                    switchMap(res => this._looseData.editEntity(DefaultSetId.ArrestReport, entity.Id, {...entity, ...res.value!})),
+                    filter(res => res.Status),
+                  )
+                  .subscribe(() => this.getArrestReports());
+              }
             },
             {
               type: 'button',
               label: this._localization.translate('Nui.Actions.Delete'),
               show: () => this.user?.Admin ?? false,
               onClick: item => this._modal.open(ModalFormComponent, {
-                  title: 'Nui.Labels.DeleteArrestReportTitle',
-                  description: this._localization.translate('Nui.Labels.DeleteArrestReportDescription'),
-                  buttons: {
-                    cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-                    submit: { variant: 'danger', label: 'Nui.Actions.Delete' },
-                  },
-                }).onSuccess(() => {
-                  this._looseData.deleteEntity(DefaultSetId.ArrestReport, item.Id).subscribe(res => {
-                    if (res.Status) {
-                      this.getArrestReports();
-                    }
-                  })
-                })
+                title: 'Nui.Labels.DeleteArrestReportTitle',
+                description: this._localization.translate('Nui.Labels.DeleteArrestReportDescription'),
+                buttons: {
+                  cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+                  submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+                },
+              }).result
+                .pipe(
+                  filter(res => res.success),
+                  switchMap(() => this._looseData.deleteEntity(DefaultSetId.ArrestReport, item.Id)),
+                  filter(res => res.Status),
+                ).subscribe(() => this.getArrestReports())
             }
           ],
         }

@@ -1,6 +1,6 @@
 <app-dynamic-form
-  *ngIf="modalRef.options.fields?.length"
-  [formFields]="modalRef.options.fields!"
+  *ngIf="fields.length"
+  [formFields]="fields"
   [limitWidth]="false"
   (onSubmit)="submit($event)"
   [columns]="modalRef.options.columns || 1">
@@ -17,7 +17,7 @@
     </div>
   </div>
 </app-dynamic-form>
-<div *ngIf="!modalRef.options.fields?.length" class="buttons-wrapper">
+<div *ngIf="!fields.length" class="buttons-wrapper">
   <div class="buttons">
     <app-button
       [variant]="modalRef.options.buttons?.cancel?.variant ?? 'secondary'"

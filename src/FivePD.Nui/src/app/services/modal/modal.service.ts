@@ -21,7 +21,7 @@ export class ModalService {
     modalComponent.childComponentType = componentType;
     modalComponent.title = options.title;
     modalComponent.description = options.description || '';
-    modalComponent.fields = options.fields || [];
+    modalComponent.fields = options.fields;
     modalComponent.buttons = options.buttons || {
       cancel: { variant: 'secondary', label: '' },
       submit: { variant: 'secondary', label: '' },

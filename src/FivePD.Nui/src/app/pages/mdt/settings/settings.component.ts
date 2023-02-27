@@ -1,24 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  AttributeDataType,
-  Button,
-  Checkbox,
-  Collation,
-  Column,
-  Dropdown,
-  Page,
-  SetAttribute,
-  TextInput,
-  User
-} from '@models';
+import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { DefaultSetId, SetId } from '@enums';
+import { DefaultSetId } from '@enums';
 import { ModalService } from '@services/modal/modal.service';
 import { UserState, UserStateModel } from '@store/user.state';
-import { Subject, takeUntil } from 'rxjs';
+import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { LocalizationService } from '@services/localization/localization.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
+import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
 
 @Component({
   selector: 'app-settings',
@@ -46,12 +36,18 @@ export class SettingsComponent implements OnInit {
       show: () => true,
       valueResolver: attr => {
         switch (attr.DataType) {
-          case AttributeDataType.ShortString: return this._localization.translate('Nui.Labels.ShortString');
-          case AttributeDataType.LongString: return this._localization.translate('Nui.Labels.LongString');
-          case AttributeDataType.Integer: return this._localization.translate('Nui.Labels.WholeNumber');
-          case AttributeDataType.Bool: return this._localization.translate('Nui.Labels.Checkbox');
-          case AttributeDataType.Date: return this._localization.translate('Nui.Labels.Date');
-          default: return '-';
+          case AttributeDataType.ShortString:
+            return this._localization.translate('Nui.Labels.ShortString');
+          case AttributeDataType.LongString:
+            return this._localization.translate('Nui.Labels.LongString');
+          case AttributeDataType.Integer:
+            return this._localization.translate('Nui.Labels.WholeNumber');
+          case AttributeDataType.Bool:
+            return this._localization.translate('Nui.Labels.Checkbox');
+          case AttributeDataType.Date:
+            return this._localization.translate('Nui.Labels.Date');
+          default:
+            return '-';
         }
       },
     },
@@ -76,78 +72,24 @@ export class SettingsComponent implements OnInit {
           onClick: item => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.EditAttributeTitle',
             buttons: {
-              cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-              submit: { variant: 'primary', label: 'Nui.Actions.Save' },
+              cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+              submit: {variant: 'primary', label: 'Nui.Actions.Save'},
             },
-            fields: [
-              new TextInput({
-                key: 'Name',
-                label: 'Name',
-                required: true,
-                value: item.Name
-              }),
-              new Dropdown({
-                key: 'DataType',
-                label: 'Type',
-                required: true,
-                readonly: true,
-                dropdownOptions: {
-                  size: 'normal',
-                  label: this._localization.translate('Nui.Labels.Type'),
-                  selectedItemResolver: itemKey => item.DataType === itemKey,
-                  items: [
-                    { key: AttributeDataType.ShortString, label: this._localization.translate('Nui.Labels.ShortString') },
-                    { key: AttributeDataType.LongString, label: this._localization.translate('Nui.Labels.LongString') },
-                    { key: AttributeDataType.Integer, label: this._localization.translate('Nui.Labels.WholeNumber') },
-                    { key: AttributeDataType.Bool, label: this._localization.translate('Nui.Labels.Checkbox') },
-                    { key: AttributeDataType.Date, label: this._localization.translate('Nui.Labels.Date') },
-                  ]
-                }
-              }),
-              new TextInput({
-                key: 'Label',
-                label: this._localization.translate('Nui.Labels.Label'),
-                required: true,
-                value: item.Label
-              }),
-              new TextInput({
-                key: 'HelpLabel',
-                label: this._localization.translate('Nui.Labels.HelpLabel'),
-                required: false,
-                value: item.HelpLabel
-              }),
-              new TextInput({
-                key: 'Placeholder',
-                label: this._localization.translate('Nui.Labels.Placeholder'),
-                required: false,
-                value: item.Placeholder
-              }),
-              new Checkbox({
-                key: 'Required',
-                label: this._localization.translate('Nui.Labels.Required'),
-                value: item.Required
-              }),
-              new Checkbox({
-                key: 'ShowInGrid',
-                label: this._localization.translate('Nui.Labels.ShowInGrid'),
-                value: item.ShowInGrid
-              }),
-            ]
-          }).onSuccess(modalRes => {
-            this._looseData.editSetAttribute(DefaultSetId.ArrestReport, {
-              Id: item.Id,
-              Name: modalRes.value!['Name'],
-              Label: modalRes.value!['Label'],
-              HelpLabel: modalRes.value!['HelpLabel'],
-              Placeholder: modalRes.value!['Placeholder'],
-              Required: modalRes.value!['Required'],
-              ShowInGrid: modalRes.value!['ShowInGrid'],
-            }).subscribe(res => {
-              if (res.Status) {
-                this.getArrestReportAttributes();
-              }
-            });
-          })
+            fields: () => createAttributesFormFields(this._localization, item)
+          }).result
+            .pipe(
+              filter(res => res.success),
+              switchMap(res => this._looseData.editSetAttribute(DefaultSetId.ArrestReport, {
+                Id: item.Id,
+                Name: res.value['Name'],
+                Label: res.value['Label'],
+                HelpLabel: res.value['HelpLabel'],
+                Placeholder: res.value['Placeholder'],
+                Required: res.value['Required'],
+                ShowInGrid: res.value['ShowInGrid'],
+              })),
+              filter(res => res.Status)
+            ).subscribe(() => this.getArrestReportAttributes())
         },
         {
           type: 'button',
@@ -155,19 +97,20 @@ export class SettingsComponent implements OnInit {
           show: item => item.AddonId === 'admin',
           onClick: item => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.DeleteAttributeTitle',
-            description: this._localization.translate('Nui.Labels.DeleteAttributeDescription', { attribute: item.Name }),
+            description: this._localization.translate('Nui.Labels.DeleteAttributeDescription', {attribute: item.Name}),
             buttons: {
-              cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-              submit: { variant: 'danger', label: 'Nui.Actions.Delete' },
+              cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+              submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
             },
-          }).onSuccess(() => {
-            this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id).subscribe(res => {
-              if (res.Status) {
-                this.arrestReportAttributesCollation.Page = 1;
-                this.getArrestReportAttributes();
-              }
-            });
-          })
+          }).result
+            .pipe(
+              filter(res => res.success),
+              switchMap(() => this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id)),
+              filter(res => res.Status),
+            ).subscribe(() => {
+              this.arrestReportAttributesCollation.Page = 1;
+              this.getArrestReportAttributes();
+            })
         }
       ]
     }
@@ -181,69 +124,27 @@ export class SettingsComponent implements OnInit {
         this._modal.open(ModalFormComponent, {
           title: 'Nui.Actions.CreateAttribute',
           buttons: {
-            cancel: { variant: 'secondary', label: 'Nui.Actions.Cancel' },
-            submit: { variant: 'primary', label: 'Nui.Actions.Create' },
+            cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+            submit: {variant: 'primary', label: 'Nui.Actions.Create'},
           },
-          fields: [
-            new TextInput({
-              key: 'Name',
-              label: this._localization.translate('Nui.Labels.Name'),
-              required: true,
-            }),
-            new Dropdown({
-              key: 'DataType',
-              label: this._localization.translate('Nui.Labels.Type'),
-              required: true,
-              dropdownOptions: {
-                size: 'normal',
-                label: this._localization.translate('Nui.Labels.Type'),
-                items: [
-                  { key: AttributeDataType.ShortString, label: this._localization.translate('Nui.Labels.ShortString') },
-                  { key: AttributeDataType.LongString, label: this._localization.translate('Nui.Labels.LongString') },
-                  { key: AttributeDataType.Integer, label: this._localization.translate('Nui.Labels.WholeNumber') },
-                  { key: AttributeDataType.Bool, label: this._localization.translate('Nui.Labels.Checkbox') },
-                  { key: AttributeDataType.Date, label: this._localization.translate('Nui.Labels.Date') },
-                ]
-              }
-            }),
-            new TextInput({
-              key: 'Label',
-              label: this._localization.translate('Nui.Labels.Label'),
-              required: true,
-            }),
-            new TextInput({
-              key: 'HelpLabel',
-              label: this._localization.translate('Nui.Labels.HelpLabel'),
-              required: false,
-            }),
-            new TextInput({
-              key: 'Placeholder',
-              label: this._localization.translate('Nui.Labels.Placeholder'),
-              required: false,
-            }),
-            new Checkbox({
-              key: 'Required',
-              label: this._localization.translate('Nui.Labels.Required'),
-            }),
-            new Checkbox({
-              key: 'ShowInGrid',
-              label: this._localization.translate('Nui.Labels.ShowInGrid'),
-            }),
-          ]
-        }).onSuccess(modalRes => {
-          this._looseData.addSetAttribute(DefaultSetId.ArrestReport, {
-            Name: modalRes.value!['Name'],
-            DataType: modalRes.value!['DataType'],
-            Label: modalRes.value!['Label'],
-            HelpLabel: modalRes.value!['HelpLabel'],
-            Placeholder: modalRes.value!['Placeholder'],
-            Required: modalRes.value!['Required'],
-            ShowInGrid: modalRes.value!['ShowInGrid'],
-          }).subscribe(() => {
+          fields: () => createAttributesFormFields(this._localization)
+        }).result
+          .pipe(
+            filter(res => res.success),
+            switchMap(res => this._looseData.addSetAttribute(DefaultSetId.ArrestReport, {
+              Name: res.value['Name'],
+              DataType: res.value['DataType'],
+              Label: res.value['Label'],
+              HelpLabel: res.value['HelpLabel'],
+              Placeholder: res.value['Placeholder'],
+              Required: res.value['Required'],
+              ShowInGrid: res.value['ShowInGrid'],
+            })),
+            filter(res => res.Status),
+          ).subscribe(() => {
             this.arrestReportAttributesCollation.Page = 1;
             this.getArrestReportAttributes();
           })
-        })
       }
     }
   ];
@@ -253,7 +154,8 @@ export class SettingsComponent implements OnInit {
     private _modal: ModalService,
     private _localization: LocalizationService,
     private _store: Store,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this._store.select(UserState).pipe(

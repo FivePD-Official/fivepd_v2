@@ -5,6 +5,7 @@ import { FormInputBase } from './form';
 import { ModalComponent } from '../components/modal/modal.component';
 import { filter, Observable, Subject } from 'rxjs';
 import { ButtonVariants } from './button';
+import { LooseDataEntity, LooseDataEntityWrapper, MappedLooseDataEntity } from './entities';
 
 interface ModalButton {
   variant: ButtonVariants;
@@ -14,7 +15,7 @@ interface ModalButton {
 export interface ModalOptions {
   title: Paths<Localization>;
   description?: string;
-  fields?: FormInputBase<any>[];
+  fields?: (entity?: MappedLooseDataEntity) => FormInputBase<any>[];
   columns?: number;
   buttons?: {
     cancel: ModalButton;
@@ -39,13 +40,6 @@ export class ModalRef {
 
   get result(): Observable<ModalResponse> {
     return this.result$;
-  }
-
-  onSuccess(handler: (response: ModalResponse) => void): ModalRef {
-    this.result$.pipe(
-      filter(response => response.success),
-    ).subscribe(response => handler(response))
-    return this;
   }
 
   close(result: ModalResponse): void {

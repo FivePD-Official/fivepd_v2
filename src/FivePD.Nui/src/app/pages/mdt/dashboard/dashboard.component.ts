@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { Button, Collation, Column, Department, NumberInput, Page, TextInput, User } from '@models';
-import { GenericNameValidator } from '@validators/generic-name-validator';
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
 import { ModalService } from '@services/modal/modal.service';
 import { Select } from '@ngxs/store';
 import { UserState } from '@store/user.state';
-import { Observable } from 'rxjs';
+import { filter, Observable, switchMap } from 'rxjs';
 import { UserService } from '@services/user/user.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
+import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
+import { CustomValidators } from '../../../helpers/validators';
 
 @Component({
   selector: 'app-dashboard',
@@ -66,7 +67,7 @@ export class DashboardComponent implements OnInit {
           disabled: () => false,
           onClick: department => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.DeleteDepartmentTitle',
-            description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', { department: `<b>${department.Name}</b>` }),
+            description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', {department: `<b>${department.Name}</b>`}),
             buttons: {
               cancel: {
                 variant: 'secondary',
@@ -77,14 +78,15 @@ export class DashboardComponent implements OnInit {
                 label: 'Nui.Actions.Delete',
               },
             },
-          }).onSuccess(() => {
-            this._department.deleteDepartment(department.Id).subscribe(res => {
-              if (res.Status) {
-                this.getDepartments();
-                this._userService.refreshData();
-              }
-            });
-          })
+          }).result
+            .pipe(
+              filter(res => res.success),
+              switchMap(() => this._department.deleteDepartment(department.Id)),
+              filter(res => res.Status),
+            ).subscribe(() => {
+              this.getDepartments();
+              this._userService.refreshData();
+            })
         },
       ]
     })
@@ -95,7 +97,8 @@ export class DashboardComponent implements OnInit {
     private _localization: LocalizationService,
     private _modal: ModalService,
     private _userService: UserService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.user$.subscribe(user => this.user = user);
@@ -116,42 +119,20 @@ export class DashboardComponent implements OnInit {
   tryCreateDepartment(): void {
     this._modal.open(ModalFormComponent, {
       title: 'Nui.Actions.CreateDepartment',
-      fields: [
+      fields: () => [
         new TextInput({
           key: 'Name',
           required: true,
           label: 'Nui.Labels.Name',
-          asyncValidators: [GenericNameValidator.get((value) => this._department.checkIfDepartmentNameTaken(value))],
+          asyncValidators: [CustomValidators.nameShouldNotBeTaken((value) => this._department.checkIfDepartmentNameTaken(value))],
         }),
         new TextInput({
           key: 'Callsign',
           label: 'Nui.Labels.Callsign',
           helpLabel: 'Nui.Labels.CallsignHelpLabel',
-          validators: [Validators.pattern('^[a-zA-Z]+$')]
+          validators: [CustomValidators.callsign]
         }),
-        new TextInput({
-          key: 'CallsignFormat',
-          required: true,
-          label: 'Nui.Labels.CallsignFormat',
-          helpLabel: `
-            ${this._localization.translate('Nui.Labels.CallsignFormatHelpLabel')} ${this._localization.translate('Nui.Labels.AvailableCharacters')}: <br/>
-            <table>
-              <tr>
-                <td><b>L</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Letter')})<td>
-              </tr>
-              <tr>
-                <td><b>N</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Number')})<td>
-              </tr>
-              <tr>
-                <td><b>-</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Dash')})<td>
-              </tr>
-            </table>
-          `,
-          validators: [Validators.pattern('^[NL0-9-*]{1,10}$')],
-        }),
+        createDepartmentCallsignFormatInputField(this._localization),
         new NumberInput({
           key: 'MaxUsers',
           required: true,
@@ -173,12 +154,11 @@ export class DashboardComponent implements OnInit {
           label: 'Nui.Actions.Create'
         }
       }
-    }).onSuccess(modalRes => {
-      this._department.createDepartment(modalRes.value!).subscribe(res => {
-        if (res.Status) {
-          this.getDepartments();
-        }
-      });
-    })
+    }).result
+      .pipe(
+        filter(res => res.success),
+        switchMap(res => this._department.createDepartment(res.value)),
+        filter(res => res.Status),
+      ).subscribe(() => this.getDepartments())
   }
 }
