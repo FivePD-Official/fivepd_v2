@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
+import { ActionResponse, Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DefaultSetId } from '@enums';
-import { filter, iif, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { filter, finalize, iif, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { UserState } from '@store/user.state';
 import { Store } from '@ngxs/store';
 import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
@@ -49,7 +49,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
             DateOfSubmit: new Date(),
             ...res.value!,
           })),
-          filter(res => res.Status)
+          this._modal.handleResponse()
         ).subscribe(() => this.getArrestReports())
     }
   ];
@@ -129,7 +129,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
                   .pipe(
                     filter(res => res.success),
                     switchMap(res => this._looseData.editEntity(DefaultSetId.ArrestReport, entity.Id, {...entity, ...res.value!})),
-                    filter(res => res.Status),
+                    this._modal.handleResponse(),
                   )
                   .subscribe(() => this.getArrestReports());
               }
@@ -149,7 +149,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
                 .pipe(
                   filter(res => res.success),
                   switchMap(() => this._looseData.deleteEntity(DefaultSetId.ArrestReport, item.Id)),
-                  filter(res => res.Status),
+                  this._modal.handleResponse()
                 ).subscribe(() => this.getArrestReports())
             }
           ],

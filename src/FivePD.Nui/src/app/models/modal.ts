@@ -50,7 +50,6 @@ export class ModalRef {
 
   close(result: ModalResponse): void {
     this.result$.next(result);
-    this.result$.complete();
   }
 
   startLoading(label: string): void {

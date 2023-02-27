@@ -36,6 +36,7 @@
             *ngIf="modalRef.options.buttons?.submit"
             [variant]="modalRef.options.buttons?.submit?.variant ?? 'primary'"
             [label]="modalRef.options.buttons?.submit?.label ?? 'Nui.Actions.Save' | translate"
+            [disabled]="modalRef.loading"
             (onClick)="submit()"/>
         </div>
       </div>

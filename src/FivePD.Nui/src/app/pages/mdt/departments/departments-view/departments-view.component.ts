@@ -105,7 +105,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
             Name: res.value['Name'],
             Permission: res.value['Permission']
           })),
-          filter(res => res.Status),
+          this._modal.handleResponse()
         ).subscribe(() => this.getRanks(true))
     }
   ];
@@ -143,7 +143,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
               .pipe(
                 filter(res => res.success),
                 switchMap(() => this._departmentService.deleteRank(rank.Id)),
-                filter(res => res.Status),
+                this._modal.handleResponse()
               ).subscribe(() => this.getRanks(true))
           }
         },
@@ -188,7 +188,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
                   Name: res.value!['Name'],
                   Permission: res.value!['Permission']
                 })),
-                filter(res => res.Status),
+                this._modal.handleResponse()
               ).subscribe(() => this.getRanks(true))
           }
         },
@@ -286,7 +286,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
             DepartmentId: this.department?.Id,
             Name: res.value['Name']
           })),
-          filter(res => res.Status),
+          this._modal.handleResponse()
         ).subscribe(() => this.getDivisions(true))
     }
   ];
@@ -316,7 +316,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
             .pipe(
               filter(res => res.success),
               switchMap(() => this._departmentService.deleteDivision(division.Id)),
-              filter(res => res.Status)
+              this._modal.handleResponse()
             ).subscribe(() => this.getDivisions(true))
         },
         {
@@ -345,7 +345,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
                   DivisionId: division.Id,
                   Name: res.value['Name'],
                 })),
-                filter(res => res.Status),
+                this._modal.handleResponse()
               ).subscribe(() => this.getDivisions(true))
           }
         }
@@ -572,7 +572,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         key: 'Callsign',
         label: 'Nui.Labels.Callsign',
         helpLabel: 'Nui.Labels.CallsignHelpLabel',
-        validators: [CustomValidators.callsign],
+        validators: [CustomValidators.callsign()],
         value: this.department.Callsign,
       }),
       createDepartmentCallsignFormatInputField(this._localization, this.department),

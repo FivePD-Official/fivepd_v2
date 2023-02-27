@@ -83,7 +83,14 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   submit(): void {
     if (this.childComponentType === ModalFormComponent) {
-      this.dynamicFormComponent?.internalOnSubmit();
+      if (this.dynamicFormComponent?.form) {
+        this.dynamicFormComponent?.internalOnSubmit();
+      } else {
+        this.modalRef.close({
+          success: true,
+          value: {},
+        });
+      }
     } else {
       this.modalRef.close({
         success: true,

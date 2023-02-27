@@ -75,7 +75,7 @@ export class SettingsComponent implements OnInit {
               cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
               submit: {variant: 'primary', label: 'Nui.Actions.Save'},
             },
-            fields: () => createAttributesFormFields(this._localization, item)
+            fields: () => createAttributesFormFields(this._localization, item),
           }).result
             .pipe(
               filter(res => res.success),
@@ -88,7 +88,7 @@ export class SettingsComponent implements OnInit {
                 Required: res.value['Required'],
                 ShowInGrid: res.value['ShowInGrid'],
               })),
-              filter(res => res.Status)
+              this._modal.handleResponse()
             ).subscribe(() => this.getArrestReportAttributes())
         },
         {
@@ -106,7 +106,7 @@ export class SettingsComponent implements OnInit {
             .pipe(
               filter(res => res.success),
               switchMap(() => this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id)),
-              filter(res => res.Status),
+              this._modal.handleResponse()
             ).subscribe(() => {
               this.arrestReportAttributesCollation.Page = 1;
               this.getArrestReportAttributes();
@@ -140,7 +140,7 @@ export class SettingsComponent implements OnInit {
               Required: res.value['Required'],
               ShowInGrid: res.value['ShowInGrid'],
             })),
-            filter(res => res.Status),
+            this._modal.handleResponse()
           ).subscribe(() => {
             this.arrestReportAttributesCollation.Page = 1;
             this.getArrestReportAttributes();

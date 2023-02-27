@@ -1,4 +1,15 @@
-import { AfterViewInit, Component, EventEmitter, Inject, OnInit, Optional, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Inject,
+  OnInit,
+  Optional,
+  Output,
+  ViewChild
+} from '@angular/core';
 import { FormInputBase, FormSubmitEvent, MappedLooseDataEntity, ModalRef } from '@models';
 import { ENTITY } from '../modal-entity-view/entity-token';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
@@ -8,7 +19,6 @@ import { tap } from 'rxjs';
 @Component({
   selector: 'app-modal-form',
   templateUrl: './modal-form.component.html',
-  styleUrls: ['./modal-form.component.sass']
 })
 export class ModalFormComponent implements OnInit, AfterViewInit {
 
@@ -43,6 +53,8 @@ export class ModalFormComponent implements OnInit, AfterViewInit {
     }
 
     this.modalRef.startLoading('Updating...');
+
+    // TODO: Refactor to load this observable from modal options
     this.looseDataService.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id)
       .pipe(
         tap(() => this.modalRef.stopLoading())
@@ -53,6 +65,7 @@ export class ModalFormComponent implements OnInit, AfterViewInit {
   }
 
   submit(event?: FormSubmitEvent): void {
+    this.modalRef.startLoading('Loading...');
     this.modalRef.close({
       success: true,
       value: event?.value ?? {},

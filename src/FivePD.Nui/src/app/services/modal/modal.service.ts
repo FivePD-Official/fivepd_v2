@@ -1,18 +1,22 @@
 import { ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type } from '@angular/core';
-import { ModalOptions, ModalRef } from '@models';
+import { ActionResponse, ModalOptions, ModalRef, ModalResponse } from '@models';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ModalInjector } from '@services/modal/modal-injector';
 import { EXTRA_OBJECTS_TO_INJECT } from '../../components/modal/extra-objects-token';
+import { filter, MonoTypeOperatorFunction, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModalService {
 
+  modalRef?: ModalRef;
+
   constructor(
     private _appRef: ApplicationRef,
     private _injector: EnvironmentInjector
-  ) { }
+  ) {
+  }
 
   public open(componentType: Type<any>, options: ModalOptions, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef {
     const modalRef = this.appendModalComponentToMainView(options, extraObjectsToInject);
@@ -23,12 +27,28 @@ export class ModalService {
     modalComponent.description = options.description || '';
     modalComponent.fields = options.fields;
     modalComponent.buttons = options.buttons || {
-      cancel: { variant: 'secondary', label: '' },
-      submit: { variant: 'secondary', label: '' },
+      cancel: {variant: 'secondary', label: ''},
+      submit: {variant: 'secondary', label: ''},
     };
     modalComponent.columns = options.columns || 1;
 
+    this.modalRef = modalRef;
+
     return modalRef;
+  }
+
+  public handleResponse(): MonoTypeOperatorFunction<ActionResponse> {
+    return source => {
+      return source.pipe(
+        tap(() => this.modalRef?.stopLoading()),
+        filter(res => res.Status),
+        tap(() => {
+          if (this.modalRef) {
+            this.removeModalComponentFromMdtView(this.modalRef.modalComponentRef)
+          }
+        })
+      )
+    }
   }
 
   private appendModalComponentToMainView(options: ModalOptions, extraObjectsToInject: Map<any, any>): ModalRef {
@@ -53,8 +73,10 @@ export class ModalService {
 
     modalRef.modalComponentRef = componentRef;
 
-    modalRef.result.subscribe(() => {
-      this.removeModalComponentFromMdtView(modalRef.modalComponentRef);
+    modalRef.result.subscribe(res => {
+      if (!res.success) {
+        this.removeModalComponentFromMdtView(modalRef.modalComponentRef);
+      }
     });
 
     return modalRef;

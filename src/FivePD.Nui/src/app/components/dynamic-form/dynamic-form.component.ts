@@ -32,8 +32,29 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.columnsGridStyle = `1fr / repeat(${this.columns}, 1fr)`;
 
-    const group: Record<string, FormControl | FormGroup> = {};
+    this.createForm();
+    this.createColumns();
 
+    this.originalFormValue = this.form.value;
+
+    if (this.disableSubmitWithOriginalValue) {
+      this.form.valueChanges.subscribe(() => {
+        if (deepEqual(this.originalFormValue, this.form.value)) {
+          this.form.markAsPristine();
+        } else {
+          this.form.markAsDirty();
+        }
+      });
+    }
+  }
+
+  ngOnChanges(): void {
+    this.createForm();
+    this.createColumns();
+  }
+
+  createForm(): void {
+    const group: Record<string, FormControl | FormGroup> = {};
     this.formFields.forEach(field => {
       let formControl;
       if (field.type === 'checkboxGroup') {
@@ -70,23 +91,6 @@ export class DynamicFormComponent implements OnInit, OnChanges {
       group[field.key] = formControl;
     });
     this.form = new FormGroup(group);
-    this.createColumns();
-
-    this.originalFormValue = this.form.value;
-
-    if (this.disableSubmitWithOriginalValue) {
-      this.form.valueChanges.subscribe(() => {
-        if (deepEqual(this.originalFormValue, this.form.value)) {
-          this.form.markAsPristine();
-        } else {
-          this.form.markAsDirty();
-        }
-      });
-    }
-  }
-
-  ngOnChanges(): void {
-    this.createColumns();
   }
 
   createColumns(): void {

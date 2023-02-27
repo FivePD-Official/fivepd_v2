@@ -24,7 +24,7 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
                 </tr>
               </table>
             `,
-    validators: [CustomValidators.callsignFormat],
+    validators: [CustomValidators.callsignFormat()],
     value: value?.CallsignFormat,
   });
 }

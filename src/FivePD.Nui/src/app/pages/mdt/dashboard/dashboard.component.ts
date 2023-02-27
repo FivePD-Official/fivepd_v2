@@ -82,7 +82,7 @@ export class DashboardComponent implements OnInit {
             .pipe(
               filter(res => res.success),
               switchMap(() => this._department.deleteDepartment(department.Id)),
-              filter(res => res.Status),
+              this._modal.handleResponse(),
             ).subscribe(() => {
               this.getDepartments();
               this._userService.refreshData();
@@ -124,13 +124,13 @@ export class DashboardComponent implements OnInit {
           key: 'Name',
           required: true,
           label: 'Nui.Labels.Name',
-          asyncValidators: [CustomValidators.nameShouldNotBeTaken((value) => this._department.checkIfDepartmentNameTaken(value))],
+          // asyncValidators: [CustomValidators.nameShouldNotBeTaken((value) => this._department.checkIfDepartmentNameTaken(value))],
         }),
         new TextInput({
           key: 'Callsign',
           label: 'Nui.Labels.Callsign',
           helpLabel: 'Nui.Labels.CallsignHelpLabel',
-          validators: [CustomValidators.callsign]
+          validators: [CustomValidators.callsign()]
         }),
         createDepartmentCallsignFormatInputField(this._localization),
         new NumberInput({
@@ -158,7 +158,7 @@ export class DashboardComponent implements OnInit {
       .pipe(
         filter(res => res.success),
         switchMap(res => this._department.createDepartment(res.value)),
-        filter(res => res.Status),
+        this._modal.handleResponse(),
       ).subscribe(() => this.getDepartments())
   }
 }
