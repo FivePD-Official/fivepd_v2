@@ -4,17 +4,41 @@
        [ngClass]="{ 'w-[30vw]': modalRef.options.columns ? modalRef.options.columns > 1 : false }">
     <div class="mb-4">
       <div class="flex flex-row items-center justify-between">
-        <p class="text-xl font-bold text-zinc-100">{{ title | translate }}</p>
+        <p class="text-2xl font-bold text-zinc-100">{{ title | translate }}</p>
         <button (click)="close()"
-                class="group flex flex-row items-center justify-between p-4 pr-0 rounded-full border-none cursor-pointer">
+                class="group flex flex-row items-center justify-between p-4 py-2 pr-0 rounded-full border-none cursor-pointer">
           <div app-icon
                name="XMark"
                className="h-[22px] text-zinc-400 group-hover:text-white">
           </div>
         </button>
       </div>
-      <p *ngIf="description" class="text-zinc-400 my-2" [innerHtml]="description | safeHtml"></p>
+      <p *ngIf="description" class="text-zinc-400 text-lg mt-0.5" [innerHtml]="description | safeHtml"></p>
     </div>
-    <div class="modal-content" appModalContent #modalContent></div>
+    <div>
+      <div #modalContent></div>
+      <div class="w-full flex flex-row items-center justify-between mt-7">
+        <div *ngIf="modalRef.loading && modalRef.loader; else noLoader"
+        class="flex flex-row items-center gap-3">
+          <div class="w-[20px] h-[20px] rounded-full border-2 border-zinc-600 border-b-zinc-200 animate-spin"></div>
+          <p class="text-zinc-300">{{ modalRef.loader.label }}</p>
+        </div>
+        <ng-template #noLoader>
+          <div></div>
+        </ng-template>
+        <div class="flex flex-row items-center justify-end gap-2.5">
+          <app-button
+            *ngIf="modalRef.options.buttons?.cancel"
+            [variant]="modalRef.options.buttons?.cancel?.variant ?? 'secondary'"
+            [label]="modalRef.options.buttons?.cancel?.label ?? 'Nui.Actions.Cancel' | translate"
+            (onClick)="close()"/>
+          <app-button
+            *ngIf="modalRef.options.buttons?.submit"
+            [variant]="modalRef.options.buttons?.submit?.variant ?? 'primary'"
+            [label]="modalRef.options.buttons?.submit?.label ?? 'Nui.Actions.Save' | translate"
+            (onClick)="submit()"/>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

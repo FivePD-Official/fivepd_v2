@@ -52,6 +52,7 @@ import { ReportsComponent } from './pages/mdt/reports/reports.component';
 import { ModalFormComponent } from './components/modal/modal-form/modal-form.component';
 import { ModalEntityViewComponent } from './components/modal/modal-entity-view/modal-entity-view.component';
 import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
+import { DynamicFormDirective } from './components/dynamic-form/dynamic-form.directive';
 
 @NgModule({
   declarations: [
@@ -84,6 +85,7 @@ import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
     ReportsComponent,
     ModalFormComponent,
     ModalEntityViewComponent,
+    DynamicFormDirective,
   ],
   imports: [
     BrowserModule,

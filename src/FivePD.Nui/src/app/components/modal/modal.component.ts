@@ -13,9 +13,12 @@ import {
   Type,
   ViewChild
 } from '@angular/core';
-import { ModalOptions, ModalRef } from '@models';
+import { FormSubmitEvent, ModalOptions, ModalRef } from '@models';
 import { ModalInjector } from '@services/modal/modal-injector';
 import { EXTRA_OBJECTS_TO_INJECT } from './extra-objects-token';
+import { ModalFormComponent } from './modal-form/modal-form.component';
+import { DynamicFormDirective } from '../dynamic-form/dynamic-form.directive';
+import { DynamicFormComponent } from '../dynamic-form/dynamic-form.component';
 
 type RemoveFocusTrap = () => void;
 
@@ -35,7 +38,7 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
   fields?: ModalOptions['fields'];
   buttons?: ModalOptions['buttons'];
   columns?: ModalOptions['columns'];
-
+  dynamicFormComponent?: DynamicFormComponent;
   @ViewChild('modalContainer') modalContainer!: ElementRef;
   @ViewChild('modalContent') modalContent!: ElementRef;
   removeFocusTrap?: RemoveFocusTrap;
@@ -78,6 +81,17 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
     });
   }
 
+  submit(): void {
+    if (this.childComponentType === ModalFormComponent) {
+      this.dynamicFormComponent?.internalOnSubmit();
+    } else {
+      this.modalRef.close({
+        success: true,
+        value: {},
+      });
+    }
+  }
+
   private loadChildComponent(componentType: Type<any>): void {
     this.extraObjectsToInject ??= new Map();
 
@@ -87,6 +101,11 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
     });
     this.modalContent.nativeElement.appendChild(this.componentRef.location.nativeElement);
     this._appRef.attachView(this.componentRef.hostView);
+    if (componentType === ModalFormComponent) {
+      (this.componentRef.instance as unknown as ModalFormComponent).form.subscribe(form => {
+        this.dynamicFormComponent = form;
+      })
+    }
     this.trapFocus();
   }
 

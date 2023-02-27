@@ -24,8 +24,12 @@ export interface ModalOptions {
 }
 
 export interface ModalResponse {
-  success: boolean;
-  value: Record<string, any>;
+  readonly success: boolean;
+  readonly value: Record<string, any>;
+}
+
+export interface ModalLoader {
+  readonly label: string;
 }
 
 export class ModalRef {
@@ -33,6 +37,8 @@ export class ModalRef {
   private result$ = new Subject<ModalResponse>();
   modalComponentRef!: ComponentRef<ModalComponent>;
   options!: ModalOptions;
+  loader?: ModalLoader;
+  loading = false;
 
   constructor(options: ModalOptions) {
     this.options = options;
@@ -45,5 +51,14 @@ export class ModalRef {
   close(result: ModalResponse): void {
     this.result$.next(result);
     this.result$.complete();
+  }
+
+  startLoading(label: string): void {
+    this.loader = {label};
+    this.loading = true;
+  }
+
+  stopLoading(): void {
+    this.loading = false;
   }
 }

@@ -20,6 +20,8 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   @Input() buttonAlignment: 'left' | 'right' | 'full' = 'right';
   @Input() submitButtonLabel: string = '';
 
+  @Input() showSubmitButton = false;
+
   @Output() onSubmit = new EventEmitter<FormSubmitEvent>();
 
   form!: FormGroup;
