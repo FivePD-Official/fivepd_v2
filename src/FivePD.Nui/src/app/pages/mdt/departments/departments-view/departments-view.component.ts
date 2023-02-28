@@ -29,6 +29,7 @@ import { ModalFormComponent } from '../../../../components/modal/modal-form/moda
 import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
 import { CustomValidators } from '../../../../helpers/validators';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -133,11 +134,10 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
           onClick: rank => {
-            this._modal.open(ModalFormComponent, {
+            this.modalConfirmService.open({
               title: 'Nui.Labels.DeleteRankTitle',
               description: this._localization.translate('Nui.Labels.DeleteRankDescription', {rank: `<b>${rank.Name}</b>`}),
               buttons: {
-                cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                 submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
               },
             }).result
@@ -310,11 +310,10 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
           onClick: division => {
-            this.modalFormService.open({
+            this.modalConfirmService.open({
               title: 'Nui.Labels.DeleteDivisionTitle',
               description: this._localization.translate('Nui.Labels.DeleteDivisionDescription', {division: `<b>${division.Name}</b>`}),
               buttons: {
-                cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                 submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
               },
             }).result
@@ -370,6 +369,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     private _userService: UserService,
     private _modal: ModalService,
     private readonly modalFormService: ModalFormService,
+    private readonly modalConfirmService: ModalConfirmService,
   ) {
   }
 

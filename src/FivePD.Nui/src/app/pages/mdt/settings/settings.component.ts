@@ -10,6 +10,7 @@ import { LocalizationService } from '@services/localization/localization.service
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 
 @Component({
   selector: 'app-settings',
@@ -70,49 +71,52 @@ export class SettingsComponent implements OnInit {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           show: item => item.AddonId === 'admin',
-          onClick: attribute => this.modalFormService.open({
-            title: 'Nui.Labels.EditAttributeTitle',
-            buttons: {
-              cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
-              submit: {variant: 'primary', label: 'Nui.Actions.Save'},
-            },
-            fields: updatedAttribute => createAttributesFormFields(this._localization, updatedAttribute),
-            valueResolver: new ValueResolver<SetAttribute>(attribute, this._looseData.getSetAttribute(DefaultSetId.ArrestReport, attribute.Id))
-          }).result
-            .pipe(
-              filter(res => res.success),
-              switchMap(res => this._looseData.editSetAttribute(DefaultSetId.ArrestReport, {
-                Id: attribute.Id,
-                Name: res.value['Name'],
-                Label: res.value['Label'],
-                HelpLabel: res.value['HelpLabel'],
-                Placeholder: res.value['Placeholder'],
-                Required: res.value['Required'],
-                ShowInGrid: res.value['ShowInGrid'],
-              })),
-              this._modal.handleResponse()
-            ).subscribe(() => this.getArrestReportAttributes())
+          onClick: attribute => {
+            this.modalFormService.open({
+              title: 'Nui.Labels.EditAttributeTitle',
+              buttons: {
+                cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+                submit: {variant: 'primary', label: 'Nui.Actions.Save'},
+              },
+              fields: updatedAttribute => createAttributesFormFields(this._localization, updatedAttribute),
+              valueResolver: new ValueResolver<SetAttribute>(attribute, this._looseData.getSetAttribute(DefaultSetId.ArrestReport, attribute.Id))
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(res => this._looseData.editSetAttribute(DefaultSetId.ArrestReport, {
+                  Id: attribute.Id,
+                  Name: res.value['Name'],
+                  Label: res.value['Label'],
+                  HelpLabel: res.value['HelpLabel'],
+                  Placeholder: res.value['Placeholder'],
+                  Required: res.value['Required'],
+                  ShowInGrid: res.value['ShowInGrid'],
+                })),
+                this._modal.handleResponse()
+              ).subscribe(() => this.getArrestReportAttributes())
+          }
         },
         {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
           show: item => item.AddonId === 'admin',
-          onClick: item => this._modal.open(ModalFormComponent, {
-            title: 'Nui.Labels.DeleteAttributeTitle',
-            description: this._localization.translate('Nui.Labels.DeleteAttributeDescription', {attribute: item.Name}),
-            buttons: {
-              cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
-              submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
-            },
-          }).result
-            .pipe(
-              filter(res => res.success),
-              switchMap(() => this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id)),
-              this._modal.handleResponse()
-            ).subscribe(() => {
+          onClick: item => {
+            this.modalConfirmService.open({
+              title: 'Nui.Labels.DeleteAttributeTitle',
+              description: this._localization.translate('Nui.Labels.DeleteAttributeDescription', {attribute: item.Name}),
+              buttons: {
+                submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+              },
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id)),
+                this._modal.handleResponse()
+              ).subscribe(() => {
               this.arrestReportAttributesCollation.Page = 1;
               this.getArrestReportAttributes();
             })
+          }
         }
       ]
     }
@@ -144,9 +148,9 @@ export class SettingsComponent implements OnInit {
             })),
             this._modal.handleResponse()
           ).subscribe(() => {
-            this.arrestReportAttributesCollation.Page = 1;
-            this.getArrestReportAttributes();
-          })
+          this.arrestReportAttributesCollation.Page = 1;
+          this.getArrestReportAttributes();
+        })
       }
     }
   ];
@@ -155,6 +159,7 @@ export class SettingsComponent implements OnInit {
     private _looseData: LooseDataService,
     private _modal: ModalService,
     private readonly modalFormService: ModalFormService,
+    private readonly modalConfirmService: ModalConfirmService,
     private _localization: LocalizationService,
     private _store: Store,
   ) {

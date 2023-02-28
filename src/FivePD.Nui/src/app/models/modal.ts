@@ -67,6 +67,12 @@ export interface ModalFormOptions<T> extends ModalOptions<T> {
   valueResolver?: ValueResolver<T>;
 }
 
+export interface ModalConfirmOptions<T> extends NonNullable<Omit<ModalOptions<T>, 'columns' | 'buttons'>> {
+  buttons: {
+    submit: ModalButton;
+  };
+}
+
 export interface ModalResponse {
   readonly success: boolean;
   readonly value: Record<string, any>;

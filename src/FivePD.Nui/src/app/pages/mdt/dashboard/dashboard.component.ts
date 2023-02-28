@@ -12,6 +12,7 @@ import { ModalFormComponent } from '../../../components/modal/modal-form/modal-f
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
 import { CustomValidators } from '../../../helpers/validators';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -66,28 +67,23 @@ export class DashboardComponent implements OnInit {
           label: this._localization.translate('Nui.Actions.Delete'),
           show: () => true,
           disabled: () => false,
-          onClick: department => this._modal.open(ModalFormComponent, {
-            title: 'Nui.Labels.DeleteDepartmentTitle',
-            description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', {department: `<b>${department.Name}</b>`}),
-            buttons: {
-              cancel: {
-                variant: 'secondary',
-                label: 'Nui.Actions.Cancel',
+          onClick: department => {
+            this.modalConfirmService.open({
+              title: 'Nui.Labels.DeleteDepartmentTitle',
+              description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', {department: `<b>${department.Name}</b>`}),
+              buttons: {
+                submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
               },
-              submit: {
-                variant: 'danger',
-                label: 'Nui.Actions.Delete',
-              },
-            },
-          }).result
-            .pipe(
-              filter(res => res.success),
-              switchMap(() => this._department.deleteDepartment(department.Id)),
-              this._modal.handleResponse(),
-            ).subscribe(() => {
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._department.deleteDepartment(department.Id)),
+                this._modal.handleResponse(),
+              ).subscribe(() => {
               this.getDepartments();
               this._userService.refreshData();
             })
+          }
         },
       ]
     })
@@ -98,6 +94,7 @@ export class DashboardComponent implements OnInit {
     private _localization: LocalizationService,
     private _modal: ModalService,
     private readonly modalFormService: ModalFormService,
+    private readonly modalConfirmService: ModalConfirmService,
     private _userService: UserService,
   ) {
   }

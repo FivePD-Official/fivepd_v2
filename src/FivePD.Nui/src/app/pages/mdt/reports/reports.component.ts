@@ -12,6 +12,7 @@ import { ModalFormComponent } from '../../../components/modal/modal-form/modal-f
 import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 
 @Component({
   selector: 'app-reports',
@@ -66,6 +67,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private _localization: LocalizationService,
     private _modal: ModalService,
     private readonly modalFormService: ModalFormService,
+    private readonly modalConfirmService: ModalConfirmService,
   ) {
   }
 
@@ -142,11 +144,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
               label: this._localization.translate('Nui.Actions.Delete'),
               show: () => this.user?.Admin ?? false,
               onClick: item => {
-                this._modal.open(ModalFormComponent, {
+                this.modalConfirmService.open({
                   title: 'Nui.Labels.DeleteArrestReportTitle',
                   description: this._localization.translate('Nui.Labels.DeleteArrestReportDescription'),
                   buttons: {
-                    cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                     submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
                   },
                 }).result
