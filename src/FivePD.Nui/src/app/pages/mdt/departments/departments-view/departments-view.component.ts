@@ -23,11 +23,12 @@ import { LocalizationService } from '@services/localization/localization.service
 import { UserState } from '@store/user.state';
 import { filter, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { Select } from '@ngxs/store';
-import { ModalService } from '@services/modal/modal.service';
+import { ModalService } from '@services/modals/modal/modal.service';
 import { UserService } from '@services/user/user.service';
 import { ModalFormComponent } from '../../../../components/modal/modal-form/modal-form.component';
 import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
 import { CustomValidators } from '../../../../helpers/validators';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -59,7 +60,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       label: this._localization.translate('Nui.Actions.CreateRank'),
       show: () => this.user?.Admin ?? false,
       disabled: () => false,
-      onClick: () => this._modal.open(ModalFormComponent, {
+      onClick: () => this.modalFormService.open({
         title: 'Nui.Actions.CreateRank',
         fields: () => [
           new TextInput({
@@ -151,7 +152,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           onClick: rank => {
-            this._modal.open<FormattedRank>(ModalFormComponent, {
+            this.modalFormService.open<FormattedRank>({
               title: 'Nui.Labels.EditRankTitle',
               fields: updatedRank => [
                 new TextInput({
@@ -266,29 +267,31 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       label: this._localization.translate('Nui.Actions.CreateDivision'),
       show: () => this.user?.Admin ?? false,
       disabled: () => false,
-      onClick: () => this._modal.open(ModalFormComponent, {
-        title: 'Nui.Actions.CreateDivision',
-        fields: () => [
-          new TextInput({
-            key: 'Name',
-            label: 'Nui.Labels.Name',
-            placeholder: 'Nui.Labels.Name',
-            required: true,
-          })
-        ],
-        buttons: {
-          cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
-          submit: {variant: 'primary', label: 'Nui.Actions.Create'},
-        },
-      }).result
-        .pipe(
-          filter(res => res.success),
-          switchMap(res => this._departmentService.createDivision({
-            DepartmentId: this.department?.Id,
-            Name: res.value['Name']
-          })),
-          this._modal.handleResponse()
-        ).subscribe(() => this.getDivisions(true))
+      onClick: () => {
+        this.modalFormService.open({
+          title: 'Nui.Actions.CreateDivision',
+          fields: () => [
+            new TextInput({
+              key: 'Name',
+              label: 'Nui.Labels.Name',
+              placeholder: 'Nui.Labels.Name',
+              required: true,
+            })
+          ],
+          buttons: {
+            cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+            submit: {variant: 'primary', label: 'Nui.Actions.Create'},
+          },
+        }).result
+          .pipe(
+            filter(res => res.success),
+            switchMap(res => this._departmentService.createDivision({
+              DepartmentId: this.department?.Id,
+              Name: res.value['Name']
+            })),
+            this._modal.handleResponse()
+          ).subscribe(() => this.getDivisions(true))
+      }
     }
   ];
   divisionsColumns: Column<Division>[] = [
@@ -306,25 +309,27 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Delete'),
-          onClick: division => this._modal.open(ModalFormComponent, {
-            title: 'Nui.Labels.DeleteDivisionTitle',
-            description: this._localization.translate('Nui.Labels.DeleteDivisionDescription', {division: `<b>${division.Name}</b>`}),
-            buttons: {
-              cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
-              submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
-            },
-          }).result
-            .pipe(
-              filter(res => res.success),
-              switchMap(() => this._departmentService.deleteDivision(division.Id)),
-              this._modal.handleResponse()
-            ).subscribe(() => this.getDivisions(true))
+          onClick: division => {
+            this.modalFormService.open({
+              title: 'Nui.Labels.DeleteDivisionTitle',
+              description: this._localization.translate('Nui.Labels.DeleteDivisionDescription', {division: `<b>${division.Name}</b>`}),
+              buttons: {
+                cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+                submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+              },
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._departmentService.deleteDivision(division.Id)),
+                this._modal.handleResponse()
+              ).subscribe(() => this.getDivisions(true))
+          }
         },
         {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           onClick: division => {
-            this._modal.open<Division>(ModalFormComponent, {
+            this.modalFormService.open<Division>({
               title: 'Nui.Labels.EditDivision',
               fields: updatedDivision => [
                 new TextInput({
@@ -363,7 +368,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     private _localization: LocalizationService,
     private _departmentService: DepartmentService,
     private _userService: UserService,
-    private _modal: ModalService
+    private _modal: ModalService,
+    private readonly modalFormService: ModalFormService,
   ) {
   }
 

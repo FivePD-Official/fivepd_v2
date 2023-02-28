@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User, ValueResolver } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DefaultSetId } from '@enums';
-import { ModalService } from '@services/modal/modal.service';
+import { ModalService } from '@services/modals/modal/modal.service';
 import { UserState, UserStateModel } from '@store/user.state';
 import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { LocalizationService } from '@services/localization/localization.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 
 @Component({
   selector: 'app-settings',
@@ -69,7 +70,7 @@ export class SettingsComponent implements OnInit {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           show: item => item.AddonId === 'admin',
-          onClick: attribute => this._modal.open(ModalFormComponent, {
+          onClick: attribute => this.modalFormService.open({
             title: 'Nui.Labels.EditAttributeTitle',
             buttons: {
               cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
@@ -122,7 +123,7 @@ export class SettingsComponent implements OnInit {
       show: () => true,
       disabled: () => false,
       onClick: () => {
-        this._modal.open(ModalFormComponent, {
+        this.modalFormService.open({
           title: 'Nui.Actions.CreateAttribute',
           buttons: {
             cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
@@ -153,6 +154,7 @@ export class SettingsComponent implements OnInit {
   constructor(
     private _looseData: LooseDataService,
     private _modal: ModalService,
+    private readonly modalFormService: ModalFormService,
     private _localization: LocalizationService,
     private _store: Store,
   ) {

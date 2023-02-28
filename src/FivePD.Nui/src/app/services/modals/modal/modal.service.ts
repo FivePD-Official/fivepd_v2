@@ -1,9 +1,9 @@
 import { ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type } from '@angular/core';
-import { ActionResponse, ModalOptions, ModalRef } from '@models';
-import { ModalComponent } from '../../components/modal/modal.component';
-import { ModalInjector } from '@services/modal/modal-injector';
-import { EXTRA_OBJECTS_TO_INJECT } from '../../components/modal/extra-objects-token';
+import { ActionResponse, ModalFormOptions, ModalOptions, ModalRef } from '@models';
 import { filter, MonoTypeOperatorFunction, tap } from 'rxjs';
+import { EXTRA_OBJECTS_TO_INJECT } from '../../../components/modal/extra-objects-token';
+import { ModalInjector } from '@services/modals/modal/modal-injector';
+import { ModalComponent } from '../../../components/modal/modal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -64,14 +64,17 @@ export class ModalService {
 
     modalRef.modalComponentRef = componentRef;
 
-    modalRef.options.valueResolver?.updating
-      .subscribe(updating => {
-        if (updating) {
-          modalRef.startLoading('Updating...');
-        } else {
-          modalRef.stopLoading();
-        }
-      });
+    const valueResolver = (modalRef.options as ModalFormOptions<T>).valueResolver;
+    if (valueResolver) {
+      valueResolver.updating
+        .subscribe(updating => {
+          if (updating) {
+            modalRef.startLoading('Updating...');
+          } else {
+            modalRef.stopLoading();
+          }
+        });
+    }
 
     modalRef.result.subscribe(res => {
       if (!res.success) {

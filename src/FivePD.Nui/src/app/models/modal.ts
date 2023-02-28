@@ -55,13 +55,16 @@ interface ModalButton {
 export interface ModalOptions<T = any> {
   title: Paths<Localization>;
   description?: string;
-  fields?: (entity: T) => FormInputBase<any>[];
-  valueResolver?: ValueResolver<T>;
   columns?: number;
   buttons?: {
     cancel: ModalButton;
     submit: ModalButton;
   };
+}
+
+export interface ModalFormOptions<T> extends ModalOptions<T> {
+  fields?: (entity: T) => FormInputBase<any>[];
+  valueResolver?: ValueResolver<T>;
 }
 
 export interface ModalResponse {

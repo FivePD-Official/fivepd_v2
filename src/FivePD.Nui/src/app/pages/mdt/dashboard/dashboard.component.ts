@@ -3,7 +3,7 @@ import { Button, Collation, Column, Department, NumberInput, Page, TextInput, Us
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
-import { ModalService } from '@services/modal/modal.service';
+import { ModalService } from '@services/modals/modal/modal.service';
 import { Select } from '@ngxs/store';
 import { UserState } from '@store/user.state';
 import { filter, Observable, switchMap } from 'rxjs';
@@ -11,6 +11,7 @@ import { UserService } from '@services/user/user.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
 import { CustomValidators } from '../../../helpers/validators';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -96,6 +97,7 @@ export class DashboardComponent implements OnInit {
     private _department: DepartmentService,
     private _localization: LocalizationService,
     private _modal: ModalService,
+    private readonly modalFormService: ModalFormService,
     private _userService: UserService,
   ) {
   }
@@ -117,7 +119,7 @@ export class DashboardComponent implements OnInit {
   }
 
   tryCreateDepartment(): void {
-    this._modal.open(ModalFormComponent, {
+    this.modalFormService.open({
       title: 'Nui.Actions.CreateDepartment',
       fields: () => [
         new TextInput({

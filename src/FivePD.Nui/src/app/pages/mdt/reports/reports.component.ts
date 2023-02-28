@@ -7,10 +7,11 @@ import { UserState } from '@store/user.state';
 import { Store } from '@ngxs/store';
 import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
 import { LocalizationService } from '@services/localization/localization.service';
-import { ModalService } from '@services/modal/modal.service';
+import { ModalService } from '@services/modals/modal/modal.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 
 @Component({
   selector: 'app-reports',
@@ -33,7 +34,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
         text: this._localization.translate('Nui.Labels.ArrestReportCreationTooltip'),
         placement: 'left',
       },
-      onClick: () => this._modal.open(ModalFormComponent, {
+      onClick: () => this.modalFormService.open({
         title: 'Nui.Actions.Create',
         buttons: {
           cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
@@ -64,6 +65,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private _looseData: LooseDataService,
     private _localization: LocalizationService,
     private _modal: ModalService,
+    private readonly modalFormService: ModalFormService,
   ) {
   }
 
@@ -116,7 +118,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
               label: this._localization.translate('Nui.Actions.Edit'),
               show: () => this.user?.Admin ?? false,
               onClick: entity => {
-                this._modal.open(ModalFormComponent, {
+                this.modalFormService.open({
                     title: 'Nui.Actions.Edit',
                     buttons: {
                       cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
@@ -139,19 +141,21 @@ export class ReportsComponent implements OnInit, OnDestroy {
               type: 'button',
               label: this._localization.translate('Nui.Actions.Delete'),
               show: () => this.user?.Admin ?? false,
-              onClick: item => this._modal.open(ModalFormComponent, {
-                title: 'Nui.Labels.DeleteArrestReportTitle',
-                description: this._localization.translate('Nui.Labels.DeleteArrestReportDescription'),
-                buttons: {
-                  cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
-                  submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
-                },
-              }).result
-                .pipe(
-                  filter(res => res.success),
-                  switchMap(() => this._looseData.deleteEntity(DefaultSetId.ArrestReport, item.Id)),
-                  this._modal.handleResponse()
-                ).subscribe(() => this.getArrestReports())
+              onClick: item => {
+                this._modal.open(ModalFormComponent, {
+                  title: 'Nui.Labels.DeleteArrestReportTitle',
+                  description: this._localization.translate('Nui.Labels.DeleteArrestReportDescription'),
+                  buttons: {
+                    cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
+                    submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+                  },
+                }).result
+                  .pipe(
+                    filter(res => res.success),
+                    switchMap(() => this._looseData.deleteEntity(DefaultSetId.ArrestReport, item.Id)),
+                    this._modal.handleResponse()
+                  ).subscribe(() => this.getArrestReports())
+              }
             }
           ],
         }
