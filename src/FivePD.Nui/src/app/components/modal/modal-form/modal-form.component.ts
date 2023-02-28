@@ -1,17 +1,5 @@
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  Inject,
-  OnDestroy,
-  OnInit,
-  Optional,
-  Output,
-  ViewChild
-} from '@angular/core';
-import { FormInputBase, FormSubmitEvent, MappedLooseDataEntity, ModalFormOptions } from '@models';
-import { ENTITY } from '../modal-entity-view/entity-token';
-import { LooseDataService } from '@services/loose-data/loose-data.service';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { FormInputBase, FormSubmitEvent, ModalFormOptions } from '@models';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
 import { Subject, takeUntil } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
@@ -29,8 +17,6 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     public readonly modalRef: ModalRef,
-    private readonly looseDataService: LooseDataService,
-    @Optional() @Inject(ENTITY) private mappedEntity: MappedLooseDataEntity,
   ) {
   }
 
