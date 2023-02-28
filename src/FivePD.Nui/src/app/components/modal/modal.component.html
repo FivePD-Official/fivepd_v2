@@ -4,7 +4,7 @@
        [ngClass]="{ 'w-[30vw]': modalRef.options.columns ? modalRef.options.columns > 1 : false }">
     <div class="mb-4">
       <div class="flex flex-row items-center justify-between">
-        <p class="text-2xl font-bold text-zinc-100">{{ title | translate }}</p>
+        <p class="text-2xl font-bold text-zinc-100">{{ modalRef.options.title | translate }}</p>
         <button (click)="close()"
                 class="group flex flex-row items-center justify-between p-4 py-2 pr-0 rounded-full border-none cursor-pointer">
           <div app-icon
@@ -13,7 +13,7 @@
           </div>
         </button>
       </div>
-      <p *ngIf="description" class="text-zinc-400 text-lg mt-0.5" [innerHtml]="description | safeHtml"></p>
+      <p *ngIf="modalRef.options.description" class="text-zinc-400 text-lg mt-0.5" [innerHtml]="modalRef.options.description | safeHtml"></p>
     </div>
     <div>
       <div #modalContent></div>

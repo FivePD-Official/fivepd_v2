@@ -4,7 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Inject,
+  Inject, OnDestroy,
   OnInit,
   Optional,
   Output,
@@ -14,14 +14,15 @@ import { FormInputBase, FormSubmitEvent, MappedLooseDataEntity, ModalRef } from 
 import { ENTITY } from '../modal-entity-view/entity-token';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
-import { tap } from 'rxjs';
+import { Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
   selector: 'app-modal-form',
   templateUrl: './modal-form.component.html',
 })
-export class ModalFormComponent implements OnInit, AfterViewInit {
+export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  destroy$ = new Subject<void>();
   fields: FormInputBase<any>[] = [];
   @ViewChild(DynamicFormComponent) dynamicFormComponent?: DynamicFormComponent;
   @Output() form = new EventEmitter();
@@ -41,27 +42,24 @@ export class ModalFormComponent implements OnInit, AfterViewInit {
     this.form.emit(this.dynamicFormComponent);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+  }
+
   populateForm(): void {
     const fields = this.modalRef.options.fields;
     if (!fields) {
       return;
     }
 
-    this.fields = fields(this.mappedEntity);
-    if (!this.mappedEntity) {
-      return;
+    const valueResolver = this.modalRef.options.valueResolver;
+    if (valueResolver) {
+      valueResolver.value
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(v => {
+          this.fields = fields(v);
+        });
     }
-
-    this.modalRef.startLoading('Updating...');
-
-    // TODO: Refactor to load this observable from modal options
-    this.looseDataService.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id)
-      .pipe(
-        tap(() => this.modalRef.stopLoading())
-      )
-      .subscribe(entityWrapper => {
-        this.fields = fields(entityWrapper.entity);
-      });
   }
 
   submit(event?: FormSubmitEvent): void {

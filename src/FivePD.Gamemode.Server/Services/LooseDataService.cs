@@ -410,6 +410,30 @@ namespace FivePD.Gamemode.Server.Services
             return entity;
         }
 
+        [UIEvent(Events.UI.LooseData.GetSetAttribute)]
+        private void GetSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<GetSetAttributeRequest>();
+                var attribute = this._databaseContext.LooseDataAttributes
+                    .AsNoTracking()
+                    .FirstOrDefault(set => set.Id == request.AttributeId);
+
+                if (attribute is null)
+                {
+                    networkCallbackDelegate.Invoke(null);
+                    return;
+                }
+
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(attribute));
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.Invoke(null);
+            }
+        }
+
         [UIEvent(Events.UI.LooseData.GetSetAttributes)]
         private void GetSetAttributesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {

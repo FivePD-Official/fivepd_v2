@@ -28,6 +28,10 @@ export class LooseDataService {
   ) {
   }
 
+  getSetAttribute(setId: SetId, attributeId: number): Observable<SetAttribute> {
+    return this.updateSetAttribute(setId, attributeId);
+  }
+
   getSetAttributes(setId: SetId): SetAttribute[] {
     return this._sets[setId];
   }
@@ -113,6 +117,21 @@ export class LooseDataService {
       SetId: setId,
       Id: id,
     });
+  }
+
+  private updateSetAttribute(setId: SetId, attributeId: number): Observable<SetAttribute> {
+    return this._http.post<SetAttribute>('fivepd:looseData:getSetAttribute', {
+      AttributeId: attributeId,
+    }).pipe(
+      tap(attribute => {
+        if (!Object.entries(this._sets).length) {
+          return;
+        }
+
+        const cachedAttributeIndex = this._sets[setId].findIndex(a => a.Id === attributeId);
+        this._sets[setId][cachedAttributeIndex] = attribute;
+      })
+    );
   }
 
   private updateSetAttributes(setId: SetId): Observable<SetAttribute[]> {
