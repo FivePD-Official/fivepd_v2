@@ -75,7 +75,6 @@ export class SettingsComponent implements OnInit {
             this.modalFormService.open({
               title: 'Nui.Labels.EditAttributeTitle',
               buttons: {
-                cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                 submit: {variant: 'primary', label: 'Nui.Actions.Save'},
               },
               fields: updatedAttribute => createAttributesFormFields(this._localization, updatedAttribute),
@@ -130,7 +129,6 @@ export class SettingsComponent implements OnInit {
         this.modalFormService.open({
           title: 'Nui.Actions.CreateAttribute',
           buttons: {
-            cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
             submit: {variant: 'primary', label: 'Nui.Actions.Create'},
           },
           fields: () => createAttributesFormFields(this._localization)

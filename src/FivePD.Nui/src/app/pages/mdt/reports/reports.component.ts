@@ -38,7 +38,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
       onClick: () => this.modalFormService.open({
         title: 'Nui.Actions.Create',
         buttons: {
-          cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
           submit: {variant: 'primary', label: 'Nui.Actions.Create'},
         },
         fields: () => mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport)),
@@ -123,7 +122,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
                 this.modalFormService.open({
                     title: 'Nui.Actions.Edit',
                     buttons: {
-                      cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                       submit: {variant: 'primary', label: 'Nui.Actions.Save'},
                     },
                     columns: 2,

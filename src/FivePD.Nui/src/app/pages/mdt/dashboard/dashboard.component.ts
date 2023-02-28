@@ -144,14 +144,7 @@ export class DashboardComponent implements OnInit {
         }),
       ],
       buttons: {
-        cancel: {
-          variant: 'secondary',
-          label: 'Nui.Actions.Cancel'
-        },
-        submit: {
-          variant: 'primary',
-          label: 'Nui.Actions.Create'
-        }
+        submit: {variant: 'primary', label: 'Nui.Actions.Create'}
       }
     }).result
       .pipe(

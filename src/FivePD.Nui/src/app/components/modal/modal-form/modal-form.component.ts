@@ -10,7 +10,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { FormInputBase, FormSubmitEvent, MappedLooseDataEntity, ModalRef } from '@models';
+import { FormInputBase, FormSubmitEvent, MappedLooseDataEntity, ModalFormOptions, ModalRef } from '@models';
 import { ENTITY } from '../modal-entity-view/entity-token';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
@@ -47,18 +47,19 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   populateForm(): void {
-    const fields = this.modalRef.options.fields;
+    const { fields, valueResolver } = this.modalRef.options as ModalFormOptions<any>;
     if (!fields) {
       return;
     }
 
-    const valueResolver = this.modalRef.options.valueResolver;
     if (valueResolver) {
       valueResolver.value
         .pipe(takeUntil(this.destroy$))
         .subscribe(v => {
           this.fields = fields(v);
         });
+    } else {
+      this.fields = fields(undefined);
     }
   }
 

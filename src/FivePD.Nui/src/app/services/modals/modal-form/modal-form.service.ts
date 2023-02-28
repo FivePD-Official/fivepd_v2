@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ModalService } from '@services/modals/modal/modal.service';
-import { ModalFormOptions, ModalRef } from '@models';
+import { ModalFormOptions, ModalOptions, ModalRef } from '@models';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 
 @Injectable({
@@ -13,6 +13,6 @@ export class ModalFormService {
   ) { }
 
   open<T>(options: ModalFormOptions<T>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T> {
-    return this.modalService.open<T>(ModalFormComponent, {...options}, extraObjectsToInject);
+    return this.modalService.open<T>(ModalFormComponent, {...options} as ModalOptions, extraObjectsToInject);
   }
 }

@@ -29,13 +29,13 @@
         <div class="flex flex-row items-center justify-end gap-2.5">
           <app-button
             *ngIf="modalRef.options.buttons?.cancel"
-            [variant]="modalRef.options.buttons?.cancel?.variant ?? 'secondary'"
-            [label]="modalRef.options.buttons?.cancel?.label ?? 'Nui.Actions.Cancel' | translate"
+            [variant]="modalRef.options.buttons!.cancel.variant"
+            [label]="modalRef.options.buttons!.cancel.label | translate"
             (onClick)="close()"/>
           <app-button
             *ngIf="modalRef.options.buttons?.submit"
-            [variant]="modalRef.options.buttons?.submit?.variant ?? 'primary'"
-            [label]="modalRef.options.buttons?.submit?.label ?? 'Nui.Actions.Save' | translate"
+            [variant]="modalRef.options.buttons!.submit.variant"
+            [label]="modalRef.options.buttons!.submit.label | translate"
             [disabled]="modalRef.loading"
             (onClick)="submit()"/>
         </div>

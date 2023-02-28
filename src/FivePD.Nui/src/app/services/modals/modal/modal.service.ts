@@ -19,7 +19,13 @@ export class ModalService {
   }
 
   public open<T>(componentType: Type<any>, options: ModalOptions<T>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T> {
-    const modalRef = this.appendModalComponentToMainView<T>(options, extraObjectsToInject);
+    const modifiedOptions = {...options};
+    if (options.buttons?.submit) {
+      modifiedOptions.buttons!.cancel = {variant: 'secondary', label: 'Nui.Actions.Cancel'};
+    }
+    const modalRef = this.appendModalComponentToMainView<T>({
+      ...modifiedOptions,
+    }, extraObjectsToInject);
 
     const modalComponent = modalRef.modalComponentRef.instance;
     modalComponent.childComponentType = componentType;

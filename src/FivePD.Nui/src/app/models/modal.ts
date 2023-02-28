@@ -52,25 +52,29 @@ interface ModalButton {
   label: Paths<Localization>;
 }
 
+interface ModalCancelButton {
+  cancel: ModalButton;
+}
+
+interface ModalSubmitButton {
+  submit: ModalButton;
+}
+
 export interface ModalOptions<T = any> {
   title: Paths<Localization>;
   description?: string;
   columns?: number;
-  buttons?: {
-    cancel: ModalButton;
-    submit: ModalButton;
-  };
+  buttons?: ModalCancelButton & ModalSubmitButton;
 }
 
-export interface ModalFormOptions<T> extends ModalOptions<T> {
+export interface ModalFormOptions<T> extends Omit<ModalOptions<T>, 'buttons'> {
   fields?: (entity: T) => FormInputBase<any>[];
   valueResolver?: ValueResolver<T>;
+  buttons: ModalSubmitButton;
 }
 
 export interface ModalConfirmOptions<T> extends NonNullable<Omit<ModalOptions<T>, 'columns' | 'buttons'>> {
-  buttons: {
-    submit: ModalButton;
-  };
+  buttons: ModalSubmitButton;
 }
 
 export interface ModalResponse {

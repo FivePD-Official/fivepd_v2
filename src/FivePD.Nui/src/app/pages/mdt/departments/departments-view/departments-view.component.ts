@@ -90,14 +90,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           }),
         ],
         buttons: {
-          cancel: {
-            variant: 'secondary',
-            label: 'Nui.Actions.Cancel',
-          },
-          submit: {
-            variant: 'primary',
-            label: 'Nui.Actions.Create',
-          },
+          submit: {variant: 'primary', label: 'Nui.Actions.Create'},
         },
       }).result
         .pipe(
@@ -178,7 +171,6 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
               ],
               valueResolver: new ValueResolver(rank, this._departmentService.getRank(rank.Id)),
               buttons: {
-                cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                 submit: {variant: 'primary', label: 'Nui.Actions.Save'},
               },
             }).result
@@ -279,7 +271,6 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
             })
           ],
           buttons: {
-            cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
             submit: {variant: 'primary', label: 'Nui.Actions.Create'},
           },
         }).result
@@ -341,7 +332,6 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
               ],
               valueResolver: new ValueResolver(division, this._departmentService.getDivision(division.Id)),
               buttons: {
-                cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                 submit: {variant: 'primary', label: 'Nui.Actions.Save'},
               },
             }).result

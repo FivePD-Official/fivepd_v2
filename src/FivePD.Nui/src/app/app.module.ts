@@ -19,7 +19,6 @@ import { MenuComponent } from './pages/menu/menu.component';
 import { DashboardComponent } from './pages/mdt/dashboard/dashboard.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { WindowService } from '@services/window/window.service';
-import { ModalService } from '@services/modal/modal.service';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { TranslatePipe } from './pipes/translate.pipe';
@@ -53,6 +52,7 @@ import { ModalFormComponent } from './components/modal/modal-form/modal-form.com
 import { ModalEntityViewComponent } from './components/modal/modal-entity-view/modal-entity-view.component';
 import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
 import { DynamicFormDirective } from './components/dynamic-form/dynamic-form.directive';
+import { ModalService } from '@services/modals/modal/modal.service';
 
 @NgModule({
   declarations: [
