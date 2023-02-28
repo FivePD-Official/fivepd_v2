@@ -1,5 +1,5 @@
 import { ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type } from '@angular/core';
-import { ActionResponse, ModalOptions, ModalRef, ModalResponse } from '@models';
+import { ActionResponse, ModalOptions, ModalRef } from '@models';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ModalInjector } from '@services/modal/modal-injector';
 import { EXTRA_OBJECTS_TO_INJECT } from '../../components/modal/extra-objects-token';
@@ -10,7 +10,7 @@ import { filter, MonoTypeOperatorFunction, tap } from 'rxjs';
 })
 export class ModalService {
 
-  modalRef?: ModalRef;
+  modalRef?: ModalRef<any>;
 
   constructor(
     private _appRef: ApplicationRef,
@@ -18,20 +18,11 @@ export class ModalService {
   ) {
   }
 
-  public open(componentType: Type<any>, options: ModalOptions, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef {
-    const modalRef = this.appendModalComponentToMainView(options, extraObjectsToInject);
+  public open<T>(componentType: Type<any>, options: ModalOptions<T>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T> {
+    const modalRef = this.appendModalComponentToMainView<T>(options, extraObjectsToInject);
 
     const modalComponent = modalRef.modalComponentRef.instance;
     modalComponent.childComponentType = componentType;
-    modalComponent.title = options.title;
-    modalComponent.description = options.description || '';
-    modalComponent.fields = options.fields;
-    modalComponent.buttons = options.buttons || {
-      cancel: {variant: 'secondary', label: ''},
-      submit: {variant: 'secondary', label: ''},
-    };
-    modalComponent.columns = options.columns || 1;
-
     this.modalRef = modalRef;
 
     return modalRef;
@@ -51,8 +42,8 @@ export class ModalService {
     }
   }
 
-  private appendModalComponentToMainView(options: ModalOptions, extraObjectsToInject: Map<any, any>): ModalRef {
-    const modalRef = new ModalRef(options);
+  private appendModalComponentToMainView<T>(options: ModalOptions, extraObjectsToInject: Map<any, any>): ModalRef<T> {
+    const modalRef = new ModalRef<T>(options);
 
     extraObjectsToInject.set(ModalRef, modalRef);
     extraObjectsToInject.set(EXTRA_OBJECTS_TO_INJECT, extraObjectsToInject);
@@ -72,6 +63,15 @@ export class ModalService {
     this._appRef.attachView(componentRef.hostView);
 
     modalRef.modalComponentRef = componentRef;
+
+    modalRef.options.valueResolver?.updating
+      .subscribe(updating => {
+        if (updating) {
+          modalRef.startLoading('Updating...');
+        } else {
+          modalRef.stopLoading();
+        }
+      });
 
     modalRef.result.subscribe(res => {
       if (!res.success) {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
+import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User, ValueResolver } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DefaultSetId } from '@enums';
 import { ModalService } from '@services/modal/modal.service';
@@ -69,18 +69,19 @@ export class SettingsComponent implements OnInit {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           show: item => item.AddonId === 'admin',
-          onClick: item => this._modal.open(ModalFormComponent, {
+          onClick: attribute => this._modal.open(ModalFormComponent, {
             title: 'Nui.Labels.EditAttributeTitle',
             buttons: {
               cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
               submit: {variant: 'primary', label: 'Nui.Actions.Save'},
             },
-            fields: () => createAttributesFormFields(this._localization, item),
+            fields: updatedAttribute => createAttributesFormFields(this._localization, updatedAttribute),
+            valueResolver: new ValueResolver<SetAttribute>(attribute, this._looseData.getSetAttribute(DefaultSetId.ArrestReport, attribute.Id))
           }).result
             .pipe(
               filter(res => res.success),
               switchMap(res => this._looseData.editSetAttribute(DefaultSetId.ArrestReport, {
-                Id: item.Id,
+                Id: attribute.Id,
                 Name: res.value['Name'],
                 Label: res.value['Label'],
                 HelpLabel: res.value['HelpLabel'],

@@ -15,7 +15,7 @@ import {
   Page,
   Rank,
   TextInput,
-  User
+  User, ValueResolver
 } from '@models';
 import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -151,30 +151,31 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           onClick: rank => {
-            this._modal.open(ModalFormComponent, {
+            this._modal.open<FormattedRank>(ModalFormComponent, {
               title: 'Nui.Labels.EditRankTitle',
-              fields: () => [
+              fields: updatedRank => [
                 new TextInput({
                   key: 'Name',
                   label: this._localization.translate('Nui.Labels.Name'),
                   placeholder: this._localization.translate('Nui.Labels.Name'),
                   required: true,
-                  value: rank.Name,
+                  value: updatedRank.Name,
                 }),
                 new CheckboxGroup({
                   key: 'Permission',
                   label: 'Nui.Labels.Permissions',
                   checkboxGroup: [
-                    new Checkbox({key: 'Kick', label: 'Kick label', value: rank.Permission.Kick}),
-                    new Checkbox({key: 'SetRank', label: 'Set rank label', value: rank.Permission.SetRank}),
+                    new Checkbox({key: 'Kick', label: 'Kick label', value: updatedRank.Permission.Kick}),
+                    new Checkbox({key: 'SetRank', label: 'Set rank label', value: updatedRank.Permission.SetRank}),
                     new Checkbox({
                       key: 'SetCallsign',
                       label: 'Set callsign label',
-                      value: rank.Permission.SetCallsign
+                      value: updatedRank.Permission.SetCallsign
                     }),
                   ]
                 }),
               ],
+              valueResolver: new ValueResolver(rank, this._departmentService.getRank(rank.Id)),
               buttons: {
                 cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                 submit: {variant: 'primary', label: 'Nui.Actions.Save'},
@@ -323,17 +324,18 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           type: 'button',
           label: this._localization.translate('Nui.Actions.Edit'),
           onClick: division => {
-            this._modal.open(ModalFormComponent, {
+            this._modal.open<Division>(ModalFormComponent, {
               title: 'Nui.Labels.EditDivision',
-              fields: () => [
+              fields: updatedDivision => [
                 new TextInput({
                   key: 'Name',
                   label: 'Nui.Labels.Name',
                   placeholder: 'Nui.Labels.Name',
                   required: true,
-                  value: division.Name,
+                  value: updatedDivision.Name,
                 })
               ],
+              valueResolver: new ValueResolver(division, this._departmentService.getDivision(division.Id)),
               buttons: {
                 cancel: {variant: 'secondary', label: 'Nui.Actions.Cancel'},
                 submit: {variant: 'primary', label: 'Nui.Actions.Save'},

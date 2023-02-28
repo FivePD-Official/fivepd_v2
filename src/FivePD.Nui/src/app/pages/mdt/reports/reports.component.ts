@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActionResponse, Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
+import { ActionResponse, Button, Collation, Column, MappedLooseDataEntity, Page, User, ValueResolver } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DefaultSetId } from '@enums';
 import { filter, finalize, iif, Subject, switchMap, takeUntil, tap } from 'rxjs';
@@ -123,8 +123,9 @@ export class ReportsComponent implements OnInit, OnDestroy {
                       submit: {variant: 'primary', label: 'Nui.Actions.Save'},
                     },
                     columns: 2,
-                    fields: newEntity => mapAttributesToFields(this._looseData.getSetAttributes(entity.SetId), newEntity)
-                  }, new Map().set(ENTITY, entity)
+                    fields: updatedEntity => mapAttributesToFields(this._looseData.getSetAttributes(entity.SetId), updatedEntity),
+                    valueResolver: new ValueResolver(entity, this._looseData.getEntity(entity.SetId, entity.Id), v => v.entity)
+                  }
                 ).result
                   .pipe(
                     filter(res => res.success),

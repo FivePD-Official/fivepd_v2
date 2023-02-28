@@ -31,13 +31,6 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   componentRef!: ComponentRef<any>;
   childComponentType!: Type<any>;
-
-  title: ModalOptions['title'] = '';
-  description?: ModalOptions['description'];
-
-  fields?: ModalOptions['fields'];
-  buttons?: ModalOptions['buttons'];
-  columns?: ModalOptions['columns'];
   dynamicFormComponent?: DynamicFormComponent;
   @ViewChild('modalContainer') modalContainer!: ElementRef;
   @ViewChild('modalContent') modalContent!: ElementRef;
