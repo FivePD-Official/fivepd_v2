@@ -8,7 +8,6 @@ import { Select } from '@ngxs/store';
 import { UserState } from '@store/user.state';
 import { filter, Observable, switchMap } from 'rxjs';
 import { UserService } from '@services/user/user.service';
-import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
 import { CustomValidators } from '../../../helpers/validators';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';

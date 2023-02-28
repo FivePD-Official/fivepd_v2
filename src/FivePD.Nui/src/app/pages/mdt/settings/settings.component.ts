@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User, ValueResolver } from '@models';
+import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DefaultSetId } from '@enums';
 import { ModalService } from '@services/modals/modal/modal.service';
@@ -7,10 +7,10 @@ import { UserState, UserStateModel } from '@store/user.state';
 import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { LocalizationService } from '@services/localization/localization.service';
-import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 
 @Component({
   selector: 'app-settings',

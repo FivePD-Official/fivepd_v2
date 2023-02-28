@@ -1,16 +1,17 @@
 import { ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type } from '@angular/core';
-import { ActionResponse, ModalFormOptions, ModalOptions, ModalRef } from '@models';
+import { ActionResponse, ModalFormOptions, ModalOptions } from '@models';
 import { filter, MonoTypeOperatorFunction, tap } from 'rxjs';
 import { EXTRA_OBJECTS_TO_INJECT } from '../../../components/modal/extra-objects-token';
 import { ModalInjector } from '@services/modals/modal/modal-injector';
 import { ModalComponent } from '../../../components/modal/modal.component';
+import { ModalRef } from '@services/modals/modal/modal-ref';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModalService {
 
-  modalRef?: ModalRef<any>;
+  modalRef?: ModalRef;
 
   constructor(
     private _appRef: ApplicationRef,

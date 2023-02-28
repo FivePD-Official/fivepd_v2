@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ModalService } from '@services/modals/modal/modal.service';
-import { ModalFormOptions, ModalOptions, ModalRef } from '@models';
+import { ModalFormOptions, ModalOptions } from '@models';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
+import { ModalRef } from '@services/modals/modal/modal-ref';
 
 @Injectable({
   providedIn: 'root'

@@ -1,20 +1,20 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
-  Inject, OnDestroy,
+  Inject,
+  OnDestroy,
   OnInit,
   Optional,
   Output,
   ViewChild
 } from '@angular/core';
-import { FormInputBase, FormSubmitEvent, MappedLooseDataEntity, ModalFormOptions, ModalRef } from '@models';
+import { FormInputBase, FormSubmitEvent, MappedLooseDataEntity, ModalFormOptions } from '@models';
 import { ENTITY } from '../modal-entity-view/entity-token';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
-import { Subject, takeUntil, tap } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
+import { ModalRef } from '@services/modals/modal/modal-ref';
 
 @Component({
   selector: 'app-modal-form',

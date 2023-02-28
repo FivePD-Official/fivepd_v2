@@ -15,7 +15,7 @@ import {
   Page,
   Rank,
   TextInput,
-  User, ValueResolver
+  User
 } from '@models';
 import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -25,11 +25,11 @@ import { filter, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { Select } from '@ngxs/store';
 import { ModalService } from '@services/modals/modal/modal.service';
 import { UserService } from '@services/user/user.service';
-import { ModalFormComponent } from '../../../../components/modal/modal-form/modal-form.component';
 import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
 import { CustomValidators } from '../../../../helpers/validators';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 
 interface FormattedRank extends Rank {
   Permissions: string;

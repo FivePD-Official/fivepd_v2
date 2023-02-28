@@ -1,18 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActionResponse, Button, Collation, Column, MappedLooseDataEntity, Page, User, ValueResolver } from '@models';
+import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DefaultSetId } from '@enums';
-import { filter, finalize, iif, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 import { UserState } from '@store/user.state';
 import { Store } from '@ngxs/store';
 import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
 import { LocalizationService } from '@services/localization/localization.service';
 import { ModalService } from '@services/modals/modal/modal.service';
-import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 
 @Component({
   selector: 'app-reports',

@@ -13,11 +13,11 @@ import {
   Type,
   ViewChild
 } from '@angular/core';
-import { ModalRef } from '@models';
 import { EXTRA_OBJECTS_TO_INJECT } from './extra-objects-token';
 import { ModalFormComponent } from './modal-form/modal-form.component';
 import { DynamicFormComponent } from '../dynamic-form/dynamic-form.component';
 import { ModalInjector } from '@services/modals/modal/modal-injector';
+import { ModalRef } from '@services/modals/modal/modal-ref';
 
 type RemoveFocusTrap = () => void;
 

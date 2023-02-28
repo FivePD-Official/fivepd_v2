@@ -1,9 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { ATTRIBUTES, ENTITY } from './entity-token';
-import { AttributeDataType, LooseDataEntityWrapper, MappedLooseDataEntity, ModalRef, SetAttribute } from '@models';
+import { AttributeDataType, LooseDataEntityWrapper, MappedLooseDataEntity, SetAttribute } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { formatDate } from '@helpers';
 import { tap } from 'rxjs';
+import { ModalRef } from '@services/modals/modal/modal-ref';
 
 interface EntityValue {
   name: string;
