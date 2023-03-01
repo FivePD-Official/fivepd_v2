@@ -18,10 +18,10 @@
     <div>
       <div #modalContent></div>
       <div class="w-full flex flex-row items-center justify-between mt-7">
-        <div *ngIf="modalRef.loading && modalRef.loader; else noLoader"
+        <div *ngIf="loader; else noLoader"
         class="flex flex-row items-center gap-3">
           <div class="w-[20px] h-[20px] rounded-full border-2 border-zinc-600 border-b-zinc-200 animate-spin"></div>
-          <p class="text-zinc-300">{{ modalRef.loader.label }}</p>
+          <p class="text-zinc-300">{{ loader.label }}</p>
         </div>
         <ng-template #noLoader>
           <div></div>
@@ -36,7 +36,7 @@
             *ngIf="modalRef.options.buttons?.submit"
             [variant]="modalRef.options.buttons!.submit.variant"
             [label]="modalRef.options.buttons!.submit.label | translate"
-            [disabled]="modalRef.loading"
+            [disabled]="!!loader"
             (onClick)="submit()"/>
         </div>
       </div>

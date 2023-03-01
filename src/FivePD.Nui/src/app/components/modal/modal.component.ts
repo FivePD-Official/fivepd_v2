@@ -18,6 +18,8 @@ import { ModalFormComponent } from './modal-form/modal-form.component';
 import { DynamicFormComponent } from '../dynamic-form/dynamic-form.component';
 import { ModalInjector } from '@services/modals/modal/modal-injector';
 import { ModalRef } from '@services/modals/modal/modal-ref';
+import { ModalLoader } from '@models';
+import { Subject, takeUntil } from 'rxjs';
 
 type RemoveFocusTrap = () => void;
 
@@ -28,12 +30,14 @@ type RemoveFocusTrap = () => void;
 })
 export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
+  destroy$ = new Subject<void>();
   componentRef!: ComponentRef<any>;
   childComponentType!: Type<any>;
   dynamicFormComponent?: DynamicFormComponent;
   @ViewChild('modalContainer') modalContainer!: ElementRef;
   @ViewChild('modalContent') modalContent!: ElementRef;
   removeFocusTrap?: RemoveFocusTrap;
+  loader?: ModalLoader;
 
   constructor(
     public modalRef: ModalRef,
@@ -41,9 +45,16 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
     private _appRef: ApplicationRef,
     private _changeDetector: ChangeDetectorRef,
     @Inject(EXTRA_OBJECTS_TO_INJECT) public extraObjectsToInject: Map<any, any>,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
+    this.modalRef.loader
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(loader => {
+        this.loader = loader;
+        this._changeDetector.detectChanges()
+      });
   }
 
   ngAfterViewInit(): void {
@@ -64,6 +75,8 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
       this.componentRef.destroy();
       this._appRef.detachView(this.componentRef.hostView);
     }
+
+    this.destroy$.next();
   }
 
   close(): void {
