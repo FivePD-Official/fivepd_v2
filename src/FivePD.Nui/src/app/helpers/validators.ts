@@ -12,12 +12,23 @@ export class CustomValidators {
     return Validators.pattern('^[NL0-9-*]{1,10}$');
   }
 
+  static date(): ValidatorFn {
+    return c => {
+      // @ts-ignore
+      if (c.value instanceof Date && !isNaN(c.value)) {
+        return null;
+      }
+
+      return {invalidDate: true};
+    };
+  }
+
   static nameShouldNotBeTaken(nameValidatorFn: (name: string) => Observable<NameTakenResponse>): AsyncValidatorFn {
     return control => control.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(value => nameValidatorFn(value)),
-      map(unique => unique.Taken ? {'nameTaken': true} : null),
+      map(unique => unique.Taken ? {nameTaken: true} : null),
       first(),
     );
   }

@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 import { FormInputBase, FormSubmitEvent } from '@models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import deepEqual from 'fast-deep-equal/es6';
+import { CustomValidators } from '../../helpers/validators';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -65,6 +66,8 @@ export class DynamicFormComponent implements OnInit, OnChanges {
         formControl = new FormGroup(nestedGroup);
       } else {
         const validators = field.validators;
+        const asyncValidators = field.asyncValidators;
+
         if (field.required) {
           if (field.type === 'dropdown') {
             validators.push((control) => control.value === -1 ? { 'required': true } : null);
@@ -72,6 +75,10 @@ export class DynamicFormComponent implements OnInit, OnChanges {
           else {
             validators.push(Validators.required);
           }
+        }
+
+        if (field.type === 'date') {
+          validators.push(CustomValidators.date());
         }
 
         let fieldValue;
@@ -85,7 +92,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
         formControl = new FormControl(
           fieldValue,
           validators,
-          field.asyncValidators
+          asyncValidators,
         );
       }
       group[field.key] = formControl;
@@ -104,7 +111,6 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
   internalOnSubmit(): void {
     this.form.markAllAsTouched();
-    // console.log('invalid: ', this.form.invalid)
     if (this.form.invalid) {
       return;
     }
