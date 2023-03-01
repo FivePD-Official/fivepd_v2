@@ -29,7 +29,7 @@ export class DashboardComponent implements OnInit {
   departmentsButtons: Button[] = [
     {
       label: this._localization.translate('Nui.Actions.CreateDepartment'),
-      show: () => this.user?.Admin ?? false,
+      show: () => !!this.user?.Admin,
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
     }
@@ -60,6 +60,7 @@ export class DashboardComponent implements OnInit {
     }),
     new Column<Department>({
       header: this._localization.translate('Nui.Labels.Actions'),
+      show: () => !!this.user?.Admin,
       actions: [
         {
           type: 'button',
