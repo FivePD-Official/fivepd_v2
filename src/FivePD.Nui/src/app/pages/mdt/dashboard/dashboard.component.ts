@@ -122,7 +122,7 @@ export class DashboardComponent implements OnInit {
           key: 'Name',
           required: true,
           label: 'Nui.Labels.Name',
-          // asyncValidators: [CustomValidators.nameShouldNotBeTaken((value) => this._department.checkIfDepartmentNameTaken(value))],
+          asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._department.checkIfDepartmentNameTaken(value))],
         }),
         new TextInput({
           key: 'Callsign',

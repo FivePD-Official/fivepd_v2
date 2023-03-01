@@ -543,7 +543,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         key: 'Name',
         required: true,
         label: 'Nui.Labels.Name',
-        // TODO fix: asyncValidators: [CustomValidators.nameShouldNotBeTaken((value) => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
+        asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
       new NumberInput({
