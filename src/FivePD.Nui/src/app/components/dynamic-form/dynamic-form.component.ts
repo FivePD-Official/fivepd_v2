@@ -70,9 +70,8 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
         if (field.required) {
           if (field.type === 'dropdown') {
-            validators.push((control) => control.value === -1 ? { 'required': true } : null);
-          }
-          else {
+            validators.push((control) => control.value === -1 ? {required: true} : null);
+          } else {
             validators.push(Validators.required);
           }
         }
@@ -90,7 +89,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
           fieldValue = field.value;
         }
         formControl = new FormControl(
-          fieldValue,
+          {value: fieldValue, disabled: field.readonly},
           validators,
           asyncValidators,
         );

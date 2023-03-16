@@ -10,6 +10,8 @@
     @apply h-[40px] w-full border border-zinc-600 hover:border-zinc-400 focus:border-zinc-400 bg-transparent rounded-md px-3 text-zinc-300 placeholder:text-zinc-400
     &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
       @apply appearance-none
+    &:read-only
+      @apply cursor-not-allowed
 
   textarea
     @apply min-h-[100px] max-h-[250px] p-3 resize-y transition-none
@@ -68,8 +70,6 @@
         @apply bg-transparent
       p
         @apply text-zinc-400
-      svg
-        @apply hidden
 
   input
     @apply hidden

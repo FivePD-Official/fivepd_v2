@@ -13,13 +13,15 @@
            [formControlName]="field.key"
            [attr.id]="field.key"
            [attr.placeholder]="placeholder"
-           (input)="onChange.emit($event)"/>
+           (input)="onChange.emit($event)"
+           [readonly]="field.readonly"/>
     <input type="number"
            *ngSwitchCase="field.type === 'number'"
            [formControlName]="field.key"
            [attr.id]="field.key"
            [attr.placeholder]="placeholder"
-           (input)="onChange.emit($event)"/>
+           (input)="onChange.emit($event)"
+           [readonly]="field.readonly"/>
     <input type="text"
            inputmode="numeric"
            *ngSwitchCase="field.type === 'date'"
@@ -27,13 +29,15 @@
            [attr.id]="field.key"
            [attr.placeholder]="placeholder"
            [appDateMask]="form"
-           (input)="onChange.emit($event)"/>
+           (input)="onChange.emit($event)"
+           [readonly]="field.readonly"/>
 
     <textarea *ngSwitchCase="field.type === 'textarea'"
               [attr.id]="field.key"
               [formControlName]="field.key"
               [attr.placeholder]="placeholder"
-              (input)="onChange.emit($event)"></textarea>
+              (input)="onChange.emit($event)"
+              [readonly]="field.readonly"></textarea>
 
     <div *ngSwitchCase="field.type === 'dropdown'"
          class="dropdown"
