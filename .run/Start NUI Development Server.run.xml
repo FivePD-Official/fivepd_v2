@@ -1,4 +1,4 @@
-﻿﻿<component name="ProjectRunConfigurationManager">
+﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Start NUI Development Server" type="js.build_tools.npm">
     <package-json value="$PROJECT_DIR$/src/FivePD.Nui/package.json" />
     <command value="run" />
@@ -7,13 +7,6 @@
     </scripts>
     <node-interpreter value="project" />
     <envs />
-    <method v="2">
-      <option name="NpmBeforeRunTask" enabled="true">
-        <package-json value="$PROJECT_DIR$/src/FivePD.Nui/package.json" />
-        <command value="install" />
-        <node-interpreter value="project" />
-        <envs />
-      </option>
-    </method>
+    <method v="2" />
   </configuration>
 </component>
