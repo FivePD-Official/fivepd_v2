@@ -63,6 +63,13 @@ export class SidebarComponent implements OnInit {
       icon: IconType.Users,
       show: () => !!this.user?.Department ?? false,
     },
+    {
+      // @ts-ignore
+      title: 'Developer tools',
+      path: () => '/mdt/devtools',
+      icon: IconType.CodeBracket,
+      show: () => true,
+    }
   ];
 
   constructor(

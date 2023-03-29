@@ -96,6 +96,7 @@ namespace FivePD.Gamemode.Client.Services
                 Events.UI.LooseData.AddSetAttribute,
                 Events.UI.LooseData.EditSetAttribute,
                 Events.UI.LooseData.DeleteSetAttribute,
+                Events.DevTools.DeleteEntities,
             });
         }
 

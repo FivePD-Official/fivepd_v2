@@ -52,6 +52,10 @@ import { ReportsComponent } from './pages/mdt/reports/reports.component';
 import { ModalFormComponent } from './components/modal/modal-form/modal-form.component';
 import { ModalEntityViewComponent } from './components/modal/modal-entity-view/modal-entity-view.component';
 import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
+import { DevtoolsGeneralComponent } from './pages/mdt/devtools/devtools-general/devtools-general.component';
+import { DevtoolsCalloutsComponent } from './pages/mdt/devtools/devtools-callouts/devtools-callouts.component';
+import { DevtoolsViewComponent } from './pages/mdt/devtools/devtools-view/devtools-view.component';
+import { TabsComponent } from './components/tabs/tabs.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +88,10 @@ import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
     ReportsComponent,
     ModalFormComponent,
     ModalEntityViewComponent,
+    DevtoolsGeneralComponent,
+    DevtoolsCalloutsComponent,
+    DevtoolsViewComponent,
+    TabsComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,9 @@
-<div class="h-24 flex flex-row items-center justify-between bg-zinc-900 z-40 border-b border-color mb-6"
-     [ngClass]="{ 'justify-center border-none': centerTitle }">
+<div class="h-24 flex flex-row items-center justify-between bg-zinc-900 z-40 border-b"
+     [ngClass]="{
+        'justify-center border-none': centerTitle,
+        'border-color mb-6': underline,
+        'border-transparent': !underline
+     }">
   <h1 class="text-2xl font-bold text-zinc-200"
       [ngClass]="{ 'text-center': centerTitle }">
     {{ title }}

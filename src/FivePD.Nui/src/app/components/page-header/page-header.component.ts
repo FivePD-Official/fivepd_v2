@@ -10,6 +10,7 @@ export class PageHeaderComponent implements OnInit {
 
   @Input() title: string = '';
   @Input() centerTitle?: boolean;
+  @Input() underline?: boolean = true;
 
   constructor() { }
 

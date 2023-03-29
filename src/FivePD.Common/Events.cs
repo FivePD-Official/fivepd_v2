@@ -344,5 +344,16 @@ namespace FivePD.Common
                 public const string DeleteEntity = "fivepd:looseData:deleteEntity";
             }
         }
+
+        /// <summary>
+        /// Contains definitions for developer tool events.
+        /// </summary>
+        public abstract class DevTools
+        {
+            /// <summary>
+            /// Used delete all entities of a given type.
+            /// </summary>
+            public const string DeleteEntities = "fivepd:devtools:deleteEntities";
+        }
     }
 }

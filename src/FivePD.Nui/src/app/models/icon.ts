@@ -14,4 +14,5 @@
   Warning = 'Warning',
   Link = 'Link',
   Report = 'Report',
+  CodeBracket = 'CodeBracket',
 }
