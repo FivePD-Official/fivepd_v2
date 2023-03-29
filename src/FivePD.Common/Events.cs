@@ -351,9 +351,14 @@ namespace FivePD.Common
         public abstract class DevTools
         {
             /// <summary>
-            /// Used delete all entities of a given type.
+            /// Used to delete all entities of a given type.
             /// </summary>
             public const string DeleteEntities = "fivepd:devtools:deleteEntities";
+
+            /// <summary>
+            /// Used to get the player's current coordinate.
+            /// </summary>
+            public const string GetCurrentPlayerCoordinate = "fivepd:devtools:getCurrentPlayerCoordinate";
         }
     }
 }

@@ -63,6 +63,13 @@ namespace FivePD.Gamemode.Client.Services
                     cb.Invoke(true);
                 }));
 
+            this._eventHandlerDictionary.AddNuiEvent(
+                Events.DevTools.GetCurrentPlayerCoordinate,
+                new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+                {
+                    cb.Invoke(JsonConvert.SerializeObject(Game.PlayerPed.Position));
+                }));
+
             this.RegisterUIEvents(new[]
             {
                 Events.UI.Department.List,

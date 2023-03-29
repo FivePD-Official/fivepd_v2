@@ -68,7 +68,7 @@ export class SidebarComponent implements OnInit {
       title: 'Developer tools',
       path: () => '/mdt/devtools',
       icon: IconType.CodeBracket,
-      show: () => true,
+      show: () => this.user?.Admin ?? false,
     }
   ];
 

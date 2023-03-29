@@ -1,7 +1,7 @@
 <div class="mb-10">
   <div class="w-full flex flex-row items-center justify-between mb-4">
     <p class="common-title">{{ title }}</p>
-    <div *ngIf="buttons" class="flex flex-row items-center justify-between">
+    <div *ngIf="buttons" class="flex flex-row items-center justify-between gap-2">
       <app-button
         *ngFor="let button of buttons"
         variant="secondary"
@@ -66,7 +66,7 @@
       {{ 'Nui.Labels.NoResults' | translate }}
     </p>
 
-    <div class="pagination flex flex-row items-center justify-end pt-4 mt-5 border-t border-color">
+    <div *ngIf="showPagination" class="pagination flex flex-row items-center justify-end pt-4 mt-5 border-t border-color">
       <div class="flex flex-row items-center">
         <button [disabled]="collation.Page === 1" (click)="toPreviousPage()" class="arrow"
                 [ngClass]="{'arrow-disabled': collation.Page === 1}">
