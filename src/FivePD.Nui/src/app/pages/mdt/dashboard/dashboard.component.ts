@@ -1,25 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Button, Collation, Column, Department, NumberInput, Page, TextInput, User } from '@models';
 import { GenericNameValidator } from '@validators/generic-name-validator';
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
 import { ModalService } from '@services/modal/modal.service';
-import { Select } from '@ngxs/store';
-import { UserState } from '@store/user.state';
-import { Observable } from 'rxjs';
 import { UserService } from '@services/user/user.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
+import { Store } from '@ngrx/store';
+import { GlobalState } from '@store';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.sass']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
+  destroy$ = new Subject<void>();
   user?: User;
-  @Select(UserState.details) user$!: Observable<User>;
   statistics: any;
   assignedCall: any;
 
@@ -95,11 +95,17 @@ export class DashboardComponent implements OnInit {
     private _localization: LocalizationService,
     private _modal: ModalService,
     private _userService: UserService,
+    private readonly store: Store<GlobalState>,
   ) { }
 
   ngOnInit(): void {
-    this.user$.subscribe(user => this.user = user);
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => this.user = state.user.details);
     this.getDepartments();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.unsubscribe();
   }
 
   getDepartments(): void {

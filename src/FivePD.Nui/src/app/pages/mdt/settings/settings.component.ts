@@ -14,11 +14,11 @@ import {
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DefaultSetId, SetId } from '@enums';
 import { ModalService } from '@services/modal/modal.service';
-import { UserState, UserStateModel } from '@store/user.state';
 import { Subject, takeUntil } from 'rxjs';
-import { Store } from '@ngxs/store';
 import { LocalizationService } from '@services/localization/localization.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
+import { Store } from '@ngrx/store';
+import { GlobalState } from '@store';
 
 @Component({
   selector: 'app-settings',
@@ -27,7 +27,7 @@ import { ModalFormComponent } from '../../../components/modal/modal-form/modal-f
 })
 export class SettingsComponent implements OnInit {
 
-  onDestroy$ = new Subject<void>();
+  destroy$ = new Subject<void>();
 
   user?: User;
 
@@ -252,23 +252,21 @@ export class SettingsComponent implements OnInit {
     private _looseData: LooseDataService,
     private _modal: ModalService,
     private _localization: LocalizationService,
-    private _store: Store,
+    private readonly store: Store<GlobalState>,
   ) { }
 
   ngOnInit(): void {
-    this._store.select(UserState).pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((user: UserStateModel) => {
-      this.user = user.details;
-      if (user.details.Admin) {
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+      this.user = state.user.details;
+      if (state.user.details.Admin) {
         this.getArrestReportAttributes();
       }
     });
   }
 
   ngOnDestroy(): void {
-    this.onDestroy$.next();
-    this.onDestroy$.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.unsubscribe();
   }
 
   getArrestReportAttributes(): void {

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { DeleteEntityType, DevtoolsService } from '@services/devtools/devtools.service';
-import { Dispatch } from '@ngxs-labs/dispatch-decorator';
-import { AddDevToolsCoordinate, ClearDevToolsCoordinates } from '@store/app.actions';
-import { AppState, Coordinate, CoordinateWithDate } from '@store/app.state';
-import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { formatDate } from '@helpers';
 import { Button, Column, Page } from '@models';
+import { Store } from '@ngrx/store';
+import { GlobalState } from '@store';
+import { CoordinateWithDate } from '@store/app.reducer';
+import { addDevToolsCoordinate, clearDevToolsCoordinates } from '@store/app.actions';
 
 @Component({
   selector: 'app-devtools-general',
@@ -15,10 +15,7 @@ import { Button, Column, Page } from '@models';
 })
 export class DevtoolsGeneralComponent {
 
-  @Select(AppState.devToolsCoordinates) coordinates$!: Observable<Page<CoordinateWithDate>>;
-  @Dispatch() addCoordinate = (coordinate: CoordinateWithDate) => new AddDevToolsCoordinate(coordinate);
-  @Dispatch() clearCoordinates = () => new ClearDevToolsCoordinates();
-
+  coordinates$: Observable<Page<CoordinateWithDate>>;
   coordinatesButtons: Button[] = [
     {
       type: 'button',
@@ -27,7 +24,8 @@ export class DevtoolsGeneralComponent {
       disabled: () => false,
       onClick: () => {
         this.devtools.getCurrentPlayerCoordinate().subscribe(res => {
-          this.addCoordinate({...res, date: new Date()});
+          const coordinate = {...res, date: new Date()};
+          this.store.dispatch(addDevToolsCoordinate({payload: coordinate}))
         });
       }
     },
@@ -36,7 +34,7 @@ export class DevtoolsGeneralComponent {
       label: 'Clear',
       show: () => true,
       disabled: () => false,
-      onClick: () => this.clearCoordinates()
+      onClick: () => this.store.dispatch(clearDevToolsCoordinates()),
     },
   ];
   coordinatesColumns: Column<CoordinateWithDate>[] = [
@@ -74,8 +72,10 @@ export class DevtoolsGeneralComponent {
   ];
 
   constructor(
-    private readonly devtools: DevtoolsService
+    private readonly devtools: DevtoolsService,
+    private readonly store: Store<GlobalState>,
   ) {
+    this.coordinates$ = this.store.select('app', 'devTools', 'coordinates');
   }
 
   deleteEntities(type: DeleteEntityType): void {

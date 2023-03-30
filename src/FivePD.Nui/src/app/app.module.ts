@@ -1,19 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgxsModule } from '@ngxs/store';
-import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
-import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { EventService } from '@services/event/event.service';
-import { environment } from '../environments/environment';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { CustomHttpInterceptor } from './interceptors/custom-http-interceptor.interceptor';
 import { MdtComponent } from './pages/mdt/mdt.component';
 import { HeaderComponent } from './components/header/header.component';
-import { AppState } from '@store/app.state';
-import { UserState } from '@store/user.state';
 import { BlankComponent } from './pages/blank/blank.component';
 import { MenuComponent } from './pages/menu/menu.component';
 import { DashboardComponent } from './pages/mdt/dashboard/dashboard.component';
@@ -56,6 +49,9 @@ import { DevtoolsGeneralComponent } from './pages/mdt/devtools/devtools-general/
 import { DevtoolsCalloutsComponent } from './pages/mdt/devtools/devtools-callouts/devtools-callouts.component';
 import { DevtoolsViewComponent } from './pages/mdt/devtools/devtools-view/devtools-view.component';
 import { TabsComponent } from './components/tabs/tabs.component';
+import { StoreModule } from '@ngrx/store';
+import { userReducer } from '@store/user.reducer';
+import { appReducer } from '@store/app.reducer';
 
 @NgModule({
   declarations: [
@@ -97,14 +93,6 @@ import { TabsComponent } from './components/tabs/tabs.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    NgxsModule.forRoot([
-      AppState,
-      UserState
-    ], {
-      developmentMode: !environment.production
-    }),
-    NgxsLoggerPluginModule.forRoot(),
-    NgxsReduxDevtoolsPluginModule.forRoot(),
     ReactiveFormsModule,
     FormsModule,
     TippyModule.forRoot({
@@ -118,6 +106,10 @@ import { TabsComponent } from './components/tabs/tabs.component';
         }
       }
     }),
+    StoreModule.forRoot({
+      app: appReducer,
+      user: userReducer,
+    })
   ],
   providers: [
     WindowService,

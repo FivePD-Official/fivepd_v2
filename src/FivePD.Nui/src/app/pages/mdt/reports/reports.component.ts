@@ -3,15 +3,14 @@ import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@m
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { DefaultSetId, SetId } from '@enums';
 import { Subject, takeUntil } from 'rxjs';
-import { UserState } from '@store/user.state';
-import { Store } from '@ngxs/store';
 import { mapAttributesToFields, mapAttributesToGridColumns, mapPageEntities } from '@helpers';
 import { LocalizationService } from '@services/localization/localization.service';
 import { ModalService } from '@services/modal/modal.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
-import { SidebarComponent } from '../../../components/sidebar/sidebar.component';
 import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import { ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
+import { GlobalState } from '@store';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-reports',
@@ -20,7 +19,7 @@ import { ENTITY } from '../../../components/modal/modal-entity-view/entity-token
 })
 export class ReportsComponent implements OnInit, OnDestroy {
 
-  onDestroy$ = new Subject<void>();
+  destroy$ = new Subject<void>();
   user?: User;
 
   arrestReportButtons: Button[] = [
@@ -62,24 +61,22 @@ export class ReportsComponent implements OnInit, OnDestroy {
   arrestReportColumns: Column<MappedLooseDataEntity>[] = [];
 
   constructor(
-    private _store: Store,
+    private readonly store: Store<GlobalState>,
     private _looseData: LooseDataService,
     private _localization: LocalizationService,
     private _modal: ModalService,
   ) { }
 
   ngOnInit(): void {
-    this._store.select(UserState).pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(user => {
-      this.user = user.details;
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+      this.user = state.user.details;
     });
     this.getArrestReports();
   }
 
   ngOnDestroy(): void {
-    this.onDestroy$.next();
-    this.onDestroy$.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.unsubscribe();
   }
 
   getArrestReports(): void {

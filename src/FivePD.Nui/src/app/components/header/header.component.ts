@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { User } from '@models';
 import { WindowService } from '@services/window/window.service';
 import { GlobalState } from '@store';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-header',
@@ -18,10 +18,10 @@ export class HeaderComponent implements OnInit {
   statusList = ['10-1', '10-2', '10-3', '10-4'];
 
   constructor(
-    private _store: Store,
+    private readonly store: Store<GlobalState>,
     public window: WindowService,
   ) {
-    this.user$ = this._store.select((res: GlobalState) => res.user.details)
+    this.user$ = this.store.select('user', 'details');
   }
 
   ngOnInit(): void {

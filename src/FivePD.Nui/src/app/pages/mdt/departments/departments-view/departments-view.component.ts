@@ -20,15 +20,13 @@ import {
 import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
-import { UserState } from '@store/user.state';
 import { Observable, Subject, takeUntil } from 'rxjs';
-import { Select } from '@ngxs/store';
 import { ModalService } from '@services/modal/modal.service';
 import { UserService } from '@services/user/user.service';
-import { GenericNameValidator } from '@validators/generic-name-validator';
 import { Validators } from '@angular/forms';
 import { ModalFormComponent } from '../../../../components/modal/modal-form/modal-form.component';
-import { NotificationService } from '@services/notification/notification.service';
+import { Store } from '@ngrx/store';
+import { GlobalState } from '@store';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -46,11 +44,8 @@ interface FormattedUser extends User {
 })
 export class DepartmentsViewComponent implements OnInit, OnDestroy {
 
-  onDestroy$ = new Subject<void>();
-
+  destroy$ = new Subject<void>();
   user?: User;
-  @Select(UserState.details) user$!: Observable<User>;
-
   department?: Department;
   isUserInDepartment: boolean = false;
 
@@ -364,27 +359,26 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     private _localization: LocalizationService,
     private _departmentService: DepartmentService,
     private _userService: UserService,
-    private _modal: ModalService
+    private _modal: ModalService,
+    private readonly store: Store<GlobalState>,
   ) { }
 
   ngOnInit(): void {
-    this.user$.pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(user => {
-      this.user = user;
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+      this.user = state.user.details;
       this.setIsUserInDepartment();
     });
 
     this._route.params.pipe(
-      takeUntil(this.onDestroy$)
+      takeUntil(this.destroy$)
     ).subscribe(() => {
       this.getDepartment();
     });
   }
 
   ngOnDestroy(): void {
-    this.onDestroy$.next();
-    this.onDestroy$.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   setIsUserInDepartment(): void {

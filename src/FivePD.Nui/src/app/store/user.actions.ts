@@ -1,11 +1,4 @@
-﻿import { User } from '@models';
+﻿import { createAction, props } from '@ngrx/store';
+import { User } from '@models';
 
-export class SetUser {
-  static readonly type = '[user] set user';
-  constructor(public payload: User) {}
-}
-
-export class TogglePanicMode {
-  static readonly type = '[user] toggle panic mode';
-  constructor(public payload: boolean) {}
-}
+export const setUser = createAction('[user] set user', props<{ payload: User }>());

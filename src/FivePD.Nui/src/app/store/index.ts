@@ -1,5 +1,5 @@
-﻿import { AppStateModel } from './app.state';
-import { UserStateModel } from './user.state';
+﻿import { UserStateModel } from '@store/user.reducer';
+import { AppStateModel } from '@store/app.reducer';
 
 export interface GlobalState {
   app: AppStateModel;
