@@ -7,11 +7,6 @@ import {
   toggleSidebarCollapse
 } from '@store/app.actions';
 
-export interface IListItem {
-  Key: number;
-  Title: string;
-}
-
 export interface Coordinate {
   X: string;
   Y: string;

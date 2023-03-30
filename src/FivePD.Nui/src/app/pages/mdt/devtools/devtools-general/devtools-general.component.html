@@ -12,7 +12,7 @@
 
   <app-grid title="Coordinates"
             [columns]="coordinatesColumns"
-            [data]="$any(coordinates$ | async)"
+            [data]="coordinates$ | async"
             [buttons]="coordinatesButtons"
             [showPagination]="false"/>
 
