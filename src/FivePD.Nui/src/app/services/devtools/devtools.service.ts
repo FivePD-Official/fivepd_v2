@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ActionResponse } from '@models';
+import { ActionResponse, DeleteEntityType } from '@models';
 import { Coordinate } from '@store/app.reducer';
-
-export type DeleteEntityType = 'peds' | 'vehicles' | 'props' | 'all';
 
 @Injectable({
   providedIn: 'root'

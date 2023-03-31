@@ -1,10 +1,17 @@
-﻿#pragma warning disable CS1591
-#pragma warning disable SA1600
+﻿#pragma warning disable
 
 namespace FivePD.Gamemode.Server.Models.Requests
 {
     public class DeleteEntitiesRequest
     {
-        public string Type { get; set; }
+        public enum DeleteEntityType
+        {
+            All,
+            Peds,
+            Vehicles,
+            Props,
+        }
+
+        public DeleteEntityType Type { get; set; }
     }
 }

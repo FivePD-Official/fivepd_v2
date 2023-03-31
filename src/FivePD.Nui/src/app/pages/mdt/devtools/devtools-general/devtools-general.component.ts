@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DeleteEntityType, DevtoolsService } from '@services/devtools/devtools.service';
+import { DevtoolsService } from '@services/devtools/devtools.service';
 import { Observable } from 'rxjs';
 import { formatDate } from '@helpers';
 import { Button, Column, Page } from '@models';
@@ -7,6 +7,7 @@ import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { CoordinateWithDate } from '@store/app.reducer';
 import { addDevToolsCoordinate, clearDevToolsCoordinates } from '@store/app.actions';
+import { DeleteEntityType } from '@models';
 
 @Component({
   selector: 'app-devtools-general',
@@ -78,17 +79,21 @@ export class DevtoolsGeneralComponent {
     this.coordinates$ = this.store.select('app', 'devTools', 'coordinates');
   }
 
+  get DeleteEntityType() {
+    return DeleteEntityType;
+  }
+
   deleteEntities(type: DeleteEntityType): void {
     this.devtools.deleteEntities(type).subscribe();
   }
 
   copyToClipboard(text: string): void {
-    const textArea = document.createElement("textarea");
+    const textArea = document.createElement('textarea');
     textArea.value = text;
 
-    textArea.style.top = "0";
-    textArea.style.left = "0";
-    textArea.style.position = "fixed";
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.position = 'fixed';
 
     document.body.appendChild(textArea);
     textArea.focus();

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Runtime.CompilerServices;
+﻿using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Attributes;
 using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
@@ -14,63 +10,42 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Server.Services
 {
     /**
-     * <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IDevUtilitiesService" />
+     * <inheritdoc cref="IDevToolsService" />
      */
-    public class DevUtilitiesService : IDevUtilitiesService
+    public class DevToolsService : IDevToolsService
     {
-        private readonly ICommandService _commandService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DevUtilitiesService"/> class.
-        /// </summary>
-        /// <param name="commandService">The <see cref="ICommandService"/> to use.</param>
-        public DevUtilitiesService(ICommandService commandService)
-        {
-            this._commandService = commandService;
-        }
-
-        /**
-         * <inheritdoc />
-         */
-        [NoUsage]
-        public void RegisterDevelopmentCommands()
-        {
-            this._commandService.RegisterCommand("clear", (source, args) => this.DeleteAllEntities());
-        }
-
         [UIEvent(Events.DevTools.DeleteEntities)]
         private void DeleteEntitiesFromUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
             var request = expandoObject.ConvertTo<DeleteEntitiesRequest>();
             switch (request.Type)
             {
-                case "all":
+                case DeleteEntitiesRequest.DeleteEntityType.All:
                 {
                     this.DeleteAllEntities();
                     break;
                 }
 
-                case "peds":
+                case DeleteEntitiesRequest.DeleteEntityType.Peds:
                 {
                     this.DeletePeds();
                     break;
                 }
 
-                case "vehicles":
+                case DeleteEntitiesRequest.DeleteEntityType.Vehicles:
                 {
                     this.DeleteVehicles();
                     break;
                 }
 
-                case "props":
+                case DeleteEntitiesRequest.DeleteEntityType.Props:
                 {
                     this.DeleteProps();
                     break;
                 }
             }
 
-            // TODO: response title and description
-            networkCallbackDelegate.InvokeWithResponse(true, string.Empty, string.Empty);
+            networkCallbackDelegate.Invoke(null);
         }
 
         private void DeleteAllEntities()
