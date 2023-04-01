@@ -302,6 +302,24 @@ namespace FivePD.Gamemode.Server.Services
             }
         }
 
+        [UIEvent(Events.UI.Department.GetRank)]
+        private void GetDepartmentRankForNui(ExpandoObject requestString, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = requestString.ConvertTo<DepartmentRankRequest>();
+                var rank = this._databaseContext.Ranks
+                    .AsNoTracking()
+                    .FirstOrDefault(rank => rank.Id == request.RankId);
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(rank));
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
         [UIEvent(Events.UI.Department.GetRanks)]
         private void GetDepartmentRanksForNui(ExpandoObject departmentRanksRequestString, NetworkCallbackDelegate networkCallbackDelegate)
         {
@@ -317,6 +335,25 @@ namespace FivePD.Gamemode.Server.Services
 
                 var page = this._databaseContext.Ranks.AsNoTracking().Paginate(departmentRanksRequest.Page, filters);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        [UIEvent(Events.UI.Department.GetDivision)]
+        private void GetDepartmentDivisionForNui(ExpandoObject requestString, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = requestString.ConvertTo<DepartmentDivisionRequest>();
+
+                var division = this._databaseContext.Divisions
+                    .AsNoTracking()
+                    .FirstOrDefault(division => division.Id == request.DivisionId);
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(division));
             }
             catch (Exception e)
             {

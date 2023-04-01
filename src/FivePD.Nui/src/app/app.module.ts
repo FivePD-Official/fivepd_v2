@@ -12,7 +12,6 @@ import { MenuComponent } from './pages/menu/menu.component';
 import { DashboardComponent } from './pages/mdt/dashboard/dashboard.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { WindowService } from '@services/window/window.service';
-import { ModalService } from '@services/modal/modal.service';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { TranslatePipe } from './pipes/translate.pipe';
@@ -52,6 +51,8 @@ import { TabsComponent } from './components/tabs/tabs.component';
 import { StoreModule } from '@ngrx/store';
 import { userReducer } from '@store/user.reducer';
 import { appReducer } from '@store/app.reducer';
+import { DynamicFormDirective } from './components/dynamic-form/dynamic-form.directive';
+import { ModalService } from '@services/modals/modal/modal.service';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { appReducer } from '@store/app.reducer';
     DevtoolsCalloutsComponent,
     DevtoolsViewComponent,
     TabsComponent,
+    DynamicFormDirective,
   ],
   imports: [
     BrowserModule,
