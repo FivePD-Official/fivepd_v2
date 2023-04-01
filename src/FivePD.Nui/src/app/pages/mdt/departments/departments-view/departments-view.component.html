@@ -20,7 +20,8 @@
         [limitWidth]="false"
         buttonAlignment="right"
         [disableSubmitWithOriginalValue]="true"
-        (onSubmit)="onDepartmentSettingsSubmit($event)"/>
+        (onSubmit)="onDepartmentSettingsSubmit($event)"
+        [showSubmitButton]="true"/>
       <app-grid
         [title]="'Nui.Labels.Divisions' | translate"
         [buttons]="divisionsButtons"

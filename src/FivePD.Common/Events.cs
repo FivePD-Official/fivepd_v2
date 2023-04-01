@@ -220,7 +220,17 @@ namespace FivePD.Common
                 /// <summary>
                 /// Used to request the ranks of a department.
                 /// </summary>
+                public const string GetRank = "fivepd:department:getRank";
+
+                /// <summary>
+                /// Used to request the ranks of a department.
+                /// </summary>
                 public const string GetRanks = "fivepd:department:getRanks";
+
+                /// <summary>
+                /// Used to request a division of a department.
+                /// </summary>
+                public const string GetDivision = "fivepd:department:getDivision";
 
                 /// <summary>
                 /// Used to request the divisions of a department.
@@ -293,6 +303,11 @@ namespace FivePD.Common
             /// </summary>
             public abstract class LooseData
             {
+                /// <summary>
+                /// Used to get a set's attributes.
+                /// </summary>
+                public const string GetSetAttribute = "fivepd:looseData:getSetAttribute";
+
                 /// <summary>
                 /// Used to get a set's attributes.
                 /// </summary>
