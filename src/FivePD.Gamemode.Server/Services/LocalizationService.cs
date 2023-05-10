@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Attributes;
 using FivePD.Common.Exceptions;
 using FivePD.Common.Extensions;
 using FivePD.Common.Localization;
@@ -17,6 +17,7 @@ namespace FivePD.Gamemode.Server.Services
     /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.ILocalizationService" />
     public class LocalizationService : ILocalizationService, IServiceWithEvents
     {
+        private readonly Dictionary<string, Localization> _localizations = new Dictionary<string, Localization>();
         private readonly Localization _defaultLocalization;
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IFileHandlerService _fileHandlerService;
@@ -40,7 +41,7 @@ namespace FivePD.Gamemode.Server.Services
         {
             this._eventHandlerDictionary[Events.Localization.GetAvailableLocalesFromServer] += new Action<NetworkCallbackDelegate>(cb =>
             {
-                cb.Invoke(JsonConvert.SerializeObject(this._locales));
+                cb.Invoke(JsonConvert.SerializeObject(this._localizations.Keys));
             });
             this.LoadAvailableLocales();
             this.ValidateLocalizationFiles();
@@ -50,6 +51,37 @@ namespace FivePD.Gamemode.Server.Services
         public Localization GetDefaultLocalization()
         {
             return this._defaultLocalization;
+        }
+
+        /// <inheritdoc />
+        public List<Locale> GetLocales()
+        {
+            return this._locales;
+        }
+
+        /// <inheritdoc />
+        public Localization GetLocalization(string locale)
+        {
+            return this.LoadLocalization(locale);
+        }
+
+        /// <inheritdoc />
+        public Localization GetLocalization(int index)
+        {
+            var locale = this._locales.ElementAt(index).Key;
+            return this.GetLocalization(locale);
+        }
+
+        private Localization LoadLocalization(string locale)
+        {
+            if (this._localizations.ContainsKey(locale))
+            {
+                return this._localizations[locale];
+            }
+
+            var file = this._fileHandlerService.LoadFile<Localization>($"/Localization/{locale}.json", false);
+            this._localizations[locale] = file.Item1;
+            return file.Item1;
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ import { LocalizationService } from '@services/localization/localization.service
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
+import { MenuService } from '@services/menu/menu.service';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit {
     private _localization: LocalizationService,
     private _router: Router,
     private _looseData: LooseDataService,
+    private _menu: MenuService,
   ) {}
 
   ngOnInit(): void {
@@ -63,12 +65,8 @@ export class AppComponent implements OnInit {
     `));
     document.head.appendChild(style);
 
-    this.sendAvailabilityToClient();
     this._localization.load();
-  }
-
-  sendAvailabilityToClient(): void {
-    this._http.post(NuiEventType.IsNuiReady, {}).subscribe();
+    this._menu.load();
   }
 
 }

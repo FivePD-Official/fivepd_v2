@@ -10,6 +10,7 @@ using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
+#pragma warning disable CS0162
 
 namespace FivePD.Gamemode.Client.Services
 {
@@ -17,18 +18,18 @@ namespace FivePD.Gamemode.Client.Services
     public class KeybindService : IKeybindService
     {
         private readonly ITickService _tickService;
-        private readonly INuiService _nuiService;
+        private readonly IUIService _uiService;
         private readonly List<HoldableKeybind> _actions = new List<HoldableKeybind>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeybindService"/> class.
         /// </summary>
         /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-        /// <param name="nuiService">The <see cref="INuiService"/> to use.</param>
-        public KeybindService(ITickService tickService, INuiService nuiService)
+        /// <param name="uiService">The <see cref="IUIService"/> to use.</param>
+        public KeybindService(ITickService tickService, IUIService uiService)
         {
             this._tickService = tickService;
-            this._nuiService = nuiService;
+            this._uiService = uiService;
         }
 
         /// <inheritdoc />
@@ -87,7 +88,7 @@ namespace FivePD.Gamemode.Client.Services
                     return;
                 }
 
-                this._nuiService.ShowTimerBar(timeToHoldInMs);
+                this._uiService.ShowTimerBar(timeToHoldInMs);
                 this._actions.Add(holdableKeybind);
             }
 
@@ -99,7 +100,7 @@ namespace FivePD.Gamemode.Client.Services
                 }
 
                 holdableKeybind.ClearTimer();
-                this._nuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.TimerBar },
                     { "show", false },
@@ -153,7 +154,7 @@ namespace FivePD.Gamemode.Client.Services
             foreach (var item in toBeRemoved)
             {
                 item.ClearTimer();
-                this._nuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.TimerBar },
                     { "show", false },

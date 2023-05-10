@@ -41,5 +41,23 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// <returns>Returns the database connection settings.</returns>
         [NoUsage]
         public DatabaseConfig GetDatabaseConfig();
+
+        /// <summary>
+        /// Loads and returns the menu configuration.
+        /// </summary>
+        /// <returns>Returns the menu configuration.</returns>
+        public MenuConfig GetMenuConfig();
+
+        /// <summary>
+        /// Loads and returns the /Config/vehicles.json file's content.
+        /// </summary>
+        /// <returns>Returns a deserialized <see cref="Vehicles"/> object.</returns>
+        public Vehicles GetVehiclesConfig();
+
+        /// <summary>
+        /// Loads and returns the /Config/menu.json file's content.
+        /// </summary>
+        /// <returns>Returns a deserialized a list of <see cref="Loadout"/> objects.</returns>
+        public List<Loadout> GetLoadoutsConfig();
     }
 }

@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using FivePD.Common.Models;
+using FivePD.Common.UIModels.Interfaces;
 
-namespace FivePD.Gamemode.Client.Models
+namespace FivePD.Common.UIModels
 {
-    /// <inheritdoc />
-    public class MenuListItem : MenuItem
+    /// <inheritdoc cref="MenuItem" />
+    public class MenuListItem : MenuItem, IMenuListItemWithEvents
     {
-        private List<string> _items;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuListItem"/> class.
         /// </summary>
@@ -16,60 +16,54 @@ namespace FivePD.Gamemode.Client.Models
         public MenuListItem(string title, string description, List<string> items)
             : base(title, description, MenuItemType.List)
         {
-            this._items = items;
+            this.Items = items;
         }
 
         /// <summary>
         /// Used for firing the selected item change event.
         /// </summary>
+        /// <param name="player">The player who invoked this event.</param>
         /// <param name="index">The currently displayed item's index.</param>
-        public delegate void ListIndexChange(int index);
+        public delegate void ListIndexChange(FPlayer player, int index);
 
         /// <summary>
         /// Used for firing the item selection event.
         /// </summary>
+        /// <param name="player">The player who invoked this event.</param>
         /// <param name="index">The selected item's index.</param>
-        public delegate void ListItemSelect(int index);
+        public delegate void ListSelect(FPlayer player, int index);
 
         /// <summary>
         /// Fires when the selected item in the list changes.
         /// </summary>
-        public event ListIndexChange OnListIndexChange;
+        public event ListIndexChange OnIndexChange;
 
         /// <summary>
         /// Fires when the item has been selected.
         /// </summary>
-        public event ListItemSelect OnListItemSelect;
+        public event ListSelect OnSelect;
 
         /// <summary>
         /// Gets the items.
         /// </summary>
-        public List<string> Items => this._items;
+        public List<string> Items { get; }
 
         /// <summary>
-        /// Gets the currently displayed item's index.
+        /// Gets the index.
         /// </summary>
         public int CurrentIndex { get; private set; }
 
-        /// <summary>
-        /// Sets the list's items.
-        /// </summary>
-        /// <param name="items">The new items of the list.</param>
-        public void SetItems(List<string> items)
-        {
-            this._items = items;
-            this.UpdateItem("items", this._items);
-        }
-
-        private void RaiseOnListIndexChange(int index)
+        /// <inheritdoc />
+        void IMenuListItemWithEvents.RaiseOnIndexChange(FPlayer player, int index)
         {
             this.CurrentIndex = index;
-            this.OnListIndexChange?.Invoke(index);
+            this.OnIndexChange?.Invoke(player, index);
         }
 
-        private void RaiseOnListItemSelect(int index)
+        /// <inheritdoc />
+        void IMenuListItemWithEvents.RaiseOnSelect(FPlayer player, int index)
         {
-            this.OnListItemSelect?.Invoke(index);
+            this.OnSelect?.Invoke(player, index);
         }
     }
 }
