@@ -5,6 +5,7 @@
 // noted by a license provided. Do not copy or redistribute.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
@@ -125,10 +126,7 @@ namespace FivePD.Gamemode.Server.UIModels
             this._changeLanguageListItem.OnSelect += (player, index) =>
             {
                 var locale = this._localizationService.AvailableLocalizations.Keys.ToList()[index];
-                player.TriggerEvent(Events.UI.Player.LocalizationChange, new JObject
-                {
-                    { "data", JObject.FromObject(this._localizationService.GetLocalization(locale)) },
-                });
+                player.GetUnderlyingPlayer().TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationService.GetLocalization(locale));
             };
             this._changeLanguageListItem.OnIndexChange += (player, index) =>
             {

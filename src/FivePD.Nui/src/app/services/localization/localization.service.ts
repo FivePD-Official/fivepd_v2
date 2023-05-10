@@ -19,14 +19,8 @@ export class LocalizationService {
     private _event: EventService,
     private sanitizer: DomSanitizer,
   ) {
-    this._event.onEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(localization => this.set(localization.data));
-  }
-
-  load(): void {
-    this._http.post<object>('fivepd:localization:getLocalizationFromNui', {}).subscribe(localization => {
-      if (localization) {
-        this.set(localization);
-      }
+    this._event.onEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(localization => {
+      this.set(JSON.parse(localization.data))
     });
   }
 
@@ -40,7 +34,7 @@ export class LocalizationService {
   }
 
   private async set(localization: object): Promise<void> {
-    await this.sanitizeObject(localization);
+    // TODO FIX await this.sanitizeObject(localization);
     this._localization = localization;
   }
 

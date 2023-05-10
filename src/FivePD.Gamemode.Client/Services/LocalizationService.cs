@@ -48,6 +48,16 @@ namespace FivePD.Gamemode.Client.Services
             this._eventHandlerDictionary.AddUIEvent(
                 Events.Localization.GetLocalizationFromNui,
                 new Action<ExpandoObject, CallbackDelegate>((body, cb) => { cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization)); }));
+
+            this._eventHandlerDictionary[Events.UI.Player.LocalizationChange] += new Action<string>(localization =>
+            {
+                this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
+                this._uiService.SendMessage(new JObject
+                {
+                    { "type", Events.UI.Player.LocalizationChange },
+                    { "data", localization },
+                });
+            });
         }
 
         /// <inheritdoc />
@@ -69,7 +79,7 @@ namespace FivePD.Gamemode.Client.Services
                     this._uiService.SendMessage(new JObject
                     {
                         { "type", Events.UI.Player.LocalizationChange },
-                        { "data", JObject.FromObject(this.CurrentLocalization) },
+                        { "data", localization },
                     });
                 }));
         }

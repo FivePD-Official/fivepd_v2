@@ -40,7 +40,7 @@ export interface RadialMenuObjectsEvent extends BaseNuiEvent {
 }
 
 export interface LocalizationChangeEvent extends BaseNuiEvent {
-  data: object;
+  data: string;
 }
 
 export interface MenuShowEvent extends BaseNuiEvent {

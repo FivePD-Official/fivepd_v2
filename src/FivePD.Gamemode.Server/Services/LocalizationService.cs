@@ -37,8 +37,7 @@ namespace FivePD.Gamemode.Server.Services
 
             this._eventHandlerDictionary[Events.Localization.GetLocalizationFromServer] += new Action<string, NetworkCallbackDelegate>((key, cb) =>
             {
-                this._localizationCache.TryGetValue(key, out var localization);
-                cb.Invoke(localization ?? this.GetLocalization(key));
+                cb.Invoke(this.GetLocalization(key));
             });
         }
 
@@ -51,6 +50,11 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public string GetLocalization(string key)
         {
+            if (this._localizationCache.TryGetValue(key, out var localization))
+            {
+                return localization;
+            }
+
             try
             {
                 var result = this._httpService.Client.GetAsync($"/localizations/{key}").Result;

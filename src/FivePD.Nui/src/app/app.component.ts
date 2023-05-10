@@ -64,7 +64,6 @@ export class AppComponent implements OnInit {
     `));
     document.head.appendChild(style);
 
-    this._localization.load();
     this._menu.load();
   }
 }
