@@ -43,6 +43,24 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
+        public MenuConfig GetMenuConfig()
+        {
+            return this.InternalLoadFile<MenuConfig>("/Config/menu.json");
+        }
+
+        /// <inheritdoc />
+        public Vehicles GetVehiclesConfig()
+        {
+            return this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
+        }
+
+        /// <inheritdoc />
+        public List<Loadout> GetLoadoutsConfig()
+        {
+            return this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
+        }
+
+        /// <inheritdoc />
         public List<string> GetFemaleFirstnames()
         {
             return this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");

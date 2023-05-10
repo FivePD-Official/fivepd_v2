@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 import { FormInputBase, FormSubmitEvent } from '@models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import deepEqual from 'fast-deep-equal/es6';
+import { CustomValidators } from '../../helpers/validators';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -20,6 +21,8 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   @Input() buttonAlignment: 'left' | 'right' | 'full' = 'right';
   @Input() submitButtonLabel: string = '';
 
+  @Input() showSubmitButton = false;
+
   @Output() onSubmit = new EventEmitter<FormSubmitEvent>();
 
   form!: FormGroup;
@@ -30,44 +33,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.columnsGridStyle = `1fr / repeat(${this.columns}, 1fr)`;
 
-    const group: Record<string, FormControl | FormGroup> = {};
-
-    this.formFields.forEach(field => {
-      let formControl;
-      if (field.type === 'checkboxGroup') {
-        const nestedGroup: Record<string, FormControl> = {};
-        field.checkboxGroup.forEach(checkbox => {
-          nestedGroup[checkbox.key] = new FormControl(checkbox.value || false, field.validators);
-        });
-        formControl = new FormGroup(nestedGroup);
-      } else {
-        const validators = field.validators;
-        if (field.required) {
-          if (field.type === 'dropdown') {
-            validators.push((control) => control.value === -1 ? { 'required': true } : null);
-          }
-          else {
-            validators.push(Validators.required);
-          }
-        }
-
-        let fieldValue;
-        if (field.type === 'number') {
-          fieldValue = field.value === 0 ? 0 : field.value;
-        } else if (!field.value && field.type === 'checkbox') {
-          fieldValue = false;
-        } else {
-          fieldValue = field.value;
-        }
-        formControl = new FormControl(
-          fieldValue,
-          validators,
-          field.asyncValidators
-        );
-      }
-      group[field.key] = formControl;
-    });
-    this.form = new FormGroup(group);
+    this.createForm();
     this.createColumns();
 
     this.originalFormValue = this.form.value;
@@ -84,7 +50,53 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
+    this.createForm();
     this.createColumns();
+  }
+
+  createForm(): void {
+    const group: Record<string, FormControl | FormGroup> = {};
+    this.formFields.forEach(field => {
+      let formControl;
+      if (field.type === 'checkboxGroup') {
+        const nestedGroup: Record<string, FormControl> = {};
+        field.checkboxGroup.forEach(checkbox => {
+          nestedGroup[checkbox.key] = new FormControl(checkbox.value || false, field.validators);
+        });
+        formControl = new FormGroup(nestedGroup);
+      } else {
+        const validators = field.validators;
+        const asyncValidators = field.asyncValidators;
+
+        if (field.required) {
+          if (field.type === 'dropdown') {
+            validators.push((control) => control.value === -1 ? {required: true} : null);
+          } else {
+            validators.push(Validators.required);
+          }
+        }
+
+        if (field.type === 'date') {
+          validators.push(CustomValidators.date());
+        }
+
+        let fieldValue;
+        if (field.type === 'number') {
+          fieldValue = field.value === 0 ? 0 : field.value;
+        } else if (!field.value && field.type === 'checkbox') {
+          fieldValue = false;
+        } else {
+          fieldValue = field.value;
+        }
+        formControl = new FormControl(
+          {value: fieldValue, disabled: field.readonly},
+          validators,
+          asyncValidators,
+        );
+      }
+      group[field.key] = formControl;
+    });
+    this.form = new FormGroup(group);
   }
 
   createColumns(): void {
@@ -98,7 +110,6 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
   internalOnSubmit(): void {
     this.form.markAllAsTouched();
-    // console.log('invalid: ', this.form.invalid)
     if (this.form.invalid) {
       return;
     }

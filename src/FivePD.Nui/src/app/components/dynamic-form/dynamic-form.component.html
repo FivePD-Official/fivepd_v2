@@ -14,7 +14,7 @@
                               class="w-full block [&:not(:last-of-type)]:mb-5"/>
     </div>
   </div>
-  <div *ngIf="!content.children.length"
+  <div *ngIf="showSubmitButton"
        class="w-full flex flex-row items-center justify-end mt-6"
        [ngClass]="{
         'justify-start': buttonAlignment === 'left' || buttonAlignment === 'full',
@@ -23,8 +23,5 @@
     <app-button type="submit"
                 [label]="submitButtonLabel || ('UI.ACTION.SAVE' | translate)"
                 [disabled]="form.invalid || (disableSubmitWithOriginalValue && form.pristine)"/>
-  </div>
-  <div class="w-full" #content>
-    <ng-content/>
   </div>
 </form>

@@ -100,7 +100,8 @@ namespace FivePD.Gamemode.Server.QueryHelpers
                 ItemCount = query.Count(),
                 Items = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
             };
-            result.PageCount = (int)Math.Ceiling((double)result.ItemCount / pageSize);
+            var pageCount = (int)Math.Ceiling((double)result.ItemCount / pageSize);
+            result.PageCount = pageCount == 0 ? 1 : pageCount;
             return result;
         }
     }

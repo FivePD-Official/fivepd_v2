@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Button, Collation, Column, Department, NumberInput, Page, TextInput, User } from '@models';
-import { GenericNameValidator } from '@validators/generic-name-validator';
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
-import { ModalService } from '@services/modal/modal.service';
+import { ModalService } from '@services/modals/modal/modal.service';
 import { Select } from '@ngxs/store';
 import { UserState } from '@store/user.state';
-import { Observable } from 'rxjs';
+import { filter, Observable, switchMap } from 'rxjs';
 import { UserService } from '@services/user/user.service';
+import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
+import { CustomValidators } from '../../../helpers/validators';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 
 @Component({
@@ -27,7 +30,7 @@ export class DashboardComponent implements OnInit {
   departmentsButtons: Button[] = [
     {
       label: this._localization.translate('UI.ACTION.CREATE_DEPARTMENT'),
-      show: () => this.user?.Admin ?? false,
+      show: () => !!this.user?.Admin,
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
     }
@@ -58,33 +61,37 @@ export class DashboardComponent implements OnInit {
     }),
     new Column<Department>({
       header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+      show: () => !!this.user?.Admin,
       actions: [
         {
           type: 'button',
           label: this._localization.translate('UI.ACTION.DELETE'),
           show: () => true,
           disabled: () => false,
-          onClick: department => this._modal.open(ModalFormComponent, {
-            title: 'UI.LABEL.DEPARTMENT.DELETE.TITLE',
-            description: this._localization.translate('UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION', { department: `<b>${department.Name}</b>` }),
-            buttons: {
-              cancel: {
-                variant: 'secondary',
-                label: 'UI.ACTION.CANCEL',
+          onClick: department => {
+            this.modalConfirmService.open({
+              title: 'UI.LABEL.DEPARTMENT.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION', {department: `<b>${department.Name}</b>`}),
+              buttons: {
+                // cancel: {
+                //   variant: 'secondary',
+                //   label: 'UI.ACTION.CANCEL',
+                // },
+                submit: {
+                  variant: 'danger',
+                  label: 'UI.ACTION.DELETE',
+                },
               },
-              submit: {
-                variant: 'danger',
-                label: 'UI.ACTION.DELETE',
-              },
-            },
-          }).onSuccess(() => {
-            this._department.deleteDepartment(department.Id).subscribe(res => {
-              if (res.Status) {
-                this.getDepartments();
-                this._userService.refreshData();
-              }
-            });
-          })
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._department.deleteDepartment(department.Id)),
+                this._modal.handleResponse(),
+              ).subscribe(() => {
+              this.getDepartments();
+              this._userService.refreshData();
+            })
+          }
         },
       ]
     })
@@ -94,8 +101,11 @@ export class DashboardComponent implements OnInit {
     private _department: DepartmentService,
     private _localization: LocalizationService,
     private _modal: ModalService,
+    private readonly _modalFormService: ModalFormService,
+    private readonly modalConfirmService: ModalConfirmService,
     private _userService: UserService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.user$.subscribe(user => this.user = user);
@@ -114,44 +124,22 @@ export class DashboardComponent implements OnInit {
   }
 
   tryCreateDepartment(): void {
-    this._modal.open(ModalFormComponent, {
+    this._modalFormService.open({
       title: 'UI.ACTION.CREATE_DEPARTMENT',
-      fields: [
+      fields: () => [
         new TextInput({
           key: 'Name',
           required: true,
           label: 'UI.LABEL.NAME.SINGULAR',
-          asyncValidators: [GenericNameValidator.get((value) => this._department.checkIfDepartmentNameTaken(value))],
+          asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._department.checkIfDepartmentNameTaken(value))],
         }),
         new TextInput({
           key: 'Callsign',
           label: 'UI.LABEL.CALLSIGN.TITLE',
           helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
-          validators: [Validators.pattern('^[a-zA-Z]+$')]
+          validators: [CustomValidators.callsign()]
         }),
-        new TextInput({
-          key: 'CallsignFormat',
-          required: true,
-          label: 'UI.LABEL.CALLSIGN.FORMAT.TITLE',
-          helpLabel: `
-            ${this._localization.translate('UI.LABEL.CALLSIGN.FORMAT.HELP_LABEL')} ${this._localization.translate('UI.LABEL.AVAILABLE_CHARACTERS')}: <br/>
-            <table>
-              <tr>
-                <td><b>L</b><td>
-                <td>(${this._localization.translate('UI.LABEL.LETTER.SINGULAR')})<td>
-              </tr>
-              <tr>
-                <td><b>N</b><td>
-                <td>(${this._localization.translate('UI.LABEL.NUMBER.SINGULAR')})<td>
-              </tr>
-              <tr>
-                <td><b>-</b><td>
-                <td>(${this._localization.translate('UI.LABEL.DASH.SINGULAR')})<td>
-              </tr>
-            </table>
-          `,
-          validators: [Validators.pattern('^[NL0-9-*]{1,10}$')],
-        }),
+        createDepartmentCallsignFormatInputField(this._localization),
         new NumberInput({
           key: 'MaxUsers',
           required: true,
@@ -164,21 +152,13 @@ export class DashboardComponent implements OnInit {
         }),
       ],
       buttons: {
-        cancel: {
-          variant: 'secondary',
-          label: 'UI.ACTION.CANCEL'
-        },
-        submit: {
-          variant: 'primary',
-          label: 'UI.ACTION.CREATE'
-        }
+        submit: {variant: 'primary', label: 'UI.ACTION.CREATE'}
       }
-    }).onSuccess(modalRes => {
-      this._department.createDepartment(modalRes.value!).subscribe(res => {
-        if (res.Status) {
-          this.getDepartments();
-        }
-      });
-    })
+    }).result
+      .pipe(
+        filter(res => res.success),
+        switchMap(res => this._department.createDepartment(res.value)),
+        this._modal.handleResponse(),
+      ).subscribe(() => this.getDepartments())
   }
 }

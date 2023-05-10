@@ -1,32 +1,8 @@
 <app-dynamic-form
-  *ngIf="modalRef.options.fields?.length"
-  [formFields]="modalRef.options.fields!"
+  appDynamicForm
+  *ngIf="fields.length"
+  [formFields]="fields"
   [limitWidth]="false"
   (onSubmit)="submit($event)"
   [columns]="modalRef.options.columns || 1">
-  <div class="buttons-wrapper">
-    <div class="buttons">
-      <app-button
-        [variant]="modalRef.options.buttons?.cancel?.variant ?? 'secondary'"
-        [label]="modalRef.options.buttons?.cancel?.label ?? 'UI.ACTION.CANCEL' | translate"
-        (onClick)="close()"/>
-      <app-button
-        type="submit"
-        [variant]="modalRef.options.buttons?.submit?.variant ?? 'primary'"
-        [label]="modalRef.options.buttons?.submit?.label ?? 'UI.ACTION.SAVE' | translate"/>
-    </div>
-  </div>
 </app-dynamic-form>
-<div *ngIf="!modalRef.options.fields?.length" class="buttons-wrapper">
-  <div class="buttons">
-    <app-button
-      [variant]="modalRef.options.buttons?.cancel?.variant ?? 'secondary'"
-      [label]="modalRef.options.buttons?.cancel?.label ?? 'UI.ACTION.CANCEL' | translate"
-      (onClick)="close()"/>
-    <app-button
-      type="submit"
-      [variant]="modalRef.options.buttons?.submit?.variant ?? 'primary'"
-      [label]="modalRef.options.buttons?.submit?.label ?? 'UI.ACTION.SAVE' | translate"
-      (onClick)="submit()"/>
-  </div>
-</div>

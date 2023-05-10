@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Dynamic;
-using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
@@ -13,19 +12,18 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
 {
-    /// <inheritdoc cref="INuiService" />
-    public class NuiService : INuiService
+    /// <inheritdoc cref="IUIService" />
+    public class UIService : IUIService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly ILoggerService _loggerService;
         private bool _isNuiOpened;
         private bool _ready;
 
-        /// <summary>Initializes a new instance of the <see cref="NuiService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="UIService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
         /// <param name="loggerService">The <see cref="ILoggerService"/> to use.</param>
-        /// >
-        public NuiService(EventHandlerDictionary eventHandlerDictionary, ILoggerService loggerService)
+        public UIService(EventHandlerDictionary eventHandlerDictionary, ILoggerService loggerService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._loggerService = loggerService;
@@ -43,7 +41,7 @@ namespace FivePD.Gamemode.Client.Services
         public void RegisterEventHandlers()
         {
             // Listens for NUI close event
-            this._eventHandlerDictionary.AddNuiEvent(
+            this._eventHandlerDictionary.AddUIEvent(
                 Events.NuiEventType.Close,
                 new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
                 {
@@ -52,7 +50,7 @@ namespace FivePD.Gamemode.Client.Services
                 }));
 
             // Listens for NUI status checks
-            this._eventHandlerDictionary.AddNuiEvent(
+            this._eventHandlerDictionary.AddUIEvent(
                 Events.NuiEventType.ClientReady,
                 new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
                 {
@@ -69,7 +67,9 @@ namespace FivePD.Gamemode.Client.Services
                 Events.UI.Department.List,
                 Events.UI.Department.GetById,
                 Events.UI.Department.GetUsers,
+                Events.UI.Department.GetRank,
                 Events.UI.Department.GetRanks,
+                Events.UI.Department.GetDivision,
                 Events.UI.Department.GetDivisions,
                 Events.UI.Department.DeleteDivision,
                 Events.UI.Department.EditDivision,
@@ -91,6 +91,7 @@ namespace FivePD.Gamemode.Client.Services
                 Events.UI.LooseData.AddEntity,
                 Events.UI.LooseData.EditEntity,
                 Events.UI.LooseData.DeleteEntity,
+                Events.UI.LooseData.GetSetAttribute,
                 Events.UI.LooseData.GetSetAttributes,
                 Events.UI.LooseData.GetSetAttributesPageable,
                 Events.UI.LooseData.AddSetAttribute,
@@ -239,7 +240,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             foreach (var e in events)
             {
-                this._eventHandlerDictionary.AddUIEventServerResponse<ExpandoObject>(e);
+                this._eventHandlerDictionary.AddUIToServerEvent(e);
             }
         }
     }

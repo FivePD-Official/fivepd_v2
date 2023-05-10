@@ -43,5 +43,16 @@ namespace FivePD.Gamemode.Server.Extensions
         {
             networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.UNEXPECTED", "UI.ERROR.DATABASE_ACCESS.TITLE");
         }
+
+        /// <summary>
+        /// Invokes the callback with the given JSON object
+        /// serialized without reference loop.
+        /// </summary>
+        /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
+        /// <param name="data">The object to send.</param>
+        public static void InvokeWithJson(this NetworkCallbackDelegate networkCallbackDelegate, object data)
+        {
+            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(data));
+        }
     }
 }

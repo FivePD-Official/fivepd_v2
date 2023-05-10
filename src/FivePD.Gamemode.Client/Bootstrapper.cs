@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Services;
-using FivePD.Gamemode.Client.Utilities;
 using Cfx = CitizenFX.Core.Native;
-using Debug = CitizenFX.Core.Debug;
 
 #pragma warning disable S3241
 #pragma warning disable CS4014
+
+#pragma warning disable S125
+#pragma warning disable S1481
+#pragma warning disable SA1512
+#pragma warning disable S1450
+
 namespace FivePD.Gamemode.Client
 {
     /// <summary>
@@ -150,8 +152,8 @@ namespace FivePD.Gamemode.Client
                 .As<IScreenDecorService>();
 
             services
-                .RegisterType<NuiService>()
-                .As<INuiService>()
+                .RegisterType<UIService>()
+                .As<IUIService>()
                 .IsSingleton();
 
             services
@@ -164,12 +166,13 @@ namespace FivePD.Gamemode.Client
                 .IsSingleton();
 
             services
-                .RegisterType<RadialMenuService>()
-                .As<IRadialMenuService>();
-
-            services
                 .RegisterType<MenuService>()
                 .As<IMenuService>();
+
+            // TODO: I'm not sure about radial menus.
+            // services
+            //     .RegisterType<RadialMenuService>()
+            //     .As<IRadialMenuService>();
 
             services
                 .RegisterType<PedService>()
@@ -218,8 +221,11 @@ namespace FivePD.Gamemode.Client
             var keybindService = this._serviceProvider.Resolve<IKeybindService>();
             keybindService.Register(this._serviceProvider);
 
-            var nuiService = this._serviceProvider.Resolve<INuiService>();
-            nuiService.RegisterEventHandlers();
+            var uiService = this._serviceProvider.Resolve<IUIService>();
+            uiService.RegisterEventHandlers();
+
+            var menuService = this._serviceProvider.Resolve<IMenuService>();
+            menuService.RegisterEvents();
 
             var pedService = this._serviceProvider.Resolve<IPedService>();
             pedService.RegisterEvents();
@@ -227,16 +233,6 @@ namespace FivePD.Gamemode.Client
 
             var trafficStopService = this._serviceProvider.Resolve<ITrafficStopService>();
             trafficStopService.RegisterKeybinds();
-
-            var radialMenuService = this._serviceProvider.Resolve<IRadialMenuService>();
-            radialMenuService.RegisterEvents();
-            radialMenuService.CreateMenus();
-            radialMenuService.RegisterMenuKeybinds();
-
-            var menuService = this._serviceProvider.Resolve<IMenuService>();
-            menuService.RegisterEvents();
-            menuService.CreateMenus();
-            menuService.RegisterMenuKeybinds();
         }
 
         private void OnTickAdd(Func<Task> task)

@@ -1,8 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { ENTITY } from './entity-token';
-import { AttributeDataType, LooseDataEntityWrapper, MappedLooseDataEntity, ModalRef } from '@models';
+import { ATTRIBUTES, ENTITY } from './entity-token';
+import { AttributeDataType, LooseDataEntityWrapper, MappedLooseDataEntity, SetAttribute } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { formatDate } from '@helpers';
+import { tap } from 'rxjs';
+import { ModalRef } from '@services/modals/modal/modal-ref';
 
 interface EntityValue {
   name: string;
@@ -17,25 +19,34 @@ interface EntityValue {
 export class ModalEntityViewComponent implements OnInit {
 
   entityValueColumns: EntityValue[][] = [];
-  entityWrapper?: LooseDataEntityWrapper;
   columnsGridStyle: string = '';
 
   constructor(
     private modalRef: ModalRef,
     @Inject(ENTITY) private mappedEntity: MappedLooseDataEntity,
+    @Inject(ATTRIBUTES) private attributes: SetAttribute[],
     private _looseData: LooseDataService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
+    this.mapEntityValues({
+      entity: this.mappedEntity,
+      attributes: this.attributes
+    });
     this.getEntity();
     this.columnsGridStyle = `1fr / repeat(${this.modalRef.options?.columns ?? 1}, 1fr)`;
   }
 
   private getEntity(): void {
-    this._looseData.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id).subscribe(res => {
-      this.entityWrapper = res;
-      this.mapEntityValues(res);
-    });
+    this.modalRef.startLoading('Updating...');
+    this._looseData.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id)
+      .pipe(
+        tap(() => this.modalRef.stopLoading())
+      )
+      .subscribe(res => {
+        this.mapEntityValues(res);
+      });
   }
 
   private mapEntityValues(entityWrapper: LooseDataEntityWrapper): void {
@@ -65,7 +76,7 @@ export class ModalEntityViewComponent implements OnInit {
       // In case of strings replace empty value with a dash
       if (
         (attr.DataType === AttributeDataType.ShortString ||
-        attr.DataType === AttributeDataType.LongString) &&
+          attr.DataType === AttributeDataType.LongString) &&
         !value
       ) {
         value = '-';

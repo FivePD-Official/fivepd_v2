@@ -19,18 +19,18 @@ namespace FivePD.Gamemode.Client.Services
     public class LocalizationService : ILocalizationService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly INuiService _nuiService;
+        private readonly IUIService _uiService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizationService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
-        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService)
+        /// <param name="uiService">The <see cref="IUIService" /> to use.</param>
+        public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IUIService uiService)
         {
             this.Locales = new Dictionary<string, string>();
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._nuiService = nuiService;
+            this._uiService = uiService;
         }
 
         /// <inheritdoc />
@@ -45,10 +45,9 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEventHandlers()
         {
-            this._eventHandlerDictionary.AddNuiEvent(Events.Localization.GetLocalizationFromNui, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization));
-            }));
+            this._eventHandlerDictionary.AddUIEvent(
+                Events.Localization.GetLocalizationFromNui,
+                new Action<ExpandoObject, CallbackDelegate>((body, cb) => { cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization)); }));
         }
 
         /// <inheritdoc />
@@ -94,9 +93,9 @@ namespace FivePD.Gamemode.Client.Services
                 {
                     this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
                     this.LocalizationChanged?.Invoke(this, locale);
-                    this._nuiService.SendMessage(new JObject
+                    this._uiService.SendMessage(new JObject
                     {
-                        { "type", Events.NuiEventType.LocalizationChange },
+                        { "type", Events.UI.Player.LocalizationChange },
                         { "data", JObject.FromObject(this.CurrentLocalization) },
                     });
                 }));

@@ -20,7 +20,8 @@
         [limitWidth]="false"
         buttonAlignment="right"
         [disableSubmitWithOriginalValue]="true"
-        (onSubmit)="onDepartmentSettingsSubmit($event)"/>
+        (onSubmit)="onDepartmentSettingsSubmit($event)"
+        [showSubmitButton]="true"/>
       <app-grid
         [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
         [buttons]="divisionsButtons"

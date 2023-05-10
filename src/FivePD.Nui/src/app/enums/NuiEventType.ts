@@ -1,5 +1,4 @@
 export enum NuiEventType {
-  IsNuiReady = 'fivepd:nui:isNuiReady',
   ClientReady = 'ready',
   Close = 'close',
   Mdt = 'view:mdt',
@@ -11,10 +10,8 @@ export enum NuiEventType {
   MenuLeft = 'menu:control_left',
   MenuRight = 'menu:control_right',
   MenuSelect = 'menu:control_select',
-  UpdateMenuItem = 'menu:update_item',
-  LocalizationChange = 'localization:change',
-  SendMenuObjects = 'send:menus',
-  SendRadialMenuObjects = 'send:radialMenus',
+  UpdateMenuItem = 'fivepd:menu:update_item',
+  LocalizationChange = 'fivepd:player:localizationChange',
   RadialMenuControl = 'radial_menu:control',
   PlaySound = 'sound:play',
   PlayText = 'sound:playText',

@@ -6,7 +6,8 @@
     submitButtonLabel="Search"
     buttonAlignment="full"
     [formFields]="formFields"
-    (onSubmit)="onSearchSubmit($event)"/>
+    (onSubmit)="onSearchSubmit($event)"
+    [showSubmitButton]="true"/>
 
   <app-grid
     [columns]="citizensColumns"

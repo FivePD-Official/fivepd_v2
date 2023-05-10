@@ -33,7 +33,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._eventHandlerDictionary.AddUIEventServerResponse<ExpandoObject>(Events.Ped.Search);
+            this._eventHandlerDictionary.AddUIToServerEvent(Events.Ped.Search);
         }
 
         /// <inheritdoc />
