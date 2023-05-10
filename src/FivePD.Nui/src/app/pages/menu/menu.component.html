@@ -8,11 +8,17 @@
                 before:absolute before:z-10 before:inset-0 before:w-full before:h-full before:bg-white/[0.05]
                 [&.selector--on-select]:before:bg-primary/10 [&.selector--on-select]:border-primary"></div>
 
-    <div *ngFor="let item of menuItems || []" class="menu-item" [ngClass]="{ 'menu-item--disabled': !item.Enabled }">
-      <p class="title">{{ menu.useLocalization ? (item.Title | translate) : item.Title }}</p>
+    <div *ngFor="let item of menuItems"
+         class="menu-item relative z-20 w-full h-[40px] flex flex-row items-center justify-between gap-6 mb-1 px-3"
+         [ngClass]="{ 'opacity-50': !item.Enabled }">
+      <p class="text-zinc-400">{{ menu.useLocalization ? (item.Title | translate) : item.Title }}</p>
 
-      <div *ngIf="item.type === MenuItemType.Toggle" class="menu-item-toggle" [ngClass]="{ 'checked': $any(item).Checked }">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <div *ngIf="item.type === MenuItemType.Toggle"
+           class="w-[20px] h-[20px] border-2 border-zinc-500 rounded-md flex items-center justify-center transition-none"
+           [ngClass]="{ 'border-zinc-300': $any(item).Checked }">
+      <svg class="h-[18px] opacity-0 text-zinc-300 transition-none"
+           [ngClass]="{ 'opacity-100': $any(item).Checked }"
+           xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
