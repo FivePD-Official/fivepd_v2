@@ -546,8 +546,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         key: 'Name',
         required: true,
         label: 'UI.LABEL.NAME.SINGULAR',
-        // TODO fix: asyncValidators: [GenericNameValidator.get((value) => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
-        asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
+        // TODO FIX asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
       new NumberInput({

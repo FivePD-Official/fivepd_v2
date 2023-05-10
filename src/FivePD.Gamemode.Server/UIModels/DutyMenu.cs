@@ -36,7 +36,7 @@ namespace FivePD.Gamemode.Server.UIModels
         /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
         /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
         public DutyMenu(IConfigService configService, ILocalizationService localizationService)
-            : base("DutyMenu.Title", "F10", true)
+            : base("DUTY_MENU.TITLE", "F10", true)
         {
             this._configService = configService;
             this._localizationService = localizationService;
@@ -65,7 +65,7 @@ namespace FivePD.Gamemode.Server.UIModels
 
             if (this._dutyMenuConfig.DutyToggle.Enabled)
             {
-                this.DutyToggleItem = new MenuCheckboxItem("DutyMenu.OnDuty.Title", "DutyMenu.OnDuty.Description");
+                this.DutyToggleItem = new MenuCheckboxItem("DUTY_MENU.ITEM.ON_DUTY.TITLE", "DUTY_MENU.ITEM.ON_DUTY.DESCRIPTION");
                 this.DutyToggleItem.OnSelect += (player, @checked) =>
                 {
                     player.DutyStatus.Value = @checked ? FDutyStatus.OnDutyAndReceiving : FDutyStatus.OffDuty;
@@ -76,8 +76,8 @@ namespace FivePD.Gamemode.Server.UIModels
             if (this._dutyMenuConfig.SpawnVehicle.Enabled)
             {
                 this.VehicleSpawnerItem = new MenuListItem(
-                    "DutyMenu.SpawnVehicle.Title",
-                    "DutyMenu.SpawnVehicle.Description",
+                    "DUTY_MENU.ITEM.SPAWN_VEHICLE.TITLE",
+                    "DUTY_MENU.ITEM.SPAWN_VEHICLE.DESCRIPTION",
                     this._configService.GetVehiclesConfig().Police.Select(vehicle => vehicle.Name).ToList());
                 this.VehicleSpawnerItem.OnSelect += (player, index) =>
                 {
@@ -90,8 +90,8 @@ namespace FivePD.Gamemode.Server.UIModels
             if (this._dutyMenuConfig.GetLoadout.Enabled)
             {
                 this.LoadoutItem = new MenuListItem(
-                    "DutyMenu.GetLoadout.Title",
-                    "DutyMenu.GetLoadout.Description",
+                    "DUTY_MENU.ITEM.GET_LOADOUT.TITLE",
+                    "DUTY_MENU.ITEM.GET_LOADOUT.DESCRIPTION",
                     this._configService.GetLoadoutsConfig().Select(x => x.Title).ToList());
                 this.LoadoutItem.OnSelect += (player, index) =>
                 {
@@ -119,14 +119,15 @@ namespace FivePD.Gamemode.Server.UIModels
             }
 
             this._changeLanguageListItem = new MenuListItem(
-                "DutyMenu.ChangeLanguage.Title",
-                "DutyMenu.ChangeLanguage.Description",
-                this._localizationService.GetLocales().Select(x => x.Title).ToList());
+                "DUTY_MENU.ITEM.CHANGE_LANGUAGE.TITLE",
+                "DUTY_MENU.ITEM.CHANGE_LANGUAGE.DESCRIPTION",
+                this._localizationService.AvailableLocalizations.Values.ToList());
             this._changeLanguageListItem.OnSelect += (player, index) =>
             {
+                var locale = this._localizationService.AvailableLocalizations.Keys.ToList()[index];
                 player.TriggerEvent(Events.UI.Player.LocalizationChange, new JObject
                 {
-                    { "data", JObject.FromObject(this._localizationService.GetLocalization(index)) },
+                    { "data", JObject.FromObject(this._localizationService.GetLocalization(locale)) },
                 });
             };
             this._changeLanguageListItem.OnIndexChange += (player, index) =>

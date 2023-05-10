@@ -16,7 +16,6 @@ namespace FivePD.Gamemode.Server.Services
         private readonly IHttpService _httpService;
         private readonly Dictionary<string, string> _localizationCache = new Dictionary<string, string>();
         private object _defaultLocalization;
-        private string _localizations;
 
         /// <summary>Initializes a new instance of the <see cref="LocalizationService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
@@ -27,16 +26,15 @@ namespace FivePD.Gamemode.Server.Services
             this._httpService = httpService;
         }
 
+        /// <inheritdoc />
+        public Dictionary<string, string> AvailableLocalizations { get; private set; }
+
         /// <inheritdoc/>
         public void RegisterEvents()
         {
             this._defaultLocalization = JsonConvert.DeserializeObject(this.GetLocalization("en"));
             this.GetLocalizations();
 
-            this._eventHandlerDictionary[Events.Localization.GetAvailableLocalesFromServer] += new Action<NetworkCallbackDelegate>(cb =>
-            {
-                cb.Invoke(this._localizations);
-            });
             this._eventHandlerDictionary[Events.Localization.GetLocalizationFromServer] += new Action<string, NetworkCallbackDelegate>((key, cb) =>
             {
                 this._localizationCache.TryGetValue(key, out var localization);
@@ -50,24 +48,8 @@ namespace FivePD.Gamemode.Server.Services
             return this._defaultLocalization.GetValueByPath(key);
         }
 
-        private void GetLocalizations()
-        {
-            try
-            {
-                var result = this._httpService.Client.GetAsync("/localizations").Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    var content = result.Content.ReadAsStringAsync().Result;
-                    this._localizations = content;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Error loading localizations: " + e.Message);
-            }
-        }
-
-        private string GetLocalization(string key)
+        /// <inheritdoc />
+        public string GetLocalization(string key)
         {
             try
             {
@@ -87,6 +69,23 @@ namespace FivePD.Gamemode.Server.Services
             }
 
             return null;
+        }
+
+        private void GetLocalizations()
+        {
+            try
+            {
+                var result = this._httpService.Client.GetAsync("/localizations").Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var content = result.Content.ReadAsStringAsync().Result;
+                    this.AvailableLocalizations = JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error loading localizations: " + e.Message);
+            }
         }
     }
 }

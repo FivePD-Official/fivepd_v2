@@ -72,11 +72,6 @@ namespace FivePD.Common
         public abstract class Localization
         {
             /// <summary>
-            /// C->S: Used when a client wants to request all available locales.
-            /// </summary>
-            public const string GetAvailableLocalesFromServer = "fivepd:localization:getAvaibleLocalesFromServer";
-
-            /// <summary>
             /// Used to request localization from the server.
             /// </summary>
             public const string GetLocalizationFromServer = "fivepd:localization:getLocalizationFromServer";

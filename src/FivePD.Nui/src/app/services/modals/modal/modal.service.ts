@@ -22,7 +22,7 @@ export class ModalService {
   public open<T>(componentType: Type<any>, options: ModalOptions<T>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T> {
     const modifiedOptions = {...options};
     if (options.buttons?.submit) {
-      modifiedOptions.buttons!.cancel = {variant: 'secondary', label: 'Nui.Actions.Cancel'};
+      modifiedOptions.buttons!.cancel = {variant: 'secondary', label: 'UI.ACTION.CANCEL'};
     }
     const modalRef = this.appendModalComponentToMainView<T>({
       ...modifiedOptions,

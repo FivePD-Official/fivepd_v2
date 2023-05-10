@@ -51,33 +51,6 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public async Task<Dictionary<string, string>> LoadLocalizations()
-        {
-            var hasServerResponded = 0;
-            var now = DateTime.Now;
-            var timeUntilFinishWait = now.AddMinutes(1);
-
-            BaseScript.TriggerServerEvent(Events.Localization.GetAvailableLocalesFromServer, new Action<string>(localizations =>
-            {
-                hasServerResponded = 1;
-                this.Locales = JsonConvert.DeserializeObject<Dictionary<string, string>>(localizations);
-            }));
-
-            do
-            {
-                if (DateTime.Compare(DateTime.Now, timeUntilFinishWait) > 0)
-                {
-                    return new Dictionary<string, string>();
-                }
-
-                await BaseScript.Delay(1);
-            }
-            while (hasServerResponded == 0);
-
-            return this.Locales;
-        }
-
-        /// <inheritdoc />
         public void LoadDefaultLocalization()
         {
             this.LoadLocalization("en");

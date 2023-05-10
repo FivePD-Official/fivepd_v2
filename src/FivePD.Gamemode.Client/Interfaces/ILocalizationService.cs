@@ -30,12 +30,6 @@ namespace FivePD.Gamemode.Client.Interfaces
         public void RegisterEventHandlers();
 
         /// <summary>
-        /// Finds and loads all translation files located in fivepd/Localization.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public Task<Dictionary<string, string>> LoadLocalizations();
-
-        /// <summary>
         /// Loads the default localization file.
         /// </summary>
         public void LoadDefaultLocalization();
