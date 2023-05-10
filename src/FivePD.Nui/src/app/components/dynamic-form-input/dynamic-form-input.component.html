@@ -99,12 +99,12 @@
   <span *ngIf="helpLabel" class="help-label" [innerHTML]="helpLabel | safeHtml"></span>
 
   <div class="input-errors" *ngIf="(control.invalid && (control.dirty || control.touched)) && control.errors">
-    <p *ngIf="control.errors['required']">{{ 'Nui.Errors.FieldRequired' | translate }}</p>
-    <p *ngIf="control.errors['min']">{{ 'Nui.Errors.FieldMin' | translate: {'value': field.options['min']} }}</p>
-    <p *ngIf="control.errors['max']">{{ 'Nui.Errors.FieldMax' | translate: {'value': field.options['max']} }}</p>
-    <p *ngIf="control.errors['nameTaken']">{{ 'Nui.Errors.FieldNameTaken' | translate }}</p>
-    <p *ngIf="control.errors['pattern']">{{ 'Nui.Errors.FieldFormat' | translate }}</p>
-    <p *ngIf="control.errors['invalidDate']">{{ 'Nui.Errors.FieldInvalidDate' | translate }}</p>
+    <p *ngIf="control.errors['required']">{{ 'UI.ERROR.FIELD.REQUIRED' | translate }}</p>
+    <p *ngIf="control.errors['min']">{{ 'UI.ERROR.FIELD.MIN' | translate: {'value': field.options['min']} }}</p>
+    <p *ngIf="control.errors['max']">{{ 'UI.ERROR.FIELD.MAX' | translate: {'value': field.options['max']} }}</p>
+    <p *ngIf="control.errors['nameTaken']">{{ 'UI.ERROR.FIELD.NAME_TAKEN' | translate }}</p>
+    <p *ngIf="control.errors['pattern']">{{ 'UI.ERROR.FIELD.FORMAT' | translate }}</p>
+    <p *ngIf="control.errors['invalidDate']">{{ 'UI.ERROR.FIELD.DATE' | translate }}</p>
   </div>
 
 </div>

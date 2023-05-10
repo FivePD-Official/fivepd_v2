@@ -40,6 +40,10 @@ export class CustomHttpInterceptor implements HttpInterceptor {
       tap(event => {
         if (event instanceof HttpResponse) {
           const body = event.body as ActionResponse;
+          if (!body) {
+            return;
+          }
+
           if (body.hasOwnProperty('Title') && body.hasOwnProperty('Description') &&
             body.hasOwnProperty('Status') && body.hasOwnProperty('Params')
           ) {

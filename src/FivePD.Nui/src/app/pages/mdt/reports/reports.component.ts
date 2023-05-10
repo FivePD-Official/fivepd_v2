@@ -27,18 +27,18 @@ export class ReportsComponent implements OnInit, OnDestroy {
   arrestReportButtons: Button[] = [
     {
       type: 'button',
-      label: this._localization.translate('Nui.Actions.Create'),
+      label: this._localization.translate('UI.ACTION.CREATE'),
       show: () => true,
       disabled: () => !this.user?.Department,
       tooltip: {
         enabled: () => !this.user?.Department,
-        text: this._localization.translate('Nui.Labels.ArrestReportCreationTooltip'),
+        text: this._localization.translate('UI.LABEL.ARREST_REPORT.CREATE.TOOLTIP'),
         placement: 'left',
       },
       onClick: () => this.modalFormService.open({
-        title: 'Nui.Actions.Create',
+        title: 'UI.ACTION.CREATE',
         buttons: {
-          submit: {variant: 'primary', label: 'Nui.Actions.Create'},
+          submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
         fields: () => mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport)),
         columns: 2,
@@ -105,24 +105,24 @@ export class ReportsComponent implements OnInit, OnDestroy {
           actions: [
             {
               type: 'button',
-              label: this._localization.translate('Nui.Actions.View'),
+              label: this._localization.translate('UI.ACTION.VIEW'),
               show: () => true,
               onClick: entity => {
                 this._modal.open(ModalEntityViewComponent, {
-                  title: 'Nui.Labels.ArrestReport',
+                  title: 'UI.LABEL.ARREST_REPORT.SINGULAR',
                   columns: 2,
                 }, new Map().set(ENTITY, entity).set(ATTRIBUTES, wrapper.attributes));
               }
             },
             {
               type: 'button',
-              label: this._localization.translate('Nui.Actions.Edit'),
+              label: this._localization.translate('UI.ACTION.EDIT'),
               show: () => this.user?.Admin ?? false,
               onClick: entity => {
                 this.modalFormService.open({
-                    title: 'Nui.Actions.Edit',
+                    title: 'UI.ACTION.EDIT',
                     buttons: {
-                      submit: {variant: 'primary', label: 'Nui.Actions.Save'},
+                      submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
                     },
                     columns: 2,
                     fields: updatedEntity => mapAttributesToFields(this._looseData.getSetAttributes(entity.SetId), updatedEntity),
@@ -139,14 +139,14 @@ export class ReportsComponent implements OnInit, OnDestroy {
             },
             {
               type: 'button',
-              label: this._localization.translate('Nui.Actions.Delete'),
+              label: this._localization.translate('UI.ACTION.DELETE'),
               show: () => this.user?.Admin ?? false,
               onClick: item => {
                 this.modalConfirmService.open({
-                  title: 'Nui.Labels.DeleteArrestReportTitle',
-                  description: this._localization.translate('Nui.Labels.DeleteArrestReportDescription'),
+                  title: 'UI.LABEL.ARREST_REPORT.DELETE.TITLE',
+                  description: this._localization.translate('UI.LABEL.ARREST_REPORT.DELETE.DESCRIPTION'),
                   buttons: {
-                    submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+                    submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
                   },
                 }).result
                   .pipe(

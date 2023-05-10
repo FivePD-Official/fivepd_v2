@@ -280,6 +280,7 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton(this.Players);
             services.AddDbContext<DatabaseContext>();
 
+            services.AddSingleton<IHttpService, HttpService>();
             services.AddSingleton<IFileHandlerService, FileHandlerService>();
             services.AddSingleton<IConfigService, ConfigService>();
             services.AddSingleton<ICommandService, CommandService>();

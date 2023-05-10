@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import type { Localization, Paths } from '@models';
 
 @Component({
   selector: 'app-page-header',

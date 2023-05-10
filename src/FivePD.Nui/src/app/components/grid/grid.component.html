@@ -63,7 +63,7 @@
 
     <p *ngIf="!formattedRows?.length"
        class="text-zinc-400 block pt-2.5 pl-2.5">
-      {{ 'Nui.Labels.NoResults' | translate }}
+      {{ 'UI.LABEL.NO_RESULTS' | translate }}
     </p>
 
     <div class="pagination flex flex-row items-center justify-end pt-4 mt-5 border-t border-color">
@@ -72,7 +72,7 @@
                 [ngClass]="{'arrow-disabled': collation.Page === 1}">
           <div app-icon name="ChevronLeft" className="h-[22px] text-zinc-200"
                [ngClassName]="{'text-zinc-500': collation.Page === 1}"></div>
-          <span>{{ 'Nui.Labels.Previous' | translate }}</span>
+          <span>{{ 'UI.LABEL.DIRECTION.PREVIOUS' | translate }}</span>
         </button>
         <button *ngIf="collation.Page > 1" (click)="toPage(collation.Page - 1)">
           <span>{{ collation.Page - 1 }}</span>
@@ -84,7 +84,7 @@
           <span>{{ collation.Page + 1 }}</span></button>
         <button [disabled]="collation.Page === (data ? data!.PageCount : 1)" (click)="toNextPage()" class="arrow"
                 [ngClass]="{'arrow-disabled': collation.Page === (data ? data.PageCount : 1)}">
-          <span>{{ 'Nui.Labels.Next' | translate }}</span>
+          <span>{{ 'UI.LABEL.DIRECTION.NEXT' | translate }}</span>
           <div app-icon name="ChevronRight" className="h-[22px] text-zinc-200"
                [ngClassName]="{'text-zinc-500': collation.Page === (data ? data.PageCount : 1)}"></div>
         </button>

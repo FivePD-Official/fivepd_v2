@@ -58,21 +58,21 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   ranks?: Page<FormattedRank>;
   ranksButtons: Button[] = [
     {
-      label: this._localization.translate('Nui.Actions.CreateRank'),
+      label: this._localization.translate('UI.ACTION.CREATE_RANK'),
       show: () => this.user?.Admin ?? false,
       disabled: () => false,
       onClick: () => this.modalFormService.open({
-        title: 'Nui.Actions.CreateRank',
+        title: 'UI.ACTION.CREATE_RANK',
         fields: () => [
           new TextInput({
             key: 'Name',
-            label: 'Nui.Labels.Name',
-            placeholder: 'Nui.Labels.Name',
+            label: 'UI.LABEL.NAME.SINGULAR',
+            placeholder: 'UI.LABEL.NAME.SINGULAR',
             required: true,
           }),
           new CheckboxGroup({
             key: 'Permission',
-            label: 'Nui.Labels.Permissions',
+            label: 'UI.LABEL.PERMISSIONS',
             checkboxGroup: [
               new Checkbox({
                 key: 'Kick',
@@ -90,7 +90,10 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           }),
         ],
         buttons: {
-          submit: {variant: 'primary', label: 'Nui.Actions.Create'},
+          submit: {
+            variant: 'primary',
+            label: 'UI.ACTION.CREATE',
+          },
         },
       }).result
         .pipe(
@@ -109,29 +112,29 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   };
   ranksColumns: Column<FormattedRank>[] = [
     new Column<FormattedRank>({
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       accessorKey: 'Name',
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByName'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
       },
     }),
     new Column<FormattedRank>({
-      header: this._localization.translate('Nui.Labels.Permissions'),
+      header: this._localization.translate('UI.LABEL.PERMISSIONS'),
       accessorKey: 'Permissions',
     }),
     new Column<FormattedRank>({
-      header: this._localization.translate('Nui.Labels.Actions'),
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
       show: () => this.user?.Admin ?? false,
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Delete'),
+          label: this._localization.translate('UI.ACTION.DELETE'),
           onClick: rank => {
             this.modalConfirmService.open({
-              title: 'Nui.Labels.DeleteRankTitle',
-              description: this._localization.translate('Nui.Labels.DeleteRankDescription', {rank: `<b>${rank.Name}</b>`}),
+              title: 'UI.LABEL.RANK.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
               buttons: {
-                submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
               },
             }).result
               .pipe(
@@ -143,21 +146,21 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         },
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Edit'),
+          label: this._localization.translate('UI.ACTION.EDIT'),
           onClick: rank => {
             this.modalFormService.open<FormattedRank>({
-              title: 'Nui.Labels.EditRankTitle',
+              title: 'UI.LABEL.RANK.EDIT',
               fields: updatedRank => [
                 new TextInput({
                   key: 'Name',
-                  label: this._localization.translate('Nui.Labels.Name'),
-                  placeholder: this._localization.translate('Nui.Labels.Name'),
+                  label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+                  placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
                   required: true,
                   value: updatedRank.Name,
                 }),
                 new CheckboxGroup({
                   key: 'Permission',
-                  label: 'Nui.Labels.Permissions',
+                  label: 'UI.LABEL.PERMISSIONS',
                   checkboxGroup: [
                     new Checkbox({key: 'Kick', label: 'Kick label', value: updatedRank.Permission.Kick}),
                     new Checkbox({key: 'SetRank', label: 'Set rank label', value: updatedRank.Permission.SetRank}),
@@ -171,7 +174,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
               ],
               valueResolver: new ValueResolver(rank, this._departmentService.getRank(rank.Id)),
               buttons: {
-                submit: {variant: 'primary', label: 'Nui.Actions.Save'},
+                submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
               },
             }).result
               .pipe(
@@ -196,29 +199,29 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   };
   usersColumns: Column<FormattedUser>[] = [
     new Column<FormattedUser>({
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       accessorKey: 'Name',
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByName'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
       },
     }),
     new Column<FormattedUser>({
-      header: this._localization.translate('Nui.Labels.Rank'),
+      header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
       accessorKey: 'RankName',
       show: () => !this.user?.Admin ?? false,
     }),
     new Column<FormattedUser>({
-      header: this._localization.translate('Nui.Labels.Division'),
+      header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
       accessorKey: 'DivisionName',
       show: () => !this.user?.Admin ?? false,
     }),
     new Column<FormattedUser>({
-      header: this._localization.translate('Nui.Labels.Rank'),
+      header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
       show: () => this.user?.Admin ?? false,
       actions: [
         {
           type: 'select',
-          label: this._localization.translate('Nui.Labels.NoRank'),
+          label: this._localization.translate('UI.LABEL.NO_RANK'),
           selectedItemResolver: (user, dropdownItemKey) => user.RankId === dropdownItemKey,
           items: () => this.ranksDropdown,
           onSelect: (user, selectedId) => {
@@ -231,12 +234,12 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       ]
     }),
     new Column<FormattedUser>({
-      header: this._localization.translate('Nui.Labels.Division'),
+      header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
       show: () => this.user?.Admin ?? false,
       actions: [
         {
           type: 'select',
-          label: this._localization.translate('Nui.Labels.NoDivision'),
+          label: this._localization.translate('UI.LABEL.NO_DIVISION'),
           selectedItemResolver: (user, dropdownItemKey) => user.DivisionId === dropdownItemKey,
           items: () => this.divisionsDropdown,
           onSelect: (user, selectedId) => {
@@ -256,22 +259,22 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   };
   divisionsButtons: Button[] = [
     {
-      label: this._localization.translate('Nui.Actions.CreateDivision'),
+      label: this._localization.translate('UI.ACTION.CREATE_DIVISION'),
       show: () => this.user?.Admin ?? false,
       disabled: () => false,
       onClick: () => {
         this.modalFormService.open({
-          title: 'Nui.Actions.CreateDivision',
+          title: 'UI.ACTION.CREATE_DIVISION',
           fields: () => [
             new TextInput({
               key: 'Name',
-              label: 'Nui.Labels.Name',
-              placeholder: 'Nui.Labels.Name',
+              label: 'UI.LABEL.NAME.SINGULAR',
+              placeholder: 'UI.LABEL.NAME.SINGULAR',
               required: true,
             })
           ],
           buttons: {
-            submit: {variant: 'primary', label: 'Nui.Actions.Create'},
+            submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
           },
         }).result
           .pipe(
@@ -287,25 +290,25 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   ];
   divisionsColumns: Column<Division>[] = [
     new Column<Division>({
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       accessorKey: 'Name',
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByName'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
       },
     }),
     new Column<Division>({
-      header: this._localization.translate('Nui.Labels.Actions'),
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
       show: () => this.user?.Admin ?? false,
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Delete'),
+          label: this._localization.translate('UI.ACTION.DELETE'),
           onClick: division => {
             this.modalConfirmService.open({
-              title: 'Nui.Labels.DeleteDivisionTitle',
-              description: this._localization.translate('Nui.Labels.DeleteDivisionDescription', {division: `<b>${division.Name}</b>`}),
+              title: 'UI.LABEL.DIVISION.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
               buttons: {
-                submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
               },
             }).result
               .pipe(
@@ -317,22 +320,22 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
         },
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Edit'),
+          label: this._localization.translate('UI.ACTION.EDIT'),
           onClick: division => {
             this.modalFormService.open<Division>({
-              title: 'Nui.Labels.EditDivision',
+              title: 'UI.LABEL.DIVISION.EDIT',
               fields: updatedDivision => [
                 new TextInput({
                   key: 'Name',
-                  label: 'Nui.Labels.Name',
-                  placeholder: 'Nui.Labels.Name',
+                  label: 'UI.LABEL.NAME.SINGULAR',
+                  placeholder: 'UI.LABEL.NAME.SINGULAR',
                   required: true,
                   value: updatedDivision.Name,
                 })
               ],
               valueResolver: new ValueResolver(division, this._departmentService.getDivision(division.Id)),
               buttons: {
-                submit: {variant: 'primary', label: 'Nui.Actions.Save'},
+                submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
               },
             }).result
               .pipe(
@@ -388,7 +391,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   }
 
   get title(): string {
-    return `${this._localization.translate('Nui.Labels.Department')} ${(this.department?.Name ? '(' + this.department?.Name + ')' : '')}`;
+    return `${this._localization.translate('UI.LABEL.DEPARTMENT.SINGULAR')} ${(this.department?.Name ? '(' + this.department?.Name + ')' : '')}`;
   }
 
   get ranksDropdown(): DropdownItem[] {
@@ -521,13 +524,13 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     let permissions = '';
 
     if (rank.Permission.Kick) {
-      permissions += `${this._localization.translate('Nui.Actions.Kick')}, `;
+      permissions += `${this._localization.translate('UI.ACTION.KICK')}, `;
     }
     if (rank.Permission.SetRank) {
-      permissions += `${this._localization.translate('Nui.Actions.SetRank')}, `;
+      permissions += `${this._localization.translate('UI.ACTION.SET_RANK')}, `;
     }
     if (rank.Permission.SetCallsign) {
-      permissions += `${this._localization.translate('Nui.Actions.SetCallsign')}, `;
+      permissions += `${this._localization.translate('UI.ACTION.SET_CALLSIGN')}, `;
     }
 
     return permissions.length ? permissions.slice(0, -2) : '-';
@@ -542,25 +545,25 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       new TextInput({
         key: 'Name',
         required: true,
-        label: 'Nui.Labels.Name',
-        asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
+        label: 'UI.LABEL.NAME.SINGULAR',
+        // TODO FIX asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
       new NumberInput({
         key: 'MaxUsers',
-        label: 'Nui.Labels.MaxNumberOfMembers',
+        label: 'UI.LABEL.MAX_MEMBERS.TITLE',
         required: true,
         value: this.department.MaxUsers,
-        helpLabel: 'Nui.Labels.MaxNumberOfMembersHelpLabel',
+        helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
       }),
       new Dropdown({
         key: 'DefaultRankId',
-        label: 'Nui.Labels.DefaultRank',
+        label: 'UI.LABEL.DEFAULT_RANK.TITLE',
         required: false,
         value: this.department.DefaultRankId ?? -1,
-        helpLabel: 'Nui.Labels.DefaultRankDescription',
+        helpLabel: 'UI.LABEL.DEFAULT_RANK.DESCRIPTION',
         dropdownOptions: {
-          label: this._localization.translate('Nui.Labels.NoDefaultRank'),
+          label: this._localization.translate('UI.LABEL.NO_DEFAULT_RANK'),
           selectedItemResolver: (item) => item === this.department!.DefaultRankId,
           items: this.ranksDropdown,
           size: 'normal',
@@ -568,8 +571,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       }),
       new TextInput({
         key: 'Callsign',
-        label: 'Nui.Labels.Callsign',
-        helpLabel: 'Nui.Labels.CallsignHelpLabel',
+        label: 'UI.LABEL.CALLSIGN.TITLE',
+        helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
         validators: [CustomValidators.callsign()],
         value: this.department.Callsign,
       }),

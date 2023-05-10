@@ -1,4 +1,6 @@
-using FivePD.Common.Localization;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FivePD.Gamemode.Client.Interfaces
 {
@@ -8,9 +10,19 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface ILocalizationService
     {
         /// <summary>
+        /// Fires when the localization has been changed.
+        /// </summary>
+        public event EventHandler<string> LocalizationChanged;
+
+        /// <summary>
+        /// Gets all available locales.
+        /// </summary>
+        public Dictionary<string, string> Locales { get; }
+
+        /// <summary>
         /// Gets the currently set localization.
         /// </summary>
-        public Localization CurrentLocalization { get; }
+        public dynamic CurrentLocalization { get; }
 
         /// <summary>
         /// Register all localization related event handlers.
@@ -27,5 +39,12 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// </summary>
         /// <param name="locale">The localization's key.</param>
         public void LoadLocalization(string locale);
+
+        /// <summary>
+        /// Gets a localization value by its key.
+        /// </summary>
+        /// <param name="key">The key of the localization to get.</param>
+        /// <returns>A localized value.</returns>
+        public string Get(string key);
     }
 }

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-using FivePD.Common;
-using FivePD.Common.Localization;
+﻿using System.Collections.Generic;
 
 namespace FivePD.Gamemode.Server.Interfaces
 {
@@ -10,29 +8,22 @@ namespace FivePD.Gamemode.Server.Interfaces
     public interface ILocalizationService
     {
         /// <summary>
-        /// Gets the default english localization.
+        /// Gets asd.
         /// </summary>
-        /// <returns>The default english localization.</returns>
-        public Localization GetDefaultLocalization();
+        public Dictionary<string, string> AvailableLocalizations { get; }
 
         /// <summary>
-        /// Gets the available locales.
+        /// Gets a localization value by its key.
         /// </summary>
-        /// <returns>The available locales.</returns>
-        public List<Locale> GetLocales();
+        /// <param name="key">The key of the localization to get.</param>
+        /// <returns>A localized value.</returns>
+        public string Get(string key);
 
         /// <summary>
-        /// Gets the localization with the given locale.
+        /// Gets asd.
         /// </summary>
-        /// <param name="locale">The locale of the localization.</param>
-        /// <returns>The localization object.</returns>
-        public Localization GetLocalization(string locale);
-
-        /// <summary>
-        /// Gets the localization at the given index.
-        /// </summary>
-        /// <param name="index">The index of the locale.</param>
-        /// <returns>The localization object.</returns>
-        public Localization GetLocalization(int index);
+        /// <param name="key">The locale.</param>
+        /// <returns>The s.</returns>
+        public string GetLocalization(string key);
     }
 }

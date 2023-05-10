@@ -12,6 +12,7 @@ import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms
 import { CustomValidators } from '../../../helpers/validators';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,7 +29,7 @@ export class DashboardComponent implements OnInit {
   departments?: Page<Department>;
   departmentsButtons: Button[] = [
     {
-      label: this._localization.translate('Nui.Actions.CreateDepartment'),
+      label: this._localization.translate('UI.ACTION.CREATE_DEPARTMENT'),
       show: () => !!this.user?.Admin,
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
@@ -39,40 +40,47 @@ export class DashboardComponent implements OnInit {
   };
   departmentsColumnDef: Column<Department>[] = [
     new Column<Department>({
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       accessorKey: 'Name',
       linkResolver: (item) => `/mdt/departments/${item.Id}`,
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByName'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
       }
     }),
     new Column<Department>({
-      header: this._localization.translate('Nui.Labels.Callsign'),
+      header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
       accessorKey: 'Callsign',
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByCallsign'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.CALLSIGN'),
       },
     }),
     new Column<Department>({
-      header: this._localization.translate('Nui.Labels.Capacity'),
+      header: this._localization.translate('UI.LABEL.CAPACITY.SINGULAR'),
       accessorKey: 'UserCount',
-      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('Nui.Labels.NoLimit')}` : `${item.UserCount} / ${item.MaxUsers}`,
+      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
     new Column<Department>({
-      header: this._localization.translate('Nui.Labels.Actions'),
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
       show: () => !!this.user?.Admin,
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Delete'),
+          label: this._localization.translate('UI.ACTION.DELETE'),
           show: () => true,
           disabled: () => false,
           onClick: department => {
             this.modalConfirmService.open({
-              title: 'Nui.Labels.DeleteDepartmentTitle',
-              description: this._localization.translate('Nui.Labels.DeleteDepartmentDescription', {department: `<b>${department.Name}</b>`}),
+              title: 'UI.LABEL.DEPARTMENT.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION', {department: `<b>${department.Name}</b>`}),
               buttons: {
-                submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+                // cancel: {
+                //   variant: 'secondary',
+                //   label: 'UI.ACTION.CANCEL',
+                // },
+                submit: {
+                  variant: 'danger',
+                  label: 'UI.ACTION.DELETE',
+                },
               },
             }).result
               .pipe(
@@ -93,7 +101,7 @@ export class DashboardComponent implements OnInit {
     private _department: DepartmentService,
     private _localization: LocalizationService,
     private _modal: ModalService,
-    private readonly modalFormService: ModalFormService,
+    private readonly _modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
     private _userService: UserService,
   ) {
@@ -116,27 +124,27 @@ export class DashboardComponent implements OnInit {
   }
 
   tryCreateDepartment(): void {
-    this.modalFormService.open({
-      title: 'Nui.Actions.CreateDepartment',
+    this._modalFormService.open({
+      title: 'UI.ACTION.CREATE_DEPARTMENT',
       fields: () => [
         new TextInput({
           key: 'Name',
           required: true,
-          label: 'Nui.Labels.Name',
+          label: 'UI.LABEL.NAME.SINGULAR',
           asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._department.checkIfDepartmentNameTaken(value))],
         }),
         new TextInput({
           key: 'Callsign',
-          label: 'Nui.Labels.Callsign',
-          helpLabel: 'Nui.Labels.CallsignHelpLabel',
+          label: 'UI.LABEL.CALLSIGN.TITLE',
+          helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
           validators: [CustomValidators.callsign()]
         }),
         createDepartmentCallsignFormatInputField(this._localization),
         new NumberInput({
           key: 'MaxUsers',
           required: true,
-          label: 'Nui.Labels.MaxNumberOfMembers',
-          helpLabel: 'Nui.Labels.MaxNumberOfMembersHelpLabel',
+          label: 'UI.LABEL.MAX_MEMBERS.TITLE',
+          helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
           validators: [Validators.min(0)],
           options: {
             min: 0,
@@ -144,7 +152,7 @@ export class DashboardComponent implements OnInit {
         }),
       ],
       buttons: {
-        submit: {variant: 'primary', label: 'Nui.Actions.Create'}
+        submit: {variant: 'primary', label: 'UI.ACTION.CREATE'}
       }
     }).result
       .pipe(

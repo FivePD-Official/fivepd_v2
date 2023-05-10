@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
 import { NuiEventType, SetId } from '@enums';
-import { Localization } from '@models';
 import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { SetLocalization, SetMdtPath } from '@store/app.actions';
 import { HttpClient } from '@angular/common/http';
@@ -19,7 +18,7 @@ import { MenuService } from '@services/menu/menu.service';
 })
 export class AppComponent implements OnInit {
 
-  @Dispatch() setLocalization = (localization: Localization) => new SetLocalization(localization);
+  @Dispatch() setLocalization = (localization: object) => new SetLocalization(localization);
   @Dispatch() setMdtPath = (path: string[]) => new SetMdtPath(path);
 
   constructor(
@@ -65,8 +64,6 @@ export class AppComponent implements OnInit {
     `));
     document.head.appendChild(style);
 
-    this._localization.load();
     this._menu.load();
   }
-
 }

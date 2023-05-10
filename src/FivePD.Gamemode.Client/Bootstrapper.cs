@@ -213,6 +213,10 @@ namespace FivePD.Gamemode.Client
             screenDecorService.Version = "v2.0.0";
             screenDecorService.ProtectionNotice = true;
             screenDecorService.BeginTextDraw();
+            localizationService.LocalizationChanged += (sender, locale) =>
+            {
+                screenDecorService.BuildText();
+            };
 
             var keybindService = this._serviceProvider.Resolve<IKeybindService>();
             keybindService.Register(this._serviceProvider);

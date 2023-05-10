@@ -75,10 +75,10 @@ namespace FivePD.Gamemode.Client.Services
         {
             return new[]
             {
-                this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.OptionA,
-                this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.OptionB,
-                this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.OptionC,
-                this._localizationService.CurrentLocalization.PlayerStatus.OnDuty.OptionD,
+                this._localizationService.Get("PLAYER_STATUS.ON_DUTY.OPTION_A"),
+                this._localizationService.Get("PLAYER_STATUS.ON_DUTY.OPTION_B"),
+                this._localizationService.Get("PLAYER_STATUS.ON_DUTY.OPTION_C"),
+                this._localizationService.Get("PLAYER_STATUS.ON_DUTY.OPTION_D"),
             };
         }
 
@@ -86,10 +86,10 @@ namespace FivePD.Gamemode.Client.Services
         {
             return new[]
             {
-                this._localizationService.CurrentLocalization.PlayerStatus.OffDuty.OptionA,
-                this._localizationService.CurrentLocalization.PlayerStatus.OffDuty.OptionB,
-                this._localizationService.CurrentLocalization.PlayerStatus.OffDuty.OptionC,
-                this._localizationService.CurrentLocalization.PlayerStatus.OffDuty.OptionD,
+                this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.OPTION_A"),
+                this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.OPTION_B"),
+                this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.OPTION_C"),
+                this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.OPTION_D"),
             };
         }
     }

@@ -21,7 +21,6 @@ using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.UIModels;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace FivePD.Gamemode.Server.Services
