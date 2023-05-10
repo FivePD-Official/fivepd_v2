@@ -1,16 +1,9 @@
-﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
-//
-// All code and assets contained in this file are STRICTLY
-// the intellectual property of GTAPoliceMods unless otherwise
-// noted by a license provided. Do not copy or redistribute.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Attributes;
 using FivePD.Common.Exceptions;
 using FivePD.Common.Extensions;
 using FivePD.Common.Localization;

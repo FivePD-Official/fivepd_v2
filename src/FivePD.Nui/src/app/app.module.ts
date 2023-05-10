@@ -19,7 +19,6 @@ import { MenuComponent } from './pages/menu/menu.component';
 import { DashboardComponent } from './pages/mdt/dashboard/dashboard.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { WindowService } from '@services/window/window.service';
-import { ModalService } from '@services/modal/modal.service';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { TranslatePipe } from './pipes/translate.pipe';
@@ -37,7 +36,7 @@ import { ModalComponent } from './components/modal/modal.component';
 import { GridComponent } from './components/grid/grid.component';
 import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
 import { UserService } from '@services/user/user.service';
-import { ColumnsComponent } from './components/columns/columns.component';
+import { ContainerComponent } from './components/container/container.component';
 import { IconComponent } from './components/icon/icon.component';
 import {
   CitizenDatabaseIndexComponent
@@ -52,6 +51,8 @@ import { ReportsComponent } from './pages/mdt/reports/reports.component';
 import { ModalFormComponent } from './components/modal/modal-form/modal-form.component';
 import { ModalEntityViewComponent } from './components/modal/modal-entity-view/modal-entity-view.component';
 import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
+import { DynamicFormDirective } from './components/dynamic-form/dynamic-form.directive';
+import { ModalService } from '@services/modals/modal/modal.service';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,7 @@ import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
     ModalComponent,
     GridComponent,
     DepartmentsViewComponent,
-    ColumnsComponent,
+    ContainerComponent,
     IconComponent,
     CitizenDatabaseIndexComponent,
     RadialMenuComponent,
@@ -84,6 +85,7 @@ import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
     ReportsComponent,
     ModalFormComponent,
     ModalEntityViewComponent,
+    DynamicFormDirective,
   ],
   imports: [
     BrowserModule,

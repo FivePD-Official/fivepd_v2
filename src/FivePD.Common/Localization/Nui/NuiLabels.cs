@@ -1,10 +1,4 @@
-﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
-//
-// All code and assets contained in this file are STRICTLY
-// the intellectual property of GTAPoliceMods unless otherwise
-// noted by a license provided. Do not copy or redistribute.
-
-#pragma warning disable CS1591
+﻿#pragma warning disable CS1591
 #pragma warning disable SA1600
 #pragma warning disable SA1402
 
@@ -116,11 +110,11 @@ namespace FivePD.Common.Localization
 
         public string NewDepartment { get; set; } = "New department";
 
+        public string Next { get; set; } = "Next";
+
         public string No { get; set; } = "No";
 
         public string NoAssignedCall { get; set; } = "You're not assigned to a call at the moment.";
-
-        public string NoDataToDisplay { get; set; } = "No data to display.";
 
         public string NoDefaultRank { get; set; } = "No default rank";
 
@@ -130,6 +124,8 @@ namespace FivePD.Common.Localization
 
         public string NoRank { get; set; } = "No rank";
 
+        public string NoResults { get; set; } = "No results";
+
         public string NotInDepartment { get; set; } = "You're not in a department.";
 
         public string Number { get; set; } = "Number";
@@ -137,6 +133,8 @@ namespace FivePD.Common.Localization
         public string Permissions { get; set; } = "Permissions";
 
         public string Placeholder { get; set; } = "Placeholder";
+
+        public string Previous { get; set; } = "Previous";
 
         public string Rank { get; set; } = "Rank";
 

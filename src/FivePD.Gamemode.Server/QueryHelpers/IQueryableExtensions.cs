@@ -1,10 +1,4 @@
-﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
-//
-// All code and assets contained in this file are STRICTLY
-// the intellectual property of GTAPoliceMods unless otherwise
-// noted by a license provided. Do not copy or redistribute.
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
@@ -106,7 +100,8 @@ namespace FivePD.Gamemode.Server.QueryHelpers
                 ItemCount = query.Count(),
                 Items = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
             };
-            result.PageCount = (int)Math.Ceiling((double)result.ItemCount / pageSize);
+            var pageCount = (int)Math.Ceiling((double)result.ItemCount / pageSize);
+            result.PageCount = pageCount == 0 ? 1 : pageCount;
             return result;
         }
     }

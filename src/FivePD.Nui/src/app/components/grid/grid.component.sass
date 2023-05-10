@@ -1,140 +1,44 @@
-.table-container
-  margin-bottom: 40px
+.table-row
+  @apply grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2 rounded-lg hover:[&:not(.table-header):not(.table-filter)]:bg-zinc-700/40
 
-  .table-container-header
-    width: 100%
-    display: flex
-    flex-direction: row
-    align-items: center
-    justify-content: space-between
-    margin-bottom: 15px
+  .table-cell
+    @apply flex flex-row items-center min-h-[45px] py-1 pl-2.5 pr-5 [&:not(:last-of-type)]:border-r border-zinc-600
+    &.numeric
+      p
+        @apply tabular-nums
 
-    .buttons
-      display: flex
-      flex-direction: row
-      align-items: center
-      justify-content: space-between
+    p
+      @apply text-zinc-300 decoration-0
 
-  .no-data
-    font-size: 18px
-    color: var(--clr-text-secondary)
-    display: block
-    padding-top: 10px
-    padding-left: 10px
+    .table-cell-actions
+      @apply flex flex-row items-center gap-2.5
 
-  .table
-    padding: 20px 20px 20px 10px
+    app-dynamic-form-input
+      @apply w-full
 
-    .table-row
-      display: grid
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
-      grid-gap: 10px
-      border-radius: var(--radius-sm)
-      &:hover:not(.table-header):not(.table-filter)
-        background: var(--clr-bg-5)
-      &:last-of-type:not(.table-header):not(.table-filter)
-        margin-bottom: 0
+  &.table-header
+    .table-cell
+      @apply flex flex-row items-center
 
-      .table-cell
-        display: flex
-        flex-direction: row
-        align-items: center
-        min-height: 45px
-        padding: 5px 20px 5px 10px
-        &:not(:last-of-type)
-          border-right: 1px solid var(--clr-bg-40)
-        &.numeric
-          p
-            font-variant-numeric: tabular-nums
+      p
+        @apply text-xl font-bold text-zinc-200
 
-        p, a
-          font-size: 18px
-          color: var(--clr-text-secondary)
-          text-decoration: none
+.table-header .table-cell
+  @apply pb-2.5
 
-        a
-          display: flex
-          flex-direction: row
-          align-items: center
+.table-filter .table-cell
+  @apply pb-3
 
-          .icon ::ng-deep svg
-            margin-left: 10px
-            height: 20px
-            color: var(--clr-text-tertiary)
-
-        a:hover
-          color: var(--clr-text)
-
-        .table-cell-actions
-          display: flex
-          flex-direction: row
-          align-items: center
-          gap: 10px
-
-        app-dynamic-form-input
-          width: 100%
-
-          &::ng-deep .input-box
-            margin-bottom: 0
-
-      &.table-header
-        .table-cell
-          display: flex
-          flex-direction: row
-          align-items: center
-
-          p
-            font-size: 20px
-            font-weight: 700
-            color: var(--clr-text)
-
-    .table-header .table-cell
-      padding-bottom: 10px
-
-    .table-filter .table-cell
-      padding-bottom: 15px
-
-      .input-box
-        margin: 0
-
-  .table-pagination
-    display: flex
-    flex-direction: row
-    align-items: center
-    justify-content: flex-end
-    padding-top: 15px
-    margin-top: 20px
-    border-top: 1px solid var(--clr-bg-40)
-
-    .pagination-inner
-      display: flex
-      flex-direction: row
-      align-items: center
-
-      button
-        display: flex
-        flex-direction: row
-        align-items: center
-        justify-content: center
-        width: 35px
-        height: 40px
-        border-radius: var(--radius-sm)
-        background: transparent
-        margin: 0 2px
-        border: none
-        &:hover:not(:disabled):not(.active)
-          background: var(--clr-bg-80)
-          cursor: pointer
-        &:disabled
-          .icon ::ng-deep svg, span
-            color: var(--clr-text-tertiary)
-        &.active
-          background: var(--clr-bg-40)
-
-        .icon ::ng-deep svg
-          height: 22px
-          color: var(--clr-text-primary)
-
+.pagination
+  button
+    @apply flex flex-row items-center justify-center w-[40px] h-[40px] rounded-md bg-transparent border-none mx-0.5 [&.active]:bg-primary/20 hover:enabled:[&:not(.active)]:bg-zinc-700 hover:enabled:[&:not(.active)]:cursor-pointer cursor-default
+    &.arrow
+      @apply w-auto px-2 gap-1
+      &.arrow-disabled
         span
-          font-size: 18px
-          color: var(--clr-text-primary)
+          @apply text-zinc-500
+    &.active
+      span
+        @apply text-primary
+    span
+      @apply text-zinc-300 font-medium

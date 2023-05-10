@@ -6,6 +6,7 @@ import { Dispatch } from '@ngxs-labs/dispatch-decorator';
 import { HttpClient } from '@angular/common/http';
 import { SetUser } from '@store/user.actions';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class EventService {
 
   @Dispatch() setUser = (user: User) => new SetUser(user);
 
+  hadFirstEvent = false;
   private _events$ = new ReplaySubject<BaseNuiEvent>(10);
 
   constructor(
@@ -22,7 +24,16 @@ export class EventService {
   ) { }
 
   next(data: BaseNuiEvent): void {
-    console.log(data)
+    if (!this.hadFirstEvent) {
+      this.hadFirstEvent = true;
+      document.body.style.display = 'none';
+      this._http.post(NuiEventType.Close, {}).subscribe();
+    }
+
+    if (!environment.production) {
+      console.log(data)
+    }
+
     this._events$.next(data);
   }
 

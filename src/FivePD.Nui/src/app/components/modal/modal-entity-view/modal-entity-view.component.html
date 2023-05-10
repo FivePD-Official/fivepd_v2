@@ -1,8 +1,8 @@
-<div class="columns" *ngIf="entityValueColumns.length" [ngStyle]="{ grid: columnsGridStyle }">
-  <div class="column" *ngFor="let col of entityValueColumns">
-    <div class="column-item" *ngFor="let item of col">
-      <p class="name">{{ item.name }}</p>
-      <p class="value">{{ item.value }}</p>
+<div class="grid gap-7 w-full" *ngIf="entityValueColumns.length" [ngStyle]="{ grid: columnsGridStyle }">
+  <div *ngFor="let col of entityValueColumns">
+    <div class="mb-5" *ngFor="let item of col">
+      <p class="font-medium text-zinc-400">{{ item.name }}</p>
+      <p class="text-zinc-200">{{ item.value }}</p>
     </div>
   </div>
 </div>

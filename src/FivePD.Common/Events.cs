@@ -1,10 +1,4 @@
-﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
-//
-// All code and assets contained in this file are STRICTLY
-// the intellectual property of GTAPoliceMods unless otherwise
-// noted by a license provided. Do not copy or redistribute.
-
-using FivePD.Common.Models;
+﻿using FivePD.Common.Models;
 
 namespace FivePD.Common
 {
@@ -214,7 +208,17 @@ namespace FivePD.Common
                 /// <summary>
                 /// Used to request the ranks of a department.
                 /// </summary>
+                public const string GetRank = "fivepd:department:getRank";
+
+                /// <summary>
+                /// Used to request the ranks of a department.
+                /// </summary>
                 public const string GetRanks = "fivepd:department:getRanks";
+
+                /// <summary>
+                /// Used to request a division of a department.
+                /// </summary>
+                public const string GetDivision = "fivepd:department:getDivision";
 
                 /// <summary>
                 /// Used to request the divisions of a department.
@@ -287,6 +291,11 @@ namespace FivePD.Common
             /// </summary>
             public abstract class LooseData
             {
+                /// <summary>
+                /// Used to get a set's attributes.
+                /// </summary>
+                public const string GetSetAttribute = "fivepd:looseData:getSetAttribute";
+
                 /// <summary>
                 /// Used to get a set's attributes.
                 /// </summary>

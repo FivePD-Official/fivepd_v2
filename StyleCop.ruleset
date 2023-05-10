@@ -70,7 +70,7 @@
     </Rules>
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
         <Rule Id="SA1600" Action="Warning" /> <!-- Elements should be documented -->
-        <Rule Id="SA1633" Action="Warning" /> <!-- File should have header -->
+        <Rule Id="SA1633" Action="None" /> <!-- File should NOT have header -->
         <Rule Id="SA0001" Action="Warning" /> <!-- XML comments -->
         <Rule Id="SA1101" Action="Warning" /> <!-- Prefix local calls with this -->
         <Rule Id="SA1407" Action="Warning" /> <!-- Arithmetic expressions should declare precedence -->

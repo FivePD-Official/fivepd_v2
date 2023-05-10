@@ -1,8 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { ENTITY } from './entity-token';
-import { LooseDataEntityWrapper, MappedLooseDataEntity, ModalRef } from '@models';
+import { ATTRIBUTES, ENTITY } from './entity-token';
+import { AttributeDataType, LooseDataEntityWrapper, MappedLooseDataEntity, SetAttribute } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { formatDate } from '@helpers';
+import { tap } from 'rxjs';
+import { ModalRef } from '@services/modals/modal/modal-ref';
 
 interface EntityValue {
   name: string;
@@ -17,25 +19,34 @@ interface EntityValue {
 export class ModalEntityViewComponent implements OnInit {
 
   entityValueColumns: EntityValue[][] = [];
-  entityWrapper?: LooseDataEntityWrapper;
   columnsGridStyle: string = '';
 
   constructor(
     private modalRef: ModalRef,
     @Inject(ENTITY) private mappedEntity: MappedLooseDataEntity,
+    @Inject(ATTRIBUTES) private attributes: SetAttribute[],
     private _looseData: LooseDataService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
+    this.mapEntityValues({
+      entity: this.mappedEntity,
+      attributes: this.attributes
+    });
     this.getEntity();
     this.columnsGridStyle = `1fr / repeat(${this.modalRef.options?.columns ?? 1}, 1fr)`;
   }
 
   private getEntity(): void {
-    this._looseData.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id).subscribe(res => {
-      this.entityWrapper = res;
-      this.mapEntityValues(res);
-    });
+    this.modalRef.startLoading('Updating...');
+    this._looseData.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id)
+      .pipe(
+        tap(() => this.modalRef.stopLoading())
+      )
+      .subscribe(res => {
+        this.mapEntityValues(res);
+      });
   }
 
   private mapEntityValues(entityWrapper: LooseDataEntityWrapper): void {
@@ -46,10 +57,29 @@ export class ModalEntityViewComponent implements OnInit {
         value = formatDate(value);
       }
 
-      let name = attr.Label ?? '-';
-      if (name === 'DepartmentId' && entityWrapper.entity['Department']) {
+      let name = attr.Label ?? '<Missing label>';
+      // Replace dedicated field IDs with their Name
+      if (name === 'Department' && entityWrapper.entity['Department']) {
         name = 'Department';
         value = entityWrapper.entity['Department']['Name'] ?? '-';
+      }
+      if (name === 'User' && entityWrapper.entity['User']) {
+        name = 'User';
+        value = entityWrapper.entity['User']['Name'] ?? '-';
+      }
+
+      // Replace enum index with value
+      if (attr.Options?.Items) {
+        value = attr.Options.Items[value];
+      }
+
+      // In case of strings replace empty value with a dash
+      if (
+        (attr.DataType === AttributeDataType.ShortString ||
+          attr.DataType === AttributeDataType.LongString) &&
+        !value
+      ) {
+        value = '-';
       }
 
       values.push({

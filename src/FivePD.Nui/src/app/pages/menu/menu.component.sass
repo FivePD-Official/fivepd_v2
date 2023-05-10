@@ -141,6 +141,12 @@
             color: var(--clr-text-secondary)
             white-space: nowrap
 
+.marquee
+  left: 50%
+  transform: translateY(-50%)
+  animation: marquee 4s linear infinite
+  animation-delay: 1s
+
 @keyframes marquee
   0%
     transform: translate(0, -50%)

@@ -1,7 +1,9 @@
 import { SetAttribute } from './loose-data';
 
-export interface User {
+export interface WithId {
   Id: number;
+}
+export interface User extends WithId {
   Name: string;
   License: string;
   Admin: boolean;
@@ -14,8 +16,7 @@ export interface User {
   RankId?: number;
 }
 
-export interface Department {
-  Id: number;
+export interface Department extends WithId {
   Name: string;
   Callsign: string;
   CallsignFormat: string;
@@ -28,13 +29,11 @@ export interface Department {
   DefaultRankId?: number;
 }
 
-export interface Division {
-  Id: number;
+export interface Division extends WithId {
   Name: string;
 }
 
-export interface Rank {
-  Id: number;
+export interface Rank extends WithId {
   Name: string;
   Permission: {
     Kick: boolean;
@@ -51,8 +50,7 @@ export interface Page<T> {
   ItemCount: number;
 }
 
-export interface LooseDataEntity {
-  Id: number;
+export interface LooseDataEntity extends WithId {
   SetId: string;
   MappedValues: Record<string, any>;
 }

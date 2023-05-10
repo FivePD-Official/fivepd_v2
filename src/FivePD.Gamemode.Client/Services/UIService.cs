@@ -1,10 +1,4 @@
-﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
-//
-// All code and assets contained in this file are STRICTLY
-// the intellectual property of GTAPoliceMods unless otherwise
-// noted by a license provided. Do not copy or redistribute.
-
-using System;
+﻿using System;
 using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -73,7 +67,9 @@ namespace FivePD.Gamemode.Client.Services
                 Events.UI.Department.List,
                 Events.UI.Department.GetById,
                 Events.UI.Department.GetUsers,
+                Events.UI.Department.GetRank,
                 Events.UI.Department.GetRanks,
+                Events.UI.Department.GetDivision,
                 Events.UI.Department.GetDivisions,
                 Events.UI.Department.DeleteDivision,
                 Events.UI.Department.EditDivision,
@@ -95,6 +91,7 @@ namespace FivePD.Gamemode.Client.Services
                 Events.UI.LooseData.AddEntity,
                 Events.UI.LooseData.EditEntity,
                 Events.UI.LooseData.DeleteEntity,
+                Events.UI.LooseData.GetSetAttribute,
                 Events.UI.LooseData.GetSetAttributes,
                 Events.UI.LooseData.GetSetAttributesPageable,
                 Events.UI.LooseData.AddSetAttribute,

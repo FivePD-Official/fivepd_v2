@@ -1,8 +1,12 @@
 ﻿import { Tooltip } from './tooltip';
 
+export type ButtonVariants = 'primary' | 'secondary' | 'tertiary' | 'tertiary-bg' | 'danger';
+export type ButtonSizes = 'base' | 'sm';
+
 export interface Button {
   label: string;
-  theme?: 'primary' | 'secondary' | 'small' | 'danger';
+  theme?: ButtonVariants;
+  size?: ButtonSizes;
   type?: 'button' | 'submit';
   show: () => boolean;
   disabled: () => boolean;

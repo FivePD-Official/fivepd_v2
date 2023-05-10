@@ -89,17 +89,19 @@ export interface Localization {
       MyDetails: string;
       Name: string;
       NewDepartment: string;
+      Next: string;
       No: string;
       NoAssignedCall: string;
-      NoDataToDisplay: string;
       NoDefaultRank: string;
       NoDivision: string;
       NoLimit: string;
       NoRank: string;
+      NoResults: string;
       NotInDepartment: string;
       Number: string;
       Permissions: string;
       Placeholder: string;
+      Previous: string;
       Rank: string;
       Ranks: string;
       Reports: string;
@@ -296,17 +298,19 @@ export const defaultLocalization: Localization = {
       MyDetails: '',
       Name: '',
       NewDepartment: '',
+      Next: '',
       No: '',
       NoAssignedCall: '',
-      NoDataToDisplay: '',
       NoDefaultRank: '',
       NoDivision: '',
       NoLimit: '',
       NoRank: '',
+      NoResults: '',
       NotInDepartment: '',
       Number: '',
       Permissions: '',
       Placeholder: '',
+      Previous: '',
       Rank: '',
       Ranks: '',
       Reports: '',

@@ -1,37 +1,8 @@
 <app-dynamic-form
-  *ngIf="modalRef.options.fields?.length"
-  [formFields]="modalRef.options.fields!"
+  appDynamicForm
+  *ngIf="fields.length"
+  [formFields]="fields"
   [limitWidth]="false"
   (onSubmit)="submit($event)"
-  [columns]="modalRef.options.columns || 1"
->
-  <div class="buttons-wrapper">
-    <div class="buttons">
-      <app-button
-        [theme]="modalRef.options.buttons?.cancel?.theme ?? 'secondary'"
-        [label]="modalRef.options.buttons?.cancel?.label ?? 'Nui.Actions.Cancel' | translate"
-        (onClick)="close()">
-      </app-button>
-      <app-button
-        type="submit"
-        [theme]="modalRef.options.buttons?.submit?.theme ?? 'primary'"
-        [label]="modalRef.options.buttons?.submit?.label ?? 'Nui.Actions.Save' | translate">
-      </app-button>
-    </div>
-  </div>
+  [columns]="modalRef.options.columns || 1">
 </app-dynamic-form>
-<div *ngIf="!modalRef.options.fields?.length" class="buttons-wrapper">
-  <div class="buttons">
-    <app-button
-      [theme]="modalRef.options.buttons?.cancel?.theme ?? 'secondary'"
-      [label]="modalRef.options.buttons?.cancel?.label ?? 'Nui.Actions.Cancel' | translate"
-      (onClick)="close()">
-    </app-button>
-    <app-button
-      type="submit"
-      [theme]="modalRef.options.buttons?.submit?.theme ?? 'primary'"
-      [label]="modalRef.options.buttons?.submit?.label ?? 'Nui.Actions.Save' | translate"
-      (onClick)="submit()">
-    </app-button>
-  </div>
-</div>
