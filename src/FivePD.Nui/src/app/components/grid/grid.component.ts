@@ -25,7 +25,8 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   @Input() title: string = '';
   @Input() buttons: Button[] = [];
   @Input() columns: Column<T>[] = [];
-  @Input() data: Page<T> | undefined;
+  @Input() data: Page<T> | undefined | null;
+  @Input() showPagination: boolean = true;
 
   formattedColumns: Column<T>[] = [];
   formattedRows: FormattedRow<T>[] = [];

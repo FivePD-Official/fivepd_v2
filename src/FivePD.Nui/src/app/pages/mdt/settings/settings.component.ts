@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { DefaultSetId } from '@enums';
-import { ModalService } from '@services/modals/modal/modal.service';
-import { UserState, UserStateModel } from '@store/user.state';
 import { filter, Subject, switchMap, takeUntil } from 'rxjs';
-import { Store } from '@ngxs/store';
-import { LocalizationService } from '@services/localization/localization.service';
 import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
-import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
-import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
+import { LocalizationService } from '@services/localization/localization.service';
+import { DefaultSetId } from '@enums';
+import { Store } from '@ngrx/store';
+import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { GlobalState } from '@store';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { ModalService } from '@services/modals/modal/modal.service';
 
 @Component({
   selector: 'app-settings',
@@ -19,7 +19,7 @@ import { ValueResolver } from '@services/modals/modal-form/modal-form-value-reso
 })
 export class SettingsComponent implements OnInit {
 
-  onDestroy$ = new Subject<void>();
+  destroy$ = new Subject<void>();
 
   user?: User;
 
@@ -153,24 +153,22 @@ export class SettingsComponent implements OnInit {
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
     private _localization: LocalizationService,
-    private _store: Store,
+    private readonly store: Store<GlobalState>,
   ) {
   }
 
   ngOnInit(): void {
-    this._store.select(UserState).pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((user: UserStateModel) => {
-      this.user = user.details;
-      if (user.details.Admin) {
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+      this.user = state.user.details;
+      if (state.user.details.Admin) {
         this.getArrestReportAttributes();
       }
     });
   }
 
   ngOnDestroy(): void {
-    this.onDestroy$.next();
-    this.onDestroy$.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.unsubscribe();
   }
 
   getArrestReportAttributes(): void {

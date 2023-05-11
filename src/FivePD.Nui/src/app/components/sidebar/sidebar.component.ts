@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GlobalState } from '@store';
-import { Store } from '@ngxs/store';
-import { Dispatch } from '@ngxs-labs/dispatch-decorator';
-import { ToggleSidebarCollapse } from '@store/app.actions';
-import { TogglePanicMode } from '@store/user.actions';
 import { IconType, User } from '@models';
+import { Store } from '@ngrx/store';
+import { toggleSidebarCollapse } from '@store/app.actions';
+import { Subject, takeUntil } from 'rxjs';
 
 interface Route {
   title: string;
@@ -18,14 +17,11 @@ interface Route {
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.sass'],
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnDestroy {
 
-  @Dispatch() togglePanicMode = () => new TogglePanicMode(!this.isPanicModeActive);
-  @Dispatch() toggleSidebarCollapse = () => new ToggleSidebarCollapse(!this.isSidebarCollapsed);
-
+  destroy$ = new Subject<void>();
   user?: User;
   isSidebarCollapsed: boolean = false;
-  isPanicModeActive: boolean = false;
   routes: Route[] = [
     {
       title: 'UI.LABEL.DASHBOARD',
@@ -63,19 +59,31 @@ export class SidebarComponent implements OnInit {
       icon: IconType.Users,
       show: () => !!this.user?.Department ?? false,
     },
+    {
+      // @ts-ignore
+      title: 'Developer tools',
+      path: () => '/mdt/devtools',
+      icon: IconType.CodeBracket,
+      show: () => this.user?.Admin ?? false,
+    }
   ];
 
   constructor(
-    private _store: Store,
+    private readonly store: Store<GlobalState>,
   ) {
-    this._store.subscribe((res: GlobalState) => {
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.isSidebarCollapsed = res.app.isSidebarCollapsed;
-      this.isPanicModeActive = res.user.isPanicModeActive;
       this.user = res.user.details;
     });
   }
 
-  ngOnInit(): void {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.unsubscribe();
+  }
+
+  toggleSidebarCollapse(): void {
+    this.store.dispatch(toggleSidebarCollapse());
   }
 
 }

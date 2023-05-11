@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Select } from '@ngxs/store';
-import { AppState } from '@store/app.state';
+import { Store } from '@ngrx/store';
+import { GlobalState } from '@store';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -10,9 +10,13 @@ import { Observable } from 'rxjs';
 })
 export class MdtComponent implements OnInit {
 
-  @Select(AppState.isSidebarCollapsed) isSidebarCollapsed$!: Observable<boolean>;
+  isSidebarCollapsed$: Observable<boolean>;
 
-  constructor() { }
+  constructor(
+    private readonly store: Store<GlobalState>,
+  ) {
+    this.isSidebarCollapsed$ = this.store.select('app', 'isSidebarCollapsed');
+  }
 
   ngOnInit(): void {
   }

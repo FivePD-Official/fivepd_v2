@@ -1,28 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Button, Collation, Column, Department, NumberInput, Page, TextInput, User } from '@models';
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
-import { ModalService } from '@services/modals/modal/modal.service';
-import { Select } from '@ngxs/store';
-import { UserState } from '@store/user.state';
-import { filter, Observable, switchMap } from 'rxjs';
-import { UserService } from '@services/user/user.service';
+import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
+import { UserService } from '@services/user/user.service';
 import { CustomValidators } from '../../../helpers/validators';
-import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { Store } from '@ngrx/store';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
-import { ModalFormComponent } from '../../../components/modal/modal-form/modal-form.component';
+import { GlobalState } from '@store';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { ModalService } from '@services/modals/modal/modal.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.sass']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
+  destroy$ = new Subject<void>();
   user?: User;
-  @Select(UserState.details) user$!: Observable<User>;
   statistics: any;
   assignedCall: any;
 
@@ -104,12 +103,18 @@ export class DashboardComponent implements OnInit {
     private readonly _modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
     private _userService: UserService,
+    private readonly store: Store<GlobalState>,
   ) {
   }
 
   ngOnInit(): void {
-    this.user$.subscribe(user => this.user = user);
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => this.user = state.user.details);
     this.getDepartments();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.unsubscribe();
   }
 
   getDepartments(): void {

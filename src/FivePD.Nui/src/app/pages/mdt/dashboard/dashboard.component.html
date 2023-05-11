@@ -11,19 +11,19 @@
           class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
           <li>
             <p>{{ 'UI.LABEL.DEPARTMENT.SINGULAR' | translate }}</p>
-            <p>{{ (user$ | async)?.Department?.Name ?? '-' }}</p>
+            <p>{{ user?.Department?.Name ?? '-' }}</p>
           </li>
           <li>
             <p>{{ 'UI.LABEL.DIVISION.SINGULAR' | translate }}</p>
-            <p>{{ (user$ | async)?.Division?.Name ?? '-' }}</p>
+            <p>{{ user?.Division?.Name ?? '-' }}</p>
           </li>
           <li>
             <p>{{ 'UI.LABEL.RANK.SINGULAR' | translate }}</p>
-            <p>{{ (user$ | async)?.Rank?.Name ?? '-' }}</p>
+            <p>{{ user?.Rank?.Name ?? '-' }}</p>
           </li>
           <li>
             <p>{{ 'UI.LABEL.CALLSIGN.TITLE' | translate }}</p>
-            <p>{{ (user$ | async)?.Callsign ?? '-' }}</p>
+            <p>{{ user?.Callsign ?? '-' }}</p>
           </li>
         </ul>
       </div>

@@ -288,7 +288,7 @@ namespace FivePD.Gamemode.Server
             services.AddTransient<IAddonLoggerService, AddonLoggerService>();
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
-            services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
+            services.AddSingleton<IDevToolsService, DevToolsService>();
             services.AddSingleton<ILooseDataService, LooseDataService>();
             services.AddSingleton<IDepartmentService, DepartmentService>();
 
@@ -406,14 +406,6 @@ namespace FivePD.Gamemode.Server
                 log?.Debug("Registering event handlers for {Service}", service.GetType());
 
                 service.RegisterEvents();
-            }
-
-            // Check for dev mode. If enabled, register the utilities
-            if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
-            {
-                var devUtilsService = this._provider.GetService<IDevUtilitiesService>();
-
-                devUtilsService?.RegisterDevelopmentCommands();
             }
 
             var tickQueueService = this._provider.GetService<ITickQueueService>();

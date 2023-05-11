@@ -3,19 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { NuiEventType } from '@enums';
 import { EventService } from '@services/event/event.service';
 import { BaseNuiEvent, MenuShowEvent, TimerBarEvent } from '@models';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
-import { Select } from '@ngxs/store';
-import { AppState } from '@store/app.state';
 import { UserService } from '@services/user/user.service';
-import { TimerBarComponent } from '../../pages/timer-bar/timer-bar.component';
+import { Store } from '@ngrx/store';
+import { GlobalState } from '@store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WindowService {
-
-  @Select(AppState.previousMdtPath) previousMdtPath$!: Observable<string[]>;
 
   visible: boolean = false; // TODO: this is only needed because of the close event spam
   previousMdtPath: string[] = ['mdt', 'dashboard'];
@@ -25,6 +22,7 @@ export class WindowService {
     private _event: EventService,
     private _router: Router,
     private _userService: UserService,
+    private readonly store: Store<GlobalState>,
   ) {
     this._event.onEvent<TimerBarEvent>('webpackInvalid' as NuiEventType).subscribe(() => this.hide());
     this._event.onEvent<TimerBarEvent>('webpackOk' as NuiEventType).subscribe(() => this.hide());
@@ -38,7 +36,9 @@ export class WindowService {
     this._event.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(res => this.onRadialMenuOpen(res));
     this._event.onEvent<TimerBarEvent>(NuiEventType.TimerBar).subscribe(res => this.onTimerBarEvent(res));
 
-    this.previousMdtPath$.subscribe(value => this.previousMdtPath = value);
+    this.store.subscribe(state => {
+      this.previousMdtPath = state.app.previousMdtPath;
+    });
   }
 
   show(): void {

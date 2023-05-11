@@ -383,5 +383,21 @@ namespace FivePD.Common
                 public const string UpdateMenuItem = "fivepd:menu:update_item";
             }
         }
+
+        /// <summary>
+        /// Contains definitions for developer tool events.
+        /// </summary>
+        public abstract class DevTools
+        {
+            /// <summary>
+            /// Used to delete all entities of a given type.
+            /// </summary>
+            public const string DeleteEntities = "fivepd:devtools:deleteEntities";
+
+            /// <summary>
+            /// Used to get the player's current coordinate.
+            /// </summary>
+            public const string GetCurrentPlayerCoordinate = "fivepd:devtools:getCurrentPlayerCoordinate";
+        }
     }
 }

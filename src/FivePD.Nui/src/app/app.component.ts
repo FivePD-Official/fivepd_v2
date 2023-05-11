@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { NuiEventType, SetId } from '@enums';
-import { Dispatch } from '@ngxs-labs/dispatch-decorator';
-import { SetLocalization, SetMdtPath } from '@store/app.actions';
 import { HttpClient } from '@angular/common/http';
 import { WindowService } from '@services/window/window.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
+import { Store } from '@ngrx/store';
+import { GlobalState } from '@store';
+import { setMdtPath } from '@store/app.actions';
 import { MenuService } from '@services/menu/menu.service';
 
 @Component({
@@ -18,9 +18,6 @@ import { MenuService } from '@services/menu/menu.service';
 })
 export class AppComponent implements OnInit {
 
-  @Dispatch() setLocalization = (localization: object) => new SetLocalization(localization);
-  @Dispatch() setMdtPath = (path: string[]) => new SetMdtPath(path);
-
   constructor(
     private _http: HttpClient,
     private _event: EventService,
@@ -28,6 +25,7 @@ export class AppComponent implements OnInit {
     private _localization: LocalizationService,
     private _router: Router,
     private _looseData: LooseDataService,
+    private readonly store: Store<GlobalState>,
     private _menu: MenuService,
   ) {}
 
@@ -37,7 +35,7 @@ export class AppComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       filter(event => event.url !== '/' && event.url.startsWith('/mdt'))
     ).subscribe(event => {
-      this.setMdtPath(event.url.split('/'));
+      this.store.dispatch(setMdtPath({payload: event.url.split('/')}));
     });
     window.addEventListener('message', event => this._event.next(event.data));
     window.addEventListener('keydown', event => {

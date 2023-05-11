@@ -61,6 +61,13 @@ namespace FivePD.Gamemode.Client.Services
                     cb.Invoke(true);
                 }));
 
+            this._eventHandlerDictionary.AddUIEvent(
+                Events.DevTools.GetCurrentPlayerCoordinate,
+                new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+                {
+                    cb.Invoke(JsonConvert.SerializeObject(Game.PlayerPed.Position));
+                }));
+
             this.RegisterUIEvents(new[]
             {
                 Events.UI.Department.List,
@@ -97,6 +104,7 @@ namespace FivePD.Gamemode.Client.Services
                 Events.UI.LooseData.AddSetAttribute,
                 Events.UI.LooseData.EditSetAttribute,
                 Events.UI.LooseData.DeleteSetAttribute,
+                Events.DevTools.DeleteEntities,
             });
         }
 

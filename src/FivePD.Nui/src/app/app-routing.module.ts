@@ -12,6 +12,60 @@ import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 import { SettingsComponent } from './pages/mdt/settings/settings.component';
 import { ReportsComponent } from './pages/mdt/reports/reports.component';
+import { DevtoolsGeneralComponent } from './pages/mdt/devtools/devtools-general/devtools-general.component';
+import { DevtoolsCalloutsComponent } from './pages/mdt/devtools/devtools-callouts/devtools-callouts.component';
+import { DevtoolsViewComponent } from './pages/mdt/devtools/devtools-view/devtools-view.component';
+
+const mdtRoutes: Routes = [
+  {
+    path: 'dashboard',
+    component: DashboardComponent
+  },
+  {
+    path: 'reports',
+    component: ReportsComponent
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent
+  },
+  {
+    path: 'citizen-database',
+    children: [
+      {
+        path: '',
+        component: CitizenDatabaseIndexComponent
+      }
+    ]
+  },
+  {
+    path: 'vehicle-database',
+    component: DashboardComponent
+  },
+  {
+    path: 'departments',
+    children: [
+      {
+        path: ':id',
+        component: DepartmentsViewComponent
+      }
+    ]
+  },
+  {
+    path: 'devtools',
+    component: DevtoolsViewComponent,
+    children: [
+      {
+        path: '',
+        component: DevtoolsGeneralComponent,
+      },
+      {
+        path: 'callouts',
+        component: DevtoolsCalloutsComponent
+      }
+    ]
+  },
+];
 
 const routes: Routes = [
   {
@@ -33,42 +87,7 @@ const routes: Routes = [
   {
     path: 'mdt',
     component: MdtComponent,
-    children: [
-      {
-        path: 'dashboard',
-        component: DashboardComponent
-      },
-      {
-        path: 'reports',
-        component: ReportsComponent
-      },
-      {
-        path: 'settings',
-        component: SettingsComponent
-      },
-      {
-        path: 'citizen-database',
-        children: [
-          {
-            path: '',
-            component: CitizenDatabaseIndexComponent
-          }
-        ]
-      },
-      {
-        path: 'vehicle-database',
-        component: DashboardComponent
-      },
-      {
-        path: 'departments',
-        children: [
-          {
-            path: ':id',
-            component: DepartmentsViewComponent
-          }
-        ]
-      }
-    ]
+    children: mdtRoutes,
   },
 ];
 
@@ -76,4 +95,5 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

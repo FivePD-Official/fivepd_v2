@@ -20,16 +20,17 @@ import {
 import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
-import { UserState } from '@store/user.state';
-import { filter, Observable, Subject, switchMap, takeUntil } from 'rxjs';
-import { Select } from '@ngxs/store';
-import { ModalService } from '@services/modals/modal/modal.service';
-import { UserService } from '@services/user/user.service';
+import { filter, switchMap, Subject } from 'rxjs';
+import { GlobalState } from '@store';
 import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
-import { CustomValidators } from '../../../../helpers/validators';
-import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { UserService } from '@services/user/user.service';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { CustomValidators } from '../../../../helpers/validators';
+import { ModalService } from '@services/modals/modal/modal.service';
+import { Store } from '@ngrx/store';
+import { takeUntil } from 'rxjs';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -47,11 +48,8 @@ interface FormattedUser extends User {
 })
 export class DepartmentsViewComponent implements OnInit, OnDestroy {
 
-  onDestroy$ = new Subject<void>();
-
+  destroy$ = new Subject<void>();
   user?: User;
-  @Select(UserState.details) user$!: Observable<User>;
-
   department?: Department;
   isUserInDepartment: boolean = false;
 
@@ -361,29 +359,28 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     private _departmentService: DepartmentService,
     private _userService: UserService,
     private _modal: ModalService,
+    private readonly store: Store<GlobalState>,
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
   ) {
   }
 
   ngOnInit(): void {
-    this.user$.pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(user => {
-      this.user = user;
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+      this.user = state.user.details;
       this.setIsUserInDepartment();
     });
 
     this._route.params.pipe(
-      takeUntil(this.onDestroy$)
+      takeUntil(this.destroy$)
     ).subscribe(() => {
       this.getDepartment();
     });
   }
 
   ngOnDestroy(): void {
-    this.onDestroy$.next();
-    this.onDestroy$.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   setIsUserInDepartment(): void {

@@ -56,6 +56,7 @@ export class ButtonComponent implements OnInit, OnChanges {
   @Input() type: Button['type'] = 'button';
   @Input() show: boolean = true;
   @Input() disabled: boolean = false;
+  @Input() fullWidth: boolean = false;
   @Input() link?: Button['link'];
   @Output() onClick = new EventEmitter();
 
@@ -78,7 +79,7 @@ export class ButtonComponent implements OnInit, OnChanges {
       variants[this.variant!],
       buttonVariants[this.variant!],
       sizeVariants[this.size!],
-      // TODO? width === 'max' ? 'w-max' : 'w-full',
+      this.fullWidth ? 'w-full' : 'w-max',
       'h-[40px] px-4 relative',
     ];
   }

@@ -1,18 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { DefaultSetId } from '@enums';
 import { filter, Subject, switchMap, takeUntil } from 'rxjs';
-import { UserState } from '@store/user.state';
-import { Store } from '@ngxs/store';
-import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
-import { LocalizationService } from '@services/localization/localization.service';
-import { ModalService } from '@services/modals/modal/modal.service';
-import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
-import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { LocalizationService } from '@services/localization/localization.service';
+import { DefaultSetId } from '@enums';
+import { Store } from '@ngrx/store';
+import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { GlobalState } from '@store';
+import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { ModalService } from '@services/modals/modal/modal.service';
 
 @Component({
   selector: 'app-reports',
@@ -21,7 +21,7 @@ import { ValueResolver } from '@services/modals/modal-form/modal-form-value-reso
 })
 export class ReportsComponent implements OnInit, OnDestroy {
 
-  onDestroy$ = new Subject<void>();
+  destroy$ = new Subject<void>();
   user?: User;
 
   arrestReportButtons: Button[] = [
@@ -61,7 +61,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   arrestReportColumns: Column<MappedLooseDataEntity>[] = [];
 
   constructor(
-    private _store: Store,
+    private readonly store: Store<GlobalState>,
     private _looseData: LooseDataService,
     private _localization: LocalizationService,
     private _modal: ModalService,
@@ -71,17 +71,15 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._store.select(UserState).pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(user => {
-      this.user = user.details;
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+      this.user = state.user.details;
     });
     this.getArrestReports();
   }
 
   ngOnDestroy(): void {
-    this.onDestroy$.next();
-    this.onDestroy$.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.unsubscribe();
   }
 
   getArrestReports(): void {
