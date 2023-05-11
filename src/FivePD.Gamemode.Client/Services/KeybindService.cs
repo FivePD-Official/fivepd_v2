@@ -65,7 +65,7 @@ namespace FivePD.Gamemode.Client.Services
                 });
             }
 
-            this._tickService.OnTick += this.WaitForHold;
+            this._tickService.OnTick += this.WaitForHoldAsync;
         }
 
         /// <inheritdoc />
@@ -138,7 +138,7 @@ namespace FivePD.Gamemode.Client.Services
                 false);
         }
 
-        private Task WaitForHold()
+        private Task WaitForHoldAsync()
         {
             var toBeRemoved = new List<HoldableKeybind>();
             foreach (var item in this._actions)

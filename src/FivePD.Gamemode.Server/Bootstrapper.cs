@@ -95,7 +95,7 @@ namespace FivePD.Gamemode.Server
             this._phases.Add(this.PerformAddonEnqueuePhase, false);
 
             // Begin running phases.
-            this.Tick += this.RunNextPhase;
+            this.Tick += this.RunNextPhaseAsync;
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace FivePD.Gamemode.Server
         /// </summary>
         /// <returns>A <see cref="Task"/> that completes
         /// when a phase is ran.</returns>
-        private Task RunNextPhase()
+        private Task RunNextPhaseAsync()
         {
             // Get the first phase that isn't completed (second parameter is not true)
             var phase = this._phases.FirstOrDefault(x => !x.Value);
@@ -141,7 +141,7 @@ namespace FivePD.Gamemode.Server
                 Debug.WriteLine("\n" + quote + "\n");
 
                 // Stop trying to run phases
-                this.Tick -= this.RunNextPhase;
+                this.Tick -= this.RunNextPhaseAsync;
                 return Task.CompletedTask;
             }
 
@@ -160,7 +160,7 @@ namespace FivePD.Gamemode.Server
             catch (Exception e)
             {
                 // Problem? Stop the gamemode.
-                this.Tick -= this.RunNextPhase;
+                this.Tick -= this.RunNextPhaseAsync;
 
                 // Log the problem
                 this._bootstrapLogger.Fatal("An error occurred during bootstrapping and the gamemode has halted to prevent further issues.");
@@ -409,7 +409,7 @@ namespace FivePD.Gamemode.Server
             }
 
             var tickQueueService = this._provider.GetService<ITickQueueService>();
-            this.Tick += tickQueueService!.OnTick;
+            this.Tick += tickQueueService!.OnTickAsync;
 
             span.Finish();
             this._bootstrapTransaction.Finish();
@@ -426,7 +426,7 @@ namespace FivePD.Gamemode.Server
             foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
             {
                 // Lazy load it
-                tickQueueService.Enqueue(() => addon.OnStarted());
+                tickQueueService.EnqueueAsync(() => addon.OnStartedAsync());
             }
         }
 
@@ -451,7 +451,7 @@ namespace FivePD.Gamemode.Server
             // Grab an instance of every addon entrypoint and "stop" it
             foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
             {
-                addon.OnStopped();
+                addon.OnStoppedAsync();
             }
 
             log?.Debug("Addon shutdown complete. Running gamemode disposal routine");

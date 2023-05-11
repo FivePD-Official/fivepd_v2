@@ -46,6 +46,10 @@
     <PackageReference Include="CitizenFX.Core.Client" Version="1.0.5375" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="PolySharp" Version="1.8.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

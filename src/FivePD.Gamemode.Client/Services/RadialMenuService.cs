@@ -41,8 +41,8 @@ namespace FivePD.Gamemode.Client.Services
             this._uiService.OnNuiHide += () =>
             {
                 this._isAnyMenuVisible = false;
-                this._tickService.OnTick -= this.DisableMouseMovement;
-                this._tickService.OnTick -= this.OnMouseMove;
+                this._tickService.OnTick -= this.DisableMouseMovementAsync;
+                this._tickService.OnTick -= this.OnMouseMoveAsync;
             };
         }
 
@@ -144,7 +144,7 @@ namespace FivePD.Gamemode.Client.Services
             // this._menus.Add(menu2);
         }
 
-        private Task DisableMouseMovement()
+        private Task DisableMouseMovementAsync()
         {
             Cfx.API.DisableControlAction(0, 24, true); // Disable attack
             Cfx.API.DisableControlAction(0, 25, true); // Disable aim
@@ -164,7 +164,7 @@ namespace FivePD.Gamemode.Client.Services
             return new MouseCoordinate(screenWidth * x, screenHeight * y);
         }
 
-        private Task OnMouseMove()
+        private Task OnMouseMoveAsync()
         {
             if (!this._isAnyMenuVisible)
             {

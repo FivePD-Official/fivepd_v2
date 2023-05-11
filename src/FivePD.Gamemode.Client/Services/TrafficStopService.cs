@@ -63,7 +63,7 @@ namespace FivePD.Gamemode.Client.Services
                         {
                             if (!isAttached)
                             {
-                                this.Initiate();
+                                this.InitiateAsync();
                             }
                         }));
                     }
@@ -80,7 +80,7 @@ namespace FivePD.Gamemode.Client.Services
         /// Initiate a traffic stop.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        private async Task Initiate()
+        private async Task InitiateAsync()
         {
             var stoppedVehicle = this.FindClosestVehicleInFrontOfPlayer();
 

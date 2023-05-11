@@ -15,7 +15,7 @@ namespace FivePD.Gamemode.Client.Interfaces
          * <param name="heading">The heading the ped will use.</param>
          * <returns>The spawned ped.</returns>
          */
-        Task<Ped> SpawnPed(uint model, Vector3 location, float heading);
+        Task<Ped> SpawnPedAsync(uint model, Vector3 location, float heading);
 
         /**
          * <summary>Spawns a vehicle directly on the server.</summary>
@@ -24,7 +24,7 @@ namespace FivePD.Gamemode.Client.Interfaces
          * <param name="heading">The heading the ped will use.</param>
          * <returns>The spawned vehicle.</returns>
          */
-        Task<Vehicle> SpawnVehicle(uint model, Vector3 location, float heading);
+        Task<Vehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading);
 
         /**
          * <summary>Spawns a prop (object) via RPC natives.</summary>
@@ -32,6 +32,6 @@ namespace FivePD.Gamemode.Client.Interfaces
          * <param name="location">A location where the prop will spawn.</param>
          * <returns>The spawned prop.</returns>
          */
-        Task<Prop> SpawnProp(int model, Vector3 location);
+        Task<Prop> SpawnPropAsync(int model, Vector3 location);
     }
 }

@@ -11,13 +11,13 @@ namespace FivePD.Gamemode.Client.Services
     public class EntityService : IEntityService
     {
         /// <inheritdoc />
-        public Task<Ped> SpawnPed(uint model, Vector3 location, float heading)
+        public Task<Ped> SpawnPedAsync(uint model, Vector3 location, float heading)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        public async Task<Vehicle> SpawnVehicle(uint model, Vector3 location, float heading)
+        public async Task<Vehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading)
         {
             bool hasServerResponded = false;
             int vehicleNetworkId = 0;
@@ -37,7 +37,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public Task<Prop> SpawnProp(int model, Vector3 location)
+        public Task<Prop> SpawnPropAsync(int model, Vector3 location)
         {
             throw new NotImplementedException();
         }
