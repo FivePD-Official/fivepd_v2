@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   Button,
   Checkbox,
@@ -20,7 +20,7 @@ import {
 import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
-import { filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { GlobalState } from '@store';
 import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
@@ -30,6 +30,7 @@ import { ModalFormService } from '@services/modals/modal-form/modal-form.service
 import { CustomValidators } from '../../../../helpers/validators';
 import { ModalService } from '@services/modals/modal/modal.service';
 import { Store } from '@ngrx/store';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -45,9 +46,8 @@ interface FormattedUser extends User {
   templateUrl: './departments-view.component.html',
   styleUrls: ['./departments-view.component.sass']
 })
-export class DepartmentsViewComponent implements OnInit, OnDestroy {
+export class DepartmentsViewComponent implements OnInit {
 
-  destroy$ = new Subject<void>();
   user?: User;
   department?: Department;
   isUserInDepartment: boolean = false;
@@ -365,21 +365,14 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+    this.store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details;
       this.setIsUserInDepartment();
     });
 
-    this._route.params.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
+    this._route.params.pipe(takeUntilDestroyed()).subscribe(() => {
       this.getDepartment();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   setIsUserInDepartment(): void {

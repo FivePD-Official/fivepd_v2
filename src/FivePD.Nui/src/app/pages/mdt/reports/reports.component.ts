@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 import { LocalizationService } from '@services/localization/localization.service';
 import { DefaultSetId } from '@enums';
@@ -14,15 +14,15 @@ import { ValueResolver } from '@services/modals/modal-form/modal-form-value-reso
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
 import { UserRole, UserService } from '@services/user/user.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.sass']
 })
-export class ReportsComponent implements OnInit, OnDestroy {
+export class ReportsComponent implements OnInit {
 
-  destroy$ = new Subject<void>();
   user?: User;
 
   arrestReportButtons: Button[] = [
@@ -73,15 +73,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+    this.store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details;
     });
     this.getArrestReports();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.unsubscribe();
   }
 
   getArrestReports(): void {
