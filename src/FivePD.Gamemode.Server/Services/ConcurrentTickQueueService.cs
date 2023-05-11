@@ -14,7 +14,7 @@ namespace FivePD.Gamemode.Server.Services
         // Inspiration from https://github.com/citizenfx/fivem/blob/f4befbfee415e8f7aea486b61a9cdbc30408cf09/ext/webadmin/server/HttpServer.cs
         private readonly string _resourceName = Cfx.API.GetCurrentResourceName();
 
-        private ConcurrentQueue<Tuple<Action, TaskCompletionSource<int>>> TickQueue { get; } = new ConcurrentQueue<Tuple<Action, TaskCompletionSource<int>>>();
+        private ConcurrentQueue<Tuple<Action, TaskCompletionSource<int>>> TickQueue { get; } = new();
 
         /**
          * <inheritdoc />

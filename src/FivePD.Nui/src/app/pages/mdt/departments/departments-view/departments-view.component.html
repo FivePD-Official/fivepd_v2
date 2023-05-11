@@ -1,9 +1,9 @@
 <app-page-header [title]="title">
-  <app-button [label]="'Nui.Actions.Join' | translate"
+  <app-button [label]="'UI.ACTION.JOIN' | translate"
               [show]="!isUserInDepartment"
               variant="secondary"
               (onClick)="joinDepartment()"/>
-  <app-button [label]="'Nui.Actions.Leave' | translate"
+  <app-button [label]="'UI.ACTION.LEAVE' | translate"
               [show]="isUserInDepartment"
               variant="secondary"
               (onClick)="leaveDepartment()"/>
@@ -14,7 +14,7 @@
     <app-container [columns]="2">
       <app-dynamic-form
         *ngIf="departmentSettingsForm"
-        [title]="'Nui.Labels.DepartmentSettings' | translate"
+        [title]="'UI.LABEL.DEPARTMENT.SETTINGS' | translate"
         [formFields]="departmentSettingsForm"
         [columns]="2"
         [limitWidth]="false"
@@ -23,7 +23,7 @@
         (onSubmit)="onDepartmentSettingsSubmit($event)"
         [showSubmitButton]="true"/>
       <app-grid
-        [title]="'Nui.Labels.Divisions' | translate"
+        [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
         [buttons]="divisionsButtons"
         [data]="divisions"
         [columns]="divisionsColumns"
@@ -31,7 +31,7 @@
         (onCellAction)="getDivisions()"/>
     </app-container>
     <app-grid
-      [title]="'Nui.Labels.Ranks' | translate"
+      [title]="'UI.LABEL.RANK.PLURAL' | translate"
       [buttons]="ranksButtons"
       [data]="ranks"
       [columns]="ranksColumns"
@@ -43,14 +43,14 @@
 <ng-template #notAdmin>
   <app-container *ngIf="department" [columns]="2">
     <app-grid
-      [title]="'Nui.Labels.Ranks' | translate"
+      [title]="'UI.LABEL.RANK.PLURAL' | translate"
       [buttons]="ranksButtons"
       [data]="ranks"
       [columns]="ranksColumns"
       (onCollationChange)="onRanksCollationChange($event)"
       (onCellAction)="getRanks()"/>
     <app-grid
-      [title]="'Nui.Labels.Divisions' | translate"
+      [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
       [buttons]="divisionsButtons"
       [data]="divisions"
       [columns]="divisionsColumns"
@@ -60,7 +60,7 @@
 </ng-template>
 
 <app-grid
-  [title]="'Nui.Labels.Members' | translate"
+  [title]="'UI.LABEL.MEMBER.PLURAL' | translate"
   [data]="users"
   [columns]="usersColumns"
   (onCollationChange)="onUsersCollationChange($event)"

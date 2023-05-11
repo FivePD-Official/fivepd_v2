@@ -1,7 +1,7 @@
-<app-page-header [title]="'Nui.Labels.Settings' | translate"/>
+<app-page-header [title]="'UI.LABEL.SETTINGS' | translate"/>
 
 <app-grid *ngIf="user?.Admin ?? false"
-          [title]="'Nui.Labels.ArrestReportAttributes' | translate"
+          [title]="'UI.LABEL.ARREST_REPORT.ATTRIBUTES' | translate"
           [buttons]="arrestReportAttributesButtons"
           [columns]="arrestReportAttributesColumns"
           [data]="arrestReportAttributes"

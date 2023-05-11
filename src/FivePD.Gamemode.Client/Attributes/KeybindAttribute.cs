@@ -36,15 +36,5 @@ namespace FivePD.Gamemode.Client.Attributes
         /// </summary>
         // TODO: Change description to JSON key for translation.
         public string Description { get; }
-
-        /// <summary>
-        /// Gets for how long the key should be pressed to trigger the action.
-        /// </summary>
-        public int TimeToHold { get; }
-
-        /// <summary>
-        /// Gets for how long the key should be pressed to trigger the action in milliseconds.
-        /// </summary>
-        public int TimeToHoldInMs { get; }
     }
 }

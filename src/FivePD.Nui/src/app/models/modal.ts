@@ -1,15 +1,13 @@
-﻿import { Paths } from './_dev/nested-object-keys';
-import { Localization } from './localization';
 import { FormInputBase } from './form';
 import { ButtonVariants } from './button';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 
 interface ModalButton {
   variant: ButtonVariants;
-  label: Paths<Localization>;
+  label: string;
 }
 
-interface ModalCancelButton {
+export interface ModalCancelButton {
   cancel: ModalButton;
 }
 
@@ -18,7 +16,7 @@ interface ModalSubmitButton {
 }
 
 export interface ModalOptions<T = any> {
-  title: Paths<Localization>;
+  title: string;
   description?: string;
   columns?: number;
   buttons?: ModalCancelButton & ModalSubmitButton;

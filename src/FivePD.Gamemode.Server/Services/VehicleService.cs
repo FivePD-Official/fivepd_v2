@@ -15,7 +15,7 @@ namespace FivePD.Gamemode.Server.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IConfigService _configService;
-        private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new ConcurrentDictionary<int, FVehicle>();
+        private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VehicleService"/> class.

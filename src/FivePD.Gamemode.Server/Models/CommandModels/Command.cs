@@ -8,7 +8,7 @@ namespace FivePD.Gamemode.Server.Models.CommandModels
     /// </summary>
     public class Command : BaseCommand
     {
-        private readonly List<Subcommand> _subcommands = new List<Subcommand>();
+        private readonly List<Subcommand> _subcommands = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Command"/> class.

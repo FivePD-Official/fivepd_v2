@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { NuiEventType } from '@enums';
 import { HttpClient } from '@angular/common/http';
 import { WindowService } from '@services/window/window.service';
 import { LocalizationService } from '@services/localization/localization.service';
@@ -10,6 +9,7 @@ import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { setMdtPath } from '@store/app.actions';
+import { MenuService } from '@services/menu/menu.service';
 
 @Component({
   selector: 'app-root',
@@ -26,8 +26,8 @@ export class AppComponent implements OnInit {
     private _router: Router,
     private _looseData: LooseDataService,
     private readonly store: Store<GlobalState>,
-  ) {
-  }
+    private _menu: MenuService,
+  ) {}
 
   ngOnInit(): void {
     this.onLoad();
@@ -62,12 +62,7 @@ export class AppComponent implements OnInit {
     `));
     document.head.appendChild(style);
 
-    this.sendAvailabilityToClient();
     this._localization.load();
+    this._menu.load();
   }
-
-  sendAvailabilityToClient(): void {
-    this._http.post(NuiEventType.IsNuiReady, {}).subscribe();
-  }
-
 }

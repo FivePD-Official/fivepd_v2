@@ -29,53 +29,47 @@ export class SettingsComponent implements OnInit {
   };
   arrestReportAttributesColumns: Column<SetAttribute>[] = [
     {
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       show: () => true,
       accessorKey: 'Name',
     },
     {
-      header: this._localization.translate('Nui.Labels.Type'),
+      header: this._localization.translate('UI.LABEL.TYPE.SINGULAR'),
       show: () => true,
       valueResolver: attr => {
         switch (attr.DataType) {
-          case AttributeDataType.ShortString:
-            return this._localization.translate('Nui.Labels.ShortString');
-          case AttributeDataType.LongString:
-            return this._localization.translate('Nui.Labels.LongString');
-          case AttributeDataType.Integer:
-            return this._localization.translate('Nui.Labels.WholeNumber');
-          case AttributeDataType.Bool:
-            return this._localization.translate('Nui.Labels.Checkbox');
-          case AttributeDataType.Date:
-            return this._localization.translate('Nui.Labels.Date');
-          default:
-            return '-';
+          case AttributeDataType.ShortString: return this._localization.translate('UI.LABEL.SHORT_TEXT.SINGULAR');
+          case AttributeDataType.LongString: return this._localization.translate('UI.LABEL.LONG_TEXT.SINGULAR');
+          case AttributeDataType.Integer: return this._localization.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR');
+          case AttributeDataType.Bool: return this._localization.translate('UI.LABEL.CHECKBOX.SINGULAR');
+          case AttributeDataType.Date: return this._localization.translate('UI.LABEL.DATE.SINGULAR');
+          default: return '-';
         }
       },
     },
     {
-      header: this._localization.translate('Nui.Labels.Required'),
+      header: this._localization.translate('UI.LABEL.REQUIRED'),
       show: () => true,
-      valueResolver: item => this._localization.translate(item.Required ? 'Nui.Labels.Yes' : 'Nui.Labels.No'),
+      valueResolver: item => this._localization.translate(item.Required ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
     },
     {
-      header: this._localization.translate('Nui.Labels.AddedBy'),
+      header: this._localization.translate('UI.LABEL.ADDED_BY'),
       show: () => true,
       accessorKey: 'AddonId',
     },
     {
-      header: this._localization.translate('Nui.Labels.Actions'),
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
       show: () => this.user?.Admin ?? false,
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Edit'),
+          label: this._localization.translate('UI.ACTION.EDIT'),
           show: item => item.AddonId === 'admin',
           onClick: attribute => {
             this.modalFormService.open({
-              title: 'Nui.Labels.EditAttributeTitle',
+              title: 'UI.LABEL.ATTRIBUTE.EDIT',
               buttons: {
-                submit: {variant: 'primary', label: 'Nui.Actions.Save'},
+                submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
               },
               fields: updatedAttribute => createAttributesFormFields(this._localization, updatedAttribute),
               valueResolver: new ValueResolver<SetAttribute>(attribute, this._looseData.getSetAttribute(DefaultSetId.ArrestReport, attribute.Id))
@@ -97,14 +91,14 @@ export class SettingsComponent implements OnInit {
         },
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Delete'),
+          label: this._localization.translate('UI.ACTION.DELETE'),
           show: item => item.AddonId === 'admin',
           onClick: item => {
             this.modalConfirmService.open({
-              title: 'Nui.Labels.DeleteAttributeTitle',
-              description: this._localization.translate('Nui.Labels.DeleteAttributeDescription', {attribute: item.Name}),
+              title: 'UI.LABEL.ATTRIBUTE.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {attribute: item.Name}),
               buttons: {
-                submit: {variant: 'danger', label: 'Nui.Actions.Delete'},
+                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
               },
             }).result
               .pipe(
@@ -122,14 +116,14 @@ export class SettingsComponent implements OnInit {
   ];
   arrestReportAttributesButtons: Button[] = [
     {
-      label: this._localization.translate('Nui.Actions.CreateAttribute'),
+      label: this._localization.translate('UI.ACTION.CREATE_ATTRIBUTE'),
       show: () => true,
       disabled: () => false,
       onClick: () => {
         this.modalFormService.open({
-          title: 'Nui.Actions.CreateAttribute',
+          title: 'UI.ACTION.CREATE_ATTRIBUTE',
           buttons: {
-            submit: {variant: 'primary', label: 'Nui.Actions.Create'},
+            submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
           },
           fields: () => createAttributesFormFields(this._localization)
         }).result

@@ -153,8 +153,8 @@ namespace FivePD.Gamemode.Server.Services
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
+                        Title = "UI.ERROR.UNEXPECTED",
+                        Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                     }.ToString());
                     return;
                 }
@@ -173,8 +173,8 @@ namespace FivePD.Gamemode.Server.Services
                         networkCallbackDelegate.Invoke(new ActionResponse
                         {
                             Status = false,
-                            Title = "Nui.Errors.UnexpectedError",
-                            Description = "Nui.Errors.DatabaseAccess",
+                            Title = "UI.ERROR.UNEXPECTED",
+                            Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                         }.ToString());
                         return;
                     }
@@ -187,8 +187,8 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
-                    Title = "Nui.Labels.SuccessfulChange",
-                    Description = "Nui.Labels.SuccessfulPlayerDivisionChange",
+                    Title = "UI.LABEL.SUCCESS.CHANGE",
+                    Description = "UI.LABEL.DIVISION.SUCCESS.CHANGE",
                     Params = new Dictionary<string, string>
                     {
                         { "player", user.Name },
@@ -200,8 +200,8 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
+                    Title = "UI.ERROR.UNEXPECTED",
+                    Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
@@ -219,8 +219,8 @@ namespace FivePD.Gamemode.Server.Services
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
+                        Title = "UI.ERROR.UNEXPECTED",
+                        Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                     }.ToString());
                     return;
                 }
@@ -239,8 +239,8 @@ namespace FivePD.Gamemode.Server.Services
                         networkCallbackDelegate.Invoke(new ActionResponse
                         {
                             Status = false,
-                            Title = "Nui.Errors.UnexpectedError",
-                            Description = "Nui.Errors.DatabaseAccess",
+                            Title = "UI.ERROR.UNEXPECTED",
+                            Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                         }.ToString());
                         return;
                     }
@@ -253,8 +253,8 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
-                    Title = "Nui.Labels.SuccessfulChange",
-                    Description = "Nui.Labels.SuccessfulPlayerRankChange",
+                    Title = "UI.LABEL.SUCCESS.CHANGE",
+                    Description = "UI.LABEL.RANK.SUCCESS.CHANGE",
                     Params = new Dictionary<string, string>
                     {
                         { "player", user.Name },
@@ -266,8 +266,8 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
+                    Title = "UI.ERROR.UNEXPECTED",
+                    Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }

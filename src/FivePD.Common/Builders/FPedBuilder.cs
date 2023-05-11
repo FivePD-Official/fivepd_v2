@@ -15,7 +15,7 @@ namespace FivePD.Common.Builders
     /// </summary>
     public class FPedBuilder
     {
-        private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
+        private readonly Random _random = new(Guid.NewGuid().GetHashCode());
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FPedBuilder"/> class.
@@ -106,7 +106,7 @@ namespace FivePD.Common.Builders
         public FPedBuilder WithItems(List<Item> items)
         {
             this.Items = items
-                .Where(item => item.Location == Item.ItemLocation.Ped || item.Location == Item.ItemLocation.Everywhere)
+                .Where(item => item.Location is Item.ItemLocation.Ped or Item.ItemLocation.Everywhere)
                 .OrderBy(item => Guid.NewGuid())
                 .Take(this._random.Next(0, 6))
                 .ToList();

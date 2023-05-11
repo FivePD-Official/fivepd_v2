@@ -14,7 +14,7 @@ namespace FivePD.Common.Builders
     /// </summary>
     public class FVehicleBuilder
     {
-        private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
+        private readonly Random _random = new(Guid.NewGuid().GetHashCode());
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FVehicleBuilder"/> class.
@@ -72,7 +72,7 @@ namespace FivePD.Common.Builders
         public FVehicleBuilder WithItems(List<Item> items)
         {
             this.Items = items
-                .Where(item => item.Location == Item.ItemLocation.Vehicle || item.Location == Item.ItemLocation.Everywhere)
+                .Where(item => item.Location is Item.ItemLocation.Vehicle or Item.ItemLocation.Everywhere)
                 .OrderBy(item => Guid.NewGuid())
                 .Take(this._random.Next(0, 6))
                 .ToList();

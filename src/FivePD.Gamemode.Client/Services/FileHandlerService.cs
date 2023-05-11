@@ -10,7 +10,7 @@ namespace FivePD.Gamemode.Client.Services
     /// <inheritdoc />
     public class FileHandlerService : IFileHandlerService
     {
-        private readonly ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> _cache = new();
 
         /// <inheritdoc />
         public Tuple<T, Exception> LoadFile<T>(string path, bool useCache = true)

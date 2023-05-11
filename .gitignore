@@ -17,8 +17,11 @@ txData/
 /**/Pages/*.css
 /**/Documentation.xml
 .idea/sonarlint
-src/FivePD.JsonGenerator/FivePD.JsonGenerator.exe
-src/FivePD.JsonGenerator/FivePD.JsonGenerator.exe.config
+src/FivePD.Localization/*.exe
+src/FivePD.Localization/*.config
+src/FivePD.Localization/*.dll
+src/FivePD.Localization/net6.0/*
+src/FivePD.Localization/Localization/optimized/*
 aws.xml
 .name
 .vs

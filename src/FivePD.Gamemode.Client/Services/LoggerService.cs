@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
@@ -60,7 +59,7 @@ namespace FivePD.Gamemode.Client.Services
 
         private void LogToConsole(LogLevel logLevel, string message, params dynamic[] parameters)
         {
-            StringBuilder extraData = new StringBuilder();
+            var extraData = new StringBuilder();
 
             // `null` was passed as the only parameter
             if (parameters is null)

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Reflection;
+using System;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Extensions;
+using FivePD.Common.Models;
+using FivePD.Common.Responses;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
-using FivePD.Gamemode.Client.Menus;
-using FivePD.Gamemode.Client.Models;
-using FivePD.Gamemode.Client.Utilities;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3011
@@ -22,181 +16,94 @@ namespace FivePD.Gamemode.Client.Services
     public class MenuService : IMenuService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly INuiService _nuiService;
+        private readonly IUIService _uiService;
         private readonly IKeybindService _keybindService;
-        private readonly ILocalizationService _localizationService;
-        private readonly IConfigService _configService;
-        private readonly IEntityService _entityService;
-        private readonly INotificationService _notificationService;
-        private readonly List<Menu> _menus;
+        private bool _registeredMenus;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuService"/> class.
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
+        /// <param name="uiService">The <see cref="IUIService" /> to use.</param>
         /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
-        /// <param name="localizationService">The <see cref="ILocalizationService" /> to use.</param>
-        /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
-        /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
-        /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
         public MenuService(
             EventHandlerDictionary eventHandlerDictionary,
-            INuiService nuiService,
-            IKeybindService keybindService,
-            ILocalizationService localizationService,
-            IConfigService configService,
-            IEntityService entityService,
-            INotificationService notificationService)
+            IUIService uiService,
+            IKeybindService keybindService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._nuiService = nuiService;
+            this._uiService = uiService;
             this._keybindService = keybindService;
-            this._localizationService = localizationService;
-            this._configService = configService;
-            this._entityService = entityService;
-            this._notificationService = notificationService;
-            this._menus = new List<Menu>();
         }
 
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.IsNuiReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
             {
-                this.CheckMenusForConflictingKeys();
-                this.SendToNui();
-                cb.Invoke(string.Empty);
-            }));
-        }
-
-        /// <inheritdoc />
-        public void CreateMenus()
-        {
-            this._menus.AddRange(new Menu[]
-            {
-                new DutyMenu(this._localizationService, this._nuiService, this._configService, this._entityService),
+                var response = JsonConvert.DeserializeObject<GetMenusResponse>(data);
+                this.RegisterMenuKeybinds(response);
             });
+
+            this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
         }
 
-        /// <inheritdoc />
-        public void RegisterMenuKeybinds()
+        private void RegisterMenuKeybinds(GetMenusResponse response)
         {
-            foreach (var menu in this._menus)
+            if (this._registeredMenus)
+            {
+                return;
+            }
+
+            this._registeredMenus = true;
+
+            foreach (var menu in response.Menus)
             {
                 void OnPress()
                 {
-                    this._nuiService.Show(Events.NuiEventType.MenuView, menu.Id, false, false);
+                    this._uiService.Show(Events.NuiEventType.MenuView, menu.Hashcode, false, false);
                 }
 
-                this._keybindService.RegisterKeybind($"fivepd:openMenu_${menu.Id}", "-", menu.Key, OnPress);
+                this._keybindService.RegisterKeybind($"fivepd:openMenu:${menu.Hashcode}", menu.Title, menu.Key, OnPress);
 
                 foreach (var item in menu.Items)
                 {
-                    var eventName = $"fivepd:menu:trigger_item_{item.GetHashCode()}";
-                    if (item.Type == MenuItem.MenuItemType.List)
+                    switch (item.Type)
                     {
-                        this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<int, CallbackDelegate>(
-                            (index, cb) =>
-                            {
-                                this.GetPrivateMethod(item, "RaiseOnListItemSelect")?.Invoke(item, new object[] { index });
-                                cb.Invoke(string.Empty);
-                            }));
+                        case MenuItemType.List:
+                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnListSelect}:{item.Hashcode}", new Action<int, CallbackDelegate>(
+                                (index, cb) =>
+                                {
+                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnListSelect, item.Hashcode, index);
+                                    cb.Invoke(string.Empty);
+                                }));
 
-                        this._eventHandlerDictionary.AddNuiEvent($"fivepd:menu:list_onchange_{item.GetHashCode()}", new Action<int, CallbackDelegate>(
-                            (index, cb) =>
-                            {
-                                this.GetPrivateMethod(item as MenuListItem, "RaiseOnListIndexChange")?.Invoke(item, new object[] { index });
-                                cb.Invoke(string.Empty);
-                            }));
+                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnListIndexChange}:{item.Hashcode}", new Action<int, CallbackDelegate>(
+                                (index, cb) =>
+                                {
+                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnListIndexChange, item.Hashcode, index);
+                                    cb.Invoke(string.Empty);
+                                }));
+                            break;
+                        case MenuItemType.Checkbox:
+                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnCheckboxSelect}:{item.Hashcode}", new Action<bool, CallbackDelegate>(
+                                (@checked, cb) =>
+                                {
+                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnCheckboxSelect, item.Hashcode, @checked);
+                                    cb.Invoke(string.Empty);
+                                }));
+                            break;
+                        case MenuItemType.Button:
+                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnButtonSelect}:{item.Hashcode}", new Action<int, CallbackDelegate>(
+                                (_, cb) =>
+                                {
+                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnButtonSelect, item.Hashcode);
+                                    cb.Invoke(string.Empty);
+                                }));
+                            break;
                     }
-                    else
-                    {
-                        this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<int, CallbackDelegate>(
-                            (index, cb) =>
-                            {
-                                this.GetPrivateMethod(item, "RaiseOnItemSelect")?.Invoke(item, new object[] { });
-                                cb.Invoke(string.Empty);
-                            }));
-                    }
                 }
             }
-        }
-
-        private void CheckMenusForConflictingKeys()
-        {
-            var keyCount = new Dictionary<string, int>();
-            foreach (var key in this._menus.Select(menu => menu.Key))
-            {
-                if (keyCount.ContainsKey(key))
-                {
-                    keyCount[key] += 1;
-                }
-                else
-                {
-                    keyCount[key] = 0;
-                }
-            }
-
-            foreach (var key in keyCount.Where(key => key.Value > 0).Select(key => key.Key))
-            {
-                var notificationText = new GtaStyleText().Red("[FivePD error]").NewLine().Reset().Build() +
-                   this._localizationService.CurrentLocalization.Error
-                       .MultipleMenusWithSameKey.ReplaceParams(
-                           new Dictionary<string, string>
-                           {
-                               { "key", new GtaStyleText().Red(key).Build() },
-                           },
-                           new GtaStyleText().Reset().Build());
-
-                this._notificationService.ShowNotification(notificationText);
-            }
-        }
-
-        private void SendToNui()
-        {
-            var menus = new JArray();
-            foreach (var menu in this._menus)
-            {
-                var items = new JArray();
-                foreach (var item in menu.Items)
-                {
-                    var itemData = new JObject
-                    {
-                        { "Title", item.Title },
-                        { "Description", item.Description },
-                        { "Hashcode", item.GetHashCode().ToString() },
-                        { "Type", (int)item.Type },
-                    };
-
-                    if (item.Type == MenuItem.MenuItemType.List)
-                    {
-                        var casted = item as MenuListItem;
-                        itemData.Add("Items", JArray.FromObject(casted?.Items));
-                    }
-
-                    items.Add(itemData);
-                }
-
-                menus.Add(new JObject
-                {
-                    { "Title", menu.Title },
-                    { "UseLocalization", menu.UseLocalization },
-                    { "Id", menu.Id },
-                    { "Items", items },
-                });
-            }
-
-            this._nuiService.SendMessage(new JObject
-            {
-                { "type", Events.NuiEventType.SendMenuObjects },
-                { "data", menus },
-            });
-        }
-
-        private MethodInfo GetPrivateMethod(object objectVariable, string methodName)
-        {
-            return objectVariable.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
         }
     }
 }

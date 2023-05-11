@@ -12,7 +12,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public bool IsAttachedToEvent()
         {
-            return !(this._currentlyAttachedEvent is null);
+            return this._currentlyAttachedEvent is not null;
         }
 
         /// <inheritdoc />

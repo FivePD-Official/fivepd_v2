@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Server.Models.Responses
     /// <summary>
     /// Used for actions initiated in the NUI.
     /// </summary>
-    public class ActionResponse
+    public record struct ActionResponse()
     {
         /// <summary>
         /// Gets or sets a value indicating whether the actions has been successful.
@@ -26,7 +26,7 @@ namespace FivePD.Gamemode.Server.Models.Responses
         /// <summary>
         /// Gets or sets the params.
         /// </summary>
-        public Dictionary<string, string> Params { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Params { get; set; } = new();
 
         /// <inheritdoc />
         public override string ToString()

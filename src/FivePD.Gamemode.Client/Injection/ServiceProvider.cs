@@ -10,7 +10,7 @@ namespace FivePD.Gamemode.Client.Injection
      */
     public class ServiceProvider
     {
-        private readonly Dictionary<string, object> _instances = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _instances = new();
         private readonly List<Registration> _registrations;
 
         /// <summary>

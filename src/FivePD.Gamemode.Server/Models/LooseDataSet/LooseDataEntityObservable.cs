@@ -8,7 +8,7 @@ namespace FivePD.Gamemode.Server.Models.LooseDataSet
     /// </summary>
     public class LooseDataEntityObservable
     {
-        private readonly List<Action<LooseDataEntity>> _observers = new List<Action<LooseDataEntity>>();
+        private readonly List<Action<LooseDataEntity>> _observers = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LooseDataEntityObservable"/> class.

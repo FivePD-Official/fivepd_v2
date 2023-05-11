@@ -6,21 +6,21 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
   return new TextInput({
     key: 'CallsignFormat',
     required: true,
-    label: 'Nui.Labels.CallsignFormat',
+    label: 'UI.LABEL.CALLSIGN.FORMAT.TITLE',
     helpLabel: `
-              ${localizationService.translate('Nui.Labels.CallsignFormatHelpLabel')} ${localizationService.translate('Nui.Labels.AvailableCharacters')}: <br/>
+              ${localizationService.translate('UI.LABEL.CALLSIGN.HELP_LABEL')} ${localizationService.translate('UI.LABEL.AVAILABLE_CHARACTERS')}: <br/>
               <table>
                 <tr>
                   <td><b>L</b><td>
-                  <td>(${localizationService.translate('Nui.Labels.Letter')})<td>
+                  <td>(${localizationService.translate('UI.LABEL.LETTER.SINGULAR')})<td>
                 </tr>
                 <tr>
                   <td><b>N</b><td>
-                  <td>(${localizationService.translate('Nui.Labels.Number')})<td>
+                  <td>(${localizationService.translate('UI.LABEL.NUMBER.SINGULAR')})<td>
                 </tr>
                 <tr>
                   <td><b>-</b><td>
-                  <td>(${localizationService.translate('Nui.Labels.Dash')})<td>
+                  <td>(${localizationService.translate('UI.LABEL.DASH.SINGULAR')})<td>
                 </tr>
               </table>
             `,
