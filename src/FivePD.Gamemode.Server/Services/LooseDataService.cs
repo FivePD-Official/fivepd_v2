@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -111,7 +112,7 @@ namespace FivePD.Gamemode.Server.Services
                                 Value = JsonConvert.SerializeObject(
                                     attr.DataType == LooseDataAttribute.LooseDataType.Date
                                     ? DateTime.Now
-                                    : (object)null),
+                                    : null),
                             };
                             entity.Values.Add(value);
                         }
@@ -871,7 +872,7 @@ namespace FivePD.Gamemode.Server.Services
         private string GetExecutingAssemblyName()
         {
             // Technically, the executing assembly is the server gamemode. Sort through the stack trace and find a ref. to the actual addon
-            foreach (var frame in new System.Diagnostics.StackTrace().GetFrames())
+            foreach (var frame in new StackTrace().GetFrames())
             {
                 try
                 {

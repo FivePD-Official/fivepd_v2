@@ -13,7 +13,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public Task<Ped> SpawnPed(uint model, Vector3 location, float heading)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -39,7 +39,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public Task<Prop> SpawnProp(int model, Vector3 location)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

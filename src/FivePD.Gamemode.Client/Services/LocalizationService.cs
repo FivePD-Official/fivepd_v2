@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Utilities;
@@ -47,7 +46,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._eventHandlerDictionary.AddUIEvent(
                 Events.Localization.GetLocalizationFromNui,
-                new Action<ExpandoObject, CallbackDelegate>((body, cb) => { cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization)); }));
+                new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization)); }));
 
             this._eventHandlerDictionary[Events.UI.Player.LocalizationChange] += new Action<string>(localization =>
             {

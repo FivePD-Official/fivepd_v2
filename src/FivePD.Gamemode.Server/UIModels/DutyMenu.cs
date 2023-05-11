@@ -1,19 +1,10 @@
-﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
-//
-// All code and assets contained in this file are STRICTLY
-// the intellectual property of GTAPoliceMods unless otherwise
-// noted by a license provided. Do not copy or redistribute.
-
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
 using FivePD.Common.Models;
 using FivePD.Common.UIModels;
-using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
-using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450

@@ -43,7 +43,7 @@ namespace FivePD.Gamemode.Client.Services
             // Listens for NUI close event
             this._eventHandlerDictionary.AddUIEvent(
                 Events.NuiEventType.Close,
-                new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+                new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
                 {
                     this.Hide();
                     cb.Invoke(string.Empty);
@@ -52,7 +52,7 @@ namespace FivePD.Gamemode.Client.Services
             // Listens for NUI status checks
             this._eventHandlerDictionary.AddUIEvent(
                 Events.NuiEventType.ClientReady,
-                new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+                new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
                 {
                     this._loggerService.Info("Starting FivePD NUI...");
                     this._ready = true;

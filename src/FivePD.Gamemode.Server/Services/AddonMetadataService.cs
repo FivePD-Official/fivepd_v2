@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
-using CitizenFX.Core;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 
@@ -22,7 +22,7 @@ namespace FivePD.Gamemode.Server.Services
         public AddonDefinition GetExecutingAddonDefinition()
         {
             // Technically, the executing assembly is the server gamemode. Sort through the stack trace and find a ref. to the actual addon
-            foreach (var frame in new System.Diagnostics.StackTrace().GetFrames())
+            foreach (var frame in new StackTrace().GetFrames())
             {
                 try
                 {

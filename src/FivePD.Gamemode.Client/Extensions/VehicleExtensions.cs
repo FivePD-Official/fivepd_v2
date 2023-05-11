@@ -184,7 +184,7 @@ namespace FivePD.Gamemode.Client.Extensions
             var secondary = 0;
             Cfx.API.GetVehicleColours(vehicle.Handle, ref primary, ref secondary);
 
-            return VehicleColors.ContainsKey(primary) ? VehicleColors[primary] : "Unknown";
+            return VehicleColors.TryGetValue(primary, out var color) ? color : "Unknown";
         }
     }
 }

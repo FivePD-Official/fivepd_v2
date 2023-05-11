@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using CitizenFX.Core;
 using FivePD.Common.Exceptions;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
@@ -20,9 +19,9 @@ namespace FivePD.Gamemode.Server.Services
         {
             var data = this.InternalLoadFile(path);
 
-            if (this._cache.ContainsKey(path))
+            if (this._cache.TryGetValue(path, out var value))
             {
-                return (List<string>)this._cache[path];
+                return (List<string>)value;
             }
 
             if (string.IsNullOrEmpty(data))
