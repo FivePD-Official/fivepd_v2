@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 import { LocalizationService } from '@services/localization/localization.service';
@@ -11,6 +11,8 @@ import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confir
 import { GlobalState } from '@store';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
+import { UserRole, UserService } from '@services/user/user.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-settings',
@@ -18,8 +20,6 @@ import { ModalService } from '@services/modals/modal/modal.service';
   styleUrls: ['./settings.component.sass']
 })
 export class SettingsComponent implements OnInit {
-
-  destroy$ = new Subject<void>();
 
   user?: User;
 
@@ -59,7 +59,7 @@ export class SettingsComponent implements OnInit {
     },
     {
       header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => this.user?.Admin ?? false,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
@@ -154,21 +154,17 @@ export class SettingsComponent implements OnInit {
     private readonly modalConfirmService: ModalConfirmService,
     private _localization: LocalizationService,
     private readonly store: Store<GlobalState>,
+    public readonly userService: UserService,
   ) {
   }
 
   ngOnInit(): void {
-    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+    this.store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details;
-      if (state.user.details.Admin) {
+      if (this.userService.userHasRole(UserRole.Admin)) {
         this.getArrestReportAttributes();
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.unsubscribe();
   }
 
   getArrestReportAttributes(): void {
@@ -181,4 +177,6 @@ export class SettingsComponent implements OnInit {
     this.arrestReportAttributesCollation = collation;
     this.getArrestReportAttributes();
   }
+
+  protected readonly UserRole = UserRole;
 }

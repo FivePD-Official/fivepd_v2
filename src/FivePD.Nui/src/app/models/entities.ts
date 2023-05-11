@@ -6,7 +6,7 @@ export interface WithId {
 export interface User extends WithId {
   Name: string;
   License: string;
-  Admin: boolean;
+  Role: number;
   Callsign: string;
   Department?: Department;
   Division?: Division;

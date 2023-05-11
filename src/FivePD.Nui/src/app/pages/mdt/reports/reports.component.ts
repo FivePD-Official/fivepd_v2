@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 import { LocalizationService } from '@services/localization/localization.service';
 import { DefaultSetId } from '@enums';
@@ -13,15 +13,16 @@ import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
+import { UserRole, UserService } from '@services/user/user.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.sass']
 })
-export class ReportsComponent implements OnInit, OnDestroy {
+export class ReportsComponent implements OnInit {
 
-  destroy$ = new Subject<void>();
   user?: User;
 
   arrestReportButtons: Button[] = [
@@ -67,19 +68,15 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private _modal: ModalService,
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
+    private readonly _userService: UserService,
   ) {
   }
 
   ngOnInit(): void {
-    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+    this.store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details;
     });
     this.getArrestReports();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.unsubscribe();
   }
 
   getArrestReports(): void {
@@ -115,7 +112,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.EDIT'),
-              show: () => this.user?.Admin ?? false,
+              show: () => this._userService.userHasRole(UserRole.Admin),
               onClick: entity => {
                 this.modalFormService.open({
                     title: 'UI.ACTION.EDIT',
@@ -138,7 +135,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.DELETE'),
-              show: () => this.user?.Admin ?? false,
+              show: () => this._userService.userHasRole(UserRole.Admin),
               onClick: item => {
                 this.modalConfirmService.open({
                   title: 'UI.LABEL.ARREST_REPORT.DELETE.TITLE',

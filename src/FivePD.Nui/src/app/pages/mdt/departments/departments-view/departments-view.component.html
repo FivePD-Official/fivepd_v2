@@ -9,7 +9,7 @@
               (onClick)="leaveDepartment()"/>
 </app-page-header>
 
-<ng-container *ngIf="user?.Admin ?? false; else notAdmin">
+<ng-container *ngIf="userService.userHasRole(UserRole.Admin); else notAdmin">
   <app-container *ngIf="department" [columns]="1" [rows]="2">
     <app-container [columns]="2">
       <app-dynamic-form

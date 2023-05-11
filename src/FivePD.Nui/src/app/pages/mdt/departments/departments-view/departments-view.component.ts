@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   Button,
   Checkbox,
@@ -20,17 +20,17 @@ import {
 import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
-import { filter, switchMap, Subject } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { GlobalState } from '@store';
 import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
-import { UserService } from '@services/user/user.service';
+import { UserRole, UserService } from '@services/user/user.service';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { CustomValidators } from '../../../../helpers/validators';
 import { ModalService } from '@services/modals/modal/modal.service';
 import { Store } from '@ngrx/store';
-import { takeUntil } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -46,9 +46,8 @@ interface FormattedUser extends User {
   templateUrl: './departments-view.component.html',
   styleUrls: ['./departments-view.component.sass']
 })
-export class DepartmentsViewComponent implements OnInit, OnDestroy {
+export class DepartmentsViewComponent implements OnInit {
 
-  destroy$ = new Subject<void>();
   user?: User;
   department?: Department;
   isUserInDepartment: boolean = false;
@@ -57,7 +56,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   ranksButtons: Button[] = [
     {
       label: this._localization.translate('UI.ACTION.CREATE_RANK'),
-      show: () => this.user?.Admin ?? false,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => this.modalFormService.open({
         title: 'UI.ACTION.CREATE_RANK',
@@ -122,7 +121,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     }),
     new Column<FormattedRank>({
       header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => this.user?.Admin ?? false,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
@@ -206,16 +205,16 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     new Column<FormattedUser>({
       header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
       accessorKey: 'RankName',
-      show: () => !this.user?.Admin ?? false,
+      show: () => !this.userService.userHasRole(UserRole.Admin),
     }),
     new Column<FormattedUser>({
       header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
       accessorKey: 'DivisionName',
-      show: () => !this.user?.Admin ?? false,
+      show: () => !this.userService.userHasRole(UserRole.Admin),
     }),
     new Column<FormattedUser>({
       header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
-      show: () => this.user?.Admin ?? false,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'select',
@@ -223,7 +222,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           selectedItemResolver: (user, dropdownItemKey) => user.RankId === dropdownItemKey,
           items: () => this.ranksDropdown,
           onSelect: (user, selectedId) => {
-            this._userService.changeRank({
+            this.userService.changeRank({
               UserId: user.Id,
               IdToChange: selectedId,
             }).subscribe();
@@ -233,7 +232,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     }),
     new Column<FormattedUser>({
       header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
-      show: () => this.user?.Admin ?? false,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'select',
@@ -241,7 +240,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           selectedItemResolver: (user, dropdownItemKey) => user.DivisionId === dropdownItemKey,
           items: () => this.divisionsDropdown,
           onSelect: (user, selectedId) => {
-            this._userService.changeDivision({
+            this.userService.changeDivision({
               UserId: user.Id,
               IdToChange: selectedId,
             }).subscribe();
@@ -258,7 +257,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   divisionsButtons: Button[] = [
     {
       label: this._localization.translate('UI.ACTION.CREATE_DIVISION'),
-      show: () => this.user?.Admin ?? false,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => {
         this.modalFormService.open({
@@ -296,7 +295,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     }),
     new Column<Division>({
       header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => this.user?.Admin ?? false,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
@@ -357,8 +356,8 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     private _route: ActivatedRoute,
     private _localization: LocalizationService,
     private _departmentService: DepartmentService,
-    private _userService: UserService,
     private _modal: ModalService,
+    public readonly userService: UserService,
     private readonly store: Store<GlobalState>,
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
@@ -366,21 +365,14 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
+    this.store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details;
       this.setIsUserInDepartment();
     });
 
-    this._route.params.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
+    this._route.params.pipe(takeUntilDestroyed()).subscribe(() => {
       this.getDepartment();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   setIsUserInDepartment(): void {
@@ -489,7 +481,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   joinDepartment(): void {
     this._departmentService.joinDepartment(this.department!.Id).subscribe(res => {
       if (res.Status) {
-        this._userService.refreshData();
+        this.userService.refreshData();
         this.getUsers();
       }
     });
@@ -498,7 +490,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   leaveDepartment(): void {
     this._departmentService.leaveDepartment(this.department!.Id).subscribe(res => {
       if (res.Status) {
-        this._userService.refreshData();
+        this.userService.refreshData();
         this._router.navigate(['mdt', 'dashboard']);
       }
     });
@@ -511,7 +503,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     }).subscribe(res => {
       if (res.Status) {
         this.getDepartment();
-        this._userService.refreshData();
+        this.userService.refreshData();
         event.markAsPristine();
       }
     });
@@ -576,4 +568,6 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       createDepartmentCallsignFormatInputField(this._localization, this.department),
     ];
   }
+
+  protected readonly UserRole = UserRole;
 }

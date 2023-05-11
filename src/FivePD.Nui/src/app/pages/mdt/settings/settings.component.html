@@ -1,6 +1,6 @@
 <app-page-header [title]="'UI.LABEL.SETTINGS' | translate"/>
 
-<app-grid *ngIf="user?.Admin ?? false"
+<app-grid *ngIf="userService.userHasRole(UserRole.Admin)"
           [title]="'UI.LABEL.ARREST_REPORT.ATTRIBUTES' | translate"
           [buttons]="arrestReportAttributesButtons"
           [columns]="arrestReportAttributesColumns"

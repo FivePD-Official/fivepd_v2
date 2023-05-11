@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { NuiEventType } from '@enums';
 import { EventService } from '@services/event/event.service';
 import { BaseNuiEvent, MenuShowEvent, TimerBarEvent } from '@models';
-import { Observable, Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { UserService } from '@services/user/user.service';
 import { Store } from '@ngrx/store';

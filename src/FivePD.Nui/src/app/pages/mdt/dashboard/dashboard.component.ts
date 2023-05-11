@@ -1,26 +1,26 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Button, Collation, Column, Department, NumberInput, Page, TextInput, User } from '@models';
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
-import { filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
-import { UserService } from '@services/user/user.service';
+import { UserRole, UserService } from '@services/user/user.service';
 import { CustomValidators } from '../../../helpers/validators';
 import { Store } from '@ngrx/store';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { GlobalState } from '@store';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.sass']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
 
-  destroy$ = new Subject<void>();
   user?: User;
   statistics: any;
   assignedCall: any;
@@ -29,7 +29,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   departmentsButtons: Button[] = [
     {
       label: this._localization.translate('UI.ACTION.CREATE_DEPARTMENT'),
-      show: () => !!this.user?.Admin,
+      show: () => this._userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
     }
@@ -60,7 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }),
     new Column<Department>({
       header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => !!this.user?.Admin,
+      show: () => this._userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
@@ -108,13 +108,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => this.user = state.user.details);
+    this.store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
     this.getDepartments();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.unsubscribe();
   }
 
   getDepartments(): void {
