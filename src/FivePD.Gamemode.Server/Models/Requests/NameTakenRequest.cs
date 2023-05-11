@@ -1,9 +1,8 @@
-﻿#pragma warning disable CS1591
-#pragma warning disable SA1600
+﻿#pragma warning disable
 
 namespace FivePD.Gamemode.Server.Models.Requests
 {
-    public class NameTakenRequest
+    public record struct NameTakenRequest
     {
         public string Name { get; set; }
 

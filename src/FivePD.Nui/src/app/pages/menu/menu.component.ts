@@ -31,7 +31,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this._route.params.subscribe(params => {
       this.menu = this._menuService.getMenuById(params['id']);
-      this.menuItems = this.menu.items ?? [];
+      this.menuItems = this.menu?.items ?? [];
     });
     this.controlEvent$ = this._event.onEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
       switch (event.type) {

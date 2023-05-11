@@ -1,11 +1,10 @@
 ﻿using FivePD.Gamemode.Server.Models.LooseDataSet;
 
-#pragma warning disable CS1591
-#pragma warning disable SA1600
+#pragma warning disable
 
 namespace FivePD.Gamemode.Server.Models.Requests
 {
-    public class AddSetAttributeRequest
+    public record struct AddSetAttributeRequest
     {
         public string SetId { get; set; }
 

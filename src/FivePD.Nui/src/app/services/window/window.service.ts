@@ -64,6 +64,7 @@ export class WindowService {
   private onMenuOpen(res: MenuShowEvent): void {
     this.show();
     this._router.navigate(['menu', res.menuId]);
+    console.log('navigated to menu')
   }
 
   private onRadialMenuOpen(res: MenuShowEvent): void {

@@ -18,7 +18,7 @@ export class DepartmentService {
       id = parseInt(id);
     }
     return this._http.post<Department>('fivepd:department:getById', {
-      DepartmentId: id,
+      Id: id,
     });
   }
 
@@ -36,7 +36,7 @@ export class DepartmentService {
 
   deleteDepartment(id: number): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:delete', {
-      DepartmentId: id,
+      Id: id,
     });
   }
 
@@ -50,13 +50,13 @@ export class DepartmentService {
 
   joinDepartment(id: number): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:join', {
-      DepartmentId: id,
+      Id: id,
     });
   }
 
   leaveDepartment(id: number): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:leave', {
-      DepartmentId: id,
+      Id: id,
     });
   }
 
@@ -70,7 +70,7 @@ export class DepartmentService {
 
   deleteRank(id: number): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:deleteRank', {
-      RankId: id,
+      Id: id,
     });
   }
 
@@ -84,7 +84,7 @@ export class DepartmentService {
 
   deleteDivision(id: number): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:deleteDivision', {
-      DivisionId: id,
+      Id: id,
     });
   }
 
@@ -97,7 +97,7 @@ export class DepartmentService {
 
   getRank(rankId: number): Observable<Rank> {
     return this._http.post<Rank>('fivepd:department:getRank', {
-      RankId: rankId,
+      Id: rankId,
     });
   }
 
@@ -110,7 +110,7 @@ export class DepartmentService {
 
   getDivision(id: number): Observable<Division> {
     return this._http.post<Division>('fivepd:department:getDivision', {
-      DivisionId: id,
+      Id: id,
     });
   }
 

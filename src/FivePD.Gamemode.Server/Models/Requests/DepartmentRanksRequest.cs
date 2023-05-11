@@ -1,29 +1,16 @@
-﻿namespace FivePD.Gamemode.Server.Models.Requests
+﻿#pragma warning disable
+
+namespace FivePD.Gamemode.Server.Models.Requests
 {
-    /// <summary>
-    /// The definition of a request for a department's ranks.
-    /// </summary>
-    public class DepartmentRanksRequest
+    public record struct DepartmentRanksRequest()
     {
-        /// <summary>
-        /// Gets or sets the department id.
-        /// </summary>
         public int DepartmentId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the current page number.
-        /// </summary>
         public int Page { get; set; }
 
-        /// <summary>
-        /// Gets or sets the filters which will be applied to the query.
-        /// </summary>
-        public DepartmentRanksRequestFilters Filters { get; set; } = new DepartmentRanksRequestFilters();
+        public DepartmentRanksRequestFilters Filters { get; set; } = default;
 
-        /// <summary>
-        /// Contains all filters that is applicable to the given class.
-        /// </summary>
-        public class DepartmentRanksRequestFilters
+        public record struct DepartmentRanksRequestFilters
         {
             /// <summary>
             /// Gets or sets the name.

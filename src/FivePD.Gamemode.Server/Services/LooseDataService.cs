@@ -416,10 +416,10 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var request = expandoObject.ConvertTo<GetSetAttributeRequest>();
+                var request = expandoObject.ConvertTo<IdRequest>();
                 var attribute = this._databaseContext.LooseDataAttributes
                     .AsNoTracking()
-                    .FirstOrDefault(set => set.Id == request.AttributeId);
+                    .FirstOrDefault(set => set.Id == request.Id);
 
                 if (attribute is null)
                 {
