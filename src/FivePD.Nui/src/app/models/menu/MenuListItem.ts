@@ -18,13 +18,17 @@ export class MenuListItem extends MenuItem {
   next(): void {
     if (this._currentIndex === this.items.length-1) return;
     this._currentIndex++;
-    this.postRequest(`fivepd:menu:list_onchange_${this.hashcode}`, this.currentIndex);
+    this.postRequest(`fivepd:menu:onListIndexChange:${this.hashcode}`, this.currentIndex);
   }
 
   prev(): void {
     if (this._currentIndex === 0) return;
     this._currentIndex--;
-    this.postRequest(`fivepd:menu:list_onchange_${this.hashcode}`, this.currentIndex);
+    this.postRequest(`fivepd:menu:onListIndexChange:${this.hashcode}`, this.currentIndex);
+  }
+
+  override onPress() {
+    this.postRequest(`fivepd:menu:onListSelect:${this.hashcode}`, this.currentIndex);
   }
 
 }

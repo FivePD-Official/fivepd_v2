@@ -43,6 +43,24 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
+        public MenuConfig GetMenuConfig()
+        {
+            return this.InternalLoadFile<MenuConfig>("/Config/menu.json");
+        }
+
+        /// <inheritdoc />
+        public Vehicles GetVehiclesConfig()
+        {
+            return this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
+        }
+
+        /// <inheritdoc />
+        public List<Loadout> GetLoadoutsConfig()
+        {
+            return this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
+        }
+
+        /// <inheritdoc />
         public List<string> GetFemaleFirstnames()
         {
             return this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");
@@ -71,8 +89,8 @@ namespace FivePD.Gamemode.Server.Services
 
             var exceptionMessage = file.Item2 switch
             {
-                EmptyConfigException _ => this._localizationService.GetDefaultLocalization().Warning.EmptyConfigException,
-                _ => this._localizationService.GetDefaultLocalization().Warning.ConfigException,
+                EmptyConfigException _ => this._localizationService.Get("EXCEPTION.EMPTY_CONFIG"),
+                _ => this._localizationService.Get("EXCEPTION.JSON_PARSE"),
             };
 
             this._logger.Warning(exceptionMessage.ReplaceParams(

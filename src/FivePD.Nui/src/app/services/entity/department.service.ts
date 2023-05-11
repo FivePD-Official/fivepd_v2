@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ActionResponse, Collation, Department, Division, NameTakenResponse, Page, Rank, User } from '@models';
 
 @Injectable({
@@ -10,7 +10,8 @@ export class DepartmentService {
 
   constructor(
     private _http: HttpClient,
-  ) { }
+  ) {
+  }
 
   getDepartment(id: number | string): Observable<Department> {
     if (typeof id === 'string') {
@@ -94,6 +95,12 @@ export class DepartmentService {
     });
   }
 
+  getRank(rankId: number): Observable<Rank> {
+    return this._http.post<Rank>('fivepd:department:getRank', {
+      RankId: rankId,
+    });
+  }
+
   getRanks(departmentId: number, collation?: Collation): Observable<Page<Rank>> {
     return this._http.post<Page<Rank>>('fivepd:department:getRanks', {
       DepartmentId: departmentId,
@@ -101,9 +108,15 @@ export class DepartmentService {
     });
   }
 
-  getDivisions(id: number, collation?: Collation): Observable<Page<Division>> {
+  getDivision(id: number): Observable<Division> {
+    return this._http.post<Division>('fivepd:department:getDivision', {
+      DivisionId: id,
+    });
+  }
+
+  getDivisions(departmentId: number, collation?: Collation): Observable<Page<Division>> {
     return this._http.post<Page<Division>>('fivepd:department:getDivisions', {
-      DepartmentId: id,
+      DepartmentId: departmentId,
       ...collation
     });
   }

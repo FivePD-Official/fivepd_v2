@@ -72,9 +72,9 @@ namespace FivePD.Common
         public abstract class Localization
         {
             /// <summary>
-            /// C->S: Used when a client wants to request all available locales.
+            /// Used to request localization from the server.
             /// </summary>
-            public const string GetAvailableLocalesFromServer = "fivepd:localization:getAvaibleLocalesFromServer";
+            public const string GetLocalizationFromServer = "fivepd:localization:getLocalizationFromServer";
 
             /// <summary>
             /// Used to request localization from Nui.
@@ -88,11 +88,6 @@ namespace FivePD.Common
         /// </summary>
         public abstract class NuiEventType
         {
-            /// <summary>
-            /// Invoked from the Nui when it's initialized..
-            /// </summary>
-            public const string IsNuiReady = "fivepd:nui:isNuiReady";
-
             /// <summary>
             /// Invoked by the client when ready for the Nui.
             /// </summary>
@@ -127,18 +122,6 @@ namespace FivePD.Common
 
             /// <summary>Selects the current item.</summary>
             public const string MenuSelect = "menu:control_select";
-
-            /// <summary>Updates a menu item's specific value.</summary>
-            public const string UpdateMenuItem = "menu:update_item";
-
-            /// <summary>Sends the current localization to the Nui.</summary>
-            public const string LocalizationChange = "localization:change";
-
-            /// <summary>Sends all menus to the Nui.</summary>
-            public const string SendMenuObjects = "send:menus";
-
-            /// <summary>Sends all radial menus to the Nui.</summary>
-            public const string SendRadialMenuObjects = "send:radialMenus";
 
             /// <summary>Sends radial menu control events (mouse move up, down, select) to the Nui.</summary>
             public const string RadialMenuControl = "radial_menu:control";
@@ -195,6 +178,11 @@ namespace FivePD.Common
                 /// Used to change a player's rank.
                 /// </summary>
                 public const string ChangeRank = "fivepd:player:changeRank";
+
+                /// <summary>
+                /// Used to change the localization of the UI.
+                /// </summary>
+                public const string LocalizationChange = "fivepd:player:localizationChange";
             }
 
             /// <summary>
@@ -220,7 +208,17 @@ namespace FivePD.Common
                 /// <summary>
                 /// Used to request the ranks of a department.
                 /// </summary>
+                public const string GetRank = "fivepd:department:getRank";
+
+                /// <summary>
+                /// Used to request the ranks of a department.
+                /// </summary>
                 public const string GetRanks = "fivepd:department:getRanks";
+
+                /// <summary>
+                /// Used to request a division of a department.
+                /// </summary>
+                public const string GetDivision = "fivepd:department:getDivision";
 
                 /// <summary>
                 /// Used to request the divisions of a department.
@@ -296,6 +294,11 @@ namespace FivePD.Common
                 /// <summary>
                 /// Used to get a set's attributes.
                 /// </summary>
+                public const string GetSetAttribute = "fivepd:looseData:getSetAttribute";
+
+                /// <summary>
+                /// Used to get a set's attributes.
+                /// </summary>
                 public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
 
                 /// <summary>
@@ -342,6 +345,42 @@ namespace FivePD.Common
                 /// Used to delete an entity.
                 /// </summary>
                 public const string DeleteEntity = "fivepd:looseData:deleteEntity";
+            }
+
+            /// <summary>
+            /// Contains all menu related events.
+            /// </summary>
+            public abstract class Menu
+            {
+                /// <summary>
+                /// Used to request all menus.
+                /// </summary>
+                public const string GetAll = "fivepd:menu:getAll";
+
+                /// <summary>
+                /// Used to invoke the OnSelect event of buttons.
+                /// </summary>
+                public const string OnButtonSelect = "fivepd:menu:onButtonSelect";
+
+                /// <summary>
+                /// Used to invoke the OnSelect event of checkboxes.
+                /// </summary>
+                public const string OnCheckboxSelect = "fivepd:menu:onCheckboxSelect";
+
+                /// <summary>
+                /// Used to invoke the OnSelect event of lists.
+                /// </summary>
+                public const string OnListSelect = "fivepd:menu:onListSelect";
+
+                /// <summary>
+                /// Used to invoke the OnIndexChange event of lists.
+                /// </summary>
+                public const string OnListIndexChange = "fivepd:menu:onListIndexChange";
+
+                /// <summary>
+                /// Updates a menu item's property value.
+                /// </summary>
+                public const string UpdateMenuItem = "fivepd:menu:update_item";
             }
         }
     }

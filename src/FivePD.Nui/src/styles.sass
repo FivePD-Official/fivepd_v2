@@ -1,52 +1,24 @@
+@tailwind base
+@tailwind components
+@tailwind utilities
+
 @import '~tippy.js/dist/tippy.css'
 @import '~tippy.js/themes/light.css'
 @import '~tippy.js/animations/scale.css'
 
 \:root
-  --clr-red: #FF3E45
-  --clr-blue: #178EE9
-
-  --clr-border: #686464
-  --clr-border-secondary: transparent
-  --clr-gray: #686464
-  --clr-overlay: #1B1A1A
-  --clr-bg: #1B1A1A
-  --clr-bg-secondary: #222121
-  --clr-bg-5: #1F1E1E
-  --clr-bg-20: #2B2929
-  --clr-bg-40: #3A3838
-  --clr-bg-80: #585555
-  --clr-text: rgba(255,255,255,1)
-  --clr-text-primary: rgba(255,255,255,.9)
-  --clr-text-secondary: rgba(255,255,255,.7)
-  --clr-text-tertiary: rgba(255,255,255,.5)
-
-  --radius-sm: 5px
-  --radius: 10px
-  --radius-lg: 15px
-
   --transition: all 0.15s cubic-bezier(0.33, 1, 0.68, 1)
 
-  --layer-0: 0
-  --layer-10: 10
-  --layer-100: 100
-  --layer-1000: 1000
-  --layer-max: 100000000
-
-  --page-header-height: 115px
-
 *
-  margin: 0
   outline: none
-  box-sizing: border-box
   user-select: none
   letter-spacing: 0.2px
-  -webkit-user-drag: none
-  -webkit-font-smoothing: subpixel-antialiased
-  font-family: 'Satoshi', 'Open Sans', 'Segoe UI', Roboto, sans-serif
   transition: var(--transition)
   &::before, &::after
     transition: var(--transition)
+
+.border-color
+  @apply border-zinc-700
 
 ::-webkit-scrollbar
   width: 10px
@@ -55,15 +27,13 @@
   background: transparent
 
 ::-webkit-scrollbar-thumb
-  background: var(--clr-bg-80)
+  @apply bg-zinc-700
+
+::selection
+  @apply text-white bg-primary
 
 app-root
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: center
-  width: 100vw
-  height: 100vh
+  @apply flex flex-col items-center justify-center w-screen h-screen
 
   .main-container
     position: relative
@@ -75,29 +45,12 @@ app-root
       width: 95vw
 
 .common-title
-  font-size: 22px
-  font-weight: 700
-  color: var(--clr-text-primary)
-
-.common-bg
-  border-radius: var(--radius)
-  background-color: var(--clr-bg-secondary)
-  padding: 20px
+  @apply text-xl font-bold text-zinc-200
 
 div[app-icon]
-  max-height: 25px
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: center
+  @apply max-h-[25px] flex flex-col items-center justify-center
 
 .tippy-box[data-theme~='custom']
-  background-color: var(--clr-bg-40)
-  color: var(--clr-text-primary)
-  font-size: 16px
-  font-weight: 500
-  border-radius: var(--radius-sm)
-  padding: 5px
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
+  @apply bg-zinc-700 text-zinc-200 text-sm font-medium rounded-lg p-1 shadow
   & > .tippy-arrow::before
-    border-top-color: var(--clr-bg-40)
+    @apply bg-zinc-700

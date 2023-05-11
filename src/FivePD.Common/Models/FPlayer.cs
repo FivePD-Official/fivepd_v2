@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
-using FivePD.Common.Attributes;
+using FivePD.Common.Interfaces;
+using FivePD.Common.UIModels;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Common.Models
@@ -14,9 +15,10 @@ namespace FivePD.Common.Models
      * functionality for easier interactions
      * with the framework.</summary>
      */
-    public class FPlayer : FStatefulContainer
+    public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     {
-        private static List<FPlayer> _cachedPlayers = new();
+        private static List<FPlayer> _cachedPlayers = new List<FPlayer>();
+        private List<Menu> _menus = new List<Menu>();
 
         /**
          * <summary>Initializes a new instance of the <see cref="FPlayer"/> class.</summary>
@@ -104,10 +106,37 @@ namespace FivePD.Common.Models
             return $"player:{this.NetId}";
         }
 
+        /// <summary>
+        /// Gets the menu with the type of <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="type">The type of the menu2.</param>
+        /// <typeparam name="T">The type of the menu.</typeparam>
+        /// <returns>Returns a menu or null.</returns>
+        public T GetMenu<T>(Type type = null)
+            where T : Menu
+        {
+            type ??= typeof(T);
+            return (T)this._menus.FirstOrDefault(m => m.GetType() == type);
+        }
+
         /// <inheritdoc />
         public override StateBag GetStateBag()
         {
             return this.GetUnderlyingPlayer().State;
+        }
+
+        /// <inheritdoc/>
+        void IFPlayerWithMenus.SetMenus(List<Menu> menus)
+        {
+            this._menus = menus;
+        }
+
+        /// <inheritdoc/>
+        MenuItem IFPlayerWithMenus.FindMenuItem(string hashcode)
+        {
+            return this._menus
+                .Select(m => m.Items.FirstOrDefault(x => x.GetHashCode().ToString() == hashcode))
+                .FirstOrDefault(found => found != null);
         }
 
         #pragma warning disable S3011

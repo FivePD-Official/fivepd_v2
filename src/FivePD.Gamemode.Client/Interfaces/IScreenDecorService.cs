@@ -45,5 +45,10 @@ namespace FivePD.Gamemode.Client.Interfaces
          * <summary>Ends drawing text on the screen.</summary>
          */
         public void EndTextDraw();
+
+        /**
+         * <summary>Builds the text.</summary>
+         */
+        public void BuildText();
     }
 }

@@ -1,6 +1,4 @@
-﻿import { Localization } from './localization';
-
-export interface ActionResponse {
+﻿export interface ActionResponse {
   Status: boolean;
   Title: string;
   Description: string;
@@ -15,15 +13,15 @@ export interface BaseNuiEvent {
   type: string;
 }
 
-export interface MenuObjectsEvent extends BaseNuiEvent {
-  data: {
+export interface GetAllMenusResponse extends BaseNuiEvent {
+  Menus: {
+    Hashcode: string;
     Title: string;
     UseLocalization: boolean;
-    Id: string;
     Items: {
+      Hashcode: string;
       Title: string;
       Description: string;
-      Hashcode: string;
       Type: number;
       Items?: string[];
     }[];
@@ -42,7 +40,7 @@ export interface RadialMenuObjectsEvent extends BaseNuiEvent {
 }
 
 export interface LocalizationChangeEvent extends BaseNuiEvent {
-  data: Localization;
+  data: string;
 }
 
 export interface MenuShowEvent extends BaseNuiEvent {
@@ -57,7 +55,7 @@ export interface RadialMenuControlEvent extends BaseNuiEvent {
 
 export interface UpdateMenuItemEvent extends BaseNuiEvent {
   hashcode: string;
-  fieldname: string;
+  property: string;
   value: any;
 }
 

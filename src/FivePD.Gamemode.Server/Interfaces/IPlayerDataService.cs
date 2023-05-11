@@ -1,5 +1,5 @@
 ﻿using System;
-using FivePD.Common.Models;
+using CitizenFX.Core;
 using FivePD.Gamemode.Server.Models;
 
 namespace FivePD.Gamemode.Server.Interfaces
@@ -20,5 +20,12 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// Fires when a player's division has been changed.
         /// </summary>
         public event EventHandler<Division> PlayerDivisionChanged;
+
+        /// <summary>
+        /// Finds the <see cref="User"/> object corresponding to the <paramref name="player"/>.
+        /// </summary>
+        /// <param name="player">The player to find.</param>
+        /// <returns>The corresponding <see cref="User"/> object.</returns>
+        public User FindUserByLicense(Player player);
     }
 }

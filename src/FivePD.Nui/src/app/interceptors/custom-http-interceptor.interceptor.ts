@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor, HttpResponse
-} from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { map, Observable, tap } from 'rxjs';
 import { NotificationService } from '@services/notification/notification.service';
 import { LocalizationService } from '@services/localization/localization.service';
@@ -45,6 +40,10 @@ export class CustomHttpInterceptor implements HttpInterceptor {
       tap(event => {
         if (event instanceof HttpResponse) {
           const body = event.body as ActionResponse;
+          if (!body) {
+            return;
+          }
+
           if (body.hasOwnProperty('Title') && body.hasOwnProperty('Description') &&
             body.hasOwnProperty('Status') && body.hasOwnProperty('Params')
           ) {

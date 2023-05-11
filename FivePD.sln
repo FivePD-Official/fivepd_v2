@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Gamemode.Server", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Gamemode.IA.AmbientEvents", "src\FivePD.Gamemode.IA.AmbientEvents\FivePD.Gamemode.IA.AmbientEvents.csproj", "{4509990C-E190-4355-9F88-D06FCABD86D8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.JsonGenerator", "src\FivePD.JsonGenerator\FivePD.JsonGenerator.csproj", "{BBA92746-14EB-4C46-BBE6-7D1D0F74589E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Localization", "src\FivePD.Localization\FivePD.Localization.csproj", "{BBA92746-14EB-4C46-BBE6-7D1D0F74589E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.StartupProject", "src\FivePD.StartupProject\FivePD.StartupProject.csproj", "{29865DEC-420B-4EEF-8A84-B8A8052B89E6}"
 EndProject

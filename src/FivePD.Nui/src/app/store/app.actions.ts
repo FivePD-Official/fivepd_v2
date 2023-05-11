@@ -1,5 +1,4 @@
 ﻿import { IListItem } from './app.state';
-import { Localization } from '@models';
 
 export class SetAvailableLocales {
   static readonly type = '[app] set available locales';
@@ -8,7 +7,7 @@ export class SetAvailableLocales {
 
 export class SetLocalization {
   static readonly type = '[app] set localization';
-  constructor(public payload: Localization) {}
+  constructor(public payload: object) {}
 }
 
 export class ToggleSidebarCollapse {

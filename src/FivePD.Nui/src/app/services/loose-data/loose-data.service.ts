@@ -2,10 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   ActionResponse,
-  AddSetAttribute, AttributeDataType,
+  AddSetAttribute,
+  AttributeDataType,
   Collation,
   EditSetAttribute,
-  LooseDataEntity, LooseDataEntityPageWrapper, LooseDataEntityWrapper, MappedLooseDataEntity,
+  LooseDataEntity,
+  LooseDataEntityPageWrapper,
+  LooseDataEntityWrapper,
+  MappedLooseDataEntity,
   Page,
   SetAttribute
 } from '@models';
@@ -21,7 +25,12 @@ export class LooseDataService {
 
   constructor(
     private _http: HttpClient,
-  ) { }
+  ) {
+  }
+
+  getSetAttribute(setId: SetId, attributeId: number): Observable<SetAttribute> {
+    return this.updateSetAttribute(setId, attributeId);
+  }
 
   getSetAttributes(setId: SetId): SetAttribute[] {
     return this._sets[setId];
@@ -108,6 +117,21 @@ export class LooseDataService {
       SetId: setId,
       Id: id,
     });
+  }
+
+  private updateSetAttribute(setId: SetId, attributeId: number): Observable<SetAttribute> {
+    return this._http.post<SetAttribute>('fivepd:looseData:getSetAttribute', {
+      AttributeId: attributeId,
+    }).pipe(
+      tap(attribute => {
+        if (!Object.entries(this._sets).length) {
+          return;
+        }
+
+        const cachedAttributeIndex = this._sets[setId].findIndex(a => a.Id === attributeId);
+        this._sets[setId][cachedAttributeIndex] = attribute;
+      })
+    );
   }
 
   private updateSetAttributes(setId: SetId): Observable<SetAttribute[]> {

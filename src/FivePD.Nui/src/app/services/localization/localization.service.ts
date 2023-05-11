@@ -1,5 +1,5 @@
 import { Injectable, SecurityContext } from '@angular/core';
-import { defaultLocalization, Localization, LocalizationChangeEvent, Paths } from '@models';
+import { LocalizationChangeEvent } from '@models';
 import { NuiEventType } from '@enums';
 import { HttpClient } from '@angular/common/http';
 import { EventService } from '@services/event/event.service';
@@ -12,31 +12,29 @@ import { replaceParams } from '@helpers';
 })
 export class LocalizationService {
 
-  _localization: Localization = defaultLocalization;
+  _localization: object = {};
 
   constructor(
     private _http: HttpClient,
     private _event: EventService,
     private sanitizer: DomSanitizer,
   ) {
-    this._event.onEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(localization => this.set(localization.data));
+    this._event.onEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(localization => {
+      this.set(JSON.parse(localization.data))
+    });
   }
 
-  load(): void {
-    this._http.post<Localization>('fivepd:localization:getLocalizationFromNui', {}).subscribe(localization => this.set(localization));
-  }
-
-  get(): Localization {
+  get(): object {
     return this._localization;
   }
 
-  translate(path: Paths<Localization> | string, params: Record<string, string> = {}, boldParams: boolean = true): string {
+  translate(path: string, params: Record<string, string> = {}, boldParams: boolean = true): string {
     const translation = getKeyFromObjectPath(this._localization, path, path);
     return replaceParams(translation, params, boldParams);
   }
 
-  private async set(localization: Localization): Promise<void> {
-    await this.sanitizeObject(localization);
+  private async set(localization: object): Promise<void> {
+    // TODO FIX await this.sanitizeObject(localization);
     this._localization = localization;
   }
 

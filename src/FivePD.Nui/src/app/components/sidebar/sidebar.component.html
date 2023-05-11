@@ -1,34 +1,40 @@
-<aside [ngClass]="{ 'collapsed': isSidebarCollapsed }">
-  <div class="links">
-    <a
-      *ngFor="let item of routes"
-      [routerLink]="item.path()"
-      [routerLinkActive]="'active'"
-      [routerLinkActiveOptions]="{ exact: false }"
-    >
-      <div *ngIf="item.show()" class="link">
-        <div class="icon" app-icon [name]="item.icon"></div>
-        <p>{{ item.title | translate }}</p>
+<aside class="w-full h-full border-r border-color flex flex-col items-center justify-between p-5 pt-10">
+  <div class="w-full">
+    <a *ngFor="let item of routes"
+       class="group decoration-0"
+       [routerLink]="item.path()"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: false }">
+      <div *ngIf="item.show()"
+           class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
+                  before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
+                  before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
+        <div app-icon
+             [name]="item.icon"
+             class="w-[50px] h-full flex flex-center justify-center"
+             className="h-[25px] text-zinc-400 group-[.active]:text-white">
+        </div>
+        <p class="text-zinc-400 group-[.active]:text-white whitespace-nowrap"
+           [ngClass]="{ 'hidden': isSidebarCollapsed }">
+          {{ item.title | translate }}
+        </p>
       </div>
     </a>
   </div>
 
-  <div class="buttons">
-    <button
-      class="panic-btn"
-      [ngClass]="{ 'collapsed': isSidebarCollapsed, 'panic-btn--active': isPanicModeActive }"
-      (click)="togglePanicMode()"
-    >
-      <span *ngIf="!isSidebarCollapsed">{{ isPanicModeActive ? 'cancel' : 'panic' }}</span>
-      <div class="icon" app-icon *ngIf="!isPanicModeActive; else icon2" name="Warning"></div>
-      <ng-template #icon2>
-        <div class="icon" app-icon name="XMark"></div>
-      </ng-template>
-    </button>
-
-    <button class="collapse-btn" [ngClass]="{ 'collapsed': isSidebarCollapsed }" (click)="toggleSidebarCollapse()">
-      <div class="icon" app-icon name="ArrowLeft"></div>
-      <span>Collapse</span>
+  <div class="w-full">
+    <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3
+                   before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
+                   before:bg-zinc-800 hover:before:bg-zinc-700"
+            (click)="toggleSidebarCollapse()">
+      <div app-icon
+           className="relative h-[24px] text-zinc-400 mr-2"
+           [ngClassName]="{ 'rotate-180 mr-0': isSidebarCollapsed }"
+           name="ArrowLeft">
+      </div>
+      <span class="relative text-lg text-zinc-400" [ngClass]="{ 'hidden': isSidebarCollapsed }">
+        Collapse
+      </span>
     </button>
   </div>
 </aside>

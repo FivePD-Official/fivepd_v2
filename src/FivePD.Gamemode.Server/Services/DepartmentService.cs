@@ -22,14 +22,17 @@ namespace FivePD.Gamemode.Server.Services
     public class DepartmentService : IDepartmentService
     {
         private readonly DatabaseContext _databaseContext;
+        private readonly IPlayerDataService _playerDataService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DepartmentService"/> class.
         /// </summary>
         /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
-        public DepartmentService(DatabaseContext databaseContext)
+        /// <param name="playerDataService">The <see cref="PlayerDataService"/> to use.</param>
+        public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService)
         {
             this._databaseContext = databaseContext;
+            this._playerDataService = playerDataService;
         }
 
         /// <inheritdoc />
@@ -190,7 +193,7 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public void AddPlayerToDepartment(Player player, Department department)
         {
-            this.AddPlayerToDepartment(this.FindUserByLicense(player), department);
+            this.AddPlayerToDepartment(this._playerDataService.FindUserByLicense(player), department);
         }
 
         /// <inheritdoc />
@@ -223,7 +226,7 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public void RemovePlayerFromDepartment(Player player)
         {
-            this.RemovePlayerFromDepartment(this.FindUserByLicense(player));
+            this.RemovePlayerFromDepartment(this._playerDataService.FindUserByLicense(player));
         }
 
         [UIEvent(Events.UI.Department.List)]
@@ -234,14 +237,18 @@ namespace FivePD.Gamemode.Server.Services
                 var departmentsRequest = departmentsRequestString.ConvertTo<DepartmentsRequest>();
 
                 var filters = new Filters<Department>();
-                filters.Add(!string.IsNullOrEmpty(departmentsRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentsRequest.Filters.Name.ToLower()));
-                filters.Add(!string.IsNullOrEmpty(departmentsRequest.Filters.Callsign), department => department.Callsign.ToLower().Contains(departmentsRequest.Filters.Callsign.ToLower()));
+                filters.Add(
+                    !string.IsNullOrEmpty(departmentsRequest.Filters.Name),
+                    department => department.Name.ToLower().Contains(departmentsRequest.Filters.Name.ToLower()));
+                filters.Add(
+                    !string.IsNullOrEmpty(departmentsRequest.Filters.Callsign),
+                    department => department.Callsign.ToLower().Contains(departmentsRequest.Filters.Callsign.ToLower()));
 
                 var page = this._databaseContext.Departments
                     .AsNoTracking()
                     .Include(department => department.Users)
                     .Paginate(departmentsRequest.Page, filters);
-                page.Items = page.Items.Select(item => item.ToResponse()).ToList();
+                page.Items = page.Items.Select(item => new DepartmentResponse(item)).ToList();
 
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
             }
@@ -260,9 +267,9 @@ namespace FivePD.Gamemode.Server.Services
                 var departmentRequest = expandoObject.ConvertTo<DepartmentByIdRequest>();
                 var department = this._databaseContext.Departments
                     .AsNoTracking()
-                        .Include(dept => dept.Divisions)
-                        .Include(dept => dept.Ranks)
-                        .FirstOrDefault(dept => dept.Id == departmentRequest.DepartmentId);
+                    .Include(dept => dept.Divisions)
+                    .Include(dept => dept.Ranks)
+                    .FirstOrDefault(dept => dept.Id == departmentRequest.DepartmentId);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(department));
             }
             catch (Exception e)
@@ -281,10 +288,30 @@ namespace FivePD.Gamemode.Server.Services
 
                 var filters = new Filters<User>();
                 filters.Add(true, user => user.Department.Id == departmentUsersRequest.DepartmentId);
-                filters.Add(!string.IsNullOrEmpty(departmentUsersRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
+                filters.Add(
+                    !string.IsNullOrEmpty(departmentUsersRequest.Filters.Name),
+                    department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
 
                 var page = this._databaseContext.Users.AsNoTracking().Paginate(departmentUsersRequest.Page, filters);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        [UIEvent(Events.UI.Department.GetRank)]
+        private void GetDepartmentRankForNui(ExpandoObject requestString, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = requestString.ConvertTo<DepartmentRankRequest>();
+                var rank = this._databaseContext.Ranks
+                    .AsNoTracking()
+                    .FirstOrDefault(rank => rank.Id == request.RankId);
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(rank));
             }
             catch (Exception e)
             {
@@ -302,10 +329,31 @@ namespace FivePD.Gamemode.Server.Services
 
                 var filters = new Filters<Rank>();
                 filters.Add(true, rank => rank.Department.Id == departmentRanksRequest.DepartmentId);
-                filters.Add(!string.IsNullOrEmpty(departmentRanksRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentRanksRequest.Filters.Name.ToLower()));
+                filters.Add(
+                    !string.IsNullOrEmpty(departmentRanksRequest.Filters.Name),
+                    department => department.Name.ToLower().Contains(departmentRanksRequest.Filters.Name.ToLower()));
 
                 var page = this._databaseContext.Ranks.AsNoTracking().Paginate(departmentRanksRequest.Page, filters);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+            }
+            catch (Exception e)
+            {
+                networkCallbackDelegate.Invoke(null);
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        [UIEvent(Events.UI.Department.GetDivision)]
+        private void GetDepartmentDivisionForNui(ExpandoObject requestString, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = requestString.ConvertTo<DepartmentDivisionRequest>();
+
+                var division = this._databaseContext.Divisions
+                    .AsNoTracking()
+                    .FirstOrDefault(division => division.Id == request.DivisionId);
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(division));
             }
             catch (Exception e)
             {
@@ -319,13 +367,18 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var departmentDivisionsRequest = departmentDivisionsRequestString.ConvertTo<DepartmentDivisionsRequest>();
+                var departmentDivisionsRequest =
+                    departmentDivisionsRequestString.ConvertTo<DepartmentDivisionsRequest>();
 
                 var filters = new Filters<Division>();
                 filters.Add(true, division => division.Department.Id == departmentDivisionsRequest.DepartmentId);
-                filters.Add(!string.IsNullOrEmpty(departmentDivisionsRequest.Filters.Name), department => department.Name.ToLower().Contains(departmentDivisionsRequest.Filters.Name.ToLower()));
+                filters.Add(
+                    !string.IsNullOrEmpty(departmentDivisionsRequest.Filters.Name),
+                    department => department.Name.ToLower().Contains(departmentDivisionsRequest.Filters.Name.ToLower()));
 
-                var page = this._databaseContext.Divisions.AsNoTracking().Paginate(departmentDivisionsRequest.Page, filters);
+                var page = this._databaseContext.Divisions
+                    .AsNoTracking()
+                    .Paginate(departmentDivisionsRequest.Page, filters);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
             }
             catch (Exception e)
@@ -347,34 +400,25 @@ namespace FivePD.Gamemode.Server.Services
                     CallsignFormat = createDepartmentRequest.CallsignFormat,
                     MaxUsers = createDepartmentRequest.MaxUsers,
                 });
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulCreate",
-                    Description = "Nui.Labels.SuccessfulDepartmentCreate",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.CREATE",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.CREATE",
+                    new Dictionary<string, string>
                     {
                         { "department", createDepartmentRequest.Name },
-                    },
-                }.ToString());
+                    });
             }
             catch (DepartmentExistsWithNameException)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.CreateDepartmentExistsWithNameTitle",
-                    Description = "Nui.Errors.DepartmentExistsWithNameDescription",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithResponse(
+                    false,
+                    "UI.ERROR.DEPARTMENT.CREATE.TITLE",
+                    "UI.ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -387,15 +431,11 @@ namespace FivePD.Gamemode.Server.Services
                 var divisionFields = expandoObject.ConvertTo<DeleteDivisionRequest>();
                 var divisionToDelete = this._databaseContext.Divisions
                     .Include(division => division.Users)
+                    .Include(division => division.Department)
                     .FirstOrDefault(division => division.Id == divisionFields.DivisionId);
                 if (divisionToDelete is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
@@ -408,25 +448,18 @@ namespace FivePD.Gamemode.Server.Services
                 this._databaseContext.Divisions.Remove(divisionToDelete);
                 this._databaseContext.SaveChanges();
                 this.PlayerDivisionDeleted?.Invoke(this, divisionToDelete);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulDelete",
-                    Description = "Nui.Labels.SuccessfulDivisionDelete",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.DELETE",
+                    "UI.LABEL.DIVISION.SUCCESS.DELETE",
+                    new Dictionary<string, string>
                     {
                         { "division", divisionToDeleteName },
-                    },
-                }.ToString());
+                    });
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -436,28 +469,26 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var renameDivisionRequest = expandoObject.ConvertTo<RenameDivisionRequest>();
-                var divisionToEdit = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == renameDivisionRequest.DivisionId);
+                var renameDivisionRequest = expandoObject.ConvertTo<EditDivisionRequest>();
+                var divisionToEdit =
+                    this._databaseContext.Divisions.FirstOrDefault(division =>
+                        division.Id == renameDivisionRequest.DivisionId);
                 if (divisionToEdit is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
-                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == renameDivisionRequest.Name && division.Department.Id == renameDivisionRequest.DepartmentId && division.Id != divisionToEdit.Id);
+                var divisionExistsWithName = this._databaseContext.Divisions
+                    .FirstOrDefault(division => division.Name == renameDivisionRequest.Name &&
+                                                division.Department.Id == renameDivisionRequest.DepartmentId &&
+                                                division.Id != divisionToEdit.Id);
                 if (divisionExistsWithName != null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.EditDivisionExistsWithNameTitle",
-                        Description = "Nui.Errors.DivisionExistsWithNameDescription",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithResponse(
+                        false,
+                        "UI.ERROR.DIVISION.EDIT.TITLE",
+                        "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -465,25 +496,18 @@ namespace FivePD.Gamemode.Server.Services
                 divisionToEdit.Name = renameDivisionRequest.Name;
                 this._databaseContext.SaveChanges();
                 this.PlayerDivisionEdited?.Invoke(this, divisionToEdit);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulEdit",
-                    Description = "Nui.Labels.SuccessfulDivisionEdit",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.EDIT",
+                    "UI.LABEL.DIVISION.SUCCESS.EDIT",
+                    new Dictionary<string, string>
                     {
                         { "division", divisionToEditOldName },
-                    },
-                }.ToString());
+                    });
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -494,27 +518,22 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var createDivisionRequest = expandoObject.ConvertTo<CreateDivisionRequest>();
-                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division => division.Name == createDivisionRequest.Name && division.Department.Id == createDivisionRequest.DepartmentId);
+                var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division =>
+                    division.Name == createDivisionRequest.Name && division.Department.Id == createDivisionRequest.DepartmentId);
                 if (divisionExistsWithName != null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.CreateDivisionExistsWithNameTitle",
-                        Description = "Nui.Errors.DivisionExistsWithNameDescription",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithResponse(
+                        false,
+                        "UI.ERROR.DIVISION.CREATE.TITLE",
+                        "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
                 var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == createDivisionRequest.DepartmentId);
                 if (department is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
                 }
 
                 var createdDivisionEntry = this._databaseContext.Divisions.Add(new Division
@@ -524,25 +543,18 @@ namespace FivePD.Gamemode.Server.Services
                 });
                 this._databaseContext.SaveChanges();
                 this.PlayerDivisionCreated?.Invoke(this, createdDivisionEntry.Entity);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulCreate",
-                    Description = "Nui.Labels.SuccessfulDivisionCreate",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.CREATE",
+                    "UI.LABEL.DIVISION.SUCCESS.CREATE",
+                    new Dictionary<string, string>
                     {
                         { "division", createDivisionRequest.Name },
-                    },
-                }.ToString());
+                    });
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -559,12 +571,7 @@ namespace FivePD.Gamemode.Server.Services
                     .FirstOrDefault(rank => rank.Id == deleteRankRequest.RankId);
                 if (rankToDelete is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
@@ -582,25 +589,18 @@ namespace FivePD.Gamemode.Server.Services
                 this._databaseContext.Ranks.Remove(rankToDelete);
                 this._databaseContext.SaveChanges();
                 this.PlayerRankDeleted?.Invoke(this, rankToDelete);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulDelete",
-                    Description = "Nui.Labels.SuccessfulRankDelete",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.DELETE",
+                    "UI.LABEL.RANK.SUCCESS.DELETE",
+                    new Dictionary<string, string>
                     {
                         { "rank", rankToDeleteName },
-                    },
-                }.ToString());
+                    });
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -614,24 +614,15 @@ namespace FivePD.Gamemode.Server.Services
                 var rankToEdit = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == editRankRequest.RankId);
                 if (rankToEdit is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
-                var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == editRankRequest.Name && rank.Department.Id == editRankRequest.DepartmentId && rank.Id != rankToEdit.Id);
+                var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank =>
+                    rank.Name == editRankRequest.Name && rank.Department.Id == editRankRequest.DepartmentId && rank.Id != rankToEdit.Id);
                 if (rankExistsWithName != null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.EditRankExistsWithNameTitle",
-                        Description = "Nui.Errors.RankExistsWithNameDescription",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -640,25 +631,18 @@ namespace FivePD.Gamemode.Server.Services
                 rankToEdit.Permission = editRankRequest.Permission;
                 this._databaseContext.SaveChanges();
                 this.PlayerRankEdited?.Invoke(this, rankToEdit);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulEdit",
-                    Description = "Nui.Labels.SuccessfulRankEdit",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.EDIT",
+                    "UI.LABEL.RANK.SUCCESS.EDIT",
+                    new Dictionary<string, string>
                     {
                         { "rank", rankToEditOldName },
-                    },
-                }.ToString());
+                    });
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -669,27 +653,20 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var createRankRequest = expandoObject.ConvertTo<CreateRankRequest>();
-                var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == createRankRequest.Name && rank.Department.Id == createRankRequest.DepartmentId);
+                var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank =>
+                    rank.Name == createRankRequest.Name && rank.Department.Id == createRankRequest.DepartmentId);
                 if (rankExistsWithName != null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.CreateRankExistsWithNameTitle",
-                        Description = "Nui.Errors.RankExistsWithNameDescription",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
-                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == createRankRequest.DepartmentId);
+                var department = this._databaseContext.Departments.FirstOrDefault(department =>
+                    department.Id == createRankRequest.DepartmentId);
                 if (department is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
                 }
 
                 var createdRankEntry = this._databaseContext.Ranks.Add(new Rank
@@ -700,25 +677,18 @@ namespace FivePD.Gamemode.Server.Services
                 });
                 this._databaseContext.SaveChanges();
                 this.PlayerRankCreated?.Invoke(this, createdRankEntry.Entity);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulCreate",
-                    Description = "Nui.Labels.SuccessfulRankCreate",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.CREATE",
+                    "UI.LABEL.RANK.SUCCESS.CREATE",
+                    new Dictionary<string, string>
                     {
                         { "rank", createRankRequest.Name },
-                    },
-                }.ToString());
+                    });
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -729,27 +699,22 @@ namespace FivePD.Gamemode.Server.Services
             try
             {
                 var editDepartmentRequest = expandoObject.ConvertTo<EditDepartmentRequest>();
-                var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == editDepartmentRequest.DepartmentId);
+                var department = this._databaseContext.Departments.FirstOrDefault(department =>
+                    department.Id == editDepartmentRequest.DepartmentId);
                 if (department is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
-                var departmentExistsWithName = this._databaseContext.Departments.AsNoTracking().FirstOrDefault(dept => dept.Id != editDepartmentRequest.DepartmentId && dept.Name == editDepartmentRequest.Name);
+                var departmentExistsWithName = this._databaseContext.Departments.AsNoTracking().FirstOrDefault(dept =>
+                    dept.Id != editDepartmentRequest.DepartmentId && dept.Name == editDepartmentRequest.Name);
                 if (departmentExistsWithName != null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.EditDepartmentExistsWithNameTitle",
-                        Description = "Nui.Errors.DepartmentExistsWithNameDescription",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithResponse(
+                        false,
+                        "UI.ERROR.DEPARTMENT.EDIT.TITLE",
+                        "UI.ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
                     return;
                 }
 
@@ -758,43 +723,33 @@ namespace FivePD.Gamemode.Server.Services
                     var defaultRank = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == editDepartmentRequest.DefaultRankId);
                     if (defaultRank is null)
                     {
-                        networkCallbackDelegate.Invoke(new ActionResponse
-                        {
-                            Status = false,
-                            Title = "Nui.Errors.UnexpectedError",
-                            Description = "Nui.Errors.DatabaseAccess",
-                        }.ToString());
+                        networkCallbackDelegate.InvokeWithUnexpectedError();
                         return;
                     }
                 }
 
                 var departmentOldName = department.Name;
                 department.Name = editDepartmentRequest.Name;
-                department.Callsign = string.IsNullOrEmpty(editDepartmentRequest.Callsign) ? editDepartmentRequest.Name.ToAcronym() : editDepartmentRequest.Callsign;
+                department.Callsign = string.IsNullOrEmpty(editDepartmentRequest.Callsign)
+                    ? editDepartmentRequest.Name.ToAcronym()
+                    : editDepartmentRequest.Callsign;
                 department.CallsignFormat = editDepartmentRequest.CallsignFormat;
                 department.MaxUsers = editDepartmentRequest.MaxUsers;
                 department.DefaultRankId = editDepartmentRequest.DefaultRankId == -1 ? (int?)null : editDepartmentRequest.DefaultRankId;
                 this._databaseContext.SaveChanges();
                 this.DepartmentEdited?.Invoke(this, department);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulEdit",
-                    Description = "Nui.Labels.SuccessfulDepartmentEdit",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.EDIT",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.EDIT",
+                    new Dictionary<string, string>
                     {
                         { "department", departmentOldName },
-                    },
-                }.ToString());
+                    });
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -806,7 +761,16 @@ namespace FivePD.Gamemode.Server.Services
             {
                 var request = expandoObject.ConvertTo<NameTakenRequest>();
                 Department departmentExists;
-                departmentExists = request.CheckForDepartmentId ? this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name && department.Id != request.DepartmentId) : this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
+                if (request.CheckForDepartmentId)
+                {
+                    departmentExists =
+                        this._databaseContext.Departments.FirstOrDefault(department =>
+                            department.Name == request.Name && department.Id != request.DepartmentId);
+                }
+                else
+                {
+                    departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
+                }
 
                 networkCallbackDelegate.Invoke(new NameTakenResponse(departmentExists != null).ToString());
             }
@@ -828,12 +792,7 @@ namespace FivePD.Gamemode.Server.Services
                     .FirstOrDefault(department => department.Id == deleteDepartmentRequest.DepartmentId);
                 if (department is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
@@ -848,25 +807,18 @@ namespace FivePD.Gamemode.Server.Services
                 this._databaseContext.Departments.Remove(department);
                 this._databaseContext.SaveChanges();
                 this.DepartmentDeleted?.Invoke(this, department);
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulDelete",
-                    Description = "Nui.Labels.SuccessfulDepartmentDelete",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.DELETE",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.DELETE",
+                    new Dictionary<string, string>
                     {
                         { "department", departmentOldName },
-                    },
-                }.ToString());
+                    });
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -884,39 +836,27 @@ namespace FivePD.Gamemode.Server.Services
                 this.AddPlayerToDepartment(player, department);
                 if (department?.DefaultRankId != null)
                 {
-                    var user = this.FindUserByLicense(player);
+                    var user = this._playerDataService.FindUserByLicense(player);
                     user.RankId = department.DefaultRankId;
                     this._databaseContext.SaveChanges();
                 }
 
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = true,
-                    Title = "Nui.Labels.SuccessfulJoin",
-                    Description = "Nui.Labels.SuccessfulDepartmentJoin",
-                    Params = new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.JOIN",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.JOIN",
+                    new Dictionary<string, string>
                     {
                         { "department", department!.Name },
-                    },
-                }.ToString());
+                    });
             }
             catch (DepartmentFullException)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.DepartmentFullTitle",
-                    Description = "Nui.Errors.DepartmentFullDescription",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.DEPARTMENT.FULL.TITLE", "UI.ERROR.DEPARTMENT.FULL.DESCRIPTION");
             }
             catch (Exception e)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 throw new DatabaseUsageException("Failed to access database", e);
             }
         }
@@ -924,37 +864,23 @@ namespace FivePD.Gamemode.Server.Services
         [UIEvent(Events.UI.Department.Leave, true)]
         private void PlayerLeaveDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
-            var playerDepartment = this.FindUserByLicense(player).Department;
+            var playerDepartment = this._playerDataService.FindUserByLicense(player).Department;
 
             try
             {
                 this.RemovePlayerFromDepartment(player);
-                networkCallbackDelegate.InvokeWithResponse(true, "Nui.Labels.SuccessfulLeave", "Nui.Labels.SuccessfulDepartmentLeave", new Dictionary<string, string>
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.LEAVE",
+                    "UI.LABEL.DEPARTMENT.SUCCESS.LEAVE",
+                    new Dictionary<string, string>
                     {
                         { "department", playerDepartment!.Name },
                     });
             }
             catch (Exception)
             {
-                networkCallbackDelegate.InvokeWithResponse(false, "Nui.Errors.UnexpectedError", "Nui.Errors.DatabaseAccess");
-            }
-        }
-
-        private User FindUserByLicense(Player player)
-        {
-            var license = player.Identifiers["license"];
-            if (string.IsNullOrEmpty(license))
-            {
-                return null;
-            }
-
-            try
-            {
-                return this._databaseContext.Users.FirstOrDefault(user => user.License == license);
-            }
-            catch (Exception e)
-            {
-                throw new DatabaseUsageException("Failed to access database", e);
+                networkCallbackDelegate.InvokeWithUnexpectedError();
             }
         }
     }

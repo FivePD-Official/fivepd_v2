@@ -13,6 +13,7 @@ import {
   TextInput
 } from '@models';
 import { debounceTime, Subject } from 'rxjs';
+import { formatDate } from '@helpers';
 
 @Component({
   selector: 'app-grid',
@@ -53,10 +54,10 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['columns']) {
-      this.setFormattedColumns(changes['columns'].currentValue);
+      this.setFormattedColumns();
     }
     if (changes['data']) {
-      this.setFormattedRows(changes['data'].currentValue);
+      this.setFormattedRows();
     }
   }
 
@@ -85,11 +86,11 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     });
   }
 
-  setFormattedColumns(columns: Column<T>): void {
+  setFormattedColumns(): void {
     this.formattedColumns = this.columns.filter(column => column.show());
   }
 
-  setFormattedRows(data: FormattedRow<T>[]): void {
+  setFormattedRows(): void {
     this.formattedRows = this.data?.Items?.map((item: any) => {
       const row: FormattedRow<any> = [];
 
@@ -98,24 +99,27 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
           continue;
         }
 
-        let newValue = '';
+        const originalItem = {...item};
+        const mappedItem = this.mapEntity({...item});
 
+        let newValue = '';
         if (value.valueResolver) {
-          newValue = value.valueResolver(item);
+          newValue = value.valueResolver(mappedItem);
         } else if (value.accessorKey) {
-          newValue = item[value.accessorKey];
+          newValue = mappedItem[value.accessorKey];
         }
 
         const rowItem: FormattedRowItem<any> = {
           value: newValue,
-          originalItem: item,
+          originalItem,
         };
+
 
         if (value.actions) {
           rowItem.actions = value.actions;
         }
         if (value.linkResolver) {
-          rowItem.link = value.linkResolver(item);
+          rowItem.link = value.linkResolver(mappedItem);
         }
         row.push(rowItem);
       }
@@ -123,6 +127,18 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       return row;
     }) ?? [];
   };
+
+  mapEntity<T extends any>(entity: T): T {
+    // @ts-ignore
+    for (const [key, value] of Object.entries(entity)) {
+      if (value instanceof Date) {
+        // @ts-ignore
+        entity[key] = formatDate(new Date(value));
+      }
+    }
+    return entity;
+  }
+
 
   onFilterFormChange(accessorKey: string | undefined, value: string | number): void {
     if (!accessorKey) {
