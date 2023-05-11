@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CitizenFX.Core;
-using FivePD.Common.Attributes;
+﻿using FivePD.Common.Attributes;
 using FivePD.Gamemode.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
@@ -29,7 +26,7 @@ namespace FivePD.Gamemode.Server.Services
         [NoUsage]
         public void RegisterDevelopmentCommands()
         {
-            this._commandService.RegisterCommand("clear", (source, args) => ClearAllEntities());
+            this._commandService.RegisterCommand("clear", (_, _) => ClearAllEntities());
         }
 
         private static void ClearAllEntities()

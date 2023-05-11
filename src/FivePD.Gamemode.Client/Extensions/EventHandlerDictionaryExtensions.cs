@@ -36,7 +36,7 @@ namespace FivePD.Gamemode.Client.Extensions
             Cfx.API.RegisterNuiCallbackType(eventName);
             eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
-                BaseScript.TriggerServerEvent(eventName, body, new Action<string>((data) =>
+                BaseScript.TriggerServerEvent(eventName, body, new Action<string>(data =>
                 {
                     onResponse?.Invoke(data);
                     cb.Invoke(data);

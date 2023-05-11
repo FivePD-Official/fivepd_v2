@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -22,8 +23,8 @@ namespace FivePD.Gamemode.Server.Services
     public class LooseDataService : ILooseDataService
     {
         private readonly DatabaseContext _databaseContext;
-        private readonly List<LooseDataEntityObservable> _observables = new List<LooseDataEntityObservable>();
-        private readonly Dictionary<Type, string> _activeSetTypes = new Dictionary<Type, string>();
+        private readonly List<LooseDataEntityObservable> _observables = new();
+        private readonly Dictionary<Type, string> _activeSetTypes = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LooseDataService"/> class.
@@ -111,7 +112,7 @@ namespace FivePD.Gamemode.Server.Services
                                 Value = JsonConvert.SerializeObject(
                                     attr.DataType == LooseDataAttribute.LooseDataType.Date
                                     ? DateTime.Now
-                                    : (object)null),
+                                    : null),
                             };
                             entity.Values.Add(value);
                         }
@@ -415,10 +416,10 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var request = expandoObject.ConvertTo<GetSetAttributeRequest>();
+                var request = expandoObject.ConvertTo<IdRequest>();
                 var attribute = this._databaseContext.LooseDataAttributes
                     .AsNoTracking()
-                    .FirstOrDefault(set => set.Id == request.AttributeId);
+                    .FirstOrDefault(set => set.Id == request.Id);
 
                 if (attribute is null)
                 {
@@ -871,7 +872,7 @@ namespace FivePD.Gamemode.Server.Services
         private string GetExecutingAssemblyName()
         {
             // Technically, the executing assembly is the server gamemode. Sort through the stack trace and find a ref. to the actual addon
-            foreach (var frame in new System.Diagnostics.StackTrace().GetFrames())
+            foreach (var frame in new StackTrace().GetFrames())
             {
                 try
                 {

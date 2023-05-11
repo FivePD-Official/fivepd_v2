@@ -21,7 +21,7 @@ namespace FivePD.Common.Models
         private readonly string _containerName;
         private readonly StateBag _stateBag;
         private readonly string _key;
-        private readonly List<Action<T>> _observers = new List<Action<T>>();
+        private readonly List<Action<T>> _observers = new();
 
         #if !IS_GAMEMODE_SERVER
         private int _stateBagChangeHandler;

@@ -121,7 +121,7 @@ export class LooseDataService {
 
   private updateSetAttribute(setId: SetId, attributeId: number): Observable<SetAttribute> {
     return this._http.post<SetAttribute>('fivepd:looseData:getSetAttribute', {
-      AttributeId: attributeId,
+      Id: attributeId,
     }).pipe(
       tap(attribute => {
         if (!Object.entries(this._sets).length) {

@@ -264,12 +264,12 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var departmentRequest = expandoObject.ConvertTo<DepartmentByIdRequest>();
+                var request = expandoObject.ConvertTo<IdRequest>();
                 var department = this._databaseContext.Departments
                     .AsNoTracking()
                     .Include(dept => dept.Divisions)
                     .Include(dept => dept.Ranks)
-                    .FirstOrDefault(dept => dept.Id == departmentRequest.DepartmentId);
+                    .FirstOrDefault(dept => dept.Id == request.Id);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(department));
             }
             catch (Exception e)
@@ -307,10 +307,10 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var request = requestString.ConvertTo<DepartmentRankRequest>();
+                var request = requestString.ConvertTo<IdRequest>();
                 var rank = this._databaseContext.Ranks
                     .AsNoTracking()
-                    .FirstOrDefault(rank => rank.Id == request.RankId);
+                    .FirstOrDefault(rank => rank.Id == request.Id);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(rank));
             }
             catch (Exception e)
@@ -348,11 +348,11 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var request = requestString.ConvertTo<DepartmentDivisionRequest>();
+                var request = requestString.ConvertTo<IdRequest>();
 
                 var division = this._databaseContext.Divisions
                     .AsNoTracking()
-                    .FirstOrDefault(division => division.Id == request.DivisionId);
+                    .FirstOrDefault(division => division.Id == request.Id);
                 networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(division));
             }
             catch (Exception e)
@@ -428,11 +428,11 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var divisionFields = expandoObject.ConvertTo<DeleteDivisionRequest>();
+                var request = expandoObject.ConvertTo<IdRequest>();
                 var divisionToDelete = this._databaseContext.Divisions
                     .Include(division => division.Users)
                     .Include(division => division.Department)
-                    .FirstOrDefault(division => division.Id == divisionFields.DivisionId);
+                    .FirstOrDefault(division => division.Id == request.Id);
                 if (divisionToDelete is null)
                 {
                     networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -564,11 +564,11 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var deleteRankRequest = expandoObject.ConvertTo<DeleteRankRequest>();
+                var request = expandoObject.ConvertTo<IdRequest>();
                 var rankToDelete = this._databaseContext.Ranks
                     .Include(rank => rank.Users)
                     .Include(rank => rank.Department)
-                    .FirstOrDefault(rank => rank.Id == deleteRankRequest.RankId);
+                    .FirstOrDefault(rank => rank.Id == request.Id);
                 if (rankToDelete is null)
                 {
                     networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -786,10 +786,10 @@ namespace FivePD.Gamemode.Server.Services
         {
             try
             {
-                var deleteDepartmentRequest = expandoObject.ConvertTo<DeleteDepartmentRequest>();
+                var request = expandoObject.ConvertTo<IdRequest>();
                 var department = this._databaseContext.Departments
                     .Include(department => department.Users)
-                    .FirstOrDefault(department => department.Id == deleteDepartmentRequest.DepartmentId);
+                    .FirstOrDefault(department => department.Id == request.Id);
                 if (department is null)
                 {
                     networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -826,10 +826,10 @@ namespace FivePD.Gamemode.Server.Services
         [UIEvent(Events.UI.Department.Join, true)]
         private void PlayerJoinDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
         {
-            var request = expandoObject.ConvertTo<JoinOrLeaveDepartmentRequest>();
+            var request = expandoObject.ConvertTo<IdRequest>();
             var department = this._databaseContext.Departments
                 .Include(department => department.Users)
-                .FirstOrDefault(department => department.Id == request.DepartmentId);
+                .FirstOrDefault(department => department.Id == request.Id);
 
             try
             {

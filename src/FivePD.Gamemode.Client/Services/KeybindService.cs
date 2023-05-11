@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
+
 #pragma warning disable CS0162
 
 namespace FivePD.Gamemode.Client.Services

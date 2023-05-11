@@ -1,9 +1,8 @@
-﻿#pragma warning disable CS1591
-#pragma warning disable SA1600
+﻿#pragma warning disable
 
 namespace FivePD.Gamemode.Server.Models.Requests
 {
-    public class GetSetEntityRequest
+    public record struct GetSetEntityRequest
     {
         public string SetId { get; set; }
 

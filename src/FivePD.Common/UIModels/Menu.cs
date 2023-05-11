@@ -23,7 +23,7 @@ namespace FivePD.Common.UIModels
         /// <summary>
         /// Gets or sets the items.
         /// </summary>
-        public List<MenuItem> Items { get; protected set; } = new List<MenuItem>();
+        public List<MenuItem> Items { get; protected set; } = new();
 
         /// <summary>
         /// Gets the title of the menu.

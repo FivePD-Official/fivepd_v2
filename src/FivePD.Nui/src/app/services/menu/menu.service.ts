@@ -8,7 +8,7 @@ import {
   MenuItem,
   MenuListItem,
   RadialMenu,
-  RadialMenuObjectsEvent,
+  RadialMenuObjectsEvent, TimerBarEvent,
   UpdateMenuItemEvent
 } from '@models';
 import { MenuItemType, NuiEventType } from '@enums';

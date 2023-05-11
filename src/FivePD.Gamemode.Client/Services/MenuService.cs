@@ -18,6 +18,7 @@ namespace FivePD.Gamemode.Client.Services
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IUIService _uiService;
         private readonly IKeybindService _keybindService;
+        private bool _registeredMenus;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuService"/> class.
@@ -49,6 +50,13 @@ namespace FivePD.Gamemode.Client.Services
 
         private void RegisterMenuKeybinds(GetMenusResponse response)
         {
+            if (this._registeredMenus)
+            {
+                return;
+            }
+
+            this._registeredMenus = true;
+
             foreach (var menu in response.Menus)
             {
                 void OnPress()

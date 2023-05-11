@@ -28,6 +28,12 @@ export class LocalizationService {
     return this._localization;
   }
 
+  load() {
+    this._http.post('fivepd:localization:getLocalizationFromNui', {}).subscribe(res => {
+      this.set(res)
+    });
+  }
+
   translate(path: string, params: Record<string, string> = {}, boldParams: boolean = true): string {
     const translation = getKeyFromObjectPath(this._localization, path, path);
     return replaceParams(translation, params, boldParams);

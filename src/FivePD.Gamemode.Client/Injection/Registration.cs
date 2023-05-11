@@ -16,7 +16,7 @@ namespace FivePD.Gamemode.Client.Injection
         /**
          * <summary>Gets the <see cref="List{Type}" /> that this registration represents.</summary>
          */
-        public List<Type> Types { get; } = new List<Type>();
+        public List<Type> Types { get; } = new();
 
         /**
          * <summary>Gets or sets a value indicating whether or not this is a singleton registration, which should only be instantiated once.</summary>

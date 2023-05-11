@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup Label="Globals">
         <ProjectGuid>{63ECCE32-17F2-4B76-91AE-FAFD2E080610}</ProjectGuid>
+        <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <OutputPath>bin\Release\</OutputPath>

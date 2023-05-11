@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Reflection;
 using FivePD.Gamemode.Server.Interfaces;
 using Serilog;
-using Serilog.Core;
 
 namespace FivePD.Gamemode.Server.Services
 {
