@@ -43,7 +43,6 @@ export class DevtoolsGeneralComponent {
       header: 'Date',
       accessorKey: 'date',
       show: () => true,
-      valueResolver: item => formatDate(item.date, 'medium'),
     },
     {
       header: 'Coordinate',
