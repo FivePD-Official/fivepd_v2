@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { GlobalState } from '@store';
 import { IconType, User } from '@models';
 import { Store } from '@ngrx/store';
 import { toggleSidebarCollapse } from '@store/app.actions';
 import { Subject, takeUntil } from 'rxjs';
+import { UserRole, UserService } from '@services/user/user.service';
 
 interface Route {
   title: string;
@@ -60,16 +61,16 @@ export class SidebarComponent implements OnDestroy {
       show: () => !!this.user?.Department ?? false,
     },
     {
-      // @ts-ignore
       title: 'Developer tools',
       path: () => '/mdt/devtools',
       icon: IconType.CodeBracket,
-      show: () => this.user?.Admin ?? false,
+      show: () => this._userService.userHasRole(UserRole.Admin, UserRole.Developer),
     }
   ];
 
   constructor(
     private readonly store: Store<GlobalState>,
+    private readonly _userService: UserService,
   ) {
     this.store.pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.isSidebarCollapsed = res.app.isSidebarCollapsed;

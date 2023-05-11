@@ -5,7 +5,7 @@ import { LocalizationService } from '@services/localization/localization.service
 import { Validators } from '@angular/forms';
 import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
-import { UserService } from '@services/user/user.service';
+import { UserRole, UserService } from '@services/user/user.service';
 import { CustomValidators } from '../../../helpers/validators';
 import { Store } from '@ngrx/store';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
@@ -29,7 +29,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   departmentsButtons: Button[] = [
     {
       label: this._localization.translate('UI.ACTION.CREATE_DEPARTMENT'),
-      show: () => !!this.user?.Admin,
+      show: () => this._userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
     }
@@ -60,7 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }),
     new Column<Department>({
       header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => !!this.user?.Admin,
+      show: () => this._userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',

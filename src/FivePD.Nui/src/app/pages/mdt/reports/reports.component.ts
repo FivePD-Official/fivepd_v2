@@ -13,6 +13,7 @@ import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
+import { UserRole, UserService } from '@services/user/user.service';
 
 @Component({
   selector: 'app-reports',
@@ -67,6 +68,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private _modal: ModalService,
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
+    private readonly _userService: UserService,
   ) {
   }
 
@@ -115,7 +117,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.EDIT'),
-              show: () => this.user?.Admin ?? false,
+              show: () => this._userService.userHasRole(UserRole.Admin),
               onClick: entity => {
                 this.modalFormService.open({
                     title: 'UI.ACTION.EDIT',
@@ -138,7 +140,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.DELETE'),
-              show: () => this.user?.Admin ?? false,
+              show: () => this._userService.userHasRole(UserRole.Admin),
               onClick: item => {
                 this.modalConfirmService.open({
                   title: 'UI.LABEL.ARREST_REPORT.DELETE.TITLE',

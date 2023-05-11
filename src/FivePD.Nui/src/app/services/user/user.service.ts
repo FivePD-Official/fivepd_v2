@@ -5,16 +5,43 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { setUser } from '@store/user.actions';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+export enum UserRole
+{
+  None = 0,
+  Admin = 1,
+  Developer = 2,
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
+  user?: User;
+
   constructor(
     private _http: HttpClient,
     private readonly store: Store<GlobalState>,
-  ) { }
+  ) {
+    store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
+  }
+
+  userHasRole(...roles: UserRole[]): boolean {
+    if (!this.user) {
+      return false;
+    }
+
+    for (const role of roles) {
+      const hasRole = !!(this.user.Role & role)
+      if (hasRole) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   refreshData(): void {
     this._http.post<User>('fivepd:player:getDetails', {}).subscribe(user => {

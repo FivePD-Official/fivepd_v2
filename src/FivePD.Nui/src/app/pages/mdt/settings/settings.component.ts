@@ -11,6 +11,7 @@ import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confir
 import { GlobalState } from '@store';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
+import { UserRole, UserService } from '@services/user/user.service';
 
 @Component({
   selector: 'app-settings',
@@ -59,7 +60,7 @@ export class SettingsComponent implements OnInit {
     },
     {
       header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => this.user?.Admin ?? false,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
@@ -154,13 +155,14 @@ export class SettingsComponent implements OnInit {
     private readonly modalConfirmService: ModalConfirmService,
     private _localization: LocalizationService,
     private readonly store: Store<GlobalState>,
+    public readonly userService: UserService,
   ) {
   }
 
   ngOnInit(): void {
     this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
       this.user = state.user.details;
-      if (state.user.details.Admin) {
+      if (this.userService.userHasRole(UserRole.Admin)) {
         this.getArrestReportAttributes();
       }
     });
@@ -181,4 +183,6 @@ export class SettingsComponent implements OnInit {
     this.arrestReportAttributesCollation = collation;
     this.getArrestReportAttributes();
   }
+
+  protected readonly UserRole = UserRole;
 }

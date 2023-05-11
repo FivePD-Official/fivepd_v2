@@ -188,9 +188,6 @@ namespace FivePD.Gamemode.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<bool>("Admin")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Callsign")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -207,6 +204,9 @@ namespace FivePD.Gamemode.Server.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int?>("RankId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
