@@ -19,7 +19,7 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public Task OnTick()
+        public Task OnTickAsync()
         {
             while (this.TickQueue.TryDequeue(out var call))
             {
@@ -41,7 +41,7 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public Task Enqueue(Action action)
+        public Task EnqueueAsync(Action action)
         {
             var tcs = new TaskCompletionSource<int>();
 
@@ -55,11 +55,11 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public async Task<T> Enqueue<T>(Func<T> action)
+        public async Task<T> EnqueueAsync<T>(Func<T> action)
         {
             var refHolder = new ReferenceHolder<T>();
 
-            await this.Enqueue(() =>
+            await this.EnqueueAsync(() =>
             {
                 refHolder.Value = action();
             });

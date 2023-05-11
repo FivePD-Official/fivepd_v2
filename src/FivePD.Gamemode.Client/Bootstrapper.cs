@@ -49,7 +49,7 @@ namespace FivePD.Gamemode.Client
             this._phases.Add(this.PerformInitializationPhase, false);
 
             // Begin running phases.
-            this.Tick += this.RunNextPhase;
+            this.Tick += this.RunNextPhaseAsync;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace FivePD.Gamemode.Client
         /// </summary>
         /// <returns>A <see cref="Task"/> that completes
         /// when a phase is ran.</returns>
-        private Task RunNextPhase()
+        private Task RunNextPhaseAsync()
         {
             // Get the first phase that isn't completed (second parameter is not true)
             var phase = this._phases.FirstOrDefault(x => !x.Value);
@@ -71,7 +71,7 @@ namespace FivePD.Gamemode.Client
                 this._bootstrapLogger.Info("FivePD Gamemode Client bootstrapping has completed");
 
                 // Stop trying to run phases
-                this.Tick -= this.RunNextPhase;
+                this.Tick -= this.RunNextPhaseAsync;
                 return Task.FromResult(0);
             }
 
@@ -87,7 +87,7 @@ namespace FivePD.Gamemode.Client
             catch (Exception e)
             {
                 // Problem? Stop the gamemode.
-                this.Tick -= this.RunNextPhase;
+                this.Tick -= this.RunNextPhaseAsync;
 
                 // Log the problem
                 this._bootstrapLogger.Error("An error occurred during bootstrapping and the gamemode has halted to prevent further issues.");

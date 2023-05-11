@@ -16,7 +16,7 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <Configurations>Release;Debug</Configurations>
-        <Platforms>x64</Platforms>
+        <Platforms>x64;AnyCPU</Platforms>
         <TargetFramework>netstandard2.0</TargetFramework>
         <DefineConstants>IS_GAMEMODE_SERVER</DefineConstants>
     </PropertyGroup>
@@ -26,6 +26,9 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
         <OutputPath>$(SolutionDir)/build-public-pre/Libraries/FivePD.Gamemode.Server</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <OutputPath>../build-public-pre/Libraries/FivePD.Gamemode.Server</OutputPath>
     </PropertyGroup>
     <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />
 
@@ -73,6 +76,10 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
         <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
+        <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CitizenFX.Core.Server, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">

@@ -80,7 +80,7 @@ namespace FivePD.Gamemode.Client.Services
          */
         public void BeginTextDraw()
         {
-            this._tickService.OnTick += this.DrawOnScreen;
+            this._tickService.OnTick += this.DrawOnScreenAsync;
         }
 
         /**
@@ -88,7 +88,7 @@ namespace FivePD.Gamemode.Client.Services
          */
         public void EndTextDraw()
         {
-            this._tickService.OnTick -= this.DrawOnScreen;
+            this._tickService.OnTick -= this.DrawOnScreenAsync;
         }
 
         /**
@@ -132,7 +132,7 @@ namespace FivePD.Gamemode.Client.Services
             };
         }
 
-        private Task DrawOnScreen()
+        private Task DrawOnScreenAsync()
         {
             Cfx.API.SetTextFont(0);
             Cfx.API.SetTextProportional(false);

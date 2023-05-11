@@ -32,14 +32,14 @@ namespace FivePD.Gamemode.Server.Services
         {
             this._eventHandlerDictionary[Events.EntityManagement.RequestVehicle] += new Action<uint, Vector3, float, NetworkCallbackDelegate>((model, location, heading, networkCallbackDelegate) =>
             {
-                this.SpawnVehicle(model, location, heading, networkCallbackDelegate);
+                this.SpawnVehicleAsync(model, location, heading, networkCallbackDelegate);
             });
         }
 
         /**
          * <inheritdoc />
          */
-        public async Task<Ped> SpawnPed(uint model, Vector3 location, float heading)
+        public async Task<Ped> SpawnPedAsync(uint model, Vector3 location, float heading)
         {
             var handle = Cfx.API.CreatePed(26, model, location.X, location.Y, location.Z, heading, true, false);
 
@@ -54,7 +54,7 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public async Task SpawnVehicle(uint model, Vector3 location, float heading, NetworkCallbackDelegate networkCallbackDelegate)
+        public async Task SpawnVehicleAsync(uint model, Vector3 location, float heading, NetworkCallbackDelegate networkCallbackDelegate)
         {
             var handle = Cfx.Function.Call<int>(CreateAutomobile, model, location.X, location.Y, location.Z, heading);
 
@@ -71,7 +71,7 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public async Task<Prop> SpawnProp(int model, Vector3 location)
+        public async Task<Prop> SpawnPropAsync(int model, Vector3 location)
         {
             var handle = Cfx.API.CreateObject(model, location.X, location.Y, location.Z, true, false, false);
 
