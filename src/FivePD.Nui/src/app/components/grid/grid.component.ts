@@ -75,16 +75,24 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   }
 
   getSelectField(action: any, item: FormattedRowItem<T>): FormInputBase<number> {
-    return new Dropdown({
+    const dropdown = new Dropdown({
       key: '#',
       dropdownOptions: {
         label: action.label,
         items: action.items(),
         size: 'small',
-        selectedItemResolver: (dropdownItemKey) => action.selectedItemResolver(item.originalItem, dropdownItemKey),
       },
       required: false,
     });
+
+    if ('selectedItemResolver' in action) {
+      (dropdown.dropdownOptions as any).selectedItemResolver = (dropdownItemKey: any) => action.selectedItemResolver(item.originalItem, dropdownItemKey);
+    }
+    if ('selectedItemsResolver' in action) {
+      (dropdown.dropdownOptions as any).selectedItemsResolver = (dropdownItemKey: any) => action.selectedItemsResolver(item.originalItem, dropdownItemKey);
+    }
+
+    return dropdown;
   }
 
   setFormattedColumns(): void {
@@ -201,8 +209,11 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   }
 
   onTableCellActionSelect(action: any, item: FormattedRowItem<T>, selectedItemKey: number): void {
-    console.log('change', selectedItemKey)
-    action.onSelect(item.originalItem, selectedItemKey);
+    if ('onSelect' in action) {
+      action.onSelect(item.originalItem, selectedItemKey);
+    } else {
+      action.onSelectMulti(item.originalItem, selectedItemKey);
+    }
   }
 
   headerButtonOnClick(button: Button): void {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActionResponse, User } from '@models';
+import { ActionResponse, Collation, Page, User } from '@models';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -7,8 +7,7 @@ import { GlobalState } from '@store';
 import { setUser } from '@store/user.actions';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-export enum UserRole
-{
+export enum UserRole {
   None = 0,
   Admin = 1,
   Developer = 2,
@@ -55,5 +54,16 @@ export class UserService {
 
   changeDivision(division: object): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:player:changeDivision', division);
+  }
+
+  getAllPageable(collation: Collation): Observable<Page<User>> {
+    return this._http.post<Page<User>>('fivepd:player:getAllPageable', {...collation});
+  }
+
+  changeRole(user: User, roles: number[]): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:player:changeRole', {
+      UserId: user.Id,
+      Roles: roles,
+    });
   }
 }

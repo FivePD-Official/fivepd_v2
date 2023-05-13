@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { filter, switchMap } from 'rxjs';
@@ -19,7 +19,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.sass']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent {
+
+  protected readonly UserRole = UserRole;
 
   user?: User;
 
@@ -38,12 +40,18 @@ export class SettingsComponent implements OnInit {
       show: () => true,
       valueResolver: attr => {
         switch (attr.DataType) {
-          case AttributeDataType.ShortString: return this._localization.translate('UI.LABEL.SHORT_TEXT.SINGULAR');
-          case AttributeDataType.LongString: return this._localization.translate('UI.LABEL.LONG_TEXT.SINGULAR');
-          case AttributeDataType.Integer: return this._localization.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR');
-          case AttributeDataType.Bool: return this._localization.translate('UI.LABEL.CHECKBOX.SINGULAR');
-          case AttributeDataType.Date: return this._localization.translate('UI.LABEL.DATE.SINGULAR');
-          default: return '-';
+          case AttributeDataType.ShortString:
+            return this._localization.translate('UI.LABEL.SHORT_TEXT.SINGULAR');
+          case AttributeDataType.LongString:
+            return this._localization.translate('UI.LABEL.LONG_TEXT.SINGULAR');
+          case AttributeDataType.Integer:
+            return this._localization.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR');
+          case AttributeDataType.Bool:
+            return this._localization.translate('UI.LABEL.CHECKBOX.SINGULAR');
+          case AttributeDataType.Date:
+            return this._localization.translate('UI.LABEL.DATE.SINGULAR');
+          default:
+            return '-';
         }
       },
     },
@@ -147,6 +155,39 @@ export class SettingsComponent implements OnInit {
     }
   ];
 
+  users?: Page<User>;
+  usersCollation: Collation = {
+    Page: 1,
+  };
+  usersColumns: Column<User>[] = [
+    new Column<User>({
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+      show: () => true,
+      accessorKey: 'Name',
+    }),
+    new Column<User>({
+      header: this._localization.translate('UI.LABEL.ROLE.SINGULAR'),
+      show: () => this.userService.userHasRole(UserRole.Admin),
+      actions: [
+        {
+          type: 'select',
+          label: this._localization.translate('UI.LABEL.ROLE.NO'),
+          selectedItemsResolver: (user, dropdownItemKey) => this.userService.userHasRole(dropdownItemKey),
+          items: () => {
+            return [
+              {key: UserRole.Admin, label: this._localization.translate('UI.LABEL.ROLE.ADMIN')},
+              {key: UserRole.Developer, label: this._localization.translate('UI.LABEL.ROLE.DEVELOPER')},
+            ];
+          },
+          resetWhenSelectedId: UserRole.None,
+          onSelectMulti: (user, selectedIds) => {
+            this.userService.changeRole(user, selectedIds).subscribe();
+          }
+        }
+      ]
+    }),
+  ];
+
   constructor(
     private _looseData: LooseDataService,
     private _modal: ModalService,
@@ -156,13 +197,11 @@ export class SettingsComponent implements OnInit {
     private readonly store: Store<GlobalState>,
     public readonly userService: UserService,
   ) {
-  }
-
-  ngOnInit(): void {
-    this.store.pipe(takeUntilDestroyed()).subscribe(state => {
+    store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details;
       if (this.userService.userHasRole(UserRole.Admin)) {
         this.getArrestReportAttributes();
+        this.getUsers();
       }
     });
   }
@@ -178,5 +217,14 @@ export class SettingsComponent implements OnInit {
     this.getArrestReportAttributes();
   }
 
-  protected readonly UserRole = UserRole;
+  getUsers(): void {
+    this.userService.getAllPageable(this.arrestReportAttributesCollation).subscribe(res => {
+      this.users = res;
+    });
+  }
+
+  onUsersCollationChange(collation: Collation): void {
+    this.usersCollation = collation;
+    this.getUsers();
+  }
 }

@@ -10,8 +10,10 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Models.Requests;
 using FivePD.Gamemode.Server.Models.Responses;
+using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace FivePD.Gamemode.Server.Services
@@ -270,6 +272,54 @@ namespace FivePD.Gamemode.Server.Services
                     Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        [UIEvent(Events.UI.Player.GetAllPageable)]
+        private void GetAllPageable(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<GetSetRequest>();
+                var page = this._databaseContext.Users
+                    .AsNoTracking()
+                    .Paginate(request.Page, new Filters<User>());
+
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.Invoke(null);
+            }
+        }
+
+        [UIEvent(Events.UI.Player.ChangeRole)]
+        private void ChangeRole(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<ChangePlayerRoleRequest>();
+                var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.UserId);
+                if (user is null)
+                {
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
+                }
+
+                user.Role = request.Roles.Sum();
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.CHANGE",
+                    "UI.LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
+                    new Dictionary<string, string>
+                    {
+                        { "name", user.Name },
+                    });
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.Invoke(null);
             }
         }
     }
