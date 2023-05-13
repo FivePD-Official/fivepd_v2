@@ -105,10 +105,10 @@ export class DashboardComponent implements OnInit {
     private _userService: UserService,
     private readonly store: Store<GlobalState>,
   ) {
+    store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
   }
 
   ngOnInit(): void {
-    this.store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
     this.getDepartments();
   }
 

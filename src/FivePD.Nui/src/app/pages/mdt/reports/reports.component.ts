@@ -70,12 +70,12 @@ export class ReportsComponent implements OnInit {
     private readonly modalConfirmService: ModalConfirmService,
     private readonly _userService: UserService,
   ) {
+    store.pipe(takeUntilDestroyed()).subscribe(state => {
+      this.user = state.user.details;
+    });
   }
 
   ngOnInit(): void {
-    this.store.pipe(takeUntilDestroyed()).subscribe(state => {
-      this.user = state.user.details;
-    });
     this.getArrestReports();
   }
 
