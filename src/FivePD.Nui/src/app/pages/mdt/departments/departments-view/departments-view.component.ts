@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   Button,
   Checkbox,
@@ -46,7 +46,7 @@ interface FormattedUser extends User {
   templateUrl: './departments-view.component.html',
   styleUrls: ['./departments-view.component.sass']
 })
-export class DepartmentsViewComponent implements OnInit {
+export class DepartmentsViewComponent {
 
   user?: User;
   department?: Department;
@@ -362,15 +362,12 @@ export class DepartmentsViewComponent implements OnInit {
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
   ) {
-  }
-
-  ngOnInit(): void {
-    this.store.pipe(takeUntilDestroyed()).subscribe(state => {
+    store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details;
       this.setIsUserInDepartment();
     });
 
-    this._route.params.pipe(takeUntilDestroyed()).subscribe(() => {
+    _route.params.pipe(takeUntilDestroyed()).subscribe(() => {
       this.getDepartment();
     });
   }

@@ -93,6 +93,8 @@ namespace FivePD.Gamemode.Client.Services
                 Events.UI.Player.GetDetails,
                 Events.UI.Player.ChangeDivision,
                 Events.UI.Player.ChangeRank,
+                Events.UI.Player.GetAllPageable,
+                Events.UI.Player.ChangeRole,
                 Events.UI.LooseData.GetEntity,
                 Events.UI.LooseData.GetEntities,
                 Events.UI.LooseData.AddEntity,

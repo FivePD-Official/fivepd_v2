@@ -1,5 +1,7 @@
 ﻿using FivePD.Common.Models;
 
+#pragma warning disable
+
 namespace FivePD.Common
 {
     /**
@@ -183,6 +185,10 @@ namespace FivePD.Common
                 /// Used to change the localization of the UI.
                 /// </summary>
                 public const string LocalizationChange = "fivepd:player:localizationChange";
+
+                public const string GetAllPageable = "fivepd:player:getAllPageable";
+
+                public const string ChangeRole = "fivepd:player:changeRole";
             }
 
             /// <summary>

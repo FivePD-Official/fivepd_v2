@@ -71,7 +71,7 @@ export class SidebarComponent {
     private readonly store: Store<GlobalState>,
     private readonly _userService: UserService,
   ) {
-    this.store.pipe(takeUntilDestroyed()).subscribe(res => {
+    store.pipe(takeUntilDestroyed()).subscribe(res => {
       this.isSidebarCollapsed = res.app.isSidebarCollapsed;
       this.user = res.user.details;
     });

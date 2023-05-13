@@ -1,15 +1,14 @@
-import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormInputBase, FormSubmitEvent, ModalFormOptions } from '@models';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-modal-form',
   templateUrl: './modal-form.component.html',
 })
-export class ModalFormComponent implements OnInit, AfterViewInit {
+export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   destroy$ = new Subject<void>();
   fields: FormInputBase<any>[] = [];
@@ -25,6 +24,11 @@ export class ModalFormComponent implements OnInit, AfterViewInit {
     this.populateForm();
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   ngAfterViewInit(): void {
     this.form.emit(this.dynamicFormComponent);
   }
@@ -37,7 +41,7 @@ export class ModalFormComponent implements OnInit, AfterViewInit {
 
     if (valueResolver) {
       valueResolver.value
-        .pipe(takeUntilDestroyed())
+        .pipe(takeUntil(this.destroy$))
         .subscribe(v => {
           this.fields = fields(v);
         });
