@@ -1,5 +1,17 @@
-﻿namespace FivePD.Gamemode.Server.Models
+﻿using System;
+
+#pragma warning disable
+
+namespace FivePD.Gamemode.Server.Models
 {
+    [Flags]
+    public enum UserRole
+    {
+        None = 0,
+        Admin = 1,
+        Developer = 2
+    }
+
     /// <summary>
     /// Represents the 'users' table.
     /// </summary>
@@ -21,9 +33,9 @@
         public string License { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user is an admin.
+        /// Gets or sets the role of the user.
         /// </summary>
-        public bool Admin { get; set; }
+        public int Role { get; set; } = (int)UserRole.None;
 
         /// <summary>
         /// Gets or sets the callsign.
@@ -59,5 +71,10 @@
         /// Gets or sets the rank.
         /// </summary>
         public Rank Rank { get; set; }
+
+        public bool HasRole(UserRole role)
+        {
+            return (this.Role & (int)role) == (int)role;
+        }
     }
 }

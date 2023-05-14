@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import type { Localization, Paths } from '@models';
 
 @Component({
   selector: 'app-page-header',
@@ -10,6 +9,7 @@ export class PageHeaderComponent implements OnInit {
 
   @Input() title: string = '';
   @Input() centerTitle?: boolean;
+  @Input() underline?: boolean = true;
 
   constructor() { }
 

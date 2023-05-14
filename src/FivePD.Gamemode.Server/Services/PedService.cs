@@ -19,7 +19,7 @@ namespace FivePD.Gamemode.Server.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IConfigService _configService;
-        private readonly ConcurrentDictionary<int, FPed> _peds = new ConcurrentDictionary<int, FPed>();
+        private readonly ConcurrentDictionary<int, FPed> _peds = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PedService"/> class.

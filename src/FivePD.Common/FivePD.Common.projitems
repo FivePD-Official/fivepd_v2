@@ -23,20 +23,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Locale.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\ErrorLocalizations.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\Localization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\Menu\DutyMenuLocalization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\Menu\MenuItemLocalization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiActions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiErrors.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiLabels.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\Nui\NuiLocalization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\PlayerStatus\OffDutyLocalization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\PlayerStatus\OnDutyLocalization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\PlayerStatus\PlayerStatusLocalization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\TrafficStopLocalization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Localization\WarningLocalizations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFPlayerWithMenus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DynamicExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FDutyStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FEntity.cs" />
@@ -50,6 +38,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\FVehicle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BasePoliceEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Responses\GetMenusResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MenuItemType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuButtonItemWithEvents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuCheckboxItemWithEvents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuListItemWithEvents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Menu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuButtonItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuCheckboxItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuListItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
   </ItemGroup>
 </Project>

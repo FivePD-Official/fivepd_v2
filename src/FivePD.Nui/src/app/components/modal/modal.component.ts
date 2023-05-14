@@ -1,19 +1,26 @@
 import {
   AfterViewChecked,
   AfterViewInit,
-  ApplicationRef, ChangeDetectorRef,
+  ApplicationRef,
+  ChangeDetectorRef,
   Component,
-  ComponentRef, ContentChildren,
+  ComponentRef,
   createComponent,
   ElementRef,
-  EnvironmentInjector, Inject,
-  OnInit, QueryList, Renderer2,
+  EnvironmentInjector,
+  Inject,
+  OnDestroy,
+  OnInit,
   Type,
-  ViewChild, ViewChildren
+  ViewChild
 } from '@angular/core';
-import { ModalOptions, ModalRef } from '@models';
-import { ModalInjector } from '@services/modal/modal-injector';
 import { EXTRA_OBJECTS_TO_INJECT } from './extra-objects-token';
+import { ModalFormComponent } from './modal-form/modal-form.component';
+import { DynamicFormComponent } from '../dynamic-form/dynamic-form.component';
+import { ModalInjector } from '@services/modals/modal/modal-injector';
+import { ModalRef } from '@services/modals/modal/modal-ref';
+import { ModalLoader } from '@models';
+import { Subject, takeUntil } from 'rxjs';
 
 type RemoveFocusTrap = () => void;
 
@@ -22,21 +29,16 @@ type RemoveFocusTrap = () => void;
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.sass']
 })
-export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
+  destroy$ = new Subject<void>();
   componentRef!: ComponentRef<any>;
   childComponentType!: Type<any>;
-
-  title: ModalOptions['title'] = '';
-  description?: ModalOptions['description'];
-
-  fields?: ModalOptions['fields'];
-  buttons?: ModalOptions['buttons'];
-  columns?: ModalOptions['columns'];
-
+  dynamicFormComponent?: DynamicFormComponent;
   @ViewChild('modalContainer') modalContainer!: ElementRef;
   @ViewChild('modalContent') modalContent!: ElementRef;
   removeFocusTrap?: RemoveFocusTrap;
+  loader?: ModalLoader;
 
   constructor(
     public modalRef: ModalRef,
@@ -44,9 +46,16 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
     private _appRef: ApplicationRef,
     private _changeDetector: ChangeDetectorRef,
     @Inject(EXTRA_OBJECTS_TO_INJECT) public extraObjectsToInject: Map<any, any>,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
+    this.modalRef.loader
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(loader => {
+        this.loader = loader;
+        this._changeDetector.detectChanges()
+      });
   }
 
   ngAfterViewInit(): void {
@@ -63,10 +72,14 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
     if (this.removeFocusTrap) {
       this.removeFocusTrap();
     }
+
     if (this.componentRef) {
       this.componentRef.destroy();
       this._appRef.detachView(this.componentRef.hostView);
     }
+
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   close(): void {
@@ -74,6 +87,24 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
       success: false,
       value: {}
     });
+  }
+
+  submit(): void {
+    if (this.childComponentType === ModalFormComponent) {
+      if (this.dynamicFormComponent?.form) {
+        this.dynamicFormComponent?.internalOnSubmit();
+      } else {
+        this.modalRef.close({
+          success: true,
+          value: {},
+        });
+      }
+    } else {
+      this.modalRef.close({
+        success: true,
+        value: {},
+      });
+    }
   }
 
   private loadChildComponent(componentType: Type<any>): void {
@@ -85,6 +116,12 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked {
     });
     this.modalContent.nativeElement.appendChild(this.componentRef.location.nativeElement);
     this._appRef.attachView(this.componentRef.hostView);
+    if (componentType === ModalFormComponent) {
+      (this.componentRef.instance as unknown as ModalFormComponent).form.subscribe(form => {
+        this.dynamicFormComponent = form;
+      })
+    }
+    this.trapFocus();
   }
 
   // TODO: Fix. The query results are empty after appending the component element.

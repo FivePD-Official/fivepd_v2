@@ -1,10 +1,16 @@
-<app-page-header [title]="'Nui.Labels.Settings' | translate"></app-page-header>
+<app-page-header [title]="'UI.LABEL.SETTINGS' | translate"/>
 
-<app-grid
-  *ngIf="user?.Admin ?? false"
-  [title]="'Nui.Labels.ArrestReportAttributes' | translate"
-  [buttons]="arrestReportAttributesButtons"
-  [columns]="arrestReportAttributesColumns"
-  [data]="arrestReportAttributes"
-  (onCollationChange)="onArrestReportAttributesCollationChange($event)"
-></app-grid>
+<ng-container *ngIf="userService.userHasRole(UserRole.Admin)">
+  <app-container [rows]="2" [columns]="1">
+    <app-grid [title]="'Users' | translate"
+              [columns]="usersColumns"
+              [data]="users"
+              (onCollationChange)="onUsersCollationChange($event)"/>
+    <app-grid [title]="'UI.LABEL.ARREST_REPORT.ATTRIBUTES' | translate"
+              [buttons]="arrestReportAttributesButtons"
+              [columns]="arrestReportAttributesColumns"
+              [data]="arrestReportAttributes"
+              (onCollationChange)="onArrestReportAttributesCollationChange($event)"/>
+  </app-container>
+</ng-container>
+

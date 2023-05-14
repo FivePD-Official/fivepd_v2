@@ -21,49 +21,47 @@ export class DateMaskDirective implements OnInit, OnDestroy {
     this.valueChange$?.unsubscribe();
   }
 
-  @HostListener('input')
-  inputChange(): void {
-    this.setValue();
+  @HostListener('input', ['$event'])
+  inputChange(e: InputEvent): void {
+    this.setValue(e);
   }
 
-  setValue(value?: any): void {
-    let newValue = value || this.model.value;
-    if (!newValue) {
+  setValue(e?: InputEvent): void {
+    let value = this.model.value;
+    if (!value) {
       return;
     }
 
-    if (newValue instanceof Date) {
-      const year = newValue.getFullYear();
-      const month = newValue.getMonth();
-      const date = newValue.getDate();
+    if (value instanceof Date) {
+      const year = value.getFullYear();
+      const month = value.getMonth();
+      const date = value.getDate();
 
       const formattedMonth = month < 10 ? `0${month + 1}` : `${month + 1}`;
       const formattedDate = date < 10 ? `0${date}` : `${date}`;
 
-      newValue = `${formattedMonth}/${formattedDate}/${year}`;
+      value = `${formattedMonth}-${formattedDate}-${year}`;
     } else {
-      const size = newValue.length;
+      const size = value.length;
+      if (e?.inputType !== 'deleteContentBackward' && e?.inputType !== 'deleteContentForward') {
+        if (size === 2 || size === 5) {
+          value += '-';
+        }
 
-      if ((size == 2 && newValue > 31) || (size == 5 && Number(newValue.split('/')[1]) > 12) || (size == 10 && Number(newValue.split('/')[2]) > 2022)) {
-        this.model.control?.setErrors({ 'invalidDate': true });
-        this.appDateMask?.updateValueAndValidity();
-        return;
-      }
-
-      if ((size == 2 && newValue < 32) || (size == 5 && Number(newValue.split('/')[1]) < 13)) {
-        newValue += '/';
+        const notNumber = !/^-?\d+$/.test(e?.data ?? '');
+        if (size === 11 || notNumber) {
+          value = value.slice(0, -1);
+        }
       }
     }
 
-    this.model.control?.setErrors({ 'invalidDate': false });
-
-    const split = newValue.split('/');
+    const split = value.split('-');
     const year = parseInt(split[2]);
     const month = parseInt(split[0]) - 1;
     const day = parseInt(split[1]);
     this.model.control?.setValue(new Date(Date.UTC(year, month, day)));
 
-    this.model!.valueAccessor?.writeValue(newValue);
+    this.model.valueAccessor?.writeValue(value);
     this.appDateMask?.updateValueAndValidity();
   }
 

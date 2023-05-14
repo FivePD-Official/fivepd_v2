@@ -1,6 +1,6 @@
 ﻿import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
 import { Paths } from './_dev/nested-object-keys';
-import { Localization } from './localization';
+import { ActionResponse } from './nui-event-responses';
 
 export interface FormSubmitEvent {
   value: object;
@@ -12,20 +12,30 @@ export interface DropdownItem {
   label: string;
 }
 
-export interface DropdownOptions {
+export interface DropdownBaseOptions {
   label: string;
-  selectedItemResolver?: (dropdownItemKey: number) => boolean;
   items: DropdownItem[];
   size: 'small' | 'normal';
 }
+
+export interface DropdownSingleOptions {
+  selectedItemResolver?: (dropdownItemKey: number) => boolean;
+}
+
+export interface DropdownMultiOptions {
+  selectedItemsResolver: (dropdownItemKey: number) => boolean;
+  resetWhenSelectedId?: number;
+}
+
+export type DropdownOptions = DropdownBaseOptions & (DropdownSingleOptions | DropdownMultiOptions);
 
 interface FormInputBaseModel<T> {
   type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'checkboxGroup';
   value: T | undefined;
   key: string;
-  label: Paths<Localization> | string;
-  helpLabel: Paths<Localization> | string;
-  placeholder: Paths<Localization> | string;
+  label: string;
+  helpLabel: string;
+  placeholder: string;
   required: boolean;
   readonly: boolean;
   options: Record<string, any>;

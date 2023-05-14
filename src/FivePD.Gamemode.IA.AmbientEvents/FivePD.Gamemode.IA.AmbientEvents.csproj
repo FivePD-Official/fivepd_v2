@@ -5,8 +5,8 @@
         <Nullable>enable</Nullable>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <Configurations>Release;Debug</Configurations>
-        <Platforms>x64</Platforms>
-        <LangVersion>8</LangVersion>
+        <Platforms>x64;AnyCPU</Platforms>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
@@ -16,6 +16,11 @@
     
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
         <OutputPath>$(SolutionDir)/build-public/Libraries/IA/AmbientEvents</OutputPath>
+        <DebugType>none</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <OutputPath>../build-public/Libraries/IA/AmbientEvents</OutputPath>
         <DebugType>none</DebugType>
     </PropertyGroup>
 
@@ -31,5 +36,12 @@
         <Content Include="addon.fpd.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>

@@ -14,12 +14,12 @@ namespace FivePD.Gamemode.Server.Services
         // Inspiration from https://github.com/citizenfx/fivem/blob/f4befbfee415e8f7aea486b61a9cdbc30408cf09/ext/webadmin/server/HttpServer.cs
         private readonly string _resourceName = Cfx.API.GetCurrentResourceName();
 
-        private ConcurrentQueue<Tuple<Action, TaskCompletionSource<int>>> TickQueue { get; } = new ConcurrentQueue<Tuple<Action, TaskCompletionSource<int>>>();
+        private ConcurrentQueue<Tuple<Action, TaskCompletionSource<int>>> TickQueue { get; } = new();
 
         /**
          * <inheritdoc />
          */
-        public Task OnTick()
+        public Task OnTickAsync()
         {
             while (this.TickQueue.TryDequeue(out var call))
             {
@@ -41,7 +41,7 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public Task Enqueue(Action action)
+        public Task EnqueueAsync(Action action)
         {
             var tcs = new TaskCompletionSource<int>();
 
@@ -55,11 +55,11 @@ namespace FivePD.Gamemode.Server.Services
         /**
          * <inheritdoc />
          */
-        public async Task<T> Enqueue<T>(Func<T> action)
+        public async Task<T> EnqueueAsync<T>(Func<T> action)
         {
             var refHolder = new ReferenceHolder<T>();
 
-            await this.Enqueue(() =>
+            await this.EnqueueAsync(() =>
             {
                 refHolder.Value = action();
             });

@@ -1,25 +1,17 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgxsModule } from '@ngxs/store';
-import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
-import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { EventService } from '@services/event/event.service';
-import { environment } from '../environments/environment';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { CustomHttpInterceptor } from './interceptors/custom-http-interceptor.interceptor';
 import { MdtComponent } from './pages/mdt/mdt.component';
 import { HeaderComponent } from './components/header/header.component';
-import { AppState } from '@store/app.state';
-import { UserState } from '@store/user.state';
 import { BlankComponent } from './pages/blank/blank.component';
 import { MenuComponent } from './pages/menu/menu.component';
 import { DashboardComponent } from './pages/mdt/dashboard/dashboard.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { WindowService } from '@services/window/window.service';
-import { ModalService } from '@services/modal/modal.service';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { TranslatePipe } from './pipes/translate.pipe';
@@ -37,7 +29,7 @@ import { ModalComponent } from './components/modal/modal.component';
 import { GridComponent } from './components/grid/grid.component';
 import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
 import { UserService } from '@services/user/user.service';
-import { ColumnsComponent } from './components/columns/columns.component';
+import { ContainerComponent } from './components/container/container.component';
 import { IconComponent } from './components/icon/icon.component';
 import {
   CitizenDatabaseIndexComponent
@@ -52,6 +44,15 @@ import { ReportsComponent } from './pages/mdt/reports/reports.component';
 import { ModalFormComponent } from './components/modal/modal-form/modal-form.component';
 import { ModalEntityViewComponent } from './components/modal/modal-entity-view/modal-entity-view.component';
 import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
+import { DevtoolsGeneralComponent } from './pages/mdt/devtools/devtools-general/devtools-general.component';
+import { DevtoolsCalloutsComponent } from './pages/mdt/devtools/devtools-callouts/devtools-callouts.component';
+import { DevtoolsViewComponent } from './pages/mdt/devtools/devtools-view/devtools-view.component';
+import { TabsComponent } from './components/tabs/tabs.component';
+import { StoreModule } from '@ngrx/store';
+import { userReducer } from '@store/user.reducer';
+import { appReducer } from '@store/app.reducer';
+import { DynamicFormDirective } from './components/dynamic-form/dynamic-form.directive';
+import { ModalService } from '@services/modals/modal/modal.service';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,7 @@ import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
     ModalComponent,
     GridComponent,
     DepartmentsViewComponent,
-    ColumnsComponent,
+    ContainerComponent,
     IconComponent,
     CitizenDatabaseIndexComponent,
     RadialMenuComponent,
@@ -84,19 +85,16 @@ import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
     ReportsComponent,
     ModalFormComponent,
     ModalEntityViewComponent,
+    DevtoolsGeneralComponent,
+    DevtoolsCalloutsComponent,
+    DevtoolsViewComponent,
+    TabsComponent,
+    DynamicFormDirective,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    NgxsModule.forRoot([
-      AppState,
-      UserState
-    ], {
-      developmentMode: !environment.production
-    }),
-    NgxsLoggerPluginModule.forRoot(),
-    NgxsReduxDevtoolsPluginModule.forRoot(),
     ReactiveFormsModule,
     FormsModule,
     TippyModule.forRoot({
@@ -110,6 +108,10 @@ import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
         }
       }
     }),
+    StoreModule.forRoot({
+      app: appReducer,
+      user: userReducer,
+    })
   ],
   providers: [
     WindowService,

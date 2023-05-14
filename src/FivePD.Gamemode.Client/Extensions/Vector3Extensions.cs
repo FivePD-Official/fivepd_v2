@@ -15,11 +15,11 @@ namespace FivePD.Gamemode.Client.Extensions
         /// <returns>A string representing the street's name.</returns>
         public static string GetStreetName(this Vector3 position)
         {
-            uint streetHash = default(uint);
-            uint crossingRoadHash = default(uint);
+            var streetHash = default(uint);
+            var crossingRoadHash = default(uint);
             Cfx.API.GetStreetNameAtCoord(position.X, position.Y, position.Z, ref streetHash, ref crossingRoadHash);
 
-            string streetName = Cfx.API.GetStreetNameFromHashKey(streetHash);
+            var streetName = Cfx.API.GetStreetNameFromHashKey(streetHash);
 
             return streetName;
         }

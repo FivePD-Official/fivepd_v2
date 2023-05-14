@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Injection;
@@ -11,24 +10,26 @@ using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
+#pragma warning disable CS0162
+
 namespace FivePD.Gamemode.Client.Services
 {
     /// <inheritdoc />
     public class ControlService : IControlService
     {
         private readonly ITickService _tickService;
-        private readonly INuiService _nuiService;
+        private readonly IUIService _uiService;
         private readonly List<HoldableKeybind> _actions = new List<HoldableKeybind>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ControlService"/> class.
         /// </summary>
         /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-        /// <param name="nuiService">The <see cref="INuiService"/> to use.</param>
-        public ControlService(ITickService tickService, INuiService nuiService)
+        /// <param name="uiService">The <see cref="IUIService"/> to use.</param>
+        public ControlService(ITickService tickService, IUIService uiService)
         {
             this._tickService = tickService;
-            this._nuiService = nuiService;
+            this._uiService = uiService;
         }
 
         /// <inheritdoc />
@@ -64,7 +65,7 @@ namespace FivePD.Gamemode.Client.Services
                 });
             }
 
-            this._tickService.OnTick += this.WaitForHold;
+            this._tickService.OnTick += this.WaitForHoldAsync;
         }
 
         /// <inheritdoc />
@@ -87,7 +88,7 @@ namespace FivePD.Gamemode.Client.Services
                     return;
                 }
 
-                this._nuiService.ShowTimerBar(timeToHoldInMs);
+                this._uiService.ShowTimerBar(timeToHoldInMs);
                 this._actions.Add(holdableKeybind);
             }
 
@@ -99,7 +100,7 @@ namespace FivePD.Gamemode.Client.Services
                 }
 
                 holdableKeybind.ClearTimer();
-                this._nuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.TimerBar },
                     { "show", false },
@@ -137,7 +138,7 @@ namespace FivePD.Gamemode.Client.Services
                 false);
         }
 
-        private Task WaitForHold()
+        private Task WaitForHoldAsync()
         {
             var toBeRemoved = new List<HoldableKeybind>();
             foreach (var item in this._actions)
@@ -153,7 +154,7 @@ namespace FivePD.Gamemode.Client.Services
             foreach (var item in toBeRemoved)
             {
                 item.ClearTimer();
-                this._nuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.TimerBar },
                     { "show", false },

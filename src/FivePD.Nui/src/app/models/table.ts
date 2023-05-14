@@ -1,4 +1,4 @@
-import { ActionResponse, Localization, Paths } from '@models';
+import { ActionResponse } from '@models';
 
 export interface ColumnOptions<T> {
   header: string;
@@ -18,7 +18,7 @@ export class Column<T> {
   header: string = '';
   accessorKey?: Extract<keyof T, string>;
   filter?: {
-    label: Paths<Localization> | string;
+    label: string;
   };
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
@@ -46,7 +46,7 @@ export interface FormattedRowItem<T> {
 
 export type FormattedRow<T> = FormattedRowItem<T>[];
 
-export type TableCellActions<T> = TableCellActionButton<T> | TableCellActionSelect<T>;
+export type TableCellActions<T> = TableCellActionButton<T> | TableCellActionSelect<T> | TableCellActionSelectMulti<T>;
 
 export interface TableCellAction<T> {
   type: 'button' | 'select';
@@ -63,6 +63,13 @@ export interface TableCellActionSelect<T> extends TableCellAction<T> {
   selectedItemResolver: (item: T, dropdownItemKey: number) => boolean;
   items: () => TableCellActionSelectItem[];
   onSelect: (item: T, selectedId: number, onResponse: (response: ActionResponse) => void) => void;
+}
+
+export interface TableCellActionSelectMulti<T> extends TableCellAction<T> {
+  selectedItemsResolver: (item: T, dropdownItemKey: number) => boolean;
+  items: () => TableCellActionSelectItem[];
+  onSelectMulti: (item: T, selectedIds: number[], onResponse: (response: ActionResponse) => void) => void;
+  resetWhenSelectedId?: number;
 }
 
 interface TableCellActionSelectItem {

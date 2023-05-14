@@ -15,7 +15,7 @@ namespace FivePD.Common.ConfigModels
         /// <summary>
         /// Gets or sets an array of weapons in this loadout.
         /// </summary>
-        public List<Weapon> Weapons { get; set; } = new List<Weapon>();
+        public List<Weapon> Weapons { get; set; } = new();
 
         /// <summary>
         /// A loadout weapon.
@@ -30,7 +30,7 @@ namespace FivePD.Common.ConfigModels
             /// <summary>
             /// Gets or sets the components of this weapon.
             /// </summary>
-            public List<string> ComponentKeys { get; set; } = new List<string>();
+            public List<string> ComponentKeys { get; set; } = new();
 
             /// <summary>
             /// Gets or sets the ammunition count of this weapon.

@@ -80,7 +80,7 @@
         <Rule Id="SA1204" Action="Warning" /> <!-- Static elements should appear before instance elements -->
         <Rule Id="SA1604" Action="Warning" /> <!-- Element documentation should have summary -->
         <Rule Id="SA1516" Action="Warning" /> <!-- Elements should be separated by blank line -->
-        <Rule Id="SA1649" Action="Warning" /> <!-- File name should match first type name -->
+        <Rule Id="SA1649" Action="None" /> <!-- File name should match first type name -->
         <Rule Id="SA1128" Action="Warning" /> <!-- Put constructor initializers on their own line -->
         <Rule Id="SA1122" Action="Warning" /> <!-- Use string.Empty for empty strings -->
         <Rule Id="SA1413" Action="Warning" /> <!-- Use trailing comma in multi-line initializers -->
@@ -103,5 +103,15 @@
         <Rule Id="SA1202" Action="Warning" /> <!-- Elements should be ordered by access -->
         <Rule Id="SA1201" Action="Warning" /> <!-- Elements should appear in the correct order -->
         <Rule Id="S1135" Action="Info" /> <!-- TODOs shouldn't be marked as errors -->
+    </Rules>
+    <Rules AnalyzerId="Microsoft.VisualStudio.Threading.Analyzers" RuleNamespace="Microsoft.VisualStudio.Threading.Analyzers">
+        <Rule Id="VSTHRD200" Action="Error" />
+        <Rule Id="VSTHRD110" Action="None" />
+    </Rules>
+    <Rules AnalyzerId="Microsoft.VisualStudio.Threading.Analyzers.CSharp" RuleNamespace="Microsoft.VisualStudio.Threading.Analyzers.CSharp">
+        <Rule Id="VSTHRD002" Action="None" />
+    </Rules>
+    <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
+        <Rule Id="S1172" Action="Error" />
     </Rules>
 </RuleSet>

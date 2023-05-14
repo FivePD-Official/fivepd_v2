@@ -1,0 +1,20 @@
+<app-container [columns]="1" [rows]="2">
+
+  <div>
+    <p class="common-title mb-4">Entities</p>
+    <div class="flex flex-row items-center gap-4">
+      <app-button variant="secondary" label="Delete all entities" (onClick)="deleteEntities(DeleteEntityType.All)"/>
+      <app-button variant="secondary" label="Delete all peds" (onClick)="deleteEntities(DeleteEntityType.Peds)"/>
+      <app-button variant="secondary" label="Delete all vehicles" (onClick)="deleteEntities(DeleteEntityType.Vehicles)"/>
+      <app-button variant="secondary" label="Delete all props" (onClick)="deleteEntities(DeleteEntityType.Props)"/>
+    </div>
+  </div>
+
+  <app-grid title="Coordinates"
+            [columns]="coordinatesColumns"
+            [data]="coordinates$ | async"
+            [buttons]="coordinatesButtons"
+            [showPagination]="false"/>
+
+</app-container>
+

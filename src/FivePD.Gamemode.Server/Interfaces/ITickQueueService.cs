@@ -16,7 +16,7 @@ namespace FivePD.Gamemode.Server.Interfaces
          * <returns>A <see cref="Task" /> which completes when
          * the tick is done being operated on.</returns>
          */
-        public Task OnTick();
+        public Task OnTickAsync();
 
         /**
          * <summary>Pushes an action to the tick queue,
@@ -25,14 +25,14 @@ namespace FivePD.Gamemode.Server.Interfaces
          * <param name="action">An action to execute and complete upon execution.</param>
          * <returns>A task which completes upon execution.</returns>
          */
-        public Task Enqueue(Action action);
+        public Task EnqueueAsync(Action action);
 
         /**
-         * <summary>See <see cref="Enqueue"/>.</summary>
+         * <summary>See <see cref="EnqueueAsync"/>.</summary>
          * <typeparam name="T">The type to return.</typeparam>
          * <param name="action">An action to execute and complete upon execution.</param>
          * <returns>A task which completes upon execution.</returns>
          */
-        public Task<T> Enqueue<T>(Func<T> action);
+        public Task<T> EnqueueAsync<T>(Func<T> action);
     }
 }

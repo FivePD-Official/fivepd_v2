@@ -10,14 +10,16 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Models.Requests;
 using FivePD.Gamemode.Server.Models.Responses;
+using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace FivePD.Gamemode.Server.Services
 {
     /**
-     * <inheritdoc />
+     * <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IPlayerDataService" />
      */
     public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     {
@@ -50,6 +52,27 @@ namespace FivePD.Gamemode.Server.Services
         {
             this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
             this.CreateDataForOnlinePlayers();
+        }
+
+        /// <inheritdoc/>
+        public User FindUserByLicense(Player player)
+        {
+            var license = player.Identifiers["license"];
+            if (string.IsNullOrEmpty(license))
+            {
+                return null;
+            }
+
+            try
+            {
+                return this._databaseContext.Users
+                    .Include(user => user.Department)
+                    .FirstOrDefault(user => user.License == license);
+            }
+            catch (Exception e)
+            {
+                throw new DatabaseUsageException("Failed to access database", e);
+            }
         }
 
         private void CreateDataForOnlinePlayers()
@@ -132,8 +155,8 @@ namespace FivePD.Gamemode.Server.Services
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
+                        Title = "UI.ERROR.UNEXPECTED",
+                        Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                     }.ToString());
                     return;
                 }
@@ -152,8 +175,8 @@ namespace FivePD.Gamemode.Server.Services
                         networkCallbackDelegate.Invoke(new ActionResponse
                         {
                             Status = false,
-                            Title = "Nui.Errors.UnexpectedError",
-                            Description = "Nui.Errors.DatabaseAccess",
+                            Title = "UI.ERROR.UNEXPECTED",
+                            Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                         }.ToString());
                         return;
                     }
@@ -166,8 +189,8 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
-                    Title = "Nui.Labels.SuccessfulChange",
-                    Description = "Nui.Labels.SuccessfulPlayerDivisionChange",
+                    Title = "UI.LABEL.SUCCESS.CHANGE",
+                    Description = "UI.LABEL.DIVISION.SUCCESS.CHANGE",
                     Params = new Dictionary<string, string>
                     {
                         { "player", user.Name },
@@ -179,8 +202,8 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
+                    Title = "UI.ERROR.UNEXPECTED",
+                    Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
             }
@@ -198,8 +221,8 @@ namespace FivePD.Gamemode.Server.Services
                     networkCallbackDelegate.Invoke(new ActionResponse
                     {
                         Status = false,
-                        Title = "Nui.Errors.UnexpectedError",
-                        Description = "Nui.Errors.DatabaseAccess",
+                        Title = "UI.ERROR.UNEXPECTED",
+                        Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                     }.ToString());
                     return;
                 }
@@ -218,8 +241,8 @@ namespace FivePD.Gamemode.Server.Services
                         networkCallbackDelegate.Invoke(new ActionResponse
                         {
                             Status = false,
-                            Title = "Nui.Errors.UnexpectedError",
-                            Description = "Nui.Errors.DatabaseAccess",
+                            Title = "UI.ERROR.UNEXPECTED",
+                            Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                         }.ToString());
                         return;
                     }
@@ -232,8 +255,8 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = true,
-                    Title = "Nui.Labels.SuccessfulChange",
-                    Description = "Nui.Labels.SuccessfulPlayerRankChange",
+                    Title = "UI.LABEL.SUCCESS.CHANGE",
+                    Description = "UI.LABEL.RANK.SUCCESS.CHANGE",
                     Params = new Dictionary<string, string>
                     {
                         { "player", user.Name },
@@ -245,10 +268,58 @@ namespace FivePD.Gamemode.Server.Services
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
                     Status = false,
-                    Title = "Nui.Errors.UnexpectedError",
-                    Description = "Nui.Errors.DatabaseAccess",
+                    Title = "UI.ERROR.UNEXPECTED",
+                    Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
                 }.ToString());
                 throw new DatabaseUsageException("Failed to access database", e);
+            }
+        }
+
+        [UIEvent(Events.UI.Player.GetAllPageable)]
+        private void GetAllPageable(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<GetSetRequest>();
+                var page = this._databaseContext.Users
+                    .AsNoTracking()
+                    .Paginate(request.Page, new Filters<User>());
+
+                networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.Invoke(null);
+            }
+        }
+
+        [UIEvent(Events.UI.Player.ChangeRole)]
+        private void ChangeRole(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            try
+            {
+                var request = expandoObject.ConvertTo<ChangePlayerRoleRequest>();
+                var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.UserId);
+                if (user is null)
+                {
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
+                    return;
+                }
+
+                user.Role = request.Roles.Sum();
+                this._databaseContext.SaveChanges();
+                networkCallbackDelegate.InvokeWithResponse(
+                    true,
+                    "UI.LABEL.SUCCESS.CHANGE",
+                    "UI.LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
+                    new Dictionary<string, string>
+                    {
+                        { "name", user.Name },
+                    });
+            }
+            catch (Exception)
+            {
+                networkCallbackDelegate.Invoke(null);
             }
         }
     }

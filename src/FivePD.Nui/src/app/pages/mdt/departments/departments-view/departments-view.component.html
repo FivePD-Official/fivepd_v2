@@ -1,62 +1,67 @@
 <app-page-header [title]="title">
-  <app-button [label]="'Nui.Actions.Join' | translate" [show]="!isUserInDepartment" theme="secondary" (onClick)="joinDepartment()"></app-button>
-  <app-button [label]="'Nui.Actions.Leave' | translate" [show]="isUserInDepartment" theme="secondary" (onClick)="leaveDepartment()"></app-button>
+  <app-button [label]="'UI.ACTION.JOIN' | translate"
+              [show]="!isUserInDepartment"
+              variant="secondary"
+              (onClick)="joinDepartment()"/>
+  <app-button [label]="'UI.ACTION.LEAVE' | translate"
+              [show]="isUserInDepartment"
+              variant="secondary"
+              (onClick)="leaveDepartment()"/>
 </app-page-header>
 
-<ng-container *ngIf="user?.Admin ?? false; else notAdmin">
-  <app-columns *ngIf="department" [columns]="2">
-    <app-dynamic-form *ngIf="departmentSettingsForm"
-      [title]="'Nui.Labels.DepartmentSettings' | translate"
-      [formFields]="departmentSettingsForm"
-      [columns]="2"
-      [limitWidth]="false"
-      [disableSubmitWithOriginalValue]="true"
-      (onSubmit)="onDepartmentSettingsSubmit($event)"
-    ></app-dynamic-form>
+<ng-container *ngIf="userService.userHasRole(UserRole.Admin); else notAdmin">
+  <app-container *ngIf="department" [columns]="1" [rows]="2">
+    <app-container [columns]="2">
+      <app-dynamic-form
+        *ngIf="departmentSettingsForm"
+        [title]="'UI.LABEL.DEPARTMENT.SETTINGS' | translate"
+        [formFields]="departmentSettingsForm"
+        [columns]="2"
+        [limitWidth]="false"
+        buttonAlignment="right"
+        [disableSubmitWithOriginalValue]="true"
+        (onSubmit)="onDepartmentSettingsSubmit($event)"
+        [showSubmitButton]="true"/>
+      <app-grid
+        [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
+        [buttons]="divisionsButtons"
+        [data]="divisions"
+        [columns]="divisionsColumns"
+        (onCollationChange)="onDivisionsCollationChange($event)"
+        (onCellAction)="getDivisions()"/>
+    </app-container>
     <app-grid
-      [title]="'Nui.Labels.Divisions' | translate"
-      [buttons]="divisionsButtons"
-      [data]="divisions"
-      [columns]="divisionsColumns"
-      (onCollationChange)="onDivisionsCollationChange($event)"
-      (onCellAction)="getDivisions()"
-    ></app-grid>
-  </app-columns>
-  <app-grid
-    [title]="'Nui.Labels.Ranks' | translate"
-    [buttons]="ranksButtons"
-    [data]="ranks"
-    [columns]="ranksColumns"
-    (onCollationChange)="onRanksCollationChange($event)"
-    (onCellAction)="getRanks()"
-  ></app-grid>
-</ng-container>
-
-<ng-template #notAdmin>
-  <app-columns *ngIf="department" [columns]="2">
-    <app-grid
-      [title]="'Nui.Labels.Ranks' | translate"
+      [title]="'UI.LABEL.RANK.PLURAL' | translate"
       [buttons]="ranksButtons"
       [data]="ranks"
       [columns]="ranksColumns"
       (onCollationChange)="onRanksCollationChange($event)"
-      (onCellAction)="getRanks()"
-    ></app-grid>
+      (onCellAction)="getRanks()"/>
+  </app-container>
+</ng-container>
+
+<ng-template #notAdmin>
+  <app-container *ngIf="department" [columns]="2">
     <app-grid
-      [title]="'Nui.Labels.Divisions' | translate"
+      [title]="'UI.LABEL.RANK.PLURAL' | translate"
+      [buttons]="ranksButtons"
+      [data]="ranks"
+      [columns]="ranksColumns"
+      (onCollationChange)="onRanksCollationChange($event)"
+      (onCellAction)="getRanks()"/>
+    <app-grid
+      [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
       [buttons]="divisionsButtons"
       [data]="divisions"
       [columns]="divisionsColumns"
       (onCollationChange)="onDivisionsCollationChange($event)"
-      (onCellAction)="getDivisions()"
-    ></app-grid>
-  </app-columns>
+      (onCellAction)="getDivisions()"/>
+  </app-container>
 </ng-template>
 
 <app-grid
-  [title]="'Nui.Labels.Members' | translate"
+  [title]="'UI.LABEL.MEMBER.PLURAL' | translate"
   [data]="users"
   [columns]="usersColumns"
   (onCollationChange)="onUsersCollationChange($event)"
-  (onCellAction)="getUsers()"
-></app-grid>
+  (onCellAction)="getUsers()"/>

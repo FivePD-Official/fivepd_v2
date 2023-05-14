@@ -1,60 +1,62 @@
-<app-page-header [title]="'Nui.Labels.Dashboard' | translate"></app-page-header>
+<app-page-header [title]="'UI.LABEL.DASHBOARD' | translate"/>
 
-<div class="grid">
-  <div class="grid-item grid-item--details">
-    <p class="common-title">
-      {{ 'Nui.Labels.MyDetails' | translate }}
-    </p>
-    <div class="common-bg grid-item--content">
-      <ul>
-        <li>
-          <p>{{ 'Nui.Labels.Department' | translate }}</p>
-          <p>{{ (user$ | async)?.Department?.Name ?? '-' }}</p>
-        </li>
-        <li>
-          <p>{{ 'Nui.Labels.Division' | translate }}</p>
-          <p>{{ (user$ | async)?.Division?.Name ?? '-' }}</p>
-        </li>
-        <li>
-          <p>{{ 'Nui.Labels.Rank' | translate }}</p>
-          <p>{{ (user$ | async)?.Rank?.Name ?? '-' }}</p>
-        </li>
-        <li>
-          <p>{{ 'Nui.Labels.Callsign' | translate }}</p>
-          <p>{{ (user$ | async)?.Callsign ?? '-' }}</p>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="grid-item grid-item--statistics">
-    <p class="common-title">
-      {{ 'Nui.Labels.Statistics' | translate }}
-    </p>
-    <div class="common-bg grid-item--content">
-      <p *ngIf="!statistics" class="no-data">
-        {{ 'Nui.Labels.NoDataToDisplay' | translate }}
+<app-container [rows]="2">
+  <app-container [columns]="3">
+    <div class="grid-item grid-item--details">
+      <p class="common-title">
+        {{ 'UI.LABEL.MY_DETAILS' | translate }}
       </p>
+      <div class="grid-item--content">
+        <ul
+          class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
+          <li>
+            <p>{{ 'UI.LABEL.DEPARTMENT.SINGULAR' | translate }}</p>
+            <p>{{ user?.Department?.Name ?? '-' }}</p>
+          </li>
+          <li>
+            <p>{{ 'UI.LABEL.DIVISION.SINGULAR' | translate }}</p>
+            <p>{{ user?.Division?.Name ?? '-' }}</p>
+          </li>
+          <li>
+            <p>{{ 'UI.LABEL.RANK.SINGULAR' | translate }}</p>
+            <p>{{ user?.Rank?.Name ?? '-' }}</p>
+          </li>
+          <li>
+            <p>{{ 'UI.LABEL.CALLSIGN.TITLE' | translate }}</p>
+            <p>{{ user?.Callsign ?? '-' }}</p>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
 
-  <div class="grid-item grid-item--call">
-    <p class="common-title">
-      {{ 'Nui.Labels.AssignedCall' | translate }}
-    </p>
-    <div class="common-bg grid-item--content">
-      <p *ngIf="!assignedCall" class="no-data">
-        {{ 'Nui.Labels.NoAssignedCall' | translate }}
+    <div class="grid-item grid-item--statistics">
+      <p class="common-title">
+        {{ 'UI.LABEL.STATISTICS' | translate }}
       </p>
+      <div class="grid-item--content">
+        <p *ngIf="!statistics" class="no-data">
+          {{ 'UI.LABEL.NO_RESULTS' | translate }}
+        </p>
+      </div>
     </div>
-  </div>
-</div>
 
-<app-grid
-  [title]="'Nui.Labels.Departments' | translate"
-  [buttons]="departmentsButtons"
-  [data]="departments"
-  [columns]="departmentsColumnDef"
-  (onCollationChange)="onDepartmentsCollationChange($event)"
-  (onCellAction)="getDepartments()"
-></app-grid>
+    <div class="grid-item grid-item--call">
+      <p class="common-title">
+        {{ 'UI.LABEL.ASSIGNED_CALL' | translate }}
+      </p>
+      <div class="grid-item--content">
+        <p *ngIf="!assignedCall" class="no-data">
+          {{ 'UI.LABEL.NO_ASSIGNED_CALL' | translate }}
+        </p>
+      </div>
+    </div>
+  </app-container>
+
+  <app-grid
+    [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
+    [buttons]="departmentsButtons"
+    [data]="departments"
+    [columns]="departmentsColumnDef"
+    (onCollationChange)="onDepartmentsCollationChange($event)"
+    (onCellAction)="getDepartments()"/>
+</app-container>

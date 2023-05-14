@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   Button,
   Checkbox,
@@ -20,14 +20,17 @@ import {
 import { DepartmentService } from '@services/entity/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
-import { UserState } from '@store/user.state';
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { Select } from '@ngxs/store';
-import { ModalService } from '@services/modal/modal.service';
-import { UserService } from '@services/user/user.service';
-import { GenericNameValidator } from '@validators/generic-name-validator';
-import { Validators } from '@angular/forms';
-import { ModalFormComponent } from '../../../../components/modal/modal-form/modal-form.component';
+import { filter, switchMap } from 'rxjs';
+import { GlobalState } from '@store';
+import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
+import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { UserRole, UserService } from '@services/user/user.service';
+import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { CustomValidators } from '../../../../helpers/validators';
+import { ModalService } from '@services/modals/modal/modal.service';
+import { Store } from '@ngrx/store';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -43,34 +46,30 @@ interface FormattedUser extends User {
   templateUrl: './departments-view.component.html',
   styleUrls: ['./departments-view.component.sass']
 })
-export class DepartmentsViewComponent implements OnInit, OnDestroy {
-
-  onDestroy$ = new Subject<void>();
+export class DepartmentsViewComponent {
 
   user?: User;
-  @Select(UserState.details) user$!: Observable<User>;
-
   department?: Department;
   isUserInDepartment: boolean = false;
 
   ranks?: Page<FormattedRank>;
   ranksButtons: Button[] = [
     {
-      label: this._localization.translate('Nui.Actions.CreateRank'),
-      show: () => this.user?.Admin ?? false,
+      label: this._localization.translate('UI.ACTION.CREATE_RANK'),
+      show: () => this.userService.userHasRole(UserRole.Admin),
       disabled: () => false,
-      onClick: () => this._modal.open(ModalFormComponent, {
-        title: 'Nui.Actions.CreateRank',
-        fields: [
+      onClick: () => this.modalFormService.open({
+        title: 'UI.ACTION.CREATE_RANK',
+        fields: () => [
           new TextInput({
             key: 'Name',
-            label: 'Nui.Labels.Name',
-            placeholder: 'Nui.Labels.Name',
+            label: 'UI.LABEL.NAME.SINGULAR',
+            placeholder: 'UI.LABEL.NAME.SINGULAR',
             required: true,
           }),
           new CheckboxGroup({
             key: 'Permission',
-            label: 'Nui.Labels.Permissions',
+            label: 'UI.LABEL.PERMISSIONS',
             checkboxGroup: [
               new Checkbox({
                 key: 'Kick',
@@ -88,26 +87,21 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
           }),
         ],
         buttons: {
-          cancel: {
-            theme: 'secondary',
-            label: 'Nui.Actions.Cancel',
-          },
           submit: {
-            theme: 'primary',
-            label: 'Nui.Actions.Create',
+            variant: 'primary',
+            label: 'UI.ACTION.CREATE',
           },
         },
-      }).onSuccess(res => {
-        this._departmentService.createRank({
-          DepartmentId: this.department!.Id,
-          Name: res.value!['Name'],
-          Permission: res.value!['Permission']
-        }).subscribe(createRes => {
-          if (createRes.Status) {
-            this.getRanks(true);
-          }
-        });
-      })
+      }).result
+        .pipe(
+          filter(res => res.success),
+          switchMap(res => this._departmentService.createRank({
+            DepartmentId: this.department!.Id,
+            Name: res.value['Name'],
+            Permission: res.value['Permission']
+          })),
+          this._modal.handleResponse()
+        ).subscribe(() => this.getRanks(true))
     }
   ];
   ranksCollation: Collation = {
@@ -115,80 +109,81 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   };
   ranksColumns: Column<FormattedRank>[] = [
     new Column<FormattedRank>({
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       accessorKey: 'Name',
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByName'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
       },
     }),
     new Column<FormattedRank>({
-      header: this._localization.translate('Nui.Labels.Permissions'),
+      header: this._localization.translate('UI.LABEL.PERMISSIONS'),
       accessorKey: 'Permissions',
     }),
     new Column<FormattedRank>({
-      header: this._localization.translate('Nui.Labels.Actions'),
-      show: () => this.user?.Admin ?? false,
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Delete'),
+          label: this._localization.translate('UI.ACTION.DELETE'),
           onClick: rank => {
-            this._modal.open(ModalFormComponent, {
-              title: 'Nui.Labels.DeleteRankTitle',
-              description: this._localization.translate('Nui.Labels.DeleteRankDescription', { rank: `<b>${rank.Name}</b>`}),
+            this.modalConfirmService.open({
+              title: 'UI.LABEL.RANK.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
               buttons: {
-                cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-                submit: { theme: 'danger', label: 'Nui.Actions.Delete' },
+                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
               },
-            }).onSuccess(() => {
-              this._departmentService.deleteRank(rank.Id).subscribe(deleteRes => {
-                if (deleteRes.Status) {
-                  this.getRanks(true);
-                }
-              });
-            });
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._departmentService.deleteRank(rank.Id)),
+                this._modal.handleResponse()
+              ).subscribe(() => this.getRanks(true))
           }
         },
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Edit'),
+          label: this._localization.translate('UI.ACTION.EDIT'),
           onClick: rank => {
-            this._modal.open(ModalFormComponent, {
-              title: 'Nui.Labels.EditRankTitle',
-              fields: [
+            this.modalFormService.open<FormattedRank>({
+              title: 'UI.LABEL.RANK.EDIT',
+              fields: updatedRank => [
                 new TextInput({
                   key: 'Name',
-                  label: this._localization.translate('Nui.Labels.Name'),
-                  placeholder: this._localization.translate('Nui.Labels.Name'),
+                  label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+                  placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
                   required: true,
-                  value: rank.Name,
+                  value: updatedRank.Name,
                 }),
                 new CheckboxGroup({
                   key: 'Permission',
-                  label: 'Nui.Labels.Permissions',
+                  label: 'UI.LABEL.PERMISSIONS',
                   checkboxGroup: [
-                    new Checkbox({ key: 'Kick', label: 'Kick label', value: rank.Permission.Kick }),
-                    new Checkbox({ key: 'SetRank', label: 'Set rank label', value: rank.Permission.SetRank }),
-                    new Checkbox({ key: 'SetCallsign', label: 'Set callsign label', value: rank.Permission.SetCallsign }),
+                    new Checkbox({key: 'Kick', label: 'Kick label', value: updatedRank.Permission.Kick}),
+                    new Checkbox({key: 'SetRank', label: 'Set rank label', value: updatedRank.Permission.SetRank}),
+                    new Checkbox({
+                      key: 'SetCallsign',
+                      label: 'Set callsign label',
+                      value: updatedRank.Permission.SetCallsign
+                    }),
                   ]
                 }),
               ],
+              valueResolver: new ValueResolver(rank, this._departmentService.getRank(rank.Id)),
               buttons: {
-                cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-                submit: { theme: 'primary', label: 'Nui.Actions.Save' },
+                submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
               },
-            }).onSuccess(res => {
-              this._departmentService.editRank({
-                DepartmentId: this.department?.Id,
-                RankId: rank.Id,
-                Name: res.value!['Name'],
-                Permission: res.value!['Permission']
-              }).subscribe(editRes => {
-                if (editRes.Status) {
-                  this.getRanks(true);
-                }
-              });
-            });
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(res => this._departmentService.editRank({
+                  DepartmentId: this.department?.Id,
+                  RankId: rank.Id,
+                  Name: res.value!['Name'],
+                  Permission: res.value!['Permission']
+                })),
+                this._modal.handleResponse()
+              ).subscribe(() => this.getRanks(true))
           }
         },
       ]
@@ -201,33 +196,33 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   };
   usersColumns: Column<FormattedUser>[] = [
     new Column<FormattedUser>({
-      header:  this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       accessorKey: 'Name',
       filter: {
-        label:  this._localization.translate('Nui.Labels.SearchByName'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
       },
     }),
     new Column<FormattedUser>({
-      header:  this._localization.translate('Nui.Labels.Rank'),
+      header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
       accessorKey: 'RankName',
-      show: () => !this.user?.Admin ?? false,
+      show: () => !this.userService.userHasRole(UserRole.Admin),
     }),
     new Column<FormattedUser>({
-      header:  this._localization.translate('Nui.Labels.Division'),
+      header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
       accessorKey: 'DivisionName',
-      show: () => !this.user?.Admin ?? false,
+      show: () => !this.userService.userHasRole(UserRole.Admin),
     }),
     new Column<FormattedUser>({
-      header:  this._localization.translate('Nui.Labels.Rank'),
-      show: () => this.user?.Admin ?? false,
+      header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'select',
-          label:  this._localization.translate('Nui.Labels.NoRank'),
+          label: this._localization.translate('UI.LABEL.NO_RANK'),
           selectedItemResolver: (user, dropdownItemKey) => user.RankId === dropdownItemKey,
           items: () => this.ranksDropdown,
           onSelect: (user, selectedId) => {
-            this._userService.changeRank({
+            this.userService.changeRank({
               UserId: user.Id,
               IdToChange: selectedId,
             }).subscribe();
@@ -236,16 +231,16 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       ]
     }),
     new Column<FormattedUser>({
-      header:  this._localization.translate('Nui.Labels.Division'),
-      show: () => this.user?.Admin ?? false,
+      header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'select',
-          label: this._localization.translate('Nui.Labels.NoDivision'),
+          label: this._localization.translate('UI.LABEL.NO_DIVISION'),
           selectedItemResolver: (user, dropdownItemKey) => user.DivisionId === dropdownItemKey,
           items: () => this.divisionsDropdown,
           onSelect: (user, selectedId) => {
-            this._userService.changeDivision({
+            this.userService.changeDivision({
               UserId: user.Id,
               IdToChange: selectedId,
             }).subscribe();
@@ -261,94 +256,93 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   };
   divisionsButtons: Button[] = [
     {
-      label: this._localization.translate('Nui.Actions.CreateDivision'),
-      show: () => this.user?.Admin ?? false,
+      label: this._localization.translate('UI.ACTION.CREATE_DIVISION'),
+      show: () => this.userService.userHasRole(UserRole.Admin),
       disabled: () => false,
-      onClick: () => this._modal.open(ModalFormComponent, {
-        title: 'Nui.Actions.CreateDivision',
-        fields: [
-          new TextInput({
-            key: 'Name',
-            label: 'Nui.Labels.Name',
-            placeholder: 'Nui.Labels.Name',
-            required: true,
-          })
-        ],
-        buttons: {
-          cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-          submit: { theme: 'primary', label: 'Nui.Actions.Create' },
-        },
-      }).onSuccess(res => {
-        this._departmentService.createDivision({
-          DepartmentId: this.department?.Id,
-          Name: res.value!['Name']
-        }).subscribe(createRes => {
-          if (createRes.Status) {
-            this.getDivisions(true);
-          }
-        });
-      }),
+      onClick: () => {
+        this.modalFormService.open({
+          title: 'UI.ACTION.CREATE_DIVISION',
+          fields: () => [
+            new TextInput({
+              key: 'Name',
+              label: 'UI.LABEL.NAME.SINGULAR',
+              placeholder: 'UI.LABEL.NAME.SINGULAR',
+              required: true,
+            })
+          ],
+          buttons: {
+            submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+          },
+        }).result
+          .pipe(
+            filter(res => res.success),
+            switchMap(res => this._departmentService.createDivision({
+              DepartmentId: this.department?.Id,
+              Name: res.value['Name']
+            })),
+            this._modal.handleResponse()
+          ).subscribe(() => this.getDivisions(true))
+      }
     }
   ];
   divisionsColumns: Column<Division>[] = [
     new Column<Division>({
-      header: this._localization.translate('Nui.Labels.Name'),
+      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
       accessorKey: 'Name',
       filter: {
-        label: this._localization.translate('Nui.Labels.SearchByName'),
+        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
       },
     }),
     new Column<Division>({
-      header: this._localization.translate('Nui.Labels.Actions'),
-      show: () => this.user?.Admin ?? false,
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+      show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Delete'),
-          onClick: division => this._modal.open(ModalFormComponent, {
-            title: 'Nui.Labels.DeleteDivisionTitle',
-            description: this._localization.translate('Nui.Labels.DeleteDivisionDescription', { division: `<b>${division.Name}</b>` }),
-            buttons: {
-              cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel'},
-              submit: { theme: 'danger', label: 'Nui.Actions.Delete'},
-            },
-          }).onSuccess(() => {
-            this._departmentService.deleteDivision(division.Id).subscribe(deleteRes => {
-              if (deleteRes.Status) {
-                this.getDivisions(true);
-              }
-            });
-          })
+          label: this._localization.translate('UI.ACTION.DELETE'),
+          onClick: division => {
+            this.modalConfirmService.open({
+              title: 'UI.LABEL.DIVISION.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
+              buttons: {
+                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+              },
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._departmentService.deleteDivision(division.Id)),
+                this._modal.handleResponse()
+              ).subscribe(() => this.getDivisions(true))
+          }
         },
         {
           type: 'button',
-          label: this._localization.translate('Nui.Actions.Edit'),
+          label: this._localization.translate('UI.ACTION.EDIT'),
           onClick: division => {
-            this._modal.open(ModalFormComponent, {
-              title: 'Nui.Labels.EditDivision',
-              fields: [
+            this.modalFormService.open<Division>({
+              title: 'UI.LABEL.DIVISION.EDIT',
+              fields: updatedDivision => [
                 new TextInput({
                   key: 'Name',
-                  label: 'Nui.Labels.Name',
-                  placeholder: 'Nui.Labels.Name',
+                  label: 'UI.LABEL.NAME.SINGULAR',
+                  placeholder: 'UI.LABEL.NAME.SINGULAR',
                   required: true,
-                  value: division.Name,
+                  value: updatedDivision.Name,
                 })
               ],
+              valueResolver: new ValueResolver(division, this._departmentService.getDivision(division.Id)),
               buttons: {
-                cancel: { theme: 'secondary', label: 'Nui.Actions.Cancel' },
-                submit: { theme: 'primary', label: 'Nui.Actions.Save' },
+                submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
               },
-            }).onSuccess(res => {
-              this._departmentService.editDivision({
-                DivisionId: division.Id,
-                Name: res.value!['Name'],
-              }).subscribe(editRes => {
-                if (editRes.Status) {
-                  this.getDivisions(true);
-                }
-              });
-            })
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(res => this._departmentService.editDivision({
+                  DivisionId: division.Id,
+                  Name: res.value['Name'],
+                })),
+                this._modal.handleResponse()
+              ).subscribe(() => this.getDivisions(true))
           }
         }
       ]
@@ -362,28 +356,20 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     private _route: ActivatedRoute,
     private _localization: LocalizationService,
     private _departmentService: DepartmentService,
-    private _userService: UserService,
-    private _modal: ModalService
-  ) { }
-
-  ngOnInit(): void {
-    this.user$.pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(user => {
-      this.user = user;
+    private _modal: ModalService,
+    public readonly userService: UserService,
+    private readonly store: Store<GlobalState>,
+    private readonly modalFormService: ModalFormService,
+    private readonly modalConfirmService: ModalConfirmService,
+  ) {
+    store.pipe(takeUntilDestroyed()).subscribe(state => {
+      this.user = state.user.details;
       this.setIsUserInDepartment();
     });
 
-    this._route.params.pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(() => {
+    _route.params.pipe(takeUntilDestroyed()).subscribe(() => {
       this.getDepartment();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.onDestroy$.next();
-    this.onDestroy$.complete();
   }
 
   setIsUserInDepartment(): void {
@@ -391,7 +377,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   }
 
   get title(): string {
-    return `${this._localization.translate('Nui.Labels.Department')} ${(this.department?.Name ? '(' + this.department?.Name + ')' : '')}`;
+    return `${this._localization.translate('UI.LABEL.DEPARTMENT.SINGULAR')} ${(this.department?.Name ? '(' + this.department?.Name + ')' : '')}`;
   }
 
   get ranksDropdown(): DropdownItem[] {
@@ -492,7 +478,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   joinDepartment(): void {
     this._departmentService.joinDepartment(this.department!.Id).subscribe(res => {
       if (res.Status) {
-        this._userService.refreshData();
+        this.userService.refreshData();
         this.getUsers();
       }
     });
@@ -501,7 +487,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
   leaveDepartment(): void {
     this._departmentService.leaveDepartment(this.department!.Id).subscribe(res => {
       if (res.Status) {
-        this._userService.refreshData();
+        this.userService.refreshData();
         this._router.navigate(['mdt', 'dashboard']);
       }
     });
@@ -514,7 +500,7 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     }).subscribe(res => {
       if (res.Status) {
         this.getDepartment();
-        this._userService.refreshData();
+        this.userService.refreshData();
         event.markAsPristine();
       }
     });
@@ -524,13 +510,13 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
     let permissions = '';
 
     if (rank.Permission.Kick) {
-      permissions += `${this._localization.translate('Nui.Actions.Kick')}, `;
+      permissions += `${this._localization.translate('UI.ACTION.KICK')}, `;
     }
     if (rank.Permission.SetRank) {
-      permissions += `${this._localization.translate('Nui.Actions.SetRank')}, `;
+      permissions += `${this._localization.translate('UI.ACTION.SET_RANK')}, `;
     }
     if (rank.Permission.SetCallsign) {
-      permissions += `${this._localization.translate('Nui.Actions.SetCallsign')}, `;
+      permissions += `${this._localization.translate('UI.ACTION.SET_CALLSIGN')}, `;
     }
 
     return permissions.length ? permissions.slice(0, -2) : '-';
@@ -541,29 +527,29 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.departmentSettingsForm  = [
+    this.departmentSettingsForm = [
       new TextInput({
         key: 'Name',
         required: true,
-        label: 'Nui.Labels.Name',
-        asyncValidators: [GenericNameValidator.get((value) => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
+        label: 'UI.LABEL.NAME.SINGULAR',
+        // TODO FIX asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
       new NumberInput({
         key: 'MaxUsers',
-        label: 'Nui.Labels.MaxNumberOfMembers',
+        label: 'UI.LABEL.MAX_MEMBERS.TITLE',
         required: true,
         value: this.department.MaxUsers,
-        helpLabel: 'Nui.Labels.MaxNumberOfMembersHelpLabel',
+        helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
       }),
       new Dropdown({
         key: 'DefaultRankId',
-        label: 'Nui.Labels.DefaultRank',
+        label: 'UI.LABEL.DEFAULT_RANK.TITLE',
         required: false,
         value: this.department.DefaultRankId ?? -1,
-        helpLabel: 'Nui.Labels.DefaultRankDescription',
+        helpLabel: 'UI.LABEL.DEFAULT_RANK.DESCRIPTION',
         dropdownOptions: {
-          label: this._localization.translate('Nui.Labels.NoDefaultRank'),
+          label: this._localization.translate('UI.LABEL.NO_DEFAULT_RANK'),
           selectedItemResolver: (item) => item === this.department!.DefaultRankId,
           items: this.ranksDropdown,
           size: 'normal',
@@ -571,35 +557,14 @@ export class DepartmentsViewComponent implements OnInit, OnDestroy {
       }),
       new TextInput({
         key: 'Callsign',
-        label: 'Nui.Labels.Callsign',
-        helpLabel: 'Nui.Labels.CallsignHelpLabel',
-        validators: [Validators.pattern('^[a-zA-Z]+$')],
+        label: 'UI.LABEL.CALLSIGN.TITLE',
+        helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
+        validators: [CustomValidators.callsign()],
         value: this.department.Callsign,
       }),
-      new TextInput({
-        key: 'CallsignFormat',
-        required: true,
-        label: 'Nui.Labels.CallsignFormat',
-        helpLabel: `
-            ${this._localization.translate('Nui.Labels.CallsignFormatHelpLabel')} ${this._localization.translate('Nui.Labels.AvailableCharacters')}: <br/>
-            <table>
-              <tr>
-                <td><b>L</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Letter')})<td>
-              </tr>
-              <tr>
-                <td><b>N</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Number')})<td>
-              </tr>
-              <tr>
-                <td><b>-</b><td>
-                <td>(${this._localization.translate('Nui.Labels.Dash')})<td>
-              </tr>
-            </table>
-          `,
-        validators: [Validators.pattern('^[NL0-9-*]{1,10}$')],
-        value: this.department.CallsignFormat
-      }),
+      createDepartmentCallsignFormatInputField(this._localization, this.department),
     ];
   }
+
+  protected readonly UserRole = UserRole;
 }

@@ -10,7 +10,7 @@ namespace FivePD.Gamemode.Server.Services
     /// <inheritdoc />
     public class CommandService : ICommandService
     {
-        private readonly List<Command> _commands = new List<Command>();
+        private readonly List<Command> _commands = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandService"/> class.
@@ -39,8 +39,8 @@ namespace FivePD.Gamemode.Server.Services
                 return;
             }
 
-            string commandName = (string)args[0];
-            string subcommandName = args.Count > 1 ? (string)args[1] : string.Empty;
+            var commandName = (string)args[0];
+            var subcommandName = args.Count > 1 ? (string)args[1] : string.Empty;
 
             var command = this._commands.FirstOrDefault(command => command.Name == commandName);
             if (command is null)

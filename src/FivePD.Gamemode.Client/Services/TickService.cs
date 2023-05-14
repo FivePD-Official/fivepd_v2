@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
 
 namespace FivePD.Gamemode.Client.Services

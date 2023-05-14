@@ -13,7 +13,7 @@ namespace FivePD.Gamemode.Server.Services
     public class TrafficStopService : ITrafficStopService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly ConcurrentDictionary<string, TrafficStop> _trafficStops = new ConcurrentDictionary<string, TrafficStop>();
+        private readonly ConcurrentDictionary<string, TrafficStop> _trafficStops = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrafficStopService"/> class.

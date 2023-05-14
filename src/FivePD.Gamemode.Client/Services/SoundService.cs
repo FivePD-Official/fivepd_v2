@@ -9,21 +9,21 @@ namespace FivePD.Gamemode.Client.Services
     /// <inheritdoc />
     public class SoundService : ISoundService
     {
-        private readonly INuiService _nuiService;
+        private readonly IUIService _uiService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundService"/> class.
         /// </summary>
-        /// <param name="nuiService">The <see cref="INuiService"/> to use.</param>
-        public SoundService(INuiService nuiService)
+        /// <param name="uiService">The <see cref="IUIService"/> to use.</param>
+        public SoundService(IUIService uiService)
         {
-            this._nuiService = nuiService;
+            this._uiService = uiService;
         }
 
         /// <inheritdoc />
         public void Play(Sound sound)
         {
-            this._nuiService.SendMessage(new JObject
+            this._uiService.SendMessage(new JObject
             {
                 { "type", Events.NuiEventType.PlaySound },
                 { "sound", sound.GetDescription() },
@@ -33,7 +33,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void Speak(string text)
         {
-            this._nuiService.SendMessage(new JObject
+            this._uiService.SendMessage(new JObject
             {
                 { "type", Events.NuiEventType.Speak },
                 { "textToPlay", text },

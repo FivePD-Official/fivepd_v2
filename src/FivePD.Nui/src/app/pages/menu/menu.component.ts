@@ -25,12 +25,13 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     private _route: ActivatedRoute,
     private _menuService: MenuService,
     private _event: EventService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this._route.params.subscribe(params => {
       this.menu = this._menuService.getMenuById(params['id']);
-      this.menuItems = this.menu.items;
+      this.menuItems = this.menu?.items ?? [];
     });
     this.controlEvent$ = this._event.onEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
       switch (event.type) {
@@ -60,7 +61,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.itemNodes = Array.from(document.querySelectorAll('.menu-item'));
-    this.selectorNode = document.querySelector('.selector');
+    this.selectorNode = document.querySelector('#selector');
   }
 
   ngOnDestroy(): void {
@@ -80,7 +81,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     else this.currentItemIndex = this.menuItems.length - 1;
 
     const currentItem = this.menuItems[this.currentItemIndex];
-    if (!currentItem.enabled) {
+    if (!currentItem.Enabled) {
       this.onMenuUp();
       return;
     }
@@ -96,12 +97,12 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.currentItemIndex < this.menuItems.length - 1) {
       this.currentItemIndex = this.currentItemIndex + 1;
-    }  else {
+    } else {
       this.currentItemIndex = 0;
     }
 
     const currentItem = this.menuItems[this.currentItemIndex];
-    if (!currentItem.enabled) {
+    if (!currentItem.Enabled) {
       this.onMenuDown();
       return;
     }
@@ -124,7 +125,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const currentItem = this.menuItems[this.currentItemIndex];
-    if (!currentItem.enabled) {
+    if (!currentItem.Enabled) {
       return;
     }
 
@@ -141,11 +142,9 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     currentItem.onPress();
   }
 
-  getMarqueeClass(item: MenuListItem): { [key: string]: boolean } {
+  getMarqueeClass(item: MenuListItem): Record<string, boolean> {
     if (item.items.length <= item.currentIndex) {
-      return {
-        '': false,
-      };
+      return {};
     }
 
     const className = item.items[item.currentIndex].length > 10 ? 'marquee' : '';

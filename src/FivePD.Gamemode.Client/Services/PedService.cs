@@ -1,4 +1,3 @@
-﻿using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
@@ -28,7 +27,7 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._eventHandlerDictionary.AddUIEventServerResponse<ExpandoObject>(Events.Ped.Search);
+            this._eventHandlerDictionary.AddUIToServerEvent(Events.Ped.Search);
         }
 
         /// <inheritdoc />

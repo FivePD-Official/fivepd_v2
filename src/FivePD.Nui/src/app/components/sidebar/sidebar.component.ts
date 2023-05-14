@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { GlobalState } from '@store';
-import { Store } from '@ngxs/store';
-import { Dispatch } from '@ngxs-labs/dispatch-decorator';
-import { ToggleSidebarCollapse } from '@store/app.actions';
-import { TogglePanicMode } from '@store/user.actions';
-import { IconType, Localization, Paths, User } from '@models';
+import { IconType, User } from '@models';
+import { Store } from '@ngrx/store';
+import { toggleSidebarCollapse } from '@store/app.actions';
+import { UserRole, UserService } from '@services/user/user.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface Route {
-  title: Paths<Localization>;
+  title: string;
   path: () => string;
   icon: IconType;
   show: () => boolean;
@@ -18,64 +18,67 @@ interface Route {
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.sass'],
 })
-export class SidebarComponent implements OnInit {
-
-  @Dispatch() togglePanicMode = () => new TogglePanicMode(!this.isPanicModeActive);
-  @Dispatch() toggleSidebarCollapse = () => new ToggleSidebarCollapse(!this.isSidebarCollapsed);
+export class SidebarComponent {
 
   user?: User;
   isSidebarCollapsed: boolean = false;
-  isPanicModeActive: boolean = false;
   routes: Route[] = [
     {
-      title: 'Nui.Labels.Dashboard',
+      title: 'UI.LABEL.DASHBOARD',
       path: () => '/mdt/dashboard',
       icon: IconType.Squares,
       show: () => true,
     },
     {
-      title: 'Nui.Labels.CitizenDatabase',
+      title: 'UI.LABEL.CITIZEN_DATABASE',
       path: () => '/mdt/citizen-database',
       icon: IconType.Identification,
       show: () => true,
     },
     {
-      title: 'Nui.Labels.VehicleDatabase',
+      title: 'UI.LABEL.VEHICLE_DATABASE',
       path: () => '/mdt/vehicle-database',
       icon: IconType.Truck,
       show: () => true,
     },
     {
-      title: 'Nui.Labels.Reports',
+      title: 'UI.LABEL.REPORT.PLURAL',
       path: () => '/mdt/reports',
       icon: IconType.Report,
       show: () => true,
     },
     {
-      title: 'Nui.Labels.Settings',
+      title: 'UI.LABEL.SETTINGS',
       path: () => '/mdt/settings',
       icon: IconType.Cog,
       show: () => true,
     },
     {
-      title: 'Nui.Labels.MyDepartment',
+      title: 'UI.LABEL.MY_DEPARTMENT',
       path: () => `/mdt/departments/${this.user?.DepartmentId}`,
       icon: IconType.Users,
       show: () => !!this.user?.Department ?? false,
     },
+    {
+      title: 'Developer tools',
+      path: () => '/mdt/devtools',
+      icon: IconType.CodeBracket,
+      show: () => this._userService.userHasRole(UserRole.Admin, UserRole.Developer),
+    }
   ];
 
   constructor(
-    private _store: Store,
+    private readonly store: Store<GlobalState>,
+    private readonly _userService: UserService,
   ) {
-    this._store.subscribe((res: GlobalState) => {
+    store.pipe(takeUntilDestroyed()).subscribe(res => {
       this.isSidebarCollapsed = res.app.isSidebarCollapsed;
-      this.isPanicModeActive = res.user.isPanicModeActive;
       this.user = res.user.details;
     });
   }
 
-  ngOnInit(): void {
+  toggleSidebarCollapse(): void {
+    this.store.dispatch(toggleSidebarCollapse());
   }
 
 }

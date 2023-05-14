@@ -10,12 +10,12 @@ namespace FivePD.Common.ConfigModels
         /// <summary>
         /// Gets or sets police vehicles that can spawned with the duty menu.
         /// </summary>
-        public List<PoliceVehicle> Police { get; set; } = new List<PoliceVehicle>();
+        public List<PoliceVehicle> Police { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the vehicles that'll be used for the ambulance service.
         /// </summary>
-        public List<ServiceVehicle> Ambulance { get; set; } = new List<ServiceVehicle>();
+        public List<ServiceVehicle> Ambulance { get; set; } = new();
 
         /// <summary>
         /// Defines a police vehicle's properties.
@@ -46,7 +46,7 @@ namespace FivePD.Common.ConfigModels
             /// <summary>
             /// Gets or sets the extras of this vehicle.
             /// </summary>
-            public List<string> Extras { get; set; } = new List<string>();
+            public List<string> Extras { get; set; } = new();
         }
     }
 }

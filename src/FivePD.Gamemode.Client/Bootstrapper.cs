@@ -11,6 +11,12 @@ using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3241
 #pragma warning disable CS4014
+
+#pragma warning disable S125
+#pragma warning disable S1481
+#pragma warning disable SA1512
+#pragma warning disable S1450
+
 namespace FivePD.Gamemode.Client
 {
     /// <summary>
@@ -43,7 +49,7 @@ namespace FivePD.Gamemode.Client
             this._phases.Add(this.PerformInitializationPhase, false);
 
             // Begin running phases.
-            this.Tick += this.RunNextPhase;
+            this.Tick += this.RunNextPhaseAsync;
         }
 
         /// <summary>
@@ -53,7 +59,7 @@ namespace FivePD.Gamemode.Client
         /// </summary>
         /// <returns>A <see cref="Task"/> that completes
         /// when a phase is ran.</returns>
-        private Task RunNextPhase()
+        private Task RunNextPhaseAsync()
         {
             // Get the first phase that isn't completed (second parameter is not true)
             var phase = this._phases.FirstOrDefault(x => !x.Value);
@@ -65,7 +71,7 @@ namespace FivePD.Gamemode.Client
                 this._bootstrapLogger.Info("FivePD Gamemode Client bootstrapping has completed");
 
                 // Stop trying to run phases
-                this.Tick -= this.RunNextPhase;
+                this.Tick -= this.RunNextPhaseAsync;
                 return Task.FromResult(0);
             }
 
@@ -81,7 +87,7 @@ namespace FivePD.Gamemode.Client
             catch (Exception e)
             {
                 // Problem? Stop the gamemode.
-                this.Tick -= this.RunNextPhase;
+                this.Tick -= this.RunNextPhaseAsync;
 
                 // Log the problem
                 this._bootstrapLogger.Error("An error occurred during bootstrapping and the gamemode has halted to prevent further issues.");
@@ -151,8 +157,8 @@ namespace FivePD.Gamemode.Client
                 .As<IScreenDecorService>();
 
             services
-                .RegisterType<NuiService>()
-                .As<INuiService>()
+                .RegisterType<UIService>()
+                .As<IUIService>()
                 .IsSingleton();
 
             services
@@ -165,12 +171,13 @@ namespace FivePD.Gamemode.Client
                 .IsSingleton();
 
             services
-                .RegisterType<RadialMenuService>()
-                .As<IRadialMenuService>();
-
-            services
                 .RegisterType<MenuService>()
                 .As<IMenuService>();
+
+            // TODO: I'm not sure about radial menus.
+            // services
+            //     .RegisterType<RadialMenuService>()
+            //     .As<IRadialMenuService>();
 
             services
                 .RegisterType<PedService>()
@@ -216,25 +223,28 @@ namespace FivePD.Gamemode.Client
             screenDecorService.Version = "v2.0.0";
             screenDecorService.ProtectionNotice = true;
             screenDecorService.BeginTextDraw();
+            localizationService.LocalizationChanged += (sender, locale) =>
+            {
+                screenDecorService.BuildText();
+            };
 
             var keybindService = this._serviceProvider.Resolve<IControlService>();
             keybindService.Register(this._serviceProvider);
 
-            var nuiService = this._serviceProvider.Resolve<INuiService>();
-            nuiService.RegisterEventHandlers();
-
-            var radialMenuService = this._serviceProvider.Resolve<IRadialMenuService>();
-            radialMenuService.RegisterEvents();
-            radialMenuService.CreateMenus();
-            radialMenuService.RegisterMenuKeybinds();
+            var uiService = this._serviceProvider.Resolve<IUIService>();
+            uiService.RegisterEventHandlers();
 
             var menuService = this._serviceProvider.Resolve<IMenuService>();
             menuService.RegisterEvents();
-            menuService.CreateMenus();
-            menuService.RegisterMenuKeybinds();
 
             var interactionService = this._serviceProvider.Resolve<IInteractionService>();
             interactionService.RegisterKeybinds();
+
+            var pedService = this._serviceProvider.Resolve<IPedService>();
+            pedService.RegisterEvents();
+
+            var trafficStopService = this._serviceProvider.Resolve<ITrafficStopService>();
+            trafficStopService.RegisterKeybinds();
         }
 
         private void OnTickAdd(Func<Task> task)

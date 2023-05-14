@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
+using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
-using FivePD.Gamemode.Client.Models;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
+
+#pragma warning disable S125
+#pragma warning disable SA1515
 
 namespace FivePD.Gamemode.Client.Services
 {
@@ -17,22 +15,22 @@ namespace FivePD.Gamemode.Client.Services
     public class RadialMenuService : IRadialMenuService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly INuiService _nuiService;
         private readonly IControlService _controlService;
+        private readonly IUIService _uiService;
         private readonly ITickService _tickService;
-        private readonly List<RadialMenu> _menus = new List<RadialMenu>();
+        // private readonly List<RadialMenu> _menus = new List<RadialMenu>();
         private bool _isAnyMenuVisible;
         private MouseCoordinate _lastMousePosition;
 
         /// <summary>Initializes a new instance of the <see cref="RadialMenuService"/> class.</summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-        /// <param name="nuiService">The <see cref="INuiService" /> to use.</param>
+        /// <param name="uiService">The <see cref="IUIService" /> to use.</param>
         /// <param name="controlService">The <see cref="IControlService" /> to use.</param>
         /// <param name="tickService">The <see cref="ITickService" /> to use.</param>
-        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, INuiService nuiService, IControlService controlService, ITickService tickService)
+        public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, IUIService uiService, IControlService controlService, ITickService tickService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
-            this._nuiService = nuiService;
+            this._uiService = uiService;
             this._controlService = controlService;
             this._tickService = tickService;
         }
@@ -40,119 +38,113 @@ namespace FivePD.Gamemode.Client.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this._eventHandlerDictionary.AddNuiEvent(Events.NuiEventType.IsNuiReady, new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                this.SendToNui();
-                cb.Invoke(string.Empty);
-            }));
-
-            this._nuiService.OnNuiHide += () =>
+            this._uiService.OnNuiHide += () =>
             {
                 this._isAnyMenuVisible = false;
-                this._tickService.OnTick -= this.DisableMouseMovement;
-                this._tickService.OnTick -= this.OnMouseMove;
+                this._tickService.OnTick -= this.DisableMouseMovementAsync;
+                this._tickService.OnTick -= this.OnMouseMoveAsync;
             };
         }
 
         /// <inheritdoc />
         public void SendToNui()
         {
-            var radialMenus = new JArray();
-            foreach (var menu in this._menus)
-            {
-                var items = new JArray();
-                foreach (var item in menu.Items)
-                {
-                    items.Add(new JObject
-                    {
-                        { "Title", item.Title },
-                        { "Hashcode", item.GetHashCode().ToString() },
-                    });
-                }
-
-                radialMenus.Add(new JObject
-                {
-                    { "Title", menu.Title },
-                    { "Id", menu.Id },
-                    { "Items", items },
-                });
-            }
-
-            this._nuiService.SendMessage(new JObject
-            {
-                { "type", Events.NuiEventType.SendRadialMenuObjects },
-                { "data", radialMenus },
-            });
+            // var radialMenus = new JArray();
+            // foreach (var menu in this._menus)
+            // {
+            //     var items = new JArray();
+            //     foreach (var item in menu.Items)
+            //     {
+            //         items.Add(new JObject
+            //         {
+            //             { "Title", item.Title },
+            //             { "Hashcode", item.GetHashCode().ToString() },
+            //         });
+            //     }
+            //
+            //     radialMenus.Add(new JObject
+            //     {
+            //         { "Title", menu.Title },
+            //         { "Id", menu.Id },
+            //         { "Items", items },
+            //     });
+            // }
+            //
+            // this._iuiService.SendMessage(new JObject
+            // {
+            //     { "type", Events.NuiEventType.SendRadialMenuObjects },
+            //     { "data", radialMenus },
+            // });
         }
 
         /// <inheritdoc />
         public void RegisterMenuKeybinds()
         {
-            foreach (var menu in this._menus)
-            {
-                void OnPress()
-                {
-                    this._isAnyMenuVisible = true;
-                    this._tickService.OnTick += this.DisableMouseMovement;
-                    this._tickService.OnTick += this.OnMouseMove;
-                    this._nuiService.ShowRadialMenu(menu.Id);
-                }
-
-                void OnRelease()
-                {
-                    this._nuiService.SendMessage(new JObject
-                    {
-                        { "type", Events.NuiEventType.RadialMenuControl },
-                        { "control", "select" },
-                    });
-                    this._nuiService.Hide();
-                }
-
-                this._controlService.RegisterKeybind($"fivepd:openRadialMenu_${menu.Id}", "-", menu.Key, OnPress, OnRelease);
-
-                foreach (var item in menu.Items)
-                {
-                    var eventName = $"fivepd:radialMenu:trigger_item_{item.GetHashCode()}";
-                    this._eventHandlerDictionary.AddNuiEvent(eventName, new Action<ExpandoObject, CallbackDelegate>((body, callback) => item.OnPress(callback)));
-                }
-            }
+            // foreach (var menu in this._menus)
+            // {
+            //     void OnPress()
+            //     {
+            //         this._isAnyMenuVisible = true;
+            //         this._tickService.OnTick += this.DisableMouseMovement;
+            //         this._tickService.OnTick += this.OnMouseMove;
+            //         this._iuiService.ShowRadialMenu(menu.Id);
+            //     }
+            //
+            //     void OnRelease()
+            //     {
+            //         this._iuiService.SendMessage(new JObject
+            //         {
+            //             { "type", Events.NuiEventType.RadialMenuControl },
+            //             { "control", "select" },
+            //         });
+            //         this._iuiService.Hide();
+            //     }
+            //
+            //     this._keybindService.RegisterKeybind($"fivepd:openRadialMenu_${menu.Id}", "-", menu.Key, OnPress, OnRelease);
+            //
+            //     foreach (var item in menu.Items)
+            //     {
+            //         var eventName = $"fivepd:radialMenu:trigger_item_{item.GetHashCode()}";
+            //         this._eventHandlerDictionary.AddUIEvent(eventName, new Action<ExpandoObject, CallbackDelegate>((body, callback) => item.OnPress(callback)));
+            //     }
+            // }
         }
 
         /// <inheritdoc />
         public void CreateMenus()
         {
-            var menu = new RadialMenu("8fb0e291-dec2-44bd-b3c0-fc33b882838c", "Test radial menu", "H", new List<RadialMenuItem>
-            {
-                new RadialMenuItem("Item 1/1", cb =>
-                {
-                    Debug.WriteLine("Pressed item 1/1");
-                    cb.Invoke(string.Empty);
-                }),
-                new RadialMenuItem("Item 1/2", cb =>
-                {
-                    Debug.WriteLine("Pressed item 1/2");
-                    cb.Invoke(string.Empty);
-                }),
-            });
-            this._menus.Add(menu);
-
-            var menu2 = new RadialMenu("4142429d-3ed1-437e-8b7c-91b4b2a628b9", "Test radial menu 2", "J", new List<RadialMenuItem>
-            {
-                new RadialMenuItem("Item 2/1", cb =>
-                {
-                    Debug.WriteLine("Pressed item 2/1");
-                    cb.Invoke(string.Empty);
-                }),
-                new RadialMenuItem("Item 2/2", cb =>
-                {
-                    Debug.WriteLine("Pressed item 2/2");
-                    cb.Invoke(string.Empty);
-                }),
-            });
-            this._menus.Add(menu2);
+            // var menu = new RadialMenu("8fb0e291-dec2-44bd-b3c0-fc33b882838c", "Test radial menu", "H", new List<RadialMenuItem>
+            // {
+            //     new RadialMenuItem("Item 1/1", cb =>
+            //     {
+            //         Debug.WriteLine("Pressed item 1/1");
+            //         cb.Invoke(string.Empty);
+            //     }),
+            //     new RadialMenuItem("Item 1/2", cb =>
+            //     {
+            //         Debug.WriteLine("Pressed item 1/2");
+            //         cb.Invoke(string.Empty);
+            //     }),
+            // });
+            // this._menus.Add(menu);
+            //
+            // var menu2 = new RadialMenu("4142429d-3ed1-437e-8b7c-91b4b2a628b9", "Test radial menu 2", "J", new List<RadialMenuItem>
+            // {
+            //     new RadialMenuItem("Item 2/1", cb =>
+            //     {
+            //         Debug.WriteLine("Pressed item 2/1");
+            //         cb.Invoke(string.Empty);
+            //     }),
+            //     new RadialMenuItem("Item 2/2", cb =>
+            //     {
+            //         Debug.WriteLine("Pressed item 2/2");
+            //         cb.Invoke(string.Empty);
+            //     }),
+            // });
+            // this._menus.Add(menu2);
         }
 
-        private Task DisableMouseMovement()
+        private Task DisableMouseMovementAsync()
         {
             Cfx.API.DisableControlAction(0, 24, true); // Disable attack
             Cfx.API.DisableControlAction(0, 25, true); // Disable aim
@@ -172,7 +164,7 @@ namespace FivePD.Gamemode.Client.Services
             return new MouseCoordinate(screenWidth * x, screenHeight * y);
         }
 
-        private Task OnMouseMove()
+        private Task OnMouseMoveAsync()
         {
             if (!this._isAnyMenuVisible)
             {
@@ -182,7 +174,7 @@ namespace FivePD.Gamemode.Client.Services
             var coordinates = this.GetMouseCoordinates();
             if (Cfx.API.IsDisabledControlJustPressed(2, 237))
             {
-                this._nuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.RadialMenuControl },
                     { "control", "down" },
@@ -192,7 +184,7 @@ namespace FivePD.Gamemode.Client.Services
             }
             else if (Cfx.API.IsDisabledControlJustReleased(2, 237))
             {
-                this._nuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.RadialMenuControl },
                     { "control", "up" },
@@ -203,7 +195,7 @@ namespace FivePD.Gamemode.Client.Services
 
             if (Math.Abs(coordinates.X - this._lastMousePosition.X) > 1 && Math.Abs(coordinates.Y - this._lastMousePosition.Y) > 1)
             {
-                this._nuiService.SendMessage(new JObject
+                this._uiService.SendMessage(new JObject
                 {
                     { "type", Events.NuiEventType.RadialMenuControl },
                     { "control", "up" },

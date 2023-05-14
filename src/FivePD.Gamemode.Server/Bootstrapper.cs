@@ -13,8 +13,8 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
-using FivePD.Gamemode.Server.Models.LooseDataSet;
 using FivePD.Gamemode.Server.Services;
+using FivePD.Gamemode.Server.UIModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sentry;
@@ -95,7 +95,7 @@ namespace FivePD.Gamemode.Server
             this._phases.Add(this.PerformAddonEnqueuePhase, false);
 
             // Begin running phases.
-            this.Tick += this.RunNextPhase;
+            this.Tick += this.RunNextPhaseAsync;
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace FivePD.Gamemode.Server
         /// </summary>
         /// <returns>A <see cref="Task"/> that completes
         /// when a phase is ran.</returns>
-        private Task RunNextPhase()
+        private Task RunNextPhaseAsync()
         {
             // Get the first phase that isn't completed (second parameter is not true)
             var phase = this._phases.FirstOrDefault(x => !x.Value);
@@ -141,7 +141,7 @@ namespace FivePD.Gamemode.Server
                 Debug.WriteLine("\n" + quote + "\n");
 
                 // Stop trying to run phases
-                this.Tick -= this.RunNextPhase;
+                this.Tick -= this.RunNextPhaseAsync;
                 return Task.CompletedTask;
             }
 
@@ -160,7 +160,7 @@ namespace FivePD.Gamemode.Server
             catch (Exception e)
             {
                 // Problem? Stop the gamemode.
-                this.Tick -= this.RunNextPhase;
+                this.Tick -= this.RunNextPhaseAsync;
 
                 // Log the problem
                 this._bootstrapLogger.Fatal("An error occurred during bootstrapping and the gamemode has halted to prevent further issues.");
@@ -280,6 +280,7 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton(this.Players);
             services.AddDbContext<DatabaseContext>();
 
+            services.AddSingleton<IHttpService, HttpService>();
             services.AddSingleton<IFileHandlerService, FileHandlerService>();
             services.AddSingleton<IConfigService, ConfigService>();
             services.AddSingleton<ICommandService, CommandService>();
@@ -287,7 +288,7 @@ namespace FivePD.Gamemode.Server
             services.AddTransient<IAddonLoggerService, AddonLoggerService>();
             services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
             services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
-            services.AddSingleton<IDevUtilitiesService, DevUtilitiesService>();
+            services.AddSingleton<IDevToolsService, DevToolsService>();
             services.AddSingleton<ILooseDataService, LooseDataService>();
             services.AddSingleton<IDepartmentService, DepartmentService>();
 
@@ -322,6 +323,12 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<PlayerDataService>();
             services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PlayerDataService>());
+
+            services.AddSingleton<IUIService, UIService>();
+
+            services.AddSingleton<MenuService>();
+            services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<MenuService>());
 
             // Find and register addons
             services.Scan(scan => scan
@@ -401,16 +408,8 @@ namespace FivePD.Gamemode.Server
                 service.RegisterEvents();
             }
 
-            // Check for dev mode. If enabled, register the utilities
-            if (Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true")
-            {
-                var devUtilsService = this._provider.GetService<IDevUtilitiesService>();
-
-                devUtilsService?.RegisterDevelopmentCommands();
-            }
-
             var tickQueueService = this._provider.GetService<ITickQueueService>();
-            this.Tick += tickQueueService!.OnTick;
+            this.Tick += tickQueueService!.OnTickAsync;
 
             span.Finish();
             this._bootstrapTransaction.Finish();
@@ -427,7 +426,7 @@ namespace FivePD.Gamemode.Server
             foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
             {
                 // Lazy load it
-                tickQueueService.Enqueue(() => addon.OnStarted());
+                tickQueueService.EnqueueAsync(() => addon.OnStartedAsync());
             }
         }
 
@@ -452,7 +451,7 @@ namespace FivePD.Gamemode.Server
             // Grab an instance of every addon entrypoint and "stop" it
             foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
             {
-                addon.OnStopped();
+                addon.OnStoppedAsync();
             }
 
             log?.Debug("Addon shutdown complete. Running gamemode disposal routine");
