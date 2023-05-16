@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
+using Control = FivePD.Gamemode.Common.Utilities.Control;
 
 #pragma warning disable CS0162
 
@@ -19,7 +22,7 @@ namespace FivePD.Gamemode.Client.Services
     {
         private readonly ITickService _tickService;
         private readonly IUIService _uiService;
-        private readonly List<HoldableKeybind> _actions = new List<HoldableKeybind>();
+        private readonly List<HoldableKeybind> _actions = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ControlService"/> class.
@@ -30,6 +33,7 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._tickService = tickService;
             this._uiService = uiService;
+            this.RegisterServerControls();
         }
 
         /// <inheritdoc />
@@ -117,7 +121,37 @@ namespace FivePD.Gamemode.Client.Services
             this.InternalRegisterKeybind(id, description, key, "MOUSE_BUTTON", onPress, onRelease);
         }
 
-        private void InternalRegisterKeybind(string id, string description, string key, string keyMapper, Action onPress = null, Action onRelease = null)
+        private void InternalRegisterMomentaryKeybind(Control.ClientControlResponse control)
+        {
+            void OnPress()
+            {
+                BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "press");
+            }
+
+            void OnRelease()
+            {
+                BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "release");
+            }
+
+            this.RegisterMomentaryKeybind(control.Id, control.Description, control.Key, control.TimeToHoldInMs, OnPress, OnRelease);
+        }
+
+        private void InternalRegisterKeybind(Control.ClientControlResponse control)
+        {
+            void OnPress()
+            {
+                BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "press");
+            }
+
+            void OnRelease()
+            {
+                BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "release");
+            }
+
+            this.InternalRegisterKeybind(control.Id, control.Description, control.Key, control.KeyMapper, OnPress, OnRelease);
+        }
+
+        private void InternalRegisterKeybind(string id, string description, string key, string keyMapper, Action onPress, Action onRelease = null)
         {
             Cfx.API.RegisterKeyMapping($"+{id}", description, keyMapper, key);
             Cfx.API.RegisterCommand(
@@ -136,6 +170,24 @@ namespace FivePD.Gamemode.Client.Services
                     onRelease?.Invoke();
                 }),
                 false);
+        }
+
+        private void RegisterServerControls()
+        {
+            BaseScript.TriggerServerEvent(Events.Control.GetAll, new Action<string>(serializedControls =>
+            {
+                var controls = JsonConvert.DeserializeObject<List<Control.ClientControlResponse>>(serializedControls);
+                foreach (var control in controls)
+                {
+                    if (control.TimeToHoldInMs > 0)
+                    {
+                        this.InternalRegisterMomentaryKeybind(control);
+                        continue;
+                    }
+
+                    this.InternalRegisterKeybind(control);
+                }
+            }));
         }
 
         private Task WaitForHoldAsync()

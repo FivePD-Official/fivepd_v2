@@ -49,5 +49,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuListItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Control.cs" />
   </ItemGroup>
 </Project>

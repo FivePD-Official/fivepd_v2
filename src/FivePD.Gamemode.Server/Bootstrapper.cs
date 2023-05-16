@@ -296,6 +296,10 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<UIService>());
 
+            services.AddSingleton<ControlService>();
+            services.AddSingleton<IControlService>(provider => provider.GetRequiredService<ControlService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ControlService>());
+
             services.AddSingleton<LocalizationService>();
             services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LocalizationService>());
