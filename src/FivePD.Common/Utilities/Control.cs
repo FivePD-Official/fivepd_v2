@@ -37,8 +37,6 @@ public class Control
 
     public class ClientControlResponse
     {
-        public int Hashcode { get; init; }
-
         public string Id { get; init; }
 
         public string Description { get; init; }

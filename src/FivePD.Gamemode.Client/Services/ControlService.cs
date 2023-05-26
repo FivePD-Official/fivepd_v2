@@ -73,13 +73,13 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void RegisterKeybind(string id, string description, string key, Action onPress = null, Action onRelease = null)
+        public void RegisterKeybind(string id, string key, string description, Action onPress = null, Action onRelease = null)
         {
-            this.InternalRegisterKeybind(id, description, key, "KEYBOARD", onPress, onRelease);
+            this.InternalRegisterKeybind(id, key, description, "KEYBOARD", onPress, onRelease);
         }
 
         /// <inheritdoc />
-        public void RegisterMomentaryKeybind(string id, string description, string key, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
+        public void RegisterMomentaryKeybind(string id, string key, string description, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
         {
             var holdableKeybind = new HoldableKeybind(onPress, (int)Math.Floor(timeToHoldInMs * 0.05));
             var isInvokable = false;
@@ -112,13 +112,13 @@ namespace FivePD.Gamemode.Client.Services
                 this._actions.Remove(holdableKeybind);
             }
 
-            this.InternalRegisterKeybind(id, description, key, "KEYBOARD", HoldableOnPress, HoldableOnRelease);
+            this.InternalRegisterKeybind(id, key, description, "KEYBOARD", HoldableOnPress, HoldableOnRelease);
         }
 
         /// <inheritdoc />
-        public void RegisterMouseKeybind(string id, string description, string key, Action onPress = null, Action onRelease = null)
+        public void RegisterMouseKeybind(string id, string key, string description, Action onPress = null, Action onRelease = null)
         {
-            this.InternalRegisterKeybind(id, description, key, "MOUSE_BUTTON", onPress, onRelease);
+            this.InternalRegisterKeybind(id, key, description, "MOUSE_BUTTON", onPress, onRelease);
         }
 
         private void InternalRegisterMomentaryKeybind(Control.ClientControlResponse control)
@@ -133,7 +133,7 @@ namespace FivePD.Gamemode.Client.Services
                 BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "release");
             }
 
-            this.RegisterMomentaryKeybind(control.Id, control.Description, control.Key, control.TimeToHoldInMs, OnPress, OnRelease);
+            this.RegisterMomentaryKeybind(control.Id, control.Key, control.Description, control.TimeToHoldInMs, OnPress, OnRelease);
         }
 
         private void InternalRegisterKeybind(Control.ClientControlResponse control)
@@ -148,10 +148,10 @@ namespace FivePD.Gamemode.Client.Services
                 BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "release");
             }
 
-            this.InternalRegisterKeybind(control.Id, control.Description, control.Key, control.KeyMapper, OnPress, OnRelease);
+            this.InternalRegisterKeybind(control.Id, control.Key, control.Description, control.KeyMapper, OnPress, OnRelease);
         }
 
-        private void InternalRegisterKeybind(string id, string description, string key, string keyMapper, Action onPress, Action onRelease = null)
+        private void InternalRegisterKeybind(string id, string key, string description, string keyMapper, Action onPress, Action onRelease = null)
         {
             Cfx.API.RegisterKeyMapping($"+{id}", description, keyMapper, key);
             Cfx.API.RegisterCommand(

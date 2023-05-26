@@ -9,78 +9,77 @@ using FivePD.Gamemode.Server.Interfaces;
 
 #pragma warning disable
 
-namespace FivePD.Gamemode.Server.Services
+namespace FivePD.Gamemode.Server.Services;
+
+/// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IControlService" />
+public class ControlService : IControlService, IServiceWithEvents
 {
-    /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IControlService" />
-    public class ControlService : IControlService, IServiceWithEvents
+    private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly List<Control> _controls = new();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ControlService"/> class.
+    /// </summary>
+    public ControlService(EventHandlerDictionary eventHandlerDictionary)
     {
-        private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly List<Control> _controls = new();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ControlService"/> class.
-        /// </summary>
-        public ControlService(EventHandlerDictionary eventHandlerDictionary)
-        {
-            this._eventHandlerDictionary = eventHandlerDictionary;
-        }
+        this._eventHandlerDictionary = eventHandlerDictionary;
+    }
         
-        /// <inheritdoc />
-        public void RegisterEvents()
-        {
-            this.RegisterKeybind("test", "test", "J", (_) => Debug.WriteLine("test"));
-            this._eventHandlerDictionary[Events.Control.GetAll] += new Action<NetworkCallbackDelegate>(this.OnGetAll);
-        }
+    /// <inheritdoc />
+    public void RegisterEvents()
+    {
+        this.RegisterKeybind("test", "test", "J", (_) => Debug.WriteLine("test"));
+        this._eventHandlerDictionary[Events.Control.GetAll] += new Action<NetworkCallbackDelegate>(this.OnGetAll);
+    }
 
-        /// <inheritdoc />
-        public void RegisterKeybind(string id, string description, string key, Action<Player> onPress = null, Action<Player> onRelease = null)
-        {
-            this.RegisterControl(id, description, key, "KEYBOARD", onPress, onRelease);
-        }
+    /// <inheritdoc />
+    public void RegisterKeybind(string id, string key, string description, Action<Player> onPress = null, Action<Player> onRelease = null)
+    {
+        this.RegisterControl(id, key, description, "KEYBOARD", onPress, onRelease);
+    }
 
-        /// <inheritdoc />
-        public void RegisterMomentaryKeybind(string id, string description, string key, int timeToHoldInMs = 0, Action<Player> onPress = null, Action<Player> onRelease = null)
-        {
-            this.RegisterControl(id, description, key, "KEYBOARD", onPress, onRelease, timeToHoldInMs);
-        }
+    /// <inheritdoc />
+    public void RegisterMomentaryKeybind(string id, string key, string description, int timeToHoldInMs = 0, Action<Player> onPress = null, Action<Player> onRelease = null)
+    {
+        this.RegisterControl(id, key, description, "KEYBOARD", onPress, onRelease, timeToHoldInMs);
+    }
 
-        /// <inheritdoc />
-        public void RegisterMouseKeybind(string id, string description, string key, Action<Player> onPress = null, Action<Player> onRelease = null)
-        {
-            this.RegisterControl(id, description, key, "MOUSE_BUTTON", onPress, onRelease);
-        }
+    /// <inheritdoc />
+    public void RegisterMouseKeybind(string id, string key, string description, Action<Player> onPress = null, Action<Player> onRelease = null)
+    {
+        this.RegisterControl(id, key, description, "MOUSE_BUTTON", onPress, onRelease);
+    }
 
-        private void RegisterControl(string id, string description, string key, string keyMapper, Action<Player> onPress = null, Action<Player> onRelease = null, int timeToHoldInMs = 0)
+    private void RegisterControl(string id, string key, string description, string keyMapper, Action<Player> onPress = null, Action<Player> onRelease = null, int timeToHoldInMs = 0)
+    {
+        this._controls.Add(new Control
         {
-            this._controls.Add(new Control
-            {
-                Id = id,
-                Description = description,
-                Key = key,
-                KeyMapper = keyMapper,
-                OnPress = onPress,
-                OnRelease = onRelease,
-                TimeToHoldInMs = timeToHoldInMs,
-            });
-            this._eventHandlerDictionary[Events.Control.Trigger] += new Action<Player, string, string>(this.OnControlTrigger);
-        }
+            Id = id,
+            Description = description,
+            Key = key,
+            KeyMapper = keyMapper,
+            OnPress = onPress,
+            OnRelease = onRelease,
+            TimeToHoldInMs = timeToHoldInMs,
+        });
+        this._eventHandlerDictionary[Events.Control.Trigger] += new Action<Player, string, string>(this.OnControlTrigger);
+    }
 
-        private void OnControlTrigger([FromSource] Player player, string triggeredId, string type)
+    private void OnControlTrigger([FromSource] Player player, string triggeredId, string type)
+    {
+        var control = this._controls.FirstOrDefault(x => x.Id == triggeredId);
+        if (type == "press")
         {
-            var control = this._controls.FirstOrDefault(x => x.Id == triggeredId);
-            if (type == "press")
-            {
-                control?.OnPress?.Invoke(player);
-            }
-            else
-            {
-                control?.OnRelease?.Invoke(player);
-            }
+            control?.OnPress?.Invoke(player);
         }
+        else
+        {
+            control?.OnRelease?.Invoke(player);
+        }
+    }
 
-        private void OnGetAll(NetworkCallbackDelegate networkCallbackDelegate)
-        {
-            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(this._controls.Select(x => x.ToClientResponse())));
-        }
+    private void OnGetAll(NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(this._controls.Select(x => x.ToClientResponse())));
     }
 }

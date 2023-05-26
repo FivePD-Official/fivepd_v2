@@ -34,7 +34,11 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     /// <inheritdoc />
     public void RegisterEvents()
     {
-        this._controlService.RegisterKeybind("fivepd::tryAlertEntityAsync", string.Empty, "E", player => this.TryAlertEntityAsync(player));
+        this._controlService.RegisterKeybind(
+            Controls.TryAlertEntityAsync.Id,
+            Controls.TryAlertEntityAsync.Description,
+            Controls.TryAlertEntityAsync.Key,
+            player => this.TryAlertEntityAsync(player));
     }
 
     /// <inheritdoc />
@@ -45,7 +49,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
         {
             return;
         }
-        
+
         if (await ped.Properties.IsDead)
         {
             // TODO
