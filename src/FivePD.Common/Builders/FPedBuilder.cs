@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace FivePD.Common.Builders
 {
     /// <summary>
-    /// Used for the construction of <see cref="FPed"/> objects.
+    /// Used for the construction of <see cref="CommonFPed"/> objects.
     /// </summary>
     public class FPedBuilder
     {
@@ -114,12 +114,12 @@ namespace FivePD.Common.Builders
         }
 
         /// <summary>
-        /// Initializes a new <see cref="FPed"/> instance.
+        /// Initializes a new <see cref="CommonFPed"/> instance.
         /// </summary>
-        /// <returns>Returns the newly created <see cref="FPed"/> instance.</returns>
-        public FPed Build()
+        /// <returns>Returns the newly created <see cref="CommonFPed"/> instance.</returns>
+        public CommonFPed Build()
         {
-            return new FPed(this);
+            return new CommonFPed(this);
         }
     }
 }

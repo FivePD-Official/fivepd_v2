@@ -10,7 +10,7 @@ using FivePD.Common.Models;
 namespace FivePD.Common.Builders
 {
     /// <summary>
-    /// Used for the construction of <see cref="FVehicle"/> objects.
+    /// Used for the construction of <see cref="CommonFVehicle"/> objects.
     /// </summary>
     public class FVehicleBuilder
     {
@@ -80,12 +80,12 @@ namespace FivePD.Common.Builders
         }
 
         /// <summary>
-        /// Initializes a new <see cref="FVehicle"/> instance.
+        /// Initializes a new <see cref="CommonFVehicle"/> instance.
         /// </summary>
-        /// <returns>Returns the newly created <see cref="FVehicle"/> instance.</returns>
-        public FVehicle Build()
+        /// <returns>Returns the newly created <see cref="CommonFVehicle"/> instance.</returns>
+        public CommonFVehicle Build()
         {
-            return new FVehicle(this);
+            return new CommonFVehicle(this);
         }
     }
 }

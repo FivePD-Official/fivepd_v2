@@ -9,7 +9,7 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface IVehicleService
     {
         /// <summary>
-        /// Generates a vehicle's <see cref="FVehicle"/> object.
+        /// Generates a vehicle's <see cref="CommonFVehicle"/> object.
         /// </summary>
         /// <param name="vehicle">The vehicle that's data need to be generated and stored on the server.</param>
         public void GenerateVehicle(Vehicle vehicle);

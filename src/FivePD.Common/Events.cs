@@ -27,6 +27,14 @@ namespace FivePD.Common
             public const string Generate = "fivepd:ped:generate";
 
             public const string Search = "fivepd:ped:search";
+            
+            public const string GetProperty = "fivepd:ped:getProperty";
+
+            public const string SetProperty = "fivepd:ped:setProperty";
+
+            public const string CreateBlip = "fivepd:ped:createBlip";
+
+            public const string RemoveBlips = "fivepd:ped:removeBlips";
         }
 
         public abstract class Vehicle
@@ -192,6 +200,16 @@ namespace FivePD.Common
             public const string GetAll = "fivepd:control:getAll";
             
             public const string Trigger = "fivepd:control:trigger";
+        }
+
+        public abstract class Interaction
+        {
+            public const string GetTargetedEntity = "fivepd:interaction:getTargetedEntity";
+        }
+
+        public abstract class Generic
+        {
+            public const string Callback = "fivepd:generic:callback";
         }
     }
 }

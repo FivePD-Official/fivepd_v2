@@ -28,29 +28,29 @@ namespace FivePD.Gamemode.Server.Services
         /// <inheritdoc />
         public void RegisterEvents()
         {
-            this.RegisterKeybind("test", "test", "J", () => Debug.WriteLine("test"));
+            this.RegisterKeybind("test", "test", "J", (_) => Debug.WriteLine("test"));
             this._eventHandlerDictionary[Events.Control.GetAll] += new Action<NetworkCallbackDelegate>(this.OnGetAll);
         }
 
         /// <inheritdoc />
-        public void RegisterKeybind(string id, string description, string key, Action onPress = null, Action onRelease = null)
+        public void RegisterKeybind(string id, string description, string key, Action<Player> onPress = null, Action<Player> onRelease = null)
         {
             this.RegisterControl(id, description, key, "KEYBOARD", onPress, onRelease);
         }
 
         /// <inheritdoc />
-        public void RegisterMomentaryKeybind(string id, string description, string key, int timeToHoldInMs = 0, Action onPress = null, Action onRelease = null)
+        public void RegisterMomentaryKeybind(string id, string description, string key, int timeToHoldInMs = 0, Action<Player> onPress = null, Action<Player> onRelease = null)
         {
             this.RegisterControl(id, description, key, "KEYBOARD", onPress, onRelease, timeToHoldInMs);
         }
 
         /// <inheritdoc />
-        public void RegisterMouseKeybind(string id, string description, string key, Action onPress = null, Action onRelease = null)
+        public void RegisterMouseKeybind(string id, string description, string key, Action<Player> onPress = null, Action<Player> onRelease = null)
         {
             this.RegisterControl(id, description, key, "MOUSE_BUTTON", onPress, onRelease);
         }
 
-        private void RegisterControl(string id, string description, string key, string keyMapper, Action onPress = null, Action onRelease = null, int timeToHoldInMs = 0)
+        private void RegisterControl(string id, string description, string key, string keyMapper, Action<Player> onPress = null, Action<Player> onRelease = null, int timeToHoldInMs = 0)
         {
             this._controls.Add(new Control
             {
@@ -62,18 +62,20 @@ namespace FivePD.Gamemode.Server.Services
                 OnRelease = onRelease,
                 TimeToHoldInMs = timeToHoldInMs,
             });
-            this._eventHandlerDictionary[Events.Control.Trigger] += new Action<string, string>((triggeredId, type) =>
+            this._eventHandlerDictionary[Events.Control.Trigger] += new Action<Player, string, string>(this.OnControlTrigger);
+        }
+
+        private void OnControlTrigger([FromSource] Player player, string triggeredId, string type)
+        {
+            var control = this._controls.FirstOrDefault(x => x.Id == triggeredId);
+            if (type == "press")
             {
-                var control = this._controls.FirstOrDefault(x => x.Id == triggeredId);
-                if (type == "press")
-                {
-                    control?.OnPress?.Invoke();
-                }
-                else
-                {
-                    control?.OnRelease?.Invoke();
-                }
-            });
+                control?.OnPress?.Invoke(player);
+            }
+            else
+            {
+                control?.OnRelease?.Invoke(player);
+            }
         }
 
         private void OnGetAll(NetworkCallbackDelegate networkCallbackDelegate)

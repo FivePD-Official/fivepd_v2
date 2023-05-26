@@ -9,6 +9,7 @@ using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
+using FivePD.Gamemode.Common.Utilities;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -90,7 +91,7 @@ namespace FivePD.Gamemode.Client.Services
                 return;
             }
 
-            var stoppedVehicleBlip = stoppedVehicle.CreateBlip(BlipSprite.PersonalVehicleCar, FBlipColor.LemonGreen, this._localizationService.Get("TRAFFIC_STOP.STOPPED_VEHICLE"));
+            var stoppedVehicleBlip = stoppedVehicle.CreateBlip(FBlipSprite.PersonalVehicleCar, FBlipColor.LemonGreen, this._localizationService.Get("TRAFFIC_STOP.STOPPED_VEHICLE"));
             stoppedVehicleBlip.IsFlashing = true;
             this._vehicleService.GenerateVehicle(stoppedVehicle);
 

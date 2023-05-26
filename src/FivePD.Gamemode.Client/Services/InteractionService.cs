@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using CitizenFX.Core;
+using FivePD.Common;
+using FivePD.Common.Builders;
+using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Interfaces;
-using FivePD.Gamemode.Client.Utilities;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
@@ -10,37 +15,31 @@ namespace FivePD.Gamemode.Client.Services
     public class InteractionService : IInteractionService
     {
         private const float BaseInteractionDistance = 10.0f;
-        private readonly IControlService _controlService;
-        private readonly IDevUtilitiesService _devUtilitiesService;
         private readonly IPedService _pedService;
+        private readonly IVehicleService _vehicleService;
+        private readonly EventHandlerDictionary _eventHandlerDictionary;
 
         /// <summary>
         /// Initializes a new instance of
         /// the <see cref="InteractionService"/> class.
         /// </summary>
-        /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
-        /// <param name="devUtilitiesService">The <see cref="IDevUtilitiesService"/> to use.</param>
         /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
+        /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
+        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
         public InteractionService(
-            IControlService controlService,
-            IDevUtilitiesService devUtilitiesService,
-            IPedService pedService)
+            IPedService pedService,
+            IVehicleService vehicleService,
+            EventHandlerDictionary eventHandlerDictionary)
         {
-            this._controlService = controlService;
-            this._devUtilitiesService = devUtilitiesService;
             this._pedService = pedService;
+            this._vehicleService = vehicleService;
+            this._eventHandlerDictionary = eventHandlerDictionary;
         }
 
         /// <inheritdoc />
         public void RegisterKeybinds()
         {
-            // Registers interaction keybind
-            this._controlService.RegisterMomentaryKeybind(
-                KeybindIdentifiers.Interact,
-                "Interact with world",
-                "E",
-                500,
-                this.TryAlertEntity);
+            this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
         }
 
         /// <inheritdoc/>
@@ -80,40 +79,6 @@ namespace FivePD.Gamemode.Client.Services
             }
 
             return null;
-        }
-
-        /// <inheritdoc />
-        public void TryAlertEntity()
-        {
-            // Let's try and get a ped first.
-            var ped = this.GetLikelyTargetEntity<Ped>();
-
-            if (ped != null)
-            {
-                if (ped.IsDead)
-                {
-                    // TODO
-                    return;
-                }
-
-                if (ped.IsInVehicle())
-                {
-                    // Targeting a ped in a vehicle.
-                    this._pedService.PedLeaveVehicleWithHandsUp(ped);
-                    return;
-                }
-
-                this._pedService.StopPed(ped);
-            }
-
-            // Let's try and get a vehicle.
-            var vehicle = this.GetLikelyTargetEntity<Vehicle>();
-
-            if (vehicle != null)
-            {
-                // Targeting a vehicle.
-                // TODO: Implement this.
-            }
         }
 
         private static Entity GetLikelyTargetEntityInternal(bool preferPeds)
@@ -209,6 +174,36 @@ namespace FivePD.Gamemode.Client.Services
                 Y = (float)((float)Math.Cos(num) * (double)num3),
                 Z = (float)Math.Sin(num2),
             };
+        }
+
+        #pragma warning disable
+        private void GetTargetedEntityServer(string eventId, string type)
+        {
+            var possibleEntity = GetLikelyTargetEntityInternal(type == "ped");
+            if (possibleEntity is null)
+            {
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, "-1");
+                return;
+            }
+            
+            // We need to make sure the entity is of the correct type.
+            // If it's not, then we'll return null.
+            if (type == "ped" && Cfx.API.IsEntityAPed(possibleEntity.Handle))
+            {
+                this._pedService.GeneratePed((Ped)possibleEntity);
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, possibleEntity.NetworkId.ToString());
+                return;
+            }
+            
+            // TODO: seems not to be working
+            if (type == "vehicle" && Cfx.API.IsEntityAVehicle(possibleEntity.Handle))
+            {
+                this._vehicleService.GenerateVehicle((Vehicle)possibleEntity);
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, possibleEntity.NetworkId.ToString());
+                return;
+            }
+            
+            BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, "-1");
         }
     }
 }

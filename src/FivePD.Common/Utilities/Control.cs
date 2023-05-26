@@ -1,4 +1,5 @@
 ﻿using System;
+using CitizenFX.Core;
 using FivePD.Common.Attributes;
 
 #pragma warning disable
@@ -16,9 +17,9 @@ public class Control
 
     public string KeyMapper { get; init; }
 
-    public Action OnPress { get; init; } = null;
+    public Action<Player> OnPress { get; init; } = null;
 
-    public Action OnRelease { get; init; } = null;
+    public Action<Player> OnRelease { get; init; } = null;
     
     public int TimeToHoldInMs { get; init; } = 0;
 

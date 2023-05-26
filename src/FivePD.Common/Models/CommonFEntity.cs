@@ -4,13 +4,13 @@
     /// The base entity class for
     /// the gamemode.
     /// </summary>
-    public class FEntity
+    public class CommonFEntity
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FEntity"/> class.
+        /// Initializes a new instance of the <see cref="CommonFEntity"/> class.
         /// </summary>
         /// <param name="networkId">The entity's network ID.</param>
-        protected FEntity(int networkId)
+        protected CommonFEntity(int networkId)
         {
             this.NetworkId = networkId;
         }

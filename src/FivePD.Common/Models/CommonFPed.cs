@@ -10,13 +10,13 @@ namespace FivePD.Common.Models
      * functionality for easier interactions
      * with the framework.</summary>
      */
-    public class FPed : FEntity
+    public class CommonFPed : CommonFEntity
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FPed"/> class.
+        /// Initializes a new instance of the <see cref="CommonFPed"/> class.
         /// </summary>
         /// <param name="builder">The builder object that'll be used to initialize this instance.</param>
-        public FPed(FPedBuilder builder)
+        public CommonFPed(FPedBuilder builder)
             : base(builder.NetworkId)
         {
             this.Gender = builder.Gender;
@@ -27,11 +27,11 @@ namespace FivePD.Common.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FPed"/> class
+        /// Initializes a new instance of the <see cref="CommonFPed"/> class
         /// from an existing Cfx handle.
         /// </summary>
         /// <param name="networkId">The entity's network ID.</param>
-        public FPed(int networkId)
+        public CommonFPed(int networkId)
             : base(networkId)
         {
         }

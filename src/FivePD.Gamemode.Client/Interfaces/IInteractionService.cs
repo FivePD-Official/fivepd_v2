@@ -14,12 +14,6 @@ namespace FivePD.Gamemode.Client.Interfaces
         public void RegisterKeybinds();
 
         /// <summary>
-        /// Trys to locate a target entity
-        /// and alert them to stop.
-        /// </summary>
-        public void TryAlertEntity();
-
-        /// <summary>
         /// Attempts to locate an entity based
         /// on factors such as the player's forward
         /// position, camera position, and target entity.

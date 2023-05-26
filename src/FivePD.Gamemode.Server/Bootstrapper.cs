@@ -312,6 +312,14 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<EntityService>());
 
+            services.AddSingleton<EventService>();
+            services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<EventService>());
+
+            services.AddSingleton<InteractionService>();
+            services.AddSingleton<IInteractionService>(provider => provider.GetRequiredService<InteractionService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<InteractionService>());
+
             services.AddSingleton<PedService>();
             services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PedService>());
