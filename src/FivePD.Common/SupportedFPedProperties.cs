@@ -11,4 +11,6 @@ public sealed class SupportedFPedProperties
     public const string IsInVehicle = "IsInVehicle";
 
     public const string BlockPermanentEvents = "BlockPermanentEvents";
+
+    public const string SetKeepTask = "SetKeepTask";
 }

@@ -28,7 +28,6 @@ public class ControlService : IControlService, IServiceWithEvents
     /// <inheritdoc />
     public void RegisterEvents()
     {
-        this.RegisterKeybind("test", "test", "J", (_) => Debug.WriteLine("test"));
         this._eventHandlerDictionary[Events.Control.GetAll] += new Action<NetworkCallbackDelegate>(this.OnGetAll);
     }
 

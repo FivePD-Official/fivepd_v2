@@ -16,6 +16,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     private readonly IVehicleService _vehicleService;
     private readonly IControlService _controlService;
     private readonly IEventService _eventService;
+    private readonly ITickQueueService _tickQueueService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InteractionService"/> class.
@@ -23,12 +24,13 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
     /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
-    public InteractionService(IPedService pedService, IVehicleService vehicleService, IControlService controlService, IEventService eventService)
+    public InteractionService(IPedService pedService, IVehicleService vehicleService, IControlService controlService, IEventService eventService, ITickQueueService tickQueueService)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
         this._controlService = controlService;
         this._eventService = eventService;
+        this._tickQueueService = tickQueueService;
     }
 
     /// <inheritdoc />
@@ -38,12 +40,13 @@ public class InteractionService : IInteractionService, IServiceWithEvents
             Controls.TryAlertEntityAsync.Id,
             Controls.TryAlertEntityAsync.Description,
             Controls.TryAlertEntityAsync.Key,
-            player => this.TryAlertEntityAsync(player));
+            player => this._tickQueueService.EnqueueAsync(() => this.TryAlertEntityAsync(player)));
     }
 
     /// <inheritdoc />
     public async Task TryAlertEntityAsync(Player player)
     {
+        Debug.WriteLine("invoked: TryAlertEntityAsync");
         var ped = await this.GetTargetedEntityAsync<FPed>(player);
         if (ped is null)
         {
@@ -62,9 +65,14 @@ public class InteractionService : IInteractionService, IServiceWithEvents
             // TODO this._pedService.PedLeaveVehicleWithHandsUp(ped);
             return;
         }
-
+        
         // TODO this._pedService.StopPed(ped);
         ped.Properties.CreateBlip(FBlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
+
+        ped.Properties.SetKeepTask(true);
+        ped.Properties.BlockPermanentEvents(true);
+        ped.Task.StandStill(-1);
+        ped.Task.TurnTo(player.Character);
 
         Debug.WriteLine($"Alerted ped with net ID of {ped.GetFPed.NetworkId}");
     }

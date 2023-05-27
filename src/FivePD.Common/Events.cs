@@ -35,6 +35,8 @@ namespace FivePD.Common
             public const string CreateBlip = "fivepd:ped:createBlip";
 
             public const string RemoveBlips = "fivepd:ped:removeBlips";
+
+            public const string SetTask = "fivepd:ped:setTask";
         }
 
         public abstract class Vehicle

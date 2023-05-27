@@ -4,6 +4,7 @@ using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
 using FivePD.Common.Requests;
+using FivePD.Common.Requests.PedTasks;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
@@ -33,6 +34,7 @@ public class PedService : IPedService
         this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<string, int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Ped.CreateBlip] += new Action<string>(this.CreateBlip);
         this._eventHandlerDictionary[Events.Ped.RemoveBlips] += new Action<string>(this.RemoveBlips);
+        this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);
     }
 
     /// <inheritdoc />
@@ -92,6 +94,12 @@ public class PedService : IPedService
                 ped.BlockPermanentEvents = bool.Parse(value);
                 break;
             }
+
+            case SupportedFPedProperties.SetKeepTask:
+            {
+                ped.AlwaysKeepTask = bool.Parse(value);
+                break;
+            }
         }
     }
 
@@ -107,6 +115,40 @@ public class PedService : IPedService
         var request = JsonConvert.DeserializeObject<RemoveBlipsRequest>(serializedRequest);
         var ped = this.FindPed(request.NetworkId);
         ped?.RemoveBlips();
+    }
+
+    private void SetTask(string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<SetPedTaskRequest>(serializedRequest);
+        var ped = this.FindPed(request.NetworkId);
+        if (ped is null)
+        {
+            return;
+        }
+
+        switch (request.Task)
+        {
+            case SupportedFPedTasks.StandStill:
+            {
+                var args = JsonConvert.DeserializeObject<StandStill>(request.Args);
+                ped.Task.StandStill(args.Duration);
+                break;
+            }
+
+            case SupportedFPedTasks.TurnToEntity:
+            {
+                var args = JsonConvert.DeserializeObject<TurnToEntity>(request.Args);
+                ped.Task.TurnTo(Entity.FromNetworkId(args.EntityNetworkId), args.Duration);
+                break;
+            }
+
+            case SupportedFPedTasks.TurnToPosition:
+            {
+                var args = JsonConvert.DeserializeObject<TurnToPosition>(request.Args);
+                ped.Task.TurnTo(args.Position, args.Duration);
+                break;
+            }
+        }
     }
 
     private Ped FindPed(int networkId)

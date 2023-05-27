@@ -60,7 +60,7 @@ public class ControlService : IControlService
                 keybindActions.Add(() => methodInfo.Invoke(obj, null));
             }
 
-            this.RegisterKeybind(attribute.Id, attribute.Description, attribute.Key, () =>
+            this.RegisterKeybind(attribute.Id, attribute.Key, attribute.Description, () =>
             {
                 foreach (var action in keybindActions)
                 {

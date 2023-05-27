@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -24,7 +23,7 @@ public class EventService : IEventService, IServiceWithEvents
 
     public void RegisterEvents()
     {
-        this._eventHandlerDictionary[Events.Generic.Callback] += new Action<string, string>((eventId, v) =>
+        this._eventHandlerDictionary[Events.Generic.Callback] += new Action<string, string>((eventId, value) =>
         {
             this._events.TryRemove(eventId, out var action);
             if (action is null)
@@ -32,7 +31,7 @@ public class EventService : IEventService, IServiceWithEvents
                 return;
             }
 
-            action.Invoke(v);
+            action.Invoke(value);
         });
     }
 
