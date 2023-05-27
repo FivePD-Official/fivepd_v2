@@ -16,7 +16,7 @@ namespace FivePD.Common.Models
         /// Initializes a new instance of the <see cref="CommonFPed"/> class.
         /// </summary>
         /// <param name="builder">The builder object that'll be used to initialize this instance.</param>
-        public CommonFPed(FPedBuilder builder)
+        public CommonFPed(CommonFPedBuilder builder)
             : base(builder.NetworkId)
         {
             this.Gender = builder.Gender;

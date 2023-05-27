@@ -32,7 +32,7 @@ namespace FivePD.Gamemode.Client.Services
                 this._pedService.GeneratePed(ped);
             }
 
-            var fVehicleBuilder = new FVehicleBuilder(vehicle.NetworkId)
+            var fVehicleBuilder = new CommonFVehicleBuilder(vehicle.NetworkId)
                 .WithOwner(vehicle.Driver.NetworkId)
                 .WithPassengers(vehicle.Occupants.Select(ped => ped.NetworkId).ToList())
                 .WithColor(vehicle.GetColorName())

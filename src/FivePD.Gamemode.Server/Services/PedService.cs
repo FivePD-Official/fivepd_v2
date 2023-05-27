@@ -47,7 +47,7 @@ namespace FivePD.Gamemode.Server.Services
 
         private void GeneratePed(string serializedFPedBuilder)
         {
-            var fPedBuilder = JsonConvert.DeserializeObject<FPedBuilder>(serializedFPedBuilder);
+            var fPedBuilder = JsonConvert.DeserializeObject<CommonFPedBuilder>(serializedFPedBuilder);
             if (fPedBuilder is null || this._peds.ContainsKey(fPedBuilder.NetworkId))
             {
                 return;

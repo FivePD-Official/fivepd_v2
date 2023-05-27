@@ -16,7 +16,7 @@ namespace FivePD.Common.Models
         /// Initializes a new instance of the <see cref="CommonFVehicle"/> class.
         /// </summary>
         /// <param name="builder">The builder object that'll be used to initialize this instance.</param>
-        public CommonFVehicle(FVehicleBuilder builder)
+        public CommonFVehicle(CommonFVehicleBuilder builder)
         {
             this.NetworkId = builder.NetworkId;
             this.LicensePlate = builder.LicensePlate;

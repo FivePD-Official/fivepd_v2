@@ -42,7 +42,7 @@ namespace FivePD.Gamemode.Server.Services
 
         private void GenerateVehicle(string serializedFVehicleBuilder)
         {
-            var fVehicleBuilder = JsonConvert.DeserializeObject<FVehicleBuilder>(serializedFVehicleBuilder);
+            var fVehicleBuilder = JsonConvert.DeserializeObject<CommonFVehicleBuilder>(serializedFVehicleBuilder);
             if (fVehicleBuilder is null || this._vehicles.ContainsKey(fVehicleBuilder.NetworkId))
             {
                 return;

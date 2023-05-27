@@ -54,7 +54,7 @@ public class PedService : IPedService
     /// <inheritdoc />
     public void GeneratePed(Ped ped)
     {
-        var fPedBuilder = new FPedBuilder(ped.NetworkId)
+        var fPedBuilder = new CommonFPedBuilder(ped.NetworkId)
             .WithGender((FGender)ped.Gender);
         BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
     }
