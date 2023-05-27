@@ -3,7 +3,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
 using FivePD.Common.Requests;
-using FivePD.Common.Requests.PedTasks;
+using FivePD.Gamemode.Client.Requests;
 using FivePD.Gamemode.Common.Utilities;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
@@ -171,7 +171,7 @@ public sealed class FPed : FEntity
         /// Invokes the "ped.Task.StandStill" native.
         /// </summary>
         /// <param name="duration">The duration in milliseconds. If -1, the ped will stand still until the task is cleared.</param>
-        public void StandStill(int duration) => this.SetTask(SupportedFPedTasks.StandStill, new StandStill { Duration = duration });
+        public void StandStill(int duration) => this.SetTask(SupportedFPedTasks.StandStill, new PedTasks.StandStill { Duration = duration });
 
         /// <summary>
         /// Invokes the "ped.Task.TurnTo" native.
@@ -180,7 +180,7 @@ public sealed class FPed : FEntity
         /// <param name="duration">The duration in milliseconds. If -1, the ped will turn until the task is cleared.</param>
         public void TurnTo(Entity entity, int duration = -1) => this.SetTask(
             SupportedFPedTasks.TurnToEntity,
-            new TurnToEntity { Duration = duration, EntityNetworkId = entity.NetworkId });
+            new PedTasks.TurnToEntity { Duration = duration, EntityNetworkId = entity.NetworkId });
 
         /// <summary>
         /// Invokes the "ped.Task.TurnTo" native.
@@ -189,7 +189,7 @@ public sealed class FPed : FEntity
         /// <param name="duration">The duration in milliseconds. If -1, the ped will turn until the task is cleared.</param>
         public void TurnTo(Vector3 position, int duration = -1) => this.SetTask(
             SupportedFPedTasks.TurnToPosition,
-            new TurnToPosition { Duration = duration, Position = position });
+            new PedTasks.TurnToPosition { Duration = duration, Position = position });
 
         private void SetTask<T>(string task, T args)
         {

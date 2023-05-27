@@ -67,6 +67,7 @@
         <Rule Id="CA2240" Action="Warning" />
         <Rule Id="CA2241" Action="Warning" />
         <Rule Id="CA2242" Action="Warning" />
+        <Rule Id="CA1801" Action="Info" />
     </Rules>
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
         <Rule Id="SA1600" Action="Warning" /> <!-- Elements should be documented -->

@@ -4,9 +4,9 @@ using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
 using FivePD.Common.Requests;
-using FivePD.Common.Requests.PedTasks;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Client.Requests;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -130,21 +130,21 @@ public class PedService : IPedService
         {
             case SupportedFPedTasks.StandStill:
             {
-                var args = JsonConvert.DeserializeObject<StandStill>(request.Args);
+                var args = JsonConvert.DeserializeObject<PedTasks.StandStill>(request.Args);
                 ped.Task.StandStill(args.Duration);
                 break;
             }
 
             case SupportedFPedTasks.TurnToEntity:
             {
-                var args = JsonConvert.DeserializeObject<TurnToEntity>(request.Args);
+                var args = JsonConvert.DeserializeObject<PedTasks.TurnToEntity>(request.Args);
                 ped.Task.TurnTo(Entity.FromNetworkId(args.EntityNetworkId), args.Duration);
                 break;
             }
 
             case SupportedFPedTasks.TurnToPosition:
             {
-                var args = JsonConvert.DeserializeObject<TurnToPosition>(request.Args);
+                var args = JsonConvert.DeserializeObject<PedTasks.TurnToPosition>(request.Args);
                 ped.Task.TurnTo(args.Position, args.Duration);
                 break;
             }
