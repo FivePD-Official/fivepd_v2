@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-public class StandStill
+public record struct StandStill
 {
     public int Duration { get; set; }
 }

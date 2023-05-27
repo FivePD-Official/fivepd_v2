@@ -12,5 +12,5 @@ public sealed class SupportedFPedProperties
 
     public const string BlockPermanentEvents = "BlockPermanentEvents";
 
-    public const string SetKeepTask = "SetKeepTask";
+    public const string AlwaysKeepTask = "SetKeepTask";
 }

@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace FivePD.Common.Requests;
+﻿namespace FivePD.Common.Requests;
 
 #pragma warning disable
 
-public class SetPedTaskRequest
+public record struct SetPedTaskRequest
 {
     public int NetworkId { get; set; }
     

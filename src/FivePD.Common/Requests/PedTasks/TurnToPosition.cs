@@ -4,7 +4,7 @@ namespace FivePD.Common.Requests.PedTasks;
 
 #pragma warning disable
 
-public class TurnToPosition
+public record struct TurnToPosition
 {
     public Vector3 Position { get; set; }
     

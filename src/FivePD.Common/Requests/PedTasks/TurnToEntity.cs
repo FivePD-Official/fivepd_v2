@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-public class TurnToEntity
+public record struct TurnToEntity
 {
     public int EntityNetworkId { get; set; }
     

@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-public class RemoveBlipsRequest
+public record struct RemoveBlipsRequest
 {
     public int NetworkId { get; set; }
 }

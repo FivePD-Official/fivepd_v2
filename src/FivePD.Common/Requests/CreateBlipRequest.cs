@@ -4,7 +4,7 @@ namespace FivePD.Common.Requests;
 
 #pragma warning disable
 
-public class CreateBlipRequest
+public record struct CreateBlipRequest
 {
     public int NetworkId { get; set; }
 

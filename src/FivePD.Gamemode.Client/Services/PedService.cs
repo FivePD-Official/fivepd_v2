@@ -95,7 +95,7 @@ public class PedService : IPedService
                 break;
             }
 
-            case SupportedFPedProperties.SetKeepTask:
+            case SupportedFPedProperties.AlwaysKeepTask:
             {
                 ped.AlwaysKeepTask = bool.Parse(value);
                 break;

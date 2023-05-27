@@ -6,15 +6,11 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
-using FivePD.Gamemode.Common.Utilities;
-using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.Requests;
 using FivePD.Gamemode.Server.QueryHelpers;
 using Newtonsoft.Json;
-
-#pragma warning disable
 
 namespace FivePD.Gamemode.Server.Services
 {
