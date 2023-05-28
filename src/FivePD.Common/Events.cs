@@ -37,6 +37,10 @@ namespace FivePD.Common
             public const string RemoveBlips = "fivepd:ped:removeBlips";
 
             public const string SetTask = "fivepd:ped:setTask";
+
+            public const string WeaponCollection = "fivepd:ped:weaponCollection";
+
+            public const string WeaponCollectionWithReturn = "fivepd:ped:weaponCollectionWithReturn";
         }
 
         public abstract class Vehicle

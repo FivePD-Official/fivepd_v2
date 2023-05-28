@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFPlayerWithMenus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DynamicExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
@@ -41,9 +42,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\CreateBlipRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\PedTasks.cs" />
-    <Folder Include="$(MSBuildThisFileDirectory)Requests\PedTasks\" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\RemoveBlipsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\SetPedTaskRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Requests\WeaponCollectionDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Requests\WeaponCollectionRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Responses\GetMenusResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MenuItemType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedFPedProperties.cs" />

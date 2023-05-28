@@ -64,7 +64,7 @@ namespace FivePD.Gamemode.Client.Services
                     this._uiService.Show(Events.NuiEventType.MenuView, menu.Hashcode, false, false);
                 }
 
-                this._controlService.RegisterKeybind($"fivepd:openMenu_${menu.Hashcode}", "-", menu.Key, OnPress);
+                this._controlService.RegisterKeybind($"fivepd:openMenu_${menu.Hashcode}", menu.Key, "-", OnPress);
 
                 foreach (var item in menu.Items)
                 {

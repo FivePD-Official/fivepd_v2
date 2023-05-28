@@ -58,6 +58,7 @@ public class EventService : IEventService, IServiceWithEvents
         var value = string.Empty;
         this.TriggerEvent(player, eventName, s => { value = s; }, args);
 
+        // TODO: wait only few seconds, also I'm not sure if this blocks the thread or not, maybe run it in a tick (ITickQueueService)?
         while (value.Length == 0)
         {
             await BaseScript.Delay(0);

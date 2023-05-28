@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
 using FivePD.Common.Models;
 using FivePD.Common.UIModels;
+using FivePD.Gamemode.Server.EntityWrappers;
+using FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
 using FivePD.Gamemode.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
@@ -18,6 +22,7 @@ namespace FivePD.Gamemode.Server.UIModels
     {
         private readonly IConfigService _configService;
         private readonly ILocalizationService _localizationService;
+        private readonly IEventService _eventService;
         private readonly DutyMenuConfig _dutyMenuConfig;
 
         private MenuListItem _changeLanguageListItem;
@@ -27,11 +32,13 @@ namespace FivePD.Gamemode.Server.UIModels
         /// </summary>
         /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
         /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
-        public DutyMenu(IConfigService configService, ILocalizationService localizationService)
+        /// <param name="eventService">The <see cref="IEventService"/> to use.</param>
+        public DutyMenu(IConfigService configService, ILocalizationService localizationService, IEventService eventService)
             : base("DUTY_MENU.TITLE", "F10", true)
         {
             this._configService = configService;
             this._localizationService = localizationService;
+            this._eventService = eventService;
             this._dutyMenuConfig = configService.GetMenuConfig().DutyMenu;
             this.Items = this.CreateItems();
         }
@@ -87,25 +94,30 @@ namespace FivePD.Gamemode.Server.UIModels
                     this._configService.GetLoadoutsConfig().Select(x => x.Title).ToList());
                 this.LoadoutItem.OnSelect += (player, index) =>
                 {
-                    // var loadout = this._loadouts.ElementAt(index);
-                    //
-                    // foreach (var weaponItem in loadout.Weapons)
-                    // {
-                    //     var weapon = (WeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
-                    //     Game.PlayerPed.Weapons.Give(weapon, weaponItem.Ammunition, false, true);
-                    //
-                    //     foreach (var componentKey in weaponItem.ComponentKeys)
-                    //     {
-                    //         var componentHash = (uint)Cfx.API.GetHashKey(componentKey);
-                    //         var weaponHash = (uint)weapon;
-                    //         if (!Cfx.API.DoesWeaponTakeWeaponComponent(weaponHash, componentHash))
-                    //         {
-                    //             continue;
-                    //         }
-                    //
-                    //         Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHash, componentHash);
-                    //     }
-                    // }
+                    void RunAsync()
+                    {
+                        var playerPed = FPed.FromFPlayer(player, this._eventService);
+                        var loadout = this._configService.GetLoadoutsConfig().ElementAt(index);
+                        foreach (var weaponItem in loadout.Weapons)
+                        {
+                            var weaponHash = (FWeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
+                            playerPed.Weapons.Give(weaponHash, weaponItem.Ammunition, false, true);
+
+                            // foreach (var componentKey in weaponItem.ComponentKeys)
+                            // {
+                            //     var componentHash = (uint)Cfx.API.GetHashKey(componentKey);
+                            //     var weaponHashUint = (uint)weaponHash;
+                            //     if (!Cfx.API.DoesWeaponTakeWeaponComponent(weaponHashUint, componentHash))
+                            //     {
+                            //         continue;
+                            //     }
+                            //
+                            //     Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHashUint, componentHash);
+                            // }
+                        }
+                    }
+
+                    RunAsync();
                 };
                 items.Add(this.LoadoutItem);
             }

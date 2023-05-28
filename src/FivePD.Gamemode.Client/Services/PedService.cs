@@ -35,6 +35,8 @@ public class PedService : IPedService
         this._eventHandlerDictionary[Events.Ped.CreateBlip] += new Action<string>(this.CreateBlip);
         this._eventHandlerDictionary[Events.Ped.RemoveBlips] += new Action<string>(this.RemoveBlips);
         this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);
+        this._eventHandlerDictionary[Events.Ped.WeaponCollection] += new Action<string>(this.WeaponCollection);
+        this._eventHandlerDictionary[Events.Ped.WeaponCollectionWithReturn] += new Action<string, string>(this.WeaponCollectionWithReturn);
     }
 
     /// <inheritdoc />
@@ -59,12 +61,12 @@ public class PedService : IPedService
         BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
     }
 
-    private void GetPedProperty(string eventId, int networkId, string property)
+    private void GetPedProperty(string eventCallbackId, int networkId, string property)
     {
         var ped = this.FindPed(networkId);
         if (ped is null)
         {
-            BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, string.Empty);
+            BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, string.Empty);
             return;
         }
 
@@ -76,10 +78,10 @@ public class PedService : IPedService
             _ => string.Empty,
         };
 
-        BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, value.ToString());
+        BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
     }
 
-    private void SetPedProperty(string eventId, int networkId, string property, string value)
+    private void SetPedProperty(string eventCallbackId, int networkId, string property, string value)
     {
         var ped = this.FindPed(networkId);
         if (ped is null)
@@ -146,6 +148,99 @@ public class PedService : IPedService
             {
                 var args = JsonConvert.DeserializeObject<PedTasks.TurnToPosition>(request.Args);
                 ped.Task.TurnTo(args.Position, args.Duration);
+                break;
+            }
+        }
+    }
+
+    private void WeaponCollection(string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<WeaponCollectionRequest>(serializedRequest);
+        var ped = this.FindPed(request.NetworkId);
+        if (ped is null)
+        {
+            return;
+        }
+
+        switch (request.SubEvent)
+        {
+            case WeaponCollectionDTO.Events.Give:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.Give>(request.Args);
+                ped.Weapons.Give((WeaponHash)args.Hash, args.AmmoCount, args.EquipNow, args.IsAmmoLoaded);
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.Remove:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.Remove>(request.Args);
+                ped.Weapons.Remove((WeaponHash)args.Hash);
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.RemoveAll:
+            {
+                ped.Weapons.RemoveAll();
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.Select:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.Select>(request.Args);
+                ped.Weapons.Select((WeaponHash)args.Hash);
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.Drop:
+            {
+                ped.Weapons.Drop();
+                break;
+            }
+        }
+    }
+
+    private void WeaponCollectionWithReturn(string eventCallbackId, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<WeaponCollectionRequest>(serializedRequest);
+        var ped = this.FindPed(request.NetworkId);
+        if (ped is null)
+        {
+            return;
+        }
+
+        switch (request.SubEvent)
+        {
+            case WeaponCollectionDTO.Events.HasWeapon:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.HasWeapon>(request.Args);
+                var value = ped.Weapons.HasWeapon((WeaponHash)args.Hash);
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.IsWeaponValid:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.IsWeaponValid>(request.Args);
+                var value = ped.Weapons.IsWeaponValid((WeaponHash)args.Hash);
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.Current:
+            {
+                var weapon = ped.Weapons.Current;
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, JsonConvert.SerializeObject(new WeaponCollectionDTO.CurrentFWeapon
+                {
+                    Hash = (FWeaponHash)weapon.Hash,
+                    Ammo = weapon.Ammo,
+                    AmmoInClip = weapon.AmmoInClip,
+                    MaxAmmo = weapon.MaxAmmo,
+                    MaxAmmoInClip = weapon.MaxAmmoInClip,
+                    DefaultClipSize = weapon.DefaultClipSize,
+                    DisplayName = weapon.DisplayName,
+                    LocalizedName = weapon.LocalizedName,
+                    CanUseOnParachute = weapon.CanUseOnParachute,
+                }));
                 break;
             }
         }
