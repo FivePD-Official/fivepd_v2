@@ -14,10 +14,8 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Services;
-using FivePD.Gamemode.Server.UIModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Sentry;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
 using Debug = CitizenFX.Core.Debug;
@@ -31,7 +29,6 @@ namespace FivePD.Gamemode.Server
     // ReSharper disable once UnusedType.Global
     public class Bootstrapper : BaseScript
     {
-        private readonly string _sentryDsn = "https://a304ee75321740359328f5f3b3fbb98c@o983555.ingest.sentry.io/6455831";
         private readonly List<string> _startupQuotes = new List<string>
         {
             "Understand, our police officers put their lives on the line for us every single day.\nThey’ve got a tough job to do to maintain public safety and hold accountable those who break the law.\n\n— Barack Obama",
@@ -47,11 +44,9 @@ namespace FivePD.Gamemode.Server
         private readonly ILogger _bootstrapLogger;
 
         private ServiceProvider _provider;
-        private IDisposable _sentryClient;
 
         private bool _isStopped;
         private Dictionary<Assembly, AddonDefinition> _assembliesWithDefinitions;
-        private ITransaction _bootstrapTransaction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
@@ -195,32 +190,6 @@ namespace FivePD.Gamemode.Server
             #pragma warning disable S4830
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             #pragma warning restore S4830
-
-            // Register Sentry for error logging
-            this._sentryClient = SentrySdk.Init(o =>
-            {
-                o.Dsn = this._sentryDsn;
-                o.TracesSampleRate = 1.0;
-                #if DEBUG
-                o.Debug = Cfx.API.GetConvar("sv_enableFivepdSentryDebug", "false") == "true";
-                o.DiagnosticLogger = new SerilogSentryDiagnosticLogger();
-                o.Environment = "development";
-                #endif
-            });
-
-            SentrySdk.ConfigureScope(scope =>
-            {
-                scope.Contexts["cfx"] = new
-                {
-                    Version = Cfx.API.GetConvar("version", "Unknown"),
-                };
-            });
-
-            // Begin startup Sentry transaction
-            this._bootstrapTransaction = SentrySdk.StartTransaction(
-                "bootstrap",
-                "bootstrap-gamemode",
-                "Gamemode Bootstrapping");
         }
 
         /// <summary>
@@ -228,8 +197,6 @@ namespace FivePD.Gamemode.Server
         /// </summary>
         private void PerformAddonLocationPhase()
         {
-            var span = this._bootstrapTransaction.StartChild("bootstrap-addon-location", "Addon location bootstrapping");
-
             /*
              * Gamemode addons have full(ish) access to the complete suite of services
              * made available to core gamemode services. Thus, we need to find our addons
@@ -261,8 +228,6 @@ namespace FivePD.Gamemode.Server
                     this._assembliesWithDefinitions.Add(asm, addon);
                 }
             }
-
-            span.Finish();
         }
 
         /// <summary>
@@ -270,8 +235,6 @@ namespace FivePD.Gamemode.Server
         /// </summary>
         private void PerformServiceLocationPhase()
         {
-            var span = this._bootstrapTransaction.StartChild("bootstrap-service-location", "Service location bootstrapping");
-
             var services = new ServiceCollection();
 
             // Find and register core services
@@ -352,8 +315,6 @@ namespace FivePD.Gamemode.Server
             this._provider = services.BuildServiceProvider();
 
             ServiceLocator.SetServiceProvider(this._provider);
-
-            span.Finish();
         }
 
         /// <summary>
@@ -361,8 +322,6 @@ namespace FivePD.Gamemode.Server
         /// </summary>
         private void PerformPostBootstrapPhase()
         {
-            var span = this._bootstrapTransaction.StartChild("bootstrap-post", "Post-bootstrapping");
-
             var addonMetadataService = this._provider.GetService<IAddonMetadataService>();
             foreach (var assembly in this._assembliesWithDefinitions)
             {
@@ -424,9 +383,6 @@ namespace FivePD.Gamemode.Server
 
             var tickQueueService = this._provider.GetService<ITickQueueService>();
             this.Tick += tickQueueService!.OnTickAsync;
-
-            span.Finish();
-            this._bootstrapTransaction.Finish();
         }
 
         /// <summary>
