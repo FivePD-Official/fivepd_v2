@@ -106,7 +106,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
                 return null;
             }
 
-            return new FPed(commonFPed, this._eventService) as T;
+            return new FPed(commonFPed) as T;
         }
 
         if (typeof(T) == typeof(FVehicle))

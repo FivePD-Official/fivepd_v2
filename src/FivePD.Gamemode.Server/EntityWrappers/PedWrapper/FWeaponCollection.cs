@@ -20,11 +20,10 @@ public class FWeaponCollection
     /// Initializes a new instance of the <see cref="FWeaponCollection"/> class.
     /// </summary>
     /// <param name="fPed">The <see cref="FPed"/> to use.</param>
-    /// <param name="eventService">The <see cref="IEventService"/> to use.</param>
-    public FWeaponCollection(FPed fPed, IEventService eventService)
+    public FWeaponCollection(FPed fPed)
     {
         this._fPed = fPed;
-        this._eventService = eventService;
+        this._eventService = ServiceLocator.GetService<IEventService>();
     }
 
     public void Give(FWeaponHash hash, int ammoCount, bool equipNow, bool isAmmoLoaded)

@@ -351,6 +351,8 @@ namespace FivePD.Gamemode.Server
 
             this._provider = services.BuildServiceProvider();
 
+            ServiceLocator.SetServiceProvider(this._provider);
+
             span.Finish();
         }
 

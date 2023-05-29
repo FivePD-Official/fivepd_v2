@@ -96,7 +96,7 @@ namespace FivePD.Gamemode.Server.UIModels
                 {
                     void RunAsync()
                     {
-                        var playerPed = FPed.FromFPlayer(player, this._eventService);
+                        var playerPed = FPed.FromFPlayer(player);
                         var loadout = this._configService.GetLoadoutsConfig().ElementAt(index);
                         foreach (var weaponItem in loadout.Weapons)
                         {

@@ -1,7 +1,6 @@
 ﻿using CitizenFX.Core;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
-using FivePD.Gamemode.Server.Interfaces;
 
 namespace FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
 
@@ -11,20 +10,17 @@ namespace FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
 public sealed class FPed : FEntity
 {
     private readonly CommonFPed _fPed;
-    private readonly IEventService _eventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FPed"/> class.
     /// </summary>
     /// <param name="fPed">The FPed to use.</param>
-    /// <param name="eventService">The <see cref="IEventService"/> to use.</param>
-    public FPed(CommonFPed fPed, IEventService eventService)
+    public FPed(CommonFPed fPed)
     {
         this._fPed = fPed;
-        this._eventService = eventService;
-        this.Properties = new(this, eventService);
-        this.Task = new(this, eventService);
-        this.Weapons = new(this, eventService);
+        this.Properties = new(this);
+        this.Task = new(this);
+        this.Weapons = new(this);
     }
 
     /// <summary>
@@ -57,13 +53,13 @@ public sealed class FPed : FEntity
     /// </summary>
     public Player Owner => this.GetUnderlyingPed.Owner;
 
-#pragma warning disable
-    // TODO - PLS REFACTOR ME
-    // this is NOT good practice, but it's the only way to get the FPed from the FPlayer at the moment
-    // an example usage is when a menu item is selected and we want to set some properties on the player's ped: "DutyMenu.LoadoutItem.OnSelect"
-    public static FPed FromFPlayer(FPlayer player, IEventService eventService)
+    /// <summary>
+    /// Created an <see cref="FPed"/> wrapper from the specified <see cref="FPlayer"/>.
+    /// </summary>
+    /// <param name="player">The <see cref="FPlayer"/> instance to use.</param>
+    /// <returns>The FPed.</returns>
+    public static FPed FromFPlayer(FPlayer player)
     {
-        return new FPed(new CommonFPed(new CommonFPedBuilder(player.GetUnderlyingPlayer().Character.NetworkId)), eventService);
+        return new FPed(new CommonFPed(new CommonFPedBuilder(player.GetUnderlyingPlayer().Character.NetworkId)));
     }
-#pragma warning restore
 }
