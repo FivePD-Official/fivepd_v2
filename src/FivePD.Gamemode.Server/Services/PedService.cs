@@ -19,7 +19,7 @@ namespace FivePD.Gamemode.Server.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IConfigService _configService;
-        private readonly ConcurrentDictionary<int, FPed> _peds = new();
+        private readonly ConcurrentDictionary<int, CommonFPed> _peds = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PedService"/> class.
@@ -39,9 +39,15 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Ped.Search] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.Search);
         }
 
+        /// <inheritdoc/>
+        public CommonFPed TryGetPed(int networkId)
+        {
+            return this._peds.TryGetValue(networkId, out var fPed) ? fPed : null;
+        }
+
         private void GeneratePed(string serializedFPedBuilder)
         {
-            var fPedBuilder = JsonConvert.DeserializeObject<FPedBuilder>(serializedFPedBuilder);
+            var fPedBuilder = JsonConvert.DeserializeObject<CommonFPedBuilder>(serializedFPedBuilder);
             if (fPedBuilder is null || this._peds.ContainsKey(fPedBuilder.NetworkId))
             {
                 return;
@@ -55,7 +61,6 @@ namespace FivePD.Gamemode.Server.Services
                 .Build();
 
             this._peds[fPed.NetworkId] = fPed;
-            Debug.WriteLine($"{fPed}");
         }
 
         private void Search(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
@@ -76,7 +81,7 @@ namespace FivePD.Gamemode.Server.Services
 
             // TODO: Maybe use proper paging? Return all peds if the search params are empty?
             var peds = pedsQueryable.Select(ped => ped.Value).ToList();
-            var page = new Page<FPed>
+            var page = new Page<CommonFPed>
             {
                 Items = peds,
                 CurrentPage = 1,

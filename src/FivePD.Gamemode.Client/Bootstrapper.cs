@@ -136,6 +136,11 @@ namespace FivePD.Gamemode.Client
                 .IsSingleton();
 
             services
+                .RegisterType<DevUtilitiesService>()
+                .As<IDevUtilitiesService>()
+                .IsSingleton();
+
+            services
                 .RegisterType<ConfigService>()
                 .As<IConfigService>();
 
@@ -161,8 +166,8 @@ namespace FivePD.Gamemode.Client
                 .As<ISoundService>();
 
             services
-                .RegisterType<KeybindService>()
-                .As<IKeybindService>()
+                .RegisterType<ControlService>()
+                .As<IControlService>()
                 .IsSingleton();
 
             services
@@ -199,6 +204,11 @@ namespace FivePD.Gamemode.Client
                 .RegisterType<LocalPlayerService>()
                 .As<ILocalPlayerService>();
 
+            services
+                .RegisterType<InteractionService>()
+                .As<IInteractionService>()
+                .IsSingleton();
+
             this._serviceProvider = services.Build();
         }
 
@@ -218,7 +228,7 @@ namespace FivePD.Gamemode.Client
                 screenDecorService.BuildText();
             };
 
-            var keybindService = this._serviceProvider.Resolve<IKeybindService>();
+            var keybindService = this._serviceProvider.Resolve<IControlService>();
             keybindService.Register(this._serviceProvider);
 
             var uiService = this._serviceProvider.Resolve<IUIService>();
@@ -227,9 +237,11 @@ namespace FivePD.Gamemode.Client
             var menuService = this._serviceProvider.Resolve<IMenuService>();
             menuService.RegisterEvents();
 
+            var interactionService = this._serviceProvider.Resolve<IInteractionService>();
+            interactionService.RegisterKeybinds();
+
             var pedService = this._serviceProvider.Resolve<IPedService>();
             pedService.RegisterEvents();
-            pedService.RegisterKeybinds();
 
             var trafficStopService = this._serviceProvider.Resolve<ITrafficStopService>();
             trafficStopService.RegisterKeybinds();

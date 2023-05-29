@@ -1,121 +1,261 @@
-﻿using System.Linq;
+using System;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
+using FivePD.Common.Requests;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
-using FivePD.Gamemode.Client.Utilities;
+using FivePD.Gamemode.Client.Requests;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Gamemode.Client.Services
+namespace FivePD.Gamemode.Client.Services;
+
+/// <inheritdoc />
+public class PedService : IPedService
 {
-    /// <inheritdoc />
-    public class PedService : IPedService
+    private readonly EventHandlerDictionary _eventHandlerDictionary;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PedService"/> class.
+    /// </summary>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    public PedService(EventHandlerDictionary eventHandlerDictionary)
     {
-        private readonly EventHandlerDictionary _eventHandlerDictionary;
-        private readonly IKeybindService _keybindService;
+        this._eventHandlerDictionary = eventHandlerDictionary;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PedService"/> class.
-        /// </summary>
-        /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-        /// <param name="keybindService">The <see cref="IKeybindService"/> to use.</param>
-        public PedService(EventHandlerDictionary eventHandlerDictionary, IKeybindService keybindService)
+    /// <inheritdoc />
+    public void RegisterEvents()
+    {
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Ped.Search);
+        this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
+        this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
+        this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);
+        this._eventHandlerDictionary[Events.Ped.WeaponCollection] += new Action<string>(this.WeaponCollection);
+        this._eventHandlerDictionary[Events.Ped.WeaponCollectionWithReturn] += new Action<string, string>(this.WeaponCollectionWithReturn);
+    }
+
+    /// <inheritdoc />
+    public void PedLeaveVehicleWithHandsUp(Ped ped)
+    {
+        ped.BlockPermanentEvents = true;
+
+        var sequence = new TaskSequence();
+        sequence.AddTask.LeaveVehicle(ped.CurrentVehicle, false);
+        sequence.AddTask.HandsUp(-1);
+        sequence.Close();
+        ped.Task.PerformSequence(sequence);
+
+        ped.PlayAmbientSpeech("GENERIC_SHOCKED_MED");
+    }
+
+    /// <inheritdoc />
+    public void GeneratePed(Ped ped)
+    {
+        var fPedBuilder = new CommonFPedBuilder(ped.NetworkId)
+            .WithGender((FGender)ped.Gender);
+        BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
+    }
+
+    private void GetPedProperty(string eventCallbackId, int networkId, string property)
+    {
+        var ped = this.FindPed(networkId);
+        if (ped is null)
         {
-            this._eventHandlerDictionary = eventHandlerDictionary;
-            this._keybindService = keybindService;
+            BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, string.Empty);
+            return;
         }
 
-        /// <inheritdoc />
-        public void RegisterEvents()
+        object value = property switch
         {
-            this._eventHandlerDictionary.AddUIToServerEvent(Events.Ped.Search);
+            FPedPropertiesDTO.Events.IsDead => ped.IsDead,
+            FPedPropertiesDTO.Events.IsOnFoot => ped.IsOnFoot,
+            FPedPropertiesDTO.Events.IsInVehicle => ped.IsInVehicle(),
+            _ => string.Empty,
+        };
+
+        BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
+    }
+
+    private void SetPedProperty(int networkId, string property, string value)
+    {
+        var ped = this.FindPed(networkId);
+        if (ped is null)
+        {
+            return;
         }
 
-        /// <inheritdoc />
-        public void RegisterKeybinds()
+        switch (property)
         {
-            this._keybindService.RegisterHoldableKeybind(
-                KeybindIdentifiers.StopPed,
-                "sd",
-                "E",
-                1500,
-                this.StopPed,
-                null,
-                () => !Game.PlayerPed.IsInVehicle());
-        }
-
-        /// <inheritdoc />
-        public void StopPed()
-        {
-            var ped = Game.Player.GetTargetedEntity() as Ped;
-            var hasPlayerAimed = false;
-            if (ped is null)
+            case FPedPropertiesDTO.Events.BlockPermanentEvents:
             {
-                ped = this.FindClosestAlivePed(Game.PlayerPed, 5f);
-                if (ped is null)
+                ped.BlockPermanentEvents = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.AlwaysKeepTask:
+            {
+                ped.AlwaysKeepTask = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CreateBlip:
+            {
+                var request = JsonConvert.DeserializeObject<FPedPropertiesDTO.CreateBlipRequest>(value);
+                ped.CreateBlip(request.Sprite, request.Color, request.Text);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.RemoveBlips:
+            {
+                ped.RemoveBlips();
+                break;
+            }
+        }
+    }
+
+    private void SetTask(string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<SetPedTaskRequest>(serializedRequest);
+        var ped = this.FindPed(request.NetworkId);
+        if (ped is null)
+        {
+            return;
+        }
+
+        switch (request.Task)
+        {
+            case FPedTasksDTO.Events.StandStill:
+            {
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.StandStill>(request.Args);
+                ped.Task.StandStill(args.Duration);
+                break;
+            }
+
+            case FPedTasksDTO.Events.TurnToEntity:
+            {
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.TurnToEntity>(request.Args);
+                ped.Task.TurnTo(Entity.FromNetworkId(args.EntityNetworkId), args.Duration);
+                break;
+            }
+
+            case FPedTasksDTO.Events.TurnToPosition:
+            {
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.TurnToPosition>(request.Args);
+                ped.Task.TurnTo(args.Position, args.Duration);
+                break;
+            }
+        }
+    }
+
+    private void WeaponCollection(string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<WeaponCollectionRequest>(serializedRequest);
+        var ped = this.FindPed(request.NetworkId);
+        if (ped is null)
+        {
+            return;
+        }
+
+        switch (request.SubEvent)
+        {
+            case WeaponCollectionDTO.Events.Give:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.Give>(request.Args);
+                ped.Weapons.Give((WeaponHash)args.Hash, args.AmmoCount, args.EquipNow, args.IsAmmoLoaded);
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.Remove:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.Remove>(request.Args);
+                ped.Weapons.Remove((WeaponHash)args.Hash);
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.RemoveAll:
+            {
+                ped.Weapons.RemoveAll();
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.Select:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.Select>(request.Args);
+                ped.Weapons.Select((WeaponHash)args.Hash);
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.Drop:
+            {
+                ped.Weapons.Drop();
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.AddComponentToWeapon:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.AddComponentToWeapon>(request.Args);
+                if (Cfx.API.DoesWeaponTakeWeaponComponent(args.WeaponHash, args.ComponentHash))
                 {
-                    return;
+                    Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, args.WeaponHash, args.ComponentHash);
                 }
+
+                break;
             }
-            else
+        }
+    }
+
+    private void WeaponCollectionWithReturn(string eventCallbackId, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<WeaponCollectionRequest>(serializedRequest);
+        var ped = this.FindPed(request.NetworkId);
+        if (ped is null)
+        {
+            return;
+        }
+
+        switch (request.SubEvent)
+        {
+            case WeaponCollectionDTO.Events.HasWeapon:
             {
-                if (!ped.IsInRangeOf(Game.PlayerPed.Position, 20f) || !ped.HasHumanHash())
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.HasWeapon>(request.Args);
+                var value = ped.Weapons.HasWeapon((WeaponHash)args.Hash);
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.IsWeaponValid:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.IsWeaponValid>(request.Args);
+                var value = ped.Weapons.IsWeaponValid((WeaponHash)args.Hash);
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
+                break;
+            }
+
+            case WeaponCollectionDTO.Events.Current:
+            {
+                var weapon = ped.Weapons.Current;
+                BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, JsonConvert.SerializeObject(new WeaponCollectionDTO.CurrentFWeapon
                 {
-                    return;
-                }
-
-                hasPlayerAimed = true;
-            }
-
-            this.GeneratePed(ped);
-
-            ped.KeepTask(true);
-            ped.CreateBlip(BlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
-            ped.SetRelationShip(Relationship.Companion);
-            Cfx.API.DoesEntityBelongToThisScript(ped.Handle, true); // TODO: Is this needed?
-
-            // TODO: Create a custom TaskSequence wrapper as an extension.
-            ped.Task.ClearAllImmediately();
-            TaskSequence ts = new TaskSequence();
-            ts.AddTask.TurnTo(Game.PlayerPed);
-            ts.AddTask.StandStill(-1);
-            ts.Close();
-            ped.Task.PerformSequence(ts);
-
-            if (hasPlayerAimed)
-            {
-                // TODO: If the ped is in a vehicle exit and hands up.
+                    Hash = (FWeaponHash)weapon.Hash,
+                    Ammo = weapon.Ammo,
+                    AmmoInClip = weapon.AmmoInClip,
+                    MaxAmmo = weapon.MaxAmmo,
+                    MaxAmmoInClip = weapon.MaxAmmoInClip,
+                    DefaultClipSize = weapon.DefaultClipSize,
+                    DisplayName = weapon.DisplayName,
+                    LocalizedName = weapon.LocalizedName,
+                    CanUseOnParachute = weapon.CanUseOnParachute,
+                }));
+                break;
             }
         }
+    }
 
-        /// <inheritdoc />
-        public void GeneratePed(Ped ped)
-        {
-            var fPedBuilder = new FPedBuilder(ped.NetworkId)
-                .WithGender((FGender)ped.Gender);
-            BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
-        }
-
-        private Ped FindClosestAlivePed(Entity entity, float withinRange = 0)
-        {
-            var peds = World
-                .GetAllPeds()
-                .Where(ped => ped.HasHumanHash())
-                .Where(ped => !ped.IsPlayer)
-                .Where(ped => !ped.IsDead)
-                .Where(ped => !ped.IsInVehicle());
-
-            if (withinRange != 0)
-            {
-                peds = peds.Where(ped => ped.IsInRangeOf(entity.Position, withinRange));
-            }
-
-            return peds
-                .OrderBy(ped => World.GetDistance(ped.Position, entity.Position))
-                .FirstOrDefault();
-        }
+    private Ped FindPed(int networkId)
+    {
+        return (Ped)Entity.FromNetworkId(networkId);
     }
 }

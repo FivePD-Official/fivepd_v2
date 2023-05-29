@@ -1,7 +1,6 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Gamemode.Client.Services;
-using FivePD.Gamemode.Client.Utilities;
+using FivePD.Gamemode.Common.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Extensions
@@ -77,10 +76,10 @@ namespace FivePD.Gamemode.Client.Extensions
         /// <param name="color">The blip's color.</param>
         /// <param name="text">The blip's title that'll be displayed in the map.</param>
         /// <returns>Returns the created blip.</returns>
-        public static Blip CreateBlip(this Entity entity, BlipSprite sprite, FBlipColor color, string text)
+        public static Blip CreateBlip(this Entity entity, FBlipSprite sprite, FBlipColor color, string text)
         {
             var blip = entity.AttachBlip();
-            blip.Sprite = sprite;
+            blip.Sprite = (BlipSprite)sprite;
             blip.Color = (BlipColor)color;
             Cfx.API.BeginTextCommandSetBlipName("STRING");
             Cfx.API.AddTextComponentString(text);

@@ -16,8 +16,8 @@ namespace FivePD.Gamemode.Client.Services
     public class MenuService : IMenuService
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
+        private readonly IControlService _controlService;
         private readonly IUIService _uiService;
-        private readonly IKeybindService _keybindService;
         private bool _registeredMenus;
 
         /// <summary>
@@ -25,15 +25,15 @@ namespace FivePD.Gamemode.Client.Services
         /// </summary>
         /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
         /// <param name="uiService">The <see cref="IUIService" /> to use.</param>
-        /// <param name="keybindService">The <see cref="IKeybindService" /> to use.</param>
+        /// <param name="controlService">The <see cref="IControlService" /> to use.</param>
         public MenuService(
             EventHandlerDictionary eventHandlerDictionary,
             IUIService uiService,
-            IKeybindService keybindService)
+            IControlService controlService)
         {
             this._eventHandlerDictionary = eventHandlerDictionary;
             this._uiService = uiService;
-            this._keybindService = keybindService;
+            this._controlService = controlService;
         }
 
         /// <inheritdoc />
@@ -64,42 +64,49 @@ namespace FivePD.Gamemode.Client.Services
                     this._uiService.Show(Events.NuiEventType.MenuView, menu.Hashcode, false, false);
                 }
 
-                this._keybindService.RegisterKeybind($"fivepd:openMenu:${menu.Hashcode}", menu.Title, menu.Key, OnPress);
+                this._controlService.RegisterKeybind($"fivepd:openMenu_${menu.Hashcode}", menu.Key, "-", OnPress);
 
                 foreach (var item in menu.Items)
                 {
                     switch (item.Type)
                     {
                         case MenuItemType.List:
-                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnListSelect}:{item.Hashcode}", new Action<int, CallbackDelegate>(
-                                (index, cb) =>
-                                {
-                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnListSelect, item.Hashcode, index);
-                                    cb.Invoke(string.Empty);
-                                }));
-
-                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnListIndexChange}:{item.Hashcode}", new Action<int, CallbackDelegate>(
-                                (index, cb) =>
-                                {
-                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnListIndexChange, item.Hashcode, index);
-                                    cb.Invoke(string.Empty);
-                                }));
+                            this._eventHandlerDictionary.AddUIEvent(
+                                $"{Events.UI.Menu.OnListSelect}:{item.Hashcode}",
+                                new Action<int, CallbackDelegate>(
+                                    (index, cb) =>
+                                    {
+                                        BaseScript.TriggerServerEvent(Events.UI.Menu.OnListSelect, item.Hashcode, index);
+                                        cb.Invoke(string.Empty);
+                                    }));
+                            this._eventHandlerDictionary.AddUIEvent(
+                                $"{Events.UI.Menu.OnListIndexChange}:{item.Hashcode}",
+                                new Action<int, CallbackDelegate>(
+                                    (index, cb) =>
+                                    {
+                                        BaseScript.TriggerServerEvent(Events.UI.Menu.OnListIndexChange, item.Hashcode, index);
+                                        cb.Invoke(string.Empty);
+                                    }));
                             break;
                         case MenuItemType.Checkbox:
-                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnCheckboxSelect}:{item.Hashcode}", new Action<bool, CallbackDelegate>(
-                                (@checked, cb) =>
-                                {
-                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnCheckboxSelect, item.Hashcode, @checked);
-                                    cb.Invoke(string.Empty);
-                                }));
+                            this._eventHandlerDictionary.AddUIEvent(
+                                $"{Events.UI.Menu.OnCheckboxSelect}:{item.Hashcode}",
+                                new Action<bool, CallbackDelegate>(
+                                    (@checked, cb) =>
+                                    {
+                                        BaseScript.TriggerServerEvent(Events.UI.Menu.OnCheckboxSelect, item.Hashcode, @checked);
+                                        cb.Invoke(string.Empty);
+                                    }));
                             break;
                         case MenuItemType.Button:
-                            this._eventHandlerDictionary.AddUIEvent($"{Events.UI.Menu.OnButtonSelect}:{item.Hashcode}", new Action<int, CallbackDelegate>(
-                                (_, cb) =>
-                                {
-                                    BaseScript.TriggerServerEvent(Events.UI.Menu.OnButtonSelect, item.Hashcode);
-                                    cb.Invoke(string.Empty);
-                                }));
+                            this._eventHandlerDictionary.AddUIEvent(
+                                $"{Events.UI.Menu.OnButtonSelect}:{item.Hashcode}",
+                                new Action<int, CallbackDelegate>(
+                                    (_, cb) =>
+                                    {
+                                        BaseScript.TriggerServerEvent(Events.UI.Menu.OnButtonSelect, item.Hashcode);
+                                        cb.Invoke(string.Empty);
+                                    }));
                             break;
                     }
                 }

@@ -16,6 +16,11 @@
         public const string StopPed = "fivepd:stopPed";
 
         /// <summary>
+        /// A common keybind for various interactions.
+        /// </summary>
+        public const string Interact = "fivepd:interact";
+
+        /// <summary>
         /// Closes any opened menu.
         /// </summary>
         public const string MenuClose = "fivepd:menuClose";

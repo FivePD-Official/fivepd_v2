@@ -43,8 +43,9 @@ namespace FivePD.Gamemode.Client.Services
         // Called when the player's duty status changes.
         private void UpdateDiscordStatus(FDutyStatus dutyStatus)
         {
+            // TODO: not working
             // Sets the Discord App ID.
-            Cfx.API.SetDiscordAppId("998944968947277845");
+            Cfx.API.SetDiscordAppId("1112111975862898718");
 
             // Configures primary asset..
             Cfx.API.SetDiscordRichPresenceAsset("fpd_generic");

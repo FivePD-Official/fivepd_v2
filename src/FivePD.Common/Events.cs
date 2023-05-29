@@ -4,186 +4,103 @@
 
 namespace FivePD.Common
 {
-    /**
-     * <summary>Contains constant definitions for event handler names.</summary>
-     */
+    // Follows naming convention "{resource}:{area}:{id}" OR "{resource}:{area}:{id}:{type}" where,
+    // {resource} is "fivepd"
+    // {area} is a camelCased descriptor of the applicable event location
+    // {id} is a camelCased descriptor of the event itself
+    // {type} is optional, either "server" or "client"
     public abstract class Events
     {
-        // Follows naming convention "{resource}:{area}:{id}" OR "{resource}:{area}:{id}:{type}" where,
-        // {resource} is "fivepd"
-        // {area} is a camelCased descriptor of the applicable event location
-        // {id} is a camelCased descriptor of the event itself
-        // {type} is optional, either "server" or "client"
-
-        /**
-         * <summary>Contains definitions for events related to entity management.</summary>
-         */
         public abstract class EntityManagement
         {
-            /**
-             * <summary>C->S: Used when a client wants to request that the server creates a ped.</summary>
-             */
             public const string RequestPed = "fivepd:entityManagement:requestPed";
 
-            /**
-             * <summary>C->S: Used when a client wants to request that the server creates a ped in an existing vehicle.</summary>
-             */
             public const string RequestPedInVehicle = "fivepd:entityManagement:requestPedInVehicle";
 
-            /**
-             * <summary>C->S: Used when a client wants to request that the server creates a vehicle.</summary>
-             */
             public const string RequestVehicle = "fivepd:entityManagement:requestVehicle";
 
-            /**
-             * <summary>C->S: Used when a client wants to request that the server creates a prop (object).</summary>
-             */
             public const string RequestProp = "fivepd:entityManagement:requestProp";
         }
 
-        /// <summary>
-        /// Contains definitions for <see cref="FPed"/> related events.
-        /// </summary>
         public abstract class Ped
         {
-            /// <summary>
-            /// Used to generate a <see cref="FPed"/> on the server.
-            /// </summary>
             public const string Generate = "fivepd:ped:generate";
 
-            /// <summary>
-            /// Used when a player searches for a ped in the Nui.
-            /// </summary>
             public const string Search = "fivepd:ped:search";
+            
+            public const string GetProperty = "fivepd:ped:getProperty";
+
+            public const string SetProperty = "fivepd:ped:setProperty";
+
+            public const string SetTask = "fivepd:ped:setTask";
+
+            public const string WeaponCollection = "fivepd:ped:weaponCollection";
+
+            public const string WeaponCollectionWithReturn = "fivepd:ped:weaponCollectionWithReturn";
         }
 
-        /// <summary>
-        /// Contains definitions for <see cref="FVehicle"/> related events.
-        /// </summary>
         public abstract class Vehicle
         {
-            /// <summary>
-            /// Used to generate a <see cref="FVehicle"/> on the server.
-            /// </summary>
             public const string Generate = "fivepd:vehicle:generate";
         }
 
-        /// <summary>
-        /// Contains definitions for events related to localization.
-        /// </summary>
         public abstract class Localization
         {
-            /// <summary>
-            /// Used to request localization from the server.
-            /// </summary>
             public const string GetLocalizationFromServer = "fivepd:localization:getLocalizationFromServer";
 
-            /// <summary>
-            /// Used to request localization from Nui.
-            /// </summary>
             public const string GetLocalizationFromNui = "fivepd:localization:getLocalizationFromNui";
         }
 
-        /// <summary>
-        /// The necessary event types used for communicating with the Nui.
-        /// Should contains the same types as the Terminal project has.
-        /// </summary>
         public abstract class NuiEventType
         {
-            /// <summary>
-            /// Invoked by the client when ready for the Nui.
-            /// </summary>
             public const string ClientReady = "ready";
 
-            /// <summary>Closes the Nui.</summary>
             public const string Close = "close";
 
-            /// <summary>Opens the Nui and displays the MDT view.</summary>
             public const string Mdt = "view:mdt";
 
-            /// <summary>Opens the Nui and displays a menu.</summary>
             public const string MenuView = "view:menu";
 
-            /// <summary>Opens the Nui and displays a radial menu.</summary>
             public const string RadialMenu = "view:radial_menu";
 
-            /// <summary>Opens the Nui and displays a timer bar.</summary>
             public const string TimerBar = "view:timer_bar";
 
-            /// <summary>Moves up by one item in normal menus.</summary>
             public const string MenuUp = "menu:control_up";
 
-            /// <summary>Moves down by one item in normal menus.</summary>
             public const string MenuDown = "menu:control_down";
 
-            /// <summary>Moves left by one item in normal menus.</summary>
             public const string MenuLeft = "menu:control_left";
 
-            /// <summary>Moves right by one item in normal menus.</summary>
             public const string MenuRight = "menu:control_right";
 
-            /// <summary>Selects the current item.</summary>
             public const string MenuSelect = "menu:control_select";
 
-            /// <summary>Sends radial menu control events (mouse move up, down, select) to the Nui.</summary>
             public const string RadialMenuControl = "radial_menu:control";
 
-            /// <summary>Sends an event to the Nui to play a sound effect.</summary>
             public const string PlaySound = "sound:play";
 
-            /// <summary>Sends an event to the Nui to read out a text.</summary>
             public const string Speak = "sound:speak";
         }
 
-        /// <summary>
-        /// Contains definitions for <see cref="BasePoliceEvent"/> related events.
-        /// </summary>
         public abstract class TrafficStop
         {
-            /// <summary>
-            /// Used to store an event on the server.
-            /// </summary>
             public const string Initiate = "fivepd:trafficStop:initiate";
 
-            /// <summary>
-            /// Used to remove an event from the server and it also detaches all attached players from it.
-            /// </summary>
             public const string Cancel = "fivepd:trafficStop:cancel";
 
-            /// <summary>
-            /// Used to get if a vehicle is attached to a vehicle or not.
-            /// </summary>
             public const string IsVehicleAttached = "fivepd:trafficStop:isVehicleAttached";
         }
 
-        /// <summary>
-        /// Contains definitions for all NUI -> C -> S -> C -> NUI events.
-        /// </summary>
         public abstract class UI
         {
-            /// <summary>
-            /// Contains definitions for player related events.
-            /// </summary>
             public abstract class Player
             {
-                /// <summary>
-                /// Used to request all departments for listing in the NUI.
-                /// </summary>
                 public const string GetDetails = "fivepd:player:getDetails";
 
-                /// <summary>
-                /// Used to change a player's division.
-                /// </summary>
                 public const string ChangeDivision = "fivepd:player:changeDivision";
 
-                /// <summary>
-                /// Used to change a player's rank.
-                /// </summary>
                 public const string ChangeRank = "fivepd:player:changeRank";
 
-                /// <summary>
-                /// Used to change the localization of the UI.
-                /// </summary>
                 public const string LocalizationChange = "fivepd:player:localizationChange";
 
                 public const string GetAllPageable = "fivepd:player:getAllPageable";
@@ -191,219 +108,110 @@ namespace FivePD.Common
                 public const string ChangeRole = "fivepd:player:changeRole";
             }
 
-            /// <summary>
-            /// Contains definitions for department related events.
-            /// </summary>
             public abstract class Department
             {
-                /// <summary>
-                /// Used to request all departments for listing in the NUI.
-                /// </summary>
                 public const string List = "fivepd:department:list";
 
-                /// <summary>
-                /// Used to request a department by its id.
-                /// </summary>
                 public const string GetById = "fivepd:department:getById";
 
-                /// <summary>
-                /// Used to request the users of a department.
-                /// </summary>
                 public const string GetUsers = "fivepd:department:getUsers";
 
-                /// <summary>
-                /// Used to request the ranks of a department.
-                /// </summary>
                 public const string GetRank = "fivepd:department:getRank";
 
-                /// <summary>
-                /// Used to request the ranks of a department.
-                /// </summary>
                 public const string GetRanks = "fivepd:department:getRanks";
 
-                /// <summary>
-                /// Used to request a division of a department.
-                /// </summary>
                 public const string GetDivision = "fivepd:department:getDivision";
 
-                /// <summary>
-                /// Used to request the divisions of a department.
-                /// </summary>
                 public const string GetDivisions = "fivepd:department:getDivisions";
 
-                /// <summary>
-                /// Used when a user creates a department in the NUI.
-                /// </summary>
                 public const string Create = "fivepd:department:create";
 
-                /// <summary>
-                /// Used when a user creates a department in the NUI.
-                /// </summary>
                 public const string CheckIfDepartmentNameTaken = "fivepd:department:checkIfDepartmentNameTaken";
 
-                /// <summary>
-                /// Used when a user joins a department in the NUI.
-                /// </summary>
                 public const string Join = "fivepd:department:join";
 
-                /// <summary>
-                /// Used when a user leaves a department in the NUI.
-                /// </summary>
                 public const string Leave = "fivepd:department:leave";
 
-                /// <summary>
-                /// Used to edit a department's settings.
-                /// </summary>
                 public const string Edit = "fivepd:department:edit";
 
-                /// <summary>
-                /// Used to delete a department.
-                /// </summary>
                 public const string Delete = "fivepd:department:delete";
 
-                /// <summary>
-                /// Used to delete a division from a department.
-                /// </summary>
                 public const string DeleteDivision = "fivepd:department:deleteDivision";
 
-                /// <summary>
-                /// Used to rename a division in a department.
-                /// </summary>
                 public const string EditDivision = "fivepd:department:renameDivision";
 
-                /// <summary>
-                /// Used to create a division in a department.
-                /// </summary>
                 public const string CreateDivision = "fivepd:department:createDivision";
 
-                /// <summary>
-                /// Used to delete a rank from a department.
-                /// </summary>
                 public const string DeleteRank = "fivepd:department:deleteRank";
 
-                /// <summary>
-                /// Used to edit a rank in a department.
-                /// </summary>
                 public const string EditRank = "fivepd:department:editRank";
 
-                /// <summary>
-                /// Used to create a rank in a department.
-                /// </summary>
                 public const string CreateRank = "fivepd:department:createRank";
             }
 
-            /// <summary>
-            /// Contains definitions for dynamic loose data related events.
-            /// </summary>
             public abstract class LooseData
             {
-                /// <summary>
-                /// Used to get a set's attributes.
-                /// </summary>
                 public const string GetSetAttribute = "fivepd:looseData:getSetAttribute";
 
-                /// <summary>
-                /// Used to get a set's attributes.
-                /// </summary>
                 public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
 
-                /// <summary>
-                /// Used to get a set's attributes in pageable format.
-                /// </summary>
                 public const string GetSetAttributesPageable = "fivepd:looseData:getSetAttributesPageable";
 
-                /// <summary>
-                /// Used to add a new set attribute.
-                /// </summary>
                 public const string AddSetAttribute = "fivepd:looseData:addSetAttribute";
 
-                /// <summary>
-                /// Used to edit a set attribute.
-                /// </summary>
                 public const string EditSetAttribute = "fivepd:looseData:editSetAttribute";
 
-                /// <summary>
-                /// Used to delete a set attribute.
-                /// </summary>
                 public const string DeleteSetAttribute = "fivepd:looseData:deleteSetAttribute";
 
-                /// <summary>
-                /// Used to get an entity from a given set.
-                /// </summary>
                 public const string GetEntity = "fivepd:looseData:getEntity";
 
-                /// <summary>
-                /// Used get all entities of a given set.
-                /// </summary>
                 public const string GetEntities = "fivepd:looseData:getEntities";
 
-                /// <summary>
-                /// Used to add an entity to a given set.
-                /// </summary>
                 public const string AddEntity = "fivepd:looseData:addEntity";
 
-                /// <summary>
-                /// Used to edit an entity.
-                /// </summary>
                 public const string EditEntity = "fivepd:looseData:editEntity";
 
-                /// <summary>
-                /// Used to delete an entity.
-                /// </summary>
                 public const string DeleteEntity = "fivepd:looseData:deleteEntity";
             }
 
-            /// <summary>
-            /// Contains all menu related events.
-            /// </summary>
             public abstract class Menu
             {
-                /// <summary>
-                /// Used to request all menus.
-                /// </summary>
                 public const string GetAll = "fivepd:menu:getAll";
 
-                /// <summary>
-                /// Used to invoke the OnSelect event of buttons.
-                /// </summary>
                 public const string OnButtonSelect = "fivepd:menu:onButtonSelect";
 
-                /// <summary>
-                /// Used to invoke the OnSelect event of checkboxes.
-                /// </summary>
                 public const string OnCheckboxSelect = "fivepd:menu:onCheckboxSelect";
 
-                /// <summary>
-                /// Used to invoke the OnSelect event of lists.
-                /// </summary>
                 public const string OnListSelect = "fivepd:menu:onListSelect";
 
-                /// <summary>
-                /// Used to invoke the OnIndexChange event of lists.
-                /// </summary>
                 public const string OnListIndexChange = "fivepd:menu:onListIndexChange";
 
-                /// <summary>
-                /// Updates a menu item's property value.
-                /// </summary>
                 public const string UpdateMenuItem = "fivepd:menu:update_item";
             }
         }
 
-        /// <summary>
-        /// Contains definitions for developer tool events.
-        /// </summary>
         public abstract class DevTools
         {
-            /// <summary>
-            /// Used to delete all entities of a given type.
-            /// </summary>
             public const string DeleteEntities = "fivepd:devtools:deleteEntities";
 
-            /// <summary>
-            /// Used to get the player's current coordinate.
-            /// </summary>
             public const string GetCurrentPlayerCoordinate = "fivepd:devtools:getCurrentPlayerCoordinate";
+        }
+
+        public abstract class Control
+        {
+            public const string GetAll = "fivepd:control:getAll";
+            
+            public const string Trigger = "fivepd:control:trigger";
+        }
+
+        public abstract class Interaction
+        {
+            public const string GetTargetedEntity = "fivepd:interaction:getTargetedEntity";
+        }
+
+        public abstract class Generic
+        {
+            public const string Callback = "fivepd:generic:callback";
         }
     }
 }

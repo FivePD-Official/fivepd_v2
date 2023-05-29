@@ -296,6 +296,10 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<UIService>());
 
+            services.AddSingleton<ControlService>();
+            services.AddSingleton<IControlService>(provider => provider.GetRequiredService<ControlService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ControlService>());
+
             services.AddSingleton<LocalizationService>();
             services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LocalizationService>());
@@ -307,6 +311,14 @@ namespace FivePD.Gamemode.Server
             services.AddSingleton<EntityService>();
             services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
             services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<EntityService>());
+
+            services.AddSingleton<EventService>();
+            services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<EventService>());
+
+            services.AddSingleton<InteractionService>();
+            services.AddSingleton<IInteractionService>(provider => provider.GetRequiredService<InteractionService>());
+            services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<InteractionService>());
 
             services.AddSingleton<PedService>();
             services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
@@ -338,6 +350,8 @@ namespace FivePD.Gamemode.Server
                 .WithSingletonLifetime());
 
             this._provider = services.BuildServiceProvider();
+
+            ServiceLocator.SetServiceProvider(this._provider);
 
             span.Finish();
         }

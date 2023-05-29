@@ -15,7 +15,7 @@ namespace FivePD.Gamemode.Server.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IConfigService _configService;
-        private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new();
+        private readonly ConcurrentDictionary<int, CommonFVehicle> _vehicles = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VehicleService"/> class.
@@ -34,9 +34,15 @@ namespace FivePD.Gamemode.Server.Services
             this._eventHandlerDictionary[Events.Vehicle.Generate] += new Action<string>(this.GenerateVehicle);
         }
 
+        /// <inheritdoc/>
+        public CommonFVehicle TryGetVehicle(int networkId)
+        {
+            return this._vehicles.TryGetValue(networkId, out var fVehicle) ? fVehicle : null;
+        }
+
         private void GenerateVehicle(string serializedFVehicleBuilder)
         {
-            var fVehicleBuilder = JsonConvert.DeserializeObject<FVehicleBuilder>(serializedFVehicleBuilder);
+            var fVehicleBuilder = JsonConvert.DeserializeObject<CommonFVehicleBuilder>(serializedFVehicleBuilder);
             if (fVehicleBuilder is null || this._vehicles.ContainsKey(fVehicleBuilder.NetworkId))
             {
                 return;

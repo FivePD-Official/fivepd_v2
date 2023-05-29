@@ -67,6 +67,7 @@
         <Rule Id="CA2240" Action="Warning" />
         <Rule Id="CA2241" Action="Warning" />
         <Rule Id="CA2242" Action="Warning" />
+        <Rule Id="CA1801" Action="Info" />
     </Rules>
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
         <Rule Id="SA1600" Action="Warning" /> <!-- Elements should be documented -->
@@ -102,7 +103,8 @@
         <Rule Id="SA1133" Action="Warning" /> <!-- Do not combine attributes -->
         <Rule Id="SA1202" Action="Warning" /> <!-- Elements should be ordered by access -->
         <Rule Id="SA1201" Action="Warning" /> <!-- Elements should appear in the correct order -->
-        <Rule Id="S1135" Action="Info" /> <!-- TODOs shouldn't be marked as errors -->
+        <Rule Id="S1135" Action="Info" />
+        <Rule Id="S1172" Action="Info" />
     </Rules>
     <Rules AnalyzerId="Microsoft.VisualStudio.Threading.Analyzers" RuleNamespace="Microsoft.VisualStudio.Threading.Analyzers">
         <Rule Id="VSTHRD200" Action="Error" />
@@ -110,8 +112,5 @@
     </Rules>
     <Rules AnalyzerId="Microsoft.VisualStudio.Threading.Analyzers.CSharp" RuleNamespace="Microsoft.VisualStudio.Threading.Analyzers.CSharp">
         <Rule Id="VSTHRD002" Action="None" />
-    </Rules>
-    <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
-        <Rule Id="S1172" Action="Error" />
     </Rules>
 </RuleSet>

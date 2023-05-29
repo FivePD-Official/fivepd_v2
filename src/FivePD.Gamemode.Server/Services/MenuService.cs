@@ -1,10 +1,4 @@
-﻿// Copyright (c) GTAPoliceMods LLC. All Rights Reserved.
-//
-// All code and assets contained in this file are STRICTLY
-// the intellectual property of GTAPoliceMods unless otherwise
-// noted by a license provided. Do not copy or redistribute.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -30,7 +24,7 @@ namespace FivePD.Gamemode.Server.Services
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IServiceProvider _serviceProvider;
-        private readonly Dictionary<Type, string> _menus = new Dictionary<Type, string>(); // Menu type, menu key
+        private readonly Dictionary<Type, string> _menus = new(); // Menu type, menu key
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuService"/> class.
