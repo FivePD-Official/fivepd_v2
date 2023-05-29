@@ -24,7 +24,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFPlayerWithMenus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DynamicExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
@@ -59,5 +58,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Control.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\FBlipColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\FBlipSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\FWeaponHash.cs" />
   </ItemGroup>
 </Project>
