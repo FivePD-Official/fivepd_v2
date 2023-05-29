@@ -1,10 +1,12 @@
 ﻿using CitizenFX.Core;
+using FivePD.Common.Attributes;
 
 namespace FivePD.Gamemode.Client.Requests;
 
 #pragma warning disable
 
-public sealed class PedTasks
+[NoUsage]
+public sealed record FPedTasksDTO
 {
     public record struct StandStill
     {
@@ -23,5 +25,14 @@ public sealed class PedTasks
         public Vector3 Position { get; set; }
     
         public int Duration { get; set; }
+    }
+
+    public sealed class Events
+    {
+        public const string StandStill = "StandStill";
+
+        public const string TurnToEntity = "TurnToEntity";
+
+        public const string TurnToPosition = "TurnToPosition";
     }
 }

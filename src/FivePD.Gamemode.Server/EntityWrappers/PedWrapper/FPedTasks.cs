@@ -30,7 +30,7 @@ public sealed class FPedTasks
     /// Invokes the "ped.Task.StandStill" native.
     /// </summary>
     /// <param name="duration">The duration in milliseconds. If -1, the ped will stand still until the task is cleared.</param>
-    public void StandStill(int duration) => this.SetTask(SupportedFPedTasks.StandStill, new PedTasks.StandStill { Duration = duration });
+    public void StandStill(int duration) => this.SetTask(FPedTasksDTO.Events.StandStill, new FPedTasksDTO.StandStill { Duration = duration });
 
     /// <summary>
     /// Invokes the "ped.Task.TurnTo" native.
@@ -38,8 +38,8 @@ public sealed class FPedTasks
     /// <param name="entity">The <see cref="Entity"/> to turn to.</param>
     /// <param name="duration">The duration in milliseconds. If -1, the ped will turn until the task is cleared.</param>
     public void TurnTo(Entity entity, int duration = -1) => this.SetTask(
-        SupportedFPedTasks.TurnToEntity,
-        new PedTasks.TurnToEntity { Duration = duration, EntityNetworkId = entity.NetworkId });
+        FPedTasksDTO.Events.TurnToEntity,
+        new FPedTasksDTO.TurnToEntity { Duration = duration, EntityNetworkId = entity.NetworkId });
 
     /// <summary>
     /// Invokes the "ped.Task.TurnTo" native.
@@ -47,8 +47,8 @@ public sealed class FPedTasks
     /// <param name="position">The <see cref="Vector3"/> to turn to.</param>
     /// <param name="duration">The duration in milliseconds. If -1, the ped will turn until the task is cleared.</param>
     public void TurnTo(Vector3 position, int duration = -1) => this.SetTask(
-        SupportedFPedTasks.TurnToPosition,
-        new PedTasks.TurnToPosition { Duration = duration, Position = position });
+        FPedTasksDTO.Events.TurnToPosition,
+        new FPedTasksDTO.TurnToPosition { Duration = duration, Position = position });
 
     private void SetTask<T>(string task, T args)
     {

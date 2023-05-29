@@ -31,9 +31,7 @@ public class PedService : IPedService
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Ped.Search);
         this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
-        this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<string, int, string, string>(this.SetPedProperty);
-        this._eventHandlerDictionary[Events.Ped.CreateBlip] += new Action<string>(this.CreateBlip);
-        this._eventHandlerDictionary[Events.Ped.RemoveBlips] += new Action<string>(this.RemoveBlips);
+        this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);
         this._eventHandlerDictionary[Events.Ped.WeaponCollection] += new Action<string>(this.WeaponCollection);
         this._eventHandlerDictionary[Events.Ped.WeaponCollectionWithReturn] += new Action<string, string>(this.WeaponCollectionWithReturn);
@@ -72,16 +70,16 @@ public class PedService : IPedService
 
         object value = property switch
         {
-            SupportedFPedProperties.IsDead => ped.IsDead,
-            SupportedFPedProperties.IsOnFoot => ped.IsOnFoot,
-            SupportedFPedProperties.IsInVehicle => ped.IsInVehicle(),
+            FPedPropertiesDTO.Events.IsDead => ped.IsDead,
+            FPedPropertiesDTO.Events.IsOnFoot => ped.IsOnFoot,
+            FPedPropertiesDTO.Events.IsInVehicle => ped.IsInVehicle(),
             _ => string.Empty,
         };
 
         BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
     }
 
-    private void SetPedProperty(string eventCallbackId, int networkId, string property, string value)
+    private void SetPedProperty(int networkId, string property, string value)
     {
         var ped = this.FindPed(networkId);
         if (ped is null)
@@ -91,32 +89,31 @@ public class PedService : IPedService
 
         switch (property)
         {
-            case SupportedFPedProperties.BlockPermanentEvents:
+            case FPedPropertiesDTO.Events.BlockPermanentEvents:
             {
                 ped.BlockPermanentEvents = bool.Parse(value);
                 break;
             }
 
-            case SupportedFPedProperties.AlwaysKeepTask:
+            case FPedPropertiesDTO.Events.AlwaysKeepTask:
             {
                 ped.AlwaysKeepTask = bool.Parse(value);
                 break;
             }
+
+            case FPedPropertiesDTO.Events.CreateBlip:
+            {
+                var request = JsonConvert.DeserializeObject<FPedPropertiesDTO.CreateBlipRequest>(value);
+                ped.CreateBlip(request.Sprite, request.Color, request.Text);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.RemoveBlips:
+            {
+                ped.RemoveBlips();
+                break;
+            }
         }
-    }
-
-    private void CreateBlip(string serializedRequest)
-    {
-        var request = JsonConvert.DeserializeObject<CreateBlipRequest>(serializedRequest);
-        var ped = this.FindPed(request.NetworkId);
-        ped?.CreateBlip(request.Sprite, request.Color, request.Text);
-    }
-
-    private void RemoveBlips(string serializedRequest)
-    {
-        var request = JsonConvert.DeserializeObject<RemoveBlipsRequest>(serializedRequest);
-        var ped = this.FindPed(request.NetworkId);
-        ped?.RemoveBlips();
     }
 
     private void SetTask(string serializedRequest)
@@ -130,23 +127,23 @@ public class PedService : IPedService
 
         switch (request.Task)
         {
-            case SupportedFPedTasks.StandStill:
+            case FPedTasksDTO.Events.StandStill:
             {
-                var args = JsonConvert.DeserializeObject<PedTasks.StandStill>(request.Args);
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.StandStill>(request.Args);
                 ped.Task.StandStill(args.Duration);
                 break;
             }
 
-            case SupportedFPedTasks.TurnToEntity:
+            case FPedTasksDTO.Events.TurnToEntity:
             {
-                var args = JsonConvert.DeserializeObject<PedTasks.TurnToEntity>(request.Args);
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.TurnToEntity>(request.Args);
                 ped.Task.TurnTo(Entity.FromNetworkId(args.EntityNetworkId), args.Duration);
                 break;
             }
 
-            case SupportedFPedTasks.TurnToPosition:
+            case FPedTasksDTO.Events.TurnToPosition:
             {
-                var args = JsonConvert.DeserializeObject<PedTasks.TurnToPosition>(request.Args);
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.TurnToPosition>(request.Args);
                 ped.Task.TurnTo(args.Position, args.Duration);
                 break;
             }
