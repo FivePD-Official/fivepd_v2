@@ -193,6 +193,17 @@ public class PedService : IPedService
                 ped.Weapons.Drop();
                 break;
             }
+
+            case WeaponCollectionDTO.Events.AddComponentToWeapon:
+            {
+                var args = JsonConvert.DeserializeObject<WeaponCollectionDTO.AddComponentToWeapon>(request.Args);
+                if (Cfx.API.DoesWeaponTakeWeaponComponent(args.WeaponHash, args.ComponentHash))
+                {
+                    Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, args.WeaponHash, args.ComponentHash);
+                }
+
+                break;
+            }
         }
     }
 

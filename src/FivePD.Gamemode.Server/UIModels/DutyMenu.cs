@@ -94,30 +94,18 @@ namespace FivePD.Gamemode.Server.UIModels
                     this._configService.GetLoadoutsConfig().Select(x => x.Title).ToList());
                 this.LoadoutItem.OnSelect += (player, index) =>
                 {
-                    void RunAsync()
+                    var playerPed = FPed.FromFPlayer(player);
+                    var loadout = this._configService.GetLoadoutsConfig().ElementAt(index);
+                    foreach (var weaponItem in loadout.Weapons)
                     {
-                        var playerPed = FPed.FromFPlayer(player);
-                        var loadout = this._configService.GetLoadoutsConfig().ElementAt(index);
-                        foreach (var weaponItem in loadout.Weapons)
-                        {
-                            var weaponHash = (FWeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
-                            playerPed.Weapons.Give(weaponHash, weaponItem.Ammunition, false, true);
+                        var weaponHash = (FWeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
+                        playerPed.Weapons.Give(weaponHash, weaponItem.Ammunition, false, true);
 
-                            // foreach (var componentKey in weaponItem.ComponentKeys)
-                            // {
-                            //     var componentHash = (uint)Cfx.API.GetHashKey(componentKey);
-                            //     var weaponHashUint = (uint)weaponHash;
-                            //     if (!Cfx.API.DoesWeaponTakeWeaponComponent(weaponHashUint, componentHash))
-                            //     {
-                            //         continue;
-                            //     }
-                            //
-                            //     Cfx.API.GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHashUint, componentHash);
-                            // }
+                        foreach (var componentKey in weaponItem.ComponentKeys)
+                        {
+                            playerPed.Weapons.AddComponentToWeapon(weaponHash, (uint)Cfx.API.GetHashKey(componentKey));
                         }
                     }
-
-                    RunAsync();
                 };
                 items.Add(this.LoadoutItem);
             }
@@ -130,10 +118,6 @@ namespace FivePD.Gamemode.Server.UIModels
             {
                 var locale = this._localizationService.AvailableLocalizations.Keys.ToList()[index];
                 player.GetUnderlyingPlayer().TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationService.GetLocalization(locale));
-            };
-            this._changeLanguageListItem.OnIndexChange += (player, index) =>
-            {
-                // Debug.WriteLine($"_changeLanguageListItem.OnIndexChange - {player.GetUnderlyingPlayer().Name} - {index}");
             };
             items.Add(this._changeLanguageListItem);
 

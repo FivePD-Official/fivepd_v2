@@ -63,6 +63,13 @@ public sealed record WeaponCollectionDTO
 
         public int MaxAmmoInClip  { get; init; }
     }
+    
+    public record struct AddComponentToWeapon
+    {
+        public uint WeaponHash { get; set; }
+
+        public uint ComponentHash { get; set; }
+    }
 
     public sealed record Events
     {
@@ -81,5 +88,7 @@ public sealed record WeaponCollectionDTO
         public const string Drop = "Drop";
 
         public const string Current = "Current";
+
+        public const string AddComponentToWeapon = "AddComponentToWeapon";
     }
 }

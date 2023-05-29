@@ -108,6 +108,15 @@ public class FWeaponCollection
             Hash = hash,
         });
     }
+    
+    public void AddComponentToWeapon(FWeaponHash weaponHash, uint componentHash)
+    {
+        this.TriggerWeaponCollectionEvent(WeaponCollectionDTO.Events.AddComponentToWeapon, new WeaponCollectionDTO.AddComponentToWeapon
+        {
+            WeaponHash = (uint)weaponHash,
+            ComponentHash = componentHash,
+        });
+    }
 
     private void TriggerWeaponCollectionEvent<T>(string subEvent, T args)
     {
@@ -137,20 +146,17 @@ public class FWeaponCollection
         return value;
     }
 
-    // TODO: getters and setters
     public sealed class FWeapon
     {
-        // TODO: setter
         public int Ammo { get; init; }
 
-        // TODO: setter
         public int AmmoInClip { get; init; }
 
-        // TODO public AmmoType AmmoType => throw null;
+        // TODO ? public AmmoType AmmoType => throw null;
 
         public bool CanUseOnParachute { get; init; }
 
-        // TODO public WeaponComponentCollection Components => throw null;
+        // TODO ? public WeaponComponentCollection Components => throw null;
 
         public int DefaultClipSize { get; init; }
 
@@ -164,16 +170,16 @@ public class FWeaponCollection
 
         public int MaxAmmoInClip { get; init; }
 
-        // TODO
-        public bool InfiniteAmmo
-        {
-            set { }
-        }
+        // TODO ?
+        // public bool InfiniteAmmo
+        // {
+        //     set { }
+        // }
 
-        // TODO
-        public bool InfiniteAmmoClip
-        {
-            set { }
-        }
+        // TODO ?
+        // public bool InfiniteAmmoClip
+        // {
+        //     set { }
+        // }
     }
 }
