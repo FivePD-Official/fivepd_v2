@@ -189,7 +189,8 @@ namespace FivePD.Gamemode.Client
 
             services
                 .RegisterType<NotificationService>()
-                .As<INotificationService>();
+                .As<INotificationService>()
+                .IsSingleton();
 
             services
                 .RegisterType<LocalPlayerService>()
@@ -219,6 +220,9 @@ namespace FivePD.Gamemode.Client
                 screenDecorService.BuildText();
             };
 
+            var notificationService = this._serviceProvider.Resolve<INotificationService>();
+            notificationService.RegisterEvents();
+
             var keybindService = this._serviceProvider.Resolve<IControlService>();
             keybindService.Register(this._serviceProvider);
 
@@ -233,9 +237,6 @@ namespace FivePD.Gamemode.Client
 
             var pedService = this._serviceProvider.Resolve<IPedService>();
             pedService.RegisterEvents();
-
-            var trafficStopService = this._serviceProvider.Resolve<ITrafficStopService>();
-            trafficStopService.RegisterKeybinds();
         }
 
         private void OnTickAdd(Func<Task> task)
