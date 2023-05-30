@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Requests;
 using FivePD.Gamemode.Common.Utilities;
@@ -31,17 +31,17 @@ public class NotificationService : INotificationService
         this._eventHandlerDictionary[Events.Notification.ShowTooltip] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowTooltip>(serializedRequest);
-            this.ShowTooltip(request.Content, request.WithBeep);
+            this.ShowTooltip(request.Content.ReplaceParams(request.ContentParams), request.WithBeep);
         });
         this._eventHandlerDictionary[Events.Notification.ShowNotification] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowNotification>(serializedRequest);
-            this.ShowNotification(request.Content);
+            this.ShowNotification(request.Content.ReplaceParams(request.ContentParams));
         });
         this._eventHandlerDictionary[Events.Notification.ShowNotificationWithTexture] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowNotificationWithTexture>(serializedRequest);
-            this.ShowNotificationWithTexture(request.Texture, request.Sender, request.Subject, request.Content);
+            this.ShowNotificationWithTexture(request.Texture, request.Sender, request.Subject, request.Content.ReplaceParams(request.ContentParams));
         });
     }
 

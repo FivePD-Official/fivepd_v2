@@ -237,9 +237,6 @@ namespace FivePD.Gamemode.Client
 
             var pedService = this._serviceProvider.Resolve<IPedService>();
             pedService.RegisterEvents();
-
-            var trafficStopService = this._serviceProvider.Resolve<ITrafficStopService>();
-            trafficStopService.RegisterKeybinds();
         }
 
         private void OnTickAdd(Func<Task> task)

@@ -1,4 +1,5 @@
-﻿using CitizenFX.Core;
+﻿using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Gamemode.Common.Utilities;
 
 namespace FivePD.Gamemode.Server.Interfaces;
@@ -14,7 +15,8 @@ public interface INotificationService
     /// <param name="player">The player which the tooltip will be displayed for.</param>
     /// <param name="content">The text that'll be displayed.</param>
     /// <param name="withBeep">If the notification should play a beep sound.</param>
-    public void ShowTooltip(Player player, string content, bool withBeep = false);
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = default);
 
     /// <summary>
     /// Displays a tooltip (small notification in the top-left corner).
@@ -22,21 +24,24 @@ public interface INotificationService
     /// <param name="player">The player which the tooltip will be displayed for.</param>
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
     /// <param name="withBeep">If the notification should play a beep sound.</param>
-    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false);
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false, Dictionary<string, string> contentParams = default);
 
     /// <summary>
     /// Displays a notification.
     /// </summary>
     /// <param name="player">The player which the notification will be displayed for.</param>
     /// <param name="content">The text that'll be displayed.</param>
-    public void ShowNotification(Player player, string content);
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = default);
 
     /// <summary>
     /// Displays a notification.
     /// </summary>
     /// <param name="player">The player which the notification will be displayed for.</param>
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
-    public void ShowNotification(Player player, GtaStyleText content);
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowNotification(Player player, GtaStyleText content, Dictionary<string, string> contentParams = default);
 
     /// <summary>
     /// Displays a notification with a texture.
@@ -46,7 +51,14 @@ public interface INotificationService
     /// <param name="sender">The sender of the notification, will be displayed on the first line.</param>
     /// <param name="subject">The subject of the notification, will be displayed on the second line.</param>
     /// <param name="content">The text that'll be displayed.</param>
-    public void ShowNotificationWithTexture(Player player, string texture, string sender, string subject, string content);
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowNotificationWithTexture(
+        Player player,
+        string texture,
+        string sender,
+        string subject,
+        string content,
+        Dictionary<string, string> contentParams = default);
 
     /// <summary>
     /// Displays a notification with a texture.
@@ -56,5 +68,12 @@ public interface INotificationService
     /// <param name="sender">The sender of the notification, will be displayed on the first line.</param>
     /// <param name="subject">The subject of the notification, will be displayed on the second line.</param>
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
-    public void ShowNotificationWithTexture(Player player, string texture, string sender, string subject, GtaStyleText content);
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowNotificationWithTexture(
+        Player player,
+        string texture,
+        string sender,
+        string subject,
+        GtaStyleText content,
+        Dictionary<string, string> contentParams = default);
 }

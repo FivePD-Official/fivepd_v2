@@ -1,4 +1,5 @@
-﻿using CitizenFX.Core;
+﻿using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Client.Requests;
 using FivePD.Gamemode.Common.Utilities;
@@ -23,51 +24,68 @@ public class NotificationService : INotificationService
     }
 
     /// <inheritdoc />
-    public void ShowTooltip(Player player, string content, bool withBeep = false)
+    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = default)
     {
         this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowTooltip, JsonConvert.SerializeObject(new NotificationDTO.ShowTooltip
         {
             Content = content,
             WithBeep = withBeep,
+            ContentParams = contentParams,
         }));
     }
 
     /// <inheritdoc />
-    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false)
+    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false, Dictionary<string, string> contentParams = default)
     {
-        this.ShowTooltip(player, content.Build(), withBeep);
+        this.ShowTooltip(player, content.Build(), withBeep, contentParams);
     }
 
     /// <inheritdoc />
-    public void ShowNotification(Player player, string content)
+    public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = default)
     {
-        this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowNotification, JsonConvert.SerializeObject(new NotificationDTO.ShowNotification
-        {
-            Content = content,
-        }));
+        this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowNotification, JsonConvert.SerializeObject(
+            new NotificationDTO.ShowNotification
+            {
+                Content = content,
+                ContentParams = contentParams,
+            }));
     }
 
     /// <inheritdoc />
-    public void ShowNotification(Player player, GtaStyleText content)
+    public void ShowNotification(Player player, GtaStyleText content, Dictionary<string, string> contentParams = default)
     {
-        this.ShowNotification(player, content.Build());
+        this.ShowNotification(player, content.Build(), contentParams);
     }
 
     /// <inheritdoc />
-    public void ShowNotificationWithTexture(Player player, string texture, string sender, string subject, string content)
+    public void ShowNotificationWithTexture(
+        Player player,
+        string texture,
+        string sender,
+        string subject,
+        string content,
+        Dictionary<string, string> contentParams = default)
     {
-        this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowNotification, JsonConvert.SerializeObject(new NotificationDTO.ShowNotificationWithTexture
-        {
-            Texture = texture,
-            Subject = subject,
-            Sender = sender,
-            Content = content,
-        }));
+        this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowNotification, JsonConvert.SerializeObject(
+            new NotificationDTO.ShowNotificationWithTexture
+            {
+                Texture = texture,
+                Subject = subject,
+                Sender = sender,
+                Content = content,
+                ContentParams = contentParams,
+            }));
     }
 
     /// <inheritdoc />
-    public void ShowNotificationWithTexture(Player player, string texture, string sender, string subject, GtaStyleText content)
+    public void ShowNotificationWithTexture(
+        Player player,
+        string texture,
+        string sender,
+        string subject,
+        GtaStyleText content,
+        Dictionary<string, string> contentParams = default)
     {
-        this.ShowNotificationWithTexture(player, texture, sender, subject, content.Build());
+        this.ShowNotificationWithTexture(player, texture, sender, subject, content.Build(), contentParams);
     }
 }

@@ -1,4 +1,5 @@
-﻿using FivePD.Common.Attributes;
+﻿using System.Collections.Generic;
+using FivePD.Common.Attributes;
 
 namespace FivePD.Gamemode.Client.Requests;
 
@@ -12,11 +13,15 @@ public sealed record NotificationDTO
         public required string Content { get; init; }
 
         public required bool WithBeep { get; init; }
+
+        public required Dictionary<string, string> ContentParams { get; init; }
     }
 
     public record struct ShowNotification
     {
         public required string Content { get; init; }
+
+        public required Dictionary<string, string> ContentParams { get; init; }
     }
 
     public record struct ShowNotificationWithTexture
@@ -28,5 +33,7 @@ public sealed record NotificationDTO
         public required string Subject { get; init; }
 
         public required string Content { get; init; }
+
+        public required Dictionary<string, string> ContentParams { get; init; }
     }
 }
