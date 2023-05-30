@@ -31,14 +31,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservableSubscription.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\FPoliceEventPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FGender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFPed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FStatefulContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFVehicle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\BasePoliceEvent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\TrafficStop.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\FPedPropertiesDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\FPedTasksDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\SetPedTaskRequest.cs" />

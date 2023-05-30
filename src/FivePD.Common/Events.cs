@@ -82,15 +82,6 @@ namespace FivePD.Common
             public const string Speak = "sound:speak";
         }
 
-        public abstract class TrafficStop
-        {
-            public const string Initiate = "fivepd:trafficStop:initiate";
-
-            public const string Cancel = "fivepd:trafficStop:cancel";
-
-            public const string IsVehicleAttached = "fivepd:trafficStop:isVehicleAttached";
-        }
-
         public abstract class UI
         {
             public abstract class Player
