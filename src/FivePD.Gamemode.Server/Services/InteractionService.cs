@@ -25,7 +25,12 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
     /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
-    public InteractionService(IPedService pedService, IVehicleService vehicleService, IControlService controlService, IEventService eventService, ITickQueueService tickQueueService)
+    public InteractionService(
+        IPedService pedService,
+        IVehicleService vehicleService,
+        IControlService controlService,
+        IEventService eventService,
+        ITickQueueService tickQueueService)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
@@ -66,7 +71,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
             // TODO this._pedService.PedLeaveVehicleWithHandsUp(ped);
             return;
         }
-        
+
         // TODO this._pedService.StopPed(ped);
         ped.Properties.CreateBlip(FBlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
 

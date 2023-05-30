@@ -239,6 +239,7 @@ public class Bootstrapper : BaseScript
         services.AddSingleton<IDevToolsService, DevToolsService>();
         services.AddSingleton<ILooseDataService, LooseDataService>();
         services.AddSingleton<IDepartmentService, DepartmentService>();
+        services.AddSingleton<INotificationService, NotificationService>();
 
         services.AddSingleton<UIService>();
         services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());

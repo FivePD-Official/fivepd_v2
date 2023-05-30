@@ -27,7 +27,7 @@ namespace FivePD.Common
             public const string Generate = "fivepd:ped:generate";
 
             public const string Search = "fivepd:ped:search";
-            
+
             public const string GetProperty = "fivepd:ped:getProperty";
 
             public const string SetProperty = "fivepd:ped:setProperty";
@@ -191,7 +191,7 @@ namespace FivePD.Common
         public abstract class Control
         {
             public const string GetAll = "fivepd:control:getAll";
-            
+
             public const string Trigger = "fivepd:control:trigger";
         }
 
@@ -203,6 +203,15 @@ namespace FivePD.Common
         public abstract class Generic
         {
             public const string Callback = "fivepd:generic:callback";
+        }
+
+        public abstract class Notification
+        {
+            public const string ShowTooltip = "fivepd:notification:showTooltip";
+
+            public const string ShowNotification = "fivepd:notification:showNotification";
+
+            public const string ShowNotificationWithTexture = "fivepd:notification:showNotificationWithTexture";
         }
     }
 }

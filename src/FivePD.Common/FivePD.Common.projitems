@@ -38,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFVehicle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\FPedPropertiesDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\FPedTasksDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Requests\NotificationDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\SetPedTaskRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\WeaponCollectionDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Requests\WeaponCollectionRequest.cs" />
@@ -56,5 +57,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\FBlipColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\FBlipSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\FWeaponHash.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\GtaStyleText.cs" />
   </ItemGroup>
 </Project>
