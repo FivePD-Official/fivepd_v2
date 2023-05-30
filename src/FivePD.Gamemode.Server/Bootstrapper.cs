@@ -30,7 +30,6 @@ public class Bootstrapper : BaseScript
 {
     private readonly Dictionary<Action, bool> _phases = new();
     private readonly Stopwatch _stopwatch = new();
-    private readonly Random _random = new();
     private readonly ILogger _bootstrapLogger;
 
     private ServiceProvider _provider;
@@ -276,10 +275,6 @@ public class Bootstrapper : BaseScript
         services.AddSingleton<VehicleService>();
         services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<VehicleService>());
-
-        services.AddSingleton<TrafficStopService>();
-        services.AddSingleton<ITrafficStopService>(provider => provider.GetRequiredService<TrafficStopService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<TrafficStopService>());
 
         services.AddSingleton<PlayerDataService>();
         services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
