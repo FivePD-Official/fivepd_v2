@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FivePD.Common;
-using FivePD.Gamemode.Client.Requests;
+using FivePD.Gamemode.Common.DTO;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 

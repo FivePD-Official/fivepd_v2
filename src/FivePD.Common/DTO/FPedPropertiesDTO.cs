@@ -1,7 +1,7 @@
 ﻿using FivePD.Common.Attributes;
 using FivePD.Gamemode.Common.Utilities;
 
-namespace FivePD.Gamemode.Client.Requests;
+namespace FivePD.Gamemode.Common.DTO;
 
 #pragma warning disable
 

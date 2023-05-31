@@ -5,7 +5,7 @@ using FivePD.Common.Builders;
 using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
-using FivePD.Gamemode.Client.Requests;
+using FivePD.Gamemode.Common.DTO;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
