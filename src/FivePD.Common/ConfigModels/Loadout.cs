@@ -1,41 +1,40 @@
 ﻿using System.Collections.Generic;
 
-namespace FivePD.Common.ConfigModels
+namespace FivePD.Common.ConfigModels;
+
+/// <summary>
+/// Contains the definition of a loadout.
+/// </summary>
+public sealed record Loadout
 {
     /// <summary>
-    /// Contains the definition of a loadout.
+    /// Gets the title of this loadout.
     /// </summary>
-    public class Loadout
+    public required string Title { get; init; }
+
+    /// <summary>
+    /// Gets an array of weapons in this loadout.
+    /// </summary>
+    public required List<Weapon> Weapons { get; init; } = new();
+
+    /// <summary>
+    /// A loadout weapon.
+    /// </summary>
+    public sealed record Weapon
     {
         /// <summary>
-        /// Gets or sets the title of this loadout.
+        /// Gets the key of this weapon.
         /// </summary>
-        public string Title { get; set; } = string.Empty;
+        public required string Key { get; init; }
 
         /// <summary>
-        /// Gets or sets an array of weapons in this loadout.
+        /// Gets the components of this weapon.
         /// </summary>
-        public List<Weapon> Weapons { get; set; } = new();
+        public List<string> ComponentKeys { get; init; } = new();
 
         /// <summary>
-        /// A loadout weapon.
+        /// Gets the ammunition count of this weapon.
         /// </summary>
-        public class Weapon
-        {
-            /// <summary>
-            /// Gets or sets the key of this weapon.
-            /// </summary>
-            public string Key { get; set; } = string.Empty;
-
-            /// <summary>
-            /// Gets or sets the components of this weapon.
-            /// </summary>
-            public List<string> ComponentKeys { get; set; } = new();
-
-            /// <summary>
-            /// Gets or sets the ammunition count of this weapon.
-            /// </summary>
-            public int Ammunition { get; set; } = 0;
-        }
+        public int Ammunition { get; init; }
     }
 }

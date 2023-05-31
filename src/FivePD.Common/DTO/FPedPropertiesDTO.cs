@@ -10,11 +10,11 @@ internal sealed record FPedPropertiesDTO
 {
     public record struct CreateBlipRequest
     {
-        public FBlipSprite Sprite { get; set; }
+        public required FBlipSprite Sprite { get; init; }
 
-        public FBlipColor Color { get; set; }
+        public required FBlipColor Color { get; init; }
 
-        public string Text { get; set; }
+        public required string Text { get; init; }
     }
 
     public sealed record Events

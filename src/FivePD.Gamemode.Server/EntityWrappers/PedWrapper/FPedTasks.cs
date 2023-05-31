@@ -1,6 +1,5 @@
 ﻿using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Requests;
 using FivePD.Gamemode.Client.Requests;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
@@ -54,7 +53,7 @@ public sealed class FPedTasks
         this._eventService.TriggerEventWithoutCallback(
             this._fPed.Owner,
             Events.Ped.SetTask,
-            JsonConvert.SerializeObject(new SetPedTaskRequest
+            JsonConvert.SerializeObject(new FPedTasksDTO.SetPedTaskRequest
             {
                 NetworkId = this._fPed.GetFPed.NetworkId,
                 Task = task,

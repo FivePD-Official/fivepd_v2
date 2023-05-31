@@ -123,7 +123,7 @@ public class FWeaponCollection
         this._eventService.TriggerEventWithoutCallback(
             this._fPed.Owner,
             Events.Ped.WeaponCollection,
-            JsonConvert.SerializeObject(new WeaponCollectionRequest
+            JsonConvert.SerializeObject(new WeaponCollectionDTO.WeaponCollectionRequest
             {
                 NetworkId = this._fPed.GetFPed.NetworkId,
                 SubEvent = subEvent,
@@ -136,7 +136,7 @@ public class FWeaponCollection
         var value = await this._eventService.TriggerEventAsync(
             this._fPed.Owner,
             Events.Ped.WeaponCollectionWithReturn,
-            JsonConvert.SerializeObject(new WeaponCollectionRequest
+            JsonConvert.SerializeObject(new WeaponCollectionDTO.WeaponCollectionRequest
             {
                 NetworkId = this._fPed.GetFPed.NetworkId,
                 SubEvent = subEvent,

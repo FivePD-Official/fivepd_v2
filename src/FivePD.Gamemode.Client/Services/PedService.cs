@@ -3,7 +3,6 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
-using FivePD.Common.Requests;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Requests;
@@ -118,7 +117,7 @@ public class PedService : IPedService
 
     private void SetTask(string serializedRequest)
     {
-        var request = JsonConvert.DeserializeObject<SetPedTaskRequest>(serializedRequest);
+        var request = JsonConvert.DeserializeObject<FPedTasksDTO.SetPedTaskRequest>(serializedRequest);
         var ped = this.FindPed(request.NetworkId);
         if (ped is null)
         {
@@ -152,7 +151,7 @@ public class PedService : IPedService
 
     private void WeaponCollection(string serializedRequest)
     {
-        var request = JsonConvert.DeserializeObject<WeaponCollectionRequest>(serializedRequest);
+        var request = JsonConvert.DeserializeObject<WeaponCollectionDTO.WeaponCollectionRequest>(serializedRequest);
         var ped = this.FindPed(request.NetworkId);
         if (ped is null)
         {
@@ -209,7 +208,7 @@ public class PedService : IPedService
 
     private void WeaponCollectionWithReturn(string eventCallbackId, string serializedRequest)
     {
-        var request = JsonConvert.DeserializeObject<WeaponCollectionRequest>(serializedRequest);
+        var request = JsonConvert.DeserializeObject<WeaponCollectionDTO.WeaponCollectionRequest>(serializedRequest);
         var ped = this.FindPed(request.NetworkId);
         if (ped is null)
         {

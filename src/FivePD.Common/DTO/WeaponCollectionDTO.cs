@@ -8,6 +8,15 @@ namespace FivePD.Gamemode.Client.Requests;
 [NoUsage]
 internal sealed record WeaponCollectionDTO
 {
+    public record struct WeaponCollectionRequest
+    {
+        public int NetworkId { get; set; }
+    
+        public string SubEvent { get; set; }
+    
+        public string Args { get; set; }
+    }
+
     public record struct Give
     {
         public FWeaponHash Hash { get; set; }

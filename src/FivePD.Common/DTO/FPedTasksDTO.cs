@@ -8,26 +8,35 @@ namespace FivePD.Gamemode.Client.Requests;
 [NoUsage]
 internal sealed record FPedTasksDTO
 {
+    public record struct SetPedTaskRequest
+    {
+        public int NetworkId { get; set; }
+    
+        public string Task { get; set; }
+    
+        public string Args { get; set; }
+    }
+
     public record struct StandStill
     {
-        public int Duration { get; set; }
+        public required int Duration { get; init; }
     }
     
     public record struct TurnToEntity
     {
-        public int EntityNetworkId { get; set; }
+        public required int EntityNetworkId { get; init; }
     
-        public int Duration { get; set; }
+        public required int Duration { get; init; }
     }
     
     public record struct TurnToPosition
     {
-        public Vector3 Position { get; set; }
+        public required Vector3 Position { get; init; }
     
-        public int Duration { get; set; }
+        public required int Duration { get; init; }
     }
 
-    public sealed class Events
+    public sealed record Events
     {
         public const string StandStill = "StandStill";
 

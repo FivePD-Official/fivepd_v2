@@ -1,15 +1,14 @@
 ﻿using FivePD.Common.ConfigModels.MenuConfigs;
 
-namespace FivePD.Common.ConfigModels
+namespace FivePD.Common.ConfigModels;
+
+/// <summary>
+/// Contains the config of all official menus.
+/// </summary>
+public sealed record MenuConfig
 {
     /// <summary>
-    /// Contains the config of all official menus.
+    /// Gets the duty menu config.
     /// </summary>
-    public class MenuConfig
-    {
-        /// <summary>
-        /// Gets or sets the duty menu config.
-        /// </summary>
-        public DutyMenuConfig DutyMenu { get; set; } = new();
-    }
+    public required DutyMenuConfig DutyMenu { get; init; } = new();
 }

@@ -1,23 +1,22 @@
-﻿namespace FivePD.Common.ConfigModels.MenuConfigs
+﻿namespace FivePD.Common.ConfigModels.MenuConfigs;
+
+/// <summary>
+/// The config of the duty menu.
+/// </summary>
+public sealed record DutyMenuConfig
 {
     /// <summary>
-    /// The config of the duty menu.
+    /// Gets the config of the duty status toggle item.
     /// </summary>
-    public class DutyMenuConfig
-    {
-        /// <summary>
-        /// Gets or sets the config of the duty status toggle item.
-        /// </summary>
-        public MenuItemConfig DutyToggle { get; set; } = new();
+    public MenuItemConfig DutyToggle { get; init; } = default;
 
-        /// <summary>
-        /// Gets or sets the config of the vehicle spawn item.
-        /// </summary>
-        public MenuItemConfig SpawnVehicle { get; set; } = new();
+    /// <summary>
+    /// Gets the config of the vehicle spawn item.
+    /// </summary>
+    public MenuItemConfig SpawnVehicle { get; init; } = default;
 
-        /// <summary>
-        /// Gets or sets the config of the loadout spawner item.
-        /// </summary>
-        public MenuItemConfig GetLoadout { get; set; } = new();
-    }
+    /// <summary>
+    /// Gets the config of the loadout spawner item.
+    /// </summary>
+    public MenuItemConfig GetLoadout { get; init; } = default;
 }

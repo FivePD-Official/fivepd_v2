@@ -43,9 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\FPedPropertiesDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\FPedTasksDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\NotificationDTO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DTO\SetPedTaskRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\WeaponCollectionDTO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DTO\WeaponCollectionRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Responses\GetMenusResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuButtonItemWithEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuCheckboxItemWithEvents.cs" />

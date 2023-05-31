@@ -1,39 +1,38 @@
-﻿namespace FivePD.Common.ConfigModels
+﻿namespace FivePD.Common.ConfigModels;
+
+/// <summary>
+/// Contains the database settings.
+/// </summary>
+public sealed record DatabaseConfig
 {
     /// <summary>
-    /// Contains the database settings.
+    /// Gets the address of the database.
     /// </summary>
-    public class DatabaseConfig
+    public required string Address { get; init; }
+
+    /// <summary>
+    /// Gets the port of the database.
+    /// </summary>
+    public required string Port { get; init; }
+
+    /// <summary>
+    /// Gets the name of the database.
+    /// </summary>
+    public required string Database { get; init; }
+
+    /// <summary>
+    /// Gets the user used for connecting to the database.
+    /// </summary>
+    public required string User { get; init; }
+
+    /// <summary>
+    /// Gets the password used for connecting to the database.
+    /// </summary>
+    public required string Password { get; init; }
+
+    /// <inheritdoc />
+    public override string ToString()
     {
-        /// <summary>
-        /// Gets or sets the address of the database.
-        /// </summary>
-        public string Address { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the port of the database.
-        /// </summary>
-        public string Port { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the name of the database.
-        /// </summary>
-        public string Database { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the user used for connecting to the database.
-        /// </summary>
-        public string User { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the password used for connecting to the database.
-        /// </summary>
-        public string Password { get; set; } = string.Empty;
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"server={this.Address};port={this.Port};database={this.Database};user={this.User};password={this.Password};";
-        }
+        return $"server={this.Address};port={this.Port};database={this.Database};user={this.User};password={this.Password};";
     }
 }
