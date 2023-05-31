@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FivePD.Gamemode.Server.Models;
 using Newtonsoft.Json;
 using Serilog;
@@ -64,6 +65,7 @@ namespace FivePD.Gamemode.Server
                             FriendlyVersion = metadata.FriendlyVersion,
                             IsInternal = true,
                             Assemblies = new List<byte[]>(),
+                            Files = metadata.Files.ToDictionary(x => x, _ => string.Empty),
                         };
 
                         var addonDirectory = Directory.GetParent(addonMetadataLocation).ToString();
@@ -90,6 +92,12 @@ namespace FivePD.Gamemode.Server
                             {
                                 this._logger.Warning("Failed to read addon assembly file {Assembly}. {Message}", assembly, e.Message);
                             }
+                        }
+
+                        foreach (var file in definition.Files.Keys.ToList())
+                        {
+                            var filePath = Path.Combine(addonDirectory, file);
+                            definition.Files[file] = File.ReadAllText(filePath);
                         }
 
                         definitions.Add(definition);
