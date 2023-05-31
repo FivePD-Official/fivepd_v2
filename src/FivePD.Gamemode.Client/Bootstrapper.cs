@@ -145,10 +145,6 @@ namespace FivePD.Gamemode.Client
                 .As<IConfigService>();
 
             services
-                .RegisterType<EntityService>()
-                .As<IEntityService>();
-
-            services
                 .RegisterType<TickService>()
                 .As<ITickService>();
 

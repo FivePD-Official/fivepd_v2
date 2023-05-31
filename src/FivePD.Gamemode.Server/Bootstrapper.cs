@@ -242,6 +242,7 @@ public class Bootstrapper : BaseScript
         services.AddSingleton<ILooseDataService, LooseDataService>();
         services.AddSingleton<IDepartmentService, DepartmentService>();
         services.AddSingleton<INotificationService, NotificationService>();
+        services.AddSingleton<IEntityService, EntityService>();
 
         services.AddSingleton<UIService>();
         services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
@@ -258,10 +259,6 @@ public class Bootstrapper : BaseScript
         services.AddSingleton<ReportService>();
         services.AddSingleton<IReportService>(provider => provider.GetRequiredService<ReportService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ReportService>());
-
-        services.AddSingleton<EntityService>();
-        services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<EntityService>());
 
         services.AddSingleton<EventService>();
         services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());

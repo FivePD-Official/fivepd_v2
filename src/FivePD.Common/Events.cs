@@ -7,20 +7,9 @@ namespace FivePD.Common;
 // {area} is a camelCased descriptor of the applicable event location
 // {id} is a camelCased descriptor of the event itself
 // {type} is optional, either "server" or "client"
-internal abstract class Events
+internal readonly record struct Events
 {
-    public abstract class EntityManagement
-    {
-        public const string RequestPed = "fivepd:entityManagement:requestPed";
-
-        public const string RequestPedInVehicle = "fivepd:entityManagement:requestPedInVehicle";
-
-        public const string RequestVehicle = "fivepd:entityManagement:requestVehicle";
-
-        public const string RequestProp = "fivepd:entityManagement:requestProp";
-    }
-
-    public abstract class Ped
+    public readonly record struct Ped
     {
         public const string Generate = "fivepd:ped:generate";
 
@@ -37,19 +26,19 @@ internal abstract class Events
         public const string WeaponCollectionWithReturn = "fivepd:ped:weaponCollectionWithReturn";
     }
 
-    public abstract class Vehicle
+    public readonly record struct Vehicle
     {
         public const string Generate = "fivepd:vehicle:generate";
     }
 
-    public abstract class Localization
+    public readonly record struct Localization
     {
         public const string GetLocalizationFromServer = "fivepd:localization:getLocalizationFromServer";
 
         public const string GetLocalizationFromNui = "fivepd:localization:getLocalizationFromNui";
     }
 
-    public abstract class NuiEventType
+    public readonly record struct NuiEventType
     {
         public const string ClientReady = "ready";
 
@@ -80,9 +69,9 @@ internal abstract class Events
         public const string Speak = "sound:speak";
     }
 
-    public abstract class UI
+    public readonly record struct UI
     {
-        public abstract class Player
+        public readonly record struct Player
         {
             public const string GetDetails = "fivepd:player:getDetails";
 
@@ -97,7 +86,7 @@ internal abstract class Events
             public const string ChangeRole = "fivepd:player:changeRole";
         }
 
-        public abstract class Department
+        public readonly record struct Department
         {
             public const string List = "fivepd:department:list";
 
@@ -138,7 +127,7 @@ internal abstract class Events
             public const string CreateRank = "fivepd:department:createRank";
         }
 
-        public abstract class LooseData
+        public readonly record struct LooseData
         {
             public const string GetSetAttribute = "fivepd:looseData:getSetAttribute";
 
@@ -163,7 +152,7 @@ internal abstract class Events
             public const string DeleteEntity = "fivepd:looseData:deleteEntity";
         }
 
-        public abstract class Menu
+        public readonly record struct Menu
         {
             public const string GetAll = "fivepd:menu:getAll";
 
@@ -179,31 +168,31 @@ internal abstract class Events
         }
     }
 
-    public abstract class DevTools
+    public readonly record struct DevTools
     {
         public const string DeleteEntities = "fivepd:devtools:deleteEntities";
 
         public const string GetCurrentPlayerCoordinate = "fivepd:devtools:getCurrentPlayerCoordinate";
     }
 
-    public abstract class Control
+    public readonly record struct Control
     {
         public const string GetAll = "fivepd:control:getAll";
 
         public const string Trigger = "fivepd:control:trigger";
     }
 
-    public abstract class Interaction
+    public readonly record struct Interaction
     {
         public const string GetTargetedEntity = "fivepd:interaction:getTargetedEntity";
     }
 
-    public abstract class Generic
+    public readonly record struct Generic
     {
         public const string Callback = "fivepd:generic:callback";
     }
 
-    public abstract class Notification
+    public readonly record struct Notification
     {
         public const string ShowTooltip = "fivepd:notification:showTooltip";
 
