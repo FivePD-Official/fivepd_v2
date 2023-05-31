@@ -11,7 +11,7 @@ namespace FivePD.Common.Utilities;
 /// A string builder wrapper to easily create multicolored texts.
 /// Should be used when the text is displayed in the SERVER CONSOLE.
 /// </summary>
-public class CfxStyleText
+public sealed record CfxStyleText
 {
     private readonly StringBuilder _stringBuilder;
 

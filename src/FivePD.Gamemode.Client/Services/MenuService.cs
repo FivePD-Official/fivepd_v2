@@ -2,9 +2,9 @@ using System;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
-using FivePD.Common.Responses;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common.DTO;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -41,14 +41,14 @@ namespace FivePD.Gamemode.Client.Services
         {
             this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
             {
-                var response = JsonConvert.DeserializeObject<GetMenusResponse>(data);
+                var response = JsonConvert.DeserializeObject<MenuDTO.GetAllMenu>(data);
                 this.RegisterMenuKeybinds(response);
             });
 
             this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
         }
 
-        private void RegisterMenuKeybinds(GetMenusResponse response)
+        private void RegisterMenuKeybinds(MenuDTO.GetAllMenu response)
         {
             if (this._registeredMenus)
             {

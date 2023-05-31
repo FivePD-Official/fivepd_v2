@@ -1,52 +1,51 @@
 ﻿using System.Collections.Generic;
 
-namespace FivePD.Common.ConfigModels
+namespace FivePD.Common.ConfigModels;
+
+/// <summary>
+/// Contains the definition of the vehicles config file.
+/// </summary>
+public sealed record Vehicles
 {
     /// <summary>
-    /// Contains the definition of the vehicles config file.
+    /// Gets police vehicles that can spawned with the duty menu.
     /// </summary>
-    public class Vehicles
+    public List<PoliceVehicle> Police { get; init; } = new();
+
+    /// <summary>
+    /// Gets the vehicles that'll be used for the ambulance service.
+    /// </summary>
+    public List<ServiceVehicle> Ambulance { get; init; } = new();
+
+    /// <summary>
+    /// Defines a police vehicle's properties.
+    /// </summary>
+    public sealed record PoliceVehicle : ServiceVehicle
     {
         /// <summary>
-        /// Gets or sets police vehicles that can spawned with the duty menu.
+        /// Gets the name of this vehicle.
         /// </summary>
-        public List<PoliceVehicle> Police { get; set; } = new();
+        public required string Name { get; init; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Defines a service vehicle's properties.
+    /// </summary>
+    public record ServiceVehicle
+    {
+        /// <summary>
+        /// Gets the model name of this vehicle.
+        /// </summary>
+        public required string Model { get; init; }
 
         /// <summary>
-        /// Gets or sets the vehicles that'll be used for the ambulance service.
+        /// Gets the livery of this vehicle.
         /// </summary>
-        public List<ServiceVehicle> Ambulance { get; set; } = new();
+        public int Livery { get; init; }
 
         /// <summary>
-        /// Defines a police vehicle's properties.
+        /// Gets the extras of this vehicle.
         /// </summary>
-        public class PoliceVehicle : ServiceVehicle
-        {
-            /// <summary>
-            /// Gets or sets the name of this vehicle.
-            /// </summary>
-            public string Name { get; set; } = string.Empty;
-        }
-
-        /// <summary>
-        /// Defines a service vehicle's properties.
-        /// </summary>
-        public class ServiceVehicle
-        {
-            /// <summary>
-            /// Gets or sets the model name of this vehicle.
-            /// </summary>
-            public string Model { get; set; } = string.Empty;
-
-            /// <summary>
-            /// Gets or sets the livery of this vehicle.
-            /// </summary>
-            public int Livery { get; set; } = 0;
-
-            /// <summary>
-            /// Gets or sets the extras of this vehicle.
-            /// </summary>
-            public List<string> Extras { get; set; } = new();
-        }
+        public List<string> Extras { get; init; } = new();
     }
 }

@@ -1,13 +1,22 @@
 ﻿using FivePD.Common;
 using FivePD.Common.Attributes;
 
-namespace FivePD.Gamemode.Client.Requests;
+namespace FivePD.Gamemode.Common.DTO;
 
 #pragma warning disable
 
 [NoUsage]
-public sealed record WeaponCollectionDTO
+internal sealed record WeaponCollectionDTO
 {
+    public record struct WeaponCollectionRequest
+    {
+        public int NetworkId { get; set; }
+    
+        public string SubEvent { get; set; }
+    
+        public string Args { get; set; }
+    }
+
     public record struct Give
     {
         public FWeaponHash Hash { get; set; }

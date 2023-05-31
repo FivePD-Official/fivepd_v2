@@ -20,6 +20,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Vehicles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\ControlsDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\MenuDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FBlipColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FBlipSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FDutyStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FGender.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FWeaponHash.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\MenuItemType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
@@ -27,23 +35,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFPlayerWithMenus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DynamicExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\FDutyStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservableSubscription.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\FGender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFPed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FStatefulContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFVehicle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Requests\FPedPropertiesDTO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Requests\FPedTasksDTO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Requests\NotificationDTO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Requests\SetPedTaskRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Requests\WeaponCollectionDTO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Requests\WeaponCollectionRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Responses\GetMenusResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\MenuItemType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\FPedPropertiesDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\FPedTasksDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\NotificationDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\WeaponCollectionDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuButtonItemWithEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuCheckboxItemWithEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuListItemWithEvents.cs" />
@@ -53,10 +55,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuListItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Control.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\FBlipColor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\FBlipSprite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\GtaStyleText.cs" />
   </ItemGroup>
 </Project>

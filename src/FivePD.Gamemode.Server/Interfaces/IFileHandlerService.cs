@@ -16,9 +16,10 @@ namespace FivePD.Gamemode.Server.Interfaces
         public List<string> LoadStringList(string path);
 
         /// <summary>
-        /// Loads a file's content.
+        /// !! IT CAN ONLY DESERIALIZE FROM JSON !!
+        /// Reads the given file.
         /// If empty, returns T with its default values.
-        /// Otherwise returns the data converted to the given type.
+        /// Otherwise returns the data deserialized to the given type.
         /// </summary>
         /// <typeparam name="T">The type to deserialize the content.</typeparam>
         /// <param name="path">The path of the file.</param>

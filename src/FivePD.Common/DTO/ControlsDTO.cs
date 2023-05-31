@@ -7,7 +7,7 @@ using FivePD.Common.Attributes;
 namespace FivePD.Gamemode.Common.Utilities;
 
 [NoUsage]
-public class Control
+internal sealed record ControlsDTO
 {
     public string Id { get; init; }
 
@@ -23,9 +23,9 @@ public class Control
     
     public int TimeToHoldInMs { get; init; } = 0;
 
-    public ClientControlResponse ToClientResponse()
+    public ClientControlDTO ToClientDTO()
     {
-        return new ClientControlResponse
+        return new ClientControlDTO
         {
             Id = this.Id,
             Description = this.Description,
@@ -35,7 +35,7 @@ public class Control
         };
     }
 
-    public class ClientControlResponse
+    public class ClientControlDTO
     {
         public string Id { get; init; }
 

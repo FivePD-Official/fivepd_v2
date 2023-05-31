@@ -11,7 +11,7 @@ namespace FivePD.Gamemode.Common.Utilities;
 /// A string builder wrapper to easily create multicolored texts.
 /// Should be used when the text is displayed in the GAME.
 /// </summary>
-public class GtaStyleText
+public sealed record GtaStyleText
 {
     private readonly StringBuilder _stringBuilder;
 

@@ -2,6 +2,10 @@
 
 #pragma warning disable
 
+/// <summary>
+/// Same as CitizenFX.Core.BlipSprite on the client.
+/// Full list: https://docs.fivem.net/docs/game-references/blips/
+/// </summary>
 public enum FBlipSprite
   {
     Standard = 1,

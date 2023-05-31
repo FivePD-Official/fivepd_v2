@@ -8,10 +8,10 @@ using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
-using Control = FivePD.Gamemode.Common.Utilities.Control;
 
 #pragma warning disable CS0162
 
@@ -37,7 +37,7 @@ public class ControlService : IControlService
     }
 
     /// <inheritdoc />
-    public void Register(ServiceProvider provider)
+    public void RegisterControls()
     {
         var methodInfos = Assembly
             .GetExecutingAssembly()
@@ -56,7 +56,7 @@ public class ControlService : IControlService
 
             foreach (var methodInfo in methodInfoGroup)
             {
-                var obj = provider.Resolve(methodInfo.DeclaringType);
+                var obj = ServiceLocator.Resolve(methodInfo.DeclaringType);
                 keybindActions.Add(() => methodInfo.Invoke(obj, null));
             }
 
@@ -121,7 +121,7 @@ public class ControlService : IControlService
         this.InternalRegisterKeybind(id, key, description, "MOUSE_BUTTON", onPress, onRelease);
     }
 
-    private void InternalRegisterMomentaryKeybind(Control.ClientControlResponse control)
+    private void InternalRegisterMomentaryKeybind(ControlsDTO.ClientControlDTO control)
     {
         void OnPress()
         {
@@ -136,7 +136,7 @@ public class ControlService : IControlService
         this.RegisterMomentaryKeybind(control.Id, control.Key, control.Description, control.TimeToHoldInMs, OnPress, OnRelease);
     }
 
-    private void InternalRegisterKeybind(Control.ClientControlResponse control)
+    private void InternalRegisterKeybind(ControlsDTO.ClientControlDTO control)
     {
         void OnPress()
         {
@@ -176,7 +176,7 @@ public class ControlService : IControlService
     {
         BaseScript.TriggerServerEvent(Events.Control.GetAll, new Action<string>(serializedControls =>
         {
-            var controls = JsonConvert.DeserializeObject<List<Control.ClientControlResponse>>(serializedControls);
+            var controls = JsonConvert.DeserializeObject<List<ControlsDTO.ClientControlDTO>>(serializedControls);
             foreach (var control in controls)
             {
                 if (control.TimeToHoldInMs > 0)

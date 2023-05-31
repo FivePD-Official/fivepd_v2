@@ -8,9 +8,9 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Interfaces;
 using FivePD.Common.Models;
-using FivePD.Common.Responses;
 using FivePD.Common.UIModels;
 using FivePD.Common.UIModels.Interfaces;
+using FivePD.Gamemode.Common.DTO;
 using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
@@ -165,13 +165,13 @@ namespace FivePD.Gamemode.Server.Services
         {
             var menus = this._menus.Keys.Select(this.CreateMenuInstance<Menu>).ToList();
 
-            var response = new GetMenusResponse
+            var response = new MenuDTO.GetAllMenu
             {
-                Menus = new List<GetMenusResponse.UIMenuResponse>(),
+                Menus = new List<MenuDTO.GetAllMenu.UIMenuResponse>(),
             };
             foreach (var menu in menus)
             {
-                var items = new List<GetMenusResponse.UIMenuResponse.UIMenuItemResponse>();
+                var items = new List<MenuDTO.GetAllMenu.UIMenuResponse.UIMenuItemResponse>();
                 foreach (var item in menu.Items)
                 {
                     var listItemItems = new JArray();
@@ -181,7 +181,7 @@ namespace FivePD.Gamemode.Server.Services
                         listItemItems = JArray.FromObject(casted!.Items);
                     }
 
-                    items.Add(new GetMenusResponse.UIMenuResponse.UIMenuItemResponse
+                    items.Add(new MenuDTO.GetAllMenu.UIMenuResponse.UIMenuItemResponse
                     {
                         Hashcode = item.GetHashCode().ToString(),
                         Title = item.Title,
@@ -191,7 +191,7 @@ namespace FivePD.Gamemode.Server.Services
                     });
                 }
 
-                response.Menus.Add(new GetMenusResponse.UIMenuResponse
+                response.Menus.Add(new MenuDTO.GetAllMenu.UIMenuResponse
                 {
                     Hashcode = menu.GetHashCode().ToString(),
                     Key = menu.Key,

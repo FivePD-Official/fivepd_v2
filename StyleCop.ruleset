@@ -79,6 +79,7 @@
         <Rule Id="SA1309" Action="None" /> <!-- Field names should not begin with underscore -->
         <Rule Id="SA1402" Action="Warning" /> <!-- File may only contain a single type -->
         <Rule Id="SA1204" Action="Warning" /> <!-- Static elements should appear before instance elements -->
+        <Rule Id="SA1206" Action="None" />
         <Rule Id="SA1604" Action="Warning" /> <!-- Element documentation should have summary -->
         <Rule Id="SA1516" Action="Warning" /> <!-- Elements should be separated by blank line -->
         <Rule Id="SA1649" Action="None" /> <!-- File name should match first type name -->

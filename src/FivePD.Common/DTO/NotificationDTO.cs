@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using FivePD.Common.Attributes;
 
-namespace FivePD.Gamemode.Client.Requests;
+namespace FivePD.Gamemode.Common.DTO;
 
 #pragma warning disable
 
 [NoUsage]
-public sealed record NotificationDTO
+internal sealed record NotificationDTO
 {
     public record struct ShowTooltip
     {

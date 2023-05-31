@@ -15,7 +15,7 @@ namespace FivePD.Gamemode.Server.Services;
 public class ControlService : IControlService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly List<Control> _controls = new();
+    private readonly List<ControlsDTO> _controls = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlService"/> class.
@@ -51,7 +51,7 @@ public class ControlService : IControlService, IServiceWithEvents
 
     private void RegisterControl(string id, string key, string description, string keyMapper, Action<Player> onPress = null, Action<Player> onRelease = null, int timeToHoldInMs = 0)
     {
-        this._controls.Add(new Control
+        this._controls.Add(new ControlsDTO
         {
             Id = id,
             Description = description,
@@ -79,6 +79,6 @@ public class ControlService : IControlService, IServiceWithEvents
 
     private void OnGetAll(NetworkCallbackDelegate networkCallbackDelegate)
     {
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(this._controls.Select(x => x.ToClientResponse())));
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(this._controls.Select(x => x.ToClientDTO())));
     }
 }

@@ -12,8 +12,7 @@ public interface IControlService
     /// Finds all methods with the Keybind attribute
     /// and register them.
     /// </summary>
-    /// <param name="provider">The <see cref="ServiceProvider"/> to be used.</param>>
-    public void Register(ServiceProvider provider);
+    public void RegisterControls();
 
     /// <summary>
     /// Registers a method to be ran on keybind press.
