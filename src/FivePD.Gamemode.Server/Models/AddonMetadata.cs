@@ -27,6 +27,11 @@ namespace FivePD.Gamemode.Server.Models
         /**
          * <summary>Gets or sets a list of assemblies found in the current folder to attempt to load.</summary>
          */
-        public IList<string> Assemblies { get; set; }
+        public IList<string> Assemblies { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Gets or sets files.
+        /// </summary>
+        public IList<string> Files { get; set; } = new List<string>();
     }
 }

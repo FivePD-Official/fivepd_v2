@@ -228,14 +228,16 @@ public class Bootstrapper : BaseScript
         services.AddSingleton(this.Players);
         services.AddDbContext<DatabaseContext>();
 
+        services.AddSingleton<IAddonMetadataService, AddonMetadataService>();
+        services.AddTransient<IAddonLoggerService, AddonLoggerService>();
+        services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
+        services.AddSingleton<IAddonFileHandlerService, AddonFileHandlerService>();
+
         services.AddSingleton<IHttpService, HttpService>();
         services.AddSingleton<IFileHandlerService, FileHandlerService>();
         services.AddSingleton<IConfigService, ConfigService>();
         services.AddSingleton<ICommandService, CommandService>();
-        services.AddSingleton<IAddonMetadataService, AddonMetadataService>();
-        services.AddTransient<IAddonLoggerService, AddonLoggerService>();
         services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
-        services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
         services.AddSingleton<IDevToolsService, DevToolsService>();
         services.AddSingleton<ILooseDataService, LooseDataService>();
         services.AddSingleton<IDepartmentService, DepartmentService>();
