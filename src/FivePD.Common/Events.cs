@@ -9,17 +9,6 @@ namespace FivePD.Common;
 // {type} is optional, either "server" or "client"
 internal abstract class Events
 {
-    public abstract class EntityManagement
-    {
-        public const string RequestPed = "fivepd:entityManagement:requestPed";
-
-        public const string RequestPedInVehicle = "fivepd:entityManagement:requestPedInVehicle";
-
-        public const string RequestVehicle = "fivepd:entityManagement:requestVehicle";
-
-        public const string RequestProp = "fivepd:entityManagement:requestProp";
-    }
-
     public abstract class Ped
     {
         public const string Generate = "fivepd:ped:generate";
