@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Requests;
 #pragma warning disable
 
 [NoUsage]
-public sealed record FPedTasksDTO
+internal sealed record FPedTasksDTO
 {
     public record struct StandStill
     {

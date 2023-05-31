@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FivePD.Common.Responses
 {
-    public class GetMenusResponse
+    internal class GetMenusResponse
     {
         public List<UIMenuResponse> Menus { get; set; }
 

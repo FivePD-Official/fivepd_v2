@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Requests;
 #pragma warning disable
 
 [NoUsage]
-public sealed record WeaponCollectionDTO
+internal sealed record WeaponCollectionDTO
 {
     public record struct Give
     {

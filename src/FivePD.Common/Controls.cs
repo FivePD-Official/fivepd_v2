@@ -2,23 +2,16 @@
 
 #pragma warning disable
 
-public class Controls
+public sealed record Controls
 {
     public static readonly Control TryAlertEntityAsync = new("fivepd::tryAlertEntityAsync", "E");
 
-    public sealed class Control
+    public record struct Control(string Id, string Key, string Description = "")
     {
-        public string Id { get; private set; }
+        public string Id { get; private set; } = Id;
 
-        public string Key { get; private set; }
+        public string Key { get; private set; } = Key;
 
-        public string Description { get; private set; }
-
-        public Control(string id, string key, string description = "")
-        {
-            this.Id = id;
-            this.Key = key;
-            this.Description = description;
-        }
+        public string Description { get; private set; } = Description;
     }
 }

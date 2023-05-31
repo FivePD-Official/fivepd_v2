@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Requests;
 #pragma warning disable
 
 [NoUsage]
-public sealed record NotificationDTO
+internal sealed record NotificationDTO
 {
     public record struct ShowTooltip
     {

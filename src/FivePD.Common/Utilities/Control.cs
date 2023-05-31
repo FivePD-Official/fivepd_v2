@@ -7,7 +7,7 @@ using FivePD.Common.Attributes;
 namespace FivePD.Gamemode.Common.Utilities;
 
 [NoUsage]
-public class Control
+internal class Control
 {
     public string Id { get; init; }
 

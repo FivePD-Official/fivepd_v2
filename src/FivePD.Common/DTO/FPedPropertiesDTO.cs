@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Requests;
 #pragma warning disable
 
 [NoUsage]
-public sealed record FPedPropertiesDTO
+internal sealed record FPedPropertiesDTO
 {
     public record struct CreateBlipRequest
     {

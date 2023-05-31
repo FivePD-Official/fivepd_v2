@@ -1,15 +1,15 @@
 ﻿using FivePD.Common.Attributes;
 
-namespace FivePD.Common.Requests;
+namespace FivePD.Gamemode.Client.Requests;
 
 #pragma warning disable
 
 [NoUsage]
-public record struct SetPedTaskRequest
+internal class WeaponCollectionRequest
 {
     public int NetworkId { get; set; }
     
-    public string Task { get; set; }
+    public string SubEvent { get; set; }
     
     public string Args { get; set; }
 }
