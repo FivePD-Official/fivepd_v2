@@ -202,6 +202,8 @@ namespace FivePD.Gamemode.Client
                 .IsSingleton();
 
             this._serviceProvider = services.Build();
+
+            ServiceLocator.SetServiceProvider(this._serviceProvider);
         }
 
         private void PerformInitializationPhase()
@@ -224,7 +226,7 @@ namespace FivePD.Gamemode.Client
             notificationService.RegisterEvents();
 
             var keybindService = this._serviceProvider.Resolve<IControlService>();
-            keybindService.Register(this._serviceProvider);
+            keybindService.RegisterControls();
 
             var uiService = this._serviceProvider.Resolve<IUIService>();
             uiService.RegisterEventHandlers();

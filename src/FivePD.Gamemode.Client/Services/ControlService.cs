@@ -37,7 +37,7 @@ public class ControlService : IControlService
     }
 
     /// <inheritdoc />
-    public void Register(ServiceProvider provider)
+    public void RegisterControls()
     {
         var methodInfos = Assembly
             .GetExecutingAssembly()
@@ -56,7 +56,7 @@ public class ControlService : IControlService
 
             foreach (var methodInfo in methodInfoGroup)
             {
-                var obj = provider.Resolve(methodInfo.DeclaringType);
+                var obj = ServiceLocator.Resolve(methodInfo.DeclaringType);
                 keybindActions.Add(() => methodInfo.Invoke(obj, null));
             }
 
