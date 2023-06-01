@@ -244,6 +244,7 @@ public class Bootstrapper : BaseScript
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IEntityService, EntityService>();
         services.AddSingleton<IFeatureFlagService, FeatureFlagService>();
+        services.AddSingleton<IMarkerService, MarkerService>();
 
         services.AddSingleton<UIService>();
         services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());

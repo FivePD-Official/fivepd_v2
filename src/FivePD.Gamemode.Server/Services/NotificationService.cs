@@ -12,21 +12,10 @@ namespace FivePD.Gamemode.Server.Services;
 /// <inheritdoc />
 public class NotificationService : INotificationService
 {
-    private readonly IEventService _eventService;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="NotificationService"/> class.
-    /// </summary>
-    /// <param name="eventService">The <see cref="IEventService"/> to use.</param>
-    public NotificationService(IEventService eventService)
-    {
-        this._eventService = eventService;
-    }
-
     /// <inheritdoc />
     public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null)
     {
-        this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowTooltip, JsonConvert.SerializeObject(new NotificationDTO.ShowTooltip
+        player.TriggerEvent(Events.Notification.ShowTooltip, JsonConvert.SerializeObject(new NotificationDTO.ShowTooltip
         {
             Content = content,
             WithBeep = withBeep,
@@ -43,7 +32,7 @@ public class NotificationService : INotificationService
     /// <inheritdoc />
     public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = null)
     {
-        this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowNotification, JsonConvert.SerializeObject(
+        player.TriggerEvent(Events.Notification.ShowNotification, JsonConvert.SerializeObject(
             new NotificationDTO.ShowNotification
             {
                 Content = content,
@@ -84,7 +73,7 @@ public class NotificationService : INotificationService
         string content,
         Dictionary<string, string> contentParams = null)
     {
-        this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowNotification, JsonConvert.SerializeObject(
+        player.TriggerEvent(Events.Notification.ShowNotification, JsonConvert.SerializeObject(
             new NotificationDTO.ShowNotificationWithTexture
             {
                 Texture = texture,
