@@ -59,7 +59,16 @@ namespace FivePD.Common.Models
         /// </summary>
         public T Value
         {
-            get => (T)this._stateBag[this._key];
+            get
+            {
+                var value = this._stateBag[this._key];
+                if (value is null && typeof(T).IsValueType)
+                {
+                    return default;
+                }
+
+                return (T)value;
+            }
 
             set
             {
