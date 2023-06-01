@@ -59,5 +59,11 @@ namespace FivePD.Gamemode.Server.Interfaces
         /// </summary>
         /// <returns>Returns a deserialized a list of <see cref="Loadout"/> objects.</returns>
         public List<Loadout> GetLoadoutsConfig();
+
+        /// <summary>
+        /// asd.
+        /// </summary>
+        /// <returns>qwe.</returns>
+        public FeaturesConfig GetFeaturesConfig();
     }
 }
