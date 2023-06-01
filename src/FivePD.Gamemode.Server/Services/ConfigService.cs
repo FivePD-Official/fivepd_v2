@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Common.Attributes;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Exceptions;
@@ -61,6 +62,12 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
+        public FeaturesConfig GetFeaturesConfig()
+        {
+            return this.InternalLoadFile<FeaturesConfig>("/Config/features.json");
+        }
+
+        /// <inheritdoc />
         public List<string> GetFemaleFirstnames()
         {
             return this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");
@@ -89,8 +96,8 @@ namespace FivePD.Gamemode.Server.Services
 
             var exceptionMessage = file.Item2 switch
             {
-                EmptyConfigException _ => this._localizationService.Get("EXCEPTION.EMPTY_CONFIG"),
-                _ => this._localizationService.Get("EXCEPTION.JSON_PARSE"),
+                EmptyConfigException _ => "The {{path}} file is empty, the default values will be used.",
+                _ => "An error occured while parsing the {{path}} file, the default values will be used. Make sure that the JSON formatting is correct, we recommend using the following site to check it: https://jsonformatter.org/",
             };
 
             this._logger.Warning(exceptionMessage.ReplaceParams(

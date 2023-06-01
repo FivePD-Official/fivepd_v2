@@ -24,37 +24,55 @@ public class NotificationService : INotificationService
     }
 
     /// <inheritdoc />
-    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = default)
+    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null)
     {
         this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowTooltip, JsonConvert.SerializeObject(new NotificationDTO.ShowTooltip
         {
             Content = content,
             WithBeep = withBeep,
-            ContentParams = contentParams,
+            ContentParams = contentParams ?? new Dictionary<string, string>(),
         }));
     }
 
     /// <inheritdoc />
-    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false, Dictionary<string, string> contentParams = default)
+    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false, Dictionary<string, string> contentParams = null)
     {
         this.ShowTooltip(player, content.Build(), withBeep, contentParams);
     }
 
     /// <inheritdoc />
-    public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = default)
+    public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = null)
     {
         this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowNotification, JsonConvert.SerializeObject(
             new NotificationDTO.ShowNotification
             {
                 Content = content,
-                ContentParams = contentParams,
+                ContentParams = contentParams ?? new Dictionary<string, string>(),
             }));
     }
 
     /// <inheritdoc />
-    public void ShowNotification(Player player, GtaStyleText content, Dictionary<string, string> contentParams = default)
+    public void ShowNotification(Player player, GtaStyleText content, Dictionary<string, string> contentParams = null)
     {
         this.ShowNotification(player, content.Build(), contentParams);
+    }
+
+    /// <inheritdoc />
+    public void ShowNotification(IEnumerable<Player> players, string content, Dictionary<string, string> contentParams = null)
+    {
+        foreach (var player in players)
+        {
+            this.ShowNotification(player, content, contentParams);
+        }
+    }
+
+    /// <inheritdoc />
+    public void ShowNotification(IEnumerable<Player> players, GtaStyleText content, Dictionary<string, string> contentParams = null)
+    {
+        foreach (var player in players)
+        {
+            this.ShowNotification(player, content.Build(), contentParams);
+        }
     }
 
     /// <inheritdoc />
@@ -64,7 +82,7 @@ public class NotificationService : INotificationService
         string sender,
         string subject,
         string content,
-        Dictionary<string, string> contentParams = default)
+        Dictionary<string, string> contentParams = null)
     {
         this._eventService.TriggerEventWithoutCallback(player, Events.Notification.ShowNotification, JsonConvert.SerializeObject(
             new NotificationDTO.ShowNotificationWithTexture
@@ -73,7 +91,7 @@ public class NotificationService : INotificationService
                 Subject = subject,
                 Sender = sender,
                 Content = content,
-                ContentParams = contentParams,
+                ContentParams = contentParams ?? new Dictionary<string, string>(),
             }));
     }
 
@@ -84,8 +102,38 @@ public class NotificationService : INotificationService
         string sender,
         string subject,
         GtaStyleText content,
-        Dictionary<string, string> contentParams = default)
+        Dictionary<string, string> contentParams = null)
     {
         this.ShowNotificationWithTexture(player, texture, sender, subject, content.Build(), contentParams);
+    }
+
+    /// <inheritdoc />
+    public void ShowNotificationWithTexture(
+        IEnumerable<Player> players,
+        string texture,
+        string sender,
+        string subject,
+        string content,
+        Dictionary<string, string> contentParams = null)
+    {
+        foreach (var player in players)
+        {
+            this.ShowNotificationWithTexture(player, texture, sender, subject, content, contentParams);
+        }
+    }
+
+    /// <inheritdoc />
+    public void ShowNotificationWithTexture(
+        IEnumerable<Player> players,
+        string texture,
+        string sender,
+        string subject,
+        GtaStyleText content,
+        Dictionary<string, string> contentParams = null)
+    {
+        foreach (var player in players)
+        {
+            this.ShowNotificationWithTexture(player, texture, sender, subject, content.Build(), contentParams);
+        }
     }
 }

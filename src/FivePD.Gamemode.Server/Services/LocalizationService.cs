@@ -42,12 +42,6 @@ namespace FivePD.Gamemode.Server.Services
         }
 
         /// <inheritdoc />
-        public string Get(string key)
-        {
-            return this._defaultLocalization.GetValueByPath(key);
-        }
-
-        /// <inheritdoc />
         public string GetLocalization(string key)
         {
             if (this._localizationCache.TryGetValue(key, out var localization))

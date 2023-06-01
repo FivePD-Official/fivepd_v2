@@ -16,7 +16,7 @@ public interface INotificationService
     /// <param name="content">The text that'll be displayed.</param>
     /// <param name="withBeep">If the notification should play a beep sound.</param>
     /// <param name="contentParams">The parameters to be replaced in the content.</param>
-    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = default);
+    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null);
 
     /// <summary>
     /// Displays a tooltip (small notification in the top-left corner).
@@ -25,7 +25,7 @@ public interface INotificationService
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
     /// <param name="withBeep">If the notification should play a beep sound.</param>
     /// <param name="contentParams">The parameters to be replaced in the content.</param>
-    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false, Dictionary<string, string> contentParams = default);
+    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false, Dictionary<string, string> contentParams = null);
 
     /// <summary>
     /// Displays a notification.
@@ -33,7 +33,7 @@ public interface INotificationService
     /// <param name="player">The player which the notification will be displayed for.</param>
     /// <param name="content">The text that'll be displayed.</param>
     /// <param name="contentParams">The parameters to be replaced in the content.</param>
-    public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = default);
+    public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = null);
 
     /// <summary>
     /// Displays a notification.
@@ -41,7 +41,23 @@ public interface INotificationService
     /// <param name="player">The player which the notification will be displayed for.</param>
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
     /// <param name="contentParams">The parameters to be replaced in the content.</param>
-    public void ShowNotification(Player player, GtaStyleText content, Dictionary<string, string> contentParams = default);
+    public void ShowNotification(Player player, GtaStyleText content, Dictionary<string, string> contentParams = null);
+
+    /// <summary>
+    /// Displays a notification.
+    /// </summary>
+    /// <param name="players">The players which the notification will be displayed for.</param>
+    /// <param name="content">The text that'll be displayed.</param>
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowNotification(IEnumerable<Player> players, string content, Dictionary<string, string> contentParams = null);
+
+    /// <summary>
+    /// Displays a notification.
+    /// </summary>
+    /// <param name="players">The players which the notification will be displayed for.</param>
+    /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowNotification(IEnumerable<Player> players, GtaStyleText content, Dictionary<string, string> contentParams = null);
 
     /// <summary>
     /// Displays a notification with a texture.
@@ -58,7 +74,7 @@ public interface INotificationService
         string sender,
         string subject,
         string content,
-        Dictionary<string, string> contentParams = default);
+        Dictionary<string, string> contentParams = null);
 
     /// <summary>
     /// Displays a notification with a texture.
@@ -75,5 +91,39 @@ public interface INotificationService
         string sender,
         string subject,
         GtaStyleText content,
-        Dictionary<string, string> contentParams = default);
+        Dictionary<string, string> contentParams = null);
+
+    /// <summary>
+    /// Displays a notification with a texture.
+    /// </summary>
+    /// <param name="players">The player which the notification will be displayed for.</param>
+    /// <param name="texture">The texture's name which is the top-left image in the notification.</param>
+    /// <param name="sender">The sender of the notification, will be displayed on the first line.</param>
+    /// <param name="subject">The subject of the notification, will be displayed on the second line.</param>
+    /// <param name="content">The text that'll be displayed.</param>
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowNotificationWithTexture(
+        IEnumerable<Player> players,
+        string texture,
+        string sender,
+        string subject,
+        string content,
+        Dictionary<string, string> contentParams = null);
+
+    /// <summary>
+    /// Displays a notification with a texture.
+    /// </summary>
+    /// <param name="players">The players which the notification will be displayed for.</param>
+    /// <param name="texture">The texture's name which is the top-left image in the notification.</param>
+    /// <param name="sender">The sender of the notification, will be displayed on the first line.</param>
+    /// <param name="subject">The subject of the notification, will be displayed on the second line.</param>
+    /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
+    /// <param name="contentParams">The parameters to be replaced in the content.</param>
+    public void ShowNotificationWithTexture(
+        IEnumerable<Player> players,
+        string texture,
+        string sender,
+        string subject,
+        GtaStyleText content,
+        Dictionary<string, string> contentParams = null);
 }
