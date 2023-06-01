@@ -23,6 +23,7 @@ public class ControlService : IControlService
     private readonly ITickService _tickService;
     private readonly IUIService _uiService;
     private readonly List<HoldableKeybind> _actions = new();
+    private readonly List<string> _registeredControlIds = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlService"/> class.
@@ -153,6 +154,13 @@ public class ControlService : IControlService
 
     private void InternalRegisterKeybind(string id, string key, string description, string keyMapper, Action onPress, Action onRelease = null)
     {
+        if (this._registeredControlIds.Contains(id))
+        {
+            return;
+        }
+
+        this._registeredControlIds.Add(id);
+
         Cfx.API.RegisterKeyMapping($"+{id}", description, keyMapper, key);
         Cfx.API.RegisterCommand(
             $"+{id}",

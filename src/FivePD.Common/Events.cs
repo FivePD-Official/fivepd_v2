@@ -200,4 +200,11 @@ internal readonly record struct Events
 
         public const string ShowNotificationWithTexture = "fivepd:notification:showNotificationWithTexture";
     }
+
+    public readonly record struct Marker
+    {
+        public const string Add = "fivepd:marker:add";
+        
+        public const string Remove = "fivepd:marker:remove";
+    }
 }

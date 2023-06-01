@@ -75,9 +75,9 @@ namespace FivePD.Gamemode.Client
                 return Task.FromResult(0);
             }
 
-            #if DEBUG
+#if DEBUG
             this._bootstrapLogger.Info("Running bootstrap phase: {phase}", phase.Key.Method.Name);
-            #endif
+#endif
 
             // Run the phase
             try
@@ -197,6 +197,11 @@ namespace FivePD.Gamemode.Client
                 .As<IInteractionService>()
                 .IsSingleton();
 
+            services
+                .RegisterType<MarkerService>()
+                .As<IMarkerService>()
+                .IsSingleton();
+
             this._serviceProvider = services.Build();
 
             ServiceLocator.SetServiceProvider(this._serviceProvider);
@@ -213,10 +218,7 @@ namespace FivePD.Gamemode.Client
             screenDecorService.Version = "v2.0.0";
             screenDecorService.ProtectionNotice = true;
             screenDecorService.BeginTextDraw();
-            localizationService.LocalizationChanged += (sender, locale) =>
-            {
-                screenDecorService.BuildText();
-            };
+            localizationService.LocalizationChanged += (sender, locale) => { screenDecorService.BuildText(); };
 
             var notificationService = this._serviceProvider.Resolve<INotificationService>();
             notificationService.RegisterEvents();
@@ -235,6 +237,9 @@ namespace FivePD.Gamemode.Client
 
             var pedService = this._serviceProvider.Resolve<IPedService>();
             pedService.RegisterEvents();
+
+            var markerService = this._serviceProvider.Resolve<IMarkerService>();
+            markerService.RegisterEvents();
         }
 
         private void OnTickAdd(Func<Task> task)
