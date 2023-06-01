@@ -58,6 +58,24 @@ public class NotificationService : INotificationService
     }
 
     /// <inheritdoc />
+    public void ShowNotification(IEnumerable<Player> players, string content, Dictionary<string, string> contentParams = null)
+    {
+        foreach (var player in players)
+        {
+            this.ShowNotification(player, content, contentParams);
+        }
+    }
+
+    /// <inheritdoc />
+    public void ShowNotification(IEnumerable<Player> players, GtaStyleText content, Dictionary<string, string> contentParams = null)
+    {
+        foreach (var player in players)
+        {
+            this.ShowNotification(player, content.Build(), contentParams);
+        }
+    }
+
+    /// <inheritdoc />
     public void ShowNotificationWithTexture(
         Player player,
         string texture,
@@ -87,5 +105,35 @@ public class NotificationService : INotificationService
         Dictionary<string, string> contentParams = null)
     {
         this.ShowNotificationWithTexture(player, texture, sender, subject, content.Build(), contentParams);
+    }
+
+    /// <inheritdoc />
+    public void ShowNotificationWithTexture(
+        IEnumerable<Player> players,
+        string texture,
+        string sender,
+        string subject,
+        string content,
+        Dictionary<string, string> contentParams = null)
+    {
+        foreach (var player in players)
+        {
+            this.ShowNotificationWithTexture(player, texture, sender, subject, content, contentParams);
+        }
+    }
+
+    /// <inheritdoc />
+    public void ShowNotificationWithTexture(
+        IEnumerable<Player> players,
+        string texture,
+        string sender,
+        string subject,
+        GtaStyleText content,
+        Dictionary<string, string> contentParams = null)
+    {
+        foreach (var player in players)
+        {
+            this.ShowNotificationWithTexture(player, texture, sender, subject, content.Build(), contentParams);
+        }
     }
 }

@@ -59,7 +59,12 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     public void RegisterEvents()
     {
         this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
-        this.CreateDataForOnlinePlayers();
+
+        foreach (var player in this._playerList)
+        {
+            this.CreatePlayerData(player);
+            this.SubscribeToOnDutyStatusChange(player);
+        }
     }
 
     /// <inheritdoc/>
@@ -83,15 +88,6 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
     }
 
-    private void CreateDataForOnlinePlayers()
-    {
-        foreach (var player in this._playerList)
-        {
-            this.CreatePlayerData(player);
-            this.SubscribeToOnDutyStatusChange(player);
-        }
-    }
-
     private void OnPlayerConnecting([FromSource] Player player, string playerName, dynamic setKickReason, dynamic deferrals)
     {
         this.CreatePlayerData(player);
@@ -108,12 +104,8 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         var fPlayer = FPlayer.FromNetId(player.Handle);
         fPlayer.DutyStatus.Subscribe(status =>
         {
-            foreach (var playerToNotify in this._playerList)
-            {
-                // TODO: add correct notification with message and texture
-                // TODO: maybe add extra methods to notification service to make it easier to use with playerList
-                this._notificationService.ShowNotification(playerToNotify, $"{fPlayer.GetUnderlyingPlayer().Name} is now {status}");
-            }
+            // TODO: add correct notification with message and texture
+            this._notificationService.ShowNotification(this._playerList, $"{fPlayer.GetUnderlyingPlayer().Name} is now {status}");
         });
     }
 
