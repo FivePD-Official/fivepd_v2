@@ -1,19 +1,17 @@
 ﻿using System.Reflection;
-using System.Threading.Tasks;
 
-namespace FivePD.Gamemode.Server.Interfaces
+namespace FivePD.Gamemode.Server.Interfaces;
+
+/// <summary>
+/// Responsible for receiving assemblies and preparing them for
+/// invocation by other parts of the game mode.
+/// </summary>
+public interface IAddonAssemblyLoader
 {
     /// <summary>
-    /// Responsible for receiving assemblies and preparing them for
-    /// invocation by other parts of the game mode.
+    /// Initializes an addon assembly from bytes.
     /// </summary>
-    public interface IAddonAssemblyLoader
-    {
-        /// <summary>
-        /// Initializes an addon assembly from bytes.
-        /// </summary>
-        /// <param name="assemblyBytes">The assembly to load.</param>
-        /// <returns>The loaded assembly.</returns>
-        public Assembly LoadAssemblyFromBytes(byte[] assemblyBytes);
-    }
+    /// <param name="assemblyBytes">The assembly to load.</param>
+    /// <returns>The loaded assembly.</returns>
+    public Assembly LoadAssemblyFromBytes(byte[] assemblyBytes);
 }

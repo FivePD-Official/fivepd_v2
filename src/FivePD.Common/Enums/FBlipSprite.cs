@@ -7,7 +7,7 @@
 /// Full list: https://docs.fivem.net/docs/game-references/blips/
 /// </summary>
 public enum FBlipSprite
-  {
+{
     Standard = 1,
     BigBlip = 2,
     PoliceOfficer = 3,
@@ -219,4 +219,4 @@ public enum FBlipSprite
     DollarSignCircled = 431, // 0x000001AF
     Crosshair2 = 432, // 0x000001B0
     DollarSignSquared = 434, // 0x000001B2
-  }
+}

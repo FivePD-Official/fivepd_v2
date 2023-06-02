@@ -7,76 +7,73 @@ using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.Requests;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Gamemode.Server.Services
+namespace FivePD.Gamemode.Server.Services;
+
+/// <inheritdoc />
+public class DevToolsService : IDevToolsService
 {
-    /**
-     * <inheritdoc cref="IDevToolsService" />
-     */
-    public class DevToolsService : IDevToolsService
+    [UIEvent(Events.DevTools.DeleteEntities)]
+    private void DeleteEntitiesFromUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        [UIEvent(Events.DevTools.DeleteEntities)]
-        private void DeleteEntitiesFromUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+        var request = expandoObject.ConvertTo<DeleteEntitiesRequest>();
+        switch (request.Type)
         {
-            var request = expandoObject.ConvertTo<DeleteEntitiesRequest>();
-            switch (request.Type)
+            case DeleteEntitiesRequest.DeleteEntityType.All:
             {
-                case DeleteEntitiesRequest.DeleteEntityType.All:
-                {
-                    this.DeleteAllEntities();
-                    break;
-                }
-
-                case DeleteEntitiesRequest.DeleteEntityType.Peds:
-                {
-                    this.DeletePeds();
-                    break;
-                }
-
-                case DeleteEntitiesRequest.DeleteEntityType.Vehicles:
-                {
-                    this.DeleteVehicles();
-                    break;
-                }
-
-                case DeleteEntitiesRequest.DeleteEntityType.Props:
-                {
-                    this.DeleteProps();
-                    break;
-                }
+                this.DeleteAllEntities();
+                break;
             }
 
-            networkCallbackDelegate.Invoke(null);
-        }
-
-        private void DeleteAllEntities()
-        {
-            this.DeletePeds();
-            this.DeleteVehicles();
-            this.DeleteProps();
-        }
-
-        private void DeletePeds()
-        {
-            foreach (int entity in Cfx.API.GetAllPeds())
+            case DeleteEntitiesRequest.DeleteEntityType.Peds:
             {
-                Cfx.API.DeleteEntity(entity);
+                this.DeletePeds();
+                break;
+            }
+
+            case DeleteEntitiesRequest.DeleteEntityType.Vehicles:
+            {
+                this.DeleteVehicles();
+                break;
+            }
+
+            case DeleteEntitiesRequest.DeleteEntityType.Props:
+            {
+                this.DeleteProps();
+                break;
             }
         }
 
-        private void DeleteVehicles()
-        {
-            foreach (int entity in Cfx.API.GetAllVehicles())
-            {
-                Cfx.API.DeleteEntity(entity);
-            }
-        }
+        networkCallbackDelegate.Invoke(null);
+    }
 
-        private void DeleteProps()
+    private void DeleteAllEntities()
+    {
+        this.DeletePeds();
+        this.DeleteVehicles();
+        this.DeleteProps();
+    }
+
+    private void DeletePeds()
+    {
+        foreach (int entity in Cfx.API.GetAllPeds())
         {
-            foreach (int entity in Cfx.API.GetAllObjects())
-            {
-                Cfx.API.DeleteEntity(entity);
-            }
+            Cfx.API.DeleteEntity(entity);
+        }
+    }
+
+    private void DeleteVehicles()
+    {
+        foreach (int entity in Cfx.API.GetAllVehicles())
+        {
+            Cfx.API.DeleteEntity(entity);
+        }
+    }
+
+    private void DeleteProps()
+    {
+        foreach (int entity in Cfx.API.GetAllObjects())
+        {
+            Cfx.API.DeleteEntity(entity);
         }
     }
 }

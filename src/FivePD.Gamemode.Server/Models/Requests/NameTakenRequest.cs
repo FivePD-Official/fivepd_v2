@@ -1,13 +1,12 @@
 ﻿#pragma warning disable
 
-namespace FivePD.Gamemode.Server.Models.Requests
+namespace FivePD.Gamemode.Server.Models.Requests;
+
+public record struct NameTakenRequest
 {
-    public record struct NameTakenRequest
-    {
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public int DepartmentId { get; set; }
+    public int DepartmentId { get; set; }
 
-        public bool CheckForDepartmentId { get; set; }
-    }
+    public bool CheckForDepartmentId { get; set; }
 }

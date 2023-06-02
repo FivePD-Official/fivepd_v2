@@ -2,12 +2,11 @@
 
 #pragma warning disable
 
-namespace FivePD.Gamemode.Server.Models.Requests
-{
-    public record struct AddSetAttributeRequest
-    {
-        public string SetId { get; set; }
+namespace FivePD.Gamemode.Server.Models.Requests;
 
-        public LooseDataAttribute Attribute { get; set; }
-    }
+public record struct AddSetAttributeRequest
+{
+    public string SetId { get; set; }
+
+    public LooseDataAttribute Attribute { get; set; }
 }

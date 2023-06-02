@@ -1,17 +1,16 @@
 ﻿using FivePD.Common.Models;
 
-namespace FivePD.Gamemode.Server.Interfaces
+namespace FivePD.Gamemode.Server.Interfaces;
+
+/// <summary>
+/// Responsible for <see cref="CommonFVehicle"/> related tasks.
+/// </summary>
+public interface IVehicleService
 {
     /// <summary>
-    /// Responsible for <see cref="CommonFVehicle"/> related tasks.
+    /// Tries to get a <see cref="CommonFVehicle"/> by its network ID.
     /// </summary>
-    public interface IVehicleService
-    {
-        /// <summary>
-        /// Tries to get a <see cref="CommonFVehicle"/> by its network ID.
-        /// </summary>
-        /// <param name="networkId">The ped's network ID.</param>
-        /// <returns>The ped or null.</returns>
-        public CommonFVehicle TryGetVehicle(int networkId);
-    }
+    /// <param name="networkId">The ped's network ID.</param>
+    /// <returns>The ped or null.</returns>
+    public CommonFVehicle TryGetVehicle(int networkId);
 }

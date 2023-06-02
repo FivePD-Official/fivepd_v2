@@ -1,17 +1,16 @@
 ﻿using FivePD.Common.Models;
 
-namespace FivePD.Gamemode.Server.Interfaces
+namespace FivePD.Gamemode.Server.Interfaces;
+
+/// <summary>
+/// Responsible for <see cref="CommonFPed"/> related tasks.
+/// </summary>
+public interface IPedService
 {
     /// <summary>
-    /// Responsible for <see cref="CommonFPed"/> related tasks.
+    /// Tries to get a <see cref="CommonFPed"/> by its network ID.
     /// </summary>
-    public interface IPedService
-    {
-        /// <summary>
-        /// Tries to get a <see cref="CommonFPed"/> by its network ID.
-        /// </summary>
-        /// <param name="networkId">The ped's network ID.</param>
-        /// <returns>The ped or null.</returns>
-        public CommonFPed TryGetPed(int networkId);
-    }
+    /// <param name="networkId">The ped's network ID.</param>
+    /// <returns>The ped or null.</returns>
+    public CommonFPed TryGetPed(int networkId);
 }

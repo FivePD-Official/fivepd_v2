@@ -1,16 +1,14 @@
-﻿using CitizenFX.Core;
-using FivePD.Common.Models;
+﻿using FivePD.Common.Models;
 
-namespace FivePD.Gamemode.Client.Interfaces
+namespace FivePD.Gamemode.Client.Interfaces;
+
+/// <summary>
+/// Provides access to the client's player.
+/// </summary>
+public interface ILocalPlayerService
 {
     /// <summary>
-    /// Provides access to the client's player.
+    /// Gets the local <see cref="FPlayer"/>.
     /// </summary>
-    public interface ILocalPlayerService
-    {
-        /// <summary>
-        /// Gets the local <see cref="FPlayer"/>.
-        /// </summary>
-        public FPlayer Player { get; }
-    }
+    public FPlayer Player { get; }
 }

@@ -6,128 +6,127 @@ using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
 
-namespace FivePD.Gamemode.Client.Services
+namespace FivePD.Gamemode.Client.Services;
+
+/// <inheritdoc />
+public class LoggerService : ILoggerService
 {
-    /// <inheritdoc />
-    public class LoggerService : ILoggerService
+    /// <summary>
+    /// Defines the level of info being logged.
+    /// </summary>
+    private enum LogLevel
     {
         /// <summary>
-        /// Defines the level of info being logged.
+        /// Informational messages that highlight the progress of the application.
         /// </summary>
-        private enum LogLevel
+        Info,
+
+        /// <summary>
+        /// Potentially harmful situations of interest that indicate potential problems.
+        /// </summary>
+        Warning,
+
+        /// <summary>
+        /// Error events of considerable importance that will prevent normal program execution.
+        /// </summary>
+        Error,
+    }
+
+    /// <inheritdoc />
+    public void Info(string message, params dynamic[] parameters)
+    {
+        this.LogToConsole(LogLevel.Info, message, parameters);
+    }
+
+    /// <inheritdoc />
+    public void Warn(string message, params dynamic[] parameters)
+    {
+        this.LogToConsole(LogLevel.Warning, message, parameters);
+    }
+
+    /// <inheritdoc />
+    public void Error(string message, params dynamic[] parameters)
+    {
+        this.LogToConsole(LogLevel.Error, message, parameters);
+    }
+
+    /// <inheritdoc />
+    public void Error(Exception exception)
+    {
+        this.LogToConsole(LogLevel.Error, exception.Message);
+        this.LogToConsole(LogLevel.Error, exception.StackTrace);
+    }
+
+    private void LogToConsole(LogLevel logLevel, string message, params dynamic[] parameters)
+    {
+        var extraData = new StringBuilder();
+
+        // `null` was passed as the only parameter
+        if (parameters is null)
         {
-            /// <summary>
-            /// Informational messages that highlight the progress of the application.
-            /// </summary>
-            Info,
-
-            /// <summary>
-            /// Potentially harmful situations of interest that indicate potential problems.
-            /// </summary>
-            Warning,
-
-            /// <summary>
-            /// Error events of considerable importance that will prevent normal program execution.
-            /// </summary>
-            Error,
+            parameters = new dynamic[] { null };
         }
 
-        /// <inheritdoc />
-        public void Info(string message, params dynamic[] parameters)
+        if (parameters.Length > 0)
         {
-            this.LogToConsole(LogLevel.Info, message, parameters);
-        }
-
-        /// <inheritdoc />
-        public void Warn(string message, params dynamic[] parameters)
-        {
-            this.LogToConsole(LogLevel.Warning, message, parameters);
-        }
-
-        /// <inheritdoc />
-        public void Error(string message, params dynamic[] parameters)
-        {
-            this.LogToConsole(LogLevel.Error, message, parameters);
-        }
-
-        /// <inheritdoc />
-        public void Error(Exception exception)
-        {
-            this.LogToConsole(LogLevel.Error, exception.Message);
-            this.LogToConsole(LogLevel.Error, exception.StackTrace);
-        }
-
-        private void LogToConsole(LogLevel logLevel, string message, params dynamic[] parameters)
-        {
-            var extraData = new StringBuilder();
-
-            // `null` was passed as the only parameter
-            if (parameters is null)
+            List<string> matches = new List<string>();
+            foreach (string word in message.Split(new[] { ' ', '.', ',', ':', '-', '/', '\\' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                parameters = new dynamic[] { null };
+                if (word.StartsWith("{") && word.EndsWith("}"))
+                {
+                    matches.Add(word);
+                }
             }
 
-            if (parameters.Length > 0)
+            for (int i = 0; i < parameters.Length; i++)
             {
-                List<string> matches = new List<string>();
-                foreach (string word in message.Split(new[] { ' ', '.', ',', ':', '-', '/', '\\' }, StringSplitOptions.RemoveEmptyEntries))
+                if (i >= matches.Count)
                 {
-                    if (word.StartsWith("{") && word.EndsWith("}"))
-                    {
-                        matches.Add(word);
-                    }
+                    extraData.Append($"\n{JsonConvert.SerializeObject(parameters[i], Formatting.Indented)}\n");
+                    continue;
                 }
 
-                for (int i = 0; i < parameters.Length; i++)
+                string param = matches[i];
+                bool serialize = param.Contains('@');
+
+                if (serialize)
                 {
-                    if (i >= matches.Count)
+                    string json = JsonConvert.SerializeObject(parameters[i], Formatting.Indented);
+                    json = string.Join(" ", json.Replace("\n", " ").Replace("\r", " ").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    message = message.Replace(param, $"{json}");
+                }
+                else
+                {
+                    if (parameters[i] is null)
                     {
-                        extraData.Append($"\n{JsonConvert.SerializeObject(parameters[i], Formatting.Indented)}\n");
-                        continue;
-                    }
-
-                    string param = matches[i];
-                    bool serialize = param.Contains('@');
-
-                    if (serialize)
-                    {
-                        string json = JsonConvert.SerializeObject(parameters[i], Formatting.Indented);
-                        json = string.Join(" ", json.Replace("\n", " ").Replace("\r", " ").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-                        message = message.Replace(param, $"{json}");
+                        message = message.Replace(param, "null");
                     }
                     else
                     {
-                        if (parameters[i] is null)
-                        {
-                            message = message.Replace(param, "null");
-                        }
-                        else
-                        {
-                            message = message.Replace(param, parameters[i].ToString());
-                        }
+                        message = message.Replace(param, parameters[i].ToString());
                     }
                 }
             }
+        }
 
-            switch (logLevel)
-            {
-                case LogLevel.Info:
-                    Debug.WriteLine($"[FivePD ^5INFO^7]: ^5{message}");
-                    break;
+        switch (logLevel)
+        {
+            case LogLevel.Info:
+                Debug.WriteLine($"[FivePD ^5INFO^7]: ^5{message}");
+                break;
 
-                case LogLevel.Warning:
-                    Debug.WriteLine($"[FivePD ^3WARNING^7]: ^3{message}");
-                    break;
+            case LogLevel.Warning:
+                Debug.WriteLine($"[FivePD ^3WARNING^7]: ^3{message}");
+                break;
 
-                case LogLevel.Error:
-                    Debug.WriteLine($"[FivePD ^1ERROR^7]: ^1{message}");
-                    break;
-            }
+            case LogLevel.Error:
+                Debug.WriteLine($"[FivePD ^1ERROR^7]: ^1{message}");
+                break;
+        }
 
-            if (extraData.Length > 0)
-            {
-                Debug.WriteLine(extraData.ToString());
-            }
+        if (extraData.Length > 0)
+        {
+            Debug.WriteLine(extraData.ToString());
         }
     }
 }
