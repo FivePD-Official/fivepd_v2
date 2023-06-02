@@ -11,8 +11,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
-/// <inheritdoc />
-public class MarkerService : IMarkerService
+/// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IMarkerService" />
+public class MarkerService : IMarkerService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;

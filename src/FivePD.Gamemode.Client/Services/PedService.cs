@@ -11,8 +11,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
-/// <inheritdoc />
-public class PedService : IPedService
+/// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IPedService" />
+public class PedService : IPedService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 

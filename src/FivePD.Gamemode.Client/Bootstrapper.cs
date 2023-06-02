@@ -111,6 +111,8 @@ namespace FivePD.Gamemode.Client
 
         private void PerformServiceLocationPhase()
         {
+            // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS !!
+
             var services = new ServiceProviderBuilder();
 
             services
@@ -123,17 +125,18 @@ namespace FivePD.Gamemode.Client
                 .Register<RemoveTickHandler>(() => this.OnTickRemove);
 
             services
+                .RegisterType<LocalizationService>()
+                .As<ILocalizationService>()
+                .As<IServiceWithEvents>()
+                .IsSingleton();
+
+            services
                 .RegisterType<FileHandlerService>()
                 .As<IFileHandlerService>();
 
             services
                 .RegisterType<LoggerService>()
                 .As<ILoggerService>();
-
-            services
-                .RegisterType<LocalizationService>()
-                .As<ILocalizationService>()
-                .IsSingleton();
 
             services
                 .RegisterType<DevUtilitiesService>()
@@ -150,11 +153,13 @@ namespace FivePD.Gamemode.Client
 
             services
                 .RegisterType<ScreenDecorService>()
-                .As<IScreenDecorService>();
+                .As<IScreenDecorService>()
+                .IsSingleton();
 
             services
                 .RegisterType<UIService>()
                 .As<IUIService>()
+                .As<IServiceWithEvents>()
                 .IsSingleton();
 
             services
@@ -164,11 +169,14 @@ namespace FivePD.Gamemode.Client
             services
                 .RegisterType<ControlService>()
                 .As<IControlService>()
+                .As<IServiceWithEvents>()
                 .IsSingleton();
 
             services
                 .RegisterType<MenuService>()
-                .As<IMenuService>();
+                .As<IMenuService>()
+                .As<IServiceWithEvents>()
+                .IsSingleton();
 
             // TODO: I'm not sure about radial menus.
             // services
@@ -177,15 +185,19 @@ namespace FivePD.Gamemode.Client
 
             services
                 .RegisterType<PedService>()
-                .As<IPedService>();
+                .As<IPedService>()
+                .As<IServiceWithEvents>()
+                .IsSingleton();
 
             services
                 .RegisterType<VehicleService>()
-                .As<IVehicleService>();
+                .As<IVehicleService>()
+                .IsSingleton();
 
             services
                 .RegisterType<NotificationService>()
                 .As<INotificationService>()
+                .As<IServiceWithEvents>()
                 .IsSingleton();
 
             services
@@ -195,11 +207,13 @@ namespace FivePD.Gamemode.Client
             services
                 .RegisterType<InteractionService>()
                 .As<IInteractionService>()
+                .As<IServiceWithEvents>()
                 .IsSingleton();
 
             services
                 .RegisterType<MarkerService>()
                 .As<IMarkerService>()
+                .As<IServiceWithEvents>()
                 .IsSingleton();
 
             this._serviceProvider = services.Build();
@@ -209,37 +223,24 @@ namespace FivePD.Gamemode.Client
 
         private void PerformInitializationPhase()
         {
-            // Load localizations EARLY!!!
-            var localizationService = this._serviceProvider.Resolve<ILocalizationService>();
-            localizationService.RegisterEventHandlers();
-            localizationService.LoadDefaultLocalization();
-
             var screenDecorService = this._serviceProvider.Resolve<IScreenDecorService>();
             screenDecorService.Version = "v2.0.0";
             screenDecorService.ProtectionNotice = true;
+
+            var serviceWithEvents = this._serviceProvider.ResolveAll<IServiceWithEvents>();
+            foreach (var service in serviceWithEvents)
+            {
+#if DEBUG
+                Debug.WriteLine($"Registering event handlers for {service.GetType()}");
+#endif
+
+                service.RegisterEvents();
+            }
+
             screenDecorService.BeginTextDraw();
-            localizationService.LocalizationChanged += (sender, locale) => { screenDecorService.BuildText(); };
 
-            var notificationService = this._serviceProvider.Resolve<INotificationService>();
-            notificationService.RegisterEvents();
-
-            var keybindService = this._serviceProvider.Resolve<IControlService>();
-            keybindService.RegisterControls();
-
-            var uiService = this._serviceProvider.Resolve<IUIService>();
-            uiService.RegisterEventHandlers();
-
-            var menuService = this._serviceProvider.Resolve<IMenuService>();
-            menuService.RegisterEvents();
-
-            var interactionService = this._serviceProvider.Resolve<IInteractionService>();
-            interactionService.RegisterKeybinds();
-
-            var pedService = this._serviceProvider.Resolve<IPedService>();
-            pedService.RegisterEvents();
-
-            var markerService = this._serviceProvider.Resolve<IMarkerService>();
-            markerService.RegisterEvents();
+            var localizationService = this._serviceProvider.Resolve<ILocalizationService>();
+            localizationService.LocalizationChanged += (_, _) => { screenDecorService.BuildText(); };
         }
 
         private void OnTickAdd(Func<Task> task)

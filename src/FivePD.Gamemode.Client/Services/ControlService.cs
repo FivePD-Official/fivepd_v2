@@ -17,8 +17,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
-/// <inheritdoc />
-public class ControlService : IControlService
+/// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IControlService" />
+public class ControlService : IControlService, IServiceWithEvents
 {
     private readonly ITickService _tickService;
     private readonly IUIService _uiService;
@@ -38,7 +38,7 @@ public class ControlService : IControlService
     }
 
     /// <inheritdoc />
-    public void RegisterControls()
+    public void RegisterEvents()
     {
         var methodInfos = Assembly
             .GetExecutingAssembly()

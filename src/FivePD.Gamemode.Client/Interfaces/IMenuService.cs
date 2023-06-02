@@ -5,9 +5,5 @@
     /// </summary>
     public interface IMenuService
     {
-        /// <summary>
-        /// Registers the necessary events for the menus.
-        /// </summary>
-        public void RegisterEvents();
     }
 }

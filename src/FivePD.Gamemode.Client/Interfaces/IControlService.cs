@@ -9,12 +9,6 @@ namespace FivePD.Gamemode.Client.Interfaces;
 public interface IControlService
 {
     /// <summary>
-    /// Finds all methods with the Keybind attribute
-    /// and register them.
-    /// </summary>
-    public void RegisterControls();
-
-    /// <summary>
     /// Registers a method to be ran on keybind press.
     /// </summary>
     /// <param name="id">The id of this keybind.</param>

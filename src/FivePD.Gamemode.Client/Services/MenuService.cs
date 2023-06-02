@@ -12,8 +12,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
 {
-    /// <inheritdoc />
-    public class MenuService : IMenuService
+    /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IMenuService" />
+    public class MenuService : IMenuService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IControlService _controlService;
