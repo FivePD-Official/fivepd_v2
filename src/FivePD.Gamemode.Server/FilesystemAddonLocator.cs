@@ -76,8 +76,10 @@ public class FilesystemAddonLocator
 
                         if (!File.Exists(assemblyPath))
                         {
-                            this._logger.Warning("Tried to find an addon assembly that doesn't exist ({Assembly}). Is the {MetadataFileName} up-to-date?",
-                                assembly, MetadataFileName);
+                            this._logger.Warning(
+                                "Tried to find an addon assembly that doesn't exist ({Assembly}). Is the {MetadataFileName} up-to-date?",
+                                assembly,
+                                MetadataFileName);
 
                             continue;
                         }
@@ -104,7 +106,9 @@ public class FilesystemAddonLocator
                 }
                 catch (Exception e)
                 {
-                    this._logger.Warning("An exception occurred while loading the addon with metadata path {Path}. {Message}", addonMetadataLocation,
+                    this._logger.Warning(
+                        "An exception occurred while loading the addon with metadata path {Path}. {Message}",
+                        addonMetadataLocation,
                         e.Message);
                 }
             }
