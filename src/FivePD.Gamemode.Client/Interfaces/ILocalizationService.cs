@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace FivePD.Gamemode.Client.Interfaces
 {
@@ -23,16 +22,6 @@ namespace FivePD.Gamemode.Client.Interfaces
         /// Gets the currently set localization.
         /// </summary>
         public dynamic CurrentLocalization { get; }
-
-        /// <summary>
-        /// Register all localization related event handlers.
-        /// </summary>
-        public void RegisterEventHandlers();
-
-        /// <summary>
-        /// Loads the default localization file.
-        /// </summary>
-        public void LoadDefaultLocalization();
 
         /// <summary>
         /// Loads the passed in localization.

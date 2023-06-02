@@ -9,11 +9,6 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface IPedService
     {
         /// <summary>
-        /// Registers all ped related events.
-        /// </summary>
-        public void RegisterEvents();
-
-        /// <summary>
         /// If the player is aiming stops the targeted ped, otherwise the closest one to the player.
         /// </summary>
         /// <param name="ped">The ped to stop.</param>

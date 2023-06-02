@@ -15,11 +15,6 @@ namespace FivePD.Gamemode.Client.Interfaces
         public event UIService.OnHide OnNuiHide;
 
         /// <summary>
-        /// Registers all necessary NUI events for the MDT and menus.
-        /// </summary>
-        public void RegisterEventHandlers();
-
-        /// <summary>
         /// Opens the test radial menu.
         /// </summary>
         /// <param name="menuId">Identifier of the menu.</param>

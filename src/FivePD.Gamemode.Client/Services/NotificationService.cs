@@ -11,8 +11,8 @@ using CfxUI = CitizenFX.Core.UI;
 
 namespace FivePD.Gamemode.Client.Services;
 
-/// <inheritdoc />
-public class NotificationService : INotificationService
+/// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.INotificationService" />
+public class NotificationService : INotificationService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 

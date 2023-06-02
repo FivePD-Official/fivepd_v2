@@ -6,8 +6,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
 {
-    /// <inheritdoc />
-    public class InteractionService : IInteractionService
+    /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IInteractionService" />
+    public class InteractionService : IInteractionService, IServiceWithEvents
     {
         private const float BaseInteractionDistance = 10.0f;
         private readonly IPedService _pedService;
@@ -32,7 +32,7 @@ namespace FivePD.Gamemode.Client.Services
         }
 
         /// <inheritdoc />
-        public void RegisterKeybinds()
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
         }

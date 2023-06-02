@@ -8,11 +8,6 @@ namespace FivePD.Gamemode.Client.Interfaces;
 public interface INotificationService
 {
     /// <summary>
-    /// Registers all ped related events.
-    /// </summary>
-    public void RegisterEvents();
-
-    /// <summary>
     /// Displays a tooltip (small notification in the top-left corner).
     /// </summary>
     /// <param name="content">The text that'll be displayed.</param>

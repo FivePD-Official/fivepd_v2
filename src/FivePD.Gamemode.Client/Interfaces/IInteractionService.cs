@@ -9,11 +9,6 @@ namespace FivePD.Gamemode.Client.Interfaces
     public interface IInteractionService
     {
         /// <summary>
-        /// Registers related keybinds.
-        /// </summary>
-        public void RegisterKeybinds();
-
-        /// <summary>
         /// Attempts to locate an entity based
         /// on factors such as the player's forward
         /// position, camera position, and target entity.

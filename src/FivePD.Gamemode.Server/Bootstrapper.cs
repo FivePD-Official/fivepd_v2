@@ -246,6 +246,11 @@ public class Bootstrapper : BaseScript
         services.AddSingleton<IFeatureFlagService, FeatureFlagService>();
         services.AddSingleton<IMarkerService, MarkerService>();
 
+#pragma warning disable
+        // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS
+        // !! AND SHOULD BE REGISTERED AS THE ONES BELOW THIS COMMENT !!
+#pragma warning enable
+
         services.AddSingleton<UIService>();
         services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<UIService>());
@@ -281,8 +286,6 @@ public class Bootstrapper : BaseScript
         services.AddSingleton<PlayerDataService>();
         services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PlayerDataService>());
-
-        services.AddSingleton<IUIService, UIService>();
 
         services.AddSingleton<MenuService>();
         services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());

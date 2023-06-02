@@ -13,7 +13,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Client.Services
 {
     /// <inheritdoc cref="IUIService" />
-    public class UIService : IUIService
+    public class UIService : IUIService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly ILoggerService _loggerService;
@@ -38,7 +38,7 @@ namespace FivePD.Gamemode.Client.Services
         public event OnHide OnNuiHide;
 
         /// <inheritdoc />
-        public void RegisterEventHandlers()
+        public void RegisterEvents()
         {
             // Listens for NUI close event
             this._eventHandlerDictionary.AddUIEvent(

@@ -14,8 +14,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services
 {
-    /// <inheritdoc />
-    public class LocalizationService : ILocalizationService
+    /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.ILocalizationService" />
+    public class LocalizationService : ILocalizationService, IServiceWithEvents
     {
         private readonly EventHandlerDictionary _eventHandlerDictionary;
         private readonly IUIService _uiService;
@@ -42,7 +42,7 @@ namespace FivePD.Gamemode.Client.Services
         public object CurrentLocalization { get; private set; }
 
         /// <inheritdoc />
-        public void RegisterEventHandlers()
+        public void RegisterEvents()
         {
             this._eventHandlerDictionary.AddUIEvent(
                 Events.Localization.GetLocalizationFromNui,
@@ -57,12 +57,8 @@ namespace FivePD.Gamemode.Client.Services
                     { "data", localization },
                 });
             });
-        }
 
-        /// <inheritdoc />
-        public void LoadDefaultLocalization()
-        {
-            this.LoadLocalization("en");
+            this.LoadDefaultLocalization();
         }
 
         /// <inheritdoc />
@@ -87,6 +83,11 @@ namespace FivePD.Gamemode.Client.Services
         public string Get(string key)
         {
             return this.CurrentLocalization.GetValueByPath(key);
+        }
+
+        private void LoadDefaultLocalization()
+        {
+            this.LoadLocalization("en");
         }
     }
 }
