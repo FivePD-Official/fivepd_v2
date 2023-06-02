@@ -2,14 +2,13 @@
 
 #pragma warning disable
 
-namespace FivePD.Gamemode.Server.Models.Requests
+namespace FivePD.Gamemode.Server.Models.Requests;
+
+public record struct AddEntityRequest
 {
-    public record struct AddEntityRequest
-    {
-        public string SetId { get; set; }
+    public string SetId { get; set; }
 
-        public int EntityId { get; set; }
+    public int EntityId { get; set; }
 
-        public ExpandoObject Entity { get; set; }
-    }
+    public ExpandoObject Entity { get; set; }
 }

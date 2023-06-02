@@ -1,15 +1,14 @@
-﻿namespace FivePD.Gamemode.Server.Interfaces
+﻿namespace FivePD.Gamemode.Server.Interfaces;
+
+/// <summary>
+/// Provides access to basic logging
+/// functionality for addon usage.
+/// </summary>
+public interface IAddonLoggerService
 {
     /// <summary>
-    /// Provides access to basic logging
-    /// functionality for addon usage.
+    /// Logs a message with the information label.
     /// </summary>
-    public interface IAddonLoggerService
-    {
-        /// <summary>
-        /// Logs a message with the information label.
-        /// </summary>
-        /// <param name="message">The text to write.</param>
-        public void Information(string message);
-    }
+    /// <param name="message">The text to write.</param>
+    public void Information(string message);
 }

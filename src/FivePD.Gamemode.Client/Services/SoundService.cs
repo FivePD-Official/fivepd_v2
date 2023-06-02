@@ -4,40 +4,39 @@ using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
 using Newtonsoft.Json.Linq;
 
-namespace FivePD.Gamemode.Client.Services
+namespace FivePD.Gamemode.Client.Services;
+
+/// <inheritdoc />
+public class SoundService : ISoundService
 {
-    /// <inheritdoc />
-    public class SoundService : ISoundService
+    private readonly IUIService _uiService;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SoundService"/> class.
+    /// </summary>
+    /// <param name="uiService">The <see cref="IUIService"/> to use.</param>
+    public SoundService(IUIService uiService)
     {
-        private readonly IUIService _uiService;
+        this._uiService = uiService;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SoundService"/> class.
-        /// </summary>
-        /// <param name="uiService">The <see cref="IUIService"/> to use.</param>
-        public SoundService(IUIService uiService)
+    /// <inheritdoc />
+    public void Play(Sound sound)
+    {
+        this._uiService.SendMessage(new JObject
         {
-            this._uiService = uiService;
-        }
+            { "type", Events.NuiEventType.PlaySound },
+            { "sound", sound.GetDescription() },
+        });
+    }
 
-        /// <inheritdoc />
-        public void Play(Sound sound)
+    /// <inheritdoc />
+    public void Speak(string text)
+    {
+        this._uiService.SendMessage(new JObject
         {
-            this._uiService.SendMessage(new JObject
-            {
-                { "type", Events.NuiEventType.PlaySound },
-                { "sound", sound.GetDescription() },
-            });
-        }
-
-        /// <inheritdoc />
-        public void Speak(string text)
-        {
-            this._uiService.SendMessage(new JObject
-            {
-                { "type", Events.NuiEventType.Speak },
-                { "textToPlay", text },
-            });
-        }
+            { "type", Events.NuiEventType.Speak },
+            { "textToPlay", text },
+        });
     }
 }

@@ -2,57 +2,56 @@
 using CitizenFX.Core;
 using FivePD.Gamemode.Server.Models.Responses;
 
-namespace FivePD.Gamemode.Server.Extensions
+namespace FivePD.Gamemode.Server.Extensions;
+
+/// <summary>
+/// Holds extension methods for <see cref="NetworkCallbackDelegate"/>.
+/// </summary>
+public static class NetworkCallbackDelegateExtensions
 {
     /// <summary>
-    /// Holds extension methods for <see cref="NetworkCallbackDelegate"/>.
+    /// Invokes the callback with a <see cref="ActionResponse"/> object.
     /// </summary>
-    public static class NetworkCallbackDelegateExtensions
+    /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
+    /// <param name="status">The status of the response.</param>
+    /// <param name="title">The title of the response.</param>
+    /// <param name="description">The description of the response.</param>
+    /// <param name="params">The params of the response.</param>
+    public static void InvokeWithResponse(this NetworkCallbackDelegate networkCallbackDelegate, bool status, string title, string description, Dictionary<string, string> @params = null)
     {
-        /// <summary>
-        /// Invokes the callback with a <see cref="ActionResponse"/> object.
-        /// </summary>
-        /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
-        /// <param name="status">The status of the response.</param>
-        /// <param name="title">The title of the response.</param>
-        /// <param name="description">The description of the response.</param>
-        /// <param name="params">The params of the response.</param>
-        public static void InvokeWithResponse(this NetworkCallbackDelegate networkCallbackDelegate, bool status, string title, string description, Dictionary<string, string> @params = null)
+        var response = new ActionResponse
         {
-            var response = new ActionResponse
-            {
-                Status = status,
-                Title = title,
-                Description = description,
-            };
+            Status = status,
+            Title = title,
+            Description = description,
+        };
 
-            if (@params != null)
-            {
-                response.Params = @params;
-            }
-
-            networkCallbackDelegate.Invoke(response.ToString());
+        if (@params != null)
+        {
+            response.Params = @params;
         }
 
-        /// <summary>
-        /// Invokes the callback with a false status and
-        /// the error message Unexpected error.
-        /// </summary>
-        /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
-        public static void InvokeWithUnexpectedError(this NetworkCallbackDelegate networkCallbackDelegate)
-        {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.UNEXPECTED", "UI.ERROR.DATABASE_ACCESS.TITLE");
-        }
+        networkCallbackDelegate.Invoke(response.ToString());
+    }
 
-        /// <summary>
-        /// Invokes the callback with the given JSON object
-        /// serialized without reference loop.
-        /// </summary>
-        /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
-        /// <param name="data">The object to send.</param>
-        public static void InvokeWithJson(this NetworkCallbackDelegate networkCallbackDelegate, object data)
-        {
-            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(data));
-        }
+    /// <summary>
+    /// Invokes the callback with a false status and
+    /// the error message Unexpected error.
+    /// </summary>
+    /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
+    public static void InvokeWithUnexpectedError(this NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.UNEXPECTED", "UI.ERROR.DATABASE_ACCESS.TITLE");
+    }
+
+    /// <summary>
+    /// Invokes the callback with the given JSON object
+    /// serialized without reference loop.
+    /// </summary>
+    /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
+    /// <param name="data">The object to send.</param>
+    public static void InvokeWithJson(this NetworkCallbackDelegate networkCallbackDelegate, object data)
+    {
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(data));
     }
 }

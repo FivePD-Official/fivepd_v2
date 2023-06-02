@@ -1,9 +1,8 @@
-﻿namespace FivePD.Gamemode.Server.Interfaces
+﻿namespace FivePD.Gamemode.Server.Interfaces;
+
+/// <summary>
+/// Provides utilities for development.
+/// </summary>
+public interface IDevToolsService
 {
-    /// <summary>
-    /// Provides utilities for development.
-    /// </summary>
-    public interface IDevToolsService
-    {
-    }
 }

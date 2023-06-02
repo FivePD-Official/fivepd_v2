@@ -1,23 +1,22 @@
-﻿namespace FivePD.Gamemode.Server.Models.LooseDataSet
+﻿namespace FivePD.Gamemode.Server.Models.LooseDataSet;
+
+/// <summary>
+/// Defines the possible types of <see cref="LooseDataEntityObservable"/>.
+/// </summary>
+public enum LooseDataEntityObservableType
 {
     /// <summary>
-    /// Defines the possible types of <see cref="LooseDataEntityObservable"/>.
+    /// Fires when an entity has been added to a set.
     /// </summary>
-    public enum LooseDataEntityObservableType
-    {
-        /// <summary>
-        /// Fires when an entity has been added to a set.
-        /// </summary>
-        Add,
+    Add,
 
-        /// <summary>
-        /// Fires when an entity has been edited in a set.
-        /// </summary>
-        Edit,
+    /// <summary>
+    /// Fires when an entity has been edited in a set.
+    /// </summary>
+    Edit,
 
-        /// <summary>
-        /// Fires when an entity has been deleted from a set.
-        /// </summary>
-        Delete,
-    }
+    /// <summary>
+    /// Fires when an entity has been deleted from a set.
+    /// </summary>
+    Delete,
 }

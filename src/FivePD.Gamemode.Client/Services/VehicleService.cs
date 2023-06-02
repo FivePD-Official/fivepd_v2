@@ -6,39 +6,38 @@ using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using Newtonsoft.Json;
 
-namespace FivePD.Gamemode.Client.Services
+namespace FivePD.Gamemode.Client.Services;
+
+/// <inheritdoc />
+public class VehicleService : IVehicleService
 {
-    /// <inheritdoc />
-    public class VehicleService : IVehicleService
+    private readonly IPedService _pedService;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VehicleService"/> class.
+    /// </summary>
+    /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
+    public VehicleService(IPedService pedService)
     {
-        private readonly IPedService _pedService;
+        this._pedService = pedService;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VehicleService"/> class.
-        /// </summary>
-        /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
-        public VehicleService(IPedService pedService)
+    /// <inheritdoc />
+    public void GenerateVehicle(Vehicle vehicle)
+    {
+        // TODO: Is the Occupants contains the Driver as well?
+        this._pedService.GeneratePed(vehicle.Driver);
+        foreach (var ped in vehicle.Occupants)
         {
-            this._pedService = pedService;
+            this._pedService.GeneratePed(ped);
         }
 
-        /// <inheritdoc />
-        public void GenerateVehicle(Vehicle vehicle)
-        {
-            // TODO: Is the Occupants contains the Driver as well?
-            this._pedService.GeneratePed(vehicle.Driver);
-            foreach (var ped in vehicle.Occupants)
-            {
-                this._pedService.GeneratePed(ped);
-            }
+        var fVehicleBuilder = new CommonFVehicleBuilder(vehicle.NetworkId)
+            .WithOwner(vehicle.Driver.NetworkId)
+            .WithPassengers(vehicle.Occupants.Select(ped => ped.NetworkId).ToList())
+            .WithColor(vehicle.GetColorName())
+            .WithBrand(vehicle.DisplayName);
 
-            var fVehicleBuilder = new CommonFVehicleBuilder(vehicle.NetworkId)
-                .WithOwner(vehicle.Driver.NetworkId)
-                .WithPassengers(vehicle.Occupants.Select(ped => ped.NetworkId).ToList())
-                .WithColor(vehicle.GetColorName())
-                .WithBrand(vehicle.DisplayName);
-
-            BaseScript.TriggerServerEvent(Events.Vehicle.Generate, JsonConvert.SerializeObject(fVehicleBuilder));
-        }
+        BaseScript.TriggerServerEvent(Events.Vehicle.Generate, JsonConvert.SerializeObject(fVehicleBuilder));
     }
 }

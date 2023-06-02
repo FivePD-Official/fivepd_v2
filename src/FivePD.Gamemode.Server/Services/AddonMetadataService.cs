@@ -5,39 +5,38 @@ using System.Reflection;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 
-namespace FivePD.Gamemode.Server.Services
+namespace FivePD.Gamemode.Server.Services;
+
+/// <inheritdoc />
+public class AddonMetadataService : IAddonMetadataService
 {
+    private readonly Dictionary<Assembly, AddonDefinition> _definitions = new();
+
     /// <inheritdoc />
-    public class AddonMetadataService : IAddonMetadataService
+    public void RegisterAddonAssemblyWithDefinition(Assembly assembly, AddonDefinition definition)
     {
-        private readonly Dictionary<Assembly, AddonDefinition> _definitions = new();
+        this._definitions[assembly] = definition;
+    }
 
-        /// <inheritdoc />
-        public void RegisterAddonAssemblyWithDefinition(Assembly assembly, AddonDefinition definition)
+    /// <inheritdoc />
+    public AddonDefinition GetExecutingAddonDefinition()
+    {
+        // Technically, the executing assembly is the server gamemode. Sort through the stack trace and find a ref. to the actual addon
+        foreach (var frame in new StackTrace().GetFrames())
         {
-            this._definitions[assembly] = definition;
-        }
-
-        /// <inheritdoc />
-        public AddonDefinition GetExecutingAddonDefinition()
-        {
-            // Technically, the executing assembly is the server gamemode. Sort through the stack trace and find a ref. to the actual addon
-            foreach (var frame in new StackTrace().GetFrames())
+            try
             {
-                try
+                if (frame.GetMethod().DeclaringType!.Assembly != Assembly.GetExecutingAssembly())
                 {
-                    if (frame.GetMethod().DeclaringType!.Assembly != Assembly.GetExecutingAssembly())
-                    {
-                        return this._definitions[frame.GetMethod().DeclaringType!.Assembly];
-                    }
-                }
-                catch (Exception)
-                {
-                    // Continues when frame assembly is null
+                    return this._definitions[frame.GetMethod().DeclaringType!.Assembly];
                 }
             }
-
-            return null;
+            catch (Exception)
+            {
+                // Continues when frame assembly is null
+            }
         }
+
+        return null;
     }
 }

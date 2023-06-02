@@ -1,16 +1,14 @@
 ﻿using System.ComponentModel;
 
-#pragma warning disable CS1591
-#pragma warning disable SA1602
+#pragma warning disable
 
-namespace FivePD.Gamemode.Client.Utilities
+namespace FivePD.Gamemode.Client.Utilities;
+
+/// <summary>
+/// Contains the available sound effect names.
+/// </summary>
+public enum Sound
 {
-    /// <summary>
-    /// Contains the available sound effect names.
-    /// </summary>
-    public enum Sound
-    {
-        [Description("panic.mp3")]
-        Panic,
-    }
+    [Description("panic.mp3")]
+    Panic,
 }

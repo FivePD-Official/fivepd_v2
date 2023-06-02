@@ -5,73 +5,72 @@ using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.CommandModels;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Gamemode.Server.Services
+namespace FivePD.Gamemode.Server.Services;
+
+/// <inheritdoc />
+public class CommandService : ICommandService
 {
-    /// <inheritdoc />
-    public class CommandService : ICommandService
+    private readonly List<Command> _commands = new();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CommandService"/> class.
+    /// </summary>
+    public CommandService()
     {
-        private readonly List<Command> _commands = new();
+        Cfx.API.RegisterCommand("fivepd", new Action<int, List<object>, string>(this.OnCommand), false);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandService"/> class.
-        /// </summary>
-        public CommandService()
+    /// <inheritdoc />
+    public Command RegisterCommand(string name, Action<int, List<object>> function, Func<bool> canInvoke = null)
+    {
+        var command = new Command(name, function, canInvoke);
+        if (this._commands.All(key => key.Name != name))
         {
-            Cfx.API.RegisterCommand("fivepd", new Action<int, List<object>, string>(this.OnCommand), false);
+            this._commands.Add(command);
         }
 
-        /// <inheritdoc />
-        public Command RegisterCommand(string name, Action<int, List<object>> function, Func<bool> canInvoke = null)
-        {
-            var command = new Command(name, function, canInvoke);
-            if (this._commands.All(key => key.Name != name))
-            {
-                this._commands.Add(command);
-            }
+        return command;
+    }
 
-            return command;
+    private void OnCommand(int source, List<object> args, string rawCommand)
+    {
+        if (args.Count == 0)
+        {
+            return;
         }
 
-        private void OnCommand(int source, List<object> args, string rawCommand)
+        var commandName = (string)args[0];
+        var subcommandName = args.Count > 1 ? (string)args[1] : string.Empty;
+
+        var command = this._commands.FirstOrDefault(command => command.Name == commandName);
+        if (command is null)
         {
-            if (args.Count == 0)
-            {
-                return;
-            }
+            return;
+        }
 
-            var commandName = (string)args[0];
-            var subcommandName = args.Count > 1 ? (string)args[1] : string.Empty;
-
-            var command = this._commands.FirstOrDefault(command => command.Name == commandName);
-            if (command is null)
+        var shouldInvokeMainCommand = true;
+        if (command.Subcommands.Count > 0 && !string.IsNullOrEmpty(subcommandName))
+        {
+            var subcommand = command.Subcommands.FirstOrDefault(subcommand => subcommand.Name == subcommandName);
+            if (subcommand != null)
             {
-                return;
-            }
-
-            var shouldInvokeMainCommand = true;
-            if (command.Subcommands.Count > 0 && !string.IsNullOrEmpty(subcommandName))
-            {
-                var subcommand = command.Subcommands.FirstOrDefault(subcommand => subcommand.Name == subcommandName);
-                if (subcommand != null)
-                {
-                    shouldInvokeMainCommand = false;
-                    args.RemoveRange(0, 2);
-                    var canBeInvoked = subcommand.CanBeInvoked is null || subcommand.CanBeInvoked();
-                    if (canBeInvoked)
-                    {
-                        subcommand.Function?.Invoke(source, args);
-                    }
-                }
-            }
-
-            if (shouldInvokeMainCommand)
-            {
-                args.RemoveAt(0);
-                var canBeInvoked = command.CanBeInvoked is null || command.CanBeInvoked();
+                shouldInvokeMainCommand = false;
+                args.RemoveRange(0, 2);
+                var canBeInvoked = subcommand.CanBeInvoked is null || subcommand.CanBeInvoked();
                 if (canBeInvoked)
                 {
-                    command.Function?.Invoke(source, args);
+                    subcommand.Function?.Invoke(source, args);
                 }
+            }
+        }
+
+        if (shouldInvokeMainCommand)
+        {
+            args.RemoveAt(0);
+            var canBeInvoked = command.CanBeInvoked is null || command.CanBeInvoked();
+            if (canBeInvoked)
+            {
+                command.Function?.Invoke(source, args);
             }
         }
     }

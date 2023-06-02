@@ -2,41 +2,40 @@
 using FivePD.Gamemode.Server.Interfaces;
 using Serilog;
 
-namespace FivePD.Gamemode.Server.Services
+namespace FivePD.Gamemode.Server.Services;
+
+/// <inheritdoc />
+public class AddonLoggerService : IAddonLoggerService
 {
-    /// <inheritdoc />
-    public class AddonLoggerService : IAddonLoggerService
+    private readonly ILogger _logger;
+    private readonly IAddonMetadataService _addonMetadataService;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddonLoggerService"/> class.
+    /// </summary>
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    /// <param name="addonMetadataService"> The <see cref="IAddonMetadataService"/> to use.</param>
+    public AddonLoggerService(ILogger logger, IAddonMetadataService addonMetadataService)
     {
-        private readonly ILogger _logger;
-        private readonly IAddonMetadataService _addonMetadataService;
+        this._logger = logger;
+        this._addonMetadataService = addonMetadataService;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddonLoggerService"/> class.
-        /// </summary>
-        /// <param name="logger">The <see cref="ILogger"/> to use.</param>
-        /// <param name="addonMetadataService"> The <see cref="IAddonMetadataService"/> to use.</param>
-        public AddonLoggerService(ILogger logger, IAddonMetadataService addonMetadataService)
+    /// <inheritdoc />
+    public void Information(string message)
+    {
+        this.BuildLoggerWithContext().Information(message);
+    }
+
+    private ILogger BuildLoggerWithContext()
+    {
+        try
         {
-            this._logger = logger;
-            this._addonMetadataService = addonMetadataService;
+            return this._logger.ForContext("SourceIdentifier", this._addonMetadataService.GetExecutingAddonDefinition().Name);
         }
-
-        /// <inheritdoc />
-        public void Information(string message)
+        catch (Exception)
         {
-            this.BuildLoggerWithContext().Information(message);
-        }
-
-        private ILogger BuildLoggerWithContext()
-        {
-            try
-            {
-                return this._logger.ForContext("SourceIdentifier", this._addonMetadataService.GetExecutingAddonDefinition().Name);
-            }
-            catch (Exception)
-            {
-                return this._logger.ForContext("SourceIdentifier", "GenericAddon");
-            }
+            return this._logger.ForContext("SourceIdentifier", "GenericAddon");
         }
     }
 }

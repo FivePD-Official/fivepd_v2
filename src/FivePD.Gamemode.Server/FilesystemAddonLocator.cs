@@ -7,139 +7,139 @@ using Newtonsoft.Json;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Gamemode.Server
+namespace FivePD.Gamemode.Server;
+
+/// <summary>
+/// Responsible for locating addon definitions. Loading of addons should be.
+/// </summary>
+public class FilesystemAddonLocator
 {
-    /**
-     * <summary>Responsible for locating addon definitions. Loading of addons should be.</summary>
-     */
-    public class FilesystemAddonLocator
+    private const string MetadataFileName = "addon.fpd.json";
+
+    private static readonly string ResourcePath = Cfx.API.GetResourcePath(Cfx.API.GetCurrentResourceName());
+
+    private static readonly string[] AddonDirectories =
     {
-        private const string MetadataFileName = "addon.fpd.json";
+        Path.Combine(ResourcePath, "Libraries/IA"),
+    };
 
-        private static readonly string ResourcePath = Cfx.API.GetResourcePath(Cfx.API.GetCurrentResourceName());
+    private readonly ILogger _logger;
 
-        private static readonly string[] AddonDirectories =
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FilesystemAddonLocator"/> class powered by the attached file system.
+    /// </summary>
+    /// <param name="logger">A logger instance to use.</param>
+    public FilesystemAddonLocator(ILogger logger)
+    {
+        this._logger = logger;
+    }
+
+    /// <summary>
+    /// Returns all found addon definitions.
+    /// </summary>
+    /// <returns>An enumerable of all addon definitions located.</returns>
+    public IEnumerable<AddonDefinition> GetAddons()
+    {
+        var definitions = new List<AddonDefinition>();
+
+        this._logger.Information("Beginning addon locate via file system driver");
+
+        foreach (var directory in AddonDirectories)
         {
-            Path.Combine(ResourcePath, "Libraries/IA"),
-        };
+            var addonMetadataLocations = FindAddonsInDirectory(new DirectoryInfo(directory));
 
-        private readonly ILogger _logger;
-
-        /**
-         * <summary>Initializes a new instance of the <see cref="FilesystemAddonLocator"/> class
-         * powered by the attached file system.</summary>
-         * <param name="logger">A logger instance to use.</param>
-         */
-        public FilesystemAddonLocator(ILogger logger)
-        {
-            this._logger = logger;
-        }
-
-        /**
-         * <summary>Returns all found addon definitions.</summary>
-         * <returns>An enumerable of all addon definitions located.</returns>
-         */
-        public IEnumerable<AddonDefinition> GetAddons()
-        {
-            var definitions = new List<AddonDefinition>();
-
-            this._logger.Information("Beginning addon locate via file system driver");
-
-            foreach (var directory in AddonDirectories)
+            foreach (var addonMetadataLocation in addonMetadataLocations)
             {
-                var addonMetadataLocations = FindAddonsInDirectory(new DirectoryInfo(directory));
-
-                foreach (var addonMetadataLocation in addonMetadataLocations)
+                try
                 {
-                    try
+                    var metadata = JsonConvert.DeserializeObject<AddonMetadata>(File.ReadAllText(addonMetadataLocation));
+
+                    this._logger.Debug("Found addon metadata for {@Addon}", metadata.FriendlyName);
+
+                    var definition = new AddonDefinition()
                     {
-                        var metadata = JsonConvert.DeserializeObject<AddonMetadata>(File.ReadAllText(addonMetadataLocation));
+                        Name = Path.GetFileName(Path.GetDirectoryName(addonMetadataLocation)),
+                        FriendlyName = metadata.FriendlyName,
+                        Version = metadata.Version,
+                        FriendlyVersion = metadata.FriendlyVersion,
+                        IsInternal = true,
+                        Assemblies = new List<byte[]>(),
+                        Files = metadata.Files.ToDictionary(x => x, _ => string.Empty),
+                    };
 
-                        this._logger.Debug("Found addon metadata for {@Addon}", metadata.FriendlyName);
+                    var addonDirectory = Directory.GetParent(addonMetadataLocation).ToString();
 
-                        var definition = new AddonDefinition()
+                    foreach (var assembly in metadata.Assemblies)
+                    {
+                        // todo: path validation and security
+                        var assemblyPath = Path.Combine(addonDirectory, assembly);
+
+                        if (!File.Exists(assemblyPath))
                         {
-                            Name = Path.GetFileName(Path.GetDirectoryName(addonMetadataLocation)),
-                            FriendlyName = metadata.FriendlyName,
-                            Version = metadata.Version,
-                            FriendlyVersion = metadata.FriendlyVersion,
-                            IsInternal = true,
-                            Assemblies = new List<byte[]>(),
-                            Files = metadata.Files.ToDictionary(x => x, _ => string.Empty),
-                        };
+                            this._logger.Warning("Tried to find an addon assembly that doesn't exist ({Assembly}). Is the {MetadataFileName} up-to-date?",
+                                assembly, MetadataFileName);
 
-                        var addonDirectory = Directory.GetParent(addonMetadataLocation).ToString();
-
-                        foreach (var assembly in metadata.Assemblies)
-                        {
-                            // todo: path validation and security
-                            var assemblyPath = Path.Combine(addonDirectory, assembly);
-
-                            if (!File.Exists(assemblyPath))
-                            {
-                                this._logger.Warning("Tried to find an addon assembly that doesn't exist ({Assembly}). Is the {MetadataFileName} up-to-date?", assembly, MetadataFileName);
-
-                                continue;
-                            }
-
-                            this._logger.Debug("Located addon assembly {Assembly}", assembly);
-
-                            try
-                            {
-                                definition.Assemblies.Add(ValidateAssemblyAndReadBytes(assemblyPath));
-                            }
-                            catch (Exception e)
-                            {
-                                this._logger.Warning("Failed to read addon assembly file {Assembly}. {Message}", assembly, e.Message);
-                            }
+                            continue;
                         }
 
-                        foreach (var file in definition.Files.Keys.ToList())
+                        this._logger.Debug("Located addon assembly {Assembly}", assembly);
+
+                        try
                         {
-                            var filePath = Path.Combine(addonDirectory, file);
-                            definition.Files[file] = File.ReadAllText(filePath);
+                            definition.Assemblies.Add(ValidateAssemblyAndReadBytes(assemblyPath));
                         }
-
-                        definitions.Add(definition);
+                        catch (Exception e)
+                        {
+                            this._logger.Warning("Failed to read addon assembly file {Assembly}. {Message}", assembly, e.Message);
+                        }
                     }
-                    catch (Exception e)
+
+                    foreach (var file in definition.Files.Keys.ToList())
                     {
-                       this._logger.Warning("An exception occurred while loading the addon with metadata path {Path}. {Message}", addonMetadataLocation, e.Message);
+                        var filePath = Path.Combine(addonDirectory, file);
+                        definition.Files[file] = File.ReadAllText(filePath);
                     }
+
+                    definitions.Add(definition);
                 }
-            }
-
-            this._logger.Information("Found {@Count} addons, passing back to bootstrapper", definitions.Count);
-
-            return definitions;
-        }
-
-        private static IEnumerable<string> FindAddonsInDirectory(DirectoryInfo directory)
-        {
-            var addons = new List<string>();
-            foreach (var subdirectory in directory.GetDirectories())
-            {
-                var metadataLocation = Path.Combine(subdirectory.ToString(), MetadataFileName);
-
-                if (!File.Exists(metadataLocation))
+                catch (Exception e)
                 {
-                    continue;
+                    this._logger.Warning("An exception occurred while loading the addon with metadata path {Path}. {Message}", addonMetadataLocation,
+                        e.Message);
                 }
-
-                addons.Add(metadataLocation);
             }
-
-            return addons;
         }
 
-        private static byte[] ValidateAssemblyAndReadBytes(string path)
+        this._logger.Information("Found {@Count} addons, passing back to bootstrapper", definitions.Count);
+
+        return definitions;
+    }
+
+    private static IEnumerable<string> FindAddonsInDirectory(DirectoryInfo directory)
+    {
+        var addons = new List<string>();
+        foreach (var subdirectory in directory.GetDirectories())
         {
-            if (Path.GetExtension(path) != ".dll")
+            var metadataLocation = Path.Combine(subdirectory.ToString(), MetadataFileName);
+
+            if (!File.Exists(metadataLocation))
             {
-                throw new ArgumentException("The provided file is not a library (DLL)");
+                continue;
             }
 
-            return File.ReadAllBytes(path);
+            addons.Add(metadataLocation);
         }
+
+        return addons;
+    }
+
+    private static byte[] ValidateAssemblyAndReadBytes(string path)
+    {
+        if (Path.GetExtension(path) != ".dll")
+        {
+            throw new ArgumentException("The provided file is not a library (DLL)");
+        }
+
+        return File.ReadAllBytes(path);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using FivePD.Gamemode.Client.Injection;
 
 namespace FivePD.Gamemode.Client.Interfaces;
 

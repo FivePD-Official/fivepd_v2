@@ -7,20 +7,25 @@ using FivePD.Gamemode.Server.Interfaces;
 
 namespace FivePD.Gamemode.Server.Services;
 
-#pragma warning disable
-
+/// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IEventService" />
 public class EventService : IEventService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _players;
     private readonly ConcurrentDictionary<string, Action<string>> _events = new();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventService"/> class.
+    /// </summary>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    /// <param name="players">The <see cref="PlayerList"/> to use.</param>
     public EventService(EventHandlerDictionary eventHandlerDictionary, PlayerList players)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._players = players;
     }
 
+    /// <inheritdoc />
     public void RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Generic.Callback] += new Action<string, string>((eventId, value) =>
@@ -35,12 +40,16 @@ public class EventService : IEventService, IServiceWithEvents
         });
     }
 
+    /// <inheritdoc />
     public void TriggerEventWithoutCallback(Player player, string eventName, params object[] args)
     {
+        // TODO: this might not work, I'm not sure if an Entity.Owner is null if the entity has no owner,
+        // also select a random player
         player ??= this._players[0];
         BaseScript.TriggerClientEvent(player, eventName, args);
     }
 
+    /// <inheritdoc />
     public void TriggerEvent(Player player, string eventName, Action<string> callback, params object[] args)
     {
         var guid = Guid.NewGuid().ToString();
@@ -53,6 +62,7 @@ public class EventService : IEventService, IServiceWithEvents
         BaseScript.TriggerClientEvent(player, eventName, newArgs);
     }
 
+    /// <inheritdoc />
     public async Task<string> TriggerEventAsync(Player player, string eventName, params object[] args)
     {
         var value = string.Empty;
