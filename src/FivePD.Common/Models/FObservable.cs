@@ -99,14 +99,17 @@ public class FObservable<T> : IDisposable
     /// of the returned <see cref="IDisposable"/>
     /// will unsubscribe the observer.</summary>
     /// <param name="observer">The action to subscribe.</param>
+    /// <param name="emitLastEventOnSubscription">Sets whether the last event should be emitted on subscription.</param>
     /// <returns>An <see cref="IDisposable"/> to
     /// use to unsubscribe.</returns>
-    public IDisposable Subscribe(Action<T> observer)
+    public IDisposable Subscribe(Action<T> observer, bool emitLastEventOnSubscription = true)
     {
         this._observers.Add(observer);
 
-        // Updates the new observer with the current value.
-        observer.Invoke(this.Value);
+        if (emitLastEventOnSubscription)
+        {
+            observer.Invoke(this.Value);
+        }
 
         return new FObservableSubscription<T>(this, observer);
     }

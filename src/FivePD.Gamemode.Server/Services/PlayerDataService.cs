@@ -5,6 +5,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
+using FivePD.Gamemode.Common.Utilities;
 using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
@@ -124,11 +125,9 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
-        fPlayer.DutyStatus.Subscribe(status =>
-        {
-            // TODO: add correct notification with message and texture
-            this._notificationService.ShowNotification(this._playerList, $"{fPlayer.GetUnderlyingPlayer().Name} is now {status}");
-        });
+        fPlayer.DutyStatus.Subscribe(
+            status => { this._notificationService.ShowNotification(this._playerList, $"{fPlayer.GetUnderlyingPlayer().Name} is now {status}"); },
+            false);
     }
 
     private void CreatePlayerData(Player player)
