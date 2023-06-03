@@ -51,7 +51,7 @@ public class LocalPlayerService : ILocalPlayerService
             FDutyStatus.OffDuty => this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.GENERIC"),
             FDutyStatus.OnDutyAndReceiving => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC_RECEIVING"),
             FDutyStatus.OnDutyAndNotReceiving => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC_NOT_RECEIVING"),
-            _ => string.Empty,
+            _ => "Unknown",
         };
         Cfx.API.SetRichPresence(status);
         Cfx.API.SetDiscordRichPresenceAssetText("FivePD is a law enforcement gamemode for FiveM. 👮 twitter.com/five_pd");
