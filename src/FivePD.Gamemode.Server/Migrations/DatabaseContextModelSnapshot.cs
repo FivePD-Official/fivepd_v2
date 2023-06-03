@@ -197,7 +197,19 @@ namespace FivePD.Gamemode.Server.Migrations
                     b.Property<int?>("DivisionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("License")
+                    b.Property<string>("IdentifierDiscord")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("IdentifierLicense")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("IdentifierLive")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("IdentifierSteam")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("IdentifierXbl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
