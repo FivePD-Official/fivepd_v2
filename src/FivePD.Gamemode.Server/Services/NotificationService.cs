@@ -73,7 +73,7 @@ public class NotificationService : INotificationService
         string content,
         Dictionary<string, string> contentParams = null)
     {
-        player.TriggerEvent(Events.Notification.ShowNotification, JsonConvert.SerializeObject(
+        player.TriggerEvent(Events.Notification.ShowNotificationWithTexture, JsonConvert.SerializeObject(
             new NotificationDTO.ShowNotificationWithTexture
             {
                 Texture = texture,

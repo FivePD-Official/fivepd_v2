@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Extensions;
@@ -15,14 +16,17 @@ namespace FivePD.Gamemode.Client.Services;
 public class NotificationService : INotificationService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly ILocalizationService _localizationService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NotificationService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    public NotificationService(EventHandlerDictionary eventHandlerDictionary)
+    /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
+    public NotificationService(EventHandlerDictionary eventHandlerDictionary, ILocalizationService localizationService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._localizationService = localizationService;
     }
 
     /// <inheritdoc />
@@ -31,17 +35,21 @@ public class NotificationService : INotificationService, IServiceWithEvents
         this._eventHandlerDictionary[Events.Notification.ShowTooltip] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowTooltip>(serializedRequest);
-            this.ShowTooltip(request.Content.ReplaceParams(request.ContentParams), request.WithBeep);
+            this.ShowTooltip(this.GetLocalizedContent(request.Content, request.ContentParams), request.WithBeep);
         });
         this._eventHandlerDictionary[Events.Notification.ShowNotification] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowNotification>(serializedRequest);
-            this.ShowNotification(request.Content.ReplaceParams(request.ContentParams));
+            this.ShowNotification(this.GetLocalizedContent(request.Content, request.ContentParams));
         });
         this._eventHandlerDictionary[Events.Notification.ShowNotificationWithTexture] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowNotificationWithTexture>(serializedRequest);
-            this.ShowNotificationWithTexture(request.Texture, request.Sender, request.Subject, request.Content.ReplaceParams(request.ContentParams));
+            this.ShowNotificationWithTexture(
+                request.Texture,
+                this.GetLocalizedText(request.Sender),
+                this.GetLocalizedText(request.Subject),
+                this.GetLocalizedContent(request.Content, request.ContentParams));
         });
     }
 
@@ -86,5 +94,24 @@ public class NotificationService : INotificationService, IServiceWithEvents
     public void ShowNotificationWithTexture(string texture, string sender, string subject, GtaStyleText content)
     {
         this.ShowNotificationWithTexture(texture, sender, subject, content.Build());
+    }
+
+    private string GetLocalizedContent(string content, Dictionary<string, string> contentParams)
+    {
+        var localizedContent = this._localizationService.Get(content);
+        var localizedParams = new Dictionary<string, string>();
+        foreach (var param in contentParams)
+        {
+            var localizedParam = this._localizationService.Get(param.Value);
+            localizedParams[param.Key] = string.IsNullOrEmpty(localizedParam) ? param.Value : localizedParam;
+        }
+
+        return string.IsNullOrEmpty(localizedContent) ? content : localizedContent.ReplaceParams(localizedParams);
+    }
+
+    private string GetLocalizedText(string text)
+    {
+        var localizedText = this._localizationService.Get(text);
+        return string.IsNullOrEmpty(localizedText) ? text : localizedText;
     }
 }

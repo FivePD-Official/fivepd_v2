@@ -126,7 +126,26 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
         fPlayer.DutyStatus.Subscribe(
-            status => { this._notificationService.ShowNotification(this._playerList, $"{fPlayer.GetUnderlyingPlayer().Name} is now {status}"); },
+            status =>
+            {
+                this._notificationService.ShowNotificationWithTexture(
+                    this._playerList,
+                    "CHAR_CALL911",
+                    "LABEL.DISPATCH",
+                    "LABEL.STATUS",
+                    "PLAYER_STATUS.CHANGE",
+                    new Dictionary<string, string>
+                    {
+                        ["name"] = player.Name,
+                        ["status"] = status switch
+                        {
+                            FDutyStatus.OffDuty => "PLAYER_STATUS.OFF_DUTY.GENERIC",
+                            FDutyStatus.OnDutyAndReceiving => "PLAYER_STATUS.ON_DUTY.GENERIC_RECEIVING",
+                            FDutyStatus.OnDutyAndNotReceiving => "PLAYER_STATUS.ON_DUTY.GENERIC_NOT_RECEIVING",
+                            _ => "Unknown",
+                        },
+                    });
+            },
             false);
     }
 
