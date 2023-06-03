@@ -36,7 +36,7 @@ public class DutyMenu : Menu
         this._configService = configService;
         this._localizationService = localizationService;
         this._eventService = eventService;
-        this._dutyMenuConfig = configService.GetMenuConfig().DutyMenu;
+        this._dutyMenuConfig = configService.MenuConfig.DutyMenu;
         this.Items = this.CreateItems();
     }
 
@@ -74,7 +74,7 @@ public class DutyMenu : Menu
             this.VehicleSpawnerItem = new MenuListItem(
                 "DUTY_MENU.ITEM.SPAWN_VEHICLE.TITLE",
                 "DUTY_MENU.ITEM.SPAWN_VEHICLE.DESCRIPTION",
-                this._configService.GetVehiclesConfig().Police.Select(vehicle => vehicle.Name).ToList());
+                this._configService.VehiclesConfig.Police.Select(vehicle => vehicle.Name).ToList());
             this.VehicleSpawnerItem.OnSelect += (player, index) =>
             {
                 // var policeVehicle = this._policeVehicles.ElementAt(index);
@@ -88,11 +88,11 @@ public class DutyMenu : Menu
             this.LoadoutItem = new MenuListItem(
                 "DUTY_MENU.ITEM.GET_LOADOUT.TITLE",
                 "DUTY_MENU.ITEM.GET_LOADOUT.DESCRIPTION",
-                this._configService.GetLoadoutsConfig().Select(x => x.Title).ToList());
+                this._configService.LoadoutsConfig.Select(x => x.Title).ToList());
             this.LoadoutItem.OnSelect += (player, index) =>
             {
                 var playerPed = FPed.FromFPlayer(player);
-                var loadout = this._configService.GetLoadoutsConfig().ElementAt(index);
+                var loadout = this._configService.LoadoutsConfig.ElementAt(index);
                 foreach (var weaponItem in loadout.Weapons)
                 {
                     var weaponHash = (FWeaponHash)Cfx.API.GetHashKey(weaponItem.Key);

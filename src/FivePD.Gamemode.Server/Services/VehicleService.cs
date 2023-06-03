@@ -4,6 +4,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
+using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 
@@ -34,9 +35,10 @@ public class VehicleService : IVehicleService, IServiceWithEvents
     }
 
     /// <inheritdoc/>
-    public CommonFVehicle TryGetVehicle(int networkId)
+    public FVehicle TryGetVehicle(int networkId)
     {
-        return this._vehicles.TryGetValue(networkId, out var fVehicle) ? fVehicle : null;
+        var commonFVehicle = this._vehicles.TryGetValue(networkId, out var fVehicle) ? fVehicle : null;
+        return new FVehicle(commonFVehicle);
     }
 
     private void GenerateVehicle(string serializedFVehicleBuilder)
@@ -48,7 +50,7 @@ public class VehicleService : IVehicleService, IServiceWithEvents
         }
 
         var fVehicle = fVehicleBuilder
-            .WithItems(this._configService.GetItems())
+            .WithItems(this._configService.Items)
             .Build();
 
         this._vehicles[fVehicle.NetworkId] = fVehicle;

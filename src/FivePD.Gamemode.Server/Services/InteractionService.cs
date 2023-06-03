@@ -105,24 +105,14 @@ public class InteractionService : IInteractionService, IServiceWithEvents
 
         if (typeof(T) == typeof(FPed))
         {
-            var commonFPed = this._pedService.TryGetPed(int.Parse(networkId));
-            if (commonFPed is null)
-            {
-                return null;
-            }
-
-            return new FPed(commonFPed) as T;
+            var fPed = this._pedService.TryGetPed(int.Parse(networkId));
+            return fPed as T;
         }
 
         if (typeof(T) == typeof(FVehicle))
         {
-            var commonFVehicle = this._vehicleService.TryGetVehicle(int.Parse(networkId));
-            if (commonFVehicle is null)
-            {
-                return null;
-            }
-
-            return new FVehicle(commonFVehicle) as T;
+            var fVehicle = this._vehicleService.TryGetVehicle(int.Parse(networkId));
+            return fVehicle as T;
         }
 
         return null;

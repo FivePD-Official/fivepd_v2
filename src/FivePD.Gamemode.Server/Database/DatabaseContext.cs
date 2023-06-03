@@ -79,7 +79,7 @@ public class DatabaseContext : DbContext
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var config = this._configService?.GetDatabaseConfig();
+        var config = this._configService?.DatabaseConfig;
         if (config != null)
         {
             optionsBuilder.UseMySql(config.ToString());

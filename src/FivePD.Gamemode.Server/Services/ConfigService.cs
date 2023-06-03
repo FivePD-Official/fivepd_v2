@@ -13,76 +13,46 @@ namespace FivePD.Gamemode.Server.Services;
 public class ConfigService : IConfigService
 {
     private readonly IFileHandlerService _fileHandlerService;
-    private readonly ILocalizationService _localizationService;
     private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigService"/> class.
     /// </summary>
     /// <param name="fileHandlerService">The <see cref="IFileHandlerService"/> to use.</param>
-    /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
-    public ConfigService(IFileHandlerService fileHandlerService, ILocalizationService localizationService, ILogger logger)
+    public ConfigService(IFileHandlerService fileHandlerService, ILogger logger)
     {
         this._fileHandlerService = fileHandlerService;
-        this._localizationService = localizationService;
         this._logger = logger;
     }
 
     /// <inheritdoc />
     [NoUsage]
-    public DatabaseConfig GetDatabaseConfig()
-    {
-        return this.InternalLoadFile<DatabaseConfig>("/Config/database.json");
-    }
+    public DatabaseConfig DatabaseConfig => this.InternalLoadFile<DatabaseConfig>("/Config/database.json");
 
     /// <inheritdoc />
-    public List<Item> GetItems()
-    {
-        return this.InternalLoadFile<List<Item>>("/Config/items.json");
-    }
+    public List<Item> Items => this.InternalLoadFile<List<Item>>("/Config/items.json");
 
     /// <inheritdoc />
-    public MenuConfig GetMenuConfig()
-    {
-        return this.InternalLoadFile<MenuConfig>("/Config/menu.json");
-    }
+    public MenuConfig MenuConfig => this.InternalLoadFile<MenuConfig>("/Config/menu.json");
 
     /// <inheritdoc />
-    public Vehicles GetVehiclesConfig()
-    {
-        return this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
-    }
+    public Vehicles VehiclesConfig => this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
 
     /// <inheritdoc />
-    public List<Loadout> GetLoadoutsConfig()
-    {
-        return this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
-    }
+    public List<Loadout> LoadoutsConfig => this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
 
     /// <inheritdoc />
-    public FeaturesConfig GetFeaturesConfig()
-    {
-        return this.InternalLoadFile<FeaturesConfig>("/Config/features.json");
-    }
+    public FeaturesConfig FeaturesConfig => this.InternalLoadFile<FeaturesConfig>("/Config/features.json");
 
     /// <inheritdoc />
-    public List<string> GetFemaleFirstnames()
-    {
-        return this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");
-    }
+    public List<string> FemaleFirstnames => this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");
 
     /// <inheritdoc />
-    public List<string> GetMaleFirstnames()
-    {
-        return this._fileHandlerService.LoadStringList("/Config/MaleFirstnames.txt");
-    }
+    public List<string> MaleFirstnames => this._fileHandlerService.LoadStringList("/Config/MaleFirstnames.txt");
 
     /// <inheritdoc />
-    public List<string> GetLastnames()
-    {
-        return this._fileHandlerService.LoadStringList("/Config/Lastnames.txt");
-    }
+    public List<string> Lastnames => this._fileHandlerService.LoadStringList("/Config/Lastnames.txt");
 
     private T InternalLoadFile<T>(string path, bool useCache = true)
     {

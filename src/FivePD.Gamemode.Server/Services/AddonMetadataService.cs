@@ -28,7 +28,11 @@ public class AddonMetadataService : IAddonMetadataService
             {
                 if (frame.GetMethod().DeclaringType!.Assembly != Assembly.GetExecutingAssembly())
                 {
-                    return this._definitions[frame.GetMethod().DeclaringType!.Assembly];
+                    var declaringTypeAssembly = frame.GetMethod().DeclaringType?.Assembly;
+                    if (declaringTypeAssembly is not null)
+                    {
+                        return this._definitions[declaringTypeAssembly];
+                    }
                 }
             }
             catch (Exception)

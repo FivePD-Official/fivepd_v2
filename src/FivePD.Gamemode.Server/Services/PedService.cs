@@ -6,6 +6,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Models;
+using FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.Requests;
@@ -40,9 +41,10 @@ public class PedService : IPedService, IServiceWithEvents
     }
 
     /// <inheritdoc/>
-    public CommonFPed TryGetPed(int networkId)
+    public FPed TryGetPed(int networkId)
     {
-        return this._peds.TryGetValue(networkId, out var fPed) ? fPed : null;
+        var commonFPed = this._peds.TryGetValue(networkId, out var fPed) ? fPed : null;
+        return new FPed(commonFPed);
     }
 
     private void GeneratePed(string serializedFPedBuilder)
@@ -54,10 +56,10 @@ public class PedService : IPedService, IServiceWithEvents
         }
 
         var fPed = fPedBuilder
-            .WithFirstname(fPedBuilder.Gender == FGender.Female ? this._configService.GetFemaleFirstnames() : this._configService.GetMaleFirstnames())
-            .WithLastname(this._configService.GetLastnames())
+            .WithFirstname(fPedBuilder.Gender == FGender.Female ? this._configService.FemaleFirstnames : this._configService.MaleFirstnames)
+            .WithLastname(this._configService.Lastnames)
             .WithBirthdate()
-            .WithItems(this._configService.GetItems())
+            .WithItems(this._configService.Items)
             .Build();
 
         this._peds[fPed.NetworkId] = fPed;

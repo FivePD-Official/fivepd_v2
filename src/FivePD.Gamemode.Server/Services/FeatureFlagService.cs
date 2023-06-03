@@ -17,7 +17,7 @@ public class FeatureFlagService : IFeatureFlagService
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     public FeatureFlagService(IConfigService configService)
     {
-        this._featuresConfig = configService.GetFeaturesConfig();
+        this._featuresConfig = configService.FeaturesConfig;
     }
 
     /// <inheritdoc />

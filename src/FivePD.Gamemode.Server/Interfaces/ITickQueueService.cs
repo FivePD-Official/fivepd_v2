@@ -11,13 +11,6 @@ namespace FivePD.Gamemode.Server.Interfaces;
 public interface ITickQueueService
 {
     /// <summary>
-    /// Works through the queue, executing
-    /// tasks and returning their values.
-    /// </summary>
-    /// <returns>A <see cref="Task" /> which completes when the tick is done being operated on.</returns>
-    public Task OnTickAsync();
-
-    /// <summary>
     /// Pushes an action to the tick queue,
     /// and requests that the system runs a tick
     /// for the current resource ASAP.

@@ -203,7 +203,7 @@ public class Bootstrapper : BaseScript
         foreach (var addon in allAddons)
         {
             this._bootstrapLogger.Information(
-                "Registering addon {@AddonName} version {@AddonVersion}",
+                "Registering addon \"{@AddonName}\" version {@AddonVersion}",
                 addon.FriendlyName,
                 addon.FriendlyVersion);
 
@@ -237,7 +237,6 @@ public class Bootstrapper : BaseScript
         services.AddSingleton<IFileHandlerService, FileHandlerService>();
         services.AddSingleton<IConfigService, ConfigService>();
         services.AddSingleton<ICommandService, CommandService>();
-        services.AddSingleton<ITickQueueService, ConcurrentTickQueueService>();
         services.AddSingleton<IDevToolsService, DevToolsService>();
         services.AddSingleton<ILooseDataService, LooseDataService>();
         services.AddSingleton<IDepartmentService, DepartmentService>();
@@ -251,6 +250,10 @@ public class Bootstrapper : BaseScript
         // !! AND SHOULD BE REGISTERED AS THE ONES BELOW THIS COMMENT !!
 #pragma warning enable
 
+        services.AddSingleton<ConcurrentTickQueueService>();
+        services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
+        services.AddSingleton<IInteralTickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
+        
         services.AddSingleton<UIService>();
         services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<UIService>());
@@ -368,7 +371,7 @@ public class Bootstrapper : BaseScript
             service.RegisterEvents();
         }
 
-        var tickQueueService = this._provider.GetService<ITickQueueService>();
+        var tickQueueService = this._provider.GetService<IInteralTickQueueService>();
         this.Tick += tickQueueService!.OnTickAsync;
     }
 
