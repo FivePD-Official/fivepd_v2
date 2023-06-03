@@ -2,7 +2,6 @@
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Gamemode.Common.DTO;
-using FivePD.Gamemode.Common.Utilities;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
@@ -24,12 +23,6 @@ public class NotificationService : INotificationService
     }
 
     /// <inheritdoc />
-    public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false, Dictionary<string, string> contentParams = null)
-    {
-        this.ShowTooltip(player, content.Build(), withBeep, contentParams);
-    }
-
-    /// <inheritdoc />
     public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = null)
     {
         player.TriggerEvent(Events.Notification.ShowNotification, JsonConvert.SerializeObject(
@@ -41,26 +34,11 @@ public class NotificationService : INotificationService
     }
 
     /// <inheritdoc />
-    public void ShowNotification(Player player, GtaStyleText content, Dictionary<string, string> contentParams = null)
-    {
-        this.ShowNotification(player, content.Build(), contentParams);
-    }
-
-    /// <inheritdoc />
     public void ShowNotification(IEnumerable<Player> players, string content, Dictionary<string, string> contentParams = null)
     {
         foreach (var player in players)
         {
             this.ShowNotification(player, content, contentParams);
-        }
-    }
-
-    /// <inheritdoc />
-    public void ShowNotification(IEnumerable<Player> players, GtaStyleText content, Dictionary<string, string> contentParams = null)
-    {
-        foreach (var player in players)
-        {
-            this.ShowNotification(player, content.Build(), contentParams);
         }
     }
 
@@ -86,18 +64,6 @@ public class NotificationService : INotificationService
 
     /// <inheritdoc />
     public void ShowNotificationWithTexture(
-        Player player,
-        string texture,
-        string sender,
-        string subject,
-        GtaStyleText content,
-        Dictionary<string, string> contentParams = null)
-    {
-        this.ShowNotificationWithTexture(player, texture, sender, subject, content.Build(), contentParams);
-    }
-
-    /// <inheritdoc />
-    public void ShowNotificationWithTexture(
         IEnumerable<Player> players,
         string texture,
         string sender,
@@ -108,21 +74,6 @@ public class NotificationService : INotificationService
         foreach (var player in players)
         {
             this.ShowNotificationWithTexture(player, texture, sender, subject, content, contentParams);
-        }
-    }
-
-    /// <inheritdoc />
-    public void ShowNotificationWithTexture(
-        IEnumerable<Player> players,
-        string texture,
-        string sender,
-        string subject,
-        GtaStyleText content,
-        Dictionary<string, string> contentParams = null)
-    {
-        foreach (var player in players)
-        {
-            this.ShowNotificationWithTexture(player, texture, sender, subject, content.Build(), contentParams);
         }
     }
 }
