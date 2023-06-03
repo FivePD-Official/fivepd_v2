@@ -27,4 +27,12 @@ public interface IPlayerDataService
     /// <param name="player">The player to find.</param>
     /// <returns>The corresponding <see cref="User"/> object.</returns>
     public User FindUserByLicense(Player player);
+
+    /// <summary>
+    /// Checks whether any identifier of the specified player matches with any identifier of the specified user.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="user">The user.</param>
+    /// <returns>A boolean.</returns>
+    public bool AnyPlayerIdMatchesWithUserId(Player player, User user);
 }

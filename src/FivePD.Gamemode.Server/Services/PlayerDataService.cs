@@ -80,12 +80,29 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         {
             return this._databaseContext.Users
                 .Include(user => user.Department)
-                .FirstOrDefault(user => user.License == license);
+                .WhereAnyIdMatches(player)
+                .FirstOrDefault();
         }
         catch (Exception e)
         {
             throw new DatabaseUsageException("Failed to access database", e);
         }
+    }
+
+    /// <inheritdoc />
+    public bool AnyPlayerIdMatchesWithUserId(Player player, User user)
+    {
+        var identifierLicense = player.Identifiers["license"];
+        var identifierDiscord = player.Identifiers["discord"];
+        var identifierSteam = player.Identifiers["steam"];
+        var identifierXbl = player.Identifiers["xbl"];
+        var identifierLive = player.Identifiers["live"];
+
+        return user.IdentifierLicense == identifierLicense ||
+               user.IdentifierDiscord == identifierDiscord ||
+               user.IdentifierSteam == identifierSteam ||
+               user.IdentifierXbl == identifierXbl ||
+               user.IdentifierLive == identifierLive;
     }
 
     private void OnPlayerConnecting([FromSource] Player player, string playerName, dynamic setKickReason, dynamic deferrals)
@@ -111,29 +128,28 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
 
     private void CreatePlayerData(Player player)
     {
-        var license = player.Identifiers["license"];
-        if (string.IsNullOrEmpty(license))
+        try
         {
-            Debug.WriteLine($"License of {player.Name} is not defined.");
-        }
-        else
-        {
-            try
+            var user = this._databaseContext.Users.WhereAnyIdMatches(player).FirstOrDefault();
+            if (user is null)
             {
-                if (this._databaseContext.Users.FirstOrDefault(user => user.License == license) is null)
+                this._databaseContext.Users.Add(new User
                 {
-                    this._databaseContext.Users.Add(new User
-                    {
-                        Name = player.Name,
-                        License = license,
-                    });
-                    this._databaseContext.SaveChanges();
-                }
+                    Name = player.Name,
+                    IdentifierLicense = player.Identifiers["license"] ?? string.Empty,
+                    IdentifierDiscord = player.Identifiers["discord"] ?? string.Empty,
+                    IdentifierSteam = player.Identifiers["steam"] ?? string.Empty,
+                    IdentifierXbl = player.Identifiers["xbl"] ?? string.Empty,
+                    IdentifierLive = player.Identifiers["live"] ?? string.Empty,
+                });
+                this._databaseContext.SaveChanges();
             }
-            catch (Exception e)
-            {
-                throw new DatabaseUsageException("Failed to access database", e);
-            }
+
+            this._databaseContext.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            throw new DatabaseUsageException("Failed to access database", e);
         }
     }
 
@@ -154,7 +170,8 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 .Include(user => user.Department)
                 .Include(user => user.Division)
                 .Include(user => user.Rank)
-                .FirstOrDefault(user => user.License == license);
+                .WhereAnyIdMatches(player)
+                .FirstOrDefault();
             networkCallbackDelegate.Invoke(user is null ? null : Converter.SerializeObjectWithoutReferenceLoop(user));
         }
         catch (Exception e)

@@ -28,9 +28,29 @@ public class User
     public string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the license key.
+    /// Gets or sets the License identifier.
     /// </summary>
-    public string License { get; set; }
+    public string IdentifierLicense { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the Discord identifier.
+    /// </summary>
+    public string IdentifierDiscord { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the Steam identifier.
+    /// </summary>
+    public string IdentifierSteam { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the Xbl identifier.
+    /// </summary>
+    public string IdentifierXbl { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the Xbox live identifier.
+    /// </summary>
+    public string IdentifierLive { get; set; }
 
     /// <summary>
     /// Gets or sets the role of the user.
@@ -72,6 +92,11 @@ public class User
     /// </summary>
     public Rank Rank { get; set; }
 
+    /// <summary>
+    /// Gets whether the user has the specified role.
+    /// </summary>
+    /// <param name="role">The role you want to check.</param>
+    /// <returns>A boolean.</returns>
     public bool HasRole(UserRole role)
     {
         return (this.Role & (int)role) == (int)role;
