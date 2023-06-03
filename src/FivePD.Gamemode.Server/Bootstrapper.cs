@@ -203,7 +203,7 @@ public class Bootstrapper : BaseScript
         foreach (var addon in allAddons)
         {
             this._bootstrapLogger.Information(
-                "Registering addon {@AddonName} version {@AddonVersion}",
+                "Registering addon \"{@AddonName}\" version {@AddonVersion}",
                 addon.FriendlyName,
                 addon.FriendlyVersion);
 

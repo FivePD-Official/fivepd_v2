@@ -48,7 +48,7 @@ public class VehicleService : IVehicleService, IServiceWithEvents
         }
 
         var fVehicle = fVehicleBuilder
-            .WithItems(this._configService.GetItems())
+            .WithItems(this._configService.Items)
             .Build();
 
         this._vehicles[fVehicle.NetworkId] = fVehicle;

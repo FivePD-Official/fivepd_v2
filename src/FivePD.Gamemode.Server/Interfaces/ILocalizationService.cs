@@ -8,14 +8,14 @@ namespace FivePD.Gamemode.Server.Interfaces;
 public interface ILocalizationService
 {
     /// <summary>
-    /// Gets asd.
+    /// Gets the available localizations.
     /// </summary>
     public Dictionary<string, string> AvailableLocalizations { get; }
 
     /// <summary>
-    /// Gets asd.
+    /// Gets the localization with the given key.
     /// </summary>
     /// <param name="key">The locale.</param>
-    /// <returns>The s.</returns>
+    /// <returns>The serialized localization.</returns>
     public string GetLocalization(string key);
 }

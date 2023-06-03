@@ -10,57 +10,57 @@ namespace FivePD.Gamemode.Server.Interfaces;
 public interface IConfigService
 {
     /// <summary>
-    /// Loads and returns the /Config/items.json file's content.
+    /// Gets the "items.json" file's content.
     /// </summary>
     /// <returns>Returns all items from the config file.</returns>
-    public List<Item> GetItems();
+    public List<Item> Items { get; }
 
     /// <summary>
-    /// Loads the /Config/FemaleFirstnames.txt and returns a list from its content.
+    /// Gets the "FemaleFirstnames.txt" file's content.
     /// </summary>
     /// <returns>A list containing each line of the file.</returns>
-    public List<string> GetFemaleFirstnames();
+    public List<string> FemaleFirstnames { get; }
 
     /// <summary>
-    /// Loads the /Config/MaleFirstnames.txt and returns a list from its content.
+    /// Gets the "MaleFirstnames.txt" file's content.
     /// </summary>
     /// <returns>A list containing each line of the file.</returns>
-    public List<string> GetMaleFirstnames();
+    public List<string> MaleFirstnames { get; }
 
     /// <summary>
-    /// Loads the /Config/Lastnames.txt and returns a list from its content.
+    /// Gets the "Lastnames.txt" file's content.
     /// </summary>
     /// <returns>A list containing each line of the file.</returns>
-    public List<string> GetLastnames();
+    public List<string> Lastnames { get; }
 
     /// <summary>
-    /// Loads and returns the database connection settings.
+    /// Gets the "database.json" file's content.
     /// </summary>
     /// <returns>Returns the database connection settings.</returns>
     [NoUsage]
-    public DatabaseConfig GetDatabaseConfig();
+    public DatabaseConfig DatabaseConfig { get; }
 
     /// <summary>
-    /// Loads and returns the menu configuration.
+    /// Gets the "menu.json" file's content.
     /// </summary>
     /// <returns>Returns the menu configuration.</returns>
-    public MenuConfig GetMenuConfig();
+    public MenuConfig MenuConfig { get; }
 
     /// <summary>
-    /// Loads and returns the /Config/vehicles.json file's content.
+    /// Gets the "vehicles.json" file's content.
     /// </summary>
     /// <returns>Returns a deserialized <see cref="Vehicles"/> object.</returns>
-    public Vehicles GetVehiclesConfig();
+    public Vehicles VehiclesConfig { get; }
 
     /// <summary>
-    /// Loads and returns the /Config/menu.json file's content.
+    /// Gets the "menu.json" file's content.
     /// </summary>
     /// <returns>Returns a deserialized a list of <see cref="Loadout"/> objects.</returns>
-    public List<Loadout> GetLoadoutsConfig();
+    public List<Loadout> LoadoutsConfig { get; }
 
     /// <summary>
-    /// asd.
+    /// Gets the "features.json" file's content.
     /// </summary>
     /// <returns>qwe.</returns>
-    public FeaturesConfig GetFeaturesConfig();
+    public FeaturesConfig FeaturesConfig { get; }
 }

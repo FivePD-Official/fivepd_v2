@@ -41,7 +41,7 @@ public class AddonDefinition
     public IList<byte[]> Assemblies { get; set; }
 
     /// <summary>
-    /// Gets or sets asd.
+    /// Gets or sets files.
     /// </summary>
     public IDictionary<string, string> Files { get; set; }
 }

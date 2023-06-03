@@ -10,7 +10,7 @@ namespace FivePD.Gamemode.Server.Interfaces;
 public interface INotificationService
 {
     /// <summary>
-    /// Displays a tooltip (small notification in the top-left corner).
+    /// Displays a tooltip (small notification in the top-left corner) for the specified player.
     /// </summary>
     /// <param name="player">The player which the tooltip will be displayed for.</param>
     /// <param name="content">The text that'll be displayed.</param>
@@ -19,7 +19,7 @@ public interface INotificationService
     public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a tooltip (small notification in the top-left corner).
+    /// Displays a tooltip (small notification in the top-left corner) for the specified player.
     /// </summary>
     /// <param name="player">The player which the tooltip will be displayed for.</param>
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
@@ -28,7 +28,7 @@ public interface INotificationService
     public void ShowTooltip(Player player, GtaStyleText content, bool withBeep = false, Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a notification.
+    /// Displays a notification for the specified player.
     /// </summary>
     /// <param name="player">The player which the notification will be displayed for.</param>
     /// <param name="content">The text that'll be displayed.</param>
@@ -36,7 +36,7 @@ public interface INotificationService
     public void ShowNotification(Player player, string content, Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a notification.
+    /// Displays a notification for the specified player.
     /// </summary>
     /// <param name="player">The player which the notification will be displayed for.</param>
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
@@ -44,7 +44,7 @@ public interface INotificationService
     public void ShowNotification(Player player, GtaStyleText content, Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a notification.
+    /// Displays a notification for the specified players.
     /// </summary>
     /// <param name="players">The players which the notification will be displayed for.</param>
     /// <param name="content">The text that'll be displayed.</param>
@@ -52,7 +52,7 @@ public interface INotificationService
     public void ShowNotification(IEnumerable<Player> players, string content, Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a notification.
+    /// Displays a notification for the specified players.
     /// </summary>
     /// <param name="players">The players which the notification will be displayed for.</param>
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
@@ -60,7 +60,7 @@ public interface INotificationService
     public void ShowNotification(IEnumerable<Player> players, GtaStyleText content, Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a notification with a texture.
+    /// Displays a notification with a texture for the specified player.
     /// </summary>
     /// <param name="player">The player which the notification will be displayed for.</param>
     /// <param name="texture">The texture's name which is the top-left image in the notification.</param>
@@ -77,7 +77,7 @@ public interface INotificationService
         Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a notification with a texture.
+    /// Displays a notification with a texture for the specified player.
     /// </summary>
     /// <param name="player">The player which the notification will be displayed for.</param>
     /// <param name="texture">The texture's name which is the top-left image in the notification.</param>
@@ -94,7 +94,7 @@ public interface INotificationService
         Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a notification with a texture.
+    /// Displays a notification with a texture for the specified players.
     /// </summary>
     /// <param name="players">The player which the notification will be displayed for.</param>
     /// <param name="texture">The texture's name which is the top-left image in the notification.</param>
@@ -111,7 +111,7 @@ public interface INotificationService
         Dictionary<string, string> contentParams = null);
 
     /// <summary>
-    /// Displays a notification with a texture.
+    /// Displays a notification with a texture for the specified players.
     /// </summary>
     /// <param name="players">The players which the notification will be displayed for.</param>
     /// <param name="texture">The texture's name which is the top-left image in the notification.</param>

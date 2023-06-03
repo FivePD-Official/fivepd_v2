@@ -54,10 +54,10 @@ public class PedService : IPedService, IServiceWithEvents
         }
 
         var fPed = fPedBuilder
-            .WithFirstname(fPedBuilder.Gender == FGender.Female ? this._configService.GetFemaleFirstnames() : this._configService.GetMaleFirstnames())
-            .WithLastname(this._configService.GetLastnames())
+            .WithFirstname(fPedBuilder.Gender == FGender.Female ? this._configService.FemaleFirstnames : this._configService.MaleFirstnames)
+            .WithLastname(this._configService.Lastnames)
             .WithBirthdate()
-            .WithItems(this._configService.GetItems())
+            .WithItems(this._configService.Items)
             .Build();
 
         this._peds[fPed.NetworkId] = fPed;
