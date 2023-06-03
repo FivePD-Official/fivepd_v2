@@ -15,6 +15,7 @@ using FivePD.Gamemode.Server.Models.Requests;
 using FivePD.Gamemode.Server.Models.Responses;
 using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace FivePD.Gamemode.Server.Services;
 
@@ -26,6 +27,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     private readonly PlayerList _playerList;
     private readonly INotificationService _notificationService;
     private readonly IFeatureFlagService _featureFlagService;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -35,18 +37,21 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
     /// <param name="featureFlagService">The <see cref="IFeatureFlagService"/> to use.</param>
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         DatabaseContext databaseContext,
         PlayerList playerList,
         INotificationService notificationService,
-        IFeatureFlagService featureFlagService)
+        IFeatureFlagService featureFlagService,
+        ILogger logger)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._databaseContext = databaseContext;
         this._playerList = playerList;
         this._notificationService = notificationService;
         this._featureFlagService = featureFlagService;
+        this._logger = logger;
     }
 
     /// <inheritdoc />
@@ -128,9 +133,25 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
 
     private void CreatePlayerData(Player player)
     {
+        var identifierLicense = player.Identifiers["license"] ?? string.Empty;
+        var identifierDiscord = player.Identifiers["discord"] ?? string.Empty;
+        var identifierSteam = player.Identifiers["steam"] ?? string.Empty;
+        var identifierXbl = player.Identifiers["xbl"] ?? string.Empty;
+        var identifierLive = player.Identifiers["live"] ?? string.Empty;
+
+        if (string.IsNullOrEmpty(identifierLicense) &&
+            string.IsNullOrEmpty(identifierDiscord) &&
+            string.IsNullOrEmpty(identifierSteam) &&
+            string.IsNullOrEmpty(identifierXbl) &&
+            string.IsNullOrEmpty(identifierLive))
+        {
+            this._logger.Warning("Player \"{PlayerName}\" has no identifiers, they will not have any associated data stored.", player.Name);
+        }
+
         try
         {
             var user = this._databaseContext.Users.WhereAnyIdMatches(player).FirstOrDefault();
+
             if (user is null)
             {
                 this._databaseContext.Users.Add(new User
