@@ -51,6 +51,7 @@ public sealed class FPed : FEntity
     /// <summary>
     /// Gets the owner of the <see cref="FPed"/>.
     /// </summary>
+    /// TODO: Find out if Owner is null if the ped is not owned by any player, but the server
     public Player Owner => this.GetUnderlyingPed.Owner;
 
     /// <summary>
