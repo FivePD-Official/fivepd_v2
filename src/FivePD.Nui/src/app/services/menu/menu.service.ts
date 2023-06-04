@@ -41,7 +41,7 @@ export class MenuService {
   }
 
   getMenuById(id: string): Menu {
-    return this._menus.find(menu => menu.hashcode === id)!;
+    return this._menus.find(menu => menu.id === id)!;
   }
 
   getRadialMenuById(id: string): RadialMenu {
