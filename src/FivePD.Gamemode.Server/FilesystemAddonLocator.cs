@@ -12,7 +12,7 @@ namespace FivePD.Gamemode.Server;
 /// <summary>
 /// Responsible for locating addon definitions. Loading of addons should be.
 /// </summary>
-public class FilesystemAddonLocator
+internal class FilesystemAddonLocator
 {
     private const string MetadataFileName = "addon.fpd.json";
 
@@ -99,6 +99,16 @@ public class FilesystemAddonLocator
                     foreach (var file in definition.Files.Keys.ToList())
                     {
                         var filePath = Path.Combine(addonDirectory, file);
+                        if (!File.Exists(filePath))
+                        {
+                            this._logger.Warning(
+                                "Tried to find a file that doesn't exist ({file}). Is the {MetadataFileName} up-to-date?",
+                                file,
+                                MetadataFileName);
+
+                            continue;
+                        }
+
                         definition.Files[file] = File.ReadAllText(filePath);
                     }
 

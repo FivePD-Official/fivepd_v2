@@ -2,7 +2,7 @@
 
 namespace FivePD.Gamemode.Server.Models.Requests;
 
-public class DeleteEntitiesRequest
+internal class DeleteEntitiesRequest
 {
     public enum DeleteEntityType
     {

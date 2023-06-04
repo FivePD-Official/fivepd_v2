@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FivePD.Common.Models;
+using FivePD.Gamemode.Common.Enums;
 using Newtonsoft.Json.Linq;
 
 namespace FivePD.Gamemode.Common.DTO;

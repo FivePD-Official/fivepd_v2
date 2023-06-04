@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using FivePD.Common.ConfigModels;
+using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Server.Interfaces;
 
 namespace FivePD.Gamemode.Server.Services;

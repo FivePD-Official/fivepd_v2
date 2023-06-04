@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class LoggerService : ILoggerService
+internal class LoggerService : ILoggerService
 {
     /// <summary>
     /// Defines the level of info being logged.

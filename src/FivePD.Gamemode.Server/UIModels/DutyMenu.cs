@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FivePD.Common;
-using FivePD.Common.ConfigModels.MenuConfigs;
-using FivePD.Common.Models;
-using FivePD.Common.UIModels;
+using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.ConfigModels.MenuConfigs;
+using FivePD.Gamemode.Common.Enums;
+using FivePD.Gamemode.Common.UIModels;
 using FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
 using FivePD.Gamemode.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;
@@ -15,7 +15,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Server.UIModels;
 
 /// <inheritdoc />
-public class DutyMenu : Menu
+public sealed class DutyMenu : Menu
 {
     private readonly IConfigService _configService;
     private readonly ILocalizationService _localizationService;

@@ -10,7 +10,7 @@ namespace FivePD.Gamemode.Server;
 /// <summary>
 /// Custom <see cref="CitizenFX.Core.Debug.Write(string)"/> wrapper.
 /// </summary>
-public class CfxDebugSink : ILogEventSink
+internal class CfxDebugSink : ILogEventSink
 {
     private readonly MessageTemplateTextFormatter _formatter;
 

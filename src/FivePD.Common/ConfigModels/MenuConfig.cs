@@ -1,6 +1,6 @@
-﻿using FivePD.Common.ConfigModels.MenuConfigs;
+﻿using FivePD.Gamemode.Common.ConfigModels.MenuConfigs;
 
-namespace FivePD.Common.ConfigModels;
+namespace FivePD.Gamemode.Common.ConfigModels;
 
 /// <summary>
 /// Contains the config of all official menus.

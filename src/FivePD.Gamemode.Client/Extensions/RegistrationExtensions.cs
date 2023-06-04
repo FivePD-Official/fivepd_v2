@@ -5,7 +5,7 @@ namespace FivePD.Gamemode.Client.Extensions;
 /// <summary>
 /// Holds extension methods for <see cref="Registration"/>.
 /// </summary>
-public static class RegistrationExtensions
+internal static class RegistrationExtensions
 {
     /// <summary>
     /// Marks a registration as a singleton. Marked classes will likely only be instantiated once.

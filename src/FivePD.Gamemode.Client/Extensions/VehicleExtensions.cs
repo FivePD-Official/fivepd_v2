@@ -7,7 +7,7 @@ namespace FivePD.Gamemode.Client.Extensions;
 /// <summary>
 /// Holds extension methods for CitizenFX.Core.Vehicle.
 /// </summary>
-public static class VehicleExtensions
+internal static class VehicleExtensions
 {
     private static readonly Dictionary<int, string> VehicleColors = new()
     {

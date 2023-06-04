@@ -1,4 +1,4 @@
-﻿namespace FivePD.Common.ConfigModels.MenuConfigs;
+﻿namespace FivePD.Gamemode.Common.ConfigModels.MenuConfigs;
 
 /// <summary>
 /// The config of the duty menu.

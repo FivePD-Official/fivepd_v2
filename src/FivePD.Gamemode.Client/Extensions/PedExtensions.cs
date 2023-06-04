@@ -5,7 +5,7 @@ namespace FivePD.Gamemode.Client.Extensions;
 /// <summary>
 /// Holds extension methods for CitizenFX.Core.Ped.
 /// </summary>
-public static class PedExtensions
+internal static class PedExtensions
 {
     /// <summary>
     /// Sets the required flags for the ped to ignore default GTA events.

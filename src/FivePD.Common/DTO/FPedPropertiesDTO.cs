@@ -1,5 +1,5 @@
-﻿using FivePD.Common.Attributes;
-using FivePD.Gamemode.Common.Utilities;
+﻿using FivePD.Gamemode.Common.Attributes;
+using FivePD.Gamemode.Common.Enums;
 
 namespace FivePD.Gamemode.Common.DTO;
 

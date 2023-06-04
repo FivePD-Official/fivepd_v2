@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using FivePD.Common.Builders;
-using FivePD.Common.ConfigModels;
+using FivePD.Gamemode.Common.Builders;
+using FivePD.Gamemode.Common.ConfigModels;
 
-namespace FivePD.Common.Models;
+namespace FivePD.Gamemode.Common.Models;
 
 /// <summary>
 /// The base vehicle class for the gamemode.

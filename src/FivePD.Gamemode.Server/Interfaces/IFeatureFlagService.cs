@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using FivePD.Common.ConfigModels;
+using FivePD.Gamemode.Common.ConfigModels;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 

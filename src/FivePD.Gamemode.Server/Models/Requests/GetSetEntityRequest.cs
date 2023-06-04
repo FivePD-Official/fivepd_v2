@@ -2,7 +2,7 @@
 
 namespace FivePD.Gamemode.Server.Models.Requests;
 
-public record struct GetSetEntityRequest
+internal record struct GetSetEntityRequest
 {
     public string SetId { get; set; }
 

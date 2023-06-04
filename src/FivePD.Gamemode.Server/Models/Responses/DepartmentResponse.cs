@@ -3,7 +3,7 @@
 namespace FivePD.Gamemode.Server.Models.Responses;
 
 /// <inheritdoc />
-public class DepartmentResponse : Department
+internal class DepartmentResponse : Department
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="DepartmentResponse"/> class.

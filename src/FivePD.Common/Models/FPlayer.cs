@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
-using FivePD.Common.Interfaces;
-using FivePD.Common.UIModels;
+using FivePD.Gamemode.Common.Enums;
+using FivePD.Gamemode.Common.Interfaces;
+using FivePD.Gamemode.Common.UIModels;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Common.Models;
+namespace FivePD.Gamemode.Common.Models;
 
 /// <summary>
 /// The base player class for the gamemode.

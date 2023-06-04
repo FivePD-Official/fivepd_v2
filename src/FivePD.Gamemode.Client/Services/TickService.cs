@@ -5,7 +5,7 @@ using FivePD.Gamemode.Client.Interfaces;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class TickService : ITickService
+internal class TickService : ITickService
 {
     private readonly AddTickHandler _addTickHandler;
 

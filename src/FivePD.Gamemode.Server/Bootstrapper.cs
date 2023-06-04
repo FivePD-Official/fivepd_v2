@@ -6,7 +6,8 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common.Models;
+using FivePD.Gamemode.Common.Enums;
+using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;
@@ -26,7 +27,7 @@ namespace FivePD.Gamemode.Server;
 /// creation and management of all tasks on the server.
 /// </summary>
 // ReSharper disable once UnusedType.Global
-public class Bootstrapper : BaseScript
+internal class Bootstrapper : BaseScript
 {
     private readonly Dictionary<Action, bool> _phases = new();
     private readonly Stopwatch _stopwatch = new();

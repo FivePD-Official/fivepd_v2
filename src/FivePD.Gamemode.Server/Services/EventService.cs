@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common;
+using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Server.Interfaces;
 
 namespace FivePD.Gamemode.Server.Services;

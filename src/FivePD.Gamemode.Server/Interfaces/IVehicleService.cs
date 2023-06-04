@@ -1,4 +1,4 @@
-﻿using FivePD.Common.Models;
+﻿using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.EntityWrappers;
 
 namespace FivePD.Gamemode.Server.Interfaces;

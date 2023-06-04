@@ -1,6 +1,6 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common.Utilities;
+using FivePD.Gamemode.Common.Enums;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Extensions;
@@ -8,7 +8,7 @@ namespace FivePD.Gamemode.Client.Extensions;
 /// <summary>
 /// Holds extension methods for CitizenFX.Core.Entity.
 /// </summary>
-public static class EntityExtensions
+internal static class EntityExtensions
 {
     private static readonly uint[] UnsupportedPedHashes =
     {

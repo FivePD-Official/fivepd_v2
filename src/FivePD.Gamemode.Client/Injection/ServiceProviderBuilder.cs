@@ -7,7 +7,7 @@ namespace FivePD.Gamemode.Client.Injection;
 /// <summary>
 /// A simple builder for <see cref="ServiceProvider"/>.
 /// </summary>
-public class ServiceProviderBuilder
+internal class ServiceProviderBuilder
 {
     private readonly List<Registration> _registration = new();
 

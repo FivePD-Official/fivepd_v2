@@ -1,13 +1,13 @@
-﻿using FivePD.Common.Attributes;
-using FivePD.Common.Models;
+﻿using FivePD.Gamemode.Common.Attributes;
+using FivePD.Gamemode.Common.Models;
 
-namespace FivePD.Common.UIModels.Interfaces;
+namespace FivePD.Gamemode.Common.UIModels.Interfaces;
 
 /// <summary>
 /// Defines the events of <see cref="MenuListItem"/>.
 /// </summary>
 [NoUsage]
-public interface IMenuListItemWithEvents
+internal interface IMenuListItemWithEvents
 {
     /// <summary>
     /// Raises the OnIndexChange event.

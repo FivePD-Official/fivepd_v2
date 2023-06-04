@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Extensions;
 /// <summary>
 /// Holds extension methods for CitizenFX.Core.Client.Vector3.
 /// </summary>
-public static class Vector3Extensions
+internal static class Vector3Extensions
 {
     /// <summary>
     /// Gets the nearest street's name to the given position.

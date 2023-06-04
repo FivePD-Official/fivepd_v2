@@ -1,5 +1,5 @@
 ﻿using System;
-using FivePD.Common.Attributes;
+using FivePD.Gamemode.Common.Attributes;
 
 namespace FivePD.Gamemode.Server.Attributes;
 
@@ -8,7 +8,7 @@ namespace FivePD.Gamemode.Server.Attributes;
 /// </summary>
 [NoUsage]
 [AttributeUsage(AttributeTargets.Method)]
-public class UIEventAttribute : Attribute
+internal class UIEventAttribute : Attribute
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="UIEventAttribute"/> class.

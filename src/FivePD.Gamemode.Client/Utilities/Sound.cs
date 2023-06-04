@@ -7,7 +7,7 @@ namespace FivePD.Gamemode.Client.Utilities;
 /// <summary>
 /// Contains the available sound effect names.
 /// </summary>
-public enum Sound
+internal enum Sound
 {
     [Description("panic.mp3")]
     Panic,

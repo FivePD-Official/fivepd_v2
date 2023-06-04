@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
-using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Common.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class ScreenDecorService : IScreenDecorService
+internal class ScreenDecorService : IScreenDecorService
 {
     private readonly ITickService _tickService;
     private readonly ILocalizationService _localizationService;

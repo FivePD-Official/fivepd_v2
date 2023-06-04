@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FivePD.Common.Extensions;
+namespace FivePD.Gamemode.Common.Extensions;
 
 /// <summary>
 /// Holds extension methods for strings.

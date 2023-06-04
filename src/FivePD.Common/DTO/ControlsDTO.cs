@@ -1,6 +1,6 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Common.Attributes;
+using FivePD.Gamemode.Common.Attributes;
 
 #pragma warning disable
 

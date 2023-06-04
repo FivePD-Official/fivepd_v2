@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Reflection;
 using CitizenFX.Core;
-using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common.Enums;
+using FivePD.Gamemode.Common.Models;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class LocalPlayerService : ILocalPlayerService
+internal class LocalPlayerService : ILocalPlayerService
 {
     private readonly ILocalizationService _localizationService;
 

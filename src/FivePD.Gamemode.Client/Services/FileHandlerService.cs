@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using FivePD.Common.Exceptions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common.Exceptions;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class FileHandlerService : IFileHandlerService
+internal class FileHandlerService : IFileHandlerService
 {
     private readonly ConcurrentDictionary<string, object> _cache = new();
 

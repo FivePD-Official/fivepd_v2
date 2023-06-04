@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FivePD.Common.ConfigModels;
+namespace FivePD.Gamemode.Common.ConfigModels;
 
 /// <summary>
 /// Contains the definition of a loadout.

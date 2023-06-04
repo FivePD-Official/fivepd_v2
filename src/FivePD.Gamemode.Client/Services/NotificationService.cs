@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
-using FivePD.Common;
-using FivePD.Common.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.DTO;
+using FivePD.Gamemode.Common.Extensions;
 using FivePD.Gamemode.Common.Utilities;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
@@ -13,7 +13,7 @@ using CfxUI = CitizenFX.Core.UI;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.INotificationService" />
-public class NotificationService : INotificationService, IServiceWithEvents
+internal class NotificationService : INotificationService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILocalizationService _localizationService;

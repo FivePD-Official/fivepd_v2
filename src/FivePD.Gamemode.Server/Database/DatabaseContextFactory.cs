@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Server.Database;
 /// <summary>
 /// Design-time context factory used only for migration generation.
 /// </summary>
-public class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
+internal class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
 {
     /// <inheritdoc/>
     public DatabaseContext CreateDbContext(string[] args)

@@ -5,7 +5,7 @@ namespace FivePD.Gamemode.Client.Interfaces;
 /// <summary>
 /// Wrapper for FiveM's Debug.WriteLine.
 /// </summary>
-public interface ILoggerService
+internal interface ILoggerService
 {
     /// <summary>
     /// Log an informational message. E.g.:

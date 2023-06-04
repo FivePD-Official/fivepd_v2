@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using FivePD.Common.ConfigModels;
+using FivePD.Gamemode.Common.ConfigModels;
 
 namespace FivePD.Gamemode.Client.Interfaces;
 
 /// <summary>
 /// Provides utility methods for the FivePD resource itself.
 /// </summary>
-public interface IConfigService
+internal interface IConfigService
 {
     /// <summary>
     /// Loads and returns the /Config/vehicles.json file's content.

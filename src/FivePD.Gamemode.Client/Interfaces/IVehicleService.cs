@@ -1,12 +1,12 @@
 ﻿using CitizenFX.Core;
-using FivePD.Common.Models;
+using FivePD.Gamemode.Common.Models;
 
 namespace FivePD.Gamemode.Client.Interfaces;
 
 /// <summary>
 /// Handles all vehicle related features.
 /// </summary>
-public interface IVehicleService
+internal interface IVehicleService
 {
     /// <summary>
     /// Generates a vehicle's <see cref="CommonFVehicle"/> object.

@@ -3,6 +3,6 @@
 /// <summary>
 /// Provides methods for drawing markers.
 /// </summary>
-public interface IMarkerService
+internal interface IMarkerService
 {
 }

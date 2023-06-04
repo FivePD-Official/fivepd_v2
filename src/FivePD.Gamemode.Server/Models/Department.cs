@@ -63,7 +63,7 @@ public class Department
     /// Initializes a new instance of <see cref="DepartmentResponse"/>.
     /// </summary>
     /// <returns>The created response object.</returns>
-    public DepartmentResponse ToResponse()
+    internal DepartmentResponse ToResponse()
     {
         return new DepartmentResponse(this);
     }

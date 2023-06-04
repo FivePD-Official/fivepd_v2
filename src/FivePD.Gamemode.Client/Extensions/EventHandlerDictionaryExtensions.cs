@@ -8,7 +8,7 @@ namespace FivePD.Gamemode.Client.Extensions;
 /// <summary>
 /// Holds extension methods for <see cref="EventHandlerDictionary"/>.
 /// </summary>
-public static class EventHandlerDictionaryExtensions
+internal static class EventHandlerDictionaryExtensions
 {
     /// <summary>
     /// Registers a Nui event.

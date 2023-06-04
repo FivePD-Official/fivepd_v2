@@ -1,12 +1,12 @@
 ﻿using CitizenFX.Core;
-using FivePD.Common.Models;
+using FivePD.Gamemode.Common.Models;
 
 namespace FivePD.Gamemode.Client.Interfaces;
 
 /// <summary>
 /// Handles all ped related features.
 /// </summary>
-public interface IPedService
+internal interface IPedService
 {
     /// <summary>
     /// If the player is aiming stops the targeted ped, otherwise the closest one to the player.

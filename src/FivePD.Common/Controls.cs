@@ -1,8 +1,8 @@
-﻿namespace FivePD.Common;
+﻿namespace FivePD.Gamemode.Common;
 
 #pragma warning disable
 
-public sealed record Controls
+internal sealed record Controls
 {
     public static readonly Control TryAlertEntityAsync = new("fivepd::tryAlertEntityAsync", "E");
 

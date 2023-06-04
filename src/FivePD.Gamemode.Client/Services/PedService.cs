@@ -1,18 +1,18 @@
 using System;
 using CitizenFX.Core;
-using FivePD.Common;
-using FivePD.Common.Builders;
-using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Builders;
 using FivePD.Gamemode.Common.DTO;
+using FivePD.Gamemode.Common.Enums;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IPedService" />
-public class PedService : IPedService, IServiceWithEvents
+internal class PedService : IPedService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 

@@ -2,7 +2,7 @@
 
 namespace FivePD.Gamemode.Server.Models.Requests;
 
-public record struct PlayerChangeRequest
+internal record struct PlayerChangeRequest
 {
     public int UserId { get; set; }
 

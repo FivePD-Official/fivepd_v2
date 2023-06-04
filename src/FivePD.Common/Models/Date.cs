@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FivePD.Common.Models;
+namespace FivePD.Gamemode.Common.Models;
 
 /// <summary>
 /// TODO: why did I make this, use <see cref="DateTime"/> instead...

@@ -1,4 +1,4 @@
-﻿namespace FivePD.Common.Models;
+﻿namespace FivePD.Gamemode.Common.Enums;
 
 /// <summary>
 /// An enum representing a player's duty

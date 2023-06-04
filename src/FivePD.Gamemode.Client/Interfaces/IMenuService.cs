@@ -3,6 +3,6 @@
 /// <summary>
 /// Handles all Nui menu related events.
 /// </summary>
-public interface IMenuService
+internal interface IMenuService
 {
 }

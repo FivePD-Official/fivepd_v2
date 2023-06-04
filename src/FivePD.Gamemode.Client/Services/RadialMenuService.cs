@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 
@@ -12,7 +12,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class RadialMenuService : IRadialMenuService
+internal class RadialMenuService : IRadialMenuService
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;

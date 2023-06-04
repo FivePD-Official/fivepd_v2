@@ -1,11 +1,11 @@
-﻿using FivePD.Common.Models;
+﻿using FivePD.Gamemode.Common.Enums;
 
 namespace FivePD.Gamemode.Client.Interfaces;
 
 /// <summary>
 /// Provides utility methods for controlling the content presented on user's screen passively.
 /// </summary>
-public interface IScreenDecorService
+internal interface IScreenDecorService
 {
     /// <summary>
     /// Gets or sets the version code to draw.

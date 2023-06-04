@@ -7,7 +7,7 @@ namespace FivePD.Gamemode.Server.Extensions;
 /// <summary>
 /// Holds extension methods for <see cref="IServiceCollection"/>.
 /// </summary>
-public static class Services
+internal static class Services
 {
     /// <summary>
     /// Adds a new Serilog logger to the provided <see cref="IServiceCollection"/>.
