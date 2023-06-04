@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Interfaces;
 /// <summary>
 /// Provides methods to request translations with their keys.
 /// </summary>
-public interface ILocalizationService
+internal interface ILocalizationService
 {
     /// <summary>
     /// Fires when the localization has been changed.

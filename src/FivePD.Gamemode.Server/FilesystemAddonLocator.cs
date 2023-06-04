@@ -12,7 +12,7 @@ namespace FivePD.Gamemode.Server;
 /// <summary>
 /// Responsible for locating addon definitions. Loading of addons should be.
 /// </summary>
-public class FilesystemAddonLocator
+internal class FilesystemAddonLocator
 {
     private const string MetadataFileName = "addon.fpd.json";
 

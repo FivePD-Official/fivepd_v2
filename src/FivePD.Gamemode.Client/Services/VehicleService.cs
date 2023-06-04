@@ -1,15 +1,15 @@
 ﻿using System.Linq;
 using CitizenFX.Core;
-using FivePD.Common;
-using FivePD.Common.Builders;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Builders;
 using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class VehicleService : IVehicleService
+internal class VehicleService : IVehicleService
 {
     private readonly IPedService _pedService;
 

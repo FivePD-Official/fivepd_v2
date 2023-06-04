@@ -1,5 +1,5 @@
 ﻿using CitizenFX.Core;
-using FivePD.Common.Attributes;
+using FivePD.Gamemode.Common.Attributes;
 
 namespace FivePD.Gamemode.Common.DTO;
 

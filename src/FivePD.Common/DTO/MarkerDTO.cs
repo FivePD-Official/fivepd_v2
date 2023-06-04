@@ -1,10 +1,10 @@
-﻿using FivePD.Common.Models;
+﻿using FivePD.Gamemode.Common.Models;
 
-namespace FivePD.Gamemode.Client.DTO;
+namespace FivePD.Gamemode.Common.DTO;
 
 #pragma warning disable
 
-public sealed record MarkerDTO
+internal sealed record MarkerDTO
 {
     public readonly record struct Add(string Guid, Marker Marker);
 }

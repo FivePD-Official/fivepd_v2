@@ -1,11 +1,11 @@
-﻿using FivePD.Common.Models;
+﻿using FivePD.Gamemode.Common.Models;
 
 namespace FivePD.Gamemode.Client.Interfaces;
 
 /// <summary>
 /// Provides access to the client's player.
 /// </summary>
-public interface ILocalPlayerService
+internal interface ILocalPlayerService
 {
     /// <summary>
     /// Gets the local <see cref="FPlayer"/>.

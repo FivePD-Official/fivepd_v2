@@ -1,12 +1,12 @@
-﻿using FivePD.Common.Attributes;
+﻿using FivePD.Gamemode.Common.Attributes;
 
-namespace FivePD.Common.Utilities;
+namespace FivePD.Gamemode.Common.Extensions;
 
 /// <summary>
 /// Contains extension methods for dynamic objects.
 /// </summary>
 [NoUsage]
-public static class DynamicExtensions
+internal static class DynamicExtensions
 {
     /// <summary>
     /// Gets a value from the given object by its path.

@@ -1,10 +1,10 @@
 using System;
 using CitizenFX.Core;
-using FivePD.Common;
-using FivePD.Common.Models;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.DTO;
+using FivePD.Gamemode.Common.Enums;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -13,7 +13,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IMenuService" />
-public class MenuService : IMenuService, IServiceWithEvents
+internal class MenuService : IMenuService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;

@@ -2,7 +2,7 @@
 
 namespace FivePD.Gamemode.Server.Models.Requests;
 
-public record struct CreateDepartmentRequest()
+internal record struct CreateDepartmentRequest()
 {
     public string Name { get; set; }
 

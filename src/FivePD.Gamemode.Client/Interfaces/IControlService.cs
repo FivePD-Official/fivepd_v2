@@ -5,7 +5,7 @@ namespace FivePD.Gamemode.Client.Interfaces;
 /// <summary>
 /// Used to register keybindings.
 /// </summary>
-public interface IControlService
+internal interface IControlService
 {
     /// <summary>
     /// Registers a method to be ran on keybind press.

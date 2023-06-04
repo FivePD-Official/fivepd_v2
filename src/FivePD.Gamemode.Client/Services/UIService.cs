@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Dynamic;
 using CitizenFX.Core;
-using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
+using FivePD.Gamemode.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
@@ -13,7 +13,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc cref="IUIService" />
-public class UIService : IUIService, IServiceWithEvents
+internal class UIService : IUIService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILoggerService _loggerService;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using FivePD.Common.Attributes;
-using FivePD.Common.ConfigModels;
+using FivePD.Gamemode.Common.Attributes;
+using FivePD.Gamemode.Common.ConfigModels;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 

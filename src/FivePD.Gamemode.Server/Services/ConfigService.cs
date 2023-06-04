@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using FivePD.Common.Attributes;
-using FivePD.Common.ConfigModels;
-using FivePD.Common.Exceptions;
-using FivePD.Common.Extensions;
+using FivePD.Gamemode.Common.Attributes;
+using FivePD.Gamemode.Common.ConfigModels;
+using FivePD.Gamemode.Common.Exceptions;
+using FivePD.Gamemode.Common.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;

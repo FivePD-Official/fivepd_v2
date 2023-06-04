@@ -3,7 +3,7 @@
 
 namespace FivePD.Gamemode.Server.Models.Requests;
 
-public record struct DeleteEntityRequest
+internal record struct DeleteEntityRequest
 {
     public string SetId { get; set; }
 

@@ -24,7 +24,7 @@ namespace FivePD.Gamemode.Client;
 /// creation and management of all tasks on the client.
 /// </summary>
 // ReSharper disable once UnusedType.Global
-public class Bootstrapper : BaseScript
+internal class Bootstrapper : BaseScript
 {
     private readonly Dictionary<Action, bool> _phases = new Dictionary<Action, bool>();
     private readonly ILoggerService _bootstrapLogger;

@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using FivePD.Common.ConfigModels;
-using FivePD.Common.Exceptions;
-using FivePD.Common.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common.ConfigModels;
+using FivePD.Gamemode.Common.Exceptions;
+using FivePD.Gamemode.Common.Extensions;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class ConfigService : IConfigService
+internal class ConfigService : IConfigService
 {
     private readonly IFileHandlerService _fileHandlerService;
     private readonly ILoggerService _loggerService;

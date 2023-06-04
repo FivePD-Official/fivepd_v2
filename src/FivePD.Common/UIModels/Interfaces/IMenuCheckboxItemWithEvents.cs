@@ -1,13 +1,13 @@
-﻿using FivePD.Common.Attributes;
-using FivePD.Common.Models;
+﻿using FivePD.Gamemode.Common.Attributes;
+using FivePD.Gamemode.Common.Models;
 
-namespace FivePD.Common.UIModels.Interfaces;
+namespace FivePD.Gamemode.Common.UIModels.Interfaces;
 
 /// <summary>
 /// Defines the events of <see cref="MenuCheckboxItem"/>.
 /// </summary>
 [NoUsage]
-public interface IMenuCheckboxItemWithEvents
+internal interface IMenuCheckboxItemWithEvents
 {
     /// <summary>
     /// Raises the OnSelect event.

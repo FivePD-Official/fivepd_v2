@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CitizenFX.Core;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Common.Models;
+namespace FivePD.Gamemode.Common.Models;
 
 /// <summary>
 /// Represents a single stateful datum in

@@ -3,7 +3,7 @@
 /// <summary>
 /// Responsible for registering and triggering all events related to radial menus.
 /// </summary>
-public interface IRadialMenuService
+internal interface IRadialMenuService
 {
     /// <summary>
     /// Registers the necessary events for the radial menus.

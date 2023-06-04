@@ -8,7 +8,7 @@ namespace FivePD.Gamemode.Client.Injection;
 /// <summary>
 /// Provides an interface to resolve registered services. Built using an <see cref="ServiceProviderBuilder"/>.
 /// </summary>
-public class ServiceProvider
+internal class ServiceProvider
 {
     private readonly Dictionary<string, object> _instances = new();
     private readonly List<Registration> _registrations;

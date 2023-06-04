@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Server.Models.Responses;
 /// <summary>
 /// Used for actions initiated in the NUI.
 /// </summary>
-public record struct ActionResponse()
+internal record struct ActionResponse()
 {
     /// <summary>
     /// Gets or sets a value indicating whether the actions has been successful.

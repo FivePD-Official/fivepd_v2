@@ -2,7 +2,7 @@
 
 namespace FivePD.Gamemode.Server.Models.Requests;
 
-public record struct DeleteSetAttributeRequest
+internal record struct DeleteSetAttributeRequest
 {
     public string SetId { get; set; }
 

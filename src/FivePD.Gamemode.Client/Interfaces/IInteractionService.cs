@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Interfaces;
 /// Provides access to functionality concerning
 /// interacting with entities in the game world.
 /// </summary>
-public interface IInteractionService
+internal interface IInteractionService
 {
     /// <summary>
     /// Attempts to locate an entity based

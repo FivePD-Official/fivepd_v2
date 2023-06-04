@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Attributes;
 /// Used to bind methods to given keys.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-public class KeybindAttribute : Attribute
+internal class KeybindAttribute : Attribute
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="KeybindAttribute"/> class.

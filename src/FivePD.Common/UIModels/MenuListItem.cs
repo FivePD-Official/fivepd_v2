@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using FivePD.Common.Models;
-using FivePD.Common.UIModels.Interfaces;
+using FivePD.Gamemode.Common.Enums;
+using FivePD.Gamemode.Common.Models;
+using FivePD.Gamemode.Common.UIModels.Interfaces;
 
-namespace FivePD.Common.UIModels;
+namespace FivePD.Gamemode.Common.UIModels;
 
 /// <inheritdoc cref="MenuItem" />
 public class MenuListItem : MenuItem, IMenuListItemWithEvents

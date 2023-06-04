@@ -5,7 +5,7 @@ namespace FivePD.Gamemode.Client.Interfaces;
 /// <summary>
 /// Provides utility methods for file handling.
 /// </summary>
-public interface IFileHandlerService
+internal interface IFileHandlerService
 {
     /// <summary>
     /// Loads a file's content.

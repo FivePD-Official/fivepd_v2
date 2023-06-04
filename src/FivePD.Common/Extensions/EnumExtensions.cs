@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace FivePD.Common.Extensions;
+namespace FivePD.Gamemode.Common.Extensions;
 
 /// <summary>
 /// Contains extension methods for enums.
 /// </summary>
-public static class EnumExtensions
+internal static class EnumExtensions
 {
     /// <summary>
     /// Gets the description attribute of an enum.

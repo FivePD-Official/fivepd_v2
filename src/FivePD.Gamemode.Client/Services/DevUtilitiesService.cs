@@ -4,7 +4,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class DevUtilitiesService : IDevUtilitiesService
+internal class DevUtilitiesService : IDevUtilitiesService
 {
     private readonly INotificationService _notificationService;
 

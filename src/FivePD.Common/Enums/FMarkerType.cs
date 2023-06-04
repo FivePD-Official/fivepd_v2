@@ -1,4 +1,4 @@
-﻿namespace FivePD.Gamemode.Client.Enums;
+﻿namespace FivePD.Gamemode.Common.Enums;
 
 #pragma warning disable
 

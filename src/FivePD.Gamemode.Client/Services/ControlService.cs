@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common;
 using FivePD.Gamemode.Client.Attributes;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,7 +18,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IControlService" />
-public class ControlService : IControlService, IServiceWithEvents
+internal class ControlService : IControlService, IServiceWithEvents
 {
     private readonly ITickService _tickService;
     private readonly IUIService _uiService;

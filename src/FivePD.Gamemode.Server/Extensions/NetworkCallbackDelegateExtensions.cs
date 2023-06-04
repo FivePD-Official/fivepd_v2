@@ -7,7 +7,7 @@ namespace FivePD.Gamemode.Server.Extensions;
 /// <summary>
 /// Holds extension methods for <see cref="NetworkCallbackDelegate"/>.
 /// </summary>
-public static class NetworkCallbackDelegateExtensions
+internal static class NetworkCallbackDelegateExtensions
 {
     /// <summary>
     /// Invokes the callback with a <see cref="ActionResponse"/> object.

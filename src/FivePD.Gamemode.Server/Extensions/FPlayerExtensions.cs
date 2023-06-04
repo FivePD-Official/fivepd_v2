@@ -1,4 +1,4 @@
-﻿using FivePD.Common.Models;
+﻿using FivePD.Gamemode.Common.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -7,7 +7,7 @@ namespace FivePD.Gamemode.Server.Extensions;
 /// <summary>
 /// Contains extension methods for the <see cref="FPlayer"/>.
 /// </summary>
-public static class FPlayerExtensions
+internal static class FPlayerExtensions
 {
     /// <summary>
     /// Triggers an event for the underlying player.

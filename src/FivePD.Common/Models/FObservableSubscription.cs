@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FivePD.Common.Models;
+namespace FivePD.Gamemode.Common.Models;
 
 /// <summary>
 /// A subscription to a <see cref="FObservable{T}"/>.

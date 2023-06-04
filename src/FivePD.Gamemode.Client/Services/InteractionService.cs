@@ -1,13 +1,13 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Common;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IInteractionService" />
-public class InteractionService : IInteractionService, IServiceWithEvents
+internal class InteractionService : IInteractionService, IServiceWithEvents
 {
     private const float BaseInteractionDistance = 10.0f;
     private readonly IPedService _pedService;

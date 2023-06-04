@@ -5,7 +5,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
-using FivePD.Common;
+using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.Database;
 using FivePD.Gamemode.Server.Exceptions;

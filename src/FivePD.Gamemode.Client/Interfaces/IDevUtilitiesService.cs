@@ -4,7 +4,7 @@
 /// Provides functionality related
 /// to gamemode development.
 /// </summary>
-public interface IDevUtilitiesService
+internal interface IDevUtilitiesService
 {
     /// <summary>
     /// Prints a development message to

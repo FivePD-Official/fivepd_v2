@@ -7,7 +7,7 @@ namespace FivePD.Gamemode.Server.Extensions;
 /// <summary>
 /// Holds extension methods for <see cref="Serilog"/> classes.
 /// </summary>
-public static class SerilogExtensions
+internal static class SerilogExtensions
 {
     /// <summary>
     /// Writes log events to the Cfx console.

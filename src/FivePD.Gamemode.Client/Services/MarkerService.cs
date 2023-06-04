@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common;
-using FivePD.Common.Models;
-using FivePD.Gamemode.Client.DTO;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.DTO;
+using FivePD.Gamemode.Common.Models;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IMarkerService" />
-public class MarkerService : IMarkerService, IServiceWithEvents
+internal class MarkerService : IMarkerService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;

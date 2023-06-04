@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using CitizenFX.Core;
-using FivePD.Common;
-using FivePD.Common.Utilities;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
@@ -15,7 +15,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.ILocalizationService" />
-public class LocalizationService : ILocalizationService, IServiceWithEvents
+internal class LocalizationService : ILocalizationService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IUIService _uiService;

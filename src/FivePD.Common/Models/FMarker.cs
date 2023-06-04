@@ -1,7 +1,7 @@
 ﻿using CitizenFX.Core;
-using FivePD.Gamemode.Client.Enums;
+using FivePD.Gamemode.Common.Enums;
 
-namespace FivePD.Common.Models;
+namespace FivePD.Gamemode.Common.Models;
 
 /// <summary>
 /// Represents a marker.

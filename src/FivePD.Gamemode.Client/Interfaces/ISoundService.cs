@@ -5,7 +5,7 @@ namespace FivePD.Gamemode.Client.Interfaces;
 /// <summary>
 /// Responsible for playing various sounds in the NUI.
 /// </summary>
-public interface ISoundService
+internal interface ISoundService
 {
     /// <summary>
     /// Plays a sound effect.

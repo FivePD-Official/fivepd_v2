@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FivePD.Common.Attributes;
+namespace FivePD.Gamemode.Common.Attributes;
 
 /// <summary>
 /// Restricts the target to only be accessible internally.

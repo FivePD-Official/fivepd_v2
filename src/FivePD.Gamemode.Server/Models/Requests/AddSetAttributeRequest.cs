@@ -4,7 +4,7 @@
 
 namespace FivePD.Gamemode.Server.Models.Requests;
 
-public record struct AddSetAttributeRequest
+internal record struct AddSetAttributeRequest
 {
     public string SetId { get; set; }
 

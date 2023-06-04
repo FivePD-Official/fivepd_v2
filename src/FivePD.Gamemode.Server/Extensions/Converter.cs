@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Server.Extensions;
 /// <summary>
 /// Custom wrapper for the <see cref="JsonConvert"/> class.
 /// </summary>
-public static class Converter
+internal static class Converter
 {
     /// <summary>
     /// Serializes an object by ignoring its reference loops.

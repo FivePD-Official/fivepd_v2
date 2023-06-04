@@ -5,7 +5,7 @@ namespace FivePD.Gamemode.Client.Interfaces;
 /// <summary>
 /// Responsible for displaying base GTA notifications.
 /// </summary>
-public interface INotificationService
+internal interface INotificationService
 {
     /// <summary>
     /// Displays a tooltip (small notification in the top-left corner).

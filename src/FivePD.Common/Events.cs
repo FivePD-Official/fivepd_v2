@@ -1,6 +1,6 @@
 ﻿#pragma warning disable
 
-namespace FivePD.Common;
+namespace FivePD.Gamemode.Common;
 
 // Follows naming convention "{resource}:{area}:{id}" OR "{resource}:{area}:{id}:{type}" where,
 // {resource} is "fivepd"

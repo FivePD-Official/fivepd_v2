@@ -1,13 +1,13 @@
-﻿using FivePD.Common;
-using FivePD.Common.Extensions;
-using FivePD.Gamemode.Client.Interfaces;
+﻿using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Utilities;
+using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Extensions;
 using Newtonsoft.Json.Linq;
 
 namespace FivePD.Gamemode.Client.Services;
 
 /// <inheritdoc />
-public class SoundService : ISoundService
+internal class SoundService : ISoundService
 {
     private readonly IUIService _uiService;
 

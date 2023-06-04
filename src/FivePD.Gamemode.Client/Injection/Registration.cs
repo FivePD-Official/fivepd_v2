@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Client.Injection;
 /// <summary>
 /// Represents a registration for a <see cref="ServiceProvider"/>.
 /// </summary>
-public abstract class Registration
+internal abstract class Registration
 {
     /// <summary>
     /// Gets or sets the <see cref="Type" /> that this registration should represent.
@@ -34,7 +34,7 @@ public abstract class Registration
 /// Represents a registration for a <see cref="ServiceProvider"/> of type <typeparamref name="T"/>.
 /// </summary>
 /// <typeparam name="T">The type to use.</typeparam>
-public class Registration<T> : Registration
+internal class Registration<T> : Registration
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Registration{T}"/> class.

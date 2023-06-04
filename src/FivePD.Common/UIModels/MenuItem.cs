@@ -1,4 +1,4 @@
-﻿using FivePD.Common.Models;
+﻿using FivePD.Gamemode.Common.Enums;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3264
@@ -7,7 +7,7 @@ using Cfx = CitizenFX.Core.Native;
 #pragma warning disable S125
 #pragma warning disable SA1515
 
-namespace FivePD.Common.UIModels;
+namespace FivePD.Gamemode.Common.UIModels;
 
 /// <summary>
 /// Represents a normal menu item in the Nui.
