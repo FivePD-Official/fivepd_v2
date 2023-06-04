@@ -9,9 +9,4 @@ public sealed record MenuItemConfig
     /// Gets a value indicating whether the given menu item should be displayed.
     /// </summary>
     public bool Enabled { get; init; } = true;
-
-    /// <summary>
-    /// Gets a value indicating whether the given menu item should be displayed only for admins.
-    /// </summary>
-    public bool AdminOnly { get; init; } = false;
 }
