@@ -10,15 +10,22 @@ public abstract class Menu
     /// <summary>
     /// Initializes a new instance of the <see cref="Menu"/> class.
     /// </summary>
+    /// <param name="id">The id of the menu. We recommend using UUID to prevent any conflict.</param>
     /// <param name="title">The title of the menu.</param>
     /// <param name="key">The keybind of this menu.</param>
     /// <param name="useLocalization">Determines whether this menu's Title should be used as a key for localizations.</param>
-    protected Menu(string title, string key, bool useLocalization)
+    protected Menu(string id, string title, string key, bool useLocalization)
     {
+        this.Id = id;
         this.Title = title;
         this.Key = key;
         this.UseLocalization = useLocalization;
     }
+
+    /// <summary>
+    /// Gets the id of the menu.
+    /// </summary>
+    public string Id { get; }
 
     /// <summary>
     /// Gets or sets the items.

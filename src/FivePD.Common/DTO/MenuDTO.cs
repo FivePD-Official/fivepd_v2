@@ -14,7 +14,7 @@ internal sealed record MenuDTO
 
         public record struct UIMenuResponse
         {
-            public string Hashcode { get; init; }
+            public string Id { get; init; }
 
             public string Key { get; init; }
 

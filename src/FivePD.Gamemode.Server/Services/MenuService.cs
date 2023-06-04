@@ -194,7 +194,7 @@ public class MenuService : IMenuService, IServiceWithEvents
 
             response.Menus.Add(new MenuDTO.GetAllMenu.UIMenuResponse
             {
-                Hashcode = menu.GetHashCode().ToString(),
+                Id = menu.Id,
                 Key = menu.Key,
                 Title = menu.Title,
                 Items = items,

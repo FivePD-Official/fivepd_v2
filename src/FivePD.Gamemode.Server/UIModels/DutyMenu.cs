@@ -19,7 +19,6 @@ public sealed class DutyMenu : Menu
 {
     private readonly IConfigService _configService;
     private readonly ILocalizationService _localizationService;
-    private readonly IEventService _eventService;
     private readonly DutyMenuConfig _dutyMenuConfig;
 
     private MenuListItem _changeLanguageListItem;
@@ -31,11 +30,10 @@ public sealed class DutyMenu : Menu
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="eventService">The <see cref="IEventService"/> to use.</param>
     public DutyMenu(IConfigService configService, ILocalizationService localizationService, IEventService eventService)
-        : base("DUTY_MENU.TITLE", "F10", true)
+        : base("fivepd_duty_menu", "DUTY_MENU.TITLE", "F10", true)
     {
         this._configService = configService;
         this._localizationService = localizationService;
-        this._eventService = eventService;
         this._dutyMenuConfig = configService.MenuConfig.DutyMenu;
         this.Items = this.CreateItems();
     }
