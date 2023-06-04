@@ -99,6 +99,16 @@ internal class FilesystemAddonLocator
                     foreach (var file in definition.Files.Keys.ToList())
                     {
                         var filePath = Path.Combine(addonDirectory, file);
+                        if (!File.Exists(filePath))
+                        {
+                            this._logger.Warning(
+                                "Tried to find a file that doesn't exist ({file}). Is the {MetadataFileName} up-to-date?",
+                                file,
+                                MetadataFileName);
+
+                            continue;
+                        }
+
                         definition.Files[file] = File.ReadAllText(filePath);
                     }
 
