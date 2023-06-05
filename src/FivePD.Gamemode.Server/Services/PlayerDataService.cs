@@ -76,12 +76,6 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     /// <inheritdoc/>
     public User FindUserByLicense(Player player)
     {
-        var license = player.Identifiers["license"];
-        if (string.IsNullOrEmpty(license))
-        {
-            return null;
-        }
-
         try
         {
             return this._databaseContext.Users
@@ -195,13 +189,6 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     [UIEvent(Events.UI.Player.GetDetails, true)]
     private void GetPlayerDetails([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var license = player.Identifiers["license"];
-        if (string.IsNullOrEmpty(license))
-        {
-            networkCallbackDelegate.Invoke(null);
-            return;
-        }
-
         try
         {
             var user = this._databaseContext.Users
