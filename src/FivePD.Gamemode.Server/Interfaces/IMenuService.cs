@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
-using FivePD.Gamemode.Common.Models;
-using FivePD.Gamemode.Common.UIModels;
+using FivePD.Gamemode.Server.EntityWrappers;
+using FivePD.Gamemode.Server.UIModels;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 

@@ -35,14 +35,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFPlayerWithMenus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DynamicExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservableSubscription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFPed.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\FPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FStatefulContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFVehicle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\FPedPropertiesDTO.cs" />
@@ -50,14 +48,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\NotificationDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\WeaponCollectionDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FMarker.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuButtonItemWithEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuCheckboxItemWithEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Interfaces\IMenuListItemWithEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\Menu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuButtonItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuCheckboxItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIModels\MenuListItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\GtaStyleText.cs" />
   </ItemGroup>

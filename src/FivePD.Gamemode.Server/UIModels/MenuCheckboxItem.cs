@@ -1,11 +1,11 @@
 ﻿using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Models;
-using FivePD.Gamemode.Common.UIModels.Interfaces;
+using FivePD.Gamemode.Server.EntityWrappers;
+using FivePD.Gamemode.Server.UIModels.Interfaces;
 
 #pragma warning disable S3264
 #pragma warning disable CS0067
 
-namespace FivePD.Gamemode.Common.UIModels;
+namespace FivePD.Gamemode.Server.UIModels;
 
 /// <inheritdoc cref="MenuItem" />
 public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents
@@ -24,7 +24,7 @@ public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents
     /// Used for firing the item selection event.
     /// </summary>
     /// <param name="player">The player who invoked this event.</param>
-    /// <param name="checked">The player who2 invoked this event.</param>
+    /// <param name="checked">The state of the checkbox.</param>
     public delegate void CheckboxSelect(FPlayer player, bool @checked);
 
     /// <summary>

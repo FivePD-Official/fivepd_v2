@@ -8,14 +8,12 @@ using CitizenFX.Core;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.DTO;
 using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Interfaces;
-using FivePD.Gamemode.Common.Models;
-using FivePD.Gamemode.Common.UIModels;
-using FivePD.Gamemode.Common.UIModels.Interfaces;
 using FivePD.Gamemode.Server.Attributes;
+using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.UIModels;
+using FivePD.Gamemode.Server.UIModels.Interfaces;
 using Newtonsoft.Json.Linq;
 
 namespace FivePD.Gamemode.Server.Services;
