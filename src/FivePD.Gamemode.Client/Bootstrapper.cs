@@ -231,10 +231,17 @@ internal class Bootstrapper : BaseScript
         foreach (var service in serviceWithEvents)
         {
 #if DEBUG
-            Debug.WriteLine($"Registering event handlers for {service.GetType()}");
+            this._bootstrapLogger.Info($"Registering event handlers for {service.GetType()}");
 #endif
 
-            service.RegisterEvents();
+            try
+            {
+                service.RegisterEvents();
+            }
+            catch (Exception e)
+            {
+                this._bootstrapLogger.Error(e.Message);
+            }
         }
 
         screenDecorService.BeginTextDraw();

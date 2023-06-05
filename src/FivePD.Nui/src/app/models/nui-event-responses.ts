@@ -1,4 +1,6 @@
-﻿export interface ActionResponse {
+﻿import { User } from "./entities";
+
+export interface ActionResponse {
   Status: boolean;
   Title: string;
   Description: string;
@@ -71,4 +73,19 @@ export interface TimerBarEvent extends BaseNuiEvent {
   show: boolean;
   title: string;
   timeToHold: number;
+}
+
+export interface SimplePlayerDTO {
+  NetworkId: string;
+  Name: string;
+}
+
+export interface UnitDTO {
+  Callsign: string;
+  Players: SimplePlayerDTO[];
+}
+
+export interface PlayerDetailsDTO {
+  NetworkId: string;
+  User: User;
 }

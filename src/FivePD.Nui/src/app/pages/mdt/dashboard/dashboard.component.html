@@ -11,19 +11,19 @@
           class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
           <li>
             <p>{{ 'UI.LABEL.DEPARTMENT.SINGULAR' | translate }}</p>
-            <p>{{ user?.Department?.Name ?? '-' }}</p>
+            <p>{{ user?.User?.Department?.Name ?? '-' }}</p>
           </li>
           <li>
             <p>{{ 'UI.LABEL.DIVISION.SINGULAR' | translate }}</p>
-            <p>{{ user?.Division?.Name ?? '-' }}</p>
+            <p>{{ user?.User?.Division?.Name ?? '-' }}</p>
           </li>
           <li>
             <p>{{ 'UI.LABEL.RANK.SINGULAR' | translate }}</p>
-            <p>{{ user?.Rank?.Name ?? '-' }}</p>
+            <p>{{ user?.User?.Rank?.Name ?? '-' }}</p>
           </li>
           <li>
             <p>{{ 'UI.LABEL.CALLSIGN.TITLE' | translate }}</p>
-            <p>{{ user?.Callsign ?? '-' }}</p>
+            <p>{{ user?.User?.Callsign ?? '-' }}</p>
           </li>
         </ul>
       </div>
@@ -59,4 +59,9 @@
     [columns]="departmentsColumnDef"
     (onCollationChange)="onDepartmentsCollationChange($event)"
     (onCellAction)="getDepartments()"/>
+
+  <app-grid
+    [title]="'UI.LABEL.UNIT.PLURAL' | translate"
+    [data]="units"
+    [columns]="unitsColumnDef"/>
 </app-container>

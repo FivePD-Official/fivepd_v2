@@ -73,7 +73,7 @@ export class SidebarComponent {
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(res => {
       this.isSidebarCollapsed = res.app.isSidebarCollapsed;
-      this.user = res.user.details;
+      this.user = res.user.details.User;
     });
   }
 

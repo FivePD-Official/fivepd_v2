@@ -24,6 +24,7 @@ internal class LocalPlayerService : ILocalPlayerService
     {
         this._localizationService = localizationService;
 
+        this.UpdateDiscordStatus(FDutyStatus.OffDuty);
         this.Player.DutyStatus.Subscribe(this.ListenForDutyStatusChanges);
     }
 

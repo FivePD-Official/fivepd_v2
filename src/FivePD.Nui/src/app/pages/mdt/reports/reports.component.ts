@@ -71,7 +71,7 @@ export class ReportsComponent implements OnInit {
     private readonly _userService: UserService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => {
-      this.user = state.user.details;
+      this.user = state.user.details.User;
     });
   }
 

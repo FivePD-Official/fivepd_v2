@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActionResponse, Collation, Page, User } from '@models';
+import { ActionResponse, Collation, Page, PlayerDetailsDTO, User } from '@models';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -18,7 +18,7 @@ export enum UserRole {
 })
 export class UserService {
 
-  user?: User;
+  user?: PlayerDetailsDTO;
 
   constructor(
     private _http: HttpClient,
@@ -33,7 +33,7 @@ export class UserService {
     }
 
     for (const role of roles) {
-      const hasRole = !!(this.user.Role & role)
+      const hasRole = !!(this.user.User.Role & role)
       if (hasRole) {
         return true;
       }
@@ -43,7 +43,7 @@ export class UserService {
   }
 
   refreshData(): void {
-    this._http.post<User>('fivepd:player:getDetails', {}).subscribe(user => {
+    this._http.post<PlayerDetailsDTO>('fivepd:player:getDetails', {}).subscribe(user => {
       this.store.dispatch(setUser({payload: user}));
     });
   }

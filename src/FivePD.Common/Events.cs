@@ -166,6 +166,16 @@ internal readonly record struct Events
 
             public const string UpdateMenuItem = "fivepd:menu:update_item";
         }
+
+        public readonly record struct Unit
+        {
+            public const string GetAll = "fivepd:unit:getAll";
+        }
+        
+        public readonly record struct Config
+        {
+            public const string GetGeneralSettings = "fivepd:config:getGeneralSettings";
+        }
     }
 
     public readonly record struct DevTools

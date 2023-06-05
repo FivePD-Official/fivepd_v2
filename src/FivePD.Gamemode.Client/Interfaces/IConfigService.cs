@@ -9,6 +9,11 @@ namespace FivePD.Gamemode.Client.Interfaces;
 internal interface IConfigService
 {
     /// <summary>
+    /// Gets the content of the "Config/general-settings.json" file.
+    /// </summary>
+    public GeneralSettings GeneralSettings { get; }
+
+    /// <summary>
     /// Loads and returns the /Config/vehicles.json file's content.
     /// </summary>
     /// <returns>Returns a deserialized <see cref="Vehicles"/> object.</returns>

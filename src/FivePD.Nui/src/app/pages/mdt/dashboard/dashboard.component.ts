@@ -1,5 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Button, Collation, Column, Department, NumberInput, Page, TextInput, User } from '@models';
+import {
+  Button,
+  Collation,
+  Column,
+  Department,
+  GeneralSettings,
+  NumberInput,
+  Page,
+  PlayerDetailsDTO,
+  TextInput,
+  UnitDTO
+} from '@models';
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
@@ -13,6 +24,8 @@ import { GlobalState } from '@store';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { UnitService } from "@services/unit/unit.service";
+import { ConfigService } from "@services/config/config.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +34,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class DashboardComponent implements OnInit {
 
-  user?: User;
+  generalSettings?: GeneralSettings;
+  user?: PlayerDetailsDTO;
   statistics: any;
   assignedCall: any;
 
@@ -72,10 +86,6 @@ export class DashboardComponent implements OnInit {
               title: 'UI.LABEL.DEPARTMENT.DELETE.TITLE',
               description: this._localization.translate('UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION', {department: `<b>${department.Name}</b>`}),
               buttons: {
-                // cancel: {
-                //   variant: 'secondary',
-                //   label: 'UI.ACTION.CANCEL',
-                // },
                 submit: {
                   variant: 'danger',
                   label: 'UI.ACTION.DELETE',
@@ -96,25 +106,72 @@ export class DashboardComponent implements OnInit {
     })
   ];
 
+  units?: Page<UnitDTO>;
+  unitsColumnDef: Column<UnitDTO>[] = [
+    new Column<UnitDTO>({
+      header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+      accessorKey: 'Callsign',
+    }),
+    new Column<UnitDTO>({
+      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+      show: () => this._userService.userHasRole(UserRole.Admin),
+      actions: [
+        {
+          type: 'button',
+          label: this._localization.translate('UI.ACTION.JOIN'),
+          show: unit => (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId),
+          onClick: () => {
+            // send request to join unit
+          }
+        },
+        // "request to join" button
+        {
+          type: 'button',
+          label: this._localization.translate('UI.ACTION.LEAVE'),
+          show: unit => (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.some(x => x.NetworkId === this.user?.NetworkId),
+          onClick: () => {
+            // send request to leave unit
+          }
+        },
+      ]
+    }),
+  ];
+
   constructor(
-    private _department: DepartmentService,
-    private _localization: LocalizationService,
-    private _modal: ModalService,
+    private readonly _department: DepartmentService,
+    private readonly _localization: LocalizationService,
+    private readonly _modal: ModalService,
     private readonly _modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
-    private _userService: UserService,
+    private readonly _userService: UserService,
     private readonly store: Store<GlobalState>,
+    private readonly _unitService: UnitService,
+    private readonly _configService: ConfigService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
   }
 
   ngOnInit(): void {
+    this.getGeneralSettings();
     this.getDepartments();
+    this.getUnits();
+  }
+
+  getGeneralSettings(): void {
+    this._configService.getGeneralSettings().subscribe(res => {
+      this.generalSettings = res;
+    });
   }
 
   getDepartments(): void {
     this._department.getDepartments(this.departmentsCollation).subscribe(res => {
       this.departments = res;
+    });
+  }
+
+  getUnits(): void {
+    this._unitService.getAll().subscribe(res => {
+      this.units = res;
     });
   }
 

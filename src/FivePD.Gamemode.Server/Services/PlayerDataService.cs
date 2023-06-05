@@ -12,8 +12,8 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.DTO;
 using FivePD.Gamemode.Server.Models.Requests;
-using FivePD.Gamemode.Server.Models.Responses;
 using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -29,6 +29,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     private readonly INotificationService _notificationService;
     private readonly IFeatureFlagService _featureFlagService;
     private readonly ILogger _logger;
+    private readonly IUnitService _unitService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -39,13 +40,15 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
     /// <param name="featureFlagService">The <see cref="IFeatureFlagService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         DatabaseContext databaseContext,
         PlayerList playerList,
         INotificationService notificationService,
         IFeatureFlagService featureFlagService,
-        ILogger logger)
+        ILogger logger,
+        IUnitService unitService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._databaseContext = databaseContext;
@@ -53,6 +56,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         this._notificationService = notificationService;
         this._featureFlagService = featureFlagService;
         this._logger = logger;
+        this._unitService = unitService;
     }
 
     /// <inheritdoc />
@@ -119,28 +123,40 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
-        fPlayer.DutyStatus.Subscribe(
-            status =>
+        fPlayer.DutyStatus.Subscribe(status => this.OnPlayerDutyStatusChanged(player, status), false);
+    }
+
+    private void OnPlayerDutyStatusChanged(Player player, FDutyStatus status)
+    {
+        var fPlayer = FPlayer.FromNetId(player.Handle);
+
+        this._notificationService.ShowNotificationWithTexture(
+            this._playerList,
+            "CHAR_CALL911",
+            "LABEL.DISPATCH",
+            "LABEL.STATUS",
+            "PLAYER_STATUS.CHANGE",
+            new Dictionary<string, string>
             {
-                this._notificationService.ShowNotificationWithTexture(
-                    this._playerList,
-                    "CHAR_CALL911",
-                    "LABEL.DISPATCH",
-                    "LABEL.STATUS",
-                    "PLAYER_STATUS.CHANGE",
-                    new Dictionary<string, string>
-                    {
-                        ["name"] = player.Name,
-                        ["status"] = status switch
-                        {
-                            FDutyStatus.OffDuty => "PLAYER_STATUS.OFF_DUTY.GENERIC",
-                            FDutyStatus.OnDutyAndReceiving => "PLAYER_STATUS.ON_DUTY.GENERIC_RECEIVING",
-                            FDutyStatus.OnDutyAndNotReceiving => "PLAYER_STATUS.ON_DUTY.GENERIC_NOT_RECEIVING",
-                            _ => "Unknown",
-                        },
-                    });
-            },
-            false);
+                ["name"] = player.Name,
+                ["status"] = status switch
+                {
+                    FDutyStatus.OffDuty => "PLAYER_STATUS.OFF_DUTY.GENERIC",
+                    FDutyStatus.OnDutyAndReceiving => "PLAYER_STATUS.ON_DUTY.GENERIC_RECEIVING",
+                    FDutyStatus.OnDutyAndNotReceiving => "PLAYER_STATUS.ON_DUTY.GENERIC_NOT_RECEIVING",
+                    _ => "Unknown",
+                },
+            });
+
+        var playerDetails = this.GetPlayerDetails(player);
+        if (status == FDutyStatus.OffDuty)
+        {
+            this._unitService.RemovePlayerFromUnit(fPlayer);
+        }
+        else
+        {
+            this._unitService.CreateUnit(playerDetails.Callsign, fPlayer);
+        }
     }
 
     private void CreatePlayerData(Player player)
@@ -186,8 +202,23 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
     }
 
+    private User GetPlayerDetails(Player player)
+    {
+        try
+        {
+            return this._databaseContext.Users
+                .AsNoTracking()
+                .WhereAnyIdMatches(player)
+                .FirstOrDefault();
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     [UIEvent(Events.UI.Player.GetDetails, true)]
-    private void GetPlayerDetails([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetPlayerDetailsUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         try
         {
@@ -198,7 +229,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 .Include(user => user.Rank)
                 .WhereAnyIdMatches(player)
                 .FirstOrDefault();
-            networkCallbackDelegate.Invoke(user is null ? null : Converter.SerializeObjectWithoutReferenceLoop(user));
+            networkCallbackDelegate.InvokeWithJson(user is null ? null : new PlayerDetailsDTO(player.Handle, user));
         }
         catch (Exception e)
         {

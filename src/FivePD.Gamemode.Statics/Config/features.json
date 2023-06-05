@@ -1,7 +1,3 @@
 {
-  "DutyNotification": true,
-  "PlayerBlips": {
-    "EnabledForEveryone": true,
-    "EnabledPerDepartment": false
-  }
+  "DutyNotification": true
 }

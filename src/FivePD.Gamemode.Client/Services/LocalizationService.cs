@@ -18,18 +18,15 @@ namespace FivePD.Gamemode.Client.Services;
 internal class LocalizationService : ILocalizationService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly IUIService _uiService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalizationService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-    /// <param name="uiService">The <see cref="IUIService" /> to use.</param>
-    public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IUIService uiService)
+    public LocalizationService(EventHandlerDictionary eventHandlerDictionary)
     {
         this.Locales = new Dictionary<string, string>();
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._uiService = uiService;
     }
 
     /// <inheritdoc />
@@ -51,11 +48,11 @@ internal class LocalizationService : ILocalizationService, IServiceWithEvents
         this._eventHandlerDictionary[Events.UI.Player.LocalizationChange] += new Action<string>(localization =>
         {
             this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
-            this._uiService.SendMessage(new JObject
+            Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
             {
                 { "type", Events.UI.Player.LocalizationChange },
                 { "data", localization },
-            });
+            }));
         });
 
         this.LoadDefaultLocalization();
@@ -71,11 +68,11 @@ internal class LocalizationService : ILocalizationService, IServiceWithEvents
             {
                 this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
                 this.LocalizationChanged?.Invoke(this, locale);
-                this._uiService.SendMessage(new JObject
+                Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
                 {
                     { "type", Events.UI.Player.LocalizationChange },
                     { "data", localization },
-                });
+                }));
             }));
     }
 

@@ -43,6 +43,9 @@
     <!-- Copy static files to respective directories -->
     <ItemGroup>
         <StaticFiles Include="..\FivePD.Gamemode.Statics\**\*.*" />
+        <StaticFiles Update="..\FivePD.Gamemode.Statics\Config\general-settings.json">
+          <Link>FivePD.Gamemode.Statics\Config\general-settings.json</Link>
+        </StaticFiles>
     </ItemGroup>
     <Target Name="CopyStatics" BeforeTargets="CopyFilesToOutputDirectory" DependsOnTargets="CopyStaticsDebug;CopyStaticsRelease" />
     <Target Name="CopyStaticsDebug" Condition=" '$(Configuration)' == 'Debug' ">

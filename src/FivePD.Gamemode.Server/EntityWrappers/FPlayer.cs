@@ -5,6 +5,8 @@ using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Common.Models;
+using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.UIModels;
 
 namespace FivePD.Gamemode.Server.EntityWrappers;
@@ -40,6 +42,12 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     /// Gets the player's network identifier.
     /// </summary>
     public string NetId { get; private set; }
+
+    /// <summary>
+    /// Gets the player's unit.
+    /// </summary>
+    /// <returns>A unit.</returns>
+    public Unit Unit => ServiceLocator.GetService<IUnitService>().GetPlayerUnit(this);
 
     /// <summary>
     /// Gets the player's duty status observable.

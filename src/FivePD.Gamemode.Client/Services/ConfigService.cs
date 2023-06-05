@@ -27,6 +27,9 @@ internal class ConfigService : IConfigService
         this._localizationService = localizationService;
     }
 
+    /// <inheritdoc/>
+    public GeneralSettings GeneralSettings => this.InternalLoadFile<GeneralSettings>("/Config/general-settings.json");
+
     /// <inheritdoc />
     public Vehicles GetVehiclesConfig()
     {

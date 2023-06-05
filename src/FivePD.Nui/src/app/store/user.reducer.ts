@@ -1,13 +1,13 @@
 ﻿import { createReducer, on } from '@ngrx/store';
-import { User } from '@models';
+import { PlayerDetailsDTO } from '@models';
 import { setUser } from '@store/user.actions';
 
 export interface UserStateModel {
-  details: User;
+  details: PlayerDetailsDTO;
 }
 
 const initialState: UserStateModel = {
-  details: {} as User,
+  details: {} as PlayerDetailsDTO,
 };
 
 export const userReducer = createReducer(

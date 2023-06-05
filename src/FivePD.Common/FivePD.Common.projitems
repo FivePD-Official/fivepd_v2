@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Builders\CommonFVehicleBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\DatabaseConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\FeaturesConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Loadout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfigs\DutyMenuConfig.cs" />

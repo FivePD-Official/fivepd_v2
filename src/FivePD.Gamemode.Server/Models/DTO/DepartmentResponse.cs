@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace FivePD.Gamemode.Server.Models.Responses;
+namespace FivePD.Gamemode.Server.Models.DTO;
 
 /// <inheritdoc />
 internal class DepartmentResponse : Department
