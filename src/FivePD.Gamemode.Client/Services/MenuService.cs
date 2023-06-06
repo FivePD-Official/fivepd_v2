@@ -64,7 +64,7 @@ internal class MenuService : IMenuService, IServiceWithEvents
                 this._uiService.Show(Events.NuiEventType.MenuView, menu.Id, false, false);
             }
 
-            this._controlService.RegisterKeybind($"fivepd:openMenu:${menu.Id}", menu.Key, "-", OnPress);
+            this._controlService.RegisterKeybind($"fivepd:openMenu:{menu.Id}", menu.Key, "-", OnPress);
 
             foreach (var item in menu.Items)
             {

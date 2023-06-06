@@ -77,7 +77,7 @@ export class MenuService {
           menuItems.push(_item as MenuItem);
         }
       }
-      menus.push(new Menu(menu.Hashcode, menu.Title, menu.UseLocalization, menuItems));
+      menus.push(new Menu(menu.Id, menu.Title, menu.UseLocalization, menuItems));
     }
 
     this._menus = menus;
