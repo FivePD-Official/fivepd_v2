@@ -1,4 +1,4 @@
-﻿import { User } from "./entities";
+﻿import { FDutyStatus, User } from "./entities";
 
 export interface ActionResponse {
   Status: boolean;
@@ -88,4 +88,5 @@ export interface UnitDTO {
 export interface PlayerDetailsDTO {
   NetworkId: string;
   User: User;
+  DutyStatus: FDutyStatus;
 }

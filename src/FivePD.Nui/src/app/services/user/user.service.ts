@@ -33,7 +33,7 @@ export class UserService {
     }
 
     for (const role of roles) {
-      const hasRole = !!(this.user.User.Role & role)
+      const hasRole = !!(this.user?.User?.Role & role)
       if (hasRole) {
         return true;
       }

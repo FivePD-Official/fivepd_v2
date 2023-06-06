@@ -4,6 +4,7 @@ import {
   Collation,
   Column,
   Department,
+  FDutyStatus,
   GeneralSettings,
   NumberInput,
   Page,
@@ -113,24 +114,36 @@ export class DashboardComponent implements OnInit {
       accessorKey: 'Callsign',
     }),
     new Column<UnitDTO>({
+      header: 'UI.LABEL.OFFICER.PLURAL',
+      valueResolver: item => item.Players.length.toString(),
+    }),
+    new Column<UnitDTO>({
       header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
       show: () => this._userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
           label: this._localization.translate('UI.ACTION.JOIN'),
-          show: unit => (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId),
-          onClick: () => {
-            // send request to join unit
+          show: unit => (this.user?.DutyStatus === FDutyStatus.OnDutyAndNotReceiving || this.user?.DutyStatus === FDutyStatus.OnDutyAndReceiving) && (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
+          onClick: unit => {
+            this._unitService.join(unit).subscribe(res => {
+              if (res.Status) {
+                this.getUnits();
+              }
+            });
           }
         },
         // "request to join" button
         {
           type: 'button',
           label: this._localization.translate('UI.ACTION.LEAVE'),
-          show: unit => (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.some(x => x.NetworkId === this.user?.NetworkId),
-          onClick: () => {
-            // send request to leave unit
+          show: unit => (this.user?.DutyStatus === FDutyStatus.OnDutyAndNotReceiving || this.user?.DutyStatus === FDutyStatus.OnDutyAndReceiving) && unit.Players.some(x => x.NetworkId === this.user?.NetworkId) && (unit.Players.length > 1),
+          onClick: unit => {
+            this._unitService.leave(unit).subscribe(res => {
+              if (res.Status) {
+                this.getUnits();
+              }
+            });
           }
         },
       ]

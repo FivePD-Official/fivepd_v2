@@ -1,7 +1,5 @@
-﻿{
+{
   "Unit": {
     "Join": "free"
-  },
-  "TODOSpikeStrips": "all/individual",
-  "TODOPlayerBlips": "all/department"
+  }
 }

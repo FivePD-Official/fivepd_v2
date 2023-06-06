@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Common.Exceptions;
 using FivePD.Gamemode.Common.Extensions;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
@@ -56,6 +58,9 @@ internal class ConfigService : IConfigService
         {
             return file.Item1;
         }
+
+        Debug.WriteLine($"exception: {file.Item2.GetType()}");
+        Debug.WriteLine($"exception message: {((JsonReaderException)file.Item2).Message}");
 
         var exceptionMessage = file.Item2 switch
         {

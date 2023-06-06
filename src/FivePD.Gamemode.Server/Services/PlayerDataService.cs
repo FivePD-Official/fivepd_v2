@@ -131,7 +131,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         var fPlayer = FPlayer.FromNetId(player.Handle);
 
         this._notificationService.ShowNotificationWithTexture(
-            this._playerList,
+            this._playerList.Where(p => p.Handle != player.Handle),
             "CHAR_CALL911",
             "LABEL.DISPATCH",
             "LABEL.STATUS",
@@ -229,7 +229,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 .Include(user => user.Rank)
                 .WhereAnyIdMatches(player)
                 .FirstOrDefault();
-            networkCallbackDelegate.InvokeWithJson(user is null ? null : new PlayerDetailsDTO(player.Handle, user));
+            networkCallbackDelegate.InvokeWithJson(user is null ? null : new PlayerDetailsDTO(player.Handle, user, FPlayer.FromNetId(player.Handle).DutyStatus.Value));
         }
         catch (Exception e)
         {

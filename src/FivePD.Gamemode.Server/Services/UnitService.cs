@@ -10,6 +10,7 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.DTO;
+using FivePD.Gamemode.Server.Models.Requests;
 using FivePD.Gamemode.Server.QueryHelpers;
 
 namespace FivePD.Gamemode.Server.Services;
@@ -18,9 +19,15 @@ namespace FivePD.Gamemode.Server.Services;
 
 public class UnitService : IUnitService
 {
+    private readonly INotificationService _notificationService;
     private readonly List<Unit> _units = new();
 
     public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
+
+    public UnitService(INotificationService notificationService)
+    {
+        this._notificationService = notificationService;
+    }
 
     public Unit CreateUnit(string callsign, FPlayer player)
     {
@@ -78,7 +85,67 @@ public class UnitService : IUnitService
             PageCount = 1,
             PageSize = units.Count,
         };
-        
+
         networkCallbackDelegate.InvokeWithJson(page);
+    }
+
+    [UIEvent(Events.UI.Unit.Join, true)]
+    private void JoinUnitUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<UnitCallsignRequest>();
+        var unit = this._units.FirstOrDefault(x => x.Callsign == request.Callsign);
+        if (unit is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        var fPlayer = FPlayer.FromNetId(player.Handle);
+        unit.AddPlayer(fPlayer);
+
+        var playerJoinDictionary = new Dictionary<string, string>
+        {
+            ["callsign"] = unit.Callsign,
+        };
+
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.JOIN", "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
+        this._notificationService.ShowNotification(fPlayer, "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
+        this._notificationService.ShowNotification(
+            unit.Players.Where(p => p.NetId != player.Handle),
+            "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
+            new Dictionary<string, string>
+            {
+                ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+            });
+    }
+
+    [UIEvent(Events.UI.Unit.Leave, true)]
+    private void LeaveUnitUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<UnitCallsignRequest>();
+        var unit = this._units.FirstOrDefault(x => x.Callsign == request.Callsign);
+        if (unit is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        var fPlayer = FPlayer.FromNetId(player.Handle);
+        unit.RemovePlayer(fPlayer);
+
+        var playerLeaveDictionary = new Dictionary<string, string>
+        {
+            ["callsign"] = unit.Callsign,
+        };
+
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.LEAVE", "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE", playerLeaveDictionary);
+        this._notificationService.ShowNotification(fPlayer, "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE", playerLeaveDictionary);
+        this._notificationService.ShowNotification(
+            unit.Players.Where(p => p.NetId != player.Handle),
+            "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.LEAVE",
+            new Dictionary<string, string>
+            {
+                ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+            });
     }
 }

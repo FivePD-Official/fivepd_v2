@@ -118,6 +118,8 @@ internal class UIService : IUIService, IServiceWithEvents
             Events.UI.LooseData.EditSetAttribute,
             Events.UI.LooseData.DeleteSetAttribute,
             Events.UI.Unit.GetAll,
+            Events.UI.Unit.Join,
+            Events.UI.Unit.Leave,
         });
     }
 

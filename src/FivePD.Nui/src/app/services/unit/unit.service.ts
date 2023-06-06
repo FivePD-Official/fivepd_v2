@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Page, PlayerDetailsDTO, UnitDTO } from "@models";
+import { ActionResponse, Page, PlayerDetailsDTO, UnitDTO } from "@models";
 import { HttpClient } from "@angular/common/http";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -22,5 +22,17 @@ export class UnitService {
 
   getAll(): Observable<Page<UnitDTO>> {
     return this._http.post<Page<UnitDTO>>('fivepd:unit:getAll', {});
+  }
+
+  join(unit: UnitDTO): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:unit:join', {
+      Callsign: unit.Callsign,
+    });
+  }
+
+  leave(unit: UnitDTO): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:unit:leave', {
+      Callsign: unit.Callsign,
+    });
   }
 }

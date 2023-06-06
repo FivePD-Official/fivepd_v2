@@ -1,5 +1,7 @@
-﻿namespace FivePD.Gamemode.Server.Models.DTO;
+﻿using FivePD.Gamemode.Common.Enums;
+
+namespace FivePD.Gamemode.Server.Models.DTO;
 
 #pragma warning disable
 
-public sealed record PlayerDetailsDTO(string NetworkId, User User);
+public sealed record PlayerDetailsDTO(string NetworkId, User User, FDutyStatus DutyStatus);

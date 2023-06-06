@@ -170,6 +170,10 @@ internal readonly record struct Events
         public readonly record struct Unit
         {
             public const string GetAll = "fivepd:unit:getAll";
+
+            public const string Join = "fivepd:unit:join";
+
+            public const string Leave = "fivepd:unit:leave";
         }
         
         public readonly record struct Config
