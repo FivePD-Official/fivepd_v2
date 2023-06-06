@@ -33,22 +33,13 @@ internal class ConfigService : IConfigService
     public GeneralSettings GeneralSettings => this.InternalLoadFile<GeneralSettings>("/Config/general-settings.json");
 
     /// <inheritdoc />
-    public Vehicles GetVehiclesConfig()
-    {
-        return this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
-    }
+    public Vehicles VehiclesConfig => this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
 
     /// <inheritdoc />
-    public List<Loadout> GetLoadoutsConfig()
-    {
-        return this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
-    }
+    public List<Loadout> LoadoutsConfig => this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
 
     /// <inheritdoc />
-    public MenuConfig GetMenuConfig()
-    {
-        return this.InternalLoadFile<MenuConfig>("/Config/menu.json");
-    }
+    public MenuConfig MenuConfig => this.InternalLoadFile<MenuConfig>("/Config/menu.json");
 
     private T InternalLoadFile<T>(string path, bool useCache = true)
     {

@@ -14,20 +14,17 @@ internal interface IConfigService
     public GeneralSettings GeneralSettings { get; }
 
     /// <summary>
-    /// Loads and returns the /Config/vehicles.json file's content.
+    /// Gets the /Config/vehicles.json file's content.
     /// </summary>
-    /// <returns>Returns a deserialized <see cref="Vehicles"/> object.</returns>
-    public Vehicles GetVehiclesConfig();
+    public Vehicles VehiclesConfig { get; }
 
     /// <summary>
-    /// Loads and returns the /Config/menu.json file's content.
+    /// Gets the /Config/menu.json file's content.
     /// </summary>
-    /// <returns>Returns a deserialized a list of <see cref="Loadout"/> objects.</returns>
-    public List<Loadout> GetLoadoutsConfig();
+    public List<Loadout> LoadoutsConfig { get; }
 
     /// <summary>
-    /// Loads and returns the /Config/menu.json file's content.
+    /// Gets the /Config/menu.json file's content.
     /// </summary>
-    /// <returns>Returns a deserialized <see cref="MenuConfig"/> object.</returns>
-    public MenuConfig GetMenuConfig();
+    public MenuConfig MenuConfig { get; }
 }
