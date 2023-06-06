@@ -124,7 +124,7 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: this._localization.translate('UI.ACTION.JOIN'),
-          show: unit => (this.user?.DutyStatus === FDutyStatus.OnDutyAndNotReceiving || this.user?.DutyStatus === FDutyStatus.OnDutyAndReceiving) && (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
+          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
           onClick: unit => {
             this._unitService.join(unit).subscribe(res => {
               if (res.Status) {
@@ -137,7 +137,7 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: this._localization.translate('UI.ACTION.LEAVE'),
-          show: unit => (this.user?.DutyStatus === FDutyStatus.OnDutyAndNotReceiving || this.user?.DutyStatus === FDutyStatus.OnDutyAndReceiving) && unit.Players.some(x => x.NetworkId === this.user?.NetworkId) && (unit.Players.length > 1),
+          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && unit.Players.some(x => x.NetworkId === this.user?.NetworkId) && (unit.Players.length > 1),
           onClick: unit => {
             this._unitService.leave(unit).subscribe(res => {
               if (res.Status) {
