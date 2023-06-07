@@ -35,7 +35,7 @@ internal class NotificationService : INotificationService, IServiceWithEvents
         this._eventHandlerDictionary[Events.Notification.ShowTooltip] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowTooltip>(serializedRequest);
-            this.ShowTooltip(this.GetLocalizedContent(request.Content, request.ContentParams), request.WithBeep);
+            this.ShowTooltip(this.GetLocalizedContent(request.Content, request.ContentParams), request.WithBeep, request.Duration);
         });
         this._eventHandlerDictionary[Events.Notification.ShowNotification] += new Action<string>(serializedRequest =>
         {
@@ -54,17 +54,17 @@ internal class NotificationService : INotificationService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void ShowTooltip(string content, bool withBeep = false)
+    public void ShowTooltip(string content, bool withBeep = false, int duration = -1)
     {
         Cfx.API.SetTextComponentFormat("STRING");
         Cfx.API.AddTextComponentString(content);
-        Cfx.API.EndTextCommandDisplayHelp(0, false, withBeep, -1);
+        Cfx.API.EndTextCommandDisplayHelp(0, false, withBeep, duration);
     }
 
     /// <inheritdoc />
-    public void ShowTooltip(GtaStyleText content, bool withBeep = false)
+    public void ShowTooltip(GtaStyleText content, bool withBeep = false, int duration = -1)
     {
-        this.ShowTooltip(content.Build(), withBeep);
+        this.ShowTooltip(content.Build(), withBeep, duration);
     }
 
     /// <inheritdoc />

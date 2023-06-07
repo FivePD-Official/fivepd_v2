@@ -12,14 +12,16 @@ internal interface INotificationService
     /// </summary>
     /// <param name="content">The text that'll be displayed.</param>
     /// <param name="withBeep">If the notification should play a beep sound.</param>
-    public void ShowTooltip(string content, bool withBeep = false);
+    /// <param name="duration">The duration in ms.</param>
+    public void ShowTooltip(string content, bool withBeep = false, int duration = -1);
 
     /// <summary>
     /// Displays a tooltip (small notification in the top-left corner).
     /// </summary>
     /// <param name="content">A <see cref="GtaStyleText"/> object to display a formatted text.</param>
     /// <param name="withBeep">If the notification should play a beep sound.</param>
-    public void ShowTooltip(GtaStyleText content, bool withBeep = false);
+    /// <param name="duration">The duration in ms.</param>
+    public void ShowTooltip(GtaStyleText content, bool withBeep = false, int duration = -1);
 
     /// <summary>
     /// Displays a notification.

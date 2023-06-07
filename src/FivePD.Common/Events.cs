@@ -178,9 +178,11 @@ internal readonly record struct Events
 
             public const string Join = "fivepd:unit:join";
 
+            public const string RequestToJoin = "fivepd:unit:requestToJoin";
+
             public const string Leave = "fivepd:unit:leave";
         }
-        
+
         public readonly record struct Config
         {
             public const string GetGeneralSettings = "fivepd:config:getGeneralSettings";
@@ -209,6 +211,8 @@ internal readonly record struct Events
     public readonly record struct Generic
     {
         public const string Callback = "fivepd:generic:callback";
+
+        public const string Action = "fivepd:generic:action";
     }
 
     public readonly record struct Notification
@@ -223,7 +227,7 @@ internal readonly record struct Events
     public readonly record struct Marker
     {
         public const string Add = "fivepd:marker:add";
-        
+
         public const string Remove = "fivepd:marker:remove";
     }
 }

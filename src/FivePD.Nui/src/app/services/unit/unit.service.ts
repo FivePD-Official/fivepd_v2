@@ -30,6 +30,12 @@ export class UnitService {
     });
   }
 
+  requestToJoin(unit: UnitDTO): Observable<void> {
+    return this._http.post<void>('fivepd:unit:requestToJoin', {
+      Callsign: unit.Callsign,
+    });
+  }
+
   leave(unit: UnitDTO): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:unit:leave', {
       Callsign: unit.Callsign,

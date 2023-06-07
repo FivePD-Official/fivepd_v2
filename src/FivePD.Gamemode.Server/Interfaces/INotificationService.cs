@@ -16,7 +16,8 @@ public interface INotificationService
     /// <param name="content">The text that'll be displayed.</param>
     /// <param name="withBeep">If the notification should play a beep sound.</param>
     /// <param name="contentParams">The parameters to be replaced in the content.</param>
-    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null);
+    /// <param name="duration">The duration in ms.</param>
+    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null, int duration = -1);
 
     /// <summary>
     /// Displays a tooltip (small notification in the top-left corner) for the specified player.
@@ -25,7 +26,8 @@ public interface INotificationService
     /// <param name="content">The text that'll be displayed.</param>
     /// <param name="withBeep">If the notification should play a beep sound.</param>
     /// <param name="contentParams">The parameters to be replaced in the content.</param>
-    public void ShowTooltip(FPlayer player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null);
+    /// <param name="duration">The duration in ms.</param>
+    public void ShowTooltip(FPlayer player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null, int duration = -1);
 
     /// <summary>
     /// Displays a notification for the specified player.

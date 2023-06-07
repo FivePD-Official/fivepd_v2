@@ -43,7 +43,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.5375" />
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.6370" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">

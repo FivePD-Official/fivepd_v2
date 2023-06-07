@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common;
@@ -13,6 +14,7 @@ public class EventService : IEventService, IServiceWithEvents
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _players;
     private readonly ConcurrentDictionary<string, Action<string>> _events = new();
+    private readonly Random _random = new(Guid.NewGuid().GetHashCode());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventService"/> class.
@@ -43,30 +45,46 @@ public class EventService : IEventService, IServiceWithEvents
     /// <inheritdoc />
     public void TriggerEventWithoutCallback(Player player, string eventName, params object[] args)
     {
-        // TODO: this might not work, I'm not sure if an Entity.Owner is null if the entity has no owner,
-        // also select a random player
-        player ??= this._players[0];
-        BaseScript.TriggerClientEvent(player, eventName, args);
+        player ??= this.GetRandomPlayer();
+        this.TriggerEventStrictWithoutCallback(player, eventName, args);
     }
 
     /// <inheritdoc />
     public void TriggerEvent(Player player, string eventName, Action<string> callback, params object[] args)
+    {
+        player ??= this.GetRandomPlayer();
+        this.TriggerEventStrict(player, eventName, callback, args);
+    }
+
+    /// <inheritdoc />
+    public Task<string> TriggerEventAsync(Player player, string eventName, params object[] args)
+    {
+        player ??= this.GetRandomPlayer();
+        return this.TriggerEventStrictAsync(player, eventName, args);
+    }
+
+    /// <inheritdoc />
+    public void TriggerEventStrictWithoutCallback(Player player, string eventName, params object[] args)
+    {
+        BaseScript.TriggerClientEvent(player, eventName, args);
+    }
+
+    /// <inheritdoc />
+    public void TriggerEventStrict(Player player, string eventName, Action<string> callback, params object[] args)
     {
         var guid = Guid.NewGuid().ToString();
         this._events.TryAdd(guid, callback);
         var newArgs = new object[args.Length + 1];
         newArgs[0] = guid;
         args.CopyTo(newArgs, 1);
-
-        player ??= this._players[0];
         BaseScript.TriggerClientEvent(player, eventName, newArgs);
     }
 
     /// <inheritdoc />
-    public async Task<string> TriggerEventAsync(Player player, string eventName, params object[] args)
+    public async Task<string> TriggerEventStrictAsync(Player player, string eventName, params object[] args)
     {
         var value = string.Empty;
-        this.TriggerEvent(player, eventName, s => { value = s; }, args);
+        this.TriggerEventStrict(player, eventName, s => { value = s; }, args);
 
         // TODO: wait only few seconds, also I'm not sure if this blocks the thread or not, maybe run it in a tick (ITickQueueService)?
         while (value.Length == 0)
@@ -75,5 +93,11 @@ public class EventService : IEventService, IServiceWithEvents
         }
 
         return value;
+    }
+
+    private Player GetRandomPlayer()
+    {
+        var index = this._random.Next(0, this._players.Count());
+        return this._players[index];
     }
 }

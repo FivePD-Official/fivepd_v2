@@ -14,20 +14,21 @@ namespace FivePD.Gamemode.Server.Services;
 public class NotificationService : INotificationService
 {
     /// <inheritdoc />
-    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null)
+    public void ShowTooltip(Player player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null, int duration = -1)
     {
         player.TriggerEvent(Events.Notification.ShowTooltip, JsonConvert.SerializeObject(new NotificationDTO.ShowTooltip
         {
             Content = content,
             WithBeep = withBeep,
             ContentParams = contentParams ?? new Dictionary<string, string>(),
+            Duration = duration,
         }));
     }
 
     /// <inheritdoc />
-    public void ShowTooltip(FPlayer player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null)
+    public void ShowTooltip(FPlayer player, string content, bool withBeep = false, Dictionary<string, string> contentParams = null, int duration = -1)
     {
-        this.ShowTooltip(player.GetUnderlyingPlayer(), content, withBeep, contentParams);
+        this.ShowTooltip(player.GetUnderlyingPlayer(), content, withBeep, contentParams, duration);
     }
 
     /// <inheritdoc />

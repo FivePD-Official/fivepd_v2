@@ -219,6 +219,12 @@ internal class Bootstrapper : BaseScript
             .As<IServiceWithEvents>()
             .IsSingleton();
 
+        services
+            .RegisterType<ConfirmationService>()
+            .As<IConfirmationService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);

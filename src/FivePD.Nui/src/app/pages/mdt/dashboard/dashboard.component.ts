@@ -133,7 +133,14 @@ export class DashboardComponent implements OnInit {
             });
           }
         },
-        // "request to join" button
+        {
+          type: 'button',
+          label: 'UI.ACTION.REQUEST_TO_JOIN',
+          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalSettings?.joinByRequestToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
+          onClick: unit => {
+            this._unitService.requestToJoin(unit).subscribe();
+          }
+        },
         {
           type: 'button',
           label: 'UI.ACTION.LEAVE',

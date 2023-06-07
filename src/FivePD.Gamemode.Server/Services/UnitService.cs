@@ -20,13 +20,15 @@ namespace FivePD.Gamemode.Server.Services;
 public class UnitService : IUnitService
 {
     private readonly INotificationService _notificationService;
+    private readonly IConfirmationService _confirmationService;
     private readonly List<Unit> _units = new();
 
     public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
 
-    public UnitService(INotificationService notificationService)
+    public UnitService(INotificationService notificationService, IConfirmationService confirmationService)
     {
         this._notificationService = notificationService;
+        this._confirmationService = confirmationService;
     }
 
     public Unit CreateUnit(string callsign, FPlayer player)
@@ -117,6 +119,54 @@ public class UnitService : IUnitService
             {
                 ["name"] = fPlayer.GetUnderlyingPlayer().Name,
             });
+    }
+
+    [UIEvent(Events.UI.Unit.RequestToJoin, true)]
+    private void RequestToJoinUnitUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<UnitCallsignRequest>();
+        var unit = this._units.FirstOrDefault(x => x.Callsign == request.Callsign);
+        if (unit is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        foreach (var unitPlayer in unit.Players.Where(p => p.NetId != player.Handle))
+        {
+            this._confirmationService.TriggerConfirmation(
+                unitPlayer.GetUnderlyingPlayer(),
+                288, // F1
+                "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.TOOLTIP",
+                "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
+                new Dictionary<string, string>
+                {
+                    ["name"] = player.Name,
+                },
+                response =>
+                {
+                    if (!response)
+                    {
+                        return;
+                    }
+
+                    var fPlayer = FPlayer.FromNetId(player.Handle);
+                    unit.AddPlayer(fPlayer);
+
+                    var playerJoinDictionary = new Dictionary<string, string>
+                    {
+                        ["callsign"] = unit.Callsign,
+                    };
+                    this._notificationService.ShowNotification(fPlayer, "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
+                    this._notificationService.ShowNotification(
+                        unit.Players.Where(p => p.NetId != player.Handle),
+                        "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
+                        new Dictionary<string, string>
+                        {
+                            ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+                        });
+                });
+        }
     }
 
     [UIEvent(Events.UI.Unit.Leave, true)]

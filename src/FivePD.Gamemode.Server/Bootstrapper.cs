@@ -246,6 +246,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IFeatureFlagService, FeatureFlagService>();
         services.AddSingleton<IMarkerService, MarkerService>();
         services.AddSingleton<IUnitService, UnitService>();
+        services.AddSingleton<IConfirmationService, ConfirmationService>();
 
 #pragma warning disable
         // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS
