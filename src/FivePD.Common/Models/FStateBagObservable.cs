@@ -15,7 +15,7 @@ namespace FivePD.Gamemode.Common.Models;
 /// <typeparam name="T">The serializable type
 /// being persisted.</typeparam>
 #pragma warning disable SA1649
-public class FObservable<T> : IDisposable
+public class FStateBagObservable<T> : IDisposable
 #pragma warning restore SA1649
 {
     private readonly string _containerName;
@@ -30,12 +30,12 @@ public class FObservable<T> : IDisposable
     private bool _disposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FObservable{T}"/> class.
+    /// Initializes a new instance of the <see cref="FStateBagObservable{T}"/> class.
     /// </summary>
     /// <param name="container">The item's state container.</param>
     /// <param name="key">The key to use for the item's state.</param>
     /// <param name="defaultValue">The value to set, if undefined.</param>
-    public FObservable(object container, string key, T defaultValue)
+    public FStateBagObservable(object container, string key, T defaultValue)
     {
         this._containerName = ((FStatefulContainer)container).GetStateKey();
         this._stateBag = ((FStatefulContainer)container).GetStateBag();
@@ -50,9 +50,9 @@ public class FObservable<T> : IDisposable
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="FObservable{T}"/> class.
+    /// Finalizes an instance of the <see cref="FStateBagObservable{T}"/> class.
     /// </summary>
-    ~FObservable() => this.Dispose(false);
+    ~FStateBagObservable() => this.Dispose(false);
 
     /// <summary>
     /// Gets or sets the current value.
@@ -111,7 +111,7 @@ public class FObservable<T> : IDisposable
             observer.Invoke(this.Value);
         }
 
-        return new FObservableSubscription<T>(this, observer);
+        return new FStateBagObservableSubscription<T>(this, observer);
     }
 
     /// <summary>

@@ -28,7 +28,7 @@ public class FPlayer : FStatefulContainer
         CachedPlayers.Add(this);
 
         // Sets up duty status tracking
-        this.DutyStatus = new FObservable<FDutyStatus>(
+        this.DutyStatus = new FStateBagObservable<FDutyStatus>(
             this,
             "FivePD:DutyStatus",
             FDutyStatus.OffDuty);
@@ -42,7 +42,7 @@ public class FPlayer : FStatefulContainer
     /// <summary>
     /// Gets the player's duty status observable.
     /// </summary>
-    public FObservable<FDutyStatus> DutyStatus { get; private set; }
+    public FStateBagObservable<FDutyStatus> DutyStatus { get; private set; }
 
     /// <summary>
     /// Attempts to get the player with the specified netId.
