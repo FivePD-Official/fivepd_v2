@@ -78,11 +78,17 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     }
 
     /// <inheritdoc/>
-    public User FindUserByLicense(Player player)
+    public User FindUserByLicense(Player player, bool withChangeTracking = true)
     {
         try
         {
-            return this._databaseContext.Users
+            var query = this._databaseContext.Users.AsQueryable();
+            if (!withChangeTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return query
                 .Include(user => user.Department)
                 .WhereAnyIdMatches(player)
                 .FirstOrDefault();
@@ -180,7 +186,6 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         try
         {
             var user = this._databaseContext.Users.WhereAnyIdMatches(player).FirstOrDefault();
-
             if (user is null)
             {
                 this._databaseContext.Users.Add(new User
@@ -192,7 +197,6 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                     IdentifierXbl = player.Identifiers["xbl"] ?? string.Empty,
                     IdentifierLive = player.Identifiers["live"] ?? string.Empty,
                 });
-                this._databaseContext.SaveChanges();
             }
 
             this._databaseContext.SaveChanges();
@@ -230,7 +234,9 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 .Include(user => user.Rank)
                 .WhereAnyIdMatches(player)
                 .FirstOrDefault();
-            networkCallbackDelegate.InvokeWithJson(user is null ? null : new PlayerDetailsDTO(player.Handle, user, FPlayer.FromNetId(player.Handle).DutyStatus.Value));
+            networkCallbackDelegate.InvokeWithJson(user is null
+                ? null
+                : new PlayerDetailsDTO(player.Handle, user, FPlayer.FromNetId(player.Handle).DutyStatus.Value));
         }
         catch (Exception e)
         {
