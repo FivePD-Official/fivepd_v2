@@ -17,16 +17,19 @@ internal class UIService : IUIService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILoggerService _loggerService;
+    private readonly IConfigService _configService;
     private bool _isNuiOpened;
     private bool _ready;
 
     /// <summary>Initializes a new instance of the <see cref="UIService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="loggerService">The <see cref="ILoggerService"/> to use.</param>
-    public UIService(EventHandlerDictionary eventHandlerDictionary, ILoggerService loggerService)
+    /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
+    public UIService(EventHandlerDictionary eventHandlerDictionary, ILoggerService loggerService, IConfigService configService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._loggerService = loggerService;
+        this._configService = configService;
     }
 
     /// <summary>
@@ -68,8 +71,16 @@ internal class UIService : IUIService, IServiceWithEvents
                 cb.Invoke(JsonConvert.SerializeObject(Game.PlayerPed.Position));
             }));
 
+        this._eventHandlerDictionary.AddUIEvent(
+            Events.UI.Config.GetGeneralSettings,
+            new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+            {
+                cb.Invoke(JsonConvert.SerializeObject(this._configService.GeneralSettings));
+            }));
+
         this.RegisterUIEvents(new[]
         {
+            Events.DevTools.DeleteEntities,
             Events.UI.Department.List,
             Events.UI.Department.List,
             Events.UI.Department.GetById,
@@ -106,7 +117,10 @@ internal class UIService : IUIService, IServiceWithEvents
             Events.UI.LooseData.AddSetAttribute,
             Events.UI.LooseData.EditSetAttribute,
             Events.UI.LooseData.DeleteSetAttribute,
-            Events.DevTools.DeleteEntities,
+            Events.UI.Unit.GetAll,
+            Events.UI.Unit.Join,
+            Events.UI.Unit.RequestToJoin,
+            Events.UI.Unit.Leave,
         });
     }
 

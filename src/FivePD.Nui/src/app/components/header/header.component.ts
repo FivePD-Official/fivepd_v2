@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
 import { User } from '@models';
 import { WindowService } from '@services/window/window.service';
 import { GlobalState } from '@store';
 import { Store } from '@ngrx/store';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-header',
@@ -12,7 +12,7 @@ import { Store } from '@ngrx/store';
 })
 export class HeaderComponent implements OnInit {
 
-  user$: Observable<User>;
+  user?: User;
   currentStatus: string = '10-0';
   isStatusSelectOpened: boolean = false;
   statusList = ['10-1', '10-2', '10-3', '10-4'];
@@ -21,7 +21,9 @@ export class HeaderComponent implements OnInit {
     private readonly store: Store<GlobalState>,
     public window: WindowService,
   ) {
-    this.user$ = this.store.select('user', 'details');
+    store.pipe(takeUntilDestroyed()).subscribe(res => {
+      this.user = res.user.details.User;
+    });
   }
 
   ngOnInit(): void {

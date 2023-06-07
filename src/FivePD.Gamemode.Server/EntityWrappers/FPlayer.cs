@@ -4,11 +4,12 @@ using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Interfaces;
-using FivePD.Gamemode.Common.UIModels;
-using Cfx = CitizenFX.Core.Native;
+using FivePD.Gamemode.Common.Models;
+using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.UIModels;
 
-namespace FivePD.Gamemode.Common.Models;
+namespace FivePD.Gamemode.Server.EntityWrappers;
 
 /// <summary>
 /// The base player class for the gamemode.
@@ -31,7 +32,7 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
         CachedPlayers.Add(this);
 
         // Sets up duty status tracking
-        this.DutyStatus = new FObservable<FDutyStatus>(
+        this.DutyStatus = new FStateBagObservable<FDutyStatus>(
             this,
             "FivePD:DutyStatus",
             FDutyStatus.OffDuty);
@@ -43,9 +44,15 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     public string NetId { get; private set; }
 
     /// <summary>
+    /// Gets the player's unit.
+    /// </summary>
+    /// <returns>A unit.</returns>
+    public Unit Unit => ServiceLocator.GetService<IUnitService>().GetPlayerUnit(this);
+
+    /// <summary>
     /// Gets the player's duty status observable.
     /// </summary>
-    public FObservable<FDutyStatus> DutyStatus { get; private set; }
+    public FStateBagObservable<FDutyStatus> DutyStatus { get; private set; }
 
     /// <summary>
     /// Attempts to get the player with the specified netId.
@@ -54,14 +61,10 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     /// <returns>The FPlayer.</returns>
     public static FPlayer FromNetId(string netId)
     {
-        // Try to get the player from the cache
         try
         {
-            return CachedPlayers
-                .First(i => i.NetId == netId);
+            return CachedPlayers.First(player => player.NetId == netId);
         }
-
-        // If not found, create a new player
         catch (Exception)
         {
             return new FPlayer(netId);
@@ -84,11 +87,7 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     /// <returns>A Cfx player.</returns>
     public Player GetUnderlyingPlayer()
     {
-#if IS_GAMEMODE_SERVER
         return CreateInstance<Player>(this.NetId);
-#else
-            return new Player(Cfx.API.GetPlayerFromServerId(int.Parse(this.NetId)));
-#endif
     }
 
     /// <inheritdoc />

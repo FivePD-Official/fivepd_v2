@@ -198,7 +198,7 @@ export class SettingsComponent {
     public readonly userService: UserService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => {
-      this.user = state.user.details;
+      this.user = state.user.details.User;
       if (this.userService.userHasRole(UserRole.Admin)) {
         this.getArrestReportAttributes();
         this.getUsers();

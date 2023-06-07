@@ -2,8 +2,8 @@
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Client.Models;
 using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Models;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
@@ -24,6 +24,7 @@ internal class LocalPlayerService : ILocalPlayerService
     {
         this._localizationService = localizationService;
 
+        this.UpdateDiscordStatus(FDutyStatus.OffDuty);
         this.Player.DutyStatus.Subscribe(this.ListenForDutyStatusChanges);
     }
 

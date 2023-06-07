@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using FivePD.Gamemode.Common.Attributes;
-using FivePD.Gamemode.Common.UIModels;
+using FivePD.Gamemode.Server.UIModels;
 
-namespace FivePD.Gamemode.Common.Interfaces;
+namespace FivePD.Gamemode.Server.EntityWrappers;
 
 /// <summary>
 /// Defines the methods which can be used

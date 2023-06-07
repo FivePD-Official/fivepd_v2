@@ -8,7 +8,7 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
     required: true,
     label: 'UI.LABEL.CALLSIGN.FORMAT.TITLE',
     helpLabel: `
-              ${localizationService.translate('UI.LABEL.CALLSIGN.HELP_LABEL')} ${localizationService.translate('UI.LABEL.AVAILABLE_CHARACTERS')}: <br/>
+              ${localizationService.translate('UI.LABEL.CALLSIGN.FORMAT.HELP_LABEL')} ${localizationService.translate('UI.LABEL.AVAILABLE_CHARACTERS')}: <br/>
               <table>
                 <tr>
                   <td><b>L</b><td>

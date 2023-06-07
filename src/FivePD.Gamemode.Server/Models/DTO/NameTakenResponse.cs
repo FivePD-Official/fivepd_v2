@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-namespace FivePD.Gamemode.Server.Models.Responses;
+namespace FivePD.Gamemode.Server.Models.DTO;
 
 internal readonly record struct NameTakenResponse(bool Taken)
 {

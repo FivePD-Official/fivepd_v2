@@ -3,7 +3,6 @@ using System.Linq;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.ConfigModels.MenuConfigs;
 using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.UIModels;
 using FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
 using FivePD.Gamemode.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;

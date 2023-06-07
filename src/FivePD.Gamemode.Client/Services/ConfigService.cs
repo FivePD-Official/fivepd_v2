@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Common.Exceptions;
 using FivePD.Gamemode.Common.Extensions;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
@@ -27,23 +29,17 @@ internal class ConfigService : IConfigService
         this._localizationService = localizationService;
     }
 
-    /// <inheritdoc />
-    public Vehicles GetVehiclesConfig()
-    {
-        return this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
-    }
+    /// <inheritdoc/>
+    public GeneralSettings GeneralSettings => this.InternalLoadFile<GeneralSettings>("/Config/general-settings.json");
 
     /// <inheritdoc />
-    public List<Loadout> GetLoadoutsConfig()
-    {
-        return this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
-    }
+    public Vehicles VehiclesConfig => this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
 
     /// <inheritdoc />
-    public MenuConfig GetMenuConfig()
-    {
-        return this.InternalLoadFile<MenuConfig>("/Config/menu.json");
-    }
+    public List<Loadout> LoadoutsConfig => this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
+
+    /// <inheritdoc />
+    public MenuConfig MenuConfig => this.InternalLoadFile<MenuConfig>("/Config/menu.json");
 
     private T InternalLoadFile<T>(string path, bool useCache = true)
     {
@@ -53,6 +49,9 @@ internal class ConfigService : IConfigService
         {
             return file.Item1;
         }
+
+        Debug.WriteLine($"exception: {file.Item2.GetType()}");
+        Debug.WriteLine($"exception message: {((JsonReaderException)file.Item2).Message}");
 
         var exceptionMessage = file.Item2 switch
         {

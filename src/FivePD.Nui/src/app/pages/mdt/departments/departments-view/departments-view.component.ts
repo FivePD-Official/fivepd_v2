@@ -363,7 +363,7 @@ export class DepartmentsViewComponent {
     private readonly modalConfirmService: ModalConfirmService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => {
-      this.user = state.user.details;
+      this.user = state.user.details.User;
       this.setIsUserInDepartment();
     });
 

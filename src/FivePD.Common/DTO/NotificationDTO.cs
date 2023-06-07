@@ -14,6 +14,8 @@ internal sealed record NotificationDTO
 
         public required bool WithBeep { get; init; }
 
+        public required int Duration { get; init; }
+
         public required Dictionary<string, string> ContentParams { get; init; }
     }
 

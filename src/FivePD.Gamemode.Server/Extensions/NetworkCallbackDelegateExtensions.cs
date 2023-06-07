@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
-using FivePD.Gamemode.Server.Models.Responses;
+using FivePD.Gamemode.Server.Models.DTO;
 
 namespace FivePD.Gamemode.Server.Extensions;
 

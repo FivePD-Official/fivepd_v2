@@ -12,14 +12,14 @@
            *ngSwitchCase="field.type === 'text'"
            [formControlName]="field.key"
            [attr.id]="field.key"
-           [attr.placeholder]="placeholder"
+           [attr.placeholder]="placeholder | translate"
            (input)="onChange.emit($event)"
            [readonly]="field.readonly"/>
     <input type="number"
            *ngSwitchCase="field.type === 'number'"
            [formControlName]="field.key"
            [attr.id]="field.key"
-           [attr.placeholder]="placeholder"
+           [attr.placeholder]="placeholder | translate"
            (input)="onChange.emit($event)"
            [readonly]="field.readonly"/>
     <input type="text"
@@ -27,7 +27,7 @@
            *ngSwitchCase="field.type === 'date'"
            [formControlName]="field.key"
            [attr.id]="field.key"
-           [attr.placeholder]="placeholder"
+           [attr.placeholder]="placeholder | translate"
            [appDateMask]="form"
            (input)="onChange.emit($event)"
            [readonly]="field.readonly"/>
@@ -35,7 +35,7 @@
     <textarea *ngSwitchCase="field.type === 'textarea'"
               [attr.id]="field.key"
               [formControlName]="field.key"
-              [attr.placeholder]="placeholder"
+              [attr.placeholder]="placeholder | translate"
               (input)="onChange.emit($event)"
               [readonly]="field.readonly"></textarea>
 

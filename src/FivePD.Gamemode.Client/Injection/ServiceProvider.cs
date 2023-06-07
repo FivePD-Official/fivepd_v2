@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CitizenFX.Core;
 
 namespace FivePD.Gamemode.Client.Injection;
 
@@ -117,8 +118,21 @@ internal class ServiceProvider
             return registration.Factory();
         }
 
+        #pragma warning disable
+        Debug.WriteLine($"type: {registration.InstanceType.Name}");
+        foreach (var c in registration.InstanceType.GetConstructors())
+        {
+            Debug.WriteLine($"ctor: {c}");
+        }
+        
         var constructor = registration.InstanceType.GetConstructors().FirstOrDefault();
         var parameters = constructor?.GetParameters().Select(this.ResolveConstructorParameter).ToArray();
+        Debug.WriteLine($"params");
+        foreach (var p in parameters)
+        {
+            Debug.WriteLine($"p: {p}");
+        }
+        Debug.WriteLine($"----------------------");
 
         var instance = Activator.CreateInstance(registration.InstanceType, parameters);
 

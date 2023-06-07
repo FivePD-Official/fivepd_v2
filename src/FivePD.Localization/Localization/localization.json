@@ -35,6 +35,7 @@
   "UI.ACTION.KICK": "Kick",
   "UI.ACTION.LEAVE": "Leave",
   "UI.ACTION.RENAME": "Rename",
+  "UI.ACTION.REQUEST_TO_JOIN": "Request to join",
   "UI.ACTION.SAVE": "Save",
   "UI.ACTION.SET_CALLSIGN": "Set callsign",
   "UI.ACTION.SET_RANK": "Set rank",
@@ -136,6 +137,8 @@
   "UI.LABEL.NO_RESULTS": "No results",
   "UI.LABEL.NOT_IN_DEPARTMENT": "You're not in a department.",
   "UI.LABEL.NUMBER.SINGULAR": "Number",
+  "UI.LABEL.OFFICER.PLURAL": "Officers",
+  "UI.LABEL.OFFICER.SINGULAR": "Officer",
   "UI.LABEL.PERMISSIONS": "Permissions",
   "UI.LABEL.PLACEHOLDER": "Placeholder",
   "UI.LABEL.PLAYER.SUCCESS.CHANGE_ROLE": "Successfully changed the role of {{name}}.",
@@ -172,7 +175,14 @@
   "UI.LABEL.SUCCESS.LEAVE": "Successful leave",
   "UI.LABEL.TYPE.SINGULAR": "Type",
   "UI.LABEL.UNIT.PLURAL": "Units",
+  "UI.LABEL.UNIT.SINGULAR": "Unit",
+  "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN": "{{name}} joined your unit.",
+  "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.LEAVE": "{{name}} left your unit.",
+  "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN": "You've successfully joined {{callsign}}.",
+  "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE": "You've successfully left {{callsign}}.",
   "UI.LABEL.VEHICLE_DATABASE": "Vehicle database",
   "UI.LABEL.WHOLE_NUMBER.SINGULAR": "Whole number",
-  "UI.LABEL.YES": "Yes"
+  "UI.LABEL.YES": "Yes",
+  "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION": "{{name}} has requested to join your unit. You have {{timeout}} seconds to accept the request.",
+  "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.TOOLTIP": "Press ~INPUT_REPLAY_START_STOP_RECORDING~ to accept the request"
 }

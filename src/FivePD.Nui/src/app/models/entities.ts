@@ -68,3 +68,9 @@ export interface LooseDataEntityPageWrapper {
   page: Page<MappedLooseDataEntity>;
   attributes: SetAttribute[];
 }
+
+export enum FDutyStatus {
+  OffDuty,
+  OnDutyAndNotReceiving,
+  OnDutyAndReceiving,
+}

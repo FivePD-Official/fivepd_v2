@@ -1,4 +1,4 @@
-﻿using FivePD.Gamemode.Common.Models;
+﻿using FivePD.Gamemode.Server.EntityWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

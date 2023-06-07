@@ -1,4 +1,6 @@
-﻿export interface ActionResponse {
+﻿import { FDutyStatus, User } from "./entities";
+
+export interface ActionResponse {
   Status: boolean;
   Title: string;
   Description: string;
@@ -15,7 +17,7 @@ export interface BaseNuiEvent {
 
 export interface GetAllMenusResponse extends BaseNuiEvent {
   Menus: {
-    Hashcode: string;
+    Id: string;
     Title: string;
     UseLocalization: boolean;
     Items: {
@@ -71,4 +73,20 @@ export interface TimerBarEvent extends BaseNuiEvent {
   show: boolean;
   title: string;
   timeToHold: number;
+}
+
+export interface SimplePlayerDTO {
+  NetworkId: string;
+  Name: string;
+}
+
+export interface UnitDTO {
+  Callsign: string;
+  Players: SimplePlayerDTO[];
+}
+
+export interface PlayerDetailsDTO {
+  NetworkId: string;
+  User: User;
+  DutyStatus: FDutyStatus;
 }

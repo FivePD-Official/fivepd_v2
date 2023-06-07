@@ -7,6 +7,7 @@ using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Services;
+using FivePD.Gamemode.Common;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3241
@@ -37,6 +38,8 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     public Bootstrapper()
     {
+        TriggerServerEvent(Events.Player.OnConnected);
+
         // Initialize the logger.
         this._bootstrapLogger = new LoggerService();
 
@@ -216,6 +219,12 @@ internal class Bootstrapper : BaseScript
             .As<IServiceWithEvents>()
             .IsSingleton();
 
+        services
+            .RegisterType<ConfirmationService>()
+            .As<IConfirmationService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);
@@ -231,10 +240,17 @@ internal class Bootstrapper : BaseScript
         foreach (var service in serviceWithEvents)
         {
 #if DEBUG
-            Debug.WriteLine($"Registering event handlers for {service.GetType()}");
+            this._bootstrapLogger.Info($"Registering event handlers for {service.GetType()}");
 #endif
 
-            service.RegisterEvents();
+            try
+            {
+                service.RegisterEvents();
+            }
+            catch (Exception e)
+            {
+                this._bootstrapLogger.Error(e.Message);
+            }
         }
 
         screenDecorService.BeginTextDraw();

@@ -1,3 +1,4 @@
+<div class="hidden">{{ hackToDetectColumnShowChange }}</div>
 <div class="mb-10">
   <div class="w-full flex flex-row items-center justify-between mb-4">
     <p class="common-title">{{ title }}</p>
@@ -6,7 +7,7 @@
         *ngFor="let button of buttons"
         variant="secondary"
         [link]="button.link"
-        [label]="button.label"
+        [label]="button.label | translate"
         [show]="button.show()"
         [disabled]="button.disabled()"
         [tippy]="button.tooltip?.text ?? ''"
@@ -20,7 +21,7 @@
     <div class="table-row table-header">
       <div *ngFor="let column of formattedColumns"
            class="table-cell">
-        <p>{{ column.header }}</p>
+        <p>{{ column.header | translate }}</p>
       </div>
     </div>
 
@@ -50,7 +51,7 @@
             <app-button *ngIf="action.type === 'button' && (action.show ? action.show(item.originalItem) : true)"
                         variant="tertiary-bg"
                         size="sm"
-                        [label]="action.label"
+                        [label]="action.label  | translate"
                         (onClick)="tableCellActionButtonClick(action, item)"/>
             <app-dynamic-form-input
               *ngIf="action.type === 'select' && (action.show ? action.show(item.originalItem) : true)"

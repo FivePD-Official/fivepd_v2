@@ -1,4 +1,4 @@
-﻿using FivePD.Gamemode.Common.Models;
+﻿using FivePD.Gamemode.Client.Models;
 
 namespace FivePD.Gamemode.Client.Interfaces;
 
