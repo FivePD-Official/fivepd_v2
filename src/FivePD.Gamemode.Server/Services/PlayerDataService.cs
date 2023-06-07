@@ -68,7 +68,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     /// <inheritdoc />
     public void RegisterEvents()
     {
-        this._eventHandlerDictionary["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(this.OnPlayerConnecting);
+        this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
 
         foreach (var player in this._playerList)
         {
@@ -109,7 +109,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                user.IdentifierLive == identifierLive;
     }
 
-    private void OnPlayerConnecting([FromSource] Player player, string playerName, dynamic setKickReason, dynamic deferrals)
+    private void OnPlayerConnected([FromSource] Player player)
     {
         this.CreatePlayerData(player);
         this.SubscribeToOnDutyStatusChange(player);

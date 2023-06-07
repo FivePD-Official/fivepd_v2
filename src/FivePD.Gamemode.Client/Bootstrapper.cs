@@ -7,6 +7,7 @@ using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Services;
+using FivePD.Gamemode.Common;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3241
@@ -37,6 +38,8 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     public Bootstrapper()
     {
+        TriggerServerEvent(Events.Player.OnConnected);
+
         // Initialize the logger.
         this._bootstrapLogger = new LoggerService();
 

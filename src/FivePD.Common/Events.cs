@@ -9,6 +9,11 @@ namespace FivePD.Gamemode.Common;
 // {type} is optional, either "server" or "client"
 internal readonly record struct Events
 {
+    public readonly record struct Player
+    {
+        public const string OnConnected = "fivepd:player:onConnected";
+    }
+
     public readonly record struct Ped
     {
         public const string Generate = "fivepd:ped:generate";
