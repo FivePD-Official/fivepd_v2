@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Extensions;
@@ -23,6 +24,7 @@ public class DepartmentService : IDepartmentService
 {
     private readonly DatabaseContext _databaseContext;
     private readonly IPlayerDataService _playerDataService;
+    private readonly Random _random = new(Guid.NewGuid().GetHashCode());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DepartmentService"/> class.
@@ -831,15 +833,36 @@ public class DepartmentService : IDepartmentService
             .Include(department => department.Users)
             .FirstOrDefault(department => department.Id == request.Id);
 
+        if (department is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
         try
         {
             this.AddPlayerToDepartment(player, department);
-            if (department?.DefaultRankId != null)
+            var user = this._playerDataService.FindUserByLicense(player, false);
+            if (department.DefaultRankId is not null)
             {
-                var user = this._playerDataService.FindUserByLicense(player);
                 user.RankId = department.DefaultRankId;
-                this._databaseContext.SaveChanges();
             }
+
+            var callsignMatchesWithFormat = new Regex("^[NL0-9-*]{1,10}$").IsMatch(user.Callsign);
+            if (string.IsNullOrEmpty(user.Callsign) || !callsignMatchesWithFormat)
+            {
+                string callsign;
+                do
+                {
+                    callsign = this.GenerateCallsign(department.CallsignFormat);
+                }
+                while (department.Users.Any(x => x.Callsign == callsign));
+
+                user = this._playerDataService.FindUserByLicense(player);
+                user.Callsign = callsign;
+            }
+
+            this._databaseContext.SaveChanges();
 
             networkCallbackDelegate.InvokeWithResponse(
                 true,
@@ -882,5 +905,35 @@ public class DepartmentService : IDepartmentService
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
         }
+    }
+
+    private string GenerateCallsign(string format)
+    {
+        var value = new char[format.Length];
+
+        for (var i = 0; i < format.Length; i++)
+        {
+            var c = format[i];
+            value[i] = c switch
+            {
+                'L' => this.GetRandomLetter(),
+                'N' => this.GetRandomNumber(),
+                _ => c,
+            };
+        }
+
+        return new string(value);
+    }
+
+    private char GetRandomLetter()
+    {
+        const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        return letters[this._random.Next(letters.Length)];
+    }
+
+    private char GetRandomNumber()
+    {
+        const string numbers = "0123456789";
+        return numbers[this._random.Next(numbers.Length)];
     }
 }
