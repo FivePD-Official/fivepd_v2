@@ -62,6 +62,18 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  private previousColumnShowValues: boolean[] = [];
+
+  get hackToDetectColumnShowChange(): null {
+    const values = this.columns.map(column => column.show());
+    if (values.some((value, index) => value !== this.previousColumnShowValues[index])) {
+      this.setFormattedColumns();
+    }
+    this.previousColumnShowValues = values;
+
+    return null;
+  }
+
   get isAnyColumnFilterable(): boolean {
     return this.columns.some(column => column.filter);
   }
@@ -97,16 +109,14 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 
   setFormattedColumns(): void {
     this.formattedColumns = this.columns.filter(column => column.show());
+    this.setFormattedRows();
   }
 
   setFormattedRows(): void {
     this.formattedRows = this.data?.Items?.map((item: any) => {
       const row: FormattedRow<any> = [];
 
-      for (const value of Object.values(this.columns)) {
-        if (!value.show()) {
-          continue;
-        }
+      for (const value of Object.values(this.formattedColumns)) {
 
         const originalItem = {...item};
         const mappedItem = this.mapEntity({...item});

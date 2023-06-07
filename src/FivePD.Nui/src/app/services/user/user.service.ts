@@ -28,12 +28,12 @@ export class UserService {
   }
 
   userHasRole(...roles: UserRole[]): boolean {
-    if (!this.user) {
+    if (!this.user?.User) {
       return false;
     }
 
     for (const role of roles) {
-      const hasRole = !!(this.user?.User?.Role & role)
+      const hasRole = !!(this.user.User.Role & role)
       if (hasRole) {
         return true;
       }

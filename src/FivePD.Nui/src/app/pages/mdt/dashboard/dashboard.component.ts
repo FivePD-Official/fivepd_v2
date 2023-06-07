@@ -43,7 +43,7 @@ export class DashboardComponent implements OnInit {
   departments?: Page<Department>;
   departmentsButtons: Button[] = [
     {
-      label: this._localization.translate('UI.ACTION.CREATE_DEPARTMENT'),
+      label: 'UI.ACTION.CREATE_DEPARTMENT',
       show: () => this._userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
@@ -54,32 +54,32 @@ export class DashboardComponent implements OnInit {
   };
   departmentsColumnDef: Column<Department>[] = [
     new Column<Department>({
-      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+      header: 'UI.LABEL.NAME.SINGULAR',
       accessorKey: 'Name',
       linkResolver: (item) => `/mdt/departments/${item.Id}`,
       filter: {
-        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
+        label: 'UI.LABEL.SEARCH_BY.NAME',
       }
     }),
     new Column<Department>({
-      header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+      header: 'UI.LABEL.CALLSIGN.TITLE',
       accessorKey: 'Callsign',
       filter: {
-        label: this._localization.translate('UI.LABEL.SEARCH_BY.CALLSIGN'),
+        label: 'UI.LABEL.SEARCH_BY.CALLSIGN',
       },
     }),
     new Column<Department>({
-      header: this._localization.translate('UI.LABEL.CAPACITY.SINGULAR'),
+      header: 'UI.LABEL.CAPACITY.SINGULAR',
       accessorKey: 'UserCount',
       valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
     new Column<Department>({
-      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+      header: 'UI.LABEL.ACTION.PLURAL',
       show: () => this._userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('UI.ACTION.DELETE'),
+          label: 'UI.ACTION.DELETE',
           show: () => true,
           disabled: () => false,
           onClick: department => {
@@ -110,7 +110,7 @@ export class DashboardComponent implements OnInit {
   units?: Page<UnitDTO>;
   unitsColumnDef: Column<UnitDTO>[] = [
     new Column<UnitDTO>({
-      header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+      header: 'UI.LABEL.CALLSIGN.TITLE',
       accessorKey: 'Callsign',
     }),
     new Column<UnitDTO>({
@@ -118,12 +118,12 @@ export class DashboardComponent implements OnInit {
       valueResolver: item => item.Players.length.toString(),
     }),
     new Column<UnitDTO>({
-      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+      header: 'UI.LABEL.ACTION.PLURAL',
       show: () => this._userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('UI.ACTION.JOIN'),
+          label: 'UI.ACTION.JOIN',
           show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
           onClick: unit => {
             this._unitService.join(unit).subscribe(res => {
@@ -136,7 +136,7 @@ export class DashboardComponent implements OnInit {
         // "request to join" button
         {
           type: 'button',
-          label: this._localization.translate('UI.ACTION.LEAVE'),
+          label: 'UI.ACTION.LEAVE',
           show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && unit.Players.some(x => x.NetworkId === this.user?.NetworkId) && (unit.Players.length > 1),
           onClick: unit => {
             this._unitService.leave(unit).subscribe(res => {
