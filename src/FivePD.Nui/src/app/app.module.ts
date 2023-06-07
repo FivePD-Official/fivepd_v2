@@ -53,6 +53,8 @@ import { userReducer } from '@store/user.reducer';
 import { appReducer } from '@store/app.reducer';
 import { DynamicFormDirective } from './components/dynamic-form/dynamic-form.directive';
 import { ModalService } from '@services/modals/modal/modal.service';
+import { UnitService } from "@services/unit/unit.service";
+import { ConfigService } from "@services/config/config.service";
 
 @NgModule({
   declarations: [
@@ -122,6 +124,8 @@ import { ModalService } from '@services/modals/modal/modal.service';
     NotificationService,
     DepartmentService,
     UserService,
+    UnitService,
+    ConfigService,
     LooseDataService,
     {
       provide: HTTP_INTERCEPTORS,
