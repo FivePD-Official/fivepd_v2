@@ -18,9 +18,9 @@ internal class ConfirmationService : IConfirmationService, IServiceWithEvents
     private readonly ITickService _tickService;
     private readonly INotificationService _notificationService;
     private readonly ILocalizationService _localizationService;
-    private string _callbackId;
-    private ConfirmationDTO _currentConfirmation;
-    private DateTime _actionStart;
+
+    private readonly Queue<QueuedConfirmation> _confirmationQueue = new();
+    private QueuedConfirmation _currentConfirmation;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfirmationService"/> class.
@@ -50,63 +50,94 @@ internal class ConfirmationService : IConfirmationService, IServiceWithEvents
 
     private void OnActionTrigger(string callbackId, string serializedAction)
     {
-        if (this._currentConfirmation is not null)
-        {
-            BaseScript.TriggerServerEvent(Events.Generic.Callback, this._callbackId, false);
-        }
-
         var action = JsonConvert.DeserializeObject<ConfirmationDTO>(serializedAction);
-        this._callbackId = callbackId;
-        this._currentConfirmation = action;
-        this._actionStart = DateTime.Now;
-        if (!string.IsNullOrEmpty(this._currentConfirmation.Tooltip))
-        {
-            this._notificationService.ShowTooltip(this._localizationService.Get(this._currentConfirmation.Tooltip), true, this._currentConfirmation.TimeoutInMs);
-        }
-
-        if (!string.IsNullOrEmpty(this._currentConfirmation.Notification))
-        {
-            var paramsToReplace = new Dictionary<string, string>();
-            if (this._currentConfirmation.NotificationParams is not null)
-            {
-                foreach (var item in this._currentConfirmation.NotificationParams)
-                {
-                    paramsToReplace[item.Key] = item.Value;
-                }
-            }
-
-            paramsToReplace["timeout"] = (this._currentConfirmation.TimeoutInMs / 1000).ToString();
-
-            this._notificationService.ShowNotification(this._localizationService.Get(this._currentConfirmation.Notification).ReplaceParams(paramsToReplace));
-        }
+        this._confirmationQueue.Enqueue(new QueuedConfirmation(callbackId, action));
     }
 
     private Task OnKeypressAsync()
     {
+        try
+        {
+            if (this._currentConfirmation is null)
+            {
+                var confirmation = this._confirmationQueue.Dequeue();
+                if (confirmation is not null)
+                {
+                    this._currentConfirmation = confirmation;
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+
         if (this._currentConfirmation is null)
         {
             return Task.FromResult(0);
         }
 
-        var elapsed = DateTime.Now.Subtract(this._actionStart).TotalMilliseconds;
-        if (elapsed >= this._currentConfirmation.TimeoutInMs)
+        if (!this._currentConfirmation.SetActionStart)
         {
-            BaseScript.TriggerServerEvent(Events.Generic.Callback, this._callbackId, false);
-            this._callbackId = string.Empty;
+            this._currentConfirmation.ActionStart = DateTime.Now;
+            this._currentConfirmation.SetActionStart = true;
+        }
+
+        this.DisplayConfirmationNotifications(this._currentConfirmation);
+
+        var elapsed = DateTime.Now.Subtract(this._currentConfirmation.ActionStart).TotalMilliseconds;
+        Debug.WriteLine("elapsed: " + elapsed + " len: " + this._confirmationQueue.Count);
+        if (elapsed >= this._currentConfirmation.Confirmation.TimeoutInMs)
+        {
+            BaseScript.TriggerServerEvent(Events.Generic.Callback, this._currentConfirmation.CallbackId, false);
             this._currentConfirmation = null;
         }
         else
         {
-            if (!Cfx.API.IsControlJustPressed(0, this._currentConfirmation.Key))
+            if (!Cfx.API.IsControlJustPressed(0, this._currentConfirmation.Confirmation.Key))
             {
                 return Task.FromResult(0);
             }
 
-            BaseScript.TriggerServerEvent(Events.Generic.Callback, this._callbackId, true);
-            this._callbackId = string.Empty;
+            BaseScript.TriggerServerEvent(Events.Generic.Callback, this._currentConfirmation.CallbackId, true);
             this._currentConfirmation = null;
         }
 
         return Task.FromResult(0);
+    }
+
+    private void DisplayConfirmationNotifications(QueuedConfirmation queuedConfirmation)
+    {
+        if (!string.IsNullOrEmpty(queuedConfirmation.Confirmation.Tooltip))
+        {
+            this._notificationService.ShowTooltip(
+                this._localizationService.Get(queuedConfirmation.Confirmation.Tooltip),
+                true,
+                queuedConfirmation.Confirmation.TimeoutInMs);
+        }
+
+        if (!string.IsNullOrEmpty(queuedConfirmation.Confirmation.Notification))
+        {
+            var paramsToReplace = new Dictionary<string, string>();
+            if (queuedConfirmation.Confirmation.NotificationParams is not null)
+            {
+                foreach (var item in queuedConfirmation.Confirmation.NotificationParams)
+                {
+                    paramsToReplace[item.Key] = item.Value;
+                }
+            }
+
+            paramsToReplace["timeout"] = (queuedConfirmation.Confirmation.TimeoutInMs / 1000).ToString();
+
+            this._notificationService.ShowNotification(
+                this._localizationService.Get(queuedConfirmation.Confirmation.Notification).ReplaceParams(paramsToReplace));
+        }
+    }
+
+    private sealed record QueuedConfirmation(string CallbackId, ConfirmationDTO Confirmation)
+    {
+        public bool SetActionStart { get; set; }
+
+        public DateTime ActionStart { get; set; } = DateTime.Now;
     }
 }

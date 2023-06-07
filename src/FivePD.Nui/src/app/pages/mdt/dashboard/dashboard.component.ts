@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {
+  BaseNuiEvent,
   Button,
   Collation,
   Column,
@@ -27,6 +28,8 @@ import { ModalService } from '@services/modals/modal/modal.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
+import { EventService } from "@services/event/event.service";
+import { NuiEventType } from "@enums";
 
 @Component({
   selector: 'app-dashboard',
@@ -167,8 +170,12 @@ export class DashboardComponent implements OnInit {
     private readonly store: Store<GlobalState>,
     private readonly _unitService: UnitService,
     private readonly _configService: ConfigService,
+    private readonly _eventService: EventService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
+    this._eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+      this.getUnits();
+    });
   }
 
   ngOnInit(): void {
