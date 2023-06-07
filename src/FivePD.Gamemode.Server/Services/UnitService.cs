@@ -15,23 +15,29 @@ using FivePD.Gamemode.Server.QueryHelpers;
 
 namespace FivePD.Gamemode.Server.Services;
 
-#pragma warning disable
-
+/// <inheritdoc />
 public class UnitService : IUnitService
 {
     private readonly INotificationService _notificationService;
     private readonly IConfirmationService _confirmationService;
     private readonly List<Unit> _units = new();
 
-    public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UnitService"/> class.
+    /// </summary>
+    /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
+    /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
     public UnitService(INotificationService notificationService, IConfirmationService confirmationService)
     {
         this._notificationService = notificationService;
         this._confirmationService = confirmationService;
     }
 
-    public Unit CreateUnit(string callsign, FPlayer player)
+    /// <inheritdoc />
+    public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
+
+    /// <inheritdoc/>
+    Unit IUnitService.CreateUnit(string callsign, FPlayer player)
     {
         if (this._units.FirstOrDefault(x => x.Callsign == callsign) is not null)
         {
@@ -44,7 +50,8 @@ public class UnitService : IUnitService
         return unit;
     }
 
-    public Unit CreateUnit(string callsign, IEnumerable<FPlayer> players)
+    /// <inheritdoc/>
+    Unit IUnitService.CreateUnit(string callsign, IEnumerable<FPlayer> players)
     {
         if (this._units.FirstOrDefault(x => x.Callsign == callsign) is not null)
         {
@@ -57,11 +64,13 @@ public class UnitService : IUnitService
         return unit;
     }
 
+    /// <inheritdoc />
     public Unit GetPlayerUnit(FPlayer player)
     {
         return this._units.FirstOrDefault(x => x.Players.Any(y => y.NetId == player.NetId));
     }
 
+    /// <inheritdoc />
     public void RemovePlayerFromUnit(FPlayer player)
     {
         var unit = this.GetPlayerUnit(player);
