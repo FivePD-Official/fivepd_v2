@@ -123,6 +123,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
+        fPlayer.DutyStatus.Value = FDutyStatus.OffDuty;
         fPlayer.DutyStatus.Subscribe(status => this.OnPlayerDutyStatusChanged(player, status), false);
     }
 
