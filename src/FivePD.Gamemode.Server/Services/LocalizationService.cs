@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
@@ -12,26 +14,21 @@ namespace FivePD.Gamemode.Server.Services;
 public class LocalizationService : ILocalizationService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly IHttpService _httpService;
-    private readonly Dictionary<string, string> _localizationCache = new Dictionary<string, string>();
-    private object _defaultLocalization;
+    private readonly Dictionary<string, string> _localizationCache = new();
 
     /// <summary>Initializes a new instance of the <see cref="LocalizationService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-    /// <param name="httpService">The <see cref="IHttpService" /> to use.</param>
-    public LocalizationService(EventHandlerDictionary eventHandlerDictionary, IHttpService httpService)
+    public LocalizationService(EventHandlerDictionary eventHandlerDictionary)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._httpService = httpService;
     }
 
     /// <inheritdoc />
-    public Dictionary<string, string> AvailableLocalizations { get; private set; }
+    public Dictionary<string, string> AvailableLocalizations { get; private set; } = new();
 
     /// <inheritdoc/>
     public void RegisterEvents()
     {
-        this._defaultLocalization = JsonConvert.DeserializeObject(this.GetLocalization("en"));
         this.GetLocalizations();
 
         this._eventHandlerDictionary[Events.Localization.GetLocalizationFromServer] += new Action<string, NetworkCallbackDelegate>((key, cb) =>
@@ -43,40 +40,25 @@ public class LocalizationService : ILocalizationService, IServiceWithEvents
     /// <inheritdoc />
     public string GetLocalization(string key)
     {
-        if (this._localizationCache.TryGetValue(key, out var localization))
-        {
-            return localization;
-        }
-
-        try
-        {
-            var result = this._httpService.Client.GetAsync($"/localizations/{key}").Result;
-            if (result.IsSuccessStatusCode)
-            {
-                var content = result.Content.ReadAsStringAsync().Result;
-                this._localizationCache[key] = content;
-                return content;
-            }
-
-            return null;
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine($"Error loading localization ({key}): " + e.Message);
-        }
-
-        return null;
+        return this._localizationCache.TryGetValue(key, out var localization) ? localization : null;
     }
 
+    #pragma warning disable
     private void GetLocalizations()
     {
         try
         {
-            var result = this._httpService.Client.GetAsync("/localizations").Result;
-            if (result.IsSuccessStatusCode)
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Localizations");
+            var files = Directory.GetFiles(path, "*.json");
+            foreach (var file in files)
             {
-                var content = result.Content.ReadAsStringAsync().Result;
-                this.AvailableLocalizations = JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
+                var fileName = Path.GetFileName(file);
+                var locale = fileName.Replace(".json", string.Empty); 
+                var serializedLocalization = File.ReadAllText(Path.Combine(path, fileName));
+                var deserializeLocalization = JsonConvert.DeserializeObject(serializedLocalization);
+                var title = deserializeLocalization.GetValueByPath("TITLE");
+                this.AvailableLocalizations[locale] = title;
+                this._localizationCache[locale] = serializedLocalization;
             }
         }
         catch (Exception e)
