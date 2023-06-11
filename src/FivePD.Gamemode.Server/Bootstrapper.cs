@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Gamemode.Server;
 
@@ -246,6 +247,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IMarkerService, MarkerService>();
         services.AddSingleton<IUnitService, UnitService>();
         services.AddSingleton<IConfirmationService, ConfirmationService>();
+        services.AddSingleton<IRandomService, RandomService>();
 
 #pragma warning disable
         // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS
@@ -295,6 +297,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<MenuService>();
         services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<MenuService>());
+        
+        services.AddSingleton<CalloutManagerService>();
+        services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
+        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutManagerService>());
 
         // Find and register addons
         services.Scan(scan => scan
@@ -302,6 +308,12 @@ internal class Bootstrapper : BaseScript
             .AddClasses(classes => classes.AssignableTo<IGamemodeAddon>())
             .AsSelfWithInterfaces()
             .WithSingletonLifetime());
+
+        var s = services.Scan(scan => scan
+            .FromAssemblies(this._assembliesWithDefinitions.Keys)
+            .AddClasses(classes => classes.Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(typeof(Callout))))
+            .As<Callout>()
+            .AsSelf());
 
         this._provider = services.BuildServiceProvider();
 

@@ -46,6 +46,9 @@ public class ConfigService : IConfigService
     public FeaturesConfig FeaturesConfig => this.InternalLoadFile<FeaturesConfig>("/Config/features.json");
 
     /// <inheritdoc />
+    public GeneralSettings GeneralSettings => this.InternalLoadFile<GeneralSettings>("/Config/general-settings.json");
+
+    /// <inheritdoc />
     public List<string> FemaleFirstnames => this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");
 
     /// <inheritdoc />

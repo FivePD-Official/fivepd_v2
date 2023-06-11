@@ -82,6 +82,16 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     }
 
     /// <summary>
+    /// Attempts to get the player with the specified player's netId.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The FPlayer.</returns>
+    public static FPlayer FromPlayer(Player player)
+    {
+        return FromNetId(player.Handle);
+    }
+
+    /// <summary>
     /// Gets the underlying Cfx player.
     /// </summary>
     /// <returns>A Cfx player.</returns>

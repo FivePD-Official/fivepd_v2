@@ -230,4 +230,11 @@ internal readonly record struct Events
 
         public const string Remove = "fivepd:marker:remove";
     }
+
+    public readonly record struct Callout
+    {
+        public const string Dispatch = "fivepd:callout:dispatch";
+
+        public const string Accept = "fivepd:callout:accept";
+    }
 }
