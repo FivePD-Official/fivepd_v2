@@ -185,10 +185,11 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
 
         try
         {
-            var user = this._databaseContext.Users.WhereAnyIdMatches(player).FirstOrDefault();
-            if (user is null)
+            var userCount = this._databaseContext.Users.Count();
+            var existingUser = this._databaseContext.Users.WhereAnyIdMatches(player).FirstOrDefault();
+            if (existingUser is null)
             {
-                this._databaseContext.Users.Add(new User
+                var user = new User
                 {
                     Name = player.Name,
                     IdentifierLicense = player.Identifiers["license"] ?? string.Empty,
@@ -196,7 +197,13 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                     IdentifierSteam = player.Identifiers["steam"] ?? string.Empty,
                     IdentifierXbl = player.Identifiers["xbl"] ?? string.Empty,
                     IdentifierLive = player.Identifiers["live"] ?? string.Empty,
-                });
+                };
+                if (userCount == 0)
+                {
+                    user.Role = (int)UserRole.Admin;
+                }
+
+                this._databaseContext.Users.Add(user);
             }
 
             this._databaseContext.SaveChanges();
