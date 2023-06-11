@@ -181,6 +181,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             string.IsNullOrEmpty(identifierLive))
         {
             this._logger.Warning("Player \"{PlayerName}\" has no identifiers, they will not have any associated data stored.", player.Name);
+            return;
         }
 
         try
