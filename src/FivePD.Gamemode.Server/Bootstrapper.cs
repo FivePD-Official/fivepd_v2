@@ -234,7 +234,6 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
         services.AddSingleton<IAddonFileHandlerService, AddonFileHandlerService>();
 
-        services.AddSingleton<IHttpService, HttpService>();
         services.AddSingleton<IFileHandlerService, FileHandlerService>();
         services.AddSingleton<IConfigService, ConfigService>();
         services.AddSingleton<ICommandService, CommandService>();

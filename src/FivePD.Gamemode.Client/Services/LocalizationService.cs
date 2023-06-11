@@ -84,6 +84,6 @@ internal class LocalizationService : ILocalizationService, IServiceWithEvents
 
     private void LoadDefaultLocalization()
     {
-        this.LoadLocalization("en");
+        this.LoadLocalization("en-US");
     }
 }

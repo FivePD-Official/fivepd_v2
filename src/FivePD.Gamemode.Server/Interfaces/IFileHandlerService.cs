@@ -26,4 +26,11 @@ public interface IFileHandlerService
     /// <param name="useCache">Determines if the data should be cached.</param>
     /// <returns>The data converted to T.</returns>
     public Tuple<T, Exception> LoadFile<T>(string path, bool useCache = true);
+
+    /// <summary>
+    /// Reads the given file and returns its content.
+    /// </summary>
+    /// <param name="path">The path of the file.</param>
+    /// <returns>The content of the file.</returns>
+    public string LoadFile(string path);
 }

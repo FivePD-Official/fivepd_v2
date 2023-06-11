@@ -70,6 +70,12 @@ public class FileHandlerService : IFileHandlerService
         return new Tuple<T, Exception>(Activator.CreateInstance<T>(), exception);
     }
 
+    /// <inheritdoc />
+    public string LoadFile(string path)
+    {
+        return this.InternalLoadFile(path);
+    }
+
     /// <summary>
     /// Loads a file's content then returns it without validation.
     /// </summary>
