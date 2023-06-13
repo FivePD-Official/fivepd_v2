@@ -18,6 +18,8 @@ public abstract class Callout : IIncident, IInternalIncident
 
     public string Title { get; internal set; }
 
+    public string Description { get; internal set; }
+
     public FIncidentPriority Priority { get; internal set; }
 
     public float ActivityRadius { get; internal set; }

@@ -14,6 +14,8 @@ public interface IIncident
 
     public string Title { get; }
 
+    public string Description { get; }
+
     public Vector3 Location { get; }
 
     public ReadOnlyCollection<FPlayer> Players { get; }

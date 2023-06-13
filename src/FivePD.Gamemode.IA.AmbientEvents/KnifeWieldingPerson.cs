@@ -24,6 +24,7 @@ public class KnifeWieldingPerson : Callout
         return Task.FromResult(new CalloutProperties
         {
             Title = "Knife wielding person",
+            Description = "A person is wielding a knife.",
             ActivityRadius = 20f,
             Priority = FIncidentPriority.Code3,
             Location = new Vector3(723.24f, -148.43f, 50.49f),

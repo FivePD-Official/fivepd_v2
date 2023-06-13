@@ -79,6 +79,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         var properties = await callout.Setup();
         callout.Id = Guid.NewGuid();
         callout.Title = properties.Title;
+        callout.Description = properties.Description;
         callout.Priority = properties.Priority;
         callout.ActivityRadius = properties.ActivityRadius;
 
@@ -148,6 +149,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                     {
                         Id = callout.Id.ToString(),
                         Title = callout.Title,
+                        Description = callout.Description,
                         Location = callout.Location,
                         Priority = callout.Priority,
                         ActivityRadius = callout.ActivityRadius,

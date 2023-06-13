@@ -11,6 +11,8 @@ internal sealed record ClientCallout
 
     public string Title { get; init; }
 
+    public string Description { get; init; }
+
     public FIncidentPriority Priority { get; init; }
 
     public float ActivityRadius { get; init; }

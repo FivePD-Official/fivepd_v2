@@ -10,6 +10,8 @@ public readonly record struct CalloutProperties
 {
     public required string Title { get; init; }
 
+    public string Description { get; init; }
+
     public required FIncidentPriority Priority { get; init; }
 
     public required float ActivityRadius { get; init; }
