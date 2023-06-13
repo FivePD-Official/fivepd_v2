@@ -12,8 +12,13 @@
   "ERROR.MENU_CONFLICTING_KEY": "There are multiple menus which key is set to {{key}}. Make sure to change them, otherwise they will not work.",
   "EXCEPTION.EMPTY_CONFIG": "The {{path}} file is empty, the default values will be used.",
   "EXCEPTION.JSON_PARSE": "An error occured while parsing the {{path}} file, the default values will be used. Make sure that the JSON formatting is correct, we recommend using the following site to check it: https://jsonformatter.org/",
+  "LABEL.CALLOUT": "~y~Callout",
   "LABEL.DISPATCH": "Dispatch",
-  "LABEL.STATUS": "Status",
+  "LABEL.PRIORITY.CODE1": "~b~Code 1",
+  "LABEL.PRIORITY.CODE2": "~y~Code 2",
+  "LABEL.PRIORITY.CODE3": "~r~Code 3",
+  "LABEL.PRIORITY.TITLE": "Priority",
+  "LABEL.STATUS": "~y~Status",
   "PLAYER_STATUS.CHANGE": "{{name}} is now {{status}}.",
   "PLAYER_STATUS.OFF_DUTY.GENERIC": "Off duty",
   "PLAYER_STATUS.ON_DUTY.GENERIC_NOT_RECEIVING": "On duty & not receiving calls",
@@ -183,6 +188,5 @@
   "UI.LABEL.VEHICLE_DATABASE": "Vehicle database",
   "UI.LABEL.WHOLE_NUMBER.SINGULAR": "Whole number",
   "UI.LABEL.YES": "Yes",
-  "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION": "{{name}} has requested to join your unit. You have {{timeout}} seconds to accept the request.",
-  "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.TOOLTIP": "Press ~INPUT_REPLAY_START_STOP_RECORDING~ to accept the request"
+  "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION": "{{name}} has requested to join your unit. You have {{timeout}} seconds to accept the request."
 }

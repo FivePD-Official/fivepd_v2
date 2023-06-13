@@ -233,8 +233,10 @@ internal readonly record struct Events
 
     public readonly record struct Callout
     {
-        public const string Dispatch = "fivepd:callout:dispatch";
+        public const string OnAccepted = "fivepd:callout:onAccepted";
 
-        public const string Accept = "fivepd:callout:accept";
+        public const string OnPlayerEnteredInActivityZone = "fivepd:callout:onPlayerEnteredInActivityZone";
+
+        public const string OnCompleted = "fivepd:callout:onCompleted";
     }
 }

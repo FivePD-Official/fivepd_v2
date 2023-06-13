@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CitizenFX.Core;
@@ -11,14 +12,19 @@ namespace FivePD.Gamemode.Server.API;
 
 public abstract class Callout : IIncident, IInternalIncident
 {
-    private List<FPlayer> _players;
+    private List<FPlayer> _players = new();
+
+    public Guid Id { get; internal set; }
+
     public string Title { get; internal set; }
 
     public FIncidentPriority Priority { get; internal set; }
 
+    public float ActivityRadius { get; internal set; }
+
     public Vector3 Location { get; internal set; }
 
-    public ReadOnlyCollection<FPlayer> Players { get; }
+    public ReadOnlyCollection<FPlayer> Players => this._players.AsReadOnly();
 
     public abstract Task<CalloutProperties> Setup();
 
@@ -30,5 +36,11 @@ public abstract class Callout : IIncident, IInternalIncident
 
     public abstract Task OnPlayerEnteredInActivityZone(FPlayer player);
 
-    List<FPlayer> IInternalIncident.Players { get; set; }
+    public abstract Task OnCompleted(); // Should be invoked when all players are Code 4 or a player has pressed the "End incident" button
+
+    List<FPlayer> IInternalIncident.Players
+    {
+        get => this._players;
+        set => this._players = value;
+    }
 }

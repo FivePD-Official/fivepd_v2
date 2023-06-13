@@ -18,7 +18,7 @@ internal static class DynamicExtensions
     {
         if (obj is null)
         {
-            return string.Empty;
+            return path;
         }
 
         var split = path.Split('.');
@@ -27,7 +27,7 @@ internal static class DynamicExtensions
         {
             if (currentObj[item] is null)
             {
-                return string.Empty;
+                return path;
             }
 
             currentObj = currentObj[item];

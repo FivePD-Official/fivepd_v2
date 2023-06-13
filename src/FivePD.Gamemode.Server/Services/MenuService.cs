@@ -15,6 +15,7 @@ using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.UIModels;
 using FivePD.Gamemode.Server.UIModels.Interfaces;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace FivePD.Gamemode.Server.Services;
 
@@ -23,6 +24,8 @@ public class MenuService : IMenuService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger _logger;
+
     private readonly Dictionary<Type, string> _menus = new(); // Menu type, menu key
 
     /// <summary>
@@ -30,16 +33,20 @@ public class MenuService : IMenuService, IServiceWithEvents
     /// </summary>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    public MenuService(IServiceProvider serviceProvider, EventHandlerDictionary eventHandlerDictionary)
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    public MenuService(IServiceProvider serviceProvider, EventHandlerDictionary eventHandlerDictionary, ILogger logger)
     {
         this._serviceProvider = serviceProvider;
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._logger = logger;
     }
 
     /// <inheritdoc />
     public void RegisterEvents()
     {
         this.Register<DutyMenu>();
+        this.Register<AssistanceMenu>();
+
         this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string>(this.OnButtonSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, bool>(this.OnCheckboxSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnListSelect] += new Action<Player, string, int>(this.OnListSelect);
@@ -55,17 +62,20 @@ public class MenuService : IMenuService, IServiceWithEvents
 
         if (this._menus.ContainsKey(type))
         {
-            throw new ArgumentException($"A menu with the same type has been already registered: {type}");
+            this._logger.Error("Can not register menu with type \"{Type}\". A menu with the same type has been already registered.", type);
+            return;
         }
 
         if (this._menus.Any(m => m.Value == menu.Key))
         {
-            throw new ArgumentException("Can't register menu due to conflicting key");
+            this._logger.Error("Can not register menu with type \"{Type}\". The key conflicts with an already registered menu's key.", type);
+            return;
         }
 
         if (string.IsNullOrEmpty(menu.Title))
         {
-            throw new ArgumentException("Can't register menu, the Title is null or empty");
+            this._logger.Error("Can not register menu with type \"{Type}\". The Title is null or empty.", type);
+            return;
         }
 
         this._menus.Add(type, menu.Key);

@@ -4,7 +4,7 @@ namespace FivePD.Gamemode.Server.Interfaces;
 
 #pragma warning disable
 
-public class IRandomService
+public interface IRandomService
 {
     public Random Random { get; }
 }

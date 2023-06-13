@@ -1,65 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using CitizenFX.Core;
-using FivePD.Gamemode.Client.DTO;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.EntityWrappers;
+using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
-using Newtonsoft.Json;
-using Serilog;
 
 namespace FivePD.Gamemode.Server.Services;
 
 #pragma warning disable
 
-public class CalloutManagerService : ICalloutManagerService, IServiceWithEvents
+public class CalloutManagerService : ICalloutManagerService, IInternalCalloutManagerService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly PlayerList _players;
     private readonly ITickQueueService _tickQueueService;
-    private readonly IConfigService _configService;
-    private readonly IRandomService _randomService;
-    private readonly IConfirmationService _confirmationService;
-    private readonly ILogger _logger;
 
     private readonly List<Type> _calloutTypes = new();
     private readonly List<CalloutHolder> _activeCallouts = new();
-    private readonly Stopwatch _nextCalloutTimer = new();
-    private int _nextCalloutInMs;
 
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
-        PlayerList players,
-        ITickQueueService tickQueueService,
-        IConfigService configService,
-        IRandomService randomService,
-        ILogger logger,
-        IConfirmationService confirmationService)
+        ITickQueueService tickQueueService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._players = players;
         this._tickQueueService = tickQueueService;
-        this._configService = configService;
-        this._randomService = randomService;
-        this._logger = logger;
-        this._confirmationService = confirmationService;
     }
+
+    List<Type> IInternalCalloutManagerService.CalloutTypes => this._calloutTypes;
+
+    List<CalloutHolder> IInternalCalloutManagerService.ActiveCallouts => this._activeCallouts;
 
     /// <inheritdoc />
     public List<Callout> ActiveCallouts => this._activeCallouts.Select(x => x.Callout).ToList();
 
+    /// <inheritdoc />
+    public Callout GetPlayerCallout(FPlayer player)
+    {
+        return this.ActiveCallouts.FirstOrDefault(x => x.Players.Any(p => p.NetId == player.NetId));
+    }
+
     public void RegisterEvents()
     {
+        this._eventHandlerDictionary[Events.Callout.OnPlayerEnteredInActivityZone] += new Action<Player, string>(this.OnPlayerEnteredInActivityZone);
         this.RegisterCallouts();
-        this._nextCalloutInMs = this._randomService.Random.Next(
-            this._configService.GeneralSettings.Callout.MinIntervalInMs,
-            this._configService.GeneralSettings.Callout.MaxIntervalInMs);
-        this._nextCalloutTimer.Start();
-        this._tickQueueService.EnqueueInterval(this.GenerateCallout, 1000);
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);
+    }
+
+    public void CompleteCalloutOfPlayer(FPlayer player)
+    {
+        this.CompleteCallout(this.GetPlayerCallout(player));
     }
 
     private void RegisterCallouts()
@@ -69,80 +60,6 @@ public class CalloutManagerService : ICalloutManagerService, IServiceWithEvents
         {
             this._calloutTypes.Add(callout.GetType());
         }
-    }
-
-    private async void GenerateCallout()
-    {
-        if (this._nextCalloutTimer.ElapsedMilliseconds < this._nextCalloutInMs)
-        {
-            return;
-        }
-
-        this._nextCalloutInMs = this._randomService.Random.Next(
-            this._configService.GeneralSettings.Callout.MinIntervalInMs,
-            this._configService.GeneralSettings.Callout.MaxIntervalInMs);
-        this._nextCalloutTimer.Restart();
-
-        var calloutType = this._calloutTypes[this._randomService.Random.Next(0, this._calloutTypes.Count)];
-        var callout = (Callout)ServiceLocator.GetService(calloutType);
-        if (callout is null)
-        {
-            this._logger.Warning("A callout with the type of \"{Type}\" could not be instantiated.", calloutType);
-            return;
-        }
-
-        var properties = await callout.Setup();
-        callout.Title = properties.Title;
-        callout.Priority = properties.Priority;
-
-        if (properties.Locations is not null)
-        {
-            var locations = properties.Locations.ToList();
-            var locationsCount = locations.Count;
-            if (locationsCount > 0)
-            {
-                callout.Location = locations[this._randomService.Random.Next(0, locationsCount)];
-            }
-        }
-        else
-        {
-            callout.Location = properties.Location;
-        }
-
-        var canBeDispatched = await callout.CanBeDispatched();
-        if (!canBeDispatched)
-        {
-            return;
-        }
-
-        var calloutHolder = new CalloutHolder(callout, new Stopwatch());
-        this._activeCallouts.Add(calloutHolder);
-        calloutHolder.Timer.Start();
-
-        foreach (var player in this._players)
-        {
-            this._confirmationService.TriggerConfirmation(
-                player,
-                288, // F1
-                "accept with f1",
-                $"Callout {callout.Title} with priority {callout.Priority}",
-                null,
-                response =>
-                {
-                    if (!response)
-                    {
-                        return;
-                    }
-
-                    var fPlayer = FPlayer.FromPlayer(player);
-                    ((IInternalIncident)calloutHolder.Callout).Players.Add(fPlayer);
-                    callout.OnAccepted(fPlayer);
-                    
-                    // TODO: trigger event for player with details, location, create blip, etc
-                });
-        }
-
-        await callout.OnDispatched(this._players.Select(FPlayer.FromPlayer).ToList());
     }
 
     private void CheckCallouts()
@@ -157,5 +74,30 @@ public class CalloutManagerService : ICalloutManagerService, IServiceWithEvents
         }
     }
 
-    private sealed record CalloutHolder(Callout Callout, Stopwatch Timer);
+    private void CompleteCallout(Callout callout)
+    {
+        if (callout is null)
+        {
+            return;
+        }
+
+        callout.OnCompleted();
+        foreach (var player in callout.Players)
+        {
+            player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnCompleted);   
+        }
+
+        this._activeCallouts.RemoveAll(x => x.Callout.Id == callout.Id);
+    }
+
+    private void OnPlayerEnteredInActivityZone([FromSource] Player player, string calloutId)
+    {
+        var callout = this._activeCallouts.FirstOrDefault(x => x.Callout.Id.ToString() == calloutId);
+        if (callout is null)
+        {
+            return;
+        }
+
+        callout.Callout.OnPlayerEnteredInActivityZone(FPlayer.FromPlayer(player));
+    }
 }
