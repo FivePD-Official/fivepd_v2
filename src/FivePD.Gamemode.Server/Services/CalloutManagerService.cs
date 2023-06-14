@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Gamemode.Client.DTO;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Server.API;
+using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.QueryHelpers;
+using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services;
 
@@ -38,7 +43,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     /// <inheritdoc />
     public Callout GetPlayerCallout(FPlayer player)
     {
-        return this.ActiveCallouts.FirstOrDefault(x => x.Players.Any(p => p.NetId == player.NetId));
+        return this.ActiveCallouts.FirstOrDefault(x => x.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
     }
 
     public void RegisterEvents()
@@ -64,12 +69,12 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
 
     private void CheckCallouts()
     {
-        this._activeCallouts.RemoveAll(x => x.Timer.ElapsedMilliseconds >= 30000 && x.Callout.Players.Count == 0);
+        this._activeCallouts.RemoveAll(x => x.Timer.ElapsedMilliseconds >= 10000 && x.Callout.Units.Count == 0);
         foreach (var calloutHolder in this._activeCallouts)
         {
-            if (calloutHolder.Callout.Players.Count > 0)
+            if (calloutHolder.Callout.Units.Count > 0)
             {
-                calloutHolder.Timer.Stop();
+                calloutHolder.Timer.Reset();
             }
         }
     }
@@ -82,9 +87,12 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         }
 
         callout.OnCompleted();
-        foreach (var player in callout.Players)
+        foreach (var unit in callout.Units)
         {
-            player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnCompleted);   
+            foreach (var player in unit.Players)
+            {
+                player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnCompleted);
+            }
         }
 
         this._activeCallouts.RemoveAll(x => x.Callout.Id == callout.Id);
@@ -99,5 +107,28 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         }
 
         callout.Callout.OnPlayerEnteredInActivityZone(FPlayer.FromPlayer(player));
+    }
+
+    [UIEvent(Events.Callout.GetAllActiveUI)]
+    private void GetAllActiveCalloutsUI(ExpandoObject _, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var activeCallouts = this._activeCallouts
+            .Where(x => x.Callout.Units.Count > 0)
+            .Select(x => new CalloutDTO.CalloutToClientDTO
+            {
+                Title = x.Callout.Title,
+                Description = x.Callout.Description,
+                Location = x.Callout.Location,
+                Units = x.Callout.Units.Select(p => p.Callsign).ToList(),
+            }).ToList();
+        var page = new Page<CalloutDTO.CalloutToClientDTO>
+        {
+            Items = activeCallouts,
+            CurrentPage = 1,
+            ItemCount = activeCallouts.Count,
+            PageCount = 1,
+            PageSize = activeCallouts.Count,
+        };
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 }

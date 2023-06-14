@@ -43,4 +43,25 @@ internal static class EventHandlerDictionaryExtensions
             }));
         });
     }
+
+    /// <summary>
+    /// Registers a NUI event without a custom action.
+    /// The data will be sent directly to the server,
+    /// then the response back to the NUI.
+    /// </summary>
+    /// <param name="eventHandlerDictionary">The event handler dictionary to add the event for.</param>
+    /// <param name="eventName">The event's name.</param>
+    /// <param name="onResponseOverrideData">This action will get invoked with the response from the server.</param>
+    public static void AddUIToServerEventOverrideData(this EventHandlerDictionary eventHandlerDictionary, string eventName, Func<string, string> onResponseOverrideData)
+    {
+        Cfx.API.RegisterNuiCallbackType(eventName);
+        eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
+        {
+            BaseScript.TriggerServerEvent(eventName, body, new Action<string>(data =>
+            {
+                var overriddenData = onResponseOverrideData.Invoke(data);
+                cb.Invoke(overriddenData);
+            }));
+        });
+    }
 }

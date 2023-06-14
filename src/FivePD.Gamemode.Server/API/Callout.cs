@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Server.EntityWrappers;
+using FivePD.Gamemode.Server.Models;
 
 namespace FivePD.Gamemode.Server.API;
 
@@ -12,7 +13,7 @@ namespace FivePD.Gamemode.Server.API;
 
 public abstract class Callout : IIncident, IInternalIncident
 {
-    private List<FPlayer> _players = new();
+    private List<Unit> _units = new();
 
     public Guid Id { get; internal set; }
 
@@ -26,23 +27,23 @@ public abstract class Callout : IIncident, IInternalIncident
 
     public Vector3 Location { get; internal set; }
 
-    public ReadOnlyCollection<FPlayer> Players => this._players.AsReadOnly();
+    public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
 
     public abstract Task<CalloutProperties> Setup();
 
     public abstract Task<bool> CanBeDispatched();
 
-    public abstract Task OnDispatched(List<FPlayer> dispatchedToPlayers);
+    public abstract Task OnDispatched(List<Unit> dispatchedToUnits);
 
-    public abstract Task OnAccepted(FPlayer player);
+    public abstract Task OnAccepted(Unit unit);
 
     public abstract Task OnPlayerEnteredInActivityZone(FPlayer player);
 
     public abstract Task OnCompleted(); // Should be invoked when all players are Code 4 or a player has pressed the "End incident" button
 
-    List<FPlayer> IInternalIncident.Players
+    List<Unit> IInternalIncident.Units
     {
-        get => this._players;
-        set => this._players = value;
+        get => this._units;
+        set => this._units = value;
     }
 }

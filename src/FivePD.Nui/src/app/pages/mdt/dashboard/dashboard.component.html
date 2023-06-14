@@ -53,6 +53,16 @@
   </app-container>
 
   <app-grid
+    [title]="'Active callouts'"
+    [data]="callouts"
+    [columns]="calloutsColumnDef"/>
+
+  <app-grid
+    [title]="'UI.LABEL.UNIT.PLURAL' | translate"
+    [data]="units"
+    [columns]="unitsColumnDef"/>
+
+  <app-grid
     [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
     [buttons]="departmentsButtons"
     [data]="departments"
@@ -60,8 +70,4 @@
     (onCollationChange)="onDepartmentsCollationChange($event)"
     (onCellAction)="getDepartments()"/>
 
-  <app-grid
-    [title]="'UI.LABEL.UNIT.PLURAL' | translate"
-    [data]="units"
-    [columns]="unitsColumnDef"/>
 </app-container>

@@ -3,7 +3,7 @@
     "Join": "free"
   },
   "Callout": {
-    "MinIntervalInMs": 2000,
+    "MinIntervalInMs": 5000,
     "MaxIntervalInMs": 10000
   }
 }

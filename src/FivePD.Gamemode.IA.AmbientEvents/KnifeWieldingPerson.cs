@@ -5,6 +5,7 @@ using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.Models;
 
 namespace FivePD.Gamemode.IA.AmbientEvents;
 
@@ -36,14 +37,14 @@ public class KnifeWieldingPerson : Callout
         return Task.FromResult(true);
     }
 
-    public override Task OnDispatched(List<FPlayer> dispatchedToPlayers)
+    public override Task OnDispatched(List<Unit> dispatchedToUnits)
     {
         this._logger.Information("OnDispatched");
 
         return Task.FromResult(0);
     }
 
-    public override Task OnAccepted(FPlayer player)
+    public override Task OnAccepted(Unit unit)
     {
         this._logger.Information("OnAccepted");
 

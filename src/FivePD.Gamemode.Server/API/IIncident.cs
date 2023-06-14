@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CitizenFX.Core;
-using FivePD.Gamemode.Server.EntityWrappers;
+using FivePD.Gamemode.Server.Models;
 
 namespace FivePD.Gamemode.Server.API;
 
@@ -18,10 +18,10 @@ public interface IIncident
 
     public Vector3 Location { get; }
 
-    public ReadOnlyCollection<FPlayer> Players { get; }
+    public ReadOnlyCollection<Unit> Units { get; }
 }
 
 internal interface IInternalIncident
 {
-    public List<FPlayer> Players { get; set; }
+    public List<Unit> Units { get; set; }
 }

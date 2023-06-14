@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.Attributes;
+using FivePD.Gamemode.Client.DTO;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
+using FivePD.Gamemode.Client.Models;
 using FivePD.Gamemode.Client.Utilities;
 using FivePD.Gamemode.Common;
 using Newtonsoft.Json;
@@ -77,6 +81,31 @@ internal class UIService : IUIService, IServiceWithEvents
             {
                 cb.Invoke(JsonConvert.SerializeObject(this._configService.GeneralSettings));
             }));
+
+        this._eventHandlerDictionary.AddUIToServerEventOverrideData(
+            Events.Callout.GetAllActiveUI,
+            serverResponse =>
+            {
+                var callouts = JsonConvert.DeserializeObject<Page<CalloutDTO.CalloutToClientDTO>>(serverResponse);
+                var newCallouts = callouts.Items.Select(callout => new CalloutDTO.CalloutToUIDTO
+                    {
+                        Title = callout.Title,
+                        Description = callout.Description,
+                        Units = callout.Units,
+                        Address = callout.Location.GetStreetName(),
+                    })
+                    .ToList();
+                var newPage = new Page<CalloutDTO.CalloutToUIDTO>
+                {
+                    Items = newCallouts,
+                    CurrentPage = 1,
+                    ItemCount = newCallouts.Count,
+                    PageCount = 1,
+                    PageSize = newCallouts.Count,
+                };
+
+                return JsonConvert.SerializeObject(newPage);
+            });
 
         this.RegisterUIEvents(new[]
         {

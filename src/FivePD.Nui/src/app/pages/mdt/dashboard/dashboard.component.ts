@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {
   BaseNuiEvent,
-  Button,
+  Button, CalloutDTO,
   Collation,
   Column,
   Department,
@@ -30,6 +30,7 @@ import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
 import { EventService } from "@services/event/event.service";
 import { NuiEventType } from "@enums";
+import { CalloutService } from "@services/callout/callout.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -160,6 +161,26 @@ export class DashboardComponent implements OnInit {
     }),
   ];
 
+  callouts?: Page<CalloutDTO>;
+  calloutsColumnDef: Column<CalloutDTO>[] = [
+    new Column<CalloutDTO>({
+      header: 'Title',
+      accessorKey: 'Title',
+    }),
+    new Column<CalloutDTO>({
+      header: 'Description',
+      accessorKey: 'Description',
+    }),
+    new Column<CalloutDTO>({
+      header: 'Address',
+      accessorKey: 'Address',
+    }),
+    new Column<CalloutDTO>({
+      header: 'Units',
+      valueResolver: item => item.Units.join(', '),
+    }),
+  ];
+
   constructor(
     private readonly _department: DepartmentService,
     private readonly _localization: LocalizationService,
@@ -171,10 +192,12 @@ export class DashboardComponent implements OnInit {
     private readonly _unitService: UnitService,
     private readonly _configService: ConfigService,
     private readonly _eventService: EventService,
+    private readonly _calloutService: CalloutService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
     this._eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
       this.getUnits();
+      this.getCallouts();
     });
   }
 
@@ -182,6 +205,7 @@ export class DashboardComponent implements OnInit {
     this.getGeneralSettings();
     this.getDepartments();
     this.getUnits();
+    this.getCallouts();
   }
 
   getGeneralSettings(): void {
@@ -199,6 +223,12 @@ export class DashboardComponent implements OnInit {
   getUnits(): void {
     this._unitService.getAll().subscribe(res => {
       this.units = res;
+    });
+  }
+
+  getCallouts(): void {
+    this._calloutService.getAll().subscribe(res => {
+      this.callouts = res;
     });
   }
 

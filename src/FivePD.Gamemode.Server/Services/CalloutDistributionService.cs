@@ -25,6 +25,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     private readonly IConfirmationService _confirmationService;
     private readonly ILogger _logger;
     private readonly IInternalCalloutManagerService _calloutManagerService;
+    private readonly IUnitService _unitService;
 
     private readonly Stopwatch _nextCalloutTimer = new();
     private int _nextCalloutInMs;
@@ -36,7 +37,8 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         IRandomService randomService,
         ILogger logger,
         IConfirmationService confirmationService,
-        IInternalCalloutManagerService calloutManagerService)
+        IInternalCalloutManagerService calloutManagerService,
+        IUnitService unitService)
     {
         this._players = players;
         this._tickQueueService = tickQueueService;
@@ -45,6 +47,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._logger = logger;
         this._confirmationService = confirmationService;
         this._calloutManagerService = calloutManagerService;
+        this._unitService = unitService;
     }
 
     public void RegisterEvents()
@@ -107,56 +110,72 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 
-        var filteredPlayers = this._players.Where(p =>
-            FPlayer.FromPlayer(p).DutyStatus.Value != FDutyStatus.OffDuty &&
-            this._calloutManagerService.ActiveCallouts.All(c => c.Callout.Players.All(cp => cp.NetId != p.Handle)));
-        foreach (var player in filteredPlayers)
+        var filteredUnits = this._unitService.Units
+            .Where(unit =>
+                this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .ToList();
+        foreach (var unit in filteredUnits)
         {
-            this._confirmationService.TriggerConfirmation(
-                player,
-                new ConfirmationProperties
+            var unitAccepted = false;
+
+            void OnAccepted()
+            {
+                if (unitAccepted)
                 {
-                    Notification = new ConfirmationProperties.NotificationProperties
+                    return;
+                }
+
+                unitAccepted = true;
+
+                ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
+                callout.OnAccepted(unit);
+            }
+
+            foreach (var player in unit.Players)
+            {
+                this._confirmationService.TriggerConfirmation(
+                    player,
+                    new ConfirmationProperties
                     {
-                        Texture = "CHAR_CALL911",
-                        Sender = "LABEL.DISPATCH",
-                        Subject = "LABEL.CALLOUT",
-                        Content = $"{callout.Title}~n~{{{{priority}}}}: {{{{priorityCode}}}}~n~{{{{location}}}}: {{{{location}}}}",
-                        ContentParams = new Dictionary<string, string>
+                        Notification = new ConfirmationProperties.NotificationProperties
                         {
-                            ["priority"] = "LABEL.PRIORITY.TITLE",
-                            ["priorityCode"] = callout.Priority switch
+                            Texture = "CHAR_CALL911",
+                            Sender = "LABEL.DISPATCH",
+                            Subject = "LABEL.CALLOUT",
+                            Content = $"{callout.Title}~n~{{{{priority}}}}: {{{{priorityCode}}}}",
+                            ContentParams = new Dictionary<string, string>
                             {
-                                FIncidentPriority.Code1 => "LABEL.PRIORITY.CODE1",
-                                FIncidentPriority.Code2 => "LABEL.PRIORITY.CODE2",
-                                FIncidentPriority.Code3 => "LABEL.PRIORITY.CODE3",
-                            },
+                                ["priority"] = "LABEL.PRIORITY.TITLE",
+                                ["priorityCode"] = callout.Priority switch
+                                {
+                                    FIncidentPriority.Code1 => "LABEL.PRIORITY.CODE1",
+                                    FIncidentPriority.Code2 => "LABEL.PRIORITY.CODE2",
+                                    FIncidentPriority.Code3 => "LABEL.PRIORITY.CODE3",
+                                },
+                            }
                         }
-                    }
-                },
-                response =>
-                {
-                    if (!response)
+                    },
+                    response =>
                     {
-                        return;
-                    }
+                        if (!response)
+                        {
+                            return;
+                        }
 
-                    var fPlayer = FPlayer.FromPlayer(player);
-                    ((IInternalIncident)calloutHolder.Callout).Players.Add(fPlayer);
-                    callout.OnAccepted(fPlayer);
-
-                    player.TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
-                    {
-                        Id = callout.Id.ToString(),
-                        Title = callout.Title,
-                        Description = callout.Description,
-                        Location = callout.Location,
-                        Priority = callout.Priority,
-                        ActivityRadius = callout.ActivityRadius,
-                    }));
-                });
+                        OnAccepted();
+                        player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
+                        {
+                            Id = callout.Id.ToString(),
+                            Title = callout.Title,
+                            Description = callout.Description,
+                            Location = callout.Location,
+                            Priority = callout.Priority,
+                            ActivityRadius = callout.ActivityRadius,
+                        }));
+                    });
+            }
         }
 
-        await callout.OnDispatched(this._players.Select(FPlayer.FromPlayer).ToList());
+        await callout.OnDispatched(filteredUnits);
     }
 }

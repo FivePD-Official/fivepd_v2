@@ -90,3 +90,10 @@ export interface PlayerDetailsDTO {
   User: User;
   DutyStatus: FDutyStatus;
 }
+
+export interface CalloutDTO {
+  Title: string;
+  Description: string;
+  Address: string;
+  Units: string[];
+}

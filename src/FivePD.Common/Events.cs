@@ -238,5 +238,7 @@ internal readonly record struct Events
         public const string OnPlayerEnteredInActivityZone = "fivepd:callout:onPlayerEnteredInActivityZone";
 
         public const string OnCompleted = "fivepd:callout:onCompleted";
+
+        public const string GetAllActiveUI = "fivepd:callout:getAllActiveUI";
     }
 }

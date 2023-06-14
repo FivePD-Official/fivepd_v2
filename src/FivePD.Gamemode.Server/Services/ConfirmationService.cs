@@ -3,6 +3,7 @@ using CitizenFX.Core;
 using FivePD.Gamemode.Client.DTO;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Models;
+using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 
@@ -38,5 +39,15 @@ public class ConfirmationService : IConfirmationService
                 TimeoutInMs = timeoutInMs,
                 Properties = properties,
             }));
+    }
+
+    /// <inheritdoc/>
+    public void TriggerConfirmation(
+        FPlayer player,
+        ConfirmationProperties properties,
+        Action<bool> callback,
+        int timeoutInMs = 5000)
+    {
+        this.TriggerConfirmation(player.GetUnderlyingPlayer(), properties, callback, timeoutInMs);
     }
 }
