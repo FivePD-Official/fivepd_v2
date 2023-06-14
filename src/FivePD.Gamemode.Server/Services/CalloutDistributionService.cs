@@ -9,6 +9,7 @@ using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.Models;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -110,6 +111,12 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 
+        var dispatchedUnits = this.DispatchCallout(calloutHolder);
+        await callout.OnDispatched(dispatchedUnits);
+    }
+
+    private List<Unit> DispatchCallout(CalloutHolder calloutHolder)
+    {
         var filteredUnits = this._unitService.Units
             .Where(unit =>
                 this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
@@ -128,7 +135,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                 unitAccepted = true;
 
                 ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
-                callout.OnAccepted(unit);
+                calloutHolder.Callout.OnAccepted(unit);
             }
 
             foreach (var player in unit.Players)
@@ -142,11 +149,11 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                             Texture = "CHAR_CALL911",
                             Sender = "LABEL.DISPATCH",
                             Subject = "LABEL.CALLOUT",
-                            Content = $"{callout.Title}~n~{{{{priority}}}}: {{{{priorityCode}}}}",
+                            Content = $"{calloutHolder.Callout.Title}~n~{{{{priority}}}}: {{{{priorityCode}}}}",
                             ContentParams = new Dictionary<string, string>
                             {
                                 ["priority"] = "LABEL.PRIORITY.TITLE",
-                                ["priorityCode"] = callout.Priority switch
+                                ["priorityCode"] = calloutHolder.Callout.Priority switch
                                 {
                                     FIncidentPriority.Code1 => "LABEL.PRIORITY.CODE1",
                                     FIncidentPriority.Code2 => "LABEL.PRIORITY.CODE2",
@@ -165,17 +172,17 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                         OnAccepted();
                         player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
                         {
-                            Id = callout.Id.ToString(),
-                            Title = callout.Title,
-                            Description = callout.Description,
-                            Location = callout.Location,
-                            Priority = callout.Priority,
-                            ActivityRadius = callout.ActivityRadius,
+                            Id = calloutHolder.Callout.Id.ToString(),
+                            Title = calloutHolder.Callout.Title,
+                            Description = calloutHolder.Callout.Description,
+                            Location = calloutHolder.Callout.Location,
+                            Priority = calloutHolder.Callout.Priority,
+                            ActivityRadius = calloutHolder.Callout.ActivityRadius,
                         }));
                     });
             }
         }
 
-        await callout.OnDispatched(filteredUnits);
+        return filteredUnits;
     }
 }

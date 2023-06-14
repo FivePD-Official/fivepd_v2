@@ -37,7 +37,7 @@ public class KnifeWieldingPerson : Callout
         return Task.FromResult(true);
     }
 
-    public override Task OnDispatched(List<Unit> dispatchedToUnits)
+    public override Task OnDispatched(List<Unit> notifiedUnits)
     {
         this._logger.Information("OnDispatched");
 

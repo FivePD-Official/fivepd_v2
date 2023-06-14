@@ -33,7 +33,7 @@ public abstract class Callout : IIncident, IInternalIncident
 
     public abstract Task<bool> CanBeDispatched();
 
-    public abstract Task OnDispatched(List<Unit> dispatchedToUnits);
+    public abstract Task OnDispatched(List<Unit> notifiedUnits);
 
     public abstract Task OnAccepted(Unit unit);
 
