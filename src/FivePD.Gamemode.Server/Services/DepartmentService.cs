@@ -848,7 +848,7 @@ public class DepartmentService : IDepartmentService
                 user.RankId = department.DefaultRankId;
             }
 
-            var callsignMatchesWithFormat = new Regex("^[NL0-9-*]{1,10}$").IsMatch(user.Callsign);
+            var callsignMatchesWithFormat = !string.IsNullOrEmpty(user.Callsign) && new Regex("^[NL0-9-*]{1,10}$").IsMatch(user.Callsign);
             if (string.IsNullOrEmpty(user.Callsign) || !callsignMatchesWithFormat)
             {
                 string callsign;
