@@ -16,7 +16,7 @@ namespace FivePD.Gamemode.Common.Builders;
 /// </summary>
 public class CommonFPedBuilder
 {
-    private readonly Random _random = new(Guid.NewGuid().GetHashCode());
+    private static readonly Random Random = new(Guid.NewGuid().GetHashCode());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommonFPedBuilder"/> class.
@@ -48,7 +48,7 @@ public class CommonFPedBuilder
 
     public CommonFPedBuilder WithFirstname(List<string> names)
     {
-        this.Firstname = names[this._random.Next(names.Count)].Trim();
+        this.Firstname = names[Random.Next(names.Count)].Trim();
         return this;
     }
 
@@ -60,7 +60,7 @@ public class CommonFPedBuilder
 
     public CommonFPedBuilder WithLastname(List<string> names)
     {
-        this.Lastname = names[this._random.Next(names.Count)].Trim();
+        this.Lastname = names[Random.Next(names.Count)].Trim();
         return this;
     }
 
@@ -74,8 +74,8 @@ public class CommonFPedBuilder
     {
         int[] monthsWith30Days = { 4, 6, 9, 11 };
 
-        int year = this._random.Next(1960, 2001);
-        int month = this._random.Next(1, 13);
+        int year = Random.Next(1960, 2001);
+        int month = Random.Next(1, 13);
         int maxDay;
 
         if (month == 2)
@@ -91,7 +91,7 @@ public class CommonFPedBuilder
             maxDay = 32;
         }
 
-        int day = this._random.Next(1, maxDay);
+        int day = Random.Next(1, maxDay);
 
         // TODO: Refactor to DateTime
         this.Birthdate = new Date(year, month, day);
@@ -109,7 +109,7 @@ public class CommonFPedBuilder
         this.Items = items
             .Where(item => item.Location is Item.ItemLocation.Ped or Item.ItemLocation.Everywhere)
             .OrderBy(item => Guid.NewGuid())
-            .Take(this._random.Next(0, 6))
+            .Take(Random.Next(0, 6))
             .ToList();
         return this;
     }

@@ -14,7 +14,7 @@ namespace FivePD.Gamemode.Common.Builders;
 /// </summary>
 public class CommonFVehicleBuilder
 {
-    private readonly Random _random = new(Guid.NewGuid().GetHashCode());
+    private static readonly Random Random = new(Guid.NewGuid().GetHashCode());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommonFVehicleBuilder"/> class.
@@ -73,8 +73,8 @@ public class CommonFVehicleBuilder
     {
         this.Items = items
             .Where(item => item.Location is Item.ItemLocation.Vehicle or Item.ItemLocation.Everywhere)
-            .OrderBy(item => Guid.NewGuid())
-            .Take(this._random.Next(0, 6))
+            .OrderBy(_ => Guid.NewGuid())
+            .Take(Random.Next(0, 6))
             .ToList();
         return this;
     }

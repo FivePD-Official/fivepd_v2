@@ -24,17 +24,19 @@ public class DepartmentService : IDepartmentService
 {
     private readonly DatabaseContext _databaseContext;
     private readonly IPlayerDataService _playerDataService;
-    private readonly Random _random = new(Guid.NewGuid().GetHashCode());
+    private readonly IRandomService _randomService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DepartmentService"/> class.
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerDataService">The <see cref="PlayerDataService"/> to use.</param>
-    public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService)
+    /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
+    public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService, IRandomService randomService)
     {
         this._databaseContext = databaseContext;
         this._playerDataService = playerDataService;
+        this._randomService = randomService;
     }
 
     /// <inheritdoc />
@@ -928,12 +930,12 @@ public class DepartmentService : IDepartmentService
     private char GetRandomLetter()
     {
         const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        return letters[this._random.Next(letters.Length)];
+        return letters[this._randomService.Random.Next(letters.Length)];
     }
 
     private char GetRandomNumber()
     {
         const string numbers = "0123456789";
-        return numbers[this._random.Next(numbers.Length)];
+        return numbers[this._randomService.Random.Next(numbers.Length)];
     }
 }

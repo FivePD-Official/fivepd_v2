@@ -14,17 +14,19 @@ public class EventService : IEventService, IServiceWithEvents
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _players;
     private readonly ConcurrentDictionary<string, Action<string>> _events = new();
-    private readonly Random _random = new(Guid.NewGuid().GetHashCode());
+    private readonly IRandomService _randomService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="players">The <see cref="PlayerList"/> to use.</param>
-    public EventService(EventHandlerDictionary eventHandlerDictionary, PlayerList players)
+    /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
+    public EventService(EventHandlerDictionary eventHandlerDictionary, PlayerList players, IRandomService randomService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._players = players;
+        this._randomService = randomService;
     }
 
     /// <inheritdoc />
@@ -97,7 +99,7 @@ public class EventService : IEventService, IServiceWithEvents
 
     private Player GetRandomPlayer()
     {
-        var index = this._random.Next(0, this._players.Count());
+        var index = this._randomService.Random.Next(0, this._players.Count());
         return this._players[index];
     }
 }
