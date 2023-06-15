@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Dynamic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Enums;
@@ -17,7 +19,7 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;
 
-    private ClientCallout _currentCallout;
+    private ClientCalloutWrapper _currentCallout;
     private Blip _calloutBlip;
 
     public CalloutManagerService(EventHandlerDictionary eventHandlerDictionary, ITickService tickService)
@@ -30,12 +32,19 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
     {
         this._eventHandlerDictionary[Events.Callout.OnAccepted] += new Action<string>(this.OnAccepted);
         this._eventHandlerDictionary[Events.Callout.OnCompleted] += new Action(this.OnCompleted);
+        
+        this._eventHandlerDictionary.AddUIEvent(
+            Events.UI.Callout.GetActive,
+            new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
+            {
+                cb.Invoke(JsonConvert.SerializeObject(this._currentCallout));
+            }));
     }
 
     private void OnAccepted(string serializedCallout)
     {
         var callout = JsonConvert.DeserializeObject<ClientCallout>(serializedCallout);
-        this._currentCallout = callout;
+        this._currentCallout = new ClientCalloutWrapper(callout, callout.Location.GetStreetName());
         this._tickService.OnTick += this.OnTick;
 
         this._calloutBlip = World.CreateBlip(callout.Location, callout.ActivityRadius);
@@ -66,12 +75,14 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
             return Task.FromResult(0);
         }
 
-        if (World.GetDistance(this._currentCallout.Location, Game.PlayerPed.Position) <= this._currentCallout.ActivityRadius)
+        if (World.GetDistance(this._currentCallout.Callout.Location, Game.PlayerPed.Position) <= this._currentCallout.Callout.ActivityRadius)
         {
             this._calloutBlip.ShowRoute = false;
-            BaseScript.TriggerServerEvent(Events.Callout.OnPlayerEnteredInActivityZone, this._currentCallout.Id);
+            BaseScript.TriggerServerEvent(Events.Callout.OnPlayerEnteredInActivityZone, this._currentCallout.Callout.Id);
         }
 
         return Task.FromResult(0);
     }
+
+    private sealed record ClientCalloutWrapper(ClientCallout Callout, string Address);
 }

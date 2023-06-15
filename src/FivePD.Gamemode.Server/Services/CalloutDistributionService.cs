@@ -136,7 +136,27 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
 
                 ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
                 calloutHolder.Callout.OnAccepted(unit);
+
+                foreach (var player in unit.Players)
+                {
+                    player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
+                    {
+                        Id = calloutHolder.Callout.Id.ToString(),
+                        Title = calloutHolder.Callout.Title,
+                        Description = calloutHolder.Callout.Description,
+                        Location = calloutHolder.Callout.Location,
+                        Priority = calloutHolder.Callout.Priority,
+                        ActivityRadius = calloutHolder.Callout.ActivityRadius,
+                    }));
+                }
             }
+
+            var priorityColorCode = calloutHolder.Callout.Priority switch
+            {
+                FIncidentPriority.Code1 => "~b~",
+                FIncidentPriority.Code2 => "~y~",
+                FIncidentPriority.Code3 => "~r~",
+            };
 
             foreach (var player in unit.Players)
             {
@@ -149,10 +169,10 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                             Texture = "CHAR_CALL911",
                             Sender = "LABEL.DISPATCH",
                             Subject = "LABEL.CALLOUT",
-                            Content = $"{calloutHolder.Callout.Title}~n~{{{{priority}}}}: {{{{priorityCode}}}}",
+                            Content = $"{calloutHolder.Callout.Title}~n~{{{{priority}}}}: {priorityColorCode}{{{{priorityCode}}}}",
                             ContentParams = new Dictionary<string, string>
                             {
-                                ["priority"] = "LABEL.PRIORITY.TITLE",
+                                ["priority"] = "LABEL.PRIORITY.SINGULAR",
                                 ["priorityCode"] = calloutHolder.Callout.Priority switch
                                 {
                                     FIncidentPriority.Code1 => "LABEL.PRIORITY.CODE1",
@@ -170,15 +190,6 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                         }
 
                         OnAccepted();
-                        player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
-                        {
-                            Id = calloutHolder.Callout.Id.ToString(),
-                            Title = calloutHolder.Callout.Title,
-                            Description = calloutHolder.Callout.Description,
-                            Location = calloutHolder.Callout.Location,
-                            Priority = calloutHolder.Callout.Priority,
-                            ActivityRadius = calloutHolder.Callout.ActivityRadius,
-                        }));
                     });
             }
         }

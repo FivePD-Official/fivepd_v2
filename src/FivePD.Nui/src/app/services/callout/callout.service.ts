@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { ActionResponse, CalloutDTO, Page, UnitDTO } from "@models";
+import { CalloutDTO, ClientCalloutWrapper, Page } from "@models";
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,10 @@ export class CalloutService {
   constructor(
     private _http: HttpClient,
   ) {
+  }
+
+  getActive(): Observable<ClientCalloutWrapper> {
+    return this._http.post<ClientCalloutWrapper>('fivepd:ui:callout:getActive', {});
   }
 
   getAll(): Observable<Page<CalloutDTO>> {

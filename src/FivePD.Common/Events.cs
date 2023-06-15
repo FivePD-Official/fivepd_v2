@@ -187,6 +187,11 @@ internal readonly record struct Events
         {
             public const string GetGeneralSettings = "fivepd:config:getGeneralSettings";
         }
+        
+        public readonly record struct Callout
+        {
+            public const string GetActive = "fivepd:ui:callout:getActive";
+        }
     }
 
     public readonly record struct DevTools
