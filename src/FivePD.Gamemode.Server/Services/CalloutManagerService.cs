@@ -11,7 +11,6 @@ using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.QueryHelpers;
-using Newtonsoft.Json;
 
 namespace FivePD.Gamemode.Server.Services;
 

@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using CitizenFX.Core;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.API;
-using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using Newtonsoft.Json;
@@ -19,7 +17,6 @@ namespace FivePD.Gamemode.Server.Services;
 
 internal class CalloutDistributionService : ICalloutDistributionService, IServiceWithEvents
 {
-    private readonly PlayerList _players;
     private readonly ITickQueueService _tickQueueService;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
@@ -32,7 +29,6 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     private int _nextCalloutInMs;
 
     public CalloutDistributionService(
-        PlayerList players,
         ITickQueueService tickQueueService,
         IConfigService configService,
         IRandomService randomService,
@@ -41,7 +37,6 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         IInternalCalloutManagerService calloutManagerService,
         IUnitService unitService)
     {
-        this._players = players;
         this._tickQueueService = tickQueueService;
         this._configService = configService;
         this._randomService = randomService;
@@ -151,12 +146,31 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                 }
             }
 
-            var priorityColorCode = calloutHolder.Callout.Priority switch
+            var priorityCodeLabel = string.Empty;
+            var priorityColorCode = string.Empty;
+            switch (calloutHolder.Callout.Priority)
             {
-                FIncidentPriority.Code1 => "~b~",
-                FIncidentPriority.Code2 => "~y~",
-                FIncidentPriority.Code3 => "~r~",
-            };
+                case FIncidentPriority.Code1:
+                {
+                    priorityCodeLabel = "LABEL.PRIORITY.CODE1";
+                    priorityColorCode = "~b~";
+                    break;
+                }
+                
+                case FIncidentPriority.Code2:
+                {
+                    priorityCodeLabel = "LABEL.PRIORITY.CODE2";
+                    priorityColorCode = "~y~";
+                    break;
+                }
+                
+                case FIncidentPriority.Code3:
+                {
+                    priorityCodeLabel = "LABEL.PRIORITY.CODE3";
+                    priorityColorCode = "~r~";
+                    break;
+                }
+            }
 
             foreach (var player in unit.Players)
             {
@@ -173,12 +187,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                             ContentParams = new Dictionary<string, string>
                             {
                                 ["priority"] = "LABEL.PRIORITY.SINGULAR",
-                                ["priorityCode"] = calloutHolder.Callout.Priority switch
-                                {
-                                    FIncidentPriority.Code1 => "LABEL.PRIORITY.CODE1",
-                                    FIncidentPriority.Code2 => "LABEL.PRIORITY.CODE2",
-                                    FIncidentPriority.Code3 => "LABEL.PRIORITY.CODE3",
-                                },
+                                ["priorityCode"] = priorityCodeLabel,
                             }
                         }
                     },
