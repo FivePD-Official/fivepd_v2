@@ -38,7 +38,8 @@ public class ConcurrentTickQueueService : ITickQueueService, IInteralTickQueueSe
         {
             if (task.Stopwatch.ElapsedMilliseconds >= task.IntervalInMs)
             {
-                task.Action.Invoke();
+                task.Action?.Invoke();
+                task.TaskAction?.Invoke();
                 task.Stopwatch.Restart();
             }
         }
@@ -80,6 +81,17 @@ public class ConcurrentTickQueueService : ITickQueueService, IInteralTickQueueSe
     }
 
     /// <inheritdoc />
+    public Guid EnqueueInterval(Func<Task> action, int intervalInMs)
+    {
+        var guid = Guid.NewGuid();
+
+        this._intervalTasks[guid.ToString()] = new IntervalTask(action, intervalInMs);
+        Cfx.API.ScheduleResourceTick(this._resourceName);
+
+        return guid;
+    }
+
+    /// <inheritdoc />
     public void DequeueInterval(Guid guid)
     {
         this._intervalTasks.TryRemove(guid.ToString(), out _);
@@ -99,7 +111,16 @@ public class ConcurrentTickQueueService : ITickQueueService, IInteralTickQueueSe
             this.Stopwatch.Start();
         }
 
+        public IntervalTask(Func<Task> action, int intervalInMs = 0)
+        {
+            this.TaskAction = action;
+            this.IntervalInMs = intervalInMs;
+            this.Stopwatch.Start();
+        }
+
         public Action Action { get; }
+
+        public Func<Task> TaskAction { get; }
 
         public int IntervalInMs { get; }
 

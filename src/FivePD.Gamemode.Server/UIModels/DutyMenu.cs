@@ -27,9 +27,8 @@ public sealed class DutyMenu : Menu
     /// </summary>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
-    /// <param name="eventService">The <see cref="IEventService"/> to use.</param>
-    public DutyMenu(IConfigService configService, ILocalizationService localizationService, IEventService eventService)
-        : base("fivepd_duty_menu", "DUTY_MENU.TITLE", "F10", true)
+    public DutyMenu(IConfigService configService, ILocalizationService localizationService)
+        : base(Controls.DutyMenu.Id, Controls.DutyMenu.Title, Controls.DutyMenu.Key, true)
     {
         this._configService = configService;
         this._localizationService = localizationService;

@@ -98,6 +98,11 @@ export class DynamicFormInputComponent implements OnInit {
       return;
     }
 
+    if (this.dropdownSelectedItem) {
+      this.multiSelectLabel = this.dropdownSelectedItem.label;
+      return;
+    }
+
     this.multiSelectLabel = this.dropdownSelectedItems.length ? this._localization.translate('UI.LABEL.SELECTED', {count: this.dropdownSelectedItems.length.toString()}, false) : this.field.dropdownOptions.label;
   }
 
@@ -114,6 +119,7 @@ export class DynamicFormInputComponent implements OnInit {
       this.dropdownFilteredItems.unshift({key: -1, label: this.field.dropdownOptions.label});
     }
 
+    this.setMultiSelectLabel();
     this.updateFormState(isCalledAtInit);
   }
 

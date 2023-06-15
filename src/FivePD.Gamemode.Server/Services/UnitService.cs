@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Extensions;
@@ -145,12 +146,16 @@ public class UnitService : IUnitService
         {
             this._confirmationService.TriggerConfirmation(
                 unitPlayer.GetUnderlyingPlayer(),
-                288, // F1
-                "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.TOOLTIP",
-                "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
-                new Dictionary<string, string>
+                new ConfirmationProperties
                 {
-                    ["name"] = player.Name,
+                    Notification = new ConfirmationProperties.NotificationProperties
+                    {
+                        Content = "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
+                        ContentParams = new Dictionary<string, string>
+                        {
+                            ["name"] = player.Name,
+                        },
+                    },
                 },
                 response =>
                 {

@@ -1,4 +1,4 @@
-﻿import { FDutyStatus, User } from "./entities";
+﻿import { FDutyStatus, FIncidentPriorty, User } from "./entities";
 
 export interface ActionResponse {
   Status: boolean;
@@ -89,4 +89,29 @@ export interface PlayerDetailsDTO {
   NetworkId: string;
   User: User;
   DutyStatus: FDutyStatus;
+}
+
+interface ClientCallout {
+  Id: string;
+  Title: string;
+  Description: string;
+  Priority: FIncidentPriorty;
+  ActivityRadius: number;
+  Location: {
+    X: number;
+    Y: number;
+    Z: number;
+  };
+}
+
+export interface ClientCalloutWrapper {
+  Callout: ClientCallout;
+  Address: string;
+}
+
+export interface CalloutDTO {
+  Title: string;
+  Description: string;
+  Address: string;
+  Units: string[];
 }

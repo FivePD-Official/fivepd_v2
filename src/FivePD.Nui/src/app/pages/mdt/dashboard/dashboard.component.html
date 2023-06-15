@@ -40,17 +40,52 @@
       </div>
     </div>
 
-    <div class="grid-item grid-item--call">
+    <div class="grid-item grid-item--details">
       <p class="common-title">
-        {{ 'UI.LABEL.ASSIGNED_CALL' | translate }}
+        {{ 'UI.LABEL.ACTIVE_CALLOUT.SINGULAR' | translate }}
       </p>
       <div class="grid-item--content">
-        <p *ngIf="!assignedCall" class="no-data">
-          {{ 'UI.LABEL.NO_ASSIGNED_CALL' | translate }}
+        <p *ngIf="!activeCallout" class="no-data">
+          {{ 'UI.LABEL.ACTIVE_CALLOUT.NONE' | translate }}
         </p>
+        <ul *ngIf="activeCallout"
+          class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-1 items-start gap-4">
+          <div class="grid grid-rows-[repeat(2,1fr)] grid-cols-1 gap-4">
+            <li>
+              <p>{{ 'UI.LABEL.TITLE.SINGULAR' | translate }}</p>
+              <p>{{ activeCallout.Callout.Title }}</p>
+            </li>
+            <li>
+              <p>{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
+              <p>{{ activeCallout.Callout.Description }}</p>
+            </li>
+          </div>
+          <div class="grid grid-rows-1 grid-cols-[repeat(2,1fr)] gap-4">
+            <li>
+              <p>{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+              <p>{{ activeCallout.Address }}</p>
+            </li>
+            <li>
+              <p>{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
+              <p>{{ priorityLabel | translate }}</p>
+            </li>
+          </div>
+        </ul>
       </div>
     </div>
   </app-container>
+
+  <app-grid
+    [title]="'UI.LABEL.ACTIVE_CALLOUT.PLURAL' | translate"
+    [data]="callouts"
+    [columns]="calloutsColumnDef"
+    [showPagination]="false"/>
+
+  <app-grid
+    [title]="'UI.LABEL.UNIT.PLURAL' | translate"
+    [data]="units"
+    [columns]="unitsColumnDef"
+    [showPagination]="false"/>
 
   <app-grid
     [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
@@ -60,8 +95,4 @@
     (onCollationChange)="onDepartmentsCollationChange($event)"
     (onCellAction)="getDepartments()"/>
 
-  <app-grid
-    [title]="'UI.LABEL.UNIT.PLURAL' | translate"
-    [data]="units"
-    [columns]="unitsColumnDef"/>
 </app-container>

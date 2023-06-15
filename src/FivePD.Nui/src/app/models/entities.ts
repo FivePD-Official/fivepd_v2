@@ -74,3 +74,9 @@ export enum FDutyStatus {
   OnDutyAndNotReceiving,
   OnDutyAndReceiving,
 }
+
+export enum FIncidentPriorty {
+  Code1,
+  Code2,
+  Code3,
+}

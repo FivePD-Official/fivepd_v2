@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {
   BaseNuiEvent,
-  Button,
+  Button, CalloutDTO, ClientCalloutWrapper,
   Collation,
   Column,
   Department,
-  FDutyStatus,
+  FDutyStatus, FIncidentPriorty,
   GeneralSettings,
   NumberInput,
   Page,
@@ -30,6 +30,7 @@ import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
 import { EventService } from "@services/event/event.service";
 import { NuiEventType } from "@enums";
+import { CalloutService } from "@services/callout/callout.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -41,7 +42,7 @@ export class DashboardComponent implements OnInit {
   generalSettings?: GeneralSettings;
   user?: PlayerDetailsDTO;
   statistics: any;
-  assignedCall: any;
+  activeCallout?: ClientCalloutWrapper;
 
   departments?: Page<Department>;
   departmentsButtons: Button[] = [
@@ -160,6 +161,26 @@ export class DashboardComponent implements OnInit {
     }),
   ];
 
+  callouts?: Page<CalloutDTO>;
+  calloutsColumnDef: Column<CalloutDTO>[] = [
+    new Column<CalloutDTO>({
+      header: 'UI.LABEL.TITLE.SINGULAR',
+      accessorKey: 'Title',
+    }),
+    new Column<CalloutDTO>({
+      header: 'UI.LABEL.DESCRIPTION.SINGULAR',
+      accessorKey: 'Description',
+    }),
+    new Column<CalloutDTO>({
+      header: 'UI.LABEL.ADDRESS.SINGULAR',
+      accessorKey: 'Address',
+    }),
+    new Column<CalloutDTO>({
+      header: 'UI.LABEL.UNIT.PLURAL',
+      valueResolver: item => item.Units.join(', '),
+    }),
+  ];
+
   constructor(
     private readonly _department: DepartmentService,
     private readonly _localization: LocalizationService,
@@ -171,10 +192,13 @@ export class DashboardComponent implements OnInit {
     private readonly _unitService: UnitService,
     private readonly _configService: ConfigService,
     private readonly _eventService: EventService,
+    private readonly _calloutService: CalloutService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
     this._eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
       this.getUnits();
+      this.getCallouts();
+      this.getActiveCallout();
     });
   }
 
@@ -182,6 +206,25 @@ export class DashboardComponent implements OnInit {
     this.getGeneralSettings();
     this.getDepartments();
     this.getUnits();
+    this.getCallouts();
+    this.getActiveCallout();
+  }
+
+  get priorityLabel(): string {
+    if (!this.activeCallout) {
+      return '';
+    }
+
+    switch (this.activeCallout.Callout.Priority) {
+      case FIncidentPriorty.Code1:
+        return 'LABEL.PRIORITY.CODE1';
+      case FIncidentPriorty.Code2:
+        return 'LABEL.PRIORITY.CODE2';
+      case FIncidentPriorty.Code3:
+        return 'LABEL.PRIORITY.CODE3';
+    }
+
+    return 'Unknown';
   }
 
   getGeneralSettings(): void {
@@ -199,6 +242,18 @@ export class DashboardComponent implements OnInit {
   getUnits(): void {
     this._unitService.getAll().subscribe(res => {
       this.units = res;
+    });
+  }
+
+  getCallouts(): void {
+    this._calloutService.getAll().subscribe(res => {
+      this.callouts = res;
+    });
+  }
+
+  getActiveCallout(): void {
+    this._calloutService.getActive().subscribe(res => {
+      this.activeCallout = res;
     });
   }
 

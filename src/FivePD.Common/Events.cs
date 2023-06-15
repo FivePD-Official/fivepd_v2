@@ -187,6 +187,11 @@ internal readonly record struct Events
         {
             public const string GetGeneralSettings = "fivepd:config:getGeneralSettings";
         }
+        
+        public readonly record struct Callout
+        {
+            public const string GetActive = "fivepd:ui:callout:getActive";
+        }
     }
 
     public readonly record struct DevTools
@@ -229,5 +234,16 @@ internal readonly record struct Events
         public const string Add = "fivepd:marker:add";
 
         public const string Remove = "fivepd:marker:remove";
+    }
+
+    public readonly record struct Callout
+    {
+        public const string OnAccepted = "fivepd:callout:onAccepted";
+
+        public const string OnPlayerEnteredInActivityZone = "fivepd:callout:onPlayerEnteredInActivityZone";
+
+        public const string OnCompleted = "fivepd:callout:onCompleted";
+
+        public const string GetAllActiveUI = "fivepd:callout:getAllActiveUI";
     }
 }

@@ -53,6 +53,8 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     public async Task TryAlertEntityAsync(Player player)
     {
         Debug.WriteLine("invoked: TryAlertEntityAsync");
+        // TODO: return if player is in vehicle
+
         var ped = await this.GetTargetedEntityAsync<FPed>(player);
         if (ped is null)
         {

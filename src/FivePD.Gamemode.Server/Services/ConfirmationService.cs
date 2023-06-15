@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.DTO;
 using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Models;
+using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 
@@ -25,10 +26,7 @@ public class ConfirmationService : IConfirmationService
     /// <inheritdoc />
     public void TriggerConfirmation(
         Player player,
-        int key,
-        string tooltip,
-        string notification,
-        Dictionary<string, string> notificationParams,
+        ConfirmationProperties properties,
         Action<bool> callback,
         int timeoutInMs = 5000)
     {
@@ -38,11 +36,18 @@ public class ConfirmationService : IConfirmationService
             response => callback.Invoke(bool.Parse(response)),
             JsonConvert.SerializeObject(new ConfirmationDTO
             {
-                Key = key,
-                Tooltip = tooltip,
-                Notification = notification,
-                NotificationParams = notificationParams,
                 TimeoutInMs = timeoutInMs,
+                Properties = properties,
             }));
+    }
+
+    /// <inheritdoc/>
+    public void TriggerConfirmation(
+        FPlayer player,
+        ConfirmationProperties properties,
+        Action<bool> callback,
+        int timeoutInMs = 5000)
+    {
+        this.TriggerConfirmation(player.GetUnderlyingPlayer(), properties, callback, timeoutInMs);
     }
 }

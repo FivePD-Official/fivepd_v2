@@ -5,6 +5,8 @@
 public sealed record GeneralSettings
 {
     public UnitSettings Unit { get; init; } = new();
+
+    public CalloutSettings Callout { get; init; } = new();
     
     public sealed record UnitSettings
     {
@@ -19,5 +21,12 @@ public sealed record GeneralSettings
         {
             return this.Join.ToUpper() == "REQUEST";
         }
+    }
+
+    public sealed record CalloutSettings
+    {
+        public int MinIntervalInMs { get; init; }
+
+        public int MaxIntervalInMs { get; init; }
     }
 }

@@ -1,5 +1,9 @@
 {
   "Unit": {
     "Join": "free"
+  },
+  "Callout": {
+    "MinIntervalInMs": 5000,
+    "MaxIntervalInMs": 10000
   }
 }
