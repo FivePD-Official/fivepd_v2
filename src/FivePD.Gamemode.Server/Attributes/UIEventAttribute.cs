@@ -1,12 +1,10 @@
 ﻿using System;
-using FivePD.Gamemode.Common.Attributes;
 
 namespace FivePD.Gamemode.Server.Attributes;
 
 /// <summary>
 /// Used to bind methods to events.
 /// </summary>
-[NoUsage]
 [AttributeUsage(AttributeTargets.Method)]
 internal class UIEventAttribute : Attribute
 {

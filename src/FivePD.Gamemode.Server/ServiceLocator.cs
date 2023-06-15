@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using FivePD.Gamemode.Common.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FivePD.Gamemode.Server;
@@ -57,7 +56,6 @@ public static class ServiceLocator
     /// Sets the service provider.
     /// </summary>
     /// <param name="provider">The service provider.</param>
-    [NoUsage]
     internal static void SetServiceProvider(IServiceProvider provider)
     {
         serviceProvider = provider;

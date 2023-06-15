@@ -1,11 +1,9 @@
 ﻿using CitizenFX.Core;
-using FivePD.Gamemode.Common.Attributes;
 
 namespace FivePD.Gamemode.Common.DTO;
 
 #pragma warning disable
 
-[NoUsage]
 internal sealed record FPedTasksDTO
 {
     public record struct SetPedTaskRequest

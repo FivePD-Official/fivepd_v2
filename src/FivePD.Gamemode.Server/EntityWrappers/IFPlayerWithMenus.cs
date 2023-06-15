@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FivePD.Gamemode.Common.Attributes;
 using FivePD.Gamemode.Server.UIModels;
 
 namespace FivePD.Gamemode.Server.EntityWrappers;
@@ -8,7 +7,6 @@ namespace FivePD.Gamemode.Server.EntityWrappers;
 /// Defines the methods which can be used
 /// to modify a player's menus.
 /// </summary>
-[NoUsage]
 internal interface IFPlayerWithMenus
 {
     /// <summary>

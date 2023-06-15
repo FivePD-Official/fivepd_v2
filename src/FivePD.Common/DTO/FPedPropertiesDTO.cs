@@ -1,11 +1,9 @@
-﻿using FivePD.Gamemode.Common.Attributes;
-using FivePD.Gamemode.Common.Enums;
+﻿using FivePD.Gamemode.Common.Enums;
 
 namespace FivePD.Gamemode.Common.DTO;
 
 #pragma warning disable
 
-[NoUsage]
 internal sealed record FPedPropertiesDTO
 {
     public record struct CreateBlipRequest

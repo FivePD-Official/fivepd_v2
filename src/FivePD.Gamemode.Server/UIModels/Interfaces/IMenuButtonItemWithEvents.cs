@@ -1,12 +1,10 @@
-﻿using FivePD.Gamemode.Common.Attributes;
-using FivePD.Gamemode.Server.EntityWrappers;
+﻿using FivePD.Gamemode.Server.EntityWrappers;
 
 namespace FivePD.Gamemode.Server.UIModels.Interfaces;
 
 /// <summary>
 /// Defines the events of <see cref="MenuButtonItem"/>.
 /// </summary>
-[NoUsage]
 internal interface IMenuButtonItemWithEvents
 {
     /// <summary>

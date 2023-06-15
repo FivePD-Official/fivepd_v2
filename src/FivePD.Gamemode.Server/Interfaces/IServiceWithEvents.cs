@@ -1,12 +1,9 @@
-﻿using FivePD.Gamemode.Common.Attributes;
-
-namespace FivePD.Gamemode.Server.Interfaces;
+﻿namespace FivePD.Gamemode.Server.Interfaces;
 
 /// <summary>
 /// Services which require events in order to function properly
 /// should inherit this interface.
 /// </summary>
-[NoUsage]
 public interface IServiceWithEvents
 {
     /// <summary>

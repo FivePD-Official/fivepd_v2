@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FivePD.Gamemode.Common.Attributes;
 using FivePD.Gamemode.Common.ConfigModels;
 
 namespace FivePD.Gamemode.Server.Interfaces;
@@ -37,7 +36,6 @@ public interface IConfigService
     /// Gets the "database.json" file's content.
     /// </summary>
     /// <returns>Returns the database connection settings.</returns>
-    [NoUsage]
     public DatabaseConfig DatabaseConfig { get; }
 
     /// <summary>

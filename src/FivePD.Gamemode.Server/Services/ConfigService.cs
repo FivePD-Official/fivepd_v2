@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FivePD.Gamemode.Common.Attributes;
 using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Common.Exceptions;
 using FivePD.Gamemode.Common.Extensions;
@@ -27,7 +26,6 @@ public class ConfigService : IConfigService
     }
 
     /// <inheritdoc />
-    [NoUsage]
     public DatabaseConfig DatabaseConfig => this.InternalLoadFile<DatabaseConfig>("/Config/database.json");
 
     /// <inheritdoc />

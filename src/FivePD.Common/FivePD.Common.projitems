@@ -9,7 +9,6 @@
     <Import_RootNamespace>FivePD.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Attributes\NoUsageAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\CommonFPedBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\CommonFVehicleBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\DatabaseConfig.cs" />

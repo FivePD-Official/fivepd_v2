@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using FivePD.Gamemode.Common.Attributes;
 
 namespace FivePD.Gamemode.Common.DTO;
 
 #pragma warning disable
 
-[NoUsage]
 internal sealed record NotificationDTO
 {
     public record struct ShowTooltip

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using FivePD.Gamemode.Common.Attributes;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 
@@ -8,7 +7,6 @@ namespace FivePD.Gamemode.Server.Interfaces;
 /// Useful for calling natives on a background thread when
 /// we don't necessarily need an immediate result.
 /// </summary>
-[NoUsage]
 internal interface IInteralTickQueueService
 {
     /// <summary>

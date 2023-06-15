@@ -1,12 +1,10 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common.Attributes;
 
 #pragma warning disable
 
 namespace FivePD.Gamemode.Common.Utilities;
 
-[NoUsage]
 internal sealed record ControlsDTO
 {
     public string Id { get; init; }
