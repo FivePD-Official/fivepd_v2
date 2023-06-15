@@ -63,4 +63,14 @@ public sealed class FPed : FEntity
     {
         return new FPed(new CommonFPed(new CommonFPedBuilder(player.GetUnderlyingPlayer().Character.NetworkId)));
     }
+
+    /// <summary>
+    /// Created an <see cref="FPed"/> wrapper from the specified <see cref="Ped"/>.
+    /// </summary>
+    /// <param name="ped">The <see cref="Ped"/> instance to use.</param>
+    /// <returns>The FPed.</returns>
+    public static FPed FromPed(Ped ped)
+    {
+        return new FPed(new CommonFPed(new CommonFPedBuilder(ped.NetworkId)));
+    }
 }

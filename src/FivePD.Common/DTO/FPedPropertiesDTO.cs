@@ -6,6 +6,15 @@ namespace FivePD.Gamemode.Common.DTO;
 
 internal sealed record FPedPropertiesDTO
 {
+    public record struct InvokeMethodRequest
+    {
+        public int NetworkId { get; set; }
+    
+        public string Method { get; set; }
+    
+        public string Args { get; set; }
+    }
+
     public record struct CreateBlipRequest
     {
         public required FBlipSprite Sprite { get; init; }
@@ -13,6 +22,13 @@ internal sealed record FPedPropertiesDTO
         public required FBlipColor Color { get; init; }
 
         public required string Text { get; init; }
+    }
+    
+    public record struct SetIntoVehicle
+    {
+        public required int VehicleNetworkId { get; init; }
+    
+        public required int VehicleSeat { get; init; }
     }
 
     public sealed record Events
@@ -25,10 +41,12 @@ internal sealed record FPedPropertiesDTO
 
         public const string BlockPermanentEvents = "BlockPermanentEvents";
 
-        public const string AlwaysKeepTask = "SetKeepTask";
+        public const string AlwaysKeepTask = "AlwaysKeepTask";
 
         public const string CreateBlip = "CreateBlip";
 
         public const string RemoveBlips = "RemoveBlips";
+
+        public const string SetIntoVehicle = "SetIntoVehicle";
     }
 }

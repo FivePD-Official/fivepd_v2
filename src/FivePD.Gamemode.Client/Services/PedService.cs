@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.Extensions;
 using FivePD.Gamemode.Client.Interfaces;
@@ -11,18 +12,23 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
+#pragma warning disable
+
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IPedService" />
 internal class PedService : IPedService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly ITickService _tickService;
+    
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PedService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    public PedService(EventHandlerDictionary eventHandlerDictionary)
+    public PedService(EventHandlerDictionary eventHandlerDictionary, ITickService tickService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._tickService = tickService;
     }
 
     /// <inheritdoc />
@@ -32,6 +38,7 @@ internal class PedService : IPedService, IServiceWithEvents
         this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
         this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);
+        this._eventHandlerDictionary[Events.Ped.InvokeMethod] += new Action<string>(this.InvokeMethod);
         this._eventHandlerDictionary[Events.Ped.WeaponCollection] += new Action<string>(this.WeaponCollection);
         this._eventHandlerDictionary[Events.Ped.WeaponCollectionWithReturn] += new Action<string, string>(this.WeaponCollectionWithReturn);
     }
@@ -58,9 +65,9 @@ internal class PedService : IPedService, IServiceWithEvents
         BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
     }
 
-    private void GetPedProperty(string eventCallbackId, int networkId, string property)
+    private async void GetPedProperty(string eventCallbackId, int networkId, string property)
     {
-        var ped = this.FindPed(networkId);
+        var ped = await this.FindPed(networkId);
         if (ped is null)
         {
             BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, string.Empty);
@@ -78,9 +85,9 @@ internal class PedService : IPedService, IServiceWithEvents
         BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
     }
 
-    private void SetPedProperty(int networkId, string property, string value)
+    private async void SetPedProperty(int networkId, string property, string value)
     {
-        var ped = this.FindPed(networkId);
+        var ped = await this.FindPed(networkId);
         if (ped is null)
         {
             return;
@@ -115,10 +122,30 @@ internal class PedService : IPedService, IServiceWithEvents
         }
     }
 
-    private void SetTask(string serializedRequest)
+    private async void InvokeMethod(string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<FPedPropertiesDTO.InvokeMethodRequest>(serializedRequest);
+        var ped = await this.FindPed(request.NetworkId);
+        if (ped is null)
+        {
+            return;
+        }
+
+        switch (request.Method)
+        {
+            case FPedPropertiesDTO.Events.SetIntoVehicle:
+            {
+                var args = JsonConvert.DeserializeObject<FPedPropertiesDTO.SetIntoVehicle>(request.Args);
+                ped.SetIntoVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, (VehicleSeat)args.VehicleSeat);
+                break;
+            }
+        }
+    }
+
+    private async void SetTask(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<FPedTasksDTO.SetPedTaskRequest>(serializedRequest);
-        var ped = this.FindPed(request.NetworkId);
+        var ped = await this.FindPed(request.NetworkId);
         if (ped is null)
         {
             return;
@@ -149,10 +176,10 @@ internal class PedService : IPedService, IServiceWithEvents
         }
     }
 
-    private void WeaponCollection(string serializedRequest)
+    private async void WeaponCollection(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<WeaponCollectionDTO.WeaponCollectionRequest>(serializedRequest);
-        var ped = this.FindPed(request.NetworkId);
+        var ped = await this.FindPed(request.NetworkId);
         if (ped is null)
         {
             return;
@@ -206,10 +233,10 @@ internal class PedService : IPedService, IServiceWithEvents
         }
     }
 
-    private void WeaponCollectionWithReturn(string eventCallbackId, string serializedRequest)
+    private async void WeaponCollectionWithReturn(string eventCallbackId, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<WeaponCollectionDTO.WeaponCollectionRequest>(serializedRequest);
-        var ped = this.FindPed(request.NetworkId);
+        var ped = await this.FindPed(request.NetworkId);
         if (ped is null)
         {
             return;
@@ -253,8 +280,13 @@ internal class PedService : IPedService, IServiceWithEvents
         }
     }
 
-    private Ped FindPed(int networkId)
+    private async Task<Ped> FindPed(int networkId)
     {
-        return (Ped)Entity.FromNetworkId(networkId);
+        while (!Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId))
+        {
+            await BaseScript.Delay(10);
+        }
+
+        return Entity.FromNetworkId(networkId) as Ped;
     }
 }

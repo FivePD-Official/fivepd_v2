@@ -14,6 +14,7 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.AssistanceServiceModels;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -248,6 +249,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IUnitService, UnitService>();
         services.AddSingleton<IConfirmationService, ConfirmationService>();
         services.AddSingleton<IRandomService, RandomService>();
+        services.AddSingleton<IAssistanceServiceManagerService, AssistanceServiceManagerService>();
 
 #pragma warning disable
         // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS

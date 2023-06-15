@@ -32,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FGender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FIncidentPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FMarkerType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleSeat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\MenuItemType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />

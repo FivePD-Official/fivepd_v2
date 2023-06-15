@@ -26,6 +26,8 @@ internal readonly record struct Events
 
         public const string SetTask = "fivepd:ped:setTask";
 
+        public const string InvokeMethod = "fivepd:ped:invokeMethod";
+
         public const string WeaponCollection = "fivepd:ped:weaponCollection";
 
         public const string WeaponCollectionWithReturn = "fivepd:ped:weaponCollectionWithReturn";
