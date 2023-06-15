@@ -20,9 +20,9 @@ public class KnifeWieldingPerson : Callout
         this._logger = logger;
     }
 
-    public override Task<CalloutProperties> Setup()
+    public override Task<CalloutSetupProperties> Setup()
     {
-        return Task.FromResult(new CalloutProperties
+        return Task.FromResult(new CalloutSetupProperties
         {
             Title = "Knife wielding person",
             Description = "A person is wielding a knife.",

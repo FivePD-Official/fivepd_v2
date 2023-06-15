@@ -29,7 +29,7 @@ public abstract class Callout : IIncident, IInternalIncident
 
     public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
 
-    public abstract Task<CalloutProperties> Setup();
+    public abstract Task<CalloutSetupProperties> Setup();
 
     public abstract Task<bool> CanBeDispatched();
 

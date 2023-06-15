@@ -6,7 +6,7 @@ namespace FivePD.Gamemode.Server.API;
 
 #pragma warning disable
 
-public readonly record struct CalloutProperties
+public readonly record struct CalloutSetupProperties
 {
     public required string Title { get; init; }
 
