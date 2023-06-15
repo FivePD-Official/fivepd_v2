@@ -14,8 +14,7 @@ using FivePD.Gamemode.Server.QueryHelpers;
 
 namespace FivePD.Gamemode.Server.Services;
 
-#pragma warning disable
-
+/// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.ICalloutManagerService" />
 public class CalloutManagerService : ICalloutManagerService, IInternalCalloutManagerService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
@@ -24,6 +23,11 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     private readonly List<Type> _calloutTypes = new();
     private readonly List<CalloutHolder> _activeCallouts = new();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CalloutManagerService"/> class.
+    /// </summary>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickQueueService tickQueueService)
@@ -32,19 +36,25 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         this._tickQueueService = tickQueueService;
     }
 
+    /// <inheritdoc/>
     List<Type> IInternalCalloutManagerService.CalloutTypes => this._calloutTypes;
 
+    /// <inheritdoc/>
     List<CalloutHolder> IInternalCalloutManagerService.ActiveCallouts => this._activeCallouts;
 
     /// <inheritdoc />
-    public List<Callout> ActiveCallouts => this._activeCallouts.Select(x => x.Callout).ToList();
+    public List<Callout> ActiveCallouts()
+    {
+        return this._activeCallouts.Select(x => x.Callout).ToList();
+    }
 
     /// <inheritdoc />
     public Callout GetPlayerCallout(FPlayer player)
     {
-        return this.ActiveCallouts.FirstOrDefault(x => x.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
+        return this.ActiveCallouts().FirstOrDefault(x => x.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
     }
 
+    /// <inheritdoc />
     public void RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Callout.OnPlayerEnteredInActivityZone] += new Action<Player, string>(this.OnPlayerEnteredInActivityZone);
@@ -52,6 +62,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);
     }
 
+    /// <inheritdoc />
     public void CompleteCalloutOfPlayer(FPlayer player)
     {
         this.CompleteCallout(this.GetPlayerCallout(player));
@@ -109,7 +120,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     }
 
     [UIEvent(Events.Callout.GetAllActiveUI)]
-    private void GetAllActiveCalloutsUI(ExpandoObject _, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var activeCallouts = this._activeCallouts
             .Where(x => x.Callout.Units.Count > 0)

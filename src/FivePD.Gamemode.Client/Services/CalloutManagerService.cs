@@ -12,8 +12,7 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
-#pragma warning disable
-
+/// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.ICalloutManagerService" />
 internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
@@ -22,30 +21,33 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
     private ClientCalloutWrapper _currentCallout;
     private Blip _calloutBlip;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CalloutManagerService"/> class.
+    /// </summary>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     public CalloutManagerService(EventHandlerDictionary eventHandlerDictionary, ITickService tickService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickService = tickService;
     }
 
+    /// <inheritdoc/>
     public void RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Callout.OnAccepted] += new Action<string>(this.OnAccepted);
         this._eventHandlerDictionary[Events.Callout.OnCompleted] += new Action(this.OnCompleted);
-        
+
         this._eventHandlerDictionary.AddUIEvent(
             Events.UI.Callout.GetActive,
-            new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
-            {
-                cb.Invoke(JsonConvert.SerializeObject(this._currentCallout));
-            }));
+            new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this._currentCallout)); }));
     }
 
     private void OnAccepted(string serializedCallout)
     {
         var callout = JsonConvert.DeserializeObject<ClientCallout>(serializedCallout);
         this._currentCallout = new ClientCalloutWrapper(callout, callout.Location.GetStreetName());
-        this._tickService.OnTick += this.OnTick;
+        this._tickService.OnTick += this.OnTickAsync;
 
         this._calloutBlip = World.CreateBlip(callout.Location, callout.ActivityRadius);
         var blipColor = callout.Priority switch
@@ -53,6 +55,7 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
             FIncidentPriority.Code1 => (BlipColor)FBlipColor.Blue,
             FIncidentPriority.Code2 => (BlipColor)FBlipColor.Yellow,
             FIncidentPriority.Code3 => (BlipColor)FBlipColor.Red,
+            _ => (BlipColor)FBlipColor.White,
         };
         this._calloutBlip.Name = callout.Title;
         this._calloutBlip.Alpha = 100;
@@ -68,7 +71,7 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
         Cfx.API.RemoveBlip(ref calloutBlipHandle);
     }
 
-    private Task OnTick()
+    private Task OnTickAsync()
     {
         if (this._currentCallout is null)
         {

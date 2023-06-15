@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Common.Models;
@@ -13,8 +14,7 @@ using Serilog;
 
 namespace FivePD.Gamemode.Server.Services;
 
-#pragma warning disable
-
+/// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.ICalloutDistributionService" />
 internal class CalloutDistributionService : ICalloutDistributionService, IServiceWithEvents
 {
     private readonly ITickQueueService _tickQueueService;
@@ -28,6 +28,16 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     private readonly Stopwatch _nextCalloutTimer = new();
     private int _nextCalloutInMs;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
+    /// </summary>
+    /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
+    /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
+    /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
+    /// <param name="calloutManagerService">The <see cref="ICalloutManagerService"/> to use.</param>
+    /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     public CalloutDistributionService(
         ITickQueueService tickQueueService,
         IConfigService configService,
@@ -46,16 +56,17 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._unitService = unitService;
     }
 
+    /// <inheritdoc/>
     public void RegisterEvents()
     {
         this._nextCalloutInMs = this._randomService.Random.Next(
             this._configService.GeneralSettings.Callout.MinIntervalInMs,
             this._configService.GeneralSettings.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Start();
-        this._tickQueueService.EnqueueInterval(this.GenerateCallout, 1000);
+        this._tickQueueService.EnqueueInterval(this.GenerateCalloutAsync, 1000);
     }
 
-    private async void GenerateCallout()
+    private async Task GenerateCalloutAsync()
     {
         if (this._nextCalloutTimer.ElapsedMilliseconds < this._nextCalloutInMs)
         {
@@ -156,14 +167,14 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                     priorityColorCode = "~b~";
                     break;
                 }
-                
+
                 case FIncidentPriority.Code2:
                 {
                     priorityCodeLabel = "LABEL.PRIORITY.CODE2";
                     priorityColorCode = "~y~";
                     break;
                 }
-                
+
                 case FIncidentPriority.Code3:
                 {
                     priorityCodeLabel = "LABEL.PRIORITY.CODE3";
@@ -188,8 +199,8 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                             {
                                 ["priority"] = "LABEL.PRIORITY.SINGULAR",
                                 ["priorityCode"] = priorityCodeLabel,
-                            }
-                        }
+                            },
+                        },
                     },
                     response =>
                     {

@@ -6,20 +6,45 @@ using FivePD.Gamemode.Server.EntityWrappers;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 
-#pragma warning disable
-
+/// <summary>
+/// Responsible for managing callouts.
+/// </summary>
 public interface ICalloutManagerService
 {
-    public List<Callout> ActiveCallouts { get; }
-    
+    /// <summary>
+    /// Gets the active callouts.
+    /// </summary>
+    /// <returns>A list of callouts.</returns>
+    public List<Callout> ActiveCallouts();
+
+    /// <summary>
+    /// Gets the attached callout of the specified player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The callout.</returns>
     public Callout GetPlayerCallout(FPlayer player);
 
+    /// <summary>
+    /// Completes the callout of the specified player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// TODO: make this internal?
     public void CompleteCalloutOfPlayer(FPlayer player);
 }
 
+/// <summary>
+/// Responsible for internal callout management.
+/// </summary>
 internal interface IInternalCalloutManagerService
 {
+    /// <summary>
+    /// Gets all available callout types.
+    /// </summary>
     public List<Type> CalloutTypes { get; }
+
+    /// <summary>
+    /// Gets the active callouts.
+    /// </summary>
     public List<CalloutHolder> ActiveCallouts { get; }
 }
 

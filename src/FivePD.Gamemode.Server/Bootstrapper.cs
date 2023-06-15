@@ -314,7 +314,8 @@ internal class Bootstrapper : BaseScript
             .AsSelfWithInterfaces()
             .WithSingletonLifetime());
 
-        var s = services.Scan(scan => scan
+        // Find and register callouts
+        services.Scan(scan => scan
             .FromAssemblies(this._assembliesWithDefinitions.Keys)
             .AddClasses(classes => classes.Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(typeof(Callout))))
             .As<Callout>()

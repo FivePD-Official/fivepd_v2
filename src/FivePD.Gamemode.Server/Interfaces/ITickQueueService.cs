@@ -36,6 +36,14 @@ public interface ITickQueueService
     public Guid EnqueueInterval(Action action, int intervalInMs);
 
     /// <summary>
+    /// Pushes an action to the tick queue which will be invoked at the given interval.
+    /// </summary>
+    /// <param name="action">An action to execute and complete upon execution.</param>
+    /// <param name="intervalInMs">The interval to run the action in milliseconds.</param>
+    /// <returns>The enqueued task's ID.</returns>
+    public Guid EnqueueInterval(Func<Task> action, int intervalInMs);
+
+    /// <summary>
     /// Dequeues an interval task.
     /// </summary>
     /// <param name="guid">The ID of the task.</param>

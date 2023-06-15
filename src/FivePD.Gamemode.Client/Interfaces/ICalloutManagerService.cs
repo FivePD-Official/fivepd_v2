@@ -1,7 +1,8 @@
 ﻿namespace FivePD.Gamemode.Client.Interfaces;
 
-#pragma warning disable
-
-internal class ICalloutManagerService
+/// <summary>
+/// Contains methods for managing callouts.
+/// </summary>
+internal interface ICalloutManagerService
 {
 }

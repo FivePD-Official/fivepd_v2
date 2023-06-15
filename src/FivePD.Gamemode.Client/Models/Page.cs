@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 
-#pragma warning disable SA1649
-
 namespace FivePD.Gamemode.Client.Models;
 
 /// <summary>
 /// Stores the filtered, sorted and paginated data for the given entity type.
 /// </summary>
 /// <typeparam name="T">Type of Entity for which pagination is being implemented.</typeparam>
-public class Page<T>
+internal class Page<T>
 {
     /// <summary>
     /// Gets or sets IEnumerable of the final sorted, filtered and paginated data.

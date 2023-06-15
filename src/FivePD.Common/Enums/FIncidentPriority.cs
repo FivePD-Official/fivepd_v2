@@ -2,6 +2,9 @@
 
 #pragma warning disable
 
+/// <summary>
+/// Represents the priority of an incident.
+/// </summary>
 public enum FIncidentPriority
 {
     Code1,
