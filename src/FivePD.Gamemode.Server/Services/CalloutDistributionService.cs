@@ -151,12 +151,31 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                 }
             }
 
-            var priorityColorCode = calloutHolder.Callout.Priority switch
+            var priorityCodeLabel = string.Empty;
+            var priorityColorCode = string.Empty;
+            switch (calloutHolder.Callout.Priority)
             {
-                FIncidentPriority.Code1 => "~b~",
-                FIncidentPriority.Code2 => "~y~",
-                FIncidentPriority.Code3 => "~r~",
-            };
+                case FIncidentPriority.Code1:
+                {
+                    priorityCodeLabel = "LABEL.PRIORITY.CODE1";
+                    priorityColorCode = "~b~";
+                    break;
+                }
+                
+                case FIncidentPriority.Code2:
+                {
+                    priorityCodeLabel = "LABEL.PRIORITY.CODE2";
+                    priorityColorCode = "~y~";
+                    break;
+                }
+                
+                case FIncidentPriority.Code3:
+                {
+                    priorityCodeLabel = "LABEL.PRIORITY.CODE3";
+                    priorityColorCode = "~r~";
+                    break;
+                }
+            }
 
             foreach (var player in unit.Players)
             {
@@ -173,12 +192,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                             ContentParams = new Dictionary<string, string>
                             {
                                 ["priority"] = "LABEL.PRIORITY.SINGULAR",
-                                ["priorityCode"] = calloutHolder.Callout.Priority switch
-                                {
-                                    FIncidentPriority.Code1 => "LABEL.PRIORITY.CODE1",
-                                    FIncidentPriority.Code2 => "LABEL.PRIORITY.CODE2",
-                                    FIncidentPriority.Code3 => "LABEL.PRIORITY.CODE3",
-                                },
+                                ["priorityCode"] = priorityCodeLabel,
                             }
                         }
                     },
