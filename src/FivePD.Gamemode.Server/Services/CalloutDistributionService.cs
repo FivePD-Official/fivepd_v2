@@ -29,11 +29,6 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     private readonly Stopwatch _nextCalloutTimer = new();
     private int _nextCalloutInMs;
 
-    /// <inheritdoc/>
-    public event EventHandler<DispatchedCallout> OnCalloutDispatched;
-
-    public event EventHandler<AcceptedCallout> OnCalloutAccepted;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
     /// </summary>
@@ -61,6 +56,12 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._calloutManagerService = calloutManagerService;
         this._unitService = unitService;
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<DispatchedCallout> OnCalloutDispatched;
+
+    /// <inheritdoc/>
+    public event EventHandler<AcceptedCallout> OnCalloutAccepted;
 
     /// <inheritdoc/>
     public void RegisterEvents()
