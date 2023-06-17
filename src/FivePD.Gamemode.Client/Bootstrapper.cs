@@ -195,6 +195,7 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<VehicleService>()
             .As<IVehicleService>()
+            .As<IServiceWithEvents>()
             .IsSingleton();
 
         services

@@ -5,6 +5,7 @@ using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Builders;
 using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.EntityWrappers;
+using FivePD.Gamemode.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
 

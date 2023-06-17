@@ -4,6 +4,7 @@ using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
+using FivePD.Gamemode.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Gamemode.Server.Interfaces;
 
 namespace FivePD.Gamemode.Server.Services;

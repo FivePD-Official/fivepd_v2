@@ -48,6 +48,24 @@ public sealed class FPedTasks
         FPedTasksDTO.Events.TurnToPosition,
         new FPedTasksDTO.TurnToPosition { Duration = duration, Position = position });
 
+    /// <summary>
+    /// Invokes the "ped.Task.StandStill" native.
+    /// </summary>
+    /// <param name="vehicle">The vehicle to drive.</param>
+    /// <param name="target">The location to drive to.</param>
+    /// <param name="radius">The radius.</param>
+    /// <param name="speed">The speed.</param>
+    /// <param name="drivingStyle">The driving style flag.</param>
+    public void DriveTo(Vehicle vehicle, Vector3 target, float radius, float speed, int drivingStyle = 0) =>
+        this.SetTask(FPedTasksDTO.Events.DriveTo, new FPedTasksDTO.DriveTo
+        {
+            VehicleNetworkId = vehicle.NetworkId,
+            Radius = radius,
+            Speed = speed,
+            Target = target,
+            DrivingStyle = drivingStyle,
+        });
+
     private void SetTask<T>(string task, T args)
     {
         this._eventService.TriggerEventWithoutCallback(

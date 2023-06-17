@@ -100,6 +100,6 @@ public class EventService : IEventService, IServiceWithEvents
     private Player GetRandomPlayer()
     {
         var index = this._randomService.Random.Next(0, this._players.Count());
-        return this._players[index];
+        return this._players.ElementAt(index);
     }
 }

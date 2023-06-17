@@ -46,12 +46,11 @@ public sealed class FPed : FEntity
     /// <summary>
     /// Gets the underlying <see cref="Ped"/>.
     /// </summary>
-    public Ped GetUnderlyingPed => (Ped)Entity.FromNetworkId(this._fPed.NetworkId);
+    public Ped GetUnderlyingPed => Entity.FromNetworkId(this._fPed.NetworkId) as Ped;
 
     /// <summary>
     /// Gets the owner of the <see cref="FPed"/>.
     /// </summary>
-    /// TODO: Find out if Owner is null if the ped is not owned by any player, but the server
     public Player Owner => this.GetUnderlyingPed.Owner;
 
     /// <summary>
@@ -62,5 +61,15 @@ public sealed class FPed : FEntity
     public static FPed FromFPlayer(FPlayer player)
     {
         return new FPed(new CommonFPed(new CommonFPedBuilder(player.GetUnderlyingPlayer().Character.NetworkId)));
+    }
+
+    /// <summary>
+    /// Created an <see cref="FPed"/> wrapper from the specified <see cref="Ped"/>.
+    /// </summary>
+    /// <param name="ped">The <see cref="Ped"/> instance to use.</param>
+    /// <returns>The FPed.</returns>
+    public static FPed FromPed(Ped ped)
+    {
+        return new FPed(new CommonFPed(new CommonFPedBuilder(ped.NetworkId)));
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.DTO;
 using FivePD.Gamemode.Common.Enums;
@@ -58,6 +59,19 @@ public sealed class FPedProperties
     public void AlwaysKeepTask(bool value) => this.SetPropertyBool(FPedPropertiesDTO.Events.AlwaysKeepTask, value);
 
     /// <summary>
+    /// A.
+    /// </summary>
+    /// <param name="vehicle">B.</param>
+    /// <param name="vehicleSeat">C.</param>
+    public void SetIntoVehicle(Vehicle vehicle, FVehicleSeat vehicleSeat) => this.InvokeMethod(
+        FPedPropertiesDTO.Events.SetIntoVehicle,
+        new FPedPropertiesDTO.SetIntoVehicle
+        {
+            VehicleNetworkId = vehicle.NetworkId,
+            VehicleSeat = (int)vehicleSeat,
+        });
+
+    /// <summary>
     /// Creates a blip for the <see cref="FPed"/>.
     /// </summary>
     /// <param name="sprite">The <see cref="FBlipSprite"/> to use.</param>
@@ -95,5 +109,18 @@ public sealed class FPedProperties
     private void SetPropertyBool(string property, bool value)
     {
         this._eventService.TriggerEventWithoutCallback(this._fPed.Owner, Events.Ped.SetProperty, this._fPed.GetFPed.NetworkId, property, value.ToString());
+    }
+
+    private void InvokeMethod<T>(string method, T args)
+    {
+        this._eventService.TriggerEventWithoutCallback(
+            this._fPed.Owner,
+            Events.Ped.InvokeMethod,
+            JsonConvert.SerializeObject(new FPedPropertiesDTO.InvokeMethodRequest
+            {
+                NetworkId = this._fPed.GetFPed.NetworkId,
+                Method = method,
+                Args = JsonConvert.SerializeObject(args),
+            }));
     }
 }

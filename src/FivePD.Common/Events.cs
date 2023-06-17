@@ -26,6 +26,8 @@ internal readonly record struct Events
 
         public const string SetTask = "fivepd:ped:setTask";
 
+        public const string InvokeMethod = "fivepd:ped:invokeMethod";
+
         public const string WeaponCollection = "fivepd:ped:weaponCollection";
 
         public const string WeaponCollectionWithReturn = "fivepd:ped:weaponCollectionWithReturn";
@@ -34,6 +36,12 @@ internal readonly record struct Events
     public readonly record struct Vehicle
     {
         public const string Generate = "fivepd:vehicle:generate";
+        
+        public const string GetProperty = "fivepd:vehicle:getProperty";
+
+        public const string SetProperty = "fivepd:vehicle:setProperty";
+
+        public const string InvokeMethod = "fivepd:vehicle:invokeMethod";
     }
 
     public readonly record struct Localization
