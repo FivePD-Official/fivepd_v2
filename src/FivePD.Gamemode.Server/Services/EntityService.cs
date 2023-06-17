@@ -15,6 +15,7 @@ public class EntityService : IEntityService
 
         while (!Cfx.API.DoesEntityExist(handle))
         {
+            // TODO: maybe use Task instead of BaseScript.Delay?
             await BaseScript.Delay(100);
         }
 

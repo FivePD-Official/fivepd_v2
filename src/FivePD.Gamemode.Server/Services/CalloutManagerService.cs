@@ -23,6 +23,9 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     private readonly List<Type> _calloutTypes = new();
     private readonly List<CalloutHolder> _activeCallouts = new();
 
+    /// <inheritdoc/>
+    public event EventHandler<Callout> OnCalloutCompleted;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutManagerService"/> class.
     /// </summary>
@@ -97,6 +100,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         }
 
         callout.OnCompleted();
+        this.OnCalloutCompleted?.Invoke(this, callout);
         foreach (var unit in callout.Units)
         {
             foreach (var player in unit.Players)

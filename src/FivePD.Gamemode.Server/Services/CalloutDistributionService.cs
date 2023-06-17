@@ -7,6 +7,7 @@ using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.API;
+using FivePD.Gamemode.Server.API.CalloutEvents;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using Newtonsoft.Json;
@@ -27,6 +28,11 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
 
     private readonly Stopwatch _nextCalloutTimer = new();
     private int _nextCalloutInMs;
+
+    /// <inheritdoc/>
+    public event EventHandler<DispatchedCallout> OnCalloutDispatched;
+
+    public event EventHandler<AcceptedCallout> OnCalloutAccepted;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
@@ -122,8 +128,13 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 
-        var dispatchedUnits = this.DispatchCallout(calloutHolder);
-        await callout.OnDispatched(dispatchedUnits);
+        var notifiedUnits = this.DispatchCallout(calloutHolder);
+        this.OnCalloutDispatched?.Invoke(this, new DispatchedCallout
+        {
+            Callout = callout,
+            NotifiedUnits = notifiedUnits,
+        });
+        await callout.OnDispatched(notifiedUnits);
     }
 
     private List<Unit> DispatchCallout(CalloutHolder calloutHolder)
@@ -147,6 +158,11 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
 
                 ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
                 calloutHolder.Callout.OnAccepted(unit);
+                this.OnCalloutAccepted?.Invoke(this, new AcceptedCallout
+                {
+                    Callout = calloutHolder.Callout,
+                    Unit = unit,
+                });
 
                 foreach (var player in unit.Players)
                 {

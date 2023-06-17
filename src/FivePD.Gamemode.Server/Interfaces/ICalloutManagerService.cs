@@ -12,6 +12,11 @@ namespace FivePD.Gamemode.Server.Interfaces;
 public interface ICalloutManagerService
 {
     /// <summary>
+    /// Invoked when a callout is completed.
+    /// </summary>
+    public event EventHandler<Callout> OnCalloutCompleted;
+
+    /// <summary>
     /// Gets the active callouts.
     /// </summary>
     /// <returns>A list of callouts.</returns>
