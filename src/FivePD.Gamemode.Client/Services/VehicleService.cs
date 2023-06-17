@@ -91,8 +91,6 @@ internal class VehicleService : IVehicleService, IServiceWithEvents
 
             case FVehiclePropertiesDTO.Events.CreateBlip:
             {
-                Debug.WriteLine($"Vehicle: {vehicle.NetworkId}");
-                Debug.WriteLine($"Vehicle2: {Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId)}");
                 var request = JsonConvert.DeserializeObject<FVehiclePropertiesDTO.CreateBlipRequest>(value);
                 vehicle.CreateBlip(request.Sprite, request.Color, request.Text);
                 break;
