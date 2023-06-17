@@ -1,4 +1,5 @@
-﻿using FivePD.Gamemode.Server.Interfaces;
+﻿using CitizenFX.Core;
+using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.LooseDataSet;
 using Microsoft.EntityFrameworkCore;
@@ -79,7 +80,7 @@ public class DatabaseContext : DbContext
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var config = this._configService?.DatabaseConfig;
+        var config = this._configService?.GeneralConfig?.Database;
         if (config != null)
         {
             optionsBuilder.UseMySql(config.ToString());

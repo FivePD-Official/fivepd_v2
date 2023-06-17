@@ -20,7 +20,7 @@ internal class ConfigService : IConfigService
     }
 
     /// <inheritdoc/>
-    public Task<GeneralSettings> GeneralSettings => this.InternalLoadFileAsync<GeneralSettings>("/Config/general-settings");
+    public Task<GeneralConfig> GeneralConfig => this.InternalLoadFileAsync<GeneralConfig>("/Config/general");
 
     private Task<T> InternalLoadFileAsync<T>(string path)
     {

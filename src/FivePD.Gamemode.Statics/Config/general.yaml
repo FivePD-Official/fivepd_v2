@@ -1,9 +1,18 @@
-﻿Unit:
+﻿Database:
+  Address: 127.0.0.1
+  Port: 3306
+  DatabaseName: fivepd
+  User: root
+  Password: ''
+
+Unit:
   Join: free
+
 Callout:
   AutomaticGeneration: true
   MinIntervalInMs: 5000
   MaxIntervalInMs: 10000
+
 Status:
   Codes:
     - Title: 10-5

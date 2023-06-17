@@ -66,14 +66,14 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <inheritdoc/>
     public void RegisterEvents()
     {
-        if (!this._configService.GeneralSettings.Callout.AutomaticGeneration)
+        if (!this._configService.GeneralConfig.Callout.AutomaticGeneration)
         {
             return;
         }
 
         this._nextCalloutInMs = this._randomService.Random.Next(
-            this._configService.GeneralSettings.Callout.MinIntervalInMs,
-            this._configService.GeneralSettings.Callout.MaxIntervalInMs);
+            this._configService.GeneralConfig.Callout.MinIntervalInMs,
+            this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Start();
         this._tickQueueService.EnqueueInterval(this.GenerateCalloutAsync, 1000);
     }
@@ -86,8 +86,8 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         }
 
         this._nextCalloutInMs = this._randomService.Random.Next(
-            this._configService.GeneralSettings.Callout.MinIntervalInMs,
-            this._configService.GeneralSettings.Callout.MaxIntervalInMs);
+            this._configService.GeneralConfig.Callout.MinIntervalInMs,
+            this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Restart();
 
         var calloutType = this._calloutManagerService.CalloutTypes[this._randomService.Random.Next(0, this._calloutManagerService.CalloutTypes.Count)];

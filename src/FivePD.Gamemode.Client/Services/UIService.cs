@@ -81,7 +81,7 @@ internal class UIService : IUIService, IServiceWithEvents
             {
                 async void RunAsync()
                 {
-                    cb.Invoke(JsonConvert.SerializeObject(await this._configService.GeneralSettings));
+                    cb.Invoke(JsonConvert.SerializeObject(await this._configService.GeneralConfig));
                 }
 
                 RunAsync();

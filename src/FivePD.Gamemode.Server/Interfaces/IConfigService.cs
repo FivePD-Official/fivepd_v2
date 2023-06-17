@@ -33,12 +33,6 @@ public interface IConfigService
     public List<string> Lastnames { get; }
 
     /// <summary>
-    /// Gets the "database.json" file's content.
-    /// </summary>
-    /// <returns>Returns the database connection settings.</returns>
-    public DatabaseConfig DatabaseConfig { get; }
-
-    /// <summary>
     /// Gets the "menu.json" file's content.
     /// </summary>
     /// <returns>Returns the menu configuration.</returns>
@@ -64,5 +58,5 @@ public interface IConfigService
     /// <summary>
     /// Gets the "general-settings.json" file's content.
     /// </summary>
-    public GeneralSettings GeneralSettings { get; }
+    public GeneralConfig GeneralConfig { get; }
 }

@@ -33,9 +33,6 @@ public class ConfigService : IConfigService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public DatabaseConfig DatabaseConfig => this.InternalLoadFile<DatabaseConfig>("/Config/database");
-
-    /// <inheritdoc />
     public List<Item> Items => this.InternalLoadFile<List<Item>>("/Config/items");
 
     /// <inheritdoc />
@@ -51,7 +48,7 @@ public class ConfigService : IConfigService, IServiceWithEvents
     public FeaturesConfig FeaturesConfig => this.InternalLoadFile<FeaturesConfig>("/Config/features");
 
     /// <inheritdoc />
-    public GeneralSettings GeneralSettings => this.InternalLoadFile<GeneralSettings>("/Config/general");
+    public GeneralConfig GeneralConfig => this.InternalLoadFile<GeneralConfig>("/Config/general");
 
     /// <inheritdoc />
     public List<string> FemaleFirstnames => this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");

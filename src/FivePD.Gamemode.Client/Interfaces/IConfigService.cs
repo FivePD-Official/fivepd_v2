@@ -12,5 +12,5 @@ internal interface IConfigService
     /// <summary>
     /// Gets the content of the "Config/general-settings.json" file.
     /// </summary>
-    public Task<GeneralSettings> GeneralSettings { get; }
+    public Task<GeneralConfig> GeneralConfig { get; }
 }
