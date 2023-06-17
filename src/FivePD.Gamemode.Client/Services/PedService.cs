@@ -12,30 +12,27 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
 
-#pragma warning disable
+#pragma warning disable // TODO remove
 
 /// <inheritdoc cref="FivePD.Gamemode.Client.Interfaces.IPedService" />
 internal class PedService : IPedService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly ITickService _tickService;
-    
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PedService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    public PedService(EventHandlerDictionary eventHandlerDictionary, ITickService tickService)
+    public PedService(EventHandlerDictionary eventHandlerDictionary)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._tickService = tickService;
     }
 
     /// <inheritdoc />
     public void RegisterEvents()
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Ped.Search);
-        this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
+        this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedPropertyAsync);
         this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);
         this._eventHandlerDictionary[Events.Ped.InvokeMethod] += new Action<string>(this.InvokeMethod);
@@ -65,7 +62,7 @@ internal class PedService : IPedService, IServiceWithEvents
         BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
     }
 
-    private async void GetPedProperty(string eventCallbackId, int networkId, string property)
+    private async void GetPedPropertyAsync(string eventCallbackId, int networkId, string property)
     {
         var ped = await this.FindPed(networkId);
         if (ped is null)
@@ -171,6 +168,13 @@ internal class PedService : IPedService, IServiceWithEvents
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.TurnToPosition>(request.Args);
                 ped.Task.TurnTo(args.Position, args.Duration);
+                break;
+            }
+            
+            case FPedTasksDTO.Events.DriveTo:
+            {
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.DriveTo>(request.Args);
+                ped.Task.DriveTo(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Target, args.Speed, args.Speed, args.DrivingStyle);
                 break;
             }
         }

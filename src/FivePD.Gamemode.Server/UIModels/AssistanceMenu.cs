@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.AssistanceServiceModels;
@@ -38,9 +39,10 @@ public sealed class AssistanceMenu : Menu
         this.CallAmbulance = new MenuButtonItem("Call ambulance", string.Empty);
         this.CallAmbulance.OnSelect += player =>
         {
-            var position = player.GetUnderlyingPlayer().Character.Position;
-            position.X += 15f;
-            this._assistanceService.Call<Ambulance>(position);
+            // var position = player.GetUnderlyingPlayer().Character.Position;
+            // position.X += 15f;
+            this._assistanceService.Call<Ambulance>(new Vector3(704.09f, -117.47f, 52.83f), player.GetUnderlyingPlayer().Character.Position);
+            // this._assistanceService.Call<Ambulance>(new Vector3(735.28f, 1289.64f, 360.3f));
         };
         items.Add(this.CallAmbulance);
         

@@ -8,8 +8,6 @@ namespace FivePD.Gamemode.Server.Services;
 /// <inheritdoc />
 public class EntityService : IEntityService
 {
-    private static readonly Cfx.Hash CreateAutomobile = (Cfx.Hash)Cfx.API.GetHashKey("CREATE_AUTOMOBILE");
-
     /// <inheritdoc />
     public async Task<Ped> SpawnPedAsync(uint model, Vector3 location, float heading)
     {
@@ -20,19 +18,23 @@ public class EntityService : IEntityService
             await BaseScript.Delay(100);
         }
 
+        Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
+
         return new Ped(handle);
     }
 
     /// <inheritdoc />
     public async Task<Vehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading)
     {
-        var handle = Cfx.Function.Call<int>(CreateAutomobile, model, location.X, location.Y, location.Z, heading);
+        #pragma warning disable
+        var handle = Cfx.API.CreateVehicle(model, location.X, location.Y, location.Z, heading, true, false);
 
-        // TODO: Check if we really need this delay. The server should own the vehicle immediately, anyways.
         while (!Cfx.API.DoesEntityExist(handle))
         {
             await BaseScript.Delay(100);
         }
+
+        Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
         return new Vehicle(handle);
     }
@@ -46,6 +48,8 @@ public class EntityService : IEntityService
         {
             await BaseScript.Delay(100);
         }
+        
+        Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
         return new Prop(handle);
     }

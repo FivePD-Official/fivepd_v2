@@ -8,7 +8,7 @@ namespace FivePD.Gamemode.Server.Interfaces;
 
 public interface IAssistanceServiceManagerService
 {
-    public Guid Call<T>(Vector3 location)
+    public Guid Call<T>(Vector3 spawnLocation, Vector3 target)
         where T : AssistanceService;
 
     public void Cancel(Guid guid);

@@ -28,7 +28,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
         this._logger = logger;
     }
 
-    public Guid Call<T>(Vector3 location)
+    // TODO: refactor, only set target, spawnLocation should be created directly in the service
+    // TODO: ambulance spawnLocations should be added into the config
+    public Guid Call<T>(Vector3 spawnLocation, Vector3 target)
         where T : AssistanceService
     {
         try
@@ -36,7 +38,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             var guid = Guid.NewGuid();
 
             var assistanceService = this.CreateInstance<T>();
-            ((IInternalAssistanceService)assistanceService).Location = location;
+            ((IInternalAssistanceService)assistanceService).SpawnLocation = spawnLocation;
+            ((IInternalAssistanceService)assistanceService).Target = target;
             var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, new CancellationTokenSource());
             this._assistanceServices.TryAdd(guid, assistanceServiceInvoker);
             this._tickQueueService.EnqueueAsync(assistanceServiceInvoker.InvokeAssistanceServiceMethods);
@@ -87,10 +90,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             this._service = service;
             this.CancellationTokenSource = cancellationTokenSource;
 
-            this._methodQueue.Add(service.SpawnEntitiesAsync);
-            this._methodQueue.Add(service.GoToLocationAsync);
-            this._methodQueue.Add(service.PerformActionAsync);
-            this._methodQueue.Add(service.ActionCompletedOrCanceledAsync);
+            this._methodQueue.Add(() => service.OnCalledAsync(cancellationTokenSource.Token));
+            this._methodQueue.Add(service.OnCompleteAsync);
         }
     
         public async Task InvokeAssistanceServiceMethods()
@@ -99,7 +100,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             {
                 if (this.CancellationTokenSource.Token.IsCancellationRequested)
                 {
-                    this._service.ActionCompletedOrCanceledAsync();
+                    this._service.OnCancellationRequestedAsync();
                     return;
                 }
 
