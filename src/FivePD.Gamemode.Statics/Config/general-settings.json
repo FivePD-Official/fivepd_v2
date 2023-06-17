@@ -3,6 +3,7 @@
     "Join": "free"
   },
   "Callout": {
+    "AutomaticGeneration": true,
     "MinIntervalInMs": 5000,
     "MaxIntervalInMs": 10000
   }

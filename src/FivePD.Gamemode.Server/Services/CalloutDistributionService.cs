@@ -59,6 +59,11 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <inheritdoc/>
     public void RegisterEvents()
     {
+        if (!this._configService.GeneralSettings.Callout.AutomaticGeneration)
+        {
+            return;
+        }
+
         this._nextCalloutInMs = this._randomService.Random.Next(
             this._configService.GeneralSettings.Callout.MinIntervalInMs,
             this._configService.GeneralSettings.Callout.MaxIntervalInMs);

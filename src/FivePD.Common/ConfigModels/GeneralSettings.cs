@@ -25,6 +25,8 @@ public sealed record GeneralSettings
 
     public sealed record CalloutSettings
     {
+        public bool AutomaticGeneration { get; init; }
+
         public int MinIntervalInMs { get; init; }
 
         public int MaxIntervalInMs { get; init; }
