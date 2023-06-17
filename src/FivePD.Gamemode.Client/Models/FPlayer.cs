@@ -32,6 +32,12 @@ public class FPlayer : FStatefulContainer
             this,
             "FivePD:DutyStatus",
             FDutyStatus.OffDuty);
+
+        // Sets up duty status tracking
+        this.Availability = new FStateBagObservable<FPlayerAvailability>(
+            this,
+            "FivePD:CallAvailability",
+            FPlayerAvailability.Receiving);
     }
 
     /// <summary>
@@ -43,6 +49,11 @@ public class FPlayer : FStatefulContainer
     /// Gets the player's duty status observable.
     /// </summary>
     public FStateBagObservable<FDutyStatus> DutyStatus { get; private set; }
+
+    /// <summary>
+    /// Gets the player's availability observable.
+    /// </summary>
+    public FStateBagObservable<FPlayerAvailability> Availability { get; private set; }
 
     /// <summary>
     /// Attempts to get the player with the specified netId.
