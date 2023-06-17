@@ -71,8 +71,7 @@ export interface LooseDataEntityPageWrapper {
 
 export enum FDutyStatus {
   OffDuty,
-  OnDutyAndNotReceiving,
-  OnDutyAndReceiving,
+  OnDuty,
 }
 
 export enum FIncidentPriorty {

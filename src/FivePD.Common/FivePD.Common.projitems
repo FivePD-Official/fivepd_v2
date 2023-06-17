@@ -34,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FIncidentPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FMarkerType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FPedHash.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FPlayerAvailability.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleSeat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\MenuItemType.cs" />

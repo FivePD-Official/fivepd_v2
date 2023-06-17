@@ -5,6 +5,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.DTO;
 using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.EntityWrappers;
@@ -105,6 +106,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         {
             foreach (var player in unit.Players)
             {
+                player.Availability.Value = FPlayerAvailability.Receiving;
                 player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnCompleted);
             }
         }

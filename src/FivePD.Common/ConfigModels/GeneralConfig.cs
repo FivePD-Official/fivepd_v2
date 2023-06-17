@@ -13,7 +13,7 @@ public sealed record GeneralConfig
     public CalloutSettings Callout { get; init; } = new();
 
     public StatusSettings Status { get; init; } = new();
-    
+
     public sealed record DatabaseConfig
     {
         /// <summary>
@@ -47,7 +47,7 @@ public sealed record GeneralConfig
             return $"server={this.Address};port={this.Port};database={this.DatabaseName};user={this.User};password={this.Password};";
         }
     }
-    
+
     public sealed record UnitSettings
     {
         public string Join { get; init; } = "FREE";
@@ -77,23 +77,25 @@ public sealed record GeneralConfig
         public List<StatusObject> Codes { get; init; } = new();
 
         public List<StatusObject> Signals { get; init; } = new();
-        
+
         public sealed record StatusObject
         {
             public string Title { get; init; }
-            
+
             public string Description { get; init; }
-            
-            public StatusOptions Options { get; init; }
-        }
 
-        public sealed record StatusOptions
-        {
-            public bool TogglesAvailability { get; init; }   
-
-            public bool CompletesCurrentIncident { get; init; }   
-
-            public bool TriggersPanicMode { get; init; }   
+            public List<string> OnSelect { get; init; }
         }
     }
+}
+
+internal readonly record struct StatusOnSelectKeys
+{
+    public const string SetsPlayerCanReceiveCallouts = "SetsPlayerCanReceiveCallouts";
+
+    public const string SetsPlayerCanNotReceiveCallouts = "SetsPlayerCanNotReceiveCallouts";
+
+    public const string CompletesCurrentCallout = "CompletesCurrentCallout";
+
+    public const string TriggersPanicMode = "TriggersPanicMode";
 }

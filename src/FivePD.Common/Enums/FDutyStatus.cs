@@ -13,12 +13,7 @@ public enum FDutyStatus
     OffDuty,
 
     /// <summary>
-    /// The player is on duty but is not currently receiving interactions.
-    /// </summary>
-    OnDutyAndNotReceiving,
-
-    /// <summary>
     /// The player is on duty and is receiving interactions.
     /// </summary>
-    OnDutyAndReceiving,
+    OnDuty,
 }

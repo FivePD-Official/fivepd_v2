@@ -61,7 +61,7 @@ public sealed class DutyMenu : Menu
             this.DutyToggleItem = new MenuCheckboxItem("DUTY_MENU.ITEM.ON_DUTY.TITLE", "DUTY_MENU.ITEM.ON_DUTY.DESCRIPTION");
             this.DutyToggleItem.OnSelect += (player, @checked) =>
             {
-                player.DutyStatus.Value = @checked ? FDutyStatus.OnDutyAndReceiving : FDutyStatus.OffDuty;
+                player.DutyStatus.Value = @checked ? FDutyStatus.OnDuty : FDutyStatus.OffDuty;
             };
             items.Add(this.DutyToggleItem);
         }

@@ -149,8 +149,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 ["status"] = status switch
                 {
                     FDutyStatus.OffDuty => "PLAYER_STATUS.OFF_DUTY.GENERIC",
-                    FDutyStatus.OnDutyAndReceiving => "PLAYER_STATUS.ON_DUTY.GENERIC_RECEIVING",
-                    FDutyStatus.OnDutyAndNotReceiving => "PLAYER_STATUS.ON_DUTY.GENERIC_NOT_RECEIVING",
+                    FDutyStatus.OnDuty => "PLAYER_STATUS.ON_DUTY.GENERIC",
                     _ => "Unknown",
                 },
             });

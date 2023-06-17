@@ -143,6 +143,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         var filteredUnits = this._unitService.Units
             .Where(unit =>
                 this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .Where(unit => unit.Players.All(p => p.Availability.Value == FPlayerAvailability.Receiving))
             .ToList();
         foreach (var unit in filteredUnits)
         {
@@ -231,6 +232,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                             return;
                         }
 
+                        player.Availability.Value = FPlayerAvailability.NotReceiving;
                         OnAccepted();
                     });
             }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Models;
@@ -12,9 +11,6 @@ namespace FivePD.Gamemode.Client.Services;
 internal class LocalPlayerService : ILocalPlayerService
 {
     private readonly ILocalizationService _localizationService;
-
-    // TODO: I'd create a RandomService (using Guid as seed), so the generated numbers won't be the same anywhere
-    private readonly Random _random = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalPlayerService" /> class.
@@ -51,8 +47,7 @@ internal class LocalPlayerService : ILocalPlayerService
         var status = dutyStatus switch
         {
             FDutyStatus.OffDuty => this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.GENERIC"),
-            FDutyStatus.OnDutyAndReceiving => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC_RECEIVING"),
-            FDutyStatus.OnDutyAndNotReceiving => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC_NOT_RECEIVING"),
+            FDutyStatus.OnDuty => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC"),
             _ => "Unknown",
         };
         Cfx.API.SetRichPresence(status);

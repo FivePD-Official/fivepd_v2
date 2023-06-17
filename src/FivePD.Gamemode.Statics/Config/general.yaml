@@ -17,16 +17,15 @@ Status:
   Codes:
     - Title: 10-5
       Description: Break
+      OnSelect: [SetsPlayerCanNotReceiveCallouts]
     - Title: 10-6
       Description: Busy
     - Title: 10-7
       Description: Out of service
-      Options:
-        TogglesAvailability: true
+      OnSelect: [SetsPlayerCanNotReceiveCallouts]
     - Title: 10-8
       Description: Available for calls
-      Options:
-        TogglesAvailability: true
+      OnSelect: [SetsPlayerCanReceiveCallouts]
     - Title: 10-15
       Description: Suspect in custody
     - Title: 10-19
@@ -34,8 +33,7 @@ Status:
   Signals:
     - Title: Code 4
       Description: No assist needed
-      Options:
-        CompletesCurrentIncident: true
+      OnSelect: [CompletesCurrentCallout]
     - Title: Code 5
       Description: Stakeout
     - Title: Code 6
@@ -44,5 +42,4 @@ Status:
       Description: Meal break
     - Title: Code 99
       Description: EMERGENCY
-      Options:
-        TriggersPanicMode: true
+      OnSelect: [TriggersPanicMode]
