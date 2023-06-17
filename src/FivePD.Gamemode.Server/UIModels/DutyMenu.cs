@@ -5,6 +5,7 @@ using FivePD.Gamemode.Common.ConfigModels.MenuConfigs;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.UIModels.MenuModels;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450

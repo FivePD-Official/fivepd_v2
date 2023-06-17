@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.UIModels;
+using FivePD.Gamemode.Server.UIModels.MenuModels;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 

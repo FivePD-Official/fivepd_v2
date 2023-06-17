@@ -5,7 +5,7 @@ using FivePD.Gamemode.Server.UIModels.Interfaces;
 #pragma warning disable S3264
 #pragma warning disable CS0067
 
-namespace FivePD.Gamemode.Server.UIModels;
+namespace FivePD.Gamemode.Server.UIModels.MenuModels;
 
 /// <inheritdoc cref="MenuItem" />
 public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FivePD.Gamemode.Server.UIModels;
+namespace FivePD.Gamemode.Server.UIModels.MenuModels;
 
 /// <summary>
 /// Defines a UI menu.

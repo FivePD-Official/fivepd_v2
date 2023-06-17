@@ -1,7 +1,7 @@
 ﻿using System;
 using CitizenFX.Core;
 
-namespace FivePD.Gamemode.Server.UIModels;
+namespace FivePD.Gamemode.Server.UIModels.MenuModels;
 
 /// <summary>
 /// A radial menu item.

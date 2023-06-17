@@ -2,7 +2,7 @@
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.UIModels.Interfaces;
 
-namespace FivePD.Gamemode.Server.UIModels;
+namespace FivePD.Gamemode.Server.UIModels.MenuModels;
 
 /// <inheritdoc cref="MenuItem" />
 public class MenuButtonItem : MenuItem, IMenuButtonItemWithEvents

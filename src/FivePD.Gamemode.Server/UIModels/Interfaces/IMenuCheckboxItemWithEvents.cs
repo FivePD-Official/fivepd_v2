@@ -1,4 +1,5 @@
 ﻿using FivePD.Gamemode.Server.EntityWrappers;
+using FivePD.Gamemode.Server.UIModels.MenuModels;
 
 namespace FivePD.Gamemode.Server.UIModels.Interfaces;
 

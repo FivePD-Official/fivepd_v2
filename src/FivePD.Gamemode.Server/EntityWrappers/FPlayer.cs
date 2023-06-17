@@ -8,6 +8,7 @@ using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.UIModels;
+using FivePD.Gamemode.Server.UIModels.MenuModels;
 
 namespace FivePD.Gamemode.Server.EntityWrappers;
 

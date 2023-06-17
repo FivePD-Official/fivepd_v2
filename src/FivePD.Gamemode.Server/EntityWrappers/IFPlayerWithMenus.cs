@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FivePD.Gamemode.Server.UIModels;
+using FivePD.Gamemode.Server.UIModels.MenuModels;
 
 namespace FivePD.Gamemode.Server.EntityWrappers;
 

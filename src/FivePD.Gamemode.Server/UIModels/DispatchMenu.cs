@@ -3,17 +3,18 @@ using CitizenFX.Core;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.AssistanceServiceModels;
+using FivePD.Gamemode.Server.UIModels.MenuModels;
 
 namespace FivePD.Gamemode.Server.UIModels;
 
 #pragma warning disable
 
-public sealed class AssistanceMenu : Menu
+public sealed class DispatchMenu : Menu
 {
     private readonly ICalloutManagerService _calloutManagerService;
     private readonly IAssistanceServiceManagerService _assistanceService;
 
-    public AssistanceMenu(ICalloutManagerService calloutManagerService, IAssistanceServiceManagerService assistanceServiceManagerService)
+    public DispatchMenu(ICalloutManagerService calloutManagerService, IAssistanceServiceManagerService assistanceServiceManagerService)
         : base(Controls.AssistanceMenu.Id, Controls.AssistanceMenu.Title, Controls.AssistanceMenu.Key, true)
     {
         this._calloutManagerService = calloutManagerService;

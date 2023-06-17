@@ -14,6 +14,7 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.UIModels;
 using FivePD.Gamemode.Server.UIModels.Interfaces;
+using FivePD.Gamemode.Server.UIModels.MenuModels;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -45,7 +46,7 @@ public class MenuService : IMenuService, IServiceWithEvents
     public void RegisterEvents()
     {
         this.Register<DutyMenu>();
-        this.Register<AssistanceMenu>();
+        this.Register<DispatchMenu>();
 
         this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string>(this.OnButtonSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, bool>(this.OnCheckboxSelect);
