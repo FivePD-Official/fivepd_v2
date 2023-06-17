@@ -1,50 +1,57 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using CitizenFX.Core;
+using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Common.Exceptions;
 using FivePD.Gamemode.Common.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
+using Newtonsoft.Json;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services;
 
 /// <inheritdoc cref="FivePD.Gamemode.Server.Interfaces.IConfigService" />
-public class ConfigService : IConfigService
+public class ConfigService : IConfigService, IServiceWithEvents
 {
     private readonly IFileHandlerService _fileHandlerService;
     private readonly ILogger _logger;
+    private readonly EventHandlerDictionary _eventHandlerDictionary;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigService"/> class.
     /// </summary>
     /// <param name="fileHandlerService">The <see cref="IFileHandlerService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
-    public ConfigService(IFileHandlerService fileHandlerService, ILogger logger)
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    public ConfigService(IFileHandlerService fileHandlerService, ILogger logger, EventHandlerDictionary eventHandlerDictionary)
     {
         this._fileHandlerService = fileHandlerService;
         this._logger = logger;
+        this._eventHandlerDictionary = eventHandlerDictionary;
     }
 
     /// <inheritdoc />
-    public DatabaseConfig DatabaseConfig => this.InternalLoadFile<DatabaseConfig>("/Config/database.json");
+    public DatabaseConfig DatabaseConfig => this.InternalLoadFile<DatabaseConfig>("/Config/database");
 
     /// <inheritdoc />
-    public List<Item> Items => this.InternalLoadFile<List<Item>>("/Config/items.json");
+    public List<Item> Items => this.InternalLoadFile<List<Item>>("/Config/items");
 
     /// <inheritdoc />
-    public MenuConfig MenuConfig => this.InternalLoadFile<MenuConfig>("/Config/menu.json");
+    public MenuConfig MenuConfig => this.InternalLoadFile<MenuConfig>("/Config/menu");
 
     /// <inheritdoc />
-    public Vehicles VehiclesConfig => this.InternalLoadFile<Vehicles>("/Config/vehicles.json");
+    public Vehicles VehiclesConfig => this.InternalLoadFile<Vehicles>("/Config/vehicles");
 
     /// <inheritdoc />
-    public List<Loadout> LoadoutsConfig => this.InternalLoadFile<List<Loadout>>("/Config/loadouts.json");
+    public List<Loadout> LoadoutsConfig => this.InternalLoadFile<List<Loadout>>("/Config/loadouts");
 
     /// <inheritdoc />
-    public FeaturesConfig FeaturesConfig => this.InternalLoadFile<FeaturesConfig>("/Config/features.json");
+    public FeaturesConfig FeaturesConfig => this.InternalLoadFile<FeaturesConfig>("/Config/features");
 
     /// <inheritdoc />
-    public GeneralSettings GeneralSettings => this.InternalLoadFile<GeneralSettings>("/Config/general-settings.json");
+    public GeneralSettings GeneralSettings => this.InternalLoadFile<GeneralSettings>("/Config/general");
 
     /// <inheritdoc />
     public List<string> FemaleFirstnames => this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");
@@ -54,6 +61,18 @@ public class ConfigService : IConfigService
 
     /// <inheritdoc />
     public List<string> Lastnames => this._fileHandlerService.LoadStringList("/Config/Lastnames.txt");
+
+    /// <inheritdoc />
+    public void RegisterEvents()
+    {
+        this._eventHandlerDictionary[Events.Config.Get] += new Action<string, NetworkCallbackDelegate>(this.OnGetConfig);
+    }
+
+    private void OnGetConfig(string path, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var config = this.InternalLoadFile<object>(path);
+        networkCallbackDelegate.Invoke(JsonConvert.SerializeObject(config));
+    }
 
     private T InternalLoadFile<T>(string path, bool useCache = true)
     {

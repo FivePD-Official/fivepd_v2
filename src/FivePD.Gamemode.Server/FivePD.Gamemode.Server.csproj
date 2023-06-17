@@ -46,6 +46,9 @@
         <StaticFiles Update="..\FivePD.Gamemode.Statics\Config\general-settings.json">
           <Link>FivePD.Gamemode.Statics\Config\general-settings.json</Link>
         </StaticFiles>
+        <StaticFiles Update="..\FivePD.Gamemode.Statics\Config\general-settings.yml">
+          <Link>FivePD.Gamemode.Statics\Config\general.yml</Link>
+        </StaticFiles>
     </ItemGroup>
     <Target Name="CopyStatics" BeforeTargets="CopyFilesToOutputDirectory" DependsOnTargets="CopyStaticsDebug;CopyStaticsRelease" />
     <Target Name="CopyStaticsDebug" Condition=" '$(Configuration)' == 'Debug' ">
@@ -82,6 +85,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="YamlDotNet" Version="13.1.1" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CitizenFX.Core.Server, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">

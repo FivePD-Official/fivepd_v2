@@ -254,4 +254,9 @@ internal readonly record struct Events
 
         public const string GetAllActiveUI = "fivepd:callout:getAllActiveUI";
     }
+    
+    public readonly record struct Config
+    {
+        public const string Get = "fivepd:config:getGeneral";
+    }
 }

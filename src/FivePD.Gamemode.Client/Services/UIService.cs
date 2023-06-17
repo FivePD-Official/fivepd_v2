@@ -79,7 +79,12 @@ internal class UIService : IUIService, IServiceWithEvents
             Events.UI.Config.GetGeneralSettings,
             new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
-                cb.Invoke(JsonConvert.SerializeObject(this._configService.GeneralSettings));
+                async void RunAsync()
+                {
+                    cb.Invoke(JsonConvert.SerializeObject(await this._configService.GeneralSettings));
+                }
+
+                RunAsync();
             }));
 
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(

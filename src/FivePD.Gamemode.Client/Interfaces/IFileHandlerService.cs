@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 
 namespace FivePD.Gamemode.Client.Interfaces;
 
@@ -14,7 +14,6 @@ internal interface IFileHandlerService
     /// </summary>
     /// <typeparam name="T">The type to deserialize the content.</typeparam>
     /// <param name="path">The path of the file.</param>
-    /// <param name="useCache">Determines if the data should be cached.</param>
     /// <returns>The data converted to T.</returns>
-    public Tuple<T, Exception> LoadFile<T>(string path, bool useCache = true);
+    public Task<T> LoadFileAsync<T>(string path);
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Gamemode.Client.Interfaces;
-using FivePD.Gamemode.Common.Exceptions;
+using FivePD.Gamemode.Common;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -13,47 +15,41 @@ internal class FileHandlerService : IFileHandlerService
     private readonly ConcurrentDictionary<string, object> _cache = new();
 
     /// <inheritdoc />
-    public Tuple<T, Exception> LoadFile<T>(string path, bool useCache = true)
+    public async Task<T> LoadFileAsync<T>(string path)
     {
-        if (this._cache.ContainsKey(path) && useCache)
+        if (this._cache.TryGetValue(path, out var value))
         {
-            return new Tuple<T, Exception>((T)this._cache[path], null);
+            return (T)value;
         }
 
-        Exception exception = null;
-        var data = this.InternalLoadFile(path);
+        var gotResponse = false;
+        var deserializedObject = default(T);
 
-        if (string.IsNullOrEmpty(data))
+        BaseScript.TriggerServerEvent(Events.Config.Get, path, new Action<string>(data =>
         {
-            data = "{}";
-            exception = new EmptyConfigException();
-        }
-
-        try
-        {
-            var deserializedObject = JsonConvert.DeserializeObject<T>(data);
-            if (useCache)
+            if (string.IsNullOrEmpty(data))
             {
-                this._cache[path] = deserializedObject;
+                data = "{}";
             }
 
-            return new Tuple<T, Exception>(deserializedObject, exception);
-        }
-        catch (Exception e)
+            try
+            {
+                deserializedObject = JsonConvert.DeserializeObject<T>(data);
+                this._cache[path] = deserializedObject;
+            }
+            catch (Exception)
+            {
+                deserializedObject = Activator.CreateInstance<T>();
+            }
+
+            gotResponse = true;
+        }));
+
+        while (!gotResponse)
         {
-            exception = e;
+            await BaseScript.Delay(100);
         }
 
-        return new Tuple<T, Exception>(Activator.CreateInstance<T>(), exception);
-    }
-
-    /// <summary>
-    /// Loads a file's content then returns it without validation.
-    /// </summary>
-    /// <param name="path">The path of the file.</param>
-    /// <returns>The content of the file.</returns>
-    private string InternalLoadFile(string path)
-    {
-        return Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(),  path);
+        return deserializedObject;
     }
 }

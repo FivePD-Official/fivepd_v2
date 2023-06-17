@@ -31,6 +31,6 @@ public interface IFileHandlerService
     /// Reads the given file and returns its content.
     /// </summary>
     /// <param name="path">The path of the file.</param>
-    /// <returns>The content of the file.</returns>
-    public string LoadFile(string path);
+    /// <returns>A tuple with a bool specifying whether the file is JSON or not and the actual content.</returns>
+    public Tuple<bool, string> LoadFile(string path);
 }

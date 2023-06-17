@@ -2,9 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using CitizenFX.Core;
 using FivePD.Gamemode.Common.Exceptions;
 using FivePD.Gamemode.Server.Interfaces;
 using Newtonsoft.Json;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Server.Services;
@@ -24,12 +27,12 @@ public class FileHandlerService : IFileHandlerService
             return (List<string>)value;
         }
 
-        if (string.IsNullOrEmpty(data))
+        if (string.IsNullOrEmpty(data.Item2))
         {
             return new List<string>();
         }
 
-        var list = data.Split('\n').ToList();
+        var list = data.Item2.Split('\n').ToList();
         this._cache[path] = list;
 
         return list;
@@ -45,16 +48,27 @@ public class FileHandlerService : IFileHandlerService
 
         Exception exception = null;
         var data = this.InternalLoadFile(path);
+        var content = data.Item2;
 
-        if (string.IsNullOrEmpty(data))
+        if (string.IsNullOrEmpty(content))
         {
-            data = "{}";
+            content = data.Item1 ? "{}" : string.Empty;
             exception = new EmptyConfigException();
         }
 
         try
         {
-            var deserializedObject = JsonConvert.DeserializeObject<T>(data);
+            T deserializedObject;
+            if (data.Item1)
+            {
+                deserializedObject = JsonConvert.DeserializeObject<T>(content);
+            }
+            else
+            {
+                var serializer = new DeserializerBuilder().Build();
+                deserializedObject = serializer.Deserialize<T>(string.IsNullOrEmpty(content) || content.Length <= 1 ? "." : content[1..]);
+            }
+
             if (useCache)
             {
                 this._cache[path] = deserializedObject;
@@ -71,7 +85,7 @@ public class FileHandlerService : IFileHandlerService
     }
 
     /// <inheritdoc />
-    public string LoadFile(string path)
+    public Tuple<bool, string> LoadFile(string path)
     {
         return this.InternalLoadFile(path);
     }
@@ -80,9 +94,17 @@ public class FileHandlerService : IFileHandlerService
     /// Loads a file's content then returns it without validation.
     /// </summary>
     /// <param name="path">The path of the file.</param>
-    /// <returns>The content of the file.</returns>
-    private string InternalLoadFile(string path)
+    /// <returns>A tuple with a bool specifying whether the file is JSON or not and the actual content.</returns>
+    private Tuple<bool, string> InternalLoadFile(string path)
     {
-        return Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(),  path);
+        if (path.Contains(".txt"))
+        {
+            return Tuple.Create(false, Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(), path));
+        }
+
+        var contentJson = Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(), $"{path}.json");
+        var contentYaml = Cfx.API.LoadResourceFile(Cfx.API.GetCurrentResourceName(), $"{path}.yaml");
+
+        return string.IsNullOrEmpty(contentJson) ? Tuple.Create(false, contentYaml) : Tuple.Create(true, contentJson);
     }
 }

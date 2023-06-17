@@ -237,7 +237,6 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IAddonFileHandlerService, AddonFileHandlerService>();
 
         services.AddSingleton<IFileHandlerService, FileHandlerService>();
-        services.AddSingleton<IConfigService, ConfigService>();
         services.AddSingleton<ICommandService, CommandService>();
         services.AddSingleton<IDevToolsService, DevToolsService>();
         services.AddSingleton<ILooseDataService, LooseDataService>();
@@ -255,6 +254,10 @@ internal class Bootstrapper : BaseScript
         // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS
         // !! AND SHOULD BE REGISTERED AS THE ONES BELOW THIS COMMENT !!
 #pragma warning enable
+
+        services.AddSingleton<ConfigService>();
+        services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());
+        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ConfigService>());
 
         services.AddSingleton<ConcurrentTickQueueService>();
         services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
