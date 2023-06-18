@@ -45,9 +45,6 @@ public class ConfigService : IConfigService, IServiceWithEvents
     public List<Loadout> LoadoutsConfig => this.InternalLoadFile<List<Loadout>>("/Config/loadouts");
 
     /// <inheritdoc />
-    public FeaturesConfig FeaturesConfig => this.InternalLoadFile<FeaturesConfig>("/Config/features");
-
-    /// <inheritdoc />
     public GeneralConfig GeneralConfig => this.InternalLoadFile<GeneralConfig>("/Config/general");
 
     /// <inheritdoc />
@@ -68,6 +65,13 @@ public class ConfigService : IConfigService, IServiceWithEvents
     private void OnGetConfig(string path, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var config = this.InternalLoadFile<object>(path);
+
+        if (path == "/Config/general")
+        {
+            var generalConfig = (IInternalGeneralConfig)(GeneralConfig)config;
+            generalConfig.Database = null;
+        }
+
         networkCallbackDelegate.Invoke(JsonConvert.SerializeObject(config));
     }
 

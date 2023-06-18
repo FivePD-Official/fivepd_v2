@@ -11,8 +11,12 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Builders\CommonFPedBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\CommonFVehicleBuilder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\FeaturesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\CalloutConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DatabaseConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\FeatureFlagsConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\StatusConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\UnitConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Loadout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfigs\DutyMenuConfig.cs" />

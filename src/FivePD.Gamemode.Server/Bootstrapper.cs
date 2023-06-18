@@ -14,13 +14,11 @@ using FivePD.Gamemode.Server.Exceptions;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
-using FivePD.Gamemode.Server.Models.AssistanceServiceModels;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
-using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Gamemode.Server;
 

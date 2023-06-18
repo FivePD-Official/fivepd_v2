@@ -1,94 +1,36 @@
 ﻿using System.Collections.Generic;
+using FivePD.Gamemode.Common.ConfigModels.GeneralConfigs;
 
 namespace FivePD.Gamemode.Common.ConfigModels;
 
 #pragma warning disable
 
-public sealed record GeneralConfig
+internal interface IInternalGeneralConfig
 {
-    public DatabaseConfig Database { get; init; } = new();
-
-    public UnitSettings Unit { get; init; } = new();
-
-    public CalloutSettings Callout { get; init; } = new();
-
-    public List<StatusItem> Status { get; init; } = new();
-
-    public sealed record DatabaseConfig
-    {
-        /// <summary>
-        /// Gets the address of the database.
-        /// </summary>
-        public string Address { get; init; }
-
-        /// <summary>
-        /// Gets the port of the database.
-        /// </summary>
-        public string Port { get; init; }
-
-        /// <summary>
-        /// Gets the name of the database.
-        /// </summary>
-        public string DatabaseName { get; init; }
-
-        /// <summary>
-        /// Gets the user used for connecting to the database.
-        /// </summary>
-        public string User { get; init; }
-
-        /// <summary>
-        /// Gets the password used for connecting to the database.
-        /// </summary>
-        public string Password { get; init; }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"server={this.Address};port={this.Port};database={this.DatabaseName};user={this.User};password={this.Password};";
-        }
-    }
-
-    public sealed record UnitSettings
-    {
-        public string Join { get; init; } = "FREE";
-
-        public bool JoinFreely()
-        {
-            return this.Join.ToUpper() == "FREE";
-        }
-
-        public bool JoinByRequest()
-        {
-            return this.Join.ToUpper() == "REQUEST";
-        }
-    }
-
-    public sealed record CalloutSettings
-    {
-        public bool AutomaticGeneration { get; init; }
-
-        public int MinIntervalInMs { get; init; }
-
-        public int MaxIntervalInMs { get; init; }
-    }
-
-    public sealed record StatusItem
-    {
-        public string Title { get; init; }
-
-        public string Description { get; init; }
-
-        public List<string> OnSelect { get; init; }
-    }
+    public DatabaseConfig Database { get; set; }
 }
 
-internal readonly record struct StatusOnSelectKeys
+public sealed record GeneralConfig : IInternalGeneralConfig
 {
-    public const string SetsPlayerCanReceiveCallouts = "SetsPlayerCanReceiveCallouts";
+    private DatabaseConfig _database = new();
 
-    public const string SetsPlayerCanNotReceiveCallouts = "SetsPlayerCanNotReceiveCallouts";
+    public DatabaseConfig Database
+    {
+        get => this._database;
+        init => this._database = value;
+    }
 
-    public const string CompletesCurrentCallout = "CompletesCurrentCallout";
+    DatabaseConfig IInternalGeneralConfig.Database
+    {
+        get => this._database;
+        set => this._database = value;
+    }
 
-    public const string TriggersPanicMode = "TriggersPanicMode";
+    public UnitConfig Unit { get; init; } = new();
+
+    public CalloutConfig Callout { get; init; } = new();
+
+    public List<StatusItemConfig> Status { get; init; } = new();
+
+    public FeatureFlagsConfig FeatureFlags { get; init; } = new();
 }

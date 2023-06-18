@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using FivePD.Gamemode.Common.ConfigModels;
+using FivePD.Gamemode.Common.ConfigModels.GeneralConfigs;
 using FivePD.Gamemode.Server.Interfaces;
 
 namespace FivePD.Gamemode.Server.Services;
@@ -9,7 +9,7 @@ namespace FivePD.Gamemode.Server.Services;
 /// <inheritdoc />
 public class FeatureFlagService : IFeatureFlagService
 {
-    private readonly FeaturesConfig _featuresConfig;
+    private readonly FeatureFlagsConfig _featureFlagsConfig;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FeatureFlagService"/> class.
@@ -17,16 +17,16 @@ public class FeatureFlagService : IFeatureFlagService
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     public FeatureFlagService(IConfigService configService)
     {
-        this._featuresConfig = configService.FeaturesConfig;
+        this._featureFlagsConfig = configService.GeneralConfig.FeatureFlags;
     }
 
     /// <inheritdoc />
-    public bool IsFeatureEnabled(Expression<Func<FeaturesConfig, bool>> selector)
+    public bool IsFeatureEnabled(Expression<Func<FeatureFlagsConfig, bool>> selector)
     {
-        return this.GetNestedPropertyValue(this._featuresConfig, selector);
+        return this.GetNestedPropertyValue(this._featureFlagsConfig, selector);
     }
 
-    private bool GetNestedPropertyValue(FeaturesConfig obj, Expression<Func<FeaturesConfig, bool>> expression)
+    private bool GetNestedPropertyValue(FeatureFlagsConfig obj, Expression<Func<FeatureFlagsConfig, bool>> expression)
     {
         if (expression.Body is not MemberExpression memberExpression)
         {

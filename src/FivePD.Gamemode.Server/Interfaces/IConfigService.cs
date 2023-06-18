@@ -51,11 +51,6 @@ public interface IConfigService
     public List<Loadout> LoadoutsConfig { get; }
 
     /// <summary>
-    /// Gets the "features.json" file's content.
-    /// </summary>
-    public FeaturesConfig FeaturesConfig { get; }
-
-    /// <summary>
     /// Gets the "general-settings.json" file's content.
     /// </summary>
     public GeneralConfig GeneralConfig { get; }

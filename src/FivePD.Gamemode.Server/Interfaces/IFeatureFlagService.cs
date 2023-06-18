@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using FivePD.Gamemode.Common.ConfigModels;
+using FivePD.Gamemode.Common.ConfigModels.GeneralConfigs;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 
@@ -14,5 +14,5 @@ public interface IFeatureFlagService
     /// </summary>
     /// <param name="selector">The selector for a property.</param>
     /// <returns>A boolean.</returns>
-    bool IsFeatureEnabled(Expression<Func<FeaturesConfig, bool>> selector);
+    bool IsFeatureEnabled(Expression<Func<FeatureFlagsConfig, bool>> selector);
 }

@@ -13,6 +13,9 @@ Callout:
   MinIntervalInMs: 5000
   MaxIntervalInMs: 10000
 
+FeatureFlags:
+  DutyNotification: true
+
 Status:
   - Title: Code 4
     Description: No assist needed
