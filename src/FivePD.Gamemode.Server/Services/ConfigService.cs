@@ -48,13 +48,13 @@ public class ConfigService : IConfigService, IServiceWithEvents
     public GeneralConfig GeneralConfig => this.InternalLoadFile<GeneralConfig>("/Config/general");
 
     /// <inheritdoc />
-    public List<string> FemaleFirstnames => this._fileHandlerService.LoadStringList("/Config/FemaleFirstnames.txt");
+    public List<string> FemaleFirstnames => this._fileHandlerService.LoadStringList("/Config/female-first-names.txt");
 
     /// <inheritdoc />
-    public List<string> MaleFirstnames => this._fileHandlerService.LoadStringList("/Config/MaleFirstnames.txt");
+    public List<string> MaleFirstnames => this._fileHandlerService.LoadStringList("/Config/male-first-names.txt");
 
     /// <inheritdoc />
-    public List<string> Lastnames => this._fileHandlerService.LoadStringList("/Config/Lastnames.txt");
+    public List<string> Lastnames => this._fileHandlerService.LoadStringList("/Config/last-names.txt");
 
     /// <inheritdoc />
     public void RegisterEvents()
