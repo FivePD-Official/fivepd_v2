@@ -14,32 +14,30 @@ Callout:
   MaxIntervalInMs: 10000
 
 Status:
-  Codes:
-    - Title: 10-5
-      Description: Break
-      OnSelect: [SetsPlayerCanNotReceiveCallouts]
-    - Title: 10-6
-      Description: Busy
-    - Title: 10-7
-      Description: Out of service
-      OnSelect: [SetsPlayerCanNotReceiveCallouts]
-    - Title: 10-8
-      Description: Available for calls
-      OnSelect: [SetsPlayerCanReceiveCallouts]
-    - Title: 10-15
-      Description: Suspect in custody
-    - Title: 10-19
-      Description: Returning to station
-  Signals:
-    - Title: Code 4
-      Description: No assist needed
-      OnSelect: [CompletesCurrentCallout]
-    - Title: Code 5
-      Description: Stakeout
-    - Title: Code 6
-      Description: Responding from a long distance
-    - Title: Code 7
-      Description: Meal break
-    - Title: Code 99
-      Description: EMERGENCY
-      OnSelect: [TriggersPanicMode]
+  - Title: Code 4
+    Description: No assist needed
+    OnSelect: [ CompletesCurrentCallout ]
+  - Title: Code 5
+    Description: Stakeout
+  - Title: Code 6
+    Description: Responding from a long distance
+  - Title: Code 7
+    Description: Meal break
+  - Title: Code 99
+    Description: EMERGENCY
+    OnSelect: [ TriggersPanicMode ]
+  - Title: 10-5
+    Description: Break
+    OnSelect: [ SetsPlayerCanNotReceiveCallouts ]
+  - Title: 10-6
+    Description: Busy
+  - Title: 10-7
+    Description: Out of service
+    OnSelect: [ SetsPlayerCanNotReceiveCallouts ]
+  - Title: 10-8
+    Description: Available for calls
+    OnSelect: [ SetsPlayerCanReceiveCallouts ]
+  - Title: 10-15
+    Description: Suspect in custody
+  - Title: 10-19
+    Description: Returning to station

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Common.Enums;
+using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.AssistanceServiceModels;
 using FivePD.Gamemode.Server.UIModels.MenuModels;
@@ -48,30 +50,44 @@ public sealed class DispatchMenu : Menu
             this._assistanceService.Call<Ambulance>(new Vector3(704.09f, -117.47f, 52.83f), player.GetUnderlyingPlayer().Character.Position);
         };
 
-        foreach (var status in this._configService.GeneralConfig.Status.Codes)
+        foreach (var status in this._configService.GeneralConfig.Status)
         {
             var item = new MenuButtonItem(status.Title, status.Description);
+            if (status.OnSelect is null)
+            {
+                items.Add(item);
+                continue;
+            }
+
+            var actions = new List<Action<FPlayer>>();
+            if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanReceiveCallouts))
+            {
+                actions.Add(player => player.Availability.Value = FPlayerAvailability.Receiving);
+            }
+
+            if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanNotReceiveCallouts))
+            {
+                actions.Add(player => player.Availability.Value = FPlayerAvailability.NotReceiving);
+            }
+
+            if (status.OnSelect.Contains(StatusOnSelectKeys.CompletesCurrentCallout))
+            {
+                actions.Add(player => this._calloutManagerService.CompleteCalloutOfPlayer(player));
+            }
+            
+            if (status.OnSelect.Contains(StatusOnSelectKeys.TriggersPanicMode))
+            {
+                // TODO
+            }
+
             item.OnSelect += player =>
             {
-                // TODO: move this into a method in the PlayerDataService, players should be able to change their status in the MDT as well
-                // TODO: maybe run the if checks only once and add only the needed stuff in the OnSelect action?
-                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanReceiveCallouts))
+                foreach (var action in actions)
                 {
-                    player.Availability.Value = FPlayerAvailability.Receiving;
+                    action.Invoke(player);
                 }
-                
-                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanNotReceiveCallouts))
-                {
-                    player.Availability.Value = FPlayerAvailability.Receiving;
-                }
-
-                if (status.OnSelect.Contains(StatusOnSelectKeys.CompletesCurrentCallout))
-                {
-                    this._calloutManagerService.CompleteCalloutOfPlayer(player);
-                }
-                
-                // TODO: add TriggersPanicMode
             };
+
             items.Add(item);
         }
 

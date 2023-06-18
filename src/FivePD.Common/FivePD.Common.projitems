@@ -57,6 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\NotificationDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\WeaponCollectionDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StateBagKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\GtaStyleText.cs" />
   </ItemGroup>

@@ -12,7 +12,7 @@ public sealed record GeneralConfig
 
     public CalloutSettings Callout { get; init; } = new();
 
-    public StatusSettings Status { get; init; } = new();
+    public List<StatusItem> Status { get; init; } = new();
 
     public sealed record DatabaseConfig
     {
@@ -72,20 +72,13 @@ public sealed record GeneralConfig
         public int MaxIntervalInMs { get; init; }
     }
 
-    public sealed record StatusSettings
+    public sealed record StatusItem
     {
-        public List<StatusObject> Codes { get; init; } = new();
+        public string Title { get; init; }
 
-        public List<StatusObject> Signals { get; init; } = new();
+        public string Description { get; init; }
 
-        public sealed record StatusObject
-        {
-            public string Title { get; init; }
-
-            public string Description { get; init; }
-
-            public List<string> OnSelect { get; init; }
-        }
+        public List<string> OnSelect { get; init; }
     }
 }
 

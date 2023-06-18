@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Common.Models;
 using Cfx = CitizenFX.Core.Native;
@@ -27,17 +28,9 @@ public class FPlayer : FStatefulContainer
         // Cache the player
         CachedPlayers.Add(this);
 
-        // Sets up duty status tracking
-        this.DutyStatus = new FStateBagObservable<FDutyStatus>(
-            this,
-            "FivePD:DutyStatus",
-            FDutyStatus.OffDuty);
-
-        // Sets up duty status tracking
-        this.Availability = new FStateBagObservable<FPlayerAvailability>(
-            this,
-            "FivePD:CallAvailability",
-            FPlayerAvailability.Receiving);
+        this.DutyStatus = new FStateBagObservable<FDutyStatus>(this, StateBagKeys.DutyStatus, FDutyStatus.OffDuty);
+        this.Availability = new FStateBagObservable<FPlayerAvailability>(this, StateBagKeys.Availability, FPlayerAvailability.NotReceiving);
+        this.Status = new FStateBagObservable<string>(this, StateBagKeys.Status, string.Empty);
     }
 
     /// <summary>
@@ -54,6 +47,11 @@ public class FPlayer : FStatefulContainer
     /// Gets the player's availability observable.
     /// </summary>
     public FStateBagObservable<FPlayerAvailability> Availability { get; private set; }
+
+    /// <summary>
+    /// Gets the player's status observable.
+    /// </summary>
+    public FStateBagObservable<string> Status { get; private set; }
 
     /// <summary>
     /// Attempts to get the player with the specified netId.
