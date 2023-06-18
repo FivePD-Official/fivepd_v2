@@ -206,7 +206,9 @@ internal class Bootstrapper : BaseScript
 
         services
             .RegisterType<LocalPlayerService>()
-            .As<ILocalPlayerService>();
+            .As<ILocalPlayerService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
 
         services
             .RegisterType<InteractionService>()

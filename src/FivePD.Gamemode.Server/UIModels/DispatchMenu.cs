@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Common.ConfigModels.GeneralConfigs;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Server.EntityWrappers;
@@ -61,6 +60,24 @@ public sealed class DispatchMenu : Menu
             }
 
             var actions = new List<Action<FPlayer>>();
+            if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerOnDuty))
+            {
+                actions.Add(player =>
+                {
+                    player.DutyStatus.Value = FDutyStatus.OnDuty;
+                    player.Availability.Value = FPlayerAvailability.Receiving;
+                });
+            }
+            
+            if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerOffDuty))
+            {
+                actions.Add(player =>
+                {
+                    player.DutyStatus.Value = FDutyStatus.OffDuty;
+                    player.Availability.Value = FPlayerAvailability.NotReceiving;
+                });
+            }
+
             if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanReceiveCallouts))
             {
                 actions.Add(player => player.Availability.Value = FPlayerAvailability.Receiving);

@@ -15,6 +15,8 @@ Callout:
 
 FeatureFlags:
   DutyNotification: true
+  DisableWantedLevel: true
+  DisableWantedLevelAllTime: false
 
 Status:
   - Title: Code 4
@@ -36,10 +38,10 @@ Status:
     Description: Busy
   - Title: 10-7
     Description: Out of service
-    OnSelect: [ SetsPlayerCanNotReceiveCallouts ]
+    OnSelect: [ SetsPlayerOffDuty ]
   - Title: 10-8
-    Description: Available for calls
-    OnSelect: [ SetsPlayerCanReceiveCallouts ]
+    Description: In service
+    OnSelect: [ SetsPlayerOnDuty ]
   - Title: 10-15
     Description: Suspect in custody
   - Title: 10-19

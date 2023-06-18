@@ -5,4 +5,8 @@
 public sealed record FeatureFlagsConfig
 {
     public bool DutyNotification { get; init; }
+
+    public bool DisableWantedLevel { get; init; }
+
+    public bool DisableWantedLevelAllTime { get; init; }
 }

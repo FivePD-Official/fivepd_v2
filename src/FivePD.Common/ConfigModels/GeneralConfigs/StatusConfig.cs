@@ -15,6 +15,10 @@ public sealed record StatusItemConfig
 
 internal readonly record struct StatusOnSelectKeys
 {
+    public const string SetsPlayerOnDuty = "SetsPlayerOnDuty";
+
+    public const string SetsPlayerOffDuty = "SetsPlayerOffDuty";
+
     public const string SetsPlayerCanReceiveCallouts = "SetsPlayerCanReceiveCallouts";
 
     public const string SetsPlayerCanNotReceiveCallouts = "SetsPlayerCanNotReceiveCallouts";
