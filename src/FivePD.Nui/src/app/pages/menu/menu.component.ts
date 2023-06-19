@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MenuItemType, NuiEventType } from '@enums';
 import { BaseNuiEvent, Menu, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
 import { ActivatedRoute } from '@angular/router';
@@ -16,10 +16,13 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   menu: Menu | null = null;
 
   currentItemIndex: number = 0;
-  itemNodes: HTMLElement[] | null = null;
+  currentItemDescription: string = '';
+  menuContainer: HTMLElement | null = null;
   selectorNode: HTMLElement | null = null;
   menuItems: MenuItem[] = [];
   controlEvent$: Subscription | null = null;
+
+  @ViewChildren('item') items!: QueryList<ElementRef<HTMLDivElement>>;
 
   constructor(
     private _route: ActivatedRoute,
@@ -32,6 +35,15 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     this._route.params.subscribe(params => {
       this.menu = this._menuService.getMenuById(params['id']);
       this.menuItems = this.menu?.items ?? [];
+      this.currentItemIndex = 0;
+      this.currentItemDescription = '';
+
+      if (this.selectorNode) {
+        this.selectorNode.style.top = '0px';
+      }
+
+      const currentItemNode = this.items.get(this.currentItemIndex);
+      currentItemNode?.nativeElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
     });
     this.controlEvent$ = this._event.onEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
       switch (event.type) {
@@ -60,7 +72,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.itemNodes = Array.from(document.querySelectorAll('.menu-item'));
+    this.menuContainer = document.querySelector('.menu-items');
     this.selectorNode = document.querySelector('#selector');
   }
 
@@ -73,10 +85,11 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onMenuUp(): void {
-    if (!this.selectorNode || !this.itemNodes || !this.menuItems) {
+    if (!this.selectorNode || !this.items?.length || !this.menuItems) {
       return;
     }
 
+    const previousIndex = this.currentItemIndex;
     if (this.currentItemIndex > 0) this.currentItemIndex = this.currentItemIndex - 1;
     else this.currentItemIndex = this.menuItems.length - 1;
 
@@ -86,15 +99,19 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const currentItemNode = this.itemNodes[this.currentItemIndex];
-    this.selectorNode.style.top = `${currentItemNode.offsetTop}px`;
+    this.currentItemDescription = currentItem.Description;
+
+    const currentItemNode = this.items.get(this.currentItemIndex);
+    this.selectorNode.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
+    currentItemNode?.nativeElement.scrollIntoView({ behavior: previousIndex === 0 ? 'auto' : 'smooth', block: 'nearest' });
   }
 
   onMenuDown(): void {
-    if (!this.selectorNode || !this.itemNodes || !this.menuItems) {
+    if (!this.selectorNode || !this.items?.length || !this.menuItems) {
       return;
     }
 
+    const previousIndex = this.currentItemIndex;
     if (this.currentItemIndex < this.menuItems.length - 1) {
       this.currentItemIndex = this.currentItemIndex + 1;
     } else {
@@ -107,8 +124,11 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const currentItemNode = this.itemNodes[this.currentItemIndex];
-    this.selectorNode.style.top = `${currentItemNode.offsetTop}px`;
+    this.currentItemDescription = currentItem.Description;
+
+    const currentItemNode = this.items.get(this.currentItemIndex);
+    this.selectorNode.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
+    currentItemNode?.nativeElement.scrollIntoView({ behavior: previousIndex > this.currentItemIndex ? 'auto' : 'smooth', block: 'nearest' });
   }
 
   onMenuLeft(): void {
@@ -120,7 +140,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onMenuSelect() {
-    if (!this.selectorNode || !this.itemNodes || !this.menuItems) {
+    if (!this.selectorNode || !this.items?.length|| !this.menuItems) {
       return;
     }
 
@@ -155,7 +175,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onListSlide(dir: string): void {
-    if (!this.selectorNode || !this.itemNodes || !this.menuItems) {
+    if (!this.selectorNode || !this.items?.length || !this.menuItems) {
       return;
     }
 
@@ -164,9 +184,9 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const currentItemNode = this.itemNodes[this.currentItemIndex];
-    const leftArrow = currentItemNode.querySelector('.left-arrow');
-    const rightArrow = currentItemNode.querySelector('.right-arrow');
+    const currentItemNode = this.items.get(this.currentItemIndex);
+    const leftArrow = currentItemNode?.nativeElement.querySelector('.left-arrow');
+    const rightArrow = currentItemNode?.nativeElement.querySelector('.right-arrow');
 
     const arrow = dir === NuiEventType.MenuLeft ? leftArrow : rightArrow;
     arrow!.classList.add('on-press');
