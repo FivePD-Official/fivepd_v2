@@ -69,10 +69,10 @@ public class CommonFVehicleBuilder
         return this;
     }
 
-    public CommonFVehicleBuilder WithItems(List<Item> items)
+    public CommonFVehicleBuilder WithItems(IEnumerable<Item> items)
     {
         this.Items = items
-            .Where(item => item.Location is Item.ItemLocation.Vehicle or Item.ItemLocation.Everywhere)
+            .Where(item => item.Location.ToUpper() == "VEHICLE" || item.Location.ToUpper() == "ALL")
             .OrderBy(_ => Guid.NewGuid())
             .Take(Random.Next(0, 6))
             .ToList();

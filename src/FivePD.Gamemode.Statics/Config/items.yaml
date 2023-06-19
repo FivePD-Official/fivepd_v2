@@ -1,9 +1,9 @@
 - Title: Test item 1
-  IsIllegal: false
-  Location: 0
+  Illegal: false
+  Location: ped
 - Title: Test item 2
-  IsIllegal: false
-  Location: 1
+  Illegal: false
+  Location: vehicle
 - Title: Test item 3
-  IsIllegal: false
-  Location: 2
+  Illegal: false
+  Location: all

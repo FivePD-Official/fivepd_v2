@@ -104,11 +104,11 @@ public class CommonFPedBuilder
         return this;
     }
 
-    public CommonFPedBuilder WithItems(List<Item> items)
+    public CommonFPedBuilder WithItems(IEnumerable<Item> items)
     {
         this.Items = items
-            .Where(item => item.Location is Item.ItemLocation.Ped or Item.ItemLocation.Everywhere)
-            .OrderBy(item => Guid.NewGuid())
+            .Where(item => item.Location.ToUpper() == "PED" || item.Location.ToUpper() == "ALL")
+            .OrderBy(_ => Guid.NewGuid())
             .Take(Random.Next(0, 6))
             .ToList();
         return this;
