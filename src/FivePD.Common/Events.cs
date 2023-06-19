@@ -194,6 +194,8 @@ internal readonly record struct Events
         public readonly record struct Config
         {
             public const string GetGeneralSettings = "fivepd:config:getGeneralSettings";
+
+            public const string GetSafeZoneSize = "fivepd:config:getSafeZoneSize";
         }
         
         public readonly record struct Callout

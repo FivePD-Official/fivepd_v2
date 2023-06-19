@@ -2,7 +2,7 @@
      class="fixed z-0 inset-0 w-screen h-screen bg-zinc-900 opacity-50">
 </div>
 <div id="modal-container"
-     class="absolute top-1/2 -translate-y-1/2 w-full h-[90vh] bg-zinc-900 rounded-xl grid grid-rows-[80px_1fr] grid-cols-1">
+     class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[95%] fhd:max-w-[90%] h-[90vh] bg-zinc-900 rounded-xl grid grid-rows-[80px_1fr] grid-cols-1">
   <app-header/>
   <div class="grid grid-rows-1 grid-cols-[250px_1fr] overflow-hidden"
        [ngClass]="{ 'grid-cols-[90px_1fr]': isSidebarCollapsed$ | async }">

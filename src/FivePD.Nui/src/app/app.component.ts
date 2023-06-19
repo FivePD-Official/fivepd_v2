@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { setMdtPath } from '@store/app.actions';
 import { MenuService } from '@services/menu/menu.service';
+import { ConfigService } from "@services/config/config.service";
 
 @Component({
   selector: 'app-root',
@@ -27,6 +28,7 @@ export class AppComponent implements OnInit {
     private _looseData: LooseDataService,
     private readonly store: Store<GlobalState>,
     private _menu: MenuService,
+    private readonly _configService: ConfigService,
   ) {}
 
   ngOnInit(): void {
@@ -46,8 +48,6 @@ export class AppComponent implements OnInit {
   }
 
   onLoad(): void {
-    // TODO: Not working, change this in the index.html with the pipeline
-    // document.head.innerHTML = document.head.innerHTML + '<base href="/Libraries/FivePD.Nui/"/>';
     document.body.style.display = 'none';
 
     const style = document.createElement('style');
@@ -64,5 +64,17 @@ export class AppComponent implements OnInit {
 
     this._localization.load();
     this._menu.load();
+
+    this._configService.getSafeZoneSize().subscribe(safeZoneSize => {
+      const safeZone = safeZoneSize * 0.5;
+      const tbMargin = window.screen.height * safeZone;
+      const lrMargin = window.screen.width * safeZone;
+      const mainContainer = document.querySelector('.main-container') as HTMLDivElement;
+      if (!mainContainer) {
+        return;
+      }
+
+      mainContainer.style.margin = `${tbMargin}px ${lrMargin}px`;
+    });
   }
 }

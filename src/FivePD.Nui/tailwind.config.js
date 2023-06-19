@@ -26,6 +26,9 @@ module.exports = {
         }
       }
     },
+    screens: {
+      'fhd': '1920px',
+    }
   },
   plugins: [],
 }

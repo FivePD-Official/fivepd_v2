@@ -115,3 +115,7 @@ export interface CalloutDTO {
   Address: string;
   Units: string[];
 }
+
+export interface GetSafeZoneSize {
+  SafeZoneSize: number;
+}

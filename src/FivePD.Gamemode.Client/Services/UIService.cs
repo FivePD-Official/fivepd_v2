@@ -87,6 +87,17 @@ internal class UIService : IUIService, IServiceWithEvents
                 RunAsync();
             }));
 
+        this._eventHandlerDictionary.AddUIEvent(
+            Events.UI.Config.GetSafeZoneSize,
+            new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
+            {
+                Debug.WriteLine($"SAFE ZONE: {Cfx.API.GetSafeZoneSize()}");
+                cb.Invoke(JsonConvert.SerializeObject(new JObject
+                {
+                    ["SafeZoneSize"] = Cfx.API.GetSafeZoneSize(),
+                }));
+            }));
+
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(
             Events.Callout.GetAllActiveUI,
             serverResponse =>
