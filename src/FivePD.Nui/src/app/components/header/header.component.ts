@@ -13,9 +13,6 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export class HeaderComponent implements OnInit {
 
   user?: User;
-  currentStatus: string = '10-0';
-  isStatusSelectOpened: boolean = false;
-  statusList = ['10-1', '10-2', '10-3', '10-4'];
 
   constructor(
     private readonly store: Store<GlobalState>,
@@ -27,19 +24,5 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-
-  toggleStatusSelect(): void {
-    this.isStatusSelectOpened = !this.isStatusSelectOpened;
-  }
-
-  closeStatusSelect(): void {
-    this.isStatusSelectOpened = false;
-  }
-
-  changeStatus(status: string): void {
-    this.toggleStatusSelect();
-    this.currentStatus = status;
   }
 }

@@ -1,32 +1,8 @@
 <header class="relative z-50 w-full h-[80px] flex flex-row items-center justify-between border-b border-color">
   <div class="flex flex-row items-center mx-8">
-    <!-- TODO ?   <img src="" alt="">-->
-    <p class="text-lg font-bold text-zinc-200">{{ user?.Department?.Name ?? 'Not in dept' }}</p>
+    <p class="text-lg font-bold text-zinc-200">{{ user?.Department?.Name ?? ('UI.LABEL.NOT_IN_DEPARTMENT' | translate) }}</p>
   </div>
   <div class="flex flex-row items-center h-full">
-    <div class="relative" (clickOutside)="closeStatusSelect()">
-      <button class="relative flex flex-row items-center justify-center h-[40px] px-5 bg-transparent cursor-pointer
-                     before:absolute before:inset-0 before:w-full before:h-full before:rounded-md before:bg-primary before:opacity-10 hover:before:opacity-20"
-              [ngClass]="{ 'before:rounded-bl-none before:rounded-br-none': isStatusSelectOpened }"
-              (click)="toggleStatusSelect()">
-        <p class="whitespace-nowrap font-bold text-primary">
-          {{ 'UI.LABEL.STATUS.SINGULAR' | translate }}: {{ currentStatus }}
-        </p>
-        <div app-icon name="ChevronDown"
-             className="h-[20px] ml-2.5 text-primary"
-             [ngClassName]="{ 'origin-center rotate-180': isStatusSelectOpened }"></div>
-      </button>
-      <div *ngIf="isStatusSelectOpened"
-           class="absolute top-full l-0 w-full flex flex-col items-center">
-        <button *ngFor="let status of statusList"
-                (click)="changeStatus(status)"
-                class="relative w-full h-[40px] text-primary bg-zinc-900 cursor-pointer rounded-bl rounded-br
-                       before:absolute before:inset-0 before:w-full before:h-full before:bg-primary/10 hover:before:bg-primary/20
-                       last-of-type:before:rounded-bl-md last-of-type:before:rounded-br-md">
-          {{ status }}
-        </button>
-      </div>
-    </div>
     <p class="text-zinc-200 px-8">
       Logged in as <b>{{ user?.Name }}</b>
     </p>

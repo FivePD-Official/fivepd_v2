@@ -42,8 +42,10 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectorNode.style.top = '0px';
       }
 
-      const currentItemNode = this.items.get(this.currentItemIndex);
-      currentItemNode?.nativeElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+      if (this.items) {
+        const currentItemNode = this.items.get(this.currentItemIndex);
+        currentItemNode?.nativeElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+      }
     });
     this.controlEvent$ = this._event.onEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
       switch (event.type) {
