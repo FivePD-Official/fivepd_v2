@@ -87,7 +87,7 @@ public class ConfigService : IConfigService, IServiceWithEvents
         var exceptionMessage = file.Item2 switch
         {
             EmptyConfigException _ => "The {{path}} file is empty, the default values will be used.",
-            _ => "An error occured while parsing the {{path}} file, the default values will be used. Make sure that the JSON formatting is correct, we recommend using the following site to check it: https://jsonformatter.org/",
+            _ => "An error occured while parsing the {{path}} file, the default values will be used. Make sure that the JSON or YAML formatting is correct.",
         };
 
         this._logger.Warning(exceptionMessage.ReplaceParams(

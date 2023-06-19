@@ -66,6 +66,20 @@ public sealed class FPedTasks
             DrivingStyle = drivingStyle,
         });
 
+    /// <summary>
+    /// Invokes the "ped.Task.StandStill" native.
+    /// </summary>
+    /// <param name="vehicle">The vehicle to drive.</param>
+    /// <param name="speed">The speed.</param>
+    /// <param name="drivingStyle">The driving style flag.</param>
+    public void CruiseWithVehicle(Vehicle vehicle, float speed, int drivingStyle = 0) =>
+        this.SetTask(FPedTasksDTO.Events.CruiseWithVehicle, new FPedTasksDTO.CruiseWithVehicle
+        {
+            VehicleNetworkId = vehicle.NetworkId,
+            Speed = speed,
+            DrivingStyle = drivingStyle,
+        });
+
     private void SetTask<T>(string task, T args)
     {
         this._eventService.TriggerEventWithoutCallback(

@@ -234,6 +234,12 @@ internal class Bootstrapper : BaseScript
             .As<IServiceWithEvents>()
             .IsSingleton();
 
+        services
+            .RegisterType<CfxService>()
+            .As<ICfxService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);

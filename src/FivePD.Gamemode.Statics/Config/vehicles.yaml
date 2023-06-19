@@ -1,0 +1,20 @@
+Police:
+  - Name: Police 1
+    Model: police
+    Livery: 0
+    Extras: [ ]
+
+Ambulance:
+  - Model: ambulance
+    Livery: 0
+    Extras: [ ]
+
+TowTruck:
+  - Model: flatbed
+    Livery: 0
+    Extras: [ ]
+    SirenActive: true
+    TowedVehiclePositionOffset:
+      X: 0
+      Y: -1.5
+      Z: 1

@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
+using FivePD.Gamemode.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Gamemode.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
@@ -9,7 +11,7 @@ namespace FivePD.Gamemode.Server.Services;
 public class EntityService : IEntityService
 {
     /// <inheritdoc />
-    public async Task<Ped> SpawnPedAsync(uint model, Vector3 location, float heading)
+    public async Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading)
     {
         var handle = Cfx.API.CreatePed(26, model, location.X, location.Y, location.Z, heading, true, false);
 
@@ -21,13 +23,13 @@ public class EntityService : IEntityService
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
-        return new Ped(handle);
+        return FPed.FromPed(new Ped(handle));
     }
 
     /// <inheritdoc />
-    public async Task<Vehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading)
+    public async Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading)
     {
-        #pragma warning disable
+        // TODO: clear area
         var handle = Cfx.API.CreateVehicle(model, location.X, location.Y, location.Z, heading, true, false);
 
         while (!Cfx.API.DoesEntityExist(handle))
@@ -37,7 +39,7 @@ public class EntityService : IEntityService
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
-        return new Vehicle(handle);
+        return FVehicle.FromVehicle(new Vehicle(handle));
     }
 
     /// <inheritdoc />
@@ -49,7 +51,7 @@ public class EntityService : IEntityService
         {
             await BaseScript.Delay(100);
         }
-        
+
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
         return new Prop(handle);

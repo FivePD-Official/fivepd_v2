@@ -66,7 +66,7 @@ public class FileHandlerService : IFileHandlerService
             else
             {
                 var serializer = new DeserializerBuilder().Build();
-                deserializedObject = serializer.Deserialize<T>(string.IsNullOrEmpty(content) || content.Length <= 1 ? "." : content[1..]);
+                deserializedObject = serializer.Deserialize<T>(string.IsNullOrEmpty(content) || content.Length <= 1 ? "." : content);
             }
 
             if (useCache)

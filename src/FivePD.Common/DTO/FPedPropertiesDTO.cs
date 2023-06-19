@@ -48,5 +48,7 @@ internal sealed record FPedPropertiesDTO
         public const string RemoveBlips = "RemoveBlips";
 
         public const string SetIntoVehicle = "SetIntoVehicle";
+
+        public const string MarkAsNoLongerNeeded = "MarkAsNoLongerNeeded";
     }
 }

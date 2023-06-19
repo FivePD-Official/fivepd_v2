@@ -17,8 +17,10 @@ using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Gamemode.Server;
 
@@ -247,6 +249,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IConfirmationService, ConfirmationService>();
         services.AddSingleton<IRandomService, RandomService>();
         services.AddSingleton<IAssistanceServiceManagerService, AssistanceServiceManagerService>();
+        services.AddSingleton<ICfxService, CfxService>();
 
 #pragma warning disable
         // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS

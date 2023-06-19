@@ -72,6 +72,11 @@ public sealed class FPedProperties
         });
 
     /// <summary>
+    /// Invokes the "MarkAsNoLongerNeeded" method on the ped.
+    /// </summary>
+    public void MarkAsNoLongerNeeded() => this.InvokeMethod<object>(FPedPropertiesDTO.Events.MarkAsNoLongerNeeded);
+
+    /// <summary>
     /// Creates a blip for the <see cref="FPed"/>.
     /// </summary>
     /// <param name="sprite">The <see cref="FBlipSprite"/> to use.</param>
@@ -111,7 +116,7 @@ public sealed class FPedProperties
         this._eventService.TriggerEventWithoutCallback(this._fPed.Owner, Events.Ped.SetProperty, this._fPed.GetFPed.NetworkId, property, value.ToString());
     }
 
-    private void InvokeMethod<T>(string method, T args)
+    private void InvokeMethod<T>(string method, T args = default)
     {
         this._eventService.TriggerEventWithoutCallback(
             this._fPed.Owner,

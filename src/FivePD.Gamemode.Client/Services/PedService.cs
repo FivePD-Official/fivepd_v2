@@ -136,6 +136,12 @@ internal class PedService : IPedService, IServiceWithEvents
                 ped.SetIntoVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, (VehicleSeat)args.VehicleSeat);
                 break;
             }
+            
+            case FPedPropertiesDTO.Events.MarkAsNoLongerNeeded:
+            {
+                ped.MarkAsNoLongerNeeded();
+                break;
+            }
         }
     }
 
@@ -174,7 +180,14 @@ internal class PedService : IPedService, IServiceWithEvents
             case FPedTasksDTO.Events.DriveTo:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.DriveTo>(request.Args);
-                ped.Task.DriveTo(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Target, args.Speed, args.Speed, args.DrivingStyle);
+                ped.Task.DriveTo(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Target, args.Radius, args.Speed, args.DrivingStyle);
+                break;
+            }
+            
+            case FPedTasksDTO.Events.CruiseWithVehicle:
+            {
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.CruiseWithVehicle>(request.Args);
+                ped.Task.CruiseWithVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Speed, args.DrivingStyle);
                 break;
             }
         }

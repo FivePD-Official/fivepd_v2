@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CitizenFX.Core;
 
 namespace FivePD.Gamemode.Common.ConfigModels;
 
@@ -18,6 +19,11 @@ public sealed record Vehicles
     public List<ServiceVehicle> Ambulance { get; init; } = new();
 
     /// <summary>
+    /// Gets the vehicles that'll be used for the tow truck service.
+    /// </summary>
+    public List<TowTruckVehicle> TowTruck { get; init; } = new();
+
+    /// <summary>
     /// Defines a police vehicle's properties.
     /// </summary>
     public sealed record PoliceVehicle : ServiceVehicle
@@ -26,6 +32,32 @@ public sealed record Vehicles
         /// Gets the name of this vehicle.
         /// </summary>
         public required string Name { get; init; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Defines a tow truck's properties.
+    /// </summary>
+    public sealed record TowTruckVehicle : ServiceVehicle
+    {
+        /// <summary>
+        /// Gets the name of this vehicle.
+        /// </summary>
+        public Position TowedVehiclePositionOffset { get; init; } = default;
+
+        /// <summary>
+        /// Gets a value indicating whether the siren should be activated or not.
+        /// </summary>
+        public bool SirenActive { get; init; } = false;
+
+        #pragma warning disable
+        public record struct Position()
+        {
+            public float X { get; init; } = 0f;
+
+            public float Y { get; init; } = 0f;
+
+            public float Z { get; init; } = 0f;
+        }
     }
 
     /// <summary>

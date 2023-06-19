@@ -115,6 +115,11 @@ internal class VehicleService : IVehicleService, IServiceWithEvents
 
         switch (request.Method)
         {
+            case FVehiclePropertiesDTO.Events.MarkAsNoLongerNeeded:
+            {
+                vehicle.MarkAsNoLongerNeeded();
+                break;
+            }
         }
     }
 

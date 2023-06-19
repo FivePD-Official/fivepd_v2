@@ -46,6 +46,15 @@ internal sealed record FPedTasksDTO
 
         public required int DrivingStyle { get; init; }
     }
+    
+    public record struct CruiseWithVehicle
+    {
+        public required int VehicleNetworkId { get; init; }
+
+        public required float Speed { get; init; }
+
+        public required int DrivingStyle { get; init; }
+    }
 
     public sealed record Events
     {
@@ -56,5 +65,7 @@ internal sealed record FPedTasksDTO
         public const string TurnToPosition = "TurnToPosition";
 
         public const string DriveTo = "DriveTo";
+        
+        public const string CruiseWithVehicle = "CruiseWithVehicle";
     }
 }

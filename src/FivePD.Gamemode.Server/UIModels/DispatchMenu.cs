@@ -47,8 +47,16 @@ public sealed class DispatchMenu : Menu
         this.CallAmbulance = new MenuButtonItem("Call ambulance", string.Empty);
         this.CallAmbulance.OnSelect += player =>
         {
-            this._assistanceService.Call<Ambulance>(new Vector3(704.09f, -117.47f, 52.83f), player.GetUnderlyingPlayer().Character.Position);
+            this._assistanceService.Call<Ambulance>(player);
         };
+        items.Add(this.CallAmbulance);
+        
+        var t = new MenuButtonItem("Call tow truck", string.Empty);
+        t.OnSelect += player =>
+        {
+            this._assistanceService.Call<TowTruck>(player);
+        };
+        items.Add(t);
 
         foreach (var status in this._configService.GeneralConfig.Status)
         {

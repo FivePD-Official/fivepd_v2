@@ -33,6 +33,11 @@ public sealed class FVehicleProperties
     public void IsSirenActive(bool value) => this.SetPropertyBool(FVehiclePropertiesDTO.Events.IsSirenActive, value);
 
     /// <summary>
+    /// Invokes the "MarkAsNoLongerNeeded" method on the ped.
+    /// </summary>
+    public void MarkAsNoLongerNeeded() => this.InvokeMethod<object>(FVehiclePropertiesDTO.Events.MarkAsNoLongerNeeded);
+
+    /// <summary>
     /// Creates a blip for the <see cref="FPed"/>.
     /// </summary>
     /// <param name="sprite">The <see cref="FBlipSprite"/> to use.</param>
@@ -72,7 +77,7 @@ public sealed class FVehicleProperties
         this._eventService.TriggerEventWithoutCallback(this._fVehicle.Owner, Events.Vehicle.SetProperty, this._fVehicle.GetFVehicle.NetworkId, property, value.ToString());
     }
 
-    private void InvokeMethod<T>(string method, T args)
+    private void InvokeMethod<T>(string method, T args = default)
     {
         this._eventService.TriggerEventWithoutCallback(
             this._fVehicle.Owner,

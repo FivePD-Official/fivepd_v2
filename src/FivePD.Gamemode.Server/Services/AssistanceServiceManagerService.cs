@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models.AssistanceServiceModels;
 using Serilog;
@@ -28,9 +29,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
         this._logger = logger;
     }
 
-    // TODO: refactor, only set target, spawnLocation should be created directly in the service
-    // TODO: ambulance spawnLocations should be added into the config
-    public Guid Call<T>(Vector3 spawnLocation, Vector3 target)
+    public Guid Call<T>(FPlayer requestedBy)
         where T : AssistanceService
     {
         try
@@ -38,8 +37,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             var guid = Guid.NewGuid();
 
             var assistanceService = this.CreateInstance<T>();
-            ((IInternalAssistanceService)assistanceService).SpawnLocation = spawnLocation;
-            ((IInternalAssistanceService)assistanceService).Target = target;
+            ((IInternalAssistanceService)assistanceService).RequestedBy = requestedBy;
             var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, new CancellationTokenSource());
             this._assistanceServices.TryAdd(guid, assistanceServiceInvoker);
             this._tickQueueService.EnqueueAsync(assistanceServiceInvoker.InvokeAssistanceServiceMethods);
@@ -90,8 +88,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             this._service = service;
             this.CancellationTokenSource = cancellationTokenSource;
 
-            this._methodQueue.Add(() => service.OnCalledAsync(cancellationTokenSource.Token));
-            this._methodQueue.Add(service.OnCompleteAsync);
+            this._methodQueue.Add(service.Setup);
+            this._methodQueue.Add(() => service.OnCalledAsync(cancellationTokenSource));
+            this._methodQueue.Add(service.OnCompletedAsync);
         }
     
         public async Task InvokeAssistanceServiceMethods()

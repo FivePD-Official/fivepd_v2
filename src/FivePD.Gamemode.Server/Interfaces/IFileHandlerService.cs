@@ -16,7 +16,7 @@ public interface IFileHandlerService
     public List<string> LoadStringList(string path);
 
     /// <summary>
-    /// !! IT CAN ONLY DESERIALIZE FROM JSON !!
+    /// !! IT CAN ONLY DESERIALIZE FROM JSON AND YAML !!
     /// Reads the given file.
     /// If empty, returns T with its default values.
     /// Otherwise returns the data deserialized to the given type.

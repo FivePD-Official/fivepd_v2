@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Gamemode.Server.EntityWrappers.PedWrapper;
+using FivePD.Gamemode.Server.EntityWrappers.VehicleWrapper;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 
@@ -15,7 +17,7 @@ public interface IEntityService
     /// <param name="location">A location where the ped will spawn.</param>
     /// <param name="heading">The heading the ped will use.</param>
     /// <returns>The spawned ped.</returns>
-    Task<Ped> SpawnPedAsync(uint model, Vector3 location, float heading);
+    Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading);
 
     /// <summary>
     /// Spawns a vehicle directly on the server.
@@ -24,7 +26,7 @@ public interface IEntityService
     /// <param name="location">A location where the ped will spawn.</param>
     /// <param name="heading">The heading the ped will use.</param>
     /// <returns>The spawned vehicle.</returns>
-    Task<Vehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading);
+    Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading);
 
     /// <summary>
     /// Spawns a prop (object) via RPC natives.

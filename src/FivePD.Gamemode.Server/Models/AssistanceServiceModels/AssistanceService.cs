@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using CitizenFX.Core;
+using FivePD.Gamemode.Server.EntityWrappers;
 
 namespace FivePD.Gamemode.Server.Models.AssistanceServiceModels;
 
@@ -8,36 +8,26 @@ namespace FivePD.Gamemode.Server.Models.AssistanceServiceModels;
 
 public abstract class AssistanceService : IInternalAssistanceService
 {
-    private Vector3 _spawnLocation;
+    private FPlayer _requestedBy;
 
-    private Vector3 _target;
+    public FPlayer RequestedBy => this._requestedBy;
 
-    public Vector3 SpawnLocation => this._spawnLocation;
-
-    public Vector3 Target => this._target;
-
-    Vector3 IInternalAssistanceService.SpawnLocation
+    FPlayer IInternalAssistanceService.RequestedBy
     {
-        get => this._spawnLocation;
-        set => this._spawnLocation = value;
+        get => this._requestedBy;
+        set => this._requestedBy = value;
     }
 
-    Vector3 IInternalAssistanceService.Target
-    {
-        get => this._target;
-        set => this._target = value;
-    }
+    public abstract Task Setup();
 
-    public abstract Task OnCalledAsync(CancellationToken cancellationToken);
+    public abstract Task OnCalledAsync(CancellationTokenSource cancellationTokenSource);
 
     public abstract Task OnCancellationRequestedAsync();
 
-    public abstract Task OnCompleteAsync();
+    public abstract Task OnCompletedAsync();
 }
 
 internal interface IInternalAssistanceService
 {
-    internal Vector3 SpawnLocation { get; set; }
-
-    internal Vector3 Target { get; set; }
+    internal FPlayer RequestedBy { get; set; }
 }
