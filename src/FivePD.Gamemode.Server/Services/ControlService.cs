@@ -32,29 +32,29 @@ public class ControlService : IControlService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterKeybind(string id, string key, string description, Action<Player> onPress = null, Action<Player> onRelease = null)
+    public void RegisterKeybind(string id, string key, string title, Action<Player> onPress = null, Action<Player> onRelease = null)
     {
-        this.RegisterControl(id, key, description, "KEYBOARD", onPress, onRelease);
+        this.RegisterControl(id, key, title, "KEYBOARD", onPress, onRelease);
     }
 
     /// <inheritdoc />
-    public void RegisterMomentaryKeybind(string id, string key, string description, int timeToHoldInMs = 0, Action<Player> onPress = null, Action<Player> onRelease = null)
+    public void RegisterMomentaryKeybind(string id, string key, string title, int timeToHoldInMs = 0, Action<Player> onPress = null, Action<Player> onRelease = null)
     {
-        this.RegisterControl(id, key, description, "KEYBOARD", onPress, onRelease, timeToHoldInMs);
+        this.RegisterControl(id, key, title, "KEYBOARD", onPress, onRelease, timeToHoldInMs);
     }
 
     /// <inheritdoc />
-    public void RegisterMouseKeybind(string id, string key, string description, Action<Player> onPress = null, Action<Player> onRelease = null)
+    public void RegisterMouseKeybind(string id, string key, string title, Action<Player> onPress = null, Action<Player> onRelease = null)
     {
-        this.RegisterControl(id, key, description, "MOUSE_BUTTON", onPress, onRelease);
+        this.RegisterControl(id, key, title, "MOUSE_BUTTON", onPress, onRelease);
     }
 
-    private void RegisterControl(string id, string key, string description, string keyMapper, Action<Player> onPress = null, Action<Player> onRelease = null, int timeToHoldInMs = 0)
+    private void RegisterControl(string id, string key, string title, string keyMapper, Action<Player> onPress = null, Action<Player> onRelease = null, int timeToHoldInMs = 0)
     {
         this._controls.Add(new ControlsDTO
         {
             Id = id,
-            Description = description,
+            Title = title,
             Key = key,
             KeyMapper = keyMapper,
             OnPress = onPress,

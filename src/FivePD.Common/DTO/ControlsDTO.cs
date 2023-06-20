@@ -9,7 +9,7 @@ internal sealed record ControlsDTO
 {
     public string Id { get; init; }
 
-    public string Description { get; init; }
+    public string Title { get; init; }
 
     public string Key { get; init; }
 
@@ -26,7 +26,7 @@ internal sealed record ControlsDTO
         return new ClientControlDTO
         {
             Id = this.Id,
-            Description = this.Description,
+            Title = this.Title,
             Key = this.Key,
             KeyMapper = this.KeyMapper,
             TimeToHoldInMs = this.TimeToHoldInMs,
@@ -37,7 +37,7 @@ internal sealed record ControlsDTO
     {
         public string Id { get; init; }
 
-        public string Description { get; init; }
+        public string Title { get; init; }
 
         public string Key { get; init; }
 

@@ -59,6 +59,8 @@ internal readonly record struct Events
 
         public const string Mdt = "view:mdt";
 
+        public const string Information = "view:information";
+
         public const string MenuView = "view:menu";
 
         public const string RadialMenu = "view:radial_menu";

@@ -17,18 +17,18 @@ internal class MenuService : IMenuService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
-    private readonly IUIService _uiService;
+    private readonly IUIManagerService _uiService;
     private bool _registeredMenus;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MenuService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-    /// <param name="uiService">The <see cref="IUIService" /> to use.</param>
+    /// <param name="uiService">The <see cref="IUIManagerService" /> to use.</param>
     /// <param name="controlService">The <see cref="IControlService" /> to use.</param>
     public MenuService(
         EventHandlerDictionary eventHandlerDictionary,
-        IUIService uiService,
+        IUIManagerService uiService,
         IControlService controlService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;

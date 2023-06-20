@@ -46,7 +46,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
         this._controlService.RegisterKeybind(
             Controls.TryAlertEntityAsync.Id,
             Controls.TryAlertEntityAsync.Key,
-            Controls.TryAlertEntityAsync.Description,
+            Controls.TryAlertEntityAsync.Title,
             player => this._tickQueueService.EnqueueAsync(() => this.TryAlertEntityAsync(player)));
     }
 

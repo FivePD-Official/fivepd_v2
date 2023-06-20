@@ -1,4 +1,14 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  QueryList, SimpleChanges,
+  ViewChildren
+} from '@angular/core';
 import { MenuItemType, NuiEventType } from '@enums';
 import { BaseNuiEvent, Menu, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
 import { ActivatedRoute } from '@angular/router';
@@ -11,9 +21,9 @@ import { Subscription } from 'rxjs';
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.sass']
 })
-export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MenuComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
 
-  menu: Menu | null = null;
+  @Input() menu!: Menu;
 
   currentItemIndex: number = 0;
   currentItemDescription: string = '';
@@ -32,21 +42,6 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._route.params.subscribe(params => {
-      this.menu = this._menuService.getMenuById(params['id']);
-      this.menuItems = this.menu?.items ?? [];
-      this.currentItemIndex = 0;
-      this.currentItemDescription = '';
-
-      if (this.selectorNode) {
-        this.selectorNode.style.top = '0px';
-      }
-
-      if (this.items) {
-        const currentItemNode = this.items.get(this.currentItemIndex);
-        currentItemNode?.nativeElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
-      }
-    });
     this.controlEvent$ = this._event.onEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
       switch (event.type) {
         case NuiEventType.MenuUp: {
@@ -71,6 +66,26 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const menu = changes['menu']?.currentValue;
+    if (!menu) {
+      return;
+    }
+
+    this.menuItems = menu.items ?? [];
+    this.currentItemIndex = 0;
+    this.currentItemDescription = '';
+
+    if (this.selectorNode) {
+      this.selectorNode.style.top = '0px';
+    }
+
+    if (this.items) {
+      const currentItemNode = this.items.get(this.currentItemIndex);
+      currentItemNode?.nativeElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+    }
   }
 
   ngAfterViewInit(): void {

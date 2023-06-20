@@ -9,13 +9,13 @@ namespace FivePD.Gamemode.Client.Services;
 /// <inheritdoc />
 internal class SoundService : ISoundService
 {
-    private readonly IUIService _uiService;
+    private readonly IUIManagerService _uiService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundService"/> class.
     /// </summary>
-    /// <param name="uiService">The <see cref="IUIService"/> to use.</param>
-    public SoundService(IUIService uiService)
+    /// <param name="uiService">The <see cref="IUIManagerService"/> to use.</param>
+    public SoundService(IUIManagerService uiService)
     {
         this._uiService = uiService;
     }

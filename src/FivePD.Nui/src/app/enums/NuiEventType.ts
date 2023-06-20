@@ -2,6 +2,7 @@ export enum NuiEventType {
   ClientReady = 'ready',
   Close = 'close',
   Mdt = 'view:mdt',
+  Information = 'view:information',
   MenuView = 'view:menu',
   RadialMenu = 'view:radial_menu',
   TimerBar = 'view:timer_bar',

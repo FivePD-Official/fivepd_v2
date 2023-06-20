@@ -16,18 +16,18 @@ internal class RadialMenuService : IRadialMenuService
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
-    private readonly IUIService _uiService;
+    private readonly IUIManagerService _uiService;
     private readonly ITickService _tickService;
     // private readonly List<RadialMenu> _menus = new List<RadialMenu>();
-    private bool _isAnyMenuVisible;
+    // private bool _isAnyMenuVisible;
     private MouseCoordinate _lastMousePosition;
 
     /// <summary>Initializes a new instance of the <see cref="RadialMenuService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-    /// <param name="uiService">The <see cref="IUIService" /> to use.</param>
+    /// <param name="uiService">The <see cref="IUIManagerService" /> to use.</param>
     /// <param name="controlService">The <see cref="IControlService" /> to use.</param>
     /// <param name="tickService">The <see cref="ITickService" /> to use.</param>
-    public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, IUIService uiService, IControlService controlService, ITickService tickService)
+    public RadialMenuService(EventHandlerDictionary eventHandlerDictionary, IUIManagerService uiService, IControlService controlService, ITickService tickService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._uiService = uiService;
@@ -38,12 +38,12 @@ internal class RadialMenuService : IRadialMenuService
     /// <inheritdoc />
     public void RegisterEvents()
     {
-        this._uiService.OnNuiHide += () =>
-        {
-            this._isAnyMenuVisible = false;
-            this._tickService.OnTick -= this.DisableMouseMovementAsync;
-            this._tickService.OnTick -= this.OnMouseMoveAsync;
-        };
+        // this._uiService.OnNuiHide += () =>
+        // {
+        //     this._isAnyMenuVisible = false;
+        //     this._tickService.OnTick -= this.DisableMouseMovementAsync;
+        //     this._tickService.OnTick -= this.OnMouseMoveAsync;
+        // };
     }
 
     /// <inheritdoc />
@@ -166,11 +166,10 @@ internal class RadialMenuService : IRadialMenuService
 
     private Task OnMouseMoveAsync()
     {
-        if (!this._isAnyMenuVisible)
-        {
-            return Task.FromResult(0);
-        }
-
+        // if (!this._isAnyMenuVisible)
+        // {
+        //     return Task.FromResult(0);
+        // }
         var coordinates = this.GetMouseCoordinates();
         if (Cfx.API.IsDisabledControlJustPressed(2, 237))
         {

@@ -160,6 +160,12 @@ internal class Bootstrapper : BaseScript
             .IsSingleton();
 
         services
+            .RegisterType<UIManagerService>()
+            .As<IUIManagerService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
+
+        services
             .RegisterType<UIService>()
             .As<IUIService>()
             .As<IServiceWithEvents>()

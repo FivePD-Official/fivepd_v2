@@ -6,21 +6,6 @@
 internal readonly record struct KeybindIdentifiers
 {
     /// <summary>
-    /// Initiates or cancels a client's traffic stop.
-    /// </summary>
-    public const string TrafficStopToggle = "fivepd:trafficStopToggle";
-
-    /// <summary>
-    /// Stops the closest or the targeted ped.
-    /// </summary>
-    public const string StopPed = "fivepd:stopPed";
-
-    /// <summary>
-    /// A common keybind for various interactions.
-    /// </summary>
-    public const string Interact = "fivepd:interact";
-
-    /// <summary>
     /// Closes any opened menu.
     /// </summary>
     public const string MenuClose = "fivepd:menuClose";
@@ -49,9 +34,4 @@ internal readonly record struct KeybindIdentifiers
     /// Invokes the action of the currently selected menu item.
     /// </summary>
     public const string MenuItemSelect = "fivepd:menuItemSelect";
-
-    /// <summary>
-    /// Opens the MDT.
-    /// </summary>
-    public const string OpenMDT = "fivepd:openMdt";
 }

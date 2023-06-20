@@ -20,60 +20,45 @@ namespace FivePD.Gamemode.Client.Services;
 internal class UIService : IUIService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly ILoggerService _loggerService;
     private readonly IConfigService _configService;
-    private bool _isNuiOpened;
-    private bool _ready;
+    private readonly IControlService _controlService;
+    private readonly IUIManagerService _uiManagerService;
 
     /// <summary>Initializes a new instance of the <see cref="UIService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-    /// <param name="loggerService">The <see cref="ILoggerService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
-    public UIService(EventHandlerDictionary eventHandlerDictionary, ILoggerService loggerService, IConfigService configService)
+    /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
+    /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
+    public UIService(
+        EventHandlerDictionary eventHandlerDictionary,
+        IConfigService configService,
+        IControlService controlService,
+        IUIManagerService uiManagerService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._loggerService = loggerService;
         this._configService = configService;
+        this._controlService = controlService;
+        this._uiManagerService = uiManagerService;
     }
-
-    /// <summary>
-    /// Delegate for event <see cref="OnNuiHide"/>.
-    /// </summary>
-    public delegate void OnHide();
-
-    /// <inheritdoc />
-    public event OnHide OnNuiHide;
 
     /// <inheritdoc />
     public void RegisterEvents()
     {
+        this._controlService.RegisterKeybind(Controls.OpenMDT.Id, Controls.OpenMDT.Key, Controls.OpenMDT.Title, this.OpenMDT);
+        this._controlService.RegisterKeybind(Controls.OpenInformation.Id, Controls.OpenInformation.Key, Controls.OpenInformation.Title, this.OpenInformation);
+
         // Listens for NUI close event
         this._eventHandlerDictionary.AddUIEvent(
             Events.NuiEventType.Close,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
             {
-                this.Hide();
+                this._uiManagerService.Close();
                 cb.Invoke(string.Empty);
-            }));
-
-        // Listens for NUI status checks
-        this._eventHandlerDictionary.AddUIEvent(
-            Events.NuiEventType.ClientReady,
-            new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
-            {
-                this._loggerService.Info("Starting FivePD NUI...");
-                this._ready = true;
-
-                // If we can hear this, we're ready
-                cb.Invoke(true);
             }));
 
         this._eventHandlerDictionary.AddUIEvent(
             Events.DevTools.GetCurrentPlayerCoordinate,
-            new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
-            {
-                cb.Invoke(JsonConvert.SerializeObject(Game.PlayerPed.Position));
-            }));
+            new Action<ExpandoObject, CallbackDelegate>((body, cb) => { cb.Invoke(JsonConvert.SerializeObject(Game.PlayerPed.Position)); }));
 
         this._eventHandlerDictionary.AddUIEvent(
             Events.UI.Config.GetGeneralSettings,
@@ -91,7 +76,6 @@ internal class UIService : IUIService, IServiceWithEvents
             Events.UI.Config.GetSafeZoneSize,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
             {
-                Debug.WriteLine($"SAFE ZONE: {Cfx.API.GetSafeZoneSize()}");
                 cb.Invoke(JsonConvert.SerializeObject(new JObject
                 {
                     ["SafeZoneSize"] = Cfx.API.GetSafeZoneSize(),
@@ -170,80 +154,76 @@ internal class UIService : IUIService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    [Keybind(KeybindIdentifiers.MenuClose, "BACK", "Close menu")]
-    public void Hide()
+    public void OpenMDT()
     {
-        this.SendMessage("{\"type\": \"" + Events.NuiEventType.Close + "\"}");
-        Cfx.API.SetNuiFocus(false, false);
-        this._isNuiOpened = false;
-        this.OnNuiHide?.Invoke();
+        this._uiManagerService.Show(Events.NuiEventType.Mdt);
     }
 
     /// <inheritdoc />
-    [Keybind(KeybindIdentifiers.OpenMDT, "B", "Open MDT")]
-    public void OpenMdt()
+    public void OpenInformation()
     {
-        this.Show(Events.NuiEventType.Mdt);
+        this._uiManagerService.Show(Events.NuiEventType.Information, string.Empty, false, false);
     }
 
     /// <inheritdoc />
     [Keybind(KeybindIdentifiers.MenuMoveUp, "UP", "Move up in menu")]
     public void MenuControlUp()
     {
-        if (!this._isNuiOpened)
+        if (!this._uiManagerService.MenuOpen)
         {
             return;
         }
 
-        this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuUp + "\"}");
+        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuUp + "\"}");
     }
 
     /// <inheritdoc />
     [Keybind(KeybindIdentifiers.MenuMoveDown, "DOWN", "Move down in menu")]
     public void MenuControlDown()
     {
-        if (!this._isNuiOpened)
+        Debug.WriteLine($"{this._uiManagerService.MenuOpen}");
+        if (!this._uiManagerService.MenuOpen)
         {
             return;
         }
 
-        this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuDown + "\"}");
+        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuDown + "\"}");
     }
 
     /// <inheritdoc />
     [Keybind(KeybindIdentifiers.MenuMoveLeft, "LEFT", "Move left in menu")]
     public void MenuControlLeft()
     {
-        if (!this._isNuiOpened)
+        if (!this._uiManagerService.MenuOpen)
         {
             return;
         }
 
-        this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuLeft + "\"}");
+        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuLeft + "\"}");
     }
 
     /// <inheritdoc />
     [Keybind(KeybindIdentifiers.MenuMoveRight, "RIGHT", "Move right in menu")]
     public void MenuControlRight()
     {
-        if (!this._isNuiOpened)
+        if (!this._uiManagerService.MenuOpen)
         {
             return;
         }
 
-        this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuRight + "\"}");
+        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuRight + "\"}");
     }
 
     /// <inheritdoc />
     [Keybind(KeybindIdentifiers.MenuItemSelect, "RETURN", "Selects item in menu")]
     public void MenuControlSelect()
     {
-        if (!this._isNuiOpened)
+        if (!this._uiManagerService.MenuOpen)
         {
             return;
         }
 
-        this.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuSelect + "\"}");
+        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuSelect + "\"}");
     }
 
     /// <inheritdoc />
@@ -252,57 +232,7 @@ internal class UIService : IUIService, IServiceWithEvents
         // Centers cursor
         Cfx.API.SetCursorLocation(0.5f, 0.5f);
 
-        this.Show(Events.NuiEventType.RadialMenu, menuId, false, false);
-    }
-
-    /// <param name="timeToHoldInMs"></param>
-    /// <inheritdoc />
-    public void ShowTimerBar(int timeToHoldInMs)
-    {
-        Cfx.API.SetNuiFocus(false, false);
-        this.SendMessage(new JObject
-        {
-            { "type", Events.NuiEventType.TimerBar },
-            { "show", true },
-            { "title", "test" },
-            { "timeToHold", timeToHoldInMs },
-        });
-    }
-
-    /// <inheritdoc />
-    public void SendMessage(string data)
-    {
-        Cfx.API.SendNuiMessage(data);
-    }
-
-    /// <inheritdoc />
-    public void SendMessage(JObject data)
-    {
-        Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(data));
-    }
-
-    /// <inheritdoc />
-    public void Show(string type, string menuId = "#", bool hasFocus = true, bool hasCursor = true)
-    {
-        if (!this._ready)
-        {
-            return;
-        }
-
-        if (this._isNuiOpened && type != Events.NuiEventType.Mdt)
-        {
-            this.Hide();
-            return;
-        }
-
-        this._isNuiOpened = true;
-
-        this.SendMessage(new JObject
-        {
-            { "type", type },
-            { "menuId", menuId },
-        });
-        Cfx.API.SetNuiFocus(hasFocus, hasCursor);
+        this._uiManagerService.Show(Events.NuiEventType.RadialMenu, menuId, false, false);
     }
 
     private void RegisterUIEvents(string[] events)

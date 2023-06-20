@@ -55,6 +55,8 @@ import { DynamicFormDirective } from './components/dynamic-form/dynamic-form.dir
 import { ModalService } from '@services/modals/modal/modal.service';
 import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
+import { InformationComponent } from './pages/information/information.component';
+import { NotMdtComponent } from './pages/not-mdt/not-mdt.component';
 
 @NgModule({
   declarations: [
@@ -92,6 +94,8 @@ import { ConfigService } from "@services/config/config.service";
     DevtoolsViewComponent,
     TabsComponent,
     DynamicFormDirective,
+    InformationComponent,
+    NotMdtComponent,
   ],
   imports: [
     BrowserModule,

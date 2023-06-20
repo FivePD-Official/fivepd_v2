@@ -40,11 +40,6 @@ export class AppComponent implements OnInit {
       this.store.dispatch(setMdtPath({payload: event.url.split('/')}));
     });
     window.addEventListener('message', event => this._event.next(event.data));
-    window.addEventListener('keydown', event => {
-      if (event.code === 'Escape') {
-        this._window.hide();
-      }
-    });
   }
 
   onLoad(): void {

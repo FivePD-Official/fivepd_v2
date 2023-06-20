@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { UserService } from '@services/user/user.service';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,9 @@ export class WindowService {
   visible: boolean = false; // TODO: this is only needed because of the close event spam
   previousMdtPath: string[] = ['mdt', 'dashboard'];
 
+  showInformation = new BehaviorSubject(false);
+  showMenu = new BehaviorSubject(false);
+
   constructor(
     private _http: HttpClient,
     private _event: EventService,
@@ -23,15 +27,23 @@ export class WindowService {
     private _userService: UserService,
     private readonly store: Store<GlobalState>,
   ) {
-    this._event.onEvent<TimerBarEvent>('webpackInvalid' as NuiEventType).subscribe(() => this.hide());
-    this._event.onEvent<TimerBarEvent>('webpackOk' as NuiEventType).subscribe(() => this.hide());
+    this._event.onEvent<TimerBarEvent>('webpackInvalid' as NuiEventType).subscribe(() => this.close());
+    this._event.onEvent<TimerBarEvent>('webpackOk' as NuiEventType).subscribe(() => this.close());
+    window.addEventListener('keydown', event => {
+      if (event.code === 'Escape') {
+        this.close();
+      }
+    });
 
-    this._event.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => this.hide()) // TODO: investigate why this subscription spams after the first close event
+    this._event.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => this.close()) // TODO: investigate why this subscription spams after the first close event
     this._event.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
       this._userService.refreshData();
       this.onMdtOpen();
     });
-    this._event.onEvent<MenuShowEvent>(NuiEventType.MenuView).subscribe(res => this.onMenuOpen(res));
+    this._event.onEvent<BaseNuiEvent>(NuiEventType.Information).subscribe(() => {
+      this.onInformationOpen();
+    });
+    this._event.onEvent<MenuShowEvent>(NuiEventType.MenuView).subscribe(() => this.onMenuOpen());
     this._event.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(res => this.onRadialMenuOpen(res));
     this._event.onEvent<TimerBarEvent>(NuiEventType.TimerBar).subscribe(res => this.onTimerBarEvent(res));
 
@@ -45,14 +57,22 @@ export class WindowService {
     document.body.style.display = 'block';
   }
 
-  hide(): void {
-    if (!this.visible) {
-      return;
+  close(): void {
+    if (this.showInformation.value || this.showMenu.value) {
+      this.triggerCloseEvent();
+      this._router.navigate(['not-mdt']);
+    } else {
+      this.closeMDT();
     }
+  }
 
-    this.visible = false;
-    document.body.style.display = 'none';
+  triggerCloseEvent(): void {
     this._http.post(NuiEventType.Close, {}).subscribe();
+  }
+
+  closeMDT(): void {
+    this._router.navigate(['']);
+    this.triggerCloseEvent();
   }
 
   private onMdtOpen(): void {
@@ -60,10 +80,16 @@ export class WindowService {
     this._router.navigate([...this.previousMdtPath]);
   }
 
-  private onMenuOpen(res: MenuShowEvent): void {
+  private onInformationOpen(): void {
     this.show();
-    this._router.navigate(['menu', res.menuId]);
-    console.log('navigated to menu')
+    this.showInformation.next(!this.showInformation.value);
+    this._router.navigate(['not-mdt']);
+  }
+
+  private onMenuOpen(): void {
+    this.show();
+    this.showMenu.next(!this.showMenu.value);
+    this._router.navigate(['not-mdt']);
   }
 
   private onRadialMenuOpen(res: MenuShowEvent): void {
@@ -76,7 +102,7 @@ export class WindowService {
       this.show();
       this._router.navigate(['timer-bar']);
     } else {
-      this.hide();
+      this.triggerCloseEvent();
     }
   }
 }

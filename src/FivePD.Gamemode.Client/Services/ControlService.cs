@@ -21,7 +21,7 @@ namespace FivePD.Gamemode.Client.Services;
 internal class ControlService : IControlService, IServiceWithEvents
 {
     private readonly ITickService _tickService;
-    private readonly IUIService _uiService;
+    private readonly IUIManagerService _uiService;
     private readonly List<HoldableKeybind> _actions = new();
     private readonly List<string> _registeredControlIds = new();
 
@@ -29,8 +29,8 @@ internal class ControlService : IControlService, IServiceWithEvents
     /// Initializes a new instance of the <see cref="ControlService"/> class.
     /// </summary>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-    /// <param name="uiService">The <see cref="IUIService"/> to use.</param>
-    public ControlService(ITickService tickService, IUIService uiService)
+    /// <param name="uiService">The <see cref="IUIManagerService"/> to use.</param>
+    public ControlService(ITickService tickService, IUIManagerService uiService)
     {
         this._tickService = tickService;
         this._uiService = uiService;
@@ -74,13 +74,13 @@ internal class ControlService : IControlService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterKeybind(string id, string key, string description, Action onPress = null, Action onRelease = null)
+    public void RegisterKeybind(string id, string key, string title, Action onPress = null, Action onRelease = null)
     {
-        this.InternalRegisterKeybind(id, key, description, "KEYBOARD", onPress, onRelease);
+        this.InternalRegisterKeybind(id, key, title, "KEYBOARD", onPress, onRelease);
     }
 
     /// <inheritdoc />
-    public void RegisterMomentaryKeybind(string id, string key, string description, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
+    public void RegisterMomentaryKeybind(string id, string key, string title, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
     {
         var holdableKeybind = new HoldableKeybind(onPress, (int)Math.Floor(timeToHoldInMs * 0.05));
         var isInvokable = false;
@@ -113,13 +113,13 @@ internal class ControlService : IControlService, IServiceWithEvents
             this._actions.Remove(holdableKeybind);
         }
 
-        this.InternalRegisterKeybind(id, key, description, "KEYBOARD", HoldableOnPress, HoldableOnRelease);
+        this.InternalRegisterKeybind(id, key, title, "KEYBOARD", HoldableOnPress, HoldableOnRelease);
     }
 
     /// <inheritdoc />
-    public void RegisterMouseKeybind(string id, string key, string description, Action onPress = null, Action onRelease = null)
+    public void RegisterMouseKeybind(string id, string key, string title, Action onPress = null, Action onRelease = null)
     {
-        this.InternalRegisterKeybind(id, key, description, "MOUSE_BUTTON", onPress, onRelease);
+        this.InternalRegisterKeybind(id, key, title, "MOUSE_BUTTON", onPress, onRelease);
     }
 
     private void InternalRegisterMomentaryKeybind(ControlsDTO.ClientControlDTO control)
@@ -134,7 +134,7 @@ internal class ControlService : IControlService, IServiceWithEvents
             BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "release");
         }
 
-        this.RegisterMomentaryKeybind(control.Id, control.Key, control.Description, control.TimeToHoldInMs, OnPress, OnRelease);
+        this.RegisterMomentaryKeybind(control.Id, control.Key, control.Title, control.TimeToHoldInMs, OnPress, OnRelease);
     }
 
     private void InternalRegisterKeybind(ControlsDTO.ClientControlDTO control)
@@ -149,10 +149,10 @@ internal class ControlService : IControlService, IServiceWithEvents
             BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "release");
         }
 
-        this.InternalRegisterKeybind(control.Id, control.Key, control.Description, control.KeyMapper, OnPress, OnRelease);
+        this.InternalRegisterKeybind(control.Id, control.Key, control.Title, control.KeyMapper, OnPress, OnRelease);
     }
 
-    private void InternalRegisterKeybind(string id, string key, string description, string keyMapper, Action onPress, Action onRelease = null)
+    private void InternalRegisterKeybind(string id, string key, string title, string keyMapper, Action onPress, Action onRelease = null)
     {
         if (this._registeredControlIds.Contains(id))
         {
@@ -161,7 +161,7 @@ internal class ControlService : IControlService, IServiceWithEvents
 
         this._registeredControlIds.Add(id);
 
-        Cfx.API.RegisterKeyMapping($"+{id}", description, keyMapper, key);
+        Cfx.API.RegisterKeyMapping($"+{id}", title, keyMapper, key);
         Cfx.API.RegisterCommand(
             $"+{id}",
             new Action(() =>

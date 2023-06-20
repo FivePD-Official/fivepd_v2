@@ -15,6 +15,8 @@ import { ReportsComponent } from './pages/mdt/reports/reports.component';
 import { DevtoolsGeneralComponent } from './pages/mdt/devtools/devtools-general/devtools-general.component';
 import { DevtoolsCalloutsComponent } from './pages/mdt/devtools/devtools-callouts/devtools-callouts.component';
 import { DevtoolsViewComponent } from './pages/mdt/devtools/devtools-view/devtools-view.component';
+import { InformationComponent } from "./pages/information/information.component";
+import { NotMdtComponent } from "./pages/not-mdt/not-mdt.component";
 
 const mdtRoutes: Routes = [
   {
@@ -73,10 +75,6 @@ const routes: Routes = [
     component: BlankComponent
   },
   {
-    path: 'menu/:id',
-    component: MenuComponent
-  },
-  {
     path: 'radial-menu/:id',
     component: RadialMenuComponent
   },
@@ -89,6 +87,10 @@ const routes: Routes = [
     component: MdtComponent,
     children: mdtRoutes,
   },
+  {
+    path: 'not-mdt',
+    component: NotMdtComponent,
+  }
 ];
 
 @NgModule({
