@@ -61,49 +61,53 @@ public sealed class DispatchMenu : Menu
         foreach (var status in this._configService.GeneralConfig.Status)
         {
             var item = new MenuButtonItem(status.Title, status.Description);
-            if (status.OnSelect is null)
+            var actions = new List<Action<FPlayer>>
             {
-                items.Add(item);
-                continue;
-            }
-
-            var actions = new List<Action<FPlayer>>();
-            if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerOnDuty))
-            {
-                actions.Add(player =>
+                player =>
                 {
-                    player.DutyStatus.Value = FDutyStatus.OnDuty;
-                    player.Availability.Value = FPlayerAvailability.Receiving;
-                });
-            }
-            
-            if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerOffDuty))
+                    player.Status.Value = status.Title;
+                }
+            };
+
+            if (status.OnSelect is not null)
             {
-                actions.Add(player =>
+                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerOnDuty))
                 {
-                    player.DutyStatus.Value = FDutyStatus.OffDuty;
-                    player.Availability.Value = FPlayerAvailability.NotReceiving;
-                });
-            }
+                    actions.Add(player =>
+                    {
+                        player.DutyStatus.Value = FDutyStatus.OnDuty;
+                        player.Availability.Value = FPlayerAvailability.Receiving;
+                    });
+                }
+                
+                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerOffDuty))
+                {
+                    actions.Add(player =>
+                    {
+                        player.DutyStatus.Value = FDutyStatus.OffDuty;
+                        player.Availability.Value = FPlayerAvailability.NotReceiving;
+                    });
+                }
 
-            if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanReceiveCallouts))
-            {
-                actions.Add(player => player.Availability.Value = FPlayerAvailability.Receiving);
-            }
+                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanReceiveCallouts))
+                {
+                    actions.Add(player => player.Availability.Value = FPlayerAvailability.Receiving);
+                }
 
-            if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanNotReceiveCallouts))
-            {
-                actions.Add(player => player.Availability.Value = FPlayerAvailability.NotReceiving);
-            }
+                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanNotReceiveCallouts))
+                {
+                    actions.Add(player => player.Availability.Value = FPlayerAvailability.NotReceiving);
+                }
 
-            if (status.OnSelect.Contains(StatusOnSelectKeys.CompletesCurrentCallout))
-            {
-                actions.Add(player => this._calloutManagerService.CompleteCalloutOfPlayer(player));
-            }
-            
-            if (status.OnSelect.Contains(StatusOnSelectKeys.TriggersPanicMode))
-            {
-                // TODO
+                if (status.OnSelect.Contains(StatusOnSelectKeys.CompletesCurrentCallout))
+                {
+                    actions.Add(player => this._calloutManagerService.CompleteCalloutOfPlayer(player));
+                }
+                
+                if (status.OnSelect.Contains(StatusOnSelectKeys.TriggersPanicMode))
+                {
+                    // TODO
+                }
             }
 
             item.OnSelect += player =>

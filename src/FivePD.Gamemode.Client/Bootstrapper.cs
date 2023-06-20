@@ -253,10 +253,6 @@ internal class Bootstrapper : BaseScript
 
     private void PerformInitializationPhase()
     {
-        var screenDecorService = this._serviceProvider.Resolve<IScreenDecorService>();
-        screenDecorService.Version = "v2.0.0";
-        screenDecorService.ProtectionNotice = true;
-
         var serviceWithEvents = this._serviceProvider.ResolveAll<IServiceWithEvents>();
         foreach (var service in serviceWithEvents)
         {
@@ -273,11 +269,6 @@ internal class Bootstrapper : BaseScript
                 this._bootstrapLogger.Error(e.Message);
             }
         }
-
-        screenDecorService.BeginTextDraw();
-
-        var localizationService = this._serviceProvider.Resolve<ILocalizationService>();
-        localizationService.LocalizationChanged += (_, _) => { screenDecorService.BuildText(); };
     }
 
     private void OnTickAdd(Func<Task> task)

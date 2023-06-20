@@ -16,4 +16,5 @@ export enum NuiEventType {
   RadialMenuControl = 'radial_menu:control',
   PlaySound = 'sound:play',
   PlayText = 'sound:playText',
+  InformationUpdate = 'information:update',
 }

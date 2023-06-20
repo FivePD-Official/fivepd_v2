@@ -1,4 +1,4 @@
-﻿import { FDutyStatus, FIncidentPriorty, User } from "./entities";
+﻿import { FDutyStatus, FIncidentPriorty, FPlayerAvailability, User } from "./entities";
 
 export interface ActionResponse {
   Status: boolean;
@@ -118,4 +118,10 @@ export interface CalloutDTO {
 
 export interface GetSafeZoneSize {
   SafeZoneSize: number;
+}
+
+export interface InformationUpdateDTO extends BaseNuiEvent {
+  Status: string;
+  DutyStatus: FDutyStatus;
+  Availability: FPlayerAvailability;
 }

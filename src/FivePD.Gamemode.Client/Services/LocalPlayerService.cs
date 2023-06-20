@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Gamemode.Client.DTO;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Models;
 using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Common.Enums;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Gamemode.Client.Services;
@@ -15,7 +17,9 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
     private readonly ILocalizationService _localizationService;
     private readonly IConfigService _configService;
     private readonly ITickService _tickService;
+    private readonly IUIManagerService _uiManagerService;
 
+    private readonly InformationUpdateDTO _information = new();
     private GeneralConfig _generalConfig = new()
     {
         FeatureFlags = new()
@@ -32,11 +36,17 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-    public LocalPlayerService(ILocalizationService localizationService, IConfigService configService, ITickService tickService)
+    /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
+    public LocalPlayerService(
+        ILocalizationService localizationService,
+        IConfigService configService,
+        ITickService tickService,
+        IUIManagerService uiManagerService)
     {
         this._localizationService = localizationService;
         this._configService = configService;
         this._tickService = tickService;
+        this._uiManagerService = uiManagerService;
 
 #pragma warning disable CS4014
         this.GetGeneralConfigAsync();
@@ -44,6 +54,8 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
 
         this.UpdateDiscordStatus(FDutyStatus.OffDuty);
         this.Player.DutyStatus.Subscribe(this.ListenForDutyStatusChanges);
+        this.Player.Availability.Subscribe(this.ListenForAvailabilityStatusChanges);
+        this.Player.Status.Subscribe(this.ListenForPlayerStatusChanges);
     }
 
     /// <inheritdoc />
@@ -89,6 +101,25 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
     {
         // Update the player's Discord presence.
         this.UpdateDiscordStatus(dutyStatus);
+        this._information.DutyStatus = dutyStatus;
+        this.UpdateInformationInUI();
+    }
+
+    private void ListenForAvailabilityStatusChanges(FPlayerAvailability availability)
+    {
+        this._information.Availability = availability;
+        this.UpdateInformationInUI();
+    }
+
+    private void ListenForPlayerStatusChanges(string status)
+    {
+        this._information.Status = status;
+        this.UpdateInformationInUI();
+    }
+
+    private void UpdateInformationInUI()
+    {
+        this._uiManagerService.SendMessage(JsonConvert.SerializeObject(this._information));
     }
 
     // Called when the player's duty status changes.

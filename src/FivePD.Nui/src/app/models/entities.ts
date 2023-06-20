@@ -74,6 +74,11 @@ export enum FDutyStatus {
   OnDuty,
 }
 
+export enum FPlayerAvailability {
+  Receiving,
+  NotReceiving,
+}
+
 export enum FIncidentPriorty {
   Code1,
   Code2,
