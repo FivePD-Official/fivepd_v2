@@ -6,6 +6,7 @@ using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Models;
 using FivePD.Gamemode.Common.ConfigModels;
 using FivePD.Gamemode.Common.Enums;
+using FivePD.Gamemode.Common.Models;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -67,6 +68,19 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
         this._tickService.OnTick += this.OnTickAsync;
     }
 
+    /// <inheritdoc/>
+    public void UpdateInformationCallout(ClientCalloutWrapper clientCalloutWrapper)
+    {
+        this._information.CalloutWrapper = clientCalloutWrapper;
+        this.UpdateInformationInUI();
+    }
+
+    /// <inheritdoc/>
+    public void UpdateInformationInUI()
+    {
+        this._uiManagerService.SendMessage(JsonConvert.SerializeObject(this._information));
+    }
+
     private Task OnTickAsync()
     {
         if (!this._generalConfig.FeatureFlags.DisableWantedLevel)
@@ -116,11 +130,6 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
     {
         this._information.Status = status;
         this.UpdateInformationInUI();
-    }
-
-    private void UpdateInformationInUI()
-    {
-        this._uiManagerService.SendMessage(JsonConvert.SerializeObject(this._information));
     }
 
     // Called when the player's duty status changes.

@@ -84,3 +84,9 @@ export enum FIncidentPriorty {
   Code2,
   Code3,
 }
+
+export interface Vector3 {
+  X: number;
+  Y: number;
+  Z: number;
+}

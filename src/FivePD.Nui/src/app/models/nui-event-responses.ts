@@ -1,4 +1,4 @@
-﻿import { FDutyStatus, FIncidentPriorty, FPlayerAvailability, User } from "./entities";
+﻿import { FDutyStatus, FIncidentPriorty, FPlayerAvailability, User, Vector3 } from "./entities";
 
 export interface ActionResponse {
   Status: boolean;
@@ -124,4 +124,15 @@ export interface InformationUpdateDTO extends BaseNuiEvent {
   Status: string;
   DutyStatus: FDutyStatus;
   Availability: FPlayerAvailability;
+  CalloutWrapper?: {
+    Callout: {
+      Id: string;
+      Title: string;
+      Description: string;
+      Priority: FIncidentPriorty;
+      ActivityRadius: number;
+      Location: Vector3;
+    };
+    Address: string;
+  }
 }

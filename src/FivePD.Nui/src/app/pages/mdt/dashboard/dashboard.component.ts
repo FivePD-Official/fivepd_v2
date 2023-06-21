@@ -224,7 +224,7 @@ export class DashboardComponent implements OnInit {
         return 'LABEL.PRIORITY.CODE3';
     }
 
-    return 'Unknown';
+    return '-';
   }
 
   getGeneralSettings(): void {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from "@services/event/event.service";
 import { NuiEventType } from "@enums";
-import { FDutyStatus, FPlayerAvailability, InformationUpdateDTO } from "@models";
+import { FDutyStatus, FIncidentPriorty, FPlayerAvailability, InformationUpdateDTO } from "@models";
 
 @Component({
   selector: 'app-information',
@@ -32,6 +32,23 @@ export class InformationComponent implements OnInit {
 
   get FPlayerAvailability() {
     return FPlayerAvailability;
+  }
+
+  get priorityLabel(): string {
+    if (!this.information.CalloutWrapper) {
+      return '';
+    }
+
+    switch (this.information.CalloutWrapper.Callout.Priority) {
+      case FIncidentPriorty.Code1:
+        return 'LABEL.PRIORITY.CODE1';
+      case FIncidentPriorty.Code2:
+        return 'LABEL.PRIORITY.CODE2';
+      case FIncidentPriorty.Code3:
+        return 'LABEL.PRIORITY.CODE3';
+    }
+
+    return '-';
   }
 
 }

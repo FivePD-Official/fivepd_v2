@@ -17,6 +17,7 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;
+    private readonly ILocalPlayerService _localPlayerService;
 
     private ClientCalloutWrapper _currentCallout;
     private Blip _calloutBlip;
@@ -26,10 +27,12 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-    public CalloutManagerService(EventHandlerDictionary eventHandlerDictionary, ITickService tickService)
+    /// <param name="localPlayerService">The <see cref="ILocalPlayerService"/> to use.</param>
+    public CalloutManagerService(EventHandlerDictionary eventHandlerDictionary, ITickService tickService, ILocalPlayerService localPlayerService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickService = tickService;
+        this._localPlayerService = localPlayerService;
     }
 
     /// <inheritdoc/>
@@ -47,6 +50,8 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
     {
         var callout = JsonConvert.DeserializeObject<ClientCallout>(serializedCallout);
         this._currentCallout = new ClientCalloutWrapper(callout, callout.Location.GetStreetName());
+        this._localPlayerService.UpdateInformationCallout(this._currentCallout);
+
         this._tickService.OnTick += this.OnTickAsync;
 
         this._calloutBlip = World.CreateBlip(callout.Location, callout.ActivityRadius);
@@ -67,6 +72,7 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
     private void OnCompleted()
     {
         this._currentCallout = null;
+        this._localPlayerService.UpdateInformationCallout(null);
         var calloutBlipHandle = this._calloutBlip.Handle;
         Cfx.API.RemoveBlip(ref calloutBlipHandle);
     }
@@ -86,6 +92,4 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
 
         return Task.FromResult(0);
     }
-
-    private sealed record ClientCalloutWrapper(ClientCallout Callout, string Address);
 }

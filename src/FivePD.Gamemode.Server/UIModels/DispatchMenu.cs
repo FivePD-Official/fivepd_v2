@@ -40,18 +40,18 @@ public sealed class DispatchMenu : Menu
     {
         var items = new List<MenuItem>();
 
-        this.CompleteIncident = new MenuButtonItem("Complete incident", string.Empty);
+        this.CompleteIncident = new MenuButtonItem("test complete incident", string.Empty);
         this.CompleteIncident.OnSelect += player => { this._calloutManagerService.CompleteCalloutOfPlayer(player); };
         items.Add(this.CompleteIncident);
 
-        this.CallAmbulance = new MenuButtonItem("Call ambulance", string.Empty);
+        this.CallAmbulance = new MenuButtonItem("test call ambulance", string.Empty);
         this.CallAmbulance.OnSelect += player =>
         {
             this._assistanceService.Call<Ambulance>(player);
         };
         items.Add(this.CallAmbulance);
         
-        var t = new MenuButtonItem("Call tow truck", string.Empty);
+        var t = new MenuButtonItem("test call tow truck", string.Empty);
         t.OnSelect += player =>
         {
             this._assistanceService.Call<TowTruck>(player);

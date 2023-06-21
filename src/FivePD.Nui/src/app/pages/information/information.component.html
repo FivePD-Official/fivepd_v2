@@ -21,8 +21,31 @@
       </div>
     </div>
 
-    <div class="w-full flex flex-row items-center justify-end py-1 border-t-[1px] border-color">
-      <p class="font-medium text-zinc-400 text-sm">FivePD 2.0</p>
+    <div *ngIf="information.CalloutWrapper" class="w-full h-[1px] bg-zinc-700"></div>
+
+    <div *ngIf="information.CalloutWrapper" class="w-full flex flex-col gap-4">
+      <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
+        <div class="flex flex-col">
+          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ACTIVE_CALLOUT.SINGULAR' | translate }}</p>
+          <p class="text-zinc-200">
+            {{ information.CalloutWrapper.Callout.Title }}
+          </p>
+        </div>
+        <div class="flex flex-col">
+          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+          <p class="text-zinc-200">
+            {{ information.CalloutWrapper.Address }}
+          </p>
+        </div>
+      </div>
+      <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
+        <div class="flex flex-col">
+          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
+          <p class="text-zinc-200">
+            {{ priorityLabel | translate }}
+          </p>
+        </div>
+      </div>
     </div>
 
   </div>

@@ -19,3 +19,5 @@ internal sealed record ClientCallout
 
     public Vector3 Location { get; init; }
 }
+
+internal sealed record ClientCalloutWrapper(ClientCallout Callout, string Address);

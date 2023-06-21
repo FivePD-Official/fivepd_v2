@@ -1,10 +1,11 @@
 ﻿using FivePD.Gamemode.Common.Enums;
+using FivePD.Gamemode.Common.Models;
 
 namespace FivePD.Gamemode.Client.DTO;
 
 #pragma warning disable
 
-public sealed record InformationUpdateDTO
+internal sealed record InformationUpdateDTO
 {
     public readonly string type = "information:update";
 
@@ -13,4 +14,6 @@ public sealed record InformationUpdateDTO
     public FDutyStatus DutyStatus { get; set; }
 
     public FPlayerAvailability Availability { get; set; }
+
+    public ClientCalloutWrapper CalloutWrapper { get; set; }
 }
