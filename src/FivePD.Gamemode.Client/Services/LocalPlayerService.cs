@@ -24,6 +24,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
     {
         FeatureFlags = new()
         {
+            DiscordRichPresence = true,
             DutyNotification = false,
             DisableWantedLevel = false,
             DisableWantedLevelAllTime = false,
@@ -52,7 +53,6 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
         this.GetGeneralConfigAsync();
 #pragma warning restore CS4014
 
-        this.UpdateDiscordStatus(FDutyStatus.OffDuty);
         this.Player.DutyStatus.Subscribe(this.ListenForDutyStatusChanges);
         this.Player.Availability.Subscribe(this.ListenForAvailabilityStatusChanges);
         this.Player.Status.Subscribe(this.ListenForPlayerStatusChanges);
@@ -95,19 +95,20 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
 #pragma warning restore S3241
     {
         this._generalConfig = await this._configService.GeneralConfig;
+        this.UpdateDiscordStatus();
     }
 
     private void ListenForDutyStatusChanges(FDutyStatus dutyStatus)
     {
-        // Update the player's Discord presence.
-        this.UpdateDiscordStatus(dutyStatus);
         this._information.DutyStatus = dutyStatus;
+        this.UpdateDiscordStatus();
         this.UpdateInformationInUI();
     }
 
     private void ListenForAvailabilityStatusChanges(FPlayerAvailability availability)
     {
         this._information.Availability = availability;
+        this.UpdateDiscordStatus();
         this.UpdateInformationInUI();
     }
 
@@ -123,8 +124,18 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
     }
 
     // Called when the player's duty status changes.
-    private void UpdateDiscordStatus(FDutyStatus dutyStatus)
+    private void UpdateDiscordStatus()
     {
+        if (!this._generalConfig.FeatureFlags.DiscordRichPresence)
+        {
+            Cfx.API.SetDiscordAppId(string.Empty);
+            Cfx.API.SetDiscordRichPresenceAsset(string.Empty);
+            Cfx.API.SetRichPresence(string.Empty);
+            Cfx.API.SetDiscordRichPresenceAssetText(string.Empty);
+            Cfx.API.SetDiscordRichPresenceAssetSmallText(string.Empty);
+            return;
+        }
+
         Cfx.API.SetDiscordAppId("1112111975862898718");
         Cfx.API.SetDiscordRichPresenceAsset("fpd_generic");
 
@@ -133,7 +144,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
         // Cfx.API.SetDiscordRichPresenceAssetSmall(dutyStatus > 0 ? "fpd_status_on_duty" : "fpd_status_off_duty")
 #pragma warning restore
 
-        var status = dutyStatus switch
+        var status = this._information.DutyStatus switch
         {
             FDutyStatus.OffDuty => this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.GENERIC"),
             FDutyStatus.OnDuty => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC"),

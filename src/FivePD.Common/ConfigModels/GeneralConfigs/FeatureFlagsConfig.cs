@@ -4,6 +4,8 @@
 
 public sealed record FeatureFlagsConfig
 {
+    public bool DiscordRichPresence { get; init; }
+
     public bool DutyNotification { get; init; }
 
     public bool DisableWantedLevel { get; init; }
