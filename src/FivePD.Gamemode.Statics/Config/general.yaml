@@ -9,7 +9,7 @@ Unit:
   Join: free
 
 Callout:
-  AutomaticGeneration: true
+  AutomaticGeneration: false
   MinIntervalInMs: 5000
   MaxIntervalInMs: 10000
 

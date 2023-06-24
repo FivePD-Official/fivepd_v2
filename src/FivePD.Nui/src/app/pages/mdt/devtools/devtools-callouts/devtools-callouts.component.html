@@ -1,2 +1,5 @@
-<p class="text-white">devtools-callouts works!</p>
-<a routerLink="/mdt/devtools" class="text-white">to main</a>
+<app-grid
+  [title]="'UI.LABEL.CALLOUT.PLURAL' | translate"
+  [data]="callouts"
+  [columns]="calloutsColumnDef"
+  [showPagination]="false"/>

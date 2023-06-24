@@ -136,3 +136,8 @@ export interface InformationUpdateDTO extends BaseNuiEvent {
     Address: string;
   }
 }
+
+export interface CalloutTypeDTO {
+  TypeName: string;
+  AssemblyName: string;
+}

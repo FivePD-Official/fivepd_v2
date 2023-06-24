@@ -11,6 +11,7 @@ using FivePD.Gamemode.Server.Attributes;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
+using FivePD.Gamemode.Server.Models.Requests;
 using FivePD.Gamemode.Server.QueryHelpers;
 
 namespace FivePD.Gamemode.Server.Services;
@@ -21,7 +22,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickQueueService _tickQueueService;
 
-    private readonly List<Type> _calloutTypes = new();
+    private readonly List<CalloutType> _calloutTypes = new();
     private readonly List<CalloutHolder> _activeCallouts = new();
 
     /// <summary>
@@ -41,10 +42,13 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     public event EventHandler<Callout> OnCalloutCompleted;
 
     /// <inheritdoc/>
-    List<Type> IInternalCalloutManagerService.CalloutTypes => this._calloutTypes;
+    List<CalloutHolder> IInternalCalloutManagerService.ActiveCallouts => this._activeCallouts;
 
     /// <inheritdoc/>
-    List<CalloutHolder> IInternalCalloutManagerService.ActiveCallouts => this._activeCallouts;
+    List<Type> IInternalCalloutManagerService.CalloutTypes()
+    {
+        return this._calloutTypes.Select(x => x.Type).ToList();
+    }
 
     /// <inheritdoc />
     public List<Callout> ActiveCallouts()
@@ -77,7 +81,8 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         var callouts = (IEnumerable<Callout>)ServiceLocator.GetServices(typeof(Callout));
         foreach (var callout in callouts)
         {
-            this._calloutTypes.Add(callout.GetType());
+            var type = callout.GetType();
+            this._calloutTypes.Add(new CalloutType(type, type.Assembly.GetName().Name));
         }
     }
 
@@ -144,6 +149,25 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
             ItemCount = activeCallouts.Count,
             PageCount = 1,
             PageSize = activeCallouts.Count,
+        };
+        networkCallbackDelegate.InvokeWithJson(page);
+    }
+
+    [UIEvent(Events.UI.Callout.GetAllTypes)]
+    private void GetAllCalloutTypesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var types = this._calloutTypes.Select(x => new CalloutDTO.CalloutTypeToUIDTO
+        {
+            TypeName = x.Type.Name,
+            AssemblyName = x.AssemblyName,
+        }).ToList();
+        var page = new Page<CalloutDTO.CalloutTypeToUIDTO>
+        {
+            Items = types,
+            CurrentPage = 1,
+            ItemCount = types.Count,
+            PageCount = 1,
+            PageSize = types.Count,
         };
         networkCallbackDelegate.InvokeWithJson(page);
     }

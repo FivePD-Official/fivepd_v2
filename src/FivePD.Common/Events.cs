@@ -203,6 +203,10 @@ internal readonly record struct Events
         public readonly record struct Callout
         {
             public const string GetActive = "fivepd:ui:callout:getActive";
+            
+            public const string GetAllTypes = "fivepd:ui:callout:getAllTypes";
+
+            public const string Dispatch = "fivepd:ui:callout:dispatch";
         }
     }
 

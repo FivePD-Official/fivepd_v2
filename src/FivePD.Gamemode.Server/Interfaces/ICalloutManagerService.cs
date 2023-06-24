@@ -43,14 +43,17 @@ public interface ICalloutManagerService
 internal interface IInternalCalloutManagerService
 {
     /// <summary>
-    /// Gets all available callout types.
-    /// </summary>
-    public List<Type> CalloutTypes { get; }
-
-    /// <summary>
     /// Gets the active callouts.
     /// </summary>
     public List<CalloutHolder> ActiveCallouts { get; }
+
+    /// <summary>
+    /// Gets all available callout types.
+    /// </summary>
+    /// <returns>A list of callout types.</returns>
+    public List<Type> CalloutTypes();
 }
 
 internal sealed record CalloutHolder(Callout Callout, Stopwatch Timer);
+
+internal sealed record CalloutType(Type Type, string AssemblyName);

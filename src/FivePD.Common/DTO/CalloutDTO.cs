@@ -28,4 +28,11 @@ public sealed record CalloutDTO
 
         public IEnumerable<string> Units { get; init; }
     }
+    
+    public sealed record CalloutTypeToUIDTO
+    {
+        public string TypeName { get; init; }
+
+        public string AssemblyName { get; init; }
+    }
 }

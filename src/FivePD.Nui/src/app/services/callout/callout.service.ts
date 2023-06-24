@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { CalloutDTO, ClientCalloutWrapper, Page } from "@models";
+import { ActionResponse, CalloutDTO, CalloutTypeDTO, ClientCalloutWrapper, Page } from "@models";
 
 @Injectable({
   providedIn: 'root'
@@ -26,4 +26,14 @@ export class CalloutService {
   //     Callsign: unit.Callsign,
   //   });
   // }
+
+  getAllTypes(): Observable<Page<CalloutTypeDTO>> {
+    return this._http.post<Page<CalloutTypeDTO>>('fivepd:ui:callout:getAllTypes', {});
+  }
+
+  dispatch(callout: CalloutTypeDTO): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:ui:callout:dispatch', {
+      TypeName: callout.TypeName,
+    });
+  }
 }

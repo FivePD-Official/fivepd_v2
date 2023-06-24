@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Gamemode.Common;
 using FivePD.Gamemode.Common.Enums;
 using FivePD.Gamemode.Common.Models;
 using FivePD.Gamemode.Server.API;
 using FivePD.Gamemode.Server.API.CalloutEvents;
+using FivePD.Gamemode.Server.Attributes;
+using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.Requests;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -90,11 +95,17 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
             this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Restart();
 
-        var calloutType = this._calloutManagerService.CalloutTypes[this._randomService.Random.Next(0, this._calloutManagerService.CalloutTypes.Count)];
-        var callout = (Callout)ServiceLocator.GetService(calloutType);
+        var calloutTypes = this._calloutManagerService.CalloutTypes();
+        var calloutType = calloutTypes[this._randomService.Random.Next(0, calloutTypes.Count)];
+        await this.DispatchCalloutAsync(calloutType);
+    }
+
+    private async Task DispatchCalloutAsync(Type type, bool invokeCanBeDispatch = true)
+    {
+        var callout = (Callout)ServiceLocator.GetService(type);
         if (callout is null)
         {
-            this._logger.Warning("A callout with the type of \"{Type}\" could not be instantiated.", calloutType);
+            this._logger.Warning("A callout with the type of \"{Type}\" could not be instantiated.", type);
             return;
         }
 
@@ -119,17 +130,20 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
             callout.Location = properties.Location;
         }
 
-        var canBeDispatched = await callout.CanBeDispatched();
-        if (!canBeDispatched)
+        if (invokeCanBeDispatch)
         {
-            return;
+            var canBeDispatched = await callout.CanBeDispatched();
+            if (!canBeDispatched)
+            {
+                return;
+            }
         }
 
         var calloutHolder = new CalloutHolder(callout, new Stopwatch());
         this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 
-        var notifiedUnits = this.DispatchCallout(calloutHolder);
+        var notifiedUnits = this.DispatchCalloutToUnits(calloutHolder);
         this.OnCalloutDispatched?.Invoke(this, new DispatchedCallout
         {
             Callout = callout,
@@ -138,7 +152,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         await callout.OnDispatched(notifiedUnits);
     }
 
-    private List<Unit> DispatchCallout(CalloutHolder calloutHolder)
+    private List<Unit> DispatchCalloutToUnits(CalloutHolder calloutHolder)
     {
         var filteredUnits = this._unitService.Units
             .Where(unit =>
@@ -239,5 +253,23 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         }
 
         return filteredUnits;
+    }
+
+    [UIEvent(Events.UI.Callout.Dispatch)]
+    private void DispatchCalloutUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<DispatchCalloutRequest>();
+        var calloutType = this._calloutManagerService.CalloutTypes().FirstOrDefault(x => x.Name == request.TypeName);
+        if (calloutType is null)
+        {
+            networkCallbackDelegate.Invoke(null);
+            return;
+        }
+
+#pragma warning disable CS4014
+        this.DispatchCalloutAsync(calloutType, false);
+#pragma warning restore CS4014
+
+        networkCallbackDelegate.Invoke(null);
     }
 }

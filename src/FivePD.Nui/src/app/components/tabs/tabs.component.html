@@ -4,6 +4,6 @@
        [routerLink]="tab.routerLink"
        routerLinkActive="bg-zinc-700 active"
        [routerLinkActiveOptions]="{exact: true}">
-    <p class="text-center text-zinc-400 group-[.active]:text-zinc-100">{{tab.label}}</p>
+    <p class="text-center text-zinc-400 group-[.active]:text-zinc-100">{{ tab.label | translate }}</p>
   </div>
 </div>
