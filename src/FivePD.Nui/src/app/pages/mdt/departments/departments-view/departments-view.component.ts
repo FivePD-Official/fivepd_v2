@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {
+  BaseNuiEvent,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -31,6 +32,8 @@ import { CustomValidators } from '../../../../helpers/validators';
 import { ModalService } from '@services/modals/modal/modal.service';
 import { Store } from '@ngrx/store';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NuiEventType } from "@enums";
+import { EventService } from "@services/event/event.service";
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -58,7 +61,7 @@ export class DepartmentsViewComponent {
       label: this._localization.translate('UI.ACTION.CREATE_RANK'),
       show: () => this.userService.userHasRole(UserRole.Admin),
       disabled: () => false,
-      onClick: () => this.modalFormService.open({
+      onClick: () => this._modalFormService.open({
         title: 'UI.ACTION.CREATE_RANK',
         fields: () => [
           new TextInput({
@@ -100,7 +103,7 @@ export class DepartmentsViewComponent {
             Name: res.value['Name'],
             Permission: res.value['Permission']
           })),
-          this._modal.handleResponse()
+          this._modalService.handleResponse()
         ).subscribe(() => this.getRanks(true))
     }
   ];
@@ -127,7 +130,7 @@ export class DepartmentsViewComponent {
           type: 'button',
           label: this._localization.translate('UI.ACTION.DELETE'),
           onClick: rank => {
-            this.modalConfirmService.open({
+            this._modalConfirmService.open({
               title: 'UI.LABEL.RANK.DELETE.TITLE',
               description: this._localization.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
               buttons: {
@@ -137,7 +140,7 @@ export class DepartmentsViewComponent {
               .pipe(
                 filter(res => res.success),
                 switchMap(() => this._departmentService.deleteRank(rank.Id)),
-                this._modal.handleResponse()
+                this._modalService.handleResponse()
               ).subscribe(() => this.getRanks(true))
           }
         },
@@ -145,7 +148,7 @@ export class DepartmentsViewComponent {
           type: 'button',
           label: this._localization.translate('UI.ACTION.EDIT'),
           onClick: rank => {
-            this.modalFormService.open<FormattedRank>({
+            this._modalFormService.open<FormattedRank>({
               title: 'UI.LABEL.RANK.EDIT',
               fields: updatedRank => [
                 new TextInput({
@@ -182,7 +185,7 @@ export class DepartmentsViewComponent {
                   Name: res.value!['Name'],
                   Permission: res.value!['Permission']
                 })),
-                this._modal.handleResponse()
+                this._modalService.handleResponse()
               ).subscribe(() => this.getRanks(true))
           }
         },
@@ -260,7 +263,7 @@ export class DepartmentsViewComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => {
-        this.modalFormService.open({
+        this._modalFormService.open({
           title: 'UI.ACTION.CREATE_DIVISION',
           fields: () => [
             new TextInput({
@@ -280,7 +283,7 @@ export class DepartmentsViewComponent {
               DepartmentId: this.department?.Id,
               Name: res.value['Name']
             })),
-            this._modal.handleResponse()
+            this._modalService.handleResponse()
           ).subscribe(() => this.getDivisions(true))
       }
     }
@@ -301,7 +304,7 @@ export class DepartmentsViewComponent {
           type: 'button',
           label: this._localization.translate('UI.ACTION.DELETE'),
           onClick: division => {
-            this.modalConfirmService.open({
+            this._modalConfirmService.open({
               title: 'UI.LABEL.DIVISION.DELETE.TITLE',
               description: this._localization.translate('UI.LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
               buttons: {
@@ -311,7 +314,7 @@ export class DepartmentsViewComponent {
               .pipe(
                 filter(res => res.success),
                 switchMap(() => this._departmentService.deleteDivision(division.Id)),
-                this._modal.handleResponse()
+                this._modalService.handleResponse()
               ).subscribe(() => this.getDivisions(true))
           }
         },
@@ -319,7 +322,7 @@ export class DepartmentsViewComponent {
           type: 'button',
           label: this._localization.translate('UI.ACTION.EDIT'),
           onClick: division => {
-            this.modalFormService.open<Division>({
+            this._modalFormService.open<Division>({
               title: 'UI.LABEL.DIVISION.EDIT',
               fields: updatedDivision => [
                 new TextInput({
@@ -341,7 +344,7 @@ export class DepartmentsViewComponent {
                   DivisionId: division.Id,
                   Name: res.value['Name'],
                 })),
-                this._modal.handleResponse()
+                this._modalService.handleResponse()
               ).subscribe(() => this.getDivisions(true))
           }
         }
@@ -352,22 +355,27 @@ export class DepartmentsViewComponent {
   departmentSettingsForm: FormInputBase<any>[] = [];
 
   constructor(
-    private _router: Router,
-    private _route: ActivatedRoute,
-    private _localization: LocalizationService,
-    private _departmentService: DepartmentService,
-    private _modal: ModalService,
     public readonly userService: UserService,
-    private readonly store: Store<GlobalState>,
-    private readonly modalFormService: ModalFormService,
-    private readonly modalConfirmService: ModalConfirmService,
+    private readonly _router: Router,
+    private readonly _route: ActivatedRoute,
+    private readonly _localization: LocalizationService,
+    private readonly _departmentService: DepartmentService,
+    private readonly _modalService: ModalService,
+    private readonly _store: Store<GlobalState>,
+    private readonly _modalFormService: ModalFormService,
+    private readonly _modalConfirmService: ModalConfirmService,
+    private readonly _eventService: EventService,
   ) {
-    store.pipe(takeUntilDestroyed()).subscribe(state => {
+    _store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details.User;
       this.setIsUserInDepartment();
     });
 
     _route.params.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.getDepartment();
+    });
+
+    _eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
       this.getDepartment();
     });
   }

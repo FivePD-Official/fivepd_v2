@@ -87,7 +87,7 @@ export class DashboardComponent implements OnInit {
           show: () => true,
           disabled: () => false,
           onClick: department => {
-            this.modalConfirmService.open({
+            this._modalConfirmService.open({
               title: 'UI.LABEL.DEPARTMENT.DELETE.TITLE',
               description: this._localization.translate('UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION', {department: `<b>${department.Name}</b>`}),
               buttons: {
@@ -99,8 +99,8 @@ export class DashboardComponent implements OnInit {
             }).result
               .pipe(
                 filter(res => res.success),
-                switchMap(() => this._department.deleteDepartment(department.Id)),
-                this._modal.handleResponse(),
+                switchMap(() => this._departmentService.deleteDepartment(department.Id)),
+                this._modalService.handleResponse(),
               ).subscribe(() => {
               this.getDepartments();
               this._userService.refreshData();
@@ -182,20 +182,21 @@ export class DashboardComponent implements OnInit {
   ];
 
   constructor(
-    private readonly _department: DepartmentService,
+    private readonly _departmentService: DepartmentService,
     private readonly _localization: LocalizationService,
-    private readonly _modal: ModalService,
+    private readonly _modalService: ModalService,
     private readonly _modalFormService: ModalFormService,
-    private readonly modalConfirmService: ModalConfirmService,
+    private readonly _modalConfirmService: ModalConfirmService,
     private readonly _userService: UserService,
-    private readonly store: Store<GlobalState>,
+    private readonly _store: Store<GlobalState>,
     private readonly _unitService: UnitService,
     private readonly _configService: ConfigService,
     private readonly _eventService: EventService,
     private readonly _calloutService: CalloutService,
   ) {
-    store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
-    this._eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+    _store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
+    _eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+      this.getDepartments();
       this.getUnits();
       this.getCallouts();
       this.getActiveCallout();
@@ -234,7 +235,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getDepartments(): void {
-    this._department.getDepartments(this.departmentsCollation).subscribe(res => {
+    this._departmentService.getDepartments(this.departmentsCollation).subscribe(res => {
       this.departments = res;
     });
   }
@@ -270,7 +271,7 @@ export class DashboardComponent implements OnInit {
           key: 'Name',
           required: true,
           label: 'UI.LABEL.NAME.SINGULAR',
-          asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._department.checkIfDepartmentNameTaken(value))],
+          asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value))],
         }),
         new TextInput({
           key: 'Callsign',
@@ -296,8 +297,8 @@ export class DashboardComponent implements OnInit {
     }).result
       .pipe(
         filter(res => res.success),
-        switchMap(res => this._department.createDepartment(res.value)),
-        this._modal.handleResponse(),
+        switchMap(res => this._departmentService.createDepartment(res.value)),
+        this._modalService.handleResponse(),
       ).subscribe(() => this.getDepartments())
   }
 }

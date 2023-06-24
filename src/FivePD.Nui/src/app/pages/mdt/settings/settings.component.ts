@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
+import { AttributeDataType, BaseNuiEvent, Button, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { filter, switchMap } from 'rxjs';
 import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 import { LocalizationService } from '@services/localization/localization.service';
-import { DefaultSetId } from '@enums';
+import { DefaultSetId, NuiEventType } from '@enums';
 import { Store } from '@ngrx/store';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { GlobalState } from '@store';
@@ -13,6 +13,7 @@ import { ModalFormService } from '@services/modals/modal-form/modal-form.service
 import { ModalService } from '@services/modals/modal/modal.service';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EventService } from "@services/event/event.service";
 
 @Component({
   selector: 'app-settings',
@@ -74,7 +75,7 @@ export class SettingsComponent {
           label: this._localization.translate('UI.ACTION.EDIT'),
           show: item => item.AddonId === 'admin',
           onClick: attribute => {
-            this.modalFormService.open({
+            this._modalFormService.open({
               title: 'UI.LABEL.ATTRIBUTE.EDIT',
               buttons: {
                 submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
@@ -93,7 +94,7 @@ export class SettingsComponent {
                   Required: res.value['Required'],
                   ShowInGrid: res.value['ShowInGrid'],
                 })),
-                this._modal.handleResponse()
+                this._modalService.handleResponse()
               ).subscribe(() => this.getArrestReportAttributes())
           }
         },
@@ -102,7 +103,7 @@ export class SettingsComponent {
           label: this._localization.translate('UI.ACTION.DELETE'),
           show: item => item.AddonId === 'admin',
           onClick: item => {
-            this.modalConfirmService.open({
+            this._modalConfirmService.open({
               title: 'UI.LABEL.ATTRIBUTE.DELETE.TITLE',
               description: this._localization.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {attribute: item.Name}),
               buttons: {
@@ -112,7 +113,7 @@ export class SettingsComponent {
               .pipe(
                 filter(res => res.success),
                 switchMap(() => this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id)),
-                this._modal.handleResponse()
+                this._modalService.handleResponse()
               ).subscribe(() => {
               this.arrestReportAttributesCollation.Page = 1;
               this.getArrestReportAttributes();
@@ -128,7 +129,7 @@ export class SettingsComponent {
       show: () => true,
       disabled: () => false,
       onClick: () => {
-        this.modalFormService.open({
+        this._modalFormService.open({
           title: 'UI.ACTION.CREATE_ATTRIBUTE',
           buttons: {
             submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
@@ -146,7 +147,7 @@ export class SettingsComponent {
               Required: res.value['Required'],
               ShowInGrid: res.value['ShowInGrid'],
             })),
-            this._modal.handleResponse()
+            this._modalService.handleResponse()
           ).subscribe(() => {
           this.arrestReportAttributesCollation.Page = 1;
           this.getArrestReportAttributes();
@@ -189,21 +190,32 @@ export class SettingsComponent {
   ];
 
   constructor(
-    private _looseData: LooseDataService,
-    private _modal: ModalService,
-    private readonly modalFormService: ModalFormService,
-    private readonly modalConfirmService: ModalConfirmService,
-    private _localization: LocalizationService,
-    private readonly store: Store<GlobalState>,
     public readonly userService: UserService,
+    private readonly _looseData: LooseDataService,
+    private readonly _modalService: ModalService,
+    private readonly _modalFormService: ModalFormService,
+    private readonly _modalConfirmService: ModalConfirmService,
+    private readonly _localization: LocalizationService,
+    private readonly _store: Store<GlobalState>,
+    private readonly _eventService: EventService,
   ) {
-    store.pipe(takeUntilDestroyed()).subscribe(state => {
+    _store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details.User;
-      if (this.userService.userHasRole(UserRole.Admin)) {
-        this.getArrestReportAttributes();
-        this.getUsers();
-      }
+      this.getSettings();
     });
+
+    _eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+      this.getSettings();
+    });
+  }
+
+  private getSettings(): void {
+    if (!this.userService.userHasRole(UserRole.Admin)) {
+      return;
+    }
+
+    this.getArrestReportAttributes();
+    this.getUsers();
   }
 
   getArrestReportAttributes(): void {
