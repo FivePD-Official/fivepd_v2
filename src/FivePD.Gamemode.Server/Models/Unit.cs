@@ -2,17 +2,14 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using FivePD.Gamemode.Server.EntityWrappers;
-using FivePD.Gamemode.Server.Interfaces;
 
 namespace FivePD.Gamemode.Server.Models;
 
 /// <summary>
 /// Represents a unit.
 /// </summary>
-public class Unit
+public class Unit : IInternalUnit
 {
-    private readonly int _maxMembers = 0;
-
     private readonly List<FPlayer> _players = new();
 
     /// <summary>
@@ -22,7 +19,6 @@ public class Unit
     public Unit(string callsign)
     {
         this.Callsign = callsign;
-        this._maxMembers = ServiceLocator.GetService<IConfigService>().GeneralConfig.Unit.MaxMembers;
     }
 
     /// <summary>
@@ -61,13 +57,8 @@ public class Unit
     /// Adds a player to the unit.
     /// </summary>
     /// <param name="player">The player to add.</param>
-    public void AddPlayer(FPlayer player)
+    void IInternalUnit.AddPlayer(FPlayer player)
     {
-        if (this._maxMembers > 0 && this._players.Count >= this._maxMembers)
-        {
-            return;
-        }
-
         if (this._players.FirstOrDefault(x => x.NetId == player.NetId) is null)
         {
             this._players.Add(player);
@@ -78,8 +69,17 @@ public class Unit
     /// Removes the player from the unit.
     /// </summary>
     /// <param name="player">The player to remove.</param>
-    public void RemovePlayer(FPlayer player)
+    void IInternalUnit.RemovePlayer(FPlayer player)
     {
         this._players.RemoveAll(x => x.NetId == player.NetId);
     }
+}
+
+#pragma warning disable
+
+internal interface IInternalUnit
+{
+    public void AddPlayer(FPlayer player);
+
+    public void RemovePlayer(FPlayer player);
 }

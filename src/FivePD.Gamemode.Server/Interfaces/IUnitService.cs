@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.UnitEvents;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 
@@ -10,6 +12,16 @@ namespace FivePD.Gamemode.Server.Interfaces;
 /// </summary>
 public interface IUnitService
 {
+    /// <summary>
+    /// Invoked when a player joined a unit.
+    /// </summary>
+    public event EventHandler<UnitPlayerEventArgs> OnPlayerJoinedUnit;
+
+    /// <summary>
+    /// Invoked when a player left a unit.
+    /// </summary>
+    public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
+
     /// <summary>
     /// Gets the units.
     /// </summary>
@@ -37,6 +49,13 @@ public interface IUnitService
     /// <param name="player">A player.</param>
     /// <returns>The unit of the player.</returns>
     public Unit GetPlayerUnit(FPlayer player);
+
+    /// <summary>
+    /// Adds the player to the given unit.
+    /// </summary>
+    /// <param name="player">A player.</param>
+    /// <param name="unit">A unit.</param>
+    public void AddPlayerToUnit(FPlayer player, Unit unit);
 
     /// <summary>
     /// Removes a player from their unit.

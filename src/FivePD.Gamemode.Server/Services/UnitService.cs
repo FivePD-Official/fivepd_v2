@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
@@ -12,6 +13,7 @@ using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.DTO;
 using FivePD.Gamemode.Server.Models.Requests;
+using FivePD.Gamemode.Server.Models.UnitEvents;
 using FivePD.Gamemode.Server.QueryHelpers;
 
 namespace FivePD.Gamemode.Server.Services;
@@ -37,6 +39,12 @@ public class UnitService : IUnitService
         this._confirmationService = confirmationService;
         this._configService = configService;
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<UnitPlayerEventArgs> OnPlayerJoinedUnit;
+
+    /// <inheritdoc/>
+    public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
 
     /// <inheritdoc />
     public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
@@ -79,12 +87,38 @@ public class UnitService : IUnitService
     public void RemovePlayerFromUnit(FPlayer player)
     {
         var unit = this.GetPlayerUnit(player);
-        unit?.RemovePlayer(player);
+        if (unit is null)
+        {
+            return;
+        }
 
-        if (unit?.Players.Count == 0)
+        ((IInternalUnit)unit).RemovePlayer(player);
+        this.OnPlayerLeftUnit?.Invoke(this, new UnitPlayerEventArgs
+        {
+            Player = player,
+            Unit = unit,
+        });
+
+        if (unit.Players.Count == 0)
         {
             this._units.Remove(unit);
         }
+    }
+
+    /// <inheritdoc />
+    public void AddPlayerToUnit(FPlayer player, Unit unit)
+    {
+        if (this._configService.GeneralConfig.Unit.MaxMembers > 0 && unit.Players.Count >= this._configService.GeneralConfig.Unit.MaxMembers)
+        {
+            return;
+        }
+
+        ((IInternalUnit)unit)?.AddPlayer(player);
+        this.OnPlayerJoinedUnit?.Invoke(this, new UnitPlayerEventArgs
+        {
+            Player = player,
+            Unit = unit,
+        });
     }
 
     [UIEvent(Events.UI.Unit.GetAll)]
@@ -126,7 +160,7 @@ public class UnitService : IUnitService
         }
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
-        unit.AddPlayer(fPlayer);
+        this.AddPlayerToUnit(fPlayer, unit);
 
         var playerJoinDictionary = new Dictionary<string, string>
         {
@@ -187,7 +221,7 @@ public class UnitService : IUnitService
                     }
 
                     var fPlayer = FPlayer.FromNetId(player.Handle);
-                    unit.AddPlayer(fPlayer);
+                    this.AddPlayerToUnit(fPlayer, unit);
 
                     var playerJoinDictionary = new Dictionary<string, string>
                     {
@@ -217,7 +251,7 @@ public class UnitService : IUnitService
         }
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
-        unit.RemovePlayer(fPlayer);
+        this.RemovePlayerFromUnit(fPlayer);
 
         var playerLeaveDictionary = new Dictionary<string, string>
         {
