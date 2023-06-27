@@ -154,7 +154,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
 
     private List<Unit> DispatchCalloutToUnits(CalloutHolder calloutHolder)
     {
-        var filteredUnits = this._unitService.Units
+        var filteredUnits = this._unitService.Units()
             .Where(unit =>
                 this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
             .Where(unit => unit.Players.All(p => p.Availability.Value == FPlayerAvailability.Receiving))

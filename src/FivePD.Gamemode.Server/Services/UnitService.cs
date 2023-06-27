@@ -47,7 +47,10 @@ public class UnitService : IUnitService
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
 
     /// <inheritdoc />
-    public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
+    public List<Unit> Units()
+    {
+        return this._units.AsReadOnly().ToList();
+    }
 
     /// <inheritdoc/>
     Unit IUnitService.CreateUnit(string callsign, FPlayer player)

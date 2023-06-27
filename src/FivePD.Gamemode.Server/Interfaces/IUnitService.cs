@@ -25,7 +25,8 @@ public interface IUnitService
     /// <summary>
     /// Gets the units.
     /// </summary>
-    public ReadOnlyCollection<Unit> Units { get; }
+    /// <returns>A list of units.</returns>
+    public List<Unit> Units();
 
     /// <summary>
     /// Creates a unit with the specified callsign and player.
