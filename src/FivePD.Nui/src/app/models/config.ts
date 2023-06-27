@@ -1,20 +1,25 @@
-﻿export interface IGeneralSettings {
+﻿export interface IGeneralConfig {
   Unit: {
     Join: string;
+    MaxMembers: number;
   };
 }
 
-export class GeneralSettings {
+export class GeneralConfig {
 
-  constructor(private readonly _settings: IGeneralSettings) {
+  constructor(private readonly _config: IGeneralConfig) {
+  }
+
+  get config() {
+    return this._config;
   }
 
   joinFreelyToUnit(): boolean {
-    return this._settings.Unit.Join.toUpperCase() === 'FREE';
+    return this._config.Unit.Join.toUpperCase() === 'FREE';
   }
 
   joinByRequestToUnit(): boolean {
-    return this._settings.Unit.Join.toUpperCase() === 'REQUEST';
+    return this._config.Unit.Join.toUpperCase() === 'REQUEST';
   }
 
 }

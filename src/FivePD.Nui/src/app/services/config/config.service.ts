@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GeneralSettings, GetSafeZoneSize, IGeneralSettings, User } from "@models";
+import { GeneralConfig, GetSafeZoneSize, IGeneralConfig, User } from "@models";
 import { HttpClient } from "@angular/common/http";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
@@ -12,7 +12,7 @@ import { map, Observable, of, tap } from "rxjs";
 export class ConfigService {
 
   private user?: User;
-  private generalSettings?: GeneralSettings;
+  private generalSettings?: GeneralConfig;
 
   safeZoneSize: number = -1;
 
@@ -38,14 +38,14 @@ export class ConfigService {
       );
   }
 
-  getGeneralSettings(): Observable<GeneralSettings> {
+  getGeneralSettings(): Observable<GeneralConfig> {
     if (this.generalSettings) {
       return of(this.generalSettings);
     }
 
-    return this._http.post<IGeneralSettings>('fivepd:config:getGeneralSettings', {})
+    return this._http.post<IGeneralConfig>('fivepd:config:getGeneralSettings', {})
       .pipe(
-        map(settings => new GeneralSettings(settings)),
+        map(settings => new GeneralConfig(settings)),
         tap(settings => this.generalSettings = settings),
       );
   }

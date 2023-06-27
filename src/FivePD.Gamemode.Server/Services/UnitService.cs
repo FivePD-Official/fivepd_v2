@@ -21,6 +21,8 @@ public class UnitService : IUnitService
 {
     private readonly INotificationService _notificationService;
     private readonly IConfirmationService _confirmationService;
+    private readonly IConfigService _configService;
+
     private readonly List<Unit> _units = new();
 
     /// <summary>
@@ -28,10 +30,12 @@ public class UnitService : IUnitService
     /// </summary>
     /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
-    public UnitService(INotificationService notificationService, IConfirmationService confirmationService)
+    /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
+    public UnitService(INotificationService notificationService, IConfirmationService confirmationService, IConfigService configService)
     {
         this._notificationService = notificationService;
         this._confirmationService = confirmationService;
+        this._configService = configService;
     }
 
     /// <inheritdoc />
@@ -112,6 +116,15 @@ public class UnitService : IUnitService
             return;
         }
 
+        if (this._configService.GeneralConfig.Unit.MaxMembers > 0 && unit.Players.Count >= this._configService.GeneralConfig.Unit.MaxMembers)
+        {
+            networkCallbackDelegate.InvokeWithResponse(
+                false,
+                "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE",
+                "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
+            return;
+        }
+
         var fPlayer = FPlayer.FromNetId(player.Handle);
         unit.AddPlayer(fPlayer);
 
@@ -139,6 +152,15 @@ public class UnitService : IUnitService
         if (unit is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        if (this._configService.GeneralConfig.Unit.MaxMembers > 0 && unit.Players.Count >= this._configService.GeneralConfig.Unit.MaxMembers)
+        {
+            networkCallbackDelegate.InvokeWithResponse(
+                false,
+                "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE",
+                "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
             return;
         }
 

@@ -4,6 +4,8 @@
 
 public sealed record UnitConfig
 {
+    public int MaxMembers { get; init; } = 0;
+
     public string Join { get; init; } = "FREE";
 
     public bool JoinFreely()

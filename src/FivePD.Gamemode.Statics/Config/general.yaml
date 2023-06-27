@@ -6,6 +6,7 @@ Database:
   Password: ''
 
 Unit:
+  MaxMembers: 0
   Join: free
 
 Callout:

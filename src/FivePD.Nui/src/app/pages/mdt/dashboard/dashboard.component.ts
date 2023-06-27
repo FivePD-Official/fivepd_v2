@@ -6,7 +6,7 @@ import {
   Column,
   Department,
   FDutyStatus, FIncidentPriorty,
-  GeneralSettings,
+  GeneralConfig,
   NumberInput,
   Page,
   PlayerDetailsDTO,
@@ -39,9 +39,8 @@ import { CalloutService } from "@services/callout/callout.service";
 })
 export class DashboardComponent implements OnInit {
 
-  generalSettings?: GeneralSettings;
+  generalConfig?: GeneralConfig;
   user?: PlayerDetailsDTO;
-  statistics: any;
   activeCallout?: ClientCalloutWrapper;
 
   departments?: Page<Department>;
@@ -119,7 +118,9 @@ export class DashboardComponent implements OnInit {
     }),
     new Column<UnitDTO>({
       header: 'UI.LABEL.OFFICER.PLURAL',
-      valueResolver: item => item.Players.length.toString(),
+      valueResolver: item => (this.generalConfig?.config?.Unit?.MaxMembers ?? 0) > 0
+        ? `${item.Players.length.toString()} / ${this.generalConfig?.config.Unit.MaxMembers}`
+        : item.Players.length.toString(),
     }),
     new Column<UnitDTO>({
       header: 'UI.LABEL.ACTION.PLURAL',
@@ -128,7 +129,7 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: 'UI.ACTION.JOIN',
-          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalSettings?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
+          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalConfig?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
           onClick: unit => {
             this._unitService.join(unit).subscribe(res => {
               if (res.Status) {
@@ -140,7 +141,7 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: 'UI.ACTION.REQUEST_TO_JOIN',
-          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalSettings?.joinByRequestToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
+          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalConfig?.joinByRequestToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
           onClick: unit => {
             this._unitService.requestToJoin(unit).subscribe();
           }
@@ -204,7 +205,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getGeneralSettings();
+    this.getGeneralConfig();
     this.getDepartments();
     this.getUnits();
     this.getCallouts();
@@ -228,9 +229,9 @@ export class DashboardComponent implements OnInit {
     return '-';
   }
 
-  getGeneralSettings(): void {
+  getGeneralConfig(): void {
     this._configService.getGeneralSettings().subscribe(res => {
-      this.generalSettings = res;
+      this.generalConfig = res;
     });
   }
 

@@ -188,6 +188,8 @@
   "UI.LABEL.SUCCESS.LEAVE": "Successful leave",
   "UI.LABEL.TITLE.SINGULAR": "Title",
   "UI.LABEL.TYPE.SINGULAR": "Type",
+  "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION": "The unit you're trying to join is full.",
+  "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE": "Can't join unit",
   "UI.LABEL.UNIT.PLURAL": "Units",
   "UI.LABEL.UNIT.SINGULAR": "Unit",
   "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN": "{{name}} joined your unit.",
