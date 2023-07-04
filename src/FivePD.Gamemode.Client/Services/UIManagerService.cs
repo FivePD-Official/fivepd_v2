@@ -61,7 +61,7 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void Show(string type, string menuId = "", bool hasFocus = true, bool hasCursor = true)
+    public void Show(string type, string menuId = "")
     {
         if (!this._ready)
         {

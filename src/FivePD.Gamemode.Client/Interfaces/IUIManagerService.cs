@@ -26,9 +26,7 @@ internal interface IUIManagerService
     /// </summary>
     /// <param name="type">Switches to the given type after showing Nui.</param>
     /// <param name="menuId">The currently opened menu's id. If left as # it'll be ignored in the Nui.</param>
-    /// <param name="hasFocus">If the Nui should have focus.</param>
-    /// <param name="hasCursor">If the Nui should have cursor usage.</param>
-    public void Show(string type, string menuId = "", bool hasFocus = true, bool hasCursor = true);
+    public void Show(string type, string menuId = "");
     
     /// <summary>
     /// Hides NUI.

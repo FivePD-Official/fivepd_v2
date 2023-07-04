@@ -164,7 +164,7 @@ internal class UIService : IUIService, IServiceWithEvents
     /// <inheritdoc />
     public void OpenInformation()
     {
-        this._uiManagerService.Show(Events.NuiEventType.Information, string.Empty, false, false);
+        this._uiManagerService.Show(Events.NuiEventType.Information, string.Empty);
     }
 
     /// <inheritdoc />
@@ -234,7 +234,7 @@ internal class UIService : IUIService, IServiceWithEvents
         // Centers cursor
         Cfx.API.SetCursorLocation(0.5f, 0.5f);
 
-        this._uiManagerService.Show(Events.NuiEventType.RadialMenu, menuId, false, false);
+        this._uiManagerService.Show(Events.NuiEventType.RadialMenu, menuId);
     }
 
     private void RegisterUIEvents(string[] events)
