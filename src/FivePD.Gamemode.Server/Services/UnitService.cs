@@ -12,8 +12,8 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.DTO;
+using FivePD.Gamemode.Server.Models.Events;
 using FivePD.Gamemode.Server.Models.Requests;
-using FivePD.Gamemode.Server.Models.UnitEvents;
 using FivePD.Gamemode.Server.QueryHelpers;
 
 namespace FivePD.Gamemode.Server.Services;

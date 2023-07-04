@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using FivePD.Gamemode.Server.EntityWrappers;
 using FivePD.Gamemode.Server.Models;
-using FivePD.Gamemode.Server.Models.UnitEvents;
+using FivePD.Gamemode.Server.Models.Events;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 

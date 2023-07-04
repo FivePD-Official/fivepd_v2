@@ -55,22 +55,22 @@ public class DepartmentService : IDepartmentService
     public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerLeftDepartment;
 
     /// <inheritdoc />
-    public event EventHandler<Rank> PlayerRankCreated;
+    public event EventHandler<Rank> RankCreated;
 
     /// <inheritdoc />
-    public event EventHandler<Rank> PlayerRankEdited;
+    public event EventHandler<Rank> RankEdited;
 
     /// <inheritdoc />
-    public event EventHandler<Rank> PlayerRankDeleted;
+    public event EventHandler<Rank> RankDeleted;
 
     /// <inheritdoc />
-    public event EventHandler<Division> PlayerDivisionCreated;
+    public event EventHandler<Division> DivisionCreated;
 
     /// <inheritdoc />
-    public event EventHandler<Division> PlayerDivisionEdited;
+    public event EventHandler<Division> DivisionEdited;
 
     /// <inheritdoc />
-    public event EventHandler<Division> PlayerDivisionDeleted;
+    public event EventHandler<Division> DivisionDeleted;
 
     /// <inheritdoc />
     public Department CreateDepartment(Department department)
@@ -451,7 +451,7 @@ public class DepartmentService : IDepartmentService
 
             this._databaseContext.Divisions.Remove(divisionToDelete);
             this._databaseContext.SaveChanges();
-            this.PlayerDivisionDeleted?.Invoke(this, divisionToDelete);
+            this.DivisionDeleted?.Invoke(this, divisionToDelete);
             networkCallbackDelegate.InvokeWithResponse(
                 true,
                 "UI.LABEL.SUCCESS.DELETE",
@@ -499,7 +499,7 @@ public class DepartmentService : IDepartmentService
             var divisionToEditOldName = divisionToEdit.Name;
             divisionToEdit.Name = renameDivisionRequest.Name;
             this._databaseContext.SaveChanges();
-            this.PlayerDivisionEdited?.Invoke(this, divisionToEdit);
+            this.DivisionEdited?.Invoke(this, divisionToEdit);
             networkCallbackDelegate.InvokeWithResponse(
                 true,
                 "UI.LABEL.SUCCESS.EDIT",
@@ -546,7 +546,7 @@ public class DepartmentService : IDepartmentService
                 Name = createDivisionRequest.Name,
             });
             this._databaseContext.SaveChanges();
-            this.PlayerDivisionCreated?.Invoke(this, createdDivisionEntry.Entity);
+            this.DivisionCreated?.Invoke(this, createdDivisionEntry.Entity);
             networkCallbackDelegate.InvokeWithResponse(
                 true,
                 "UI.LABEL.SUCCESS.CREATE",
@@ -592,7 +592,7 @@ public class DepartmentService : IDepartmentService
 
             this._databaseContext.Ranks.Remove(rankToDelete);
             this._databaseContext.SaveChanges();
-            this.PlayerRankDeleted?.Invoke(this, rankToDelete);
+            this.RankDeleted?.Invoke(this, rankToDelete);
             networkCallbackDelegate.InvokeWithResponse(
                 true,
                 "UI.LABEL.SUCCESS.DELETE",
@@ -634,7 +634,7 @@ public class DepartmentService : IDepartmentService
             rankToEdit.Name = editRankRequest.Name;
             rankToEdit.Permission = editRankRequest.Permission;
             this._databaseContext.SaveChanges();
-            this.PlayerRankEdited?.Invoke(this, rankToEdit);
+            this.RankEdited?.Invoke(this, rankToEdit);
             networkCallbackDelegate.InvokeWithResponse(
                 true,
                 "UI.LABEL.SUCCESS.EDIT",
@@ -680,7 +680,7 @@ public class DepartmentService : IDepartmentService
                 Permission = createRankRequest.Permission,
             });
             this._databaseContext.SaveChanges();
-            this.PlayerRankCreated?.Invoke(this, createdRankEntry.Entity);
+            this.RankCreated?.Invoke(this, createdRankEntry.Entity);
             networkCallbackDelegate.InvokeWithResponse(
                 true,
                 "UI.LABEL.SUCCESS.CREATE",

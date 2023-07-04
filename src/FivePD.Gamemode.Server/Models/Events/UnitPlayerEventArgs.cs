@@ -1,6 +1,6 @@
 ﻿using FivePD.Gamemode.Server.EntityWrappers;
 
-namespace FivePD.Gamemode.Server.Models.UnitEvents;
+namespace FivePD.Gamemode.Server.Models.Events;
 
 /// <summary>
 /// The event arguments for when a player joined or left a unit.

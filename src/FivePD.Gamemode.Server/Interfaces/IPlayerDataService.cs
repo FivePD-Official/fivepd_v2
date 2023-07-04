@@ -1,6 +1,7 @@
 ﻿using System;
 using CitizenFX.Core;
 using FivePD.Gamemode.Server.Models;
+using FivePD.Gamemode.Server.Models.Events;
 
 namespace FivePD.Gamemode.Server.Interfaces;
 
@@ -14,12 +15,12 @@ public interface IPlayerDataService
     /// <summary>
     /// Fires when a player's rank has been changed.
     /// </summary>
-    public event EventHandler<Rank> PlayerRankChanged;
+    public event EventHandler<PlayerRankChangeEventArgs> PlayerRankChanged;
 
     /// <summary>
     /// Fires when a player's division has been changed.
     /// </summary>
-    public event EventHandler<Division> PlayerDivisionChanged;
+    public event EventHandler<PlayerDivisionChangeEventArgs> PlayerDivisionChanged;
 
     /// <summary>
     /// Finds the <see cref="User"/> object corresponding to the <paramref name="player"/>.

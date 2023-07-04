@@ -13,6 +13,7 @@ using FivePD.Gamemode.Server.Extensions;
 using FivePD.Gamemode.Server.Interfaces;
 using FivePD.Gamemode.Server.Models;
 using FivePD.Gamemode.Server.Models.DTO;
+using FivePD.Gamemode.Server.Models.Events;
 using FivePD.Gamemode.Server.Models.Requests;
 using FivePD.Gamemode.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -60,10 +61,10 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public event EventHandler<Rank> PlayerRankChanged;
+    public event EventHandler<PlayerRankChangeEventArgs> PlayerRankChanged;
 
     /// <inheritdoc />
-    public event EventHandler<Division> PlayerDivisionChanged;
+    public event EventHandler<PlayerDivisionChangeEventArgs> PlayerDivisionChanged;
 
     /// <inheritdoc />
     public void RegisterEvents()
@@ -252,8 +253,8 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
     }
 
-    [UIEvent(Events.UI.Player.ChangeDivision)]
-    private void ChangePlayerDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Player.ChangeDivision, true)]
+    private void ChangePlayerDivisionFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         try
         {
@@ -294,7 +295,11 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             }
 
             this._databaseContext.SaveChanges();
-            this.PlayerDivisionChanged?.Invoke(this, division);
+            this.PlayerDivisionChanged?.Invoke(this, new PlayerDivisionChangeEventArgs
+            {
+                Division = division,
+                Player = FPlayer.FromPlayer(player),
+            });
             networkCallbackDelegate.Invoke(new ActionResponse
             {
                 Status = true,
@@ -318,8 +323,8 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
     }
 
-    [UIEvent(Events.UI.Player.ChangeRank)]
-    private void ChangePlayerRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Player.ChangeRank, true)]
+    private void ChangePlayerRankFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         try
         {
@@ -360,7 +365,11 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             }
 
             this._databaseContext.SaveChanges();
-            this.PlayerRankChanged?.Invoke(this, rank);
+            this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
+            {
+                Rank = rank,
+                Player = FPlayer.FromPlayer(player),
+            });
             networkCallbackDelegate.Invoke(new ActionResponse
             {
                 Status = true,

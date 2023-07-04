@@ -29,32 +29,32 @@ public interface IDepartmentService
     /// <summary>
     /// Fires when a rank has been created.
     /// </summary>
-    public event EventHandler<Rank> PlayerRankCreated;
+    public event EventHandler<Rank> RankCreated;
 
     /// <summary>
     /// Fires when a rank has been edited.
     /// </summary>
-    public event EventHandler<Rank> PlayerRankEdited;
+    public event EventHandler<Rank> RankEdited;
 
     /// <summary>
     /// Fires when a rank has been deleted.
     /// </summary>
-    public event EventHandler<Rank> PlayerRankDeleted;
+    public event EventHandler<Rank> RankDeleted;
 
     /// <summary>
     /// Fires when a division has been created.
     /// </summary>
-    public event EventHandler<Division> PlayerDivisionCreated;
+    public event EventHandler<Division> DivisionCreated;
 
     /// <summary>
     /// Fires when a division has been edited.
     /// </summary>
-    public event EventHandler<Division> PlayerDivisionEdited;
+    public event EventHandler<Division> DivisionEdited;
 
     /// <summary>
     /// Fires when a division has been deleted.
     /// </summary>
-    public event EventHandler<Division> PlayerDivisionDeleted;
+    public event EventHandler<Division> DivisionDeleted;
 
     /// <summary>
     /// Fires when a player joins a department or has been added to one with the API.
