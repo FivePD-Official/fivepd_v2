@@ -129,6 +129,15 @@ public sealed record GtaStyleText
     }
 
     /// <summary>
+    /// Append text without a specific color.
+    /// </summary>
+    public GtaStyleText Append(string text = "")
+    {
+        this._stringBuilder.Append(text);
+        return this;
+    }
+
+    /// <summary>
     /// Returns the created text.
     /// </summary>
     public string Build()

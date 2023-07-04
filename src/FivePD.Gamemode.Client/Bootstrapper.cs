@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Gamemode.Client.Extensions;
@@ -8,6 +9,7 @@ using FivePD.Gamemode.Client.Injection;
 using FivePD.Gamemode.Client.Interfaces;
 using FivePD.Gamemode.Client.Services;
 using FivePD.Gamemode.Common;
+using FivePD.Gamemode.Common.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3241
@@ -27,7 +29,7 @@ namespace FivePD.Gamemode.Client;
 // ReSharper disable once UnusedType.Global
 internal class Bootstrapper : BaseScript
 {
-    private readonly Dictionary<Action, bool> _phases = new Dictionary<Action, bool>();
+    private readonly Dictionary<Action, bool> _phases = new();
     private readonly ILoggerService _bootstrapLogger;
 
     private ServiceProvider _serviceProvider;
@@ -71,7 +73,16 @@ internal class Bootstrapper : BaseScript
         if (phase.Key == null)
         {
             // Log that we're done
-            this._bootstrapLogger.Info("FivePD Gamemode Client bootstrapping has completed");
+            this._bootstrapLogger.Info("FivePD bootstrapping has completed");
+
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            var notificationService = this._serviceProvider.Resolve<INotificationService>();
+            notificationService.ShowNotification(new GtaStyleText()
+                .Blue("[FivePD]")
+                .NewLine()
+                .White("Bootstrapping has been completed.")
+                .NewLine()
+                .Orange($"Version: {version.Major}.{version.Minor}.{version.Build}"));
 
             // Stop trying to run phases
             this.Tick -= this.RunNextPhaseAsync;
