@@ -243,7 +243,6 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IDepartmentService, DepartmentService>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IEntityService, EntityService>();
-        services.AddSingleton<IFeatureFlagService, FeatureFlagService>();
         services.AddSingleton<IMarkerService, MarkerService>();
         services.AddSingleton<IUnitService, UnitService>();
         services.AddSingleton<IConfirmationService, ConfirmationService>();

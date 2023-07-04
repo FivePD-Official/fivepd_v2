@@ -27,7 +27,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     private readonly DatabaseContext _databaseContext;
     private readonly PlayerList _playerList;
     private readonly INotificationService _notificationService;
-    private readonly IFeatureFlagService _featureFlagService;
+    private readonly IConfigService _configService;
     private readonly ILogger _logger;
     private readonly IUnitService _unitService;
 
@@ -38,7 +38,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
-    /// <param name="featureFlagService">The <see cref="IFeatureFlagService"/> to use.</param>
+    /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     public PlayerDataService(
@@ -46,7 +46,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         DatabaseContext databaseContext,
         PlayerList playerList,
         INotificationService notificationService,
-        IFeatureFlagService featureFlagService,
+        IConfigService configService,
         ILogger logger,
         IUnitService unitService)
     {
@@ -54,7 +54,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         this._databaseContext = databaseContext;
         this._playerList = playerList;
         this._notificationService = notificationService;
-        this._featureFlagService = featureFlagService;
+        this._configService = configService;
         this._logger = logger;
         this._unitService = unitService;
     }
@@ -123,7 +123,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
 
     private void SubscribeToOnDutyStatusChange(Player player)
     {
-        if (!this._featureFlagService.IsFeatureEnabled(x => x.DutyNotification))
+        if (!this._configService.GeneralConfig.FeatureFlags.DutyNotification)
         {
             return;
         }
