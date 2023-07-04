@@ -15,6 +15,6 @@
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj" />
+        <ProjectReference Include="..\FivePD.Server\FivePD.Server.csproj" />
     </ItemGroup>
 </Project>

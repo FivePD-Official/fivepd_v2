@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace FivePD.Server.Interfaces;
+
+/// <summary>
+/// Provides utility methods for file handling.
+/// </summary>
+public interface IFileHandlerService
+{
+    /// <summary>
+    /// Loads a file's content, splits it by new lines and creates a list from them.
+    /// </summary>
+    /// <param name="path">The path of the file.</param>
+    /// <returns>A string list, containing each line of the file.</returns>
+    public List<string> LoadStringList(string path);
+
+    /// <summary>
+    /// !! IT CAN ONLY DESERIALIZE FROM JSON AND YAML !!
+    /// Reads the given file.
+    /// If empty, returns T with its default values.
+    /// Otherwise returns the data deserialized to the given type.
+    /// </summary>
+    /// <typeparam name="T">The type to deserialize the content.</typeparam>
+    /// <param name="path">The path of the file.</param>
+    /// <param name="useCache">Determines if the data should be cached.</param>
+    /// <returns>The data converted to T.</returns>
+    public Tuple<T, Exception> LoadFile<T>(string path, bool useCache = true);
+
+    /// <summary>
+    /// Reads the given file and returns its content.
+    /// </summary>
+    /// <param name="path">The path of the file.</param>
+    /// <returns>A tuple with a bool specifying whether the file is JSON or not and the actual content.</returns>
+    public Tuple<bool, string> LoadFile(string path);
+}
