@@ -7,7 +7,7 @@ namespace FivePD.Server.Interfaces;
 /// Useful for calling natives on a background thread when
 /// we don't necessarily need an immediate result.
 /// </summary>
-internal interface IInteralTickQueueService
+internal interface IInternalTickQueueService
 {
     /// <summary>
     /// Works through the queue, executing

@@ -256,7 +256,7 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<ConcurrentTickQueueService>();
         services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
-        services.AddSingleton<IInteralTickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
+        services.AddSingleton<IInternalTickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
 
         services.AddSingleton<UIService>();
         services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
@@ -391,7 +391,7 @@ internal class Bootstrapper : BaseScript
             service.RegisterEvents();
         }
 
-        var tickQueueService = this._provider.GetService<IInteralTickQueueService>();
+        var tickQueueService = this._provider.GetService<IInternalTickQueueService>();
         this.Tick += tickQueueService!.OnTickAsync;
     }
 

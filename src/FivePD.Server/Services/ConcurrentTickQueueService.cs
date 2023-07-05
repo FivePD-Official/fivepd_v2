@@ -8,7 +8,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.ITickQueueService" />
-public class ConcurrentTickQueueService : ITickQueueService, IInteralTickQueueService
+public class ConcurrentTickQueueService : ITickQueueService, IInternalTickQueueService
 {
     // Inspiration from https://github.com/citizenfx/fivem/blob/f4befbfee415e8f7aea486b61a9cdbc30408cf09/ext/webadmin/server/HttpServer.cs
     private readonly string _resourceName = Cfx.API.GetCurrentResourceName();
