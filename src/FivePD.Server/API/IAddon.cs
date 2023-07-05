@@ -5,7 +5,7 @@ namespace FivePD.Server.API;
 /// <summary>
 /// Represents a server-sided addon.
 /// </summary>
-public interface IGamemodeAddon
+public interface IAddon
 {
     /// <summary>
     /// Executed when the addon is loaded by the GAR.

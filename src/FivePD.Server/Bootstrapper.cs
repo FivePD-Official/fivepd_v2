@@ -310,7 +310,7 @@ internal class Bootstrapper : BaseScript
         // Find and register addons
         services.Scan(scan => scan
             .FromAssemblies(this._assembliesWithDefinitions.Keys)
-            .AddClasses(classes => classes.AssignableTo<IGamemodeAddon>())
+            .AddClasses(classes => classes.AssignableTo<IAddon>())
             .AsSelfWithInterfaces()
             .WithSingletonLifetime());
 
@@ -403,7 +403,7 @@ internal class Bootstrapper : BaseScript
         var tickQueueService = this._provider.GetService<ITickQueueService>();
 
         // Grab an instance of every addon entrypoint
-        foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
+        foreach (var addon in this._provider.GetServices<IAddon>())
         {
             // Lazy load it
             tickQueueService.EnqueueAsync(() => addon.OnStartedAsync());
@@ -429,7 +429,7 @@ internal class Bootstrapper : BaseScript
         log?.Debug("Running addon shutdown routine");
 
         // Grab an instance of every addon entrypoint and "stop" it
-        foreach (var addon in this._provider.GetServices<IGamemodeAddon>())
+        foreach (var addon in this._provider.GetServices<IAddon>())
         {
             addon.OnStoppedAsync();
         }

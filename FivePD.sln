@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Gamemode.Client", "src\FivePD.Gamemode.Client\FivePD.Gamemode.Client.csproj", "{4CF57E85-1599-4CF0-9794-3137B126C666}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Client", "src\FivePD.Client\FivePD.Client.csproj", "{4CF57E85-1599-4CF0-9794-3137B126C666}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FivePD.Common", "src\FivePD.Common\FivePD.Common.shproj", "{63ECCE32-17F2-4B76-91AE-FAFD2E080610}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Gamemode.Server", "src\FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj", "{87DAAE85-FEB5-4860-9E51-31DCB2B30820}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Server", "src\FivePD.Server\FivePD.Server.csproj", "{87DAAE85-FEB5-4860-9E51-31DCB2B30820}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Gamemode.IA.AmbientEvents", "src\FivePD.Gamemode.IA.AmbientEvents\FivePD.Gamemode.IA.AmbientEvents.csproj", "{4509990C-E190-4355-9F88-D06FCABD86D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.IA.AmbientEvents", "src\FivePD.IA.AmbientEvents\FivePD.IA.AmbientEvents.csproj", "{4509990C-E190-4355-9F88-D06FCABD86D8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Localization", "src\FivePD.Localization\FivePD.Localization.csproj", "{BBA92746-14EB-4C46-BBE6-7D1D0F74589E}"
 EndProject
