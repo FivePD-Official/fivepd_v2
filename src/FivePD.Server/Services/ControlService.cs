@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Utilities;
+using FivePD.Common;
+using FivePD.Common.Utilities;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 

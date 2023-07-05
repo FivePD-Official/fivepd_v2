@@ -1,4 +1,4 @@
-﻿namespace FivePD.Gamemode.Common.Extensions;
+﻿namespace FivePD.Common.Extensions;
 
 /// <summary>
 /// Contains extension methods for dynamic objects.

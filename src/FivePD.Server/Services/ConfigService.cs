@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.ConfigModels;
-using FivePD.Gamemode.Common.Exceptions;
-using FivePD.Gamemode.Common.Extensions;
+using FivePD.Common;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.Exceptions;
+using FivePD.Common.Extensions;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
 using Serilog;

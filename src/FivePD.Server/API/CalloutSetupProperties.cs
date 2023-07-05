@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common.Enums;
 
 namespace FivePD.Server.API;
 

@@ -1,4 +1,4 @@
-﻿using FivePD.Gamemode.Common.Models;
+﻿using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 
 namespace FivePD.Server.Interfaces;

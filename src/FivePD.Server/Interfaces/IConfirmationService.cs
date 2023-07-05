@@ -1,6 +1,6 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
 
 namespace FivePD.Server.Interfaces;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
 
-namespace FivePD.Gamemode.Common.ConfigModels;
+namespace FivePD.Common.ConfigModels;
 
 /// <summary>
 /// Contains the definition of the vehicles config file.

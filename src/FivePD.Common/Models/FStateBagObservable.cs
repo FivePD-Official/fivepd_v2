@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using CitizenFX.Core;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Gamemode.Common.Models;
+namespace FivePD.Common.Models;
 
 /// <summary>
-/// Represents a single stateful datum in
-/// the gamemode. A property defined with
+/// Represents a single stateful datum. A property defined with
 /// this type will be automatically persisted
 /// assuming the property's class is of the
 /// <see cref="FStatefulContainer"/> type.

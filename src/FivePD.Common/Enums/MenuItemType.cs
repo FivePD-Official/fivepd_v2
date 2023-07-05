@@ -1,4 +1,4 @@
-﻿namespace FivePD.Gamemode.Common.Enums;
+﻿namespace FivePD.Common.Enums;
 
 /// <summary>
 /// Defines the types of menu items.

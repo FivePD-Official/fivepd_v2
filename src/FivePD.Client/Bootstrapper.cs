@@ -8,9 +8,8 @@ using FivePD.Client.Extensions;
 using FivePD.Client.Injection;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Services;
-using FivePD.Gamemode.Client.Services;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Utilities;
+using FivePD.Common;
+using FivePD.Common.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3241
@@ -24,7 +23,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client;
 
 /// <summary>
-/// The gamemode client entrypoint. Handles the
+/// The client entrypoint. Handles the
 /// creation and management of all tasks on the client.
 /// </summary>
 // ReSharper disable once UnusedType.Global
@@ -101,11 +100,10 @@ internal class Bootstrapper : BaseScript
         }
         catch (Exception e)
         {
-            // Problem? Stop the gamemode.
             this.Tick -= this.RunNextPhaseAsync;
 
             // Log the problem
-            this._bootstrapLogger.Error("An error occurred during bootstrapping and the gamemode has halted to prevent further issues.");
+            this._bootstrapLogger.Error("An error occurred during bootstrapping and FivePD has halted to prevent further issues.");
             this._bootstrapLogger.Info("Exception: {exception}", e.Message);
             this._bootstrapLogger.Error("Stacktrace: {stacktrace}", e.StackTrace);
             if (e.InnerException != null)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common.Models;
 
 namespace FivePD.Server.Interfaces;
 

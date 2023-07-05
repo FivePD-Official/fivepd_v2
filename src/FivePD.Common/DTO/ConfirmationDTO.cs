@@ -1,6 +1,6 @@
-﻿using FivePD.Gamemode.Common.Models;
+﻿using FivePD.Common.Models;
 
-namespace FivePD.Gamemode.Client.DTO;
+namespace FivePD.Client.DTO;
 
 #pragma warning disable
 

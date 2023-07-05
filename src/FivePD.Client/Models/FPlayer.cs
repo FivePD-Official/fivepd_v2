@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common;
+using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Models;
 
 /// <summary>
-/// The base player class for the gamemode.
+/// The base player class.
 /// Provides a wrapper around game functionality for easier interactions with the framework.
 /// </summary>
 public class FPlayer : FStatefulContainer

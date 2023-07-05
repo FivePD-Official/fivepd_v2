@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Provides functionality related
-/// to gamemode development.
+/// to development.
 /// </summary>
 internal interface IDevUtilitiesService
 {

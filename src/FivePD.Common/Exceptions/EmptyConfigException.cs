@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace FivePD.Gamemode.Common.Exceptions;
+namespace FivePD.Common.Exceptions;
 
 /// <inheritdoc />
 [Serializable]

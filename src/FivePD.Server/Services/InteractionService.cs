@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;

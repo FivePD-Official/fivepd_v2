@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FivePD.Gamemode.Common.ConfigModels;
-using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using Newtonsoft.Json;
 
 #pragma warning disable CS1591
 #pragma warning disable SA1600
 
-namespace FivePD.Gamemode.Common.Builders;
+namespace FivePD.Common.Builders;
 
 /// <summary>
 /// Used for the construction of <see cref="CommonFPed"/> objects.

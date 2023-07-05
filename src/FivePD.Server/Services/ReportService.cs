@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common.Enums;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.LooseDataSet;

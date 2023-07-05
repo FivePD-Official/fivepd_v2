@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Models;
-using FivePD.Gamemode.Server;
+using FivePD.Common;
+using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
@@ -14,7 +13,7 @@ using FivePD.Server.UIModels.MenuModels;
 namespace FivePD.Server.EntityWrappers;
 
 /// <summary>
-/// The base player class for the gamemode.
+/// The base player class.
 /// Provides a wrapper around game functionality for easier interactions with the framework.
 /// </summary>
 public class FPlayer : FStatefulContainer, IFPlayerWithMenus

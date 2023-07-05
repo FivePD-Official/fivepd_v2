@@ -21,7 +21,7 @@ public class AddonMetadataService : IAddonMetadataService
     /// <inheritdoc />
     public AddonDefinition GetExecutingAddonDefinition()
     {
-        // Technically, the executing assembly is the server gamemode. Sort through the stack trace and find a ref. to the actual addon
+        // Technically, the executing assembly is the server. Sort through the stack trace and find a ref. to the actual addon
         foreach (var frame in new StackTrace().GetFrames())
         {
             try

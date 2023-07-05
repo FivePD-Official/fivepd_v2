@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Extensions;
+using FivePD.Common;
+using FivePD.Common.Extensions;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
 

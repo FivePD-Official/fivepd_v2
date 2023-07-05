@@ -2,8 +2,8 @@
   "FriendlyName": "Ambient Event Manager",
   "Version": 100,
   "FriendlyVersion": "1.0.0",
-  "Author": "GPMDS",
+  "Author": "FivePD",
   "Assemblies": [
-    "FivePD.Gamemode.IA.AmbientEvents.dll"
+    "FivePD.IA.AmbientEvents.dll"
   ]
 }

@@ -6,8 +6,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Server;
+using FivePD.Common.Enums;
 using FivePD.Server.API;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
@@ -24,7 +23,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Server;
 
 /// <summary>
-/// The gamemode server entrypoint. Handles the
+/// The server entrypoint. Handles the
 /// creation and management of all tasks on the server.
 /// </summary>
 // ReSharper disable once UnusedType.Global
@@ -63,7 +62,7 @@ internal class Bootstrapper : BaseScript
 
         // Creates log context for bootstrapping.
         this._bootstrapLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
-        this._bootstrapLogger.Information("Starting FivePD Gamemode Server...");
+        this._bootstrapLogger.Information("Starting FivePD...");
 
         // Enqueue pre-bootstrap phase.
         this._phases.Add(this.PerformPreBootstrapPhase, false);
@@ -85,7 +84,7 @@ internal class Bootstrapper : BaseScript
     }
 
     /// <summary>
-    /// Terminates the gamemode.
+    /// Terminates the resource.
     /// </summary>
     internal void StopGamemode()
     {
@@ -95,7 +94,7 @@ internal class Bootstrapper : BaseScript
 #if DEBUG
     /// <summary>
     /// Configures pre-run settings for development mode.
-    /// This logic runs before the gamemode has been initialized.
+    /// This logic runs before everything else has been initialized.
     /// </summary>
     private static void ConfigureForDevelopment()
     {
@@ -120,7 +119,7 @@ internal class Bootstrapper : BaseScript
         if (phase.Key == null)
         {
             // Log that we're done
-            this._bootstrapLogger.Information("FivePD Gamemode Server bootstrapping has completed");
+            this._bootstrapLogger.Information("FivePD bootstrapping has completed");
 
             // Stop trying to run phases
             this.Tick -= this.RunNextPhaseAsync;
@@ -141,11 +140,10 @@ internal class Bootstrapper : BaseScript
         }
         catch (Exception e)
         {
-            // Problem? Stop the gamemode.
             this.Tick -= this.RunNextPhaseAsync;
 
             // Log the problem
-            this._bootstrapLogger.Fatal("An error occurred during bootstrapping and the gamemode has halted to prevent further issues.");
+            this._bootstrapLogger.Fatal("An error occurred during bootstrapping and the FivePD has halted to prevent further issues.");
             this._bootstrapLogger.Fatal("Exception: {exception}", e.Message);
             this._bootstrapLogger.Debug("Stacktrace: {stacktrace}", e.StackTrace);
             if (e.InnerException != null)
@@ -184,15 +182,12 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     private void PerformAddonLocationPhase()
     {
-        /*
-         * Gamemode addons have full(ish) access to the complete suite of services
-         * made available to core gamemode services. Thus, we need to find our addons
-         * prior to actually assembling a service this._provider. The addon locator takes one
-         * parameter, a logger, so we create it early.
-         */
-
+         // Addons have full(ish) access to the complete suite of services
+         // made available to core services. Thus, we need to find our addons
+         // prior to actually assembling a service this._provider. The addon locator takes one
+         // parameter, a logger, so we create it early.
         this._bootstrapLogger.Information(
-            "Bootstrapping gamemode server version {@Version}",
+            "Bootstrapping server version {@Version}",
             Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
         var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
@@ -216,6 +211,7 @@ internal class Bootstrapper : BaseScript
             }
         }
     }
+#pragma warning disable
 
     /// <summary>
     /// Locates and registers services.
@@ -261,7 +257,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<ConcurrentTickQueueService>();
         services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
         services.AddSingleton<IInteralTickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
-        
+
         services.AddSingleton<UIService>();
         services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<UIService>());
@@ -301,12 +297,12 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<MenuService>();
         services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<MenuService>());
-        
+
         services.AddSingleton<CalloutManagerService>();
         services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
         services.AddSingleton<IInternalCalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutManagerService>());
-        
+
         services.AddSingleton<CalloutDistributionService>();
         services.AddSingleton<ICalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutDistributionService>());
@@ -319,7 +315,7 @@ internal class Bootstrapper : BaseScript
             .WithSingletonLifetime());
 
         // Find and register callouts
-        services.Scan(scan => scan
+        var s = services.Scan(scan => scan
             .FromAssemblies(this._assembliesWithDefinitions.Keys)
             .AddClasses(classes => classes.Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(typeof(Callout))))
             .As<Callout>()
@@ -415,7 +411,7 @@ internal class Bootstrapper : BaseScript
     }
 
     /// <summary>
-    /// Called when the gamemode is being stopped. Handles cleanup.
+    /// Called when the resource is being stopped. Handles cleanup.
     /// </summary>
     private void OnStopped()
     {
@@ -438,7 +434,7 @@ internal class Bootstrapper : BaseScript
             addon.OnStoppedAsync();
         }
 
-        log?.Debug("Addon shutdown complete. Running gamemode disposal routine");
+        log?.Debug("Addon shutdown complete. Running disposal routine");
 
         try
         {
@@ -451,7 +447,7 @@ internal class Bootstrapper : BaseScript
     }
 
     /// <summary>
-    /// Determines if the gamemode can run in the current environment.
+    /// Determines if the resource can run in the current environment.
     /// <returns>A boolean representing the safety of the environment.</returns>
     /// </summary>
     private bool IsSafeToRun()

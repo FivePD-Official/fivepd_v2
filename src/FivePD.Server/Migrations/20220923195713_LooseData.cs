@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 #pragma warning disable CS1591
-namespace FivePD.Gamemode.Server.Migrations
+namespace FivePD.Server.Migrations
 {
     public partial class LooseData : Migration
     {

@@ -1,5 +1,4 @@
 ﻿using System;
-using FivePD.Gamemode.Server;
 using Serilog;
 using Serilog.Configuration;
 

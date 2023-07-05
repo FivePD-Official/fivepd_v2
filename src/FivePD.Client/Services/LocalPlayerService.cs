@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Models;
-using FivePD.Gamemode.Client.DTO;
-using FivePD.Gamemode.Common.ConfigModels;
-using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -160,7 +160,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
             _ => "Unknown",
         };
         Cfx.API.SetRichPresence(status);
-        Cfx.API.SetDiscordRichPresenceAssetText("FivePD is a law enforcement gamemode for FiveM. 👮 twitter.com/five_pd");
+        Cfx.API.SetDiscordRichPresenceAssetText("FivePD is a law enforcement mod for FiveM. 👮 twitter.com/five_pd");
         Cfx.API.SetDiscordRichPresenceAssetSmallText($"FivePD v{Assembly.GetExecutingAssembly().GetName().Version}");
     }
 }

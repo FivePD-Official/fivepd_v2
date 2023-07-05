@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Builders;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common;
+using FivePD.Common.Builders;
+using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;

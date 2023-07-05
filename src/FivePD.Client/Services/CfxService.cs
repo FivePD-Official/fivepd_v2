@@ -2,7 +2,7 @@
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Common;
+using FivePD.Common;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Services;

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.DTO;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common;
+using FivePD.Common.DTO;
+using FivePD.Common.Models;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 

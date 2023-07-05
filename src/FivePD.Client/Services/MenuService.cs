@@ -2,9 +2,9 @@ using System;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.DTO;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common;
+using FivePD.Common.DTO;
+using FivePD.Common.Enums;
 using Newtonsoft.Json;
 
 #pragma warning disable S3011

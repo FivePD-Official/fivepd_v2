@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FivePD.Gamemode.Common.Models;
+namespace FivePD.Common.Models;
 
 #pragma warning disable
 

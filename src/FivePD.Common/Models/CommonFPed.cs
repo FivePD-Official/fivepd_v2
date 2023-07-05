@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using FivePD.Gamemode.Common.Builders;
-using FivePD.Gamemode.Common.ConfigModels;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common.Builders;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.Enums;
 
-namespace FivePD.Gamemode.Common.Models;
+namespace FivePD.Common.Models;
 
 /// <summary>
-/// The base ped class for the gamemode.
+/// The base ped class.
 /// Provides a wrapper around game functionality for easier interactions with the framework.
 /// </summary>
 public class CommonFPed : CommonFEntity

@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using FivePD.Gamemode.Common.Exceptions;
+using FivePD.Common.Exceptions;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;

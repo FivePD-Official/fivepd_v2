@@ -1,4 +1,4 @@
-﻿namespace FivePD.Gamemode.Common.Enums;
+﻿namespace FivePD.Common.Enums;
 
 /// <summary>
 /// An enum representing whether a player

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FivePD.Gamemode.Common.Models;
+namespace FivePD.Common.Models;
 
 /// <summary>
 /// A subscription to a <see cref="FStateBagObservable{T}"/>.

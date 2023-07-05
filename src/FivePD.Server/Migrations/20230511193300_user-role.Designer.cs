@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 #pragma warning disable CS1591
-namespace FivePD.Gamemode.Server.Migrations
+namespace FivePD.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20230511193300_user-role")]

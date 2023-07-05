@@ -11,7 +11,7 @@ namespace FivePD.Localization
     public static class Localization
     {
         private const string LocalizationFileName = "en-US.json";
-        private static readonly string ServerStaticsDirPath = AppDomain.CurrentDomain.BaseDirectory + "../../FivePD.Gamemode.Statics/Localizations";
+        private static readonly string ServerStaticsDirPath = AppDomain.CurrentDomain.BaseDirectory + "../../FivePD.Statics/Localizations";
         private static readonly string LocalizationDirPath = AppDomain.CurrentDomain.BaseDirectory + "../Localization";
         private static readonly string LocalizationPath = LocalizationDirPath + '/' + LocalizationFileName;
         private static readonly string OptimizedLocalizationPath = ServerStaticsDirPath + '/' + LocalizationFileName;

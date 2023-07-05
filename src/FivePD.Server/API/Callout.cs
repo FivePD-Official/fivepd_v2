@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Models;
 

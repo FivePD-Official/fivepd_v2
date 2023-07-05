@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Utilities;
+using FivePD.Common.Enums;
+using FivePD.Common.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Services;

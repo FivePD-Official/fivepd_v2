@@ -3,7 +3,7 @@
 namespace FivePD.Server.API;
 
 /// <summary>
-/// Represents a server-sided gamemode addon.
+/// Represents a server-sided addon.
 /// </summary>
 public interface IGamemodeAddon
 {

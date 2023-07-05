@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Client.DTO;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Extensions;
+using FivePD.Common;
+using FivePD.Common.Extensions;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 

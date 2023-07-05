@@ -1,4 +1,4 @@
-﻿using FivePD.Gamemode.Common.Enums;
+﻿using FivePD.Common.Enums;
 
 namespace FivePD.Server.Models.DTO;
 

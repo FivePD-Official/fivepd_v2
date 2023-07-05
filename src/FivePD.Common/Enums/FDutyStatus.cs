@@ -1,9 +1,7 @@
-﻿namespace FivePD.Gamemode.Common.Enums;
+﻿namespace FivePD.Common.Enums;
 
 /// <summary>
-/// An enum representing a player's duty
-/// status within the gamemode (i.e. if they are
-/// acting as a user of the gamemode or not).
+/// An enum representing a player's duty status.
 /// </summary>
 public enum FDutyStatus
 {

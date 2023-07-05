@@ -1,8 +1,8 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Gamemode.Client.DTO;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Client.DTO;
+using FivePD.Common;
+using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;

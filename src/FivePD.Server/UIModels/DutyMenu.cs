@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.ConfigModels.MenuConfigs;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common;
+using FivePD.Common.ConfigModels.MenuConfigs;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.UIModels.MenuModels;

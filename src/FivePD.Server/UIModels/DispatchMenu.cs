@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.ConfigModels.GeneralConfigs;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common;
+using FivePD.Common.ConfigModels.GeneralConfigs;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.AssistanceServiceModels;

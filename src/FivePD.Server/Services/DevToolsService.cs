@@ -1,6 +1,6 @@
 ﻿using System.Dynamic;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
+using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;

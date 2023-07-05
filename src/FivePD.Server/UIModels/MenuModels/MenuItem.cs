@@ -1,4 +1,4 @@
-﻿using FivePD.Gamemode.Common.Enums;
+﻿using FivePD.Common.Enums;
 
 #pragma warning disable S3264
 #pragma warning disable CS0067

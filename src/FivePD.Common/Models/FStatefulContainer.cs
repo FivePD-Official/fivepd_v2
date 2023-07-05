@@ -1,6 +1,6 @@
 ﻿using CitizenFX.Core;
 
-namespace FivePD.Gamemode.Common.Models;
+namespace FivePD.Common.Models;
 
 /// <summary>
 /// Represents a stateful object

@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Common.ConfigModels;
+using FivePD.Common.ConfigModels;
 using Cfx = CitizenFX.Core.Native;
 
-namespace FivePD.Gamemode.Client.Services;
+namespace FivePD.Client.Services;
 
 /// <inheritdoc />
 internal class ConfigService : IConfigService

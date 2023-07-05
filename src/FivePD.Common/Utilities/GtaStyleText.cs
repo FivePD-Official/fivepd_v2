@@ -5,7 +5,7 @@
 #pragma warning disable SA1611
 #pragma warning disable SA1615
 
-namespace FivePD.Gamemode.Common.Utilities;
+namespace FivePD.Common.Utilities;
 
 /// <summary>
 /// A string builder wrapper to easily create multicolored texts.

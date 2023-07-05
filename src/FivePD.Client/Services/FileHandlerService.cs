@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Common;
+using FivePD.Common;
 using Newtonsoft.Json;
 
 namespace FivePD.Client.Services;

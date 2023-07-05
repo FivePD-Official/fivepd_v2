@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common;
+using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 

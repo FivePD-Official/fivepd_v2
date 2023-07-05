@@ -1,6 +1,6 @@
 ﻿using CitizenFX.Core;
-using FivePD.Gamemode.Common.Builders;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common.Builders;
+using FivePD.Common.Models;
 
 namespace FivePD.Server.EntityWrappers.PedWrapper;
 

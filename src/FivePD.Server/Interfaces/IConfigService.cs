@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FivePD.Gamemode.Common.ConfigModels;
+using FivePD.Common.ConfigModels;
 
 namespace FivePD.Server.Interfaces;
 

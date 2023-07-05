@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-using FivePD.Gamemode.Common;
-using FivePD.Gamemode.Common.DTO;
-using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Server;
+using FivePD.Common;
+using FivePD.Common.DTO;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;

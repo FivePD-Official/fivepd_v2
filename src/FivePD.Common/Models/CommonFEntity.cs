@@ -1,8 +1,7 @@
-﻿namespace FivePD.Gamemode.Common.Models;
+﻿namespace FivePD.Common.Models;
 
 /// <summary>
-/// The base entity class for
-/// the gamemode.
+/// The base entity class.
 /// </summary>
 public class CommonFEntity
 {

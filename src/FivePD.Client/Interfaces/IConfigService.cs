@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using FivePD.Gamemode.Common.ConfigModels;
+using FivePD.Common.ConfigModels;
 
 namespace FivePD.Client.Interfaces;
 

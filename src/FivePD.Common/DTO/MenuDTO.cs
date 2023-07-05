@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common.Enums;
 using Newtonsoft.Json.Linq;
 
-namespace FivePD.Gamemode.Common.DTO;
+namespace FivePD.Common.DTO;
 
 #pragma warning disable
 

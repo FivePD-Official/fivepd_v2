@@ -1,6 +1,6 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common.Enums;
+using FivePD.Common.Enums;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Extensions;

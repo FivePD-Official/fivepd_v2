@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
-using FivePD.Gamemode.Common;
+using FivePD.Common;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
 

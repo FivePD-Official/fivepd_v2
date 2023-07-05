@@ -1,4 +1,4 @@
-﻿using FivePD.Gamemode.Common.Utilities;
+﻿using FivePD.Common.Utilities;
 
 namespace FivePD.Client.Interfaces;
 

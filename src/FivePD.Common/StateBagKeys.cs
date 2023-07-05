@@ -1,4 +1,4 @@
-﻿namespace FivePD.Gamemode.Common;
+﻿namespace FivePD.Common;
 
 #pragma warning disable
 

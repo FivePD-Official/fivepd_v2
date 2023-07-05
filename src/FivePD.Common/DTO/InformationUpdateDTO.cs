@@ -1,7 +1,7 @@
-﻿using FivePD.Gamemode.Common.Enums;
-using FivePD.Gamemode.Common.Models;
+﻿using FivePD.Common.Enums;
+using FivePD.Common.Models;
 
-namespace FivePD.Gamemode.Client.DTO;
+namespace FivePD.Client.DTO;
 
 #pragma warning disable
 

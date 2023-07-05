@@ -1,4 +1,4 @@
-﻿namespace FivePD.Gamemode.Common.ConfigModels;
+﻿namespace FivePD.Common.ConfigModels;
 
 /// <summary>
 /// Contains the definition of an item.

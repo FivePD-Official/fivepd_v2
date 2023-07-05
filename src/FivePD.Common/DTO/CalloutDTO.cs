@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
 
-namespace FivePD.Gamemode.Client.DTO;
+namespace FivePD.Client.DTO;
 
 #pragma warning disable
 

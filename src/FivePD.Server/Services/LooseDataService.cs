@@ -5,7 +5,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
-using FivePD.Gamemode.Common;
+using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
@@ -67,7 +67,7 @@ public class LooseDataService : ILooseDataService
 
             if (assemblyName == "CitizenFX.Core")
             {
-                assemblyName = "FivePD Gamemode";
+                assemblyName = "FivePD";
             }
 
             var setType = typeof(TS);
@@ -874,7 +874,7 @@ public class LooseDataService : ILooseDataService
 
     private string GetExecutingAssemblyName()
     {
-        // Technically, the executing assembly is the server gamemode. Sort through the stack trace and find a ref. to the actual addon
+        // Technically, the executing assembly is the server. Sort through the stack trace and find a ref. to the actual addon
         foreach (var frame in new StackTrace().GetFrames())
         {
             try

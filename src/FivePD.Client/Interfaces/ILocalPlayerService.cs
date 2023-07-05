@@ -1,5 +1,5 @@
 ﻿using FivePD.Client.Models;
-using FivePD.Gamemode.Common.Models;
+using FivePD.Common.Models;
 
 namespace FivePD.Client.Interfaces;
 
