@@ -38,7 +38,7 @@ public class CommonFPed : CommonFEntity
     /// <summary>
     /// Gets the ped's gender.
     /// </summary>
-    public FGender Gender { get; }
+    public FGender Gender { get; internal set; }
 
     /// <summary>
     /// Gets the ped's firstname.

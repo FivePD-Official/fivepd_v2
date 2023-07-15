@@ -73,8 +73,82 @@ internal class PedService : IPedService, IServiceWithEvents
 
         object value = property switch
         {
-            FPedPropertiesDTO.Events.IsDead => ped.IsDead,
+            FPedPropertiesDTO.Events.Accuracy => ped.Accuracy,
+            FPedPropertiesDTO.Events.Armor => ped.Armor,
+            FPedPropertiesDTO.Events.ArmorFloat => ped.ArmorFloat,
+            FPedPropertiesDTO.Events.CanFlyThroughWindscreen => ped.CanFlyThroughWindscreen,
+            FPedPropertiesDTO.Events.CanRagdoll => ped.CanRagdoll,
+            FPedPropertiesDTO.Events.CanSufferCriticalHits => ped.CanSufferCriticalHits,
+            FPedPropertiesDTO.Events.CanWrithe => ped.CanWrithe,
+            FPedPropertiesDTO.Events.CurrentVehicle => ped.CurrentVehicle.NetworkId,
+            FPedPropertiesDTO.Events.DropsWeaponsOnDeath => ped.DropsWeaponsOnDeath,
+            FPedPropertiesDTO.Events.FatalInjuryHealthThreshold => ped.FatalInjuryHealthThreshold,
+            FPedPropertiesDTO.Events.Gender => (int)ped.Gender,
+            FPedPropertiesDTO.Events.InjuryHealthThreshold => ped.InjuryHealthThreshold,
+            FPedPropertiesDTO.Events.IsAiming => ped.IsAiming,
+            FPedPropertiesDTO.Events.IsAimingFromCover => ped.IsAimingFromCover,
+            FPedPropertiesDTO.Events.IsAmbientSpeechEnabled => ped.IsAmbientSpeechEnabled,
+            FPedPropertiesDTO.Events.IsAmbientSpeechplaying => ped.IsAmbientSpeechplaying,
+            FPedPropertiesDTO.Events.IsBeingJacked => ped.IsBeingJacked,
+            FPedPropertiesDTO.Events.IsBeingStealthKilled => ped.IsBeingStealthKilled,
+            FPedPropertiesDTO.Events.IsBeingStunned => ped.IsBeingStunned,
+            FPedPropertiesDTO.Events.IsClimbing => ped.IsClimbing,
+            FPedPropertiesDTO.Events.IsCuffed => ped.IsCuffed,
+            FPedPropertiesDTO.Events.IsDiving => ped.IsDiving,
+            FPedPropertiesDTO.Events.IsDoingDriveBy => ped.IsDoingDriveBy,
+            FPedPropertiesDTO.Events.IsDucking => ped.IsDucking,
+            FPedPropertiesDTO.Events.IsFalling => ped.IsFalling,
+            FPedPropertiesDTO.Events.IsFleeing => ped.IsFleeing,
+            FPedPropertiesDTO.Events.IsGettingIntoAVehicle => ped.IsGettingIntoAVehicle,
+            FPedPropertiesDTO.Events.IsGettingUp => ped.IsGettingUp,
+            FPedPropertiesDTO.Events.IsGoingIntoCover => ped.IsGoingIntoCover,
+            FPedPropertiesDTO.Events.IsHuman => ped.IsHuman,
+            FPedPropertiesDTO.Events.IsIdle => ped.IsIdle,
+            FPedPropertiesDTO.Events.IsInBoat => ped.IsInBoat,
+            FPedPropertiesDTO.Events.IsInCombat => ped.IsInCombat,
+            FPedPropertiesDTO.Events.IsInCoverFacingLeft => ped.IsInCoverFacingLeft,
+            FPedPropertiesDTO.Events.IsInFlyingVehicle => ped.IsInFlyingVehicle,
+            FPedPropertiesDTO.Events.IsInGroup => ped.IsInGroup,
+            FPedPropertiesDTO.Events.IsInHeli => ped.IsInHeli,
+            FPedPropertiesDTO.Events.IsInjured => ped.IsInjured,
+            FPedPropertiesDTO.Events.IsInMeleeCombat => ped.IsInMeleeCombat,
+            FPedPropertiesDTO.Events.IsInParachuteFreeFall => ped.IsInParachuteFreeFall,
+            FPedPropertiesDTO.Events.IsInPlane => ped.IsInPlane,
+            FPedPropertiesDTO.Events.IsInPoliceVehicle => ped.IsInPoliceVehicle,
+            FPedPropertiesDTO.Events.IsInStealthMode => ped.IsInStealthMode,
+            FPedPropertiesDTO.Events.IsInSub => ped.IsInSub,
+            FPedPropertiesDTO.Events.IsInTaxi => ped.IsInTaxi,
+            FPedPropertiesDTO.Events.IsInTrain => ped.IsInTrain,
+            FPedPropertiesDTO.Events.IsJacking => ped.IsJacking,
+            FPedPropertiesDTO.Events.IsJumping => ped.IsJumping,
+            FPedPropertiesDTO.Events.IsJumpingOutOfVehicle => ped.IsJumpingOutOfVehicle,
+            FPedPropertiesDTO.Events.IsOnBike => ped.IsOnBike,
             FPedPropertiesDTO.Events.IsOnFoot => ped.IsOnFoot,
+            FPedPropertiesDTO.Events.IsPerformingStealthKill => ped.IsPerformingStealthKill,
+            FPedPropertiesDTO.Events.IsPlantingBomb => ped.IsPlantingBomb,
+            FPedPropertiesDTO.Events.IsPlayer => ped.IsPlayer,
+            FPedPropertiesDTO.Events.IsProne => ped.IsProne,
+            FPedPropertiesDTO.Events.IsReloading => ped.IsReloading,
+            FPedPropertiesDTO.Events.IsRunning => ped.IsRunning,
+            FPedPropertiesDTO.Events.IsScriptedSpeechplaying => ped.IsScriptedSpeechplaying,
+            FPedPropertiesDTO.Events.IsShooting => ped.IsShooting,
+            FPedPropertiesDTO.Events.IsSprinting => ped.IsSprinting,
+            FPedPropertiesDTO.Events.IsStopped => ped.IsStopped,
+            FPedPropertiesDTO.Events.IsSwimming => ped.IsSwimming,
+            FPedPropertiesDTO.Events.IsSwimmingUnderWater => ped.IsSwimmingUnderWater,
+            FPedPropertiesDTO.Events.IsTryingToEnterALockedVehicle => ped.IsTryingToEnterALockedVehicle,
+            FPedPropertiesDTO.Events.IsVaulting => ped.IsVaulting,
+            FPedPropertiesDTO.Events.IsWalking => ped.IsWalking,
+            FPedPropertiesDTO.Events.IsWearingHelmet => ped.IsWearingHelmet,
+            FPedPropertiesDTO.Events.LastVehicle => ped.LastVehicle.NetworkId,
+            FPedPropertiesDTO.Events.Money => ped.Money,
+            FPedPropertiesDTO.Events.SeatIndex => (int)ped.SeatIndex,
+            FPedPropertiesDTO.Events.Sweat => ped.Sweat,
+            FPedPropertiesDTO.Events.VehicleTryingToEnter => ped.VehicleTryingToEnter.NetworkId,
+            FPedPropertiesDTO.Events.VehicleWeapon => (int)ped.VehicleWeapon,
+            FPedPropertiesDTO.Events.WasKilledByStealth => ped.WasKilledByStealth,
+            FPedPropertiesDTO.Events.WasKilledByTakedown => ped.WasKilledByTakedown,
+            FPedPropertiesDTO.Events.IsDead => ped.IsDead,
             FPedPropertiesDTO.Events.IsInVehicle => ped.IsInVehicle(),
             _ => string.Empty,
         };
@@ -92,15 +166,237 @@ internal class PedService : IPedService, IServiceWithEvents
 
         switch (property)
         {
-            case FPedPropertiesDTO.Events.BlockPermanentEvents:
+            case FPedPropertiesDTO.Events.Accuracy:
             {
-                ped.BlockPermanentEvents = bool.Parse(value);
+                ped.Accuracy = int.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.AlwaysDiesOnLowHealth:
+            {
+                ped.AlwaysDiesOnLowHealth = bool.Parse(value);
                 break;
             }
 
             case FPedPropertiesDTO.Events.AlwaysKeepTask:
             {
                 ped.AlwaysKeepTask = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.Armor:
+            {
+                ped.Armor = int.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.ArmorFloat:
+            {
+                ped.ArmorFloat = float.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.BlockPermanentEvents:
+            {
+                ped.BlockPermanentEvents = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanBeDraggedOutOfVehicle:
+            {
+                ped.CanBeDraggedOutOfVehicle = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanBeKnockedOffBike:
+            {
+                ped.CanBeKnockedOffBike = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanBeShotInVehicle:
+            {
+                ped.CanBeShotInVehicle = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanBeTargetted:
+            {
+                ped.CanBeTargetted = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanFlyThroughWindscreen:
+            {
+                ped.CanFlyThroughWindscreen = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanPlayGestures:
+            {
+                ped.CanPlayGestures = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanRagdoll:
+            {
+                ped.CanRagdoll = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanSufferCriticalHits:
+            {
+                ped.CanSufferCriticalHits = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanSwitchWeapons:
+            {
+                ped.CanSwitchWeapons = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanWearHelmet:
+            {
+                ped.CanWearHelmet = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.CanWrithe:
+            {
+                ped.CanWrithe = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.DiesInstantlyInWater:
+            {
+                ped.DiesInstantlyInWater = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.DrivingSpeed:
+            {
+                ped.DrivingSpeed = float.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.DrivingStyle:
+            {
+                ped.DrivingStyle = (DrivingStyle)int.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.DropsWeaponsOnDeath:
+            {
+                ped.DropsWeaponsOnDeath = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.DrownsInSinkingVehicle:
+            {
+                ped.DrownsInSinkingVehicle = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.DrownsInWater:
+            {
+                ped.DrownsInWater = bool.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.FatalInjuryHealthThreshold:
+            {
+                ped.FatalInjuryHealthThreshold = float.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.InjuryHealthThreshold:
+            {
+                ped.InjuryHealthThreshold = float.Parse(value);
+                break;
+            }
+
+            case FPedPropertiesDTO.Events.IsDucking:
+            {
+                ped.IsDucking = bool.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.IsEnemy:
+            {
+                ped.IsEnemy = bool.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.IsPainAudioEnabled:
+            {
+                ped.IsPainAudioEnabled = bool.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.IsPriorityTargetForEnemies:
+            {
+                ped.IsPriorityTargetForEnemies = bool.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.MaxDrivingSpeed:
+            {
+                ped.MaxDrivingSpeed = float.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.Money:
+            {
+                ped.Money = int.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.MovementAnimationSet:
+            {
+                ped.MovementAnimationSet = value;
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.NeverLeavesGroup:
+            {
+                ped.NeverLeavesGroup = bool.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.ShootRate:
+            {
+                ped.ShootRate = int.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.StaysInVehicleWhenJacked:
+            {
+                ped.StaysInVehicleWhenJacked = bool.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.Sweat:
+            {
+                ped.Sweat = float.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.VehicleDrivingFlags:
+            {
+                ped.VehicleDrivingFlags = (VehicleDrivingFlags)int.Parse(value);
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.Voice:
+            {
+                ped.Voice = value;
+                break;
+            }
+            
+            case FPedPropertiesDTO.Events.WetnessHeight:
+            {
+                ped.WetnessHeight = float.Parse(value);
                 break;
             }
 
@@ -183,71 +479,71 @@ internal class PedService : IPedService, IServiceWithEvents
                 ped.Task.ChaseWithGroundVehicle(Entity.FromNetworkId(args.TargetNetworkId));
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ChaseWithHelicopter:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ChaseWithHelicopter>(request.Args);
                 ped.Task.ChaseWithHelicopter(Entity.FromNetworkId(args.TargetNetworkId), args.Offset);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ChaseWithPlane:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ChaseWithPlane>(request.Args);
                 ped.Task.ChaseWithPlane(Entity.FromNetworkId(args.TargetNetworkId), args.Offset);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ChatTo:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ChatTo>(request.Args);
                 ped.Task.ChatTo(Entity.FromNetworkId(args.NetworkId) as Ped);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ClearAll:
             {
                 ped.Task.ClearAll();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ClearAllImmediately:
             {
                 ped.Task.ClearAllImmediately();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ClearAnimation:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ClearAnimation>(request.Args);
                 ped.Task.ClearAnimation(args.AnimSet, args.AnimName);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ClearLookAt:
             {
                 ped.Task.ClearLookAt();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ClearSecondary:
             {
                 ped.Task.ClearSecondary();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.Climb:
             {
                 ped.Task.Climb();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ClimbLadder:
             {
                 ped.Task.ClimbLadder();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.Cower:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.Cower>(request.Args);
@@ -261,267 +557,269 @@ internal class PedService : IPedService, IServiceWithEvents
                 ped.Task.CruiseWithVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Speed, args.DrivingStyle);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.DriveTo:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.DriveTo>(request.Args);
                 ped.Task.DriveTo(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Target, args.Radius, args.Speed, args.DrivingStyle);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.EnterAnyVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.EnterAnyVehicle>(request.Args);
                 ped.Task.EnterAnyVehicle((VehicleSeat)args.Seat, args.Timeout, args.Speed, args.Flag);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.EnterVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.EnterVehicle>(request.Args);
                 ped.Task.EnterVehicle(Entity.FromHandle(args.VehicleNetworkId) as Vehicle, (VehicleSeat)args.Seat, args.Timeout, args.Speed, args.Flag);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.FightAgainst:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FightAgainst>(request.Args);
                 ped.Task.FightAgainst(Entity.FromHandle(args.PedNetworkId) as Ped, args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.FightAgainstHatedTargets:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FightAgainstHatedTargets>(request.Args);
                 ped.Task.FightAgainstHatedTargets(args.Radius, args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.FleeFrom:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FleeFrom>(request.Args);
                 ped.Task.FleeFrom(args.Position, args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.FollowPointRoute:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FollowPointRoute>(request.Args);
                 ped.Task.FollowPointRoute(args.Points.ToArray());
                 break;
             }
-            
+
             case FPedTasksDTO.Events.FollowToOffsetFromEntity:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FollowToOffsetFromEntity>(request.Args);
-                ped.Task.FollowToOffsetFromEntity(Entity.FromNetworkId(args.TargetNetworkId), args.Offset, args.MovementSpeed, args.Timeout, args.StoppingRange, args.PersistFollowing);
+                ped.Task.FollowToOffsetFromEntity(Entity.FromNetworkId(args.TargetNetworkId), args.Offset, args.MovementSpeed, args.Timeout, args.StoppingRange,
+                    args.PersistFollowing);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.GoToTarget:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.GoToTarget>(request.Args);
                 ped.Task.GoTo(Entity.FromNetworkId(args.TargetNetworkId));
                 break;
             }
-            
+
             case FPedTasksDTO.Events.GoToTargetWithOffset:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.GoToTargetWithOffset>(request.Args);
                 ped.Task.GoTo(Entity.FromNetworkId(args.TargetNetworkId), args.Offset, args.Timeout);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.GoToPosition:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.GoToPosition>(request.Args);
                 ped.Task.GoTo(args.Position, args.IgnorePaths, args.Timeout);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.GuardCurrentPosition:
             {
                 ped.Task.GuardCurrentPosition();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.HandsUp:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.HandsUp>(request.Args);
                 ped.Task.HandsUp(args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.Jump:
             {
                 ped.Task.Jump();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.LandPlane:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LandPlane>(request.Args);
                 ped.Task.LandPlane(args.StartPosition, args.TouchdownPosition, Entity.FromNetworkId(args.PlaneNetworkId) as Vehicle);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.LeaveVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LeaveVehicle>(request.Args);
                 ped.Task.LeaveVehicle((LeaveVehicleFlags)args.Flags);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.LeaveVehicleSpecified:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LeaveVehicleSpecified>(request.Args);
                 ped.Task.LeaveVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, (LeaveVehicleFlags)args.Flags);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.LeaveVehicleCloseDoor:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LeaveVehicleCloseDoor>(request.Args);
                 ped.Task.LeaveVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.CloseDoor);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.LookAtTarget:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LookAtTarget>(request.Args);
                 ped.Task.LookAt(Entity.FromNetworkId(args.TargetNetworkId), args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.LookAtPosition:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LookAtPosition>(request.Args);
                 ped.Task.LookAt(args.Position, args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ParachuteTo:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ParachuteTo>(request.Args);
                 ped.Task.ParachuteTo(args.Position);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ParkVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ParkVehicle>(request.Args);
                 ped.Task.ParkVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Position, args.Heading, args.Radius, args.KeepEngineOn);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.PlayAnimation:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.PlayAnimation>(request.Args);
                 ped.Task.PlayAnimation(args.AnimDict, args.AnimName);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.PlayAnimationWithBlendInSpeed:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.PlayAnimationWithBlendInSpeed>(request.Args);
                 ped.Task.PlayAnimation(args.AnimDict, args.AnimName, args.BlendInSpeed, args.Duration, (AnimationFlags)args.Flags);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.PlayAnimationWithPlaybackRate:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.PlayAnimationWithPlaybackRate>(request.Args);
                 ped.Task.PlayAnimation(args.AnimDict, args.AnimName, args.Speed, args.Duration, args.PlaybackRate);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.PlayAnimationWithBlendInAndOutSpeed:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.PlayAnimationWithBlendInAndOutSpeed>(request.Args);
-                ped.Task.PlayAnimation(args.AnimDict, args.AnimName, args.BlendInSpeed, args.BlendOutSpeed, args.Duration, (AnimationFlags)args.Flags, args.PlaybackRate);
+                ped.Task.PlayAnimation(args.AnimDict, args.AnimName, args.BlendInSpeed, args.BlendOutSpeed, args.Duration, (AnimationFlags)args.Flags,
+                    args.PlaybackRate);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.PutAwayMobilePhone:
             {
                 ped.Task.PutAwayMobilePhone();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.PutAwayParachute:
             {
                 ped.Task.PutAwayParachute();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ReactAndFlee:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ReactAndFlee>(request.Args);
                 ped.Task.ReactAndFlee(Entity.FromNetworkId(args.PedNetworkId) as Ped);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ReloadWeapon:
             {
                 ped.Task.ReloadWeapon();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.RunTo:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.RunTo>(request.Args);
                 ped.Task.RunTo(args.Position, args.IgnorePaths, args.Timeout);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ShootAtTarget:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ShootAtTarget>(request.Args);
                 ped.Task.ShootAt(Entity.FromNetworkId(args.TargetNetworkId) as Ped, args.Duration, (FiringPattern)args.FiringPattern);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ShootAtPosition:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ShootAtPosition>(request.Args);
                 ped.Task.ShootAt(args.Position, args.Duration, (FiringPattern)args.FiringPattern);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.ShuffleToNextVehicleSeat:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ShuffleToNextVehicleSeat>(request.Args);
                 ped.Task.ShuffleToNextVehicleSeat(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.Skydive:
             {
                 ped.Task.Skydive();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.SlideTo:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.SlideTo>(request.Args);
                 ped.Task.SlideTo(args.Position, args.Heading);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.StandStill:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.StandStill>(request.Args);
                 ped.Task.StandStill(args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.StartScenario:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.StartScenario>(request.Args);
                 ped.Task.StartScenario(args.Name, args.Position);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.SwapWeapon:
             {
                 ped.Task.SwapWeapon();
@@ -541,67 +839,67 @@ internal class PedService : IPedService, IServiceWithEvents
                 ped.Task.TurnTo(args.Position, args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.UseMobilePhone:
             {
                 ped.Task.UseMobilePhone();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.UseMobilePhoneWithDuration:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.UseMobilePhoneWithDuration>(request.Args);
                 ped.Task.UseMobilePhone(args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.UseParachute:
             {
                 ped.Task.UseParachute();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.VehicleChase:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.VehicleChase>(request.Args);
                 ped.Task.VehicleChase(Entity.FromNetworkId(args.TargetNetworkId) as Ped);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.VehicleShootAtPed:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.VehicleShootAtPed>(request.Args);
                 ped.Task.VehicleShootAtPed(Entity.FromNetworkId(args.TargetNetworkId) as Ped);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.Wait:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.Wait>(request.Args);
                 ped.Task.Wait(args.Duration);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.WanderAround:
             {
                 ped.Task.WanderAround();
                 break;
             }
-            
+
             case FPedTasksDTO.Events.WanderAroundPosition:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.WanderAroundPosition>(request.Args);
                 ped.Task.WanderAround(args.Position, args.Radius);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.WarpIntoVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.WarpIntoVehicle>(request.Args);
                 ped.Task.WarpIntoVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, (VehicleSeat)args.Seat);
                 break;
             }
-            
+
             case FPedTasksDTO.Events.WarpOutOfVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.WarpOutOfVehicle>(request.Args);
@@ -717,6 +1015,7 @@ internal class PedService : IPedService, IServiceWithEvents
 
     private async Task<Ped> FindPed(int networkId)
     {
+        // TODO: only wait a few seconds
         while (!Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId))
         {
             await BaseScript.Delay(10);

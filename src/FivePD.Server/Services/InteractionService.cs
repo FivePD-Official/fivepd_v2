@@ -78,8 +78,8 @@ public class InteractionService : IInteractionService, IServiceWithEvents
         // TODO this._pedService.StopPed(ped);
         ped.Properties.CreateBlip(FBlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
 
-        ped.Properties.AlwaysKeepTask(true);
-        ped.Properties.BlockPermanentEvents(true);
+        ped.Properties.SetAlwaysKeepTask(true);
+        ped.Properties.SetBlockPermanentEvents(true);
         ped.Task.StandStill(-1);
         ped.Task.TurnTo(player.Character);
 

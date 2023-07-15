@@ -52,9 +52,9 @@ public class TowTruck : AssistanceService
             this._towTruck.Properties.IsSirenActive(true);
         }
 
-        this._driver.Properties.AlwaysKeepTask(true);
+        this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._towTruck.GetUnderlyingVehicle, FVehicleSeat.Driver);
-        this._driver.Properties.BlockPermanentEvents(true);
+        this._driver.Properties.SetBlockPermanentEvents(true);
         this._driver.Task.DriveTo(
             this._towTruck.GetUnderlyingVehicle,
             this._targetVehicle.GetUnderlyingVehicle.Position,

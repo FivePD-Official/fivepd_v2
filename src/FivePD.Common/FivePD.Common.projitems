@@ -43,7 +43,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FMarkerType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FPedHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FPlayerAvailability.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleDrivingFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleSeat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\MenuItemType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />

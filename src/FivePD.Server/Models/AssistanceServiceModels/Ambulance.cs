@@ -45,9 +45,9 @@ public class Ambulance : AssistanceService
         this._ambulance.Properties.CreateBlip(FBlipSprite.Health, FBlipColor.Red, "Ambulance");
         this._ambulance.Properties.IsSirenActive(true);
 
-        this._driver.Properties.AlwaysKeepTask(true);
+        this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._ambulance.GetUnderlyingVehicle, FVehicleSeat.Driver);
-        this._driver.Properties.BlockPermanentEvents(true);
+        this._driver.Properties.SetBlockPermanentEvents(true);
         this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, 30f, (int)FDrivingStyle.Emergency);
         
         while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared2D(this._target) >= 150f)
