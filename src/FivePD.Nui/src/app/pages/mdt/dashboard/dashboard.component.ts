@@ -5,7 +5,6 @@ import {
   Collation,
   Column,
   Department,
-  FDutyStatus, FIncidentPriorty,
   GeneralConfig,
   NumberInput,
   Page,
@@ -29,7 +28,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
 import { EventService } from "@services/event/event.service";
-import { NuiEventType } from "@enums";
+import { FDutyStatus, FIncidentPriority, NuiEventType } from "@enums";
 import { CalloutService } from "@services/callout/callout.service";
 
 @Component({
@@ -218,11 +217,11 @@ export class DashboardComponent implements OnInit {
     }
 
     switch (this.activeCallout.Callout.Priority) {
-      case FIncidentPriorty.Code1:
+      case FIncidentPriority.Code1:
         return 'LABEL.PRIORITY.CODE1';
-      case FIncidentPriorty.Code2:
+      case FIncidentPriority.Code2:
         return 'LABEL.PRIORITY.CODE2';
-      case FIncidentPriorty.Code3:
+      case FIncidentPriority.Code3:
         return 'LABEL.PRIORITY.CODE3';
     }
 

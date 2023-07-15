@@ -1,4 +1,5 @@
-﻿import { FDutyStatus, FIncidentPriorty, FPlayerAvailability, User, Vector3 } from "./entities";
+﻿import { User, Vector3 } from "./entities";
+import { FDutyStatus, FIncidentPriority, FPlayerAvailability } from "@enums";
 
 export interface ActionResponse {
   Status: boolean;
@@ -95,7 +96,7 @@ interface ClientCallout {
   Id: string;
   Title: string;
   Description: string;
-  Priority: FIncidentPriorty;
+  Priority: FIncidentPriority;
   ActivityRadius: number;
   Location: {
     X: number;
@@ -129,7 +130,7 @@ export interface InformationUpdateDTO extends BaseNuiEvent {
       Id: string;
       Title: string;
       Description: string;
-      Priority: FIncidentPriorty;
+      Priority: FIncidentPriority;
       ActivityRadius: number;
       Location: Vector3;
     };

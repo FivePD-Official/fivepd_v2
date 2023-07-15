@@ -69,22 +69,6 @@ export interface LooseDataEntityPageWrapper {
   attributes: SetAttribute[];
 }
 
-export enum FDutyStatus {
-  OffDuty,
-  OnDuty,
-}
-
-export enum FPlayerAvailability {
-  Receiving,
-  NotReceiving,
-}
-
-export enum FIncidentPriorty {
-  Code1,
-  Code2,
-  Code3,
-}
-
 export interface Vector3 {
   X: number;
   Y: number;

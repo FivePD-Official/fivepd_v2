@@ -22,3 +22,19 @@ export enum DefaultSetId {
 }
 
 export type SetId = DefaultSetId | string;
+
+export enum FDutyStatus {
+  OffDuty,
+  OnDuty,
+}
+
+export enum FPlayerAvailability {
+  Receiving,
+  NotReceiving,
+}
+
+export enum FIncidentPriority {
+  Code1,
+  Code2,
+  Code3,
+}
