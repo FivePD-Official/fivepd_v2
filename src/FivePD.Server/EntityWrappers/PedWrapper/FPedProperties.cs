@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 namespace FivePD.Server.EntityWrappers.PedWrapper;
 
 #pragma warning disable VSTHRD200
+#pragma warning disable SA1201
 
 /// <summary>
 /// Represents the properties of a <see cref="FPed"/>.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FivePD.Server.Models;
-using Newtonsoft.Json;
+using FivePD.Server.Services;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
 
@@ -14,13 +14,13 @@ namespace FivePD.Server;
 /// </summary>
 internal class FilesystemAddonLocator
 {
-    private const string MetadataFileName = "addon.fpd.json";
+    private const string MetadataFileName = "addon.fpd";
 
     private static readonly string ResourcePath = Cfx.API.GetResourcePath(Cfx.API.GetCurrentResourceName());
 
     private static readonly string[] AddonDirectories =
     {
-        Path.Combine(ResourcePath, "Libraries/IA"),
+        Path.Combine(ResourcePath, "Libraries", "IA"),
     };
 
     private readonly ILogger _logger;
@@ -44,6 +44,8 @@ internal class FilesystemAddonLocator
 
         this._logger.Information("Beginning addon locate via file system driver");
 
+        var fileHandlerService = new FileHandlerService();
+
         foreach (var directory in AddonDirectories)
         {
             var addonMetadataLocations = FindAddonsInDirectory(new DirectoryInfo(directory));
@@ -52,11 +54,17 @@ internal class FilesystemAddonLocator
             {
                 try
                 {
-                    var metadata = JsonConvert.DeserializeObject<AddonMetadata>(File.ReadAllText(addonMetadataLocation));
+                    var index = addonMetadataLocation.IndexOf("Libraries", StringComparison.Ordinal);
+                    var (metadata, exception) = fileHandlerService.LoadFile<AddonMetadata>(Path.DirectorySeparatorChar + addonMetadataLocation[index..], false);
+                    if (exception is not null)
+                    {
+                        this._logger.Error("Failed to load addon metadata for {Addon}: {Exception}", addonMetadataLocation, exception);
+                        continue;
+                    }
 
                     this._logger.Debug("Found addon metadata for {@Addon}", metadata.FriendlyName);
 
-                    var definition = new AddonDefinition()
+                    var definition = new AddonDefinition
                     {
                         Name = Path.GetFileName(Path.GetDirectoryName(addonMetadataLocation)),
                         FriendlyName = metadata.FriendlyName,
@@ -135,8 +143,7 @@ internal class FilesystemAddonLocator
         foreach (var subdirectory in directory.GetDirectories())
         {
             var metadataLocation = Path.Combine(subdirectory.ToString(), MetadataFileName);
-
-            if (!File.Exists(metadataLocation))
+            if (!File.Exists(metadataLocation + ".json") && !File.Exists(metadataLocation + ".yaml"))
             {
                 continue;
             }

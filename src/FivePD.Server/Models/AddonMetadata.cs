@@ -9,6 +9,11 @@ namespace FivePD.Server.Models;
 public class AddonMetadata
 {
     /// <summary>
+    /// Gets or sets the author of the addon.
+    /// </summary>
+    public string Author { get; set; }
+
+    /// <summary>
     /// Gets or sets the friendly name for the addon. Should be Title Case.
     /// </summary>
     public string FriendlyName { get; set; }

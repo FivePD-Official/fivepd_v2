@@ -34,9 +34,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="addon.fpd.json">
+        <None Include="addon.fpd.yaml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

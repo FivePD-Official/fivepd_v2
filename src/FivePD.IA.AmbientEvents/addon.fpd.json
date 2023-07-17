@@ -1,9 +1,0 @@
-﻿{
-  "FriendlyName": "Ambient Event Manager",
-  "Version": 100,
-  "FriendlyVersion": "1.0.0",
-  "Author": "FivePD",
-  "Assemblies": [
-    "FivePD.IA.AmbientEvents.dll"
-  ]
-}
