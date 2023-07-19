@@ -6,7 +6,6 @@ namespace FivePD.IA.AmbientEvents;
 
 #pragma warning disable
 
-[AddonMetadata("AmbientEventProvider", "1.0.0", 100)]
 public class AmbientEvents : IAddon
 {
     private readonly IAddonLoggerService _logger;

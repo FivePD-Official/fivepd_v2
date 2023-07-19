@@ -40,28 +40,24 @@ public class KnifeWieldingPerson : Callout
     public override Task OnDispatched(List<Unit> notifiedUnits)
     {
         this._logger.Information("OnDispatched");
-
         return Task.FromResult(0);
     }
 
     public override Task OnAccepted(Unit unit)
     {
         this._logger.Information("OnAccepted");
-
         return Task.FromResult(0);
     }
 
     public override Task OnCompleted()
     {
         this._logger.Information($"OnCompleted");
-
         return Task.FromResult(0);
     }
 
     public override Task OnPlayerEnteredInActivityZone(FPlayer player)
     {
         this._logger.Information($"OnPlayerEnteredInActivityZone: {player.GetUnderlyingPlayer().Name}");
-
         return Task.FromResult(0);
     }
 }

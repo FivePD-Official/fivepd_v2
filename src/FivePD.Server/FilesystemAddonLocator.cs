@@ -14,7 +14,7 @@ namespace FivePD.Server;
 /// </summary>
 internal class FilesystemAddonLocator
 {
-    private const string MetadataFileName = "addon.fpd";
+    private const string MetadataFileName = "metadata";
 
     private static readonly string ResourcePath = Cfx.API.GetResourcePath(Cfx.API.GetCurrentResourceName());
 

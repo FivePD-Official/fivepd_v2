@@ -34,7 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="addon.fpd.yaml">
+        <None Include="metadata.yaml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
