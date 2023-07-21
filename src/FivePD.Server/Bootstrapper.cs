@@ -391,10 +391,6 @@ internal class Bootstrapper : BaseScript
         // Register all event listeners for services
         foreach (var service in this._provider.GetServices<IServiceWithEvents>())
         {
-#if DEBUG
-            log?.Debug("Registering event handlers for {Service}", service.GetType());
-#endif
-
             service.RegisterEvents();
         }
 
@@ -475,31 +471,8 @@ internal class Bootstrapper : BaseScript
     {
         var log = this._provider.GetService<ILogger>()!.ForContext("SourceIdentifier", "Bootstrapper");
 
-        // Logs the current Cfx artifacts version
         log.Debug(
             "Running Cfx version {@Version}",
             Cfx.API.GetConvar("version", "Unknown"));
-
-        // Logs dev mode status
-        var devModeEnabled = Cfx.API.GetConvar("sv_enableFivepdDevUtils", "false") == "true";
-
-        log.Debug(
-            "Development mode is {@Status}",
-            devModeEnabled ? "on" : "off");
-
-        if (devModeEnabled)
-        {
-            log.Warning(
-                "Do not enable development mode on public servers. Only enable development mode when developing addons for FivePD. Development mode allows bad actors to exploit FivePD. This is VERY dangerous");
-        }
-    }
-
-    // TEMPORARY: Use while we do not have a proper way to go on duty.
-    // /setduty <0,1,2> corresponding to an FDutyStatus value
-    [Command("setduty")]
-    private void TemporarySetDutyCommand(Player cfxPlayer, string[] args)
-    {
-        var player = FPlayer.FromNetId(cfxPlayer.Handle);
-        player.DutyStatus.Value = (FDutyStatus)uint.Parse(args[0]);
     }
 }
