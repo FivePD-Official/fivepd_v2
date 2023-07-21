@@ -182,10 +182,10 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     private void PerformAddonLocationPhase()
     {
-         // Addons have full(ish) access to the complete suite of services
-         // made available to core services. Thus, we need to find our addons
-         // prior to actually assembling a service this._provider. The addon locator takes one
-         // parameter, a logger, so we create it early.
+        // Addons have full(ish) access to the complete suite of services
+        // made available to core services. Thus, we need to find our addons
+        // prior to actually assembling a service this._provider. The addon locator takes one
+        // parameter, a logger, so we create it early.
         this._bootstrapLogger.Information(
             "Bootstrapping server version {@Version}",
             Assembly.GetExecutingAssembly().GetName().Version.ToString());
@@ -359,6 +359,11 @@ internal class Bootstrapper : BaseScript
                 throw new DatabaseUsageException("No database context is available for usage");
             }
 
+            if (db.Database.EnsureCreated())
+            {
+                log?.Information("The database did not exist, it has been created");
+            }
+
             if (!db.Database.CanConnect())
             {
                 throw new DatabaseUsageException("Database connection failed");
@@ -386,7 +391,9 @@ internal class Bootstrapper : BaseScript
         // Register all event listeners for services
         foreach (var service in this._provider.GetServices<IServiceWithEvents>())
         {
+#if DEBUG
             log?.Debug("Registering event handlers for {Service}", service.GetType());
+#endif
 
             service.RegisterEvents();
         }

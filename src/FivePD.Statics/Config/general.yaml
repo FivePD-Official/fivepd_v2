@@ -3,7 +3,7 @@ Database:
   Port: 3306
   DatabaseName: fivepd
   User: root
-  Password: ''
+  Password: root
 
 Unit:
   MaxMembers: 0
