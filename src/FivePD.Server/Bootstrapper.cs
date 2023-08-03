@@ -244,6 +244,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IRandomService, RandomService>();
         services.AddSingleton<IAssistanceServiceManagerService, AssistanceServiceManagerService>();
         services.AddSingleton<ICfxService, CfxService>();
+        services.AddSingleton<IBackupManagerService, BackupManagerService>();
 
 #pragma warning disable
         // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS

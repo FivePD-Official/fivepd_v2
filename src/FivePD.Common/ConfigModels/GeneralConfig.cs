@@ -30,7 +30,7 @@ public sealed record GeneralConfig : IInternalGeneralConfig
 
     public CalloutConfig Callout { get; init; } = new();
 
-    public List<StatusItemConfig> Status { get; init; } = new();
+    public List<DispatchActionItemConfig> DispatchActions { get; init; } = new();
 
     public FeatureFlagsConfig FeatureFlags { get; init; } = new();
 }

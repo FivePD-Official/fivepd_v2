@@ -17,16 +17,19 @@ public sealed class DispatchMenu : Menu
     private readonly ICalloutManagerService _calloutManagerService;
     private readonly IAssistanceServiceManagerService _assistanceService;
     private readonly IConfigService _configService;
+    private readonly IBackupManagerService _backupManagerService;
 
     public DispatchMenu(
         ICalloutManagerService calloutManagerService,
         IAssistanceServiceManagerService assistanceServiceManagerService,
-        IConfigService configService)
+        IConfigService configService,
+        IBackupManagerService backupManagerService)
         : base(Controls.AssistanceMenu.Id, Controls.AssistanceMenu.Title, Controls.AssistanceMenu.Key, true)
     {
         this._calloutManagerService = calloutManagerService;
         this._assistanceService = assistanceServiceManagerService;
         this._configService = configService;
+        this._backupManagerService = backupManagerService;
 
         this.Items = this.CreateItems();
     }
@@ -57,20 +60,22 @@ public sealed class DispatchMenu : Menu
         };
         items.Add(t);
 
-        foreach (var status in this._configService.GeneralConfig.Status)
+        foreach (var status in this._configService.GeneralConfig.DispatchActions)
         {
             var item = new MenuButtonItem(status.Title, status.Description);
-            var actions = new List<Action<FPlayer>>
-            {
-                player =>
-                {
-                    player.Status.Value = status.Title;
-                }
-            };
+            var actions = new List<Action<FPlayer>>();
 
             if (status.OnSelect is not null)
             {
-                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerOnDuty))
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetStatus))
+                {
+                    actions.Add(player =>
+                    {
+                        player.Status.Value = status.Title;
+                    });
+                }
+
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOnDuty))
                 {
                     actions.Add(player =>
                     {
@@ -79,7 +84,7 @@ public sealed class DispatchMenu : Menu
                     });
                 }
                 
-                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerOffDuty))
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOffDuty))
                 {
                     actions.Add(player =>
                     {
@@ -88,24 +93,29 @@ public sealed class DispatchMenu : Menu
                     });
                 }
 
-                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanReceiveCallouts))
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanReceiveCallouts))
                 {
                     actions.Add(player => player.Availability.Value = FPlayerAvailability.Receiving);
                 }
 
-                if (status.OnSelect.Contains(StatusOnSelectKeys.SetsPlayerCanNotReceiveCallouts))
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanNotReceiveCallouts))
                 {
                     actions.Add(player => player.Availability.Value = FPlayerAvailability.NotReceiving);
                 }
 
-                if (status.OnSelect.Contains(StatusOnSelectKeys.CompletesCurrentCallout))
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.CompleteCurrentCallout))
                 {
                     actions.Add(player => this._calloutManagerService.CompleteCalloutOfPlayer(player));
                 }
                 
-                if (status.OnSelect.Contains(StatusOnSelectKeys.TriggersPanicMode))
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.TriggerPanicMode))
                 {
                     // TODO
+                }
+                
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.RequestBackup))
+                {
+                    actions.Add(player => this._backupManagerService.TriggerBackupRequest(player.Unit));
                 }
             }
 
