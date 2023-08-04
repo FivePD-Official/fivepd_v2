@@ -161,11 +161,17 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     private List<Unit> DispatchCalloutToUnits(CalloutHolder calloutHolder)
     {
         var filteredUnits = this._unitService.Units()
-            .Where(unit =>
-                this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
-            .Where(unit => unit.Players.All(p => p.Availability.Value == FPlayerAvailability.Receiving))
-            .ToList();
-        foreach (var unit in filteredUnits)
+            .Where(unit => this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .Where(unit => unit.Players.All(p => p.Availability.Value == FPlayerAvailability.Receiving));
+        if (this._configService.GeneralConfig.Callout.DynamicDispatch.Enabled)
+        {
+            filteredUnits = filteredUnits.Where(unit =>
+                unit.Players.Any(player => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared2D(calloutHolder.Callout.Location) <=
+                                           this._configService.GeneralConfig.Callout.DynamicDispatch.Radius));
+        }
+
+        var notifiedUnits = filteredUnits.ToList();
+        foreach (var unit in notifiedUnits)
         {
             var unitAccepted = false;
 
@@ -258,7 +264,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
             }
         }
 
-        return filteredUnits;
+        return notifiedUnits;
     }
 
     [UIEvent(Events.UI.Callout.Dispatch)]

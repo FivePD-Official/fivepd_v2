@@ -11,4 +11,13 @@ public sealed record CalloutConfig
     public int MaxIntervalInMs { get; init; }
 
     public int MaxActiveCallouts { get; init; }
+    
+    public DynamicDispatchConfig DynamicDispatch { get; init; } = new();
+
+    public sealed record DynamicDispatchConfig
+    {
+        public bool Enabled { get; init; }
+
+        public float Radius { get; init; }
+    }
 }
