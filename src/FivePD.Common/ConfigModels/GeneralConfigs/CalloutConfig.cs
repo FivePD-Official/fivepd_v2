@@ -9,4 +9,6 @@ public sealed record CalloutConfig
     public int MinIntervalInMs { get; init; }
 
     public int MaxIntervalInMs { get; init; }
+
+    public int MaxActiveCallouts { get; init; }
 }

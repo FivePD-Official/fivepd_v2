@@ -53,7 +53,7 @@ internal class Bootstrapper : BaseScript
         Log.Logger = new LoggerConfiguration()
             .WriteTo.CfxDebugSink("[{Timestamp:HH:mm:ss} FivePD:{SourceIdentifier} {Level:u3}] {Message:lj}{NewLine}{Exception}")
             .WriteTo.File(
-                $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/FivePD-GS-Log-.txt",
+                $"{AppDomain.CurrentDomain.BaseDirectory}/Logs/FivePD-Log-.txt",
                 rollingInterval: RollingInterval.Day,
                 rollOnFileSizeLimit: true,
                 retainedFileCountLimit: 7)

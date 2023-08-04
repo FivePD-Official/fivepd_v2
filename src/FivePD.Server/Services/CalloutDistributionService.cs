@@ -85,6 +85,12 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
 
     private async Task GenerateCalloutAsync()
     {
+        if (this._configService.GeneralConfig.Callout.MaxActiveCallouts > 0 &&
+            this._calloutManagerService.ActiveCallouts.Count >= this._configService.GeneralConfig.Callout.MaxActiveCallouts)
+        {
+            return;
+        }
+
         if (this._nextCalloutTimer.ElapsedMilliseconds < this._nextCalloutInMs)
         {
             return;
