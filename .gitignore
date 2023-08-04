@@ -7,6 +7,7 @@ FivePD.sln.DotSettings.user
 dev/FXServer/**/*.*
 !dev/FXServer/**/*.gitkeep
 dev/FXServer-Data/resources/fivepd
+dev/FXServer-Data/resources/weathersync-master
 build-public/
 build-public-pre/
 build-insider/
