@@ -98,12 +98,17 @@ export class DynamicFormInputComponent implements OnInit {
       return;
     }
 
+    if (this.dropdownSelectedItems.length) {
+      this.multiSelectLabel = this._localization.translate('UI.LABEL.SELECTED', {count: this.dropdownSelectedItems.length.toString()}, false);
+      return;
+    }
+
     if (this.dropdownSelectedItem) {
       this.multiSelectLabel = this.dropdownSelectedItem.label;
       return;
     }
 
-    this.multiSelectLabel = this.dropdownSelectedItems.length ? this._localization.translate('UI.LABEL.SELECTED', {count: this.dropdownSelectedItems.length.toString()}, false) : this.field.dropdownOptions.label;
+    this.multiSelectLabel = this.field.dropdownOptions.label;
   }
 
   private setSelectedItem(selectedItem: DropdownItem, isCalledAtInit: boolean = false): void {
