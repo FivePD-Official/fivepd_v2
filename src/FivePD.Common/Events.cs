@@ -94,6 +94,8 @@ internal readonly record struct Events
 
             public const string ChangeRank = "fivepd:player:changeRank";
 
+            public const string ChangeFixedRank = "fivepd:player:changeFixedRank";
+
             public const string LocalizationChange = "fivepd:player:localizationChange";
 
             public const string GetAllPageable = "fivepd:player:getAllPageable";
@@ -195,7 +197,7 @@ internal readonly record struct Events
 
         public readonly record struct Config
         {
-            public const string GetGeneralSettings = "fivepd:config:getGeneralSettings";
+            public const string GetGeneralConfig = "fivepd:config:getGeneralConfig";
 
             public const string GetSafeZoneSize = "fivepd:config:getSafeZoneSize";
         }

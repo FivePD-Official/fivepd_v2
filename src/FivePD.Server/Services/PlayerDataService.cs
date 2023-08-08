@@ -94,9 +94,9 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 .WhereAnyIdMatches(player)
                 .FirstOrDefault();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            throw new DatabaseUsageException("Failed to access database", e);
+            return null;
         }
     }
 
@@ -114,6 +114,104 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                user.IdentifierSteam == identifierSteam ||
                user.IdentifierXbl == identifierXbl ||
                user.IdentifierLive == identifierLive;
+    }
+
+    /// <inheritdoc />
+    public void IncreaseRank(FPlayer player)
+    {
+        if (!this._configService.GeneralConfig.FeatureFlags.ProgressionSystem)
+        {
+            return;
+        }
+
+        var user = player.User;
+        if (user.KeepRankWithProgressionSystem)
+        {
+            return;
+        }
+
+        if (user.Department is null)
+        {
+            return;
+        }
+
+        this._databaseContext
+            .Entry(user)
+            .Reference(x => x.Rank)
+            .Load();
+        this._databaseContext
+            .Entry(user.Department)
+            .Collection(x => x.Ranks)
+            .Load();
+        var ranks = user.Department.Ranks.OrderBy(x => x.RequiredXp).ToList();
+        var currentRankRequiredXp = user.Rank?.RequiredXp ?? user.Xp;
+        var nextRank = ranks.FirstOrDefault(x => x.RequiredXp > currentRankRequiredXp);
+        if (nextRank is null)
+        {
+            return;
+        }
+
+        if (nextRank.RequiredXp > user.Xp)
+        {
+            return;
+        }
+
+        user.RankId = nextRank.Id;
+        this._databaseContext.SaveChanges();
+        this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
+        {
+            Rank = nextRank,
+            Player = player,
+        });
+    }
+
+    /// <inheritdoc/>
+    public void DecreaseRank(FPlayer player)
+    {
+        if (!this._configService.GeneralConfig.FeatureFlags.ProgressionSystem)
+        {
+            return;
+        }
+
+        var user = player.User;
+        if (user.KeepRankWithProgressionSystem)
+        {
+            return;
+        }
+
+        if (user.Department is null)
+        {
+            return;
+        }
+
+        this._databaseContext
+            .Entry(user)
+            .Reference(x => x.Rank)
+            .Load();
+        this._databaseContext
+            .Entry(user.Department)
+            .Collection(x => x.Ranks)
+            .Load();
+        var ranks = user.Department.Ranks.OrderBy(x => x.RequiredXp).ToList();
+        var currentRankRequiredXp = user.Rank?.RequiredXp ?? user.Xp;
+        var previousRank = ranks.LastOrDefault(x => x.RequiredXp < currentRankRequiredXp);
+        if (previousRank is null)
+        {
+            return;
+        }
+
+        if (previousRank.RequiredXp <= user.Xp)
+        {
+            return;
+        }
+
+        user.RankId = previousRank.Id;
+        this._databaseContext.SaveChanges();
+        this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
+        {
+            Rank = previousRank,
+            Player = player,
+        });
     }
 
     private void OnPlayerConnected([FromSource] Player player)
@@ -246,10 +344,9 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 ? null
                 : new PlayerDetailsDTO(player.Handle, user, FPlayer.FromNetId(player.Handle).DutyStatus.Value));
         }
-        catch (Exception e)
+        catch (Exception)
         {
             networkCallbackDelegate.Invoke(null);
-            throw new DatabaseUsageException("Failed to access database", e);
         }
     }
 
@@ -311,7 +408,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 },
             }.ToString());
         }
-        catch (Exception e)
+        catch (Exception)
         {
             networkCallbackDelegate.Invoke(new ActionResponse
             {
@@ -319,7 +416,6 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 Title = "UI.ERROR.UNEXPECTED",
                 Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
             }.ToString());
-            throw new DatabaseUsageException("Failed to access database", e);
         }
     }
 
@@ -332,12 +428,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
             if (user is null)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "UI.ERROR.UNEXPECTED",
-                    Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 return;
             }
 
@@ -352,12 +443,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 rank = this._databaseContext.Ranks.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
                 if (rank is null)
                 {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "UI.ERROR.UNEXPECTED",
-                        Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
-                    }.ToString());
+                    networkCallbackDelegate.InvokeWithUnexpectedError();
                     return;
                 }
 
@@ -381,15 +467,42 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 },
             }.ToString());
         }
-        catch (Exception e)
+        catch (Exception)
         {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+        }
+    }
+
+    [UIEvent(Events.UI.Player.ChangeFixedRank)]
+    private void ChangePlayerFixedRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        try
+        {
+            var request = expandoObject.ConvertTo<PlayerChangeFixedRankRequest>();
+            var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == request.UserId);
+            if (user is null)
+            {
+                networkCallbackDelegate.InvokeWithUnexpectedError();
+                return;
+            }
+
+            user.KeepRankWithProgressionSystem = request.FixedRank;
+            this._databaseContext.SaveChanges();
             networkCallbackDelegate.Invoke(new ActionResponse
             {
-                Status = false,
-                Title = "UI.ERROR.UNEXPECTED",
-                Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
+                Status = true,
+                Title = "UI.LABEL.SUCCESS.CHANGE",
+                Description = request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
+                Params = new Dictionary<string, string>
+                {
+                    { "name", user.Name },
+                },
             }.ToString());
-            throw new DatabaseUsageException("Failed to access database", e);
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e.Message);
+            networkCallbackDelegate.InvokeWithUnexpectedError();
         }
     }
 

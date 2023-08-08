@@ -1,5 +1,6 @@
 ﻿using System;
 using CitizenFX.Core;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Events;
 
@@ -37,4 +38,18 @@ public interface IPlayerDataService
     /// <param name="user">The user.</param>
     /// <returns>A boolean.</returns>
     public bool AnyPlayerIdMatchesWithUserId(Player player, User user);
+
+    /// <summary>
+    /// Increases the rank of the specified player to the next rank with higher required experience points.
+    /// In order to use this the ProgressionSystem feature flag must be enabled.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public void IncreaseRank(FPlayer player);
+
+    /// <summary>
+    /// Decreases the rank of the specified player to the previous rank with lower required experience points.
+    /// In order to use this the ProgressionSystem feature flag must be enabled.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public void DecreaseRank(FPlayer player);
 }

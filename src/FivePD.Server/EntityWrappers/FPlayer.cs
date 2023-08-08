@@ -49,6 +49,12 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     public Unit Unit => ServiceLocator.GetService<IUnitService>().GetPlayerUnit(this);
 
     /// <summary>
+    /// Gets the player's User model.
+    /// </summary>
+    /// <returns>User.</returns>
+    public User User => ServiceLocator.GetService<IPlayerDataService>().FindUserByLicense(this.GetUnderlyingPlayer());
+
+    /// <summary>
     /// Gets the player's duty status observable.
     /// </summary>
     public FStateBagObservable<FDutyStatus> DutyStatus { get; private set; }

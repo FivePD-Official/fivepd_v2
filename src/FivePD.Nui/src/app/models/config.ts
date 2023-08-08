@@ -3,6 +3,14 @@
     Join: string;
     MaxMembers: number;
   };
+  FeatureFlags: {
+    DiscordRichPresence: boolean;
+    DutyNotification: boolean;
+    DisableWantedLevel: boolean;
+    DisableWantedLevelAllTime: boolean;
+    Backups: boolean;
+    ProgressionSystem: boolean;
+  };
 }
 
 export class GeneralConfig {

@@ -1,9 +1,8 @@
 ﻿using System;
 
-#pragma warning disable
-
 namespace FivePD.Server.Models;
 
+#pragma warning disable
 [Flags]
 public enum UserRole
 {
@@ -11,6 +10,7 @@ public enum UserRole
     Admin = 1,
     Developer = 2
 }
+#pragma warning restore
 
 /// <summary>
 /// Represents the 'users' table.
@@ -31,26 +31,31 @@ public class User
     /// Gets or sets the License identifier.
     /// </summary>
     public string IdentifierLicense { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the Discord identifier.
     /// </summary>
     public string IdentifierDiscord { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the Steam identifier.
     /// </summary>
     public string IdentifierSteam { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the Xbl identifier.
     /// </summary>
     public string IdentifierXbl { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the Xbox live identifier.
     /// </summary>
     public string IdentifierLive { get; set; }
+
+    /// <summary>
+    /// Gets or sets the experience points.
+    /// </summary>
+    public int Xp { get; set; }
 
     /// <summary>
     /// Gets or sets the role of the user.
@@ -91,6 +96,12 @@ public class User
     /// Gets or sets the rank.
     /// </summary>
     public Rank Rank { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the rank can be increased or decreased by the progression system.
+    /// Enable this if you want to keep the rank of the user.
+    /// </summary>
+    public bool KeepRankWithProgressionSystem { get; set; }
 
     /// <summary>
     /// Gets whether the user has the specified role.

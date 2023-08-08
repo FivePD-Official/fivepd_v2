@@ -56,6 +56,10 @@ export class UserService {
     return this._http.post<ActionResponse>('fivepd:player:changeDivision', division);
   }
 
+  changeFixedRank(request: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:player:changeFixedRank', request);
+  }
+
   getAllPageable(collation: Collation): Observable<Page<User>> {
     return this._http.post<Page<User>>('fivepd:player:getAllPageable', {...collation});
   }

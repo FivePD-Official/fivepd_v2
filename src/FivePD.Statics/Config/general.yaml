@@ -16,11 +16,20 @@ Callout:
   MaxActiveCallouts: 0 # 0 = unlimited, 0+ = limited
   DynamicDispatch:
     Enabled: false # true = only units within the specified radius will be dispatched, false = all units
-    Radius: 200f # radius measured from callout position
+    Radius: 200 # radius measured from callout position
 
 Vehicles:
   Police:
     EnableSpikeStripInAllVehicles: true
+
+ProgressionSystem:
+  ExperiencePoints:
+    Arrest: 100
+    CalloutCompleted: 100
+    Citation: 50
+    Fine: 50
+    Death: -50
+    VehicleImpounded: 50
 
 FeatureFlags:
   DiscordRichPresence: true
@@ -28,6 +37,7 @@ FeatureFlags:
   DisableWantedLevel: true
   DisableWantedLevelAllTime: false
   Backups: true
+  ProgressionSystem: false
 
 DispatchActions:
   - Title: Request backup
@@ -46,7 +56,7 @@ DispatchActions:
     OnSelect: [ SetStatus, SetPlayerOffDuty ]
   - Title: 10-8
     Description: In service
-    OnSelect: [ SetStatus, SetPlayerOnDuty ] 
+    OnSelect: [ SetStatus, SetPlayerOnDuty ]
   - Title: 10-15
     Description: Suspect in custody
     OnSelect: [ SetStatus ]

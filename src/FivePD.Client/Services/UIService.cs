@@ -60,7 +60,7 @@ internal class UIService : IUIService, IServiceWithEvents
             new Action<ExpandoObject, CallbackDelegate>((body, cb) => { cb.Invoke(JsonConvert.SerializeObject(Game.PlayerPed.Position)); }));
 
         this._eventHandlerDictionary.AddUIEvent(
-            Events.UI.Config.GetGeneralSettings,
+            Events.UI.Config.GetGeneralConfig,
             new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
                 async void RunAsync()
@@ -134,6 +134,7 @@ internal class UIService : IUIService, IServiceWithEvents
             Events.UI.Player.ChangeRank,
             Events.UI.Player.GetAllPageable,
             Events.UI.Player.ChangeRole,
+            Events.UI.Player.ChangeFixedRank,
             Events.UI.LooseData.GetEntity,
             Events.UI.LooseData.GetEntities,
             Events.UI.LooseData.AddEntity,

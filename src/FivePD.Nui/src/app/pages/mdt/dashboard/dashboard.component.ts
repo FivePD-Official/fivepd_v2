@@ -229,7 +229,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getGeneralConfig(): void {
-    this._configService.getGeneralSettings().subscribe(res => {
+    this._configService.getGeneralConfig().subscribe(res => {
       this.generalConfig = res;
     });
   }

@@ -245,6 +245,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IAssistanceServiceManagerService, AssistanceServiceManagerService>();
         services.AddSingleton<ICfxService, CfxService>();
         services.AddSingleton<IBackupManagerService, BackupManagerService>();
+        services.AddSingleton<IProgressionSystemService, ProgressionSystemService>();
 
 #pragma warning disable
         // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS
@@ -386,7 +387,7 @@ internal class Bootstrapper : BaseScript
         catch (Exception e)
         {
             throw new DatabaseUsageException(
-                "The configured database is invalid or offline. Verify the connection settings in the /Config/database.json file and try again.", e);
+                "The configured database is invalid or offline. Verify the connection settings in the /Config/database file and try again.", e);
         }
 
         // Register all event listeners for services

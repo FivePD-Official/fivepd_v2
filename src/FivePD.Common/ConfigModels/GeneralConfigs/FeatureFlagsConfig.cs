@@ -13,4 +13,6 @@ public sealed record FeatureFlagsConfig
     public bool DisableWantedLevelAllTime { get; init; }
 
     public bool Backups { get; init; }
+
+    public bool ProgressionSystem { get; init; }
 }

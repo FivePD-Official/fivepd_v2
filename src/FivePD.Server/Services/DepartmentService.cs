@@ -633,6 +633,7 @@ public class DepartmentService : IDepartmentService
             var rankToEditOldName = rankToEdit.Name;
             rankToEdit.Name = editRankRequest.Name;
             rankToEdit.Permission = editRankRequest.Permission;
+            rankToEdit.RequiredXp = editRankRequest.RequiredXp;
             this._databaseContext.SaveChanges();
             this.RankEdited?.Invoke(this, rankToEdit);
             networkCallbackDelegate.InvokeWithResponse(
@@ -678,6 +679,7 @@ public class DepartmentService : IDepartmentService
                 Department = department,
                 Name = createRankRequest.Name,
                 Permission = createRankRequest.Permission,
+                RequiredXp = createRankRequest.RequiredXp,
             });
             this._databaseContext.SaveChanges();
             this.RankCreated?.Invoke(this, createdRankEntry.Entity);

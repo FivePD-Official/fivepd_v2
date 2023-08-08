@@ -175,6 +175,9 @@ namespace FivePD.Server.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int>("RequiredXp")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
@@ -212,6 +215,9 @@ namespace FivePD.Server.Migrations
                     b.Property<string>("IdentifierXbl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<bool>("KeepRankWithProgressionSystem")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -219,6 +225,9 @@ namespace FivePD.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Xp")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

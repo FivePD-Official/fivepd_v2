@@ -32,6 +32,11 @@ public sealed record Vehicles
         /// Gets the name of this vehicle.
         /// </summary>
         public required string Name { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Gets a value indicating whether the spike strip is available on this vehicle.
+        /// </summary>
+        public bool SpikeStrip { get; init; }
     }
 
     /// <summary>

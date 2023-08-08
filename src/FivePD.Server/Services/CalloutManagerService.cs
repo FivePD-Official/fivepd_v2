@@ -20,6 +20,8 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickQueueService _tickQueueService;
+    private readonly IProgressionSystemService _progressionSystemService;
+    private readonly IConfigService _configService;
 
     private readonly List<CalloutType> _calloutTypes = new();
     private readonly List<CalloutHolder> _activeCallouts = new();
@@ -29,12 +31,18 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
+    /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
+    /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
-        ITickQueueService tickQueueService)
+        ITickQueueService tickQueueService,
+        IProgressionSystemService progressionSystemService,
+        IConfigService configService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickQueueService = tickQueueService;
+        this._progressionSystemService = progressionSystemService;
+        this._configService = configService;
     }
 
     /// <inheritdoc/>
@@ -108,6 +116,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         this.OnCalloutCompleted?.Invoke(this, callout);
         foreach (var unit in callout.Units)
         {
+            this._progressionSystemService.AddExperiencePoints(unit, this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.CalloutCompleted);
             foreach (var player in unit.Players)
             {
                 player.Availability.Value = FPlayerAvailability.Receiving;

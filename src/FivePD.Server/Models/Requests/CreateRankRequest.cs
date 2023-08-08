@@ -11,4 +11,6 @@ internal record struct CreateRankRequest
     public string Name { get; set; }
 
     public Rank.Permissions Permission { get; set; }
+
+    public int RequiredXp { get; set; }
 }

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
   Button,
+  Checkbox,
   Collation,
   Column,
   Dropdown,
@@ -105,6 +106,14 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     }
 
     return dropdown;
+  }
+
+  getCheckboxField(action: any, item: FormattedRowItem<T>): FormInputBase<boolean> {
+    return new Checkbox({
+      key: '#',
+      required: false,
+      value: action.checkedResolver(item.originalItem),
+    });
   }
 
   setFormattedColumns(): void {
@@ -224,6 +233,10 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     } else {
       action.onSelectMulti(item.originalItem, selectedItemKey);
     }
+  }
+
+  onTableCellActionCheckbox(action: any, item: FormattedRowItem<T>, checked: boolean): void {
+    action.onCheck(item.originalItem, checked);
   }
 
   headerButtonOnClick(button: Button): void {

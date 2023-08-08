@@ -25,6 +25,10 @@
             <p>{{ 'UI.LABEL.CALLSIGN.TITLE' | translate }}</p>
             <p>{{ user?.User?.Callsign ?? '-' }}</p>
           </li>
+          <li *ngIf="generalConfig?.config?.FeatureFlags?.ProgressionSystem">
+            <p>{{ 'UI.LABEL.XP.SHORT' | translate }}</p>
+            <p>{{ user?.User?.Xp ?? '-' }}</p>
+          </li>
         </ul>
       </div>
     </div>

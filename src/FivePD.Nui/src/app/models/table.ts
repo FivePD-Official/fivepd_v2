@@ -46,10 +46,14 @@ export interface FormattedRowItem<T> {
 
 export type FormattedRow<T> = FormattedRowItem<T>[];
 
-export type TableCellActions<T> = TableCellActionButton<T> | TableCellActionSelect<T> | TableCellActionSelectMulti<T>;
+export type TableCellActions<T> =
+  | TableCellActionButton<T>
+  | TableCellActionSelect<T>
+  | TableCellActionSelectMulti<T>
+  | TableCellActionCheckbox<T>;
 
 export interface TableCellAction<T> {
-  type: 'button' | 'select';
+  type: 'button' | 'select' | 'checkbox';
   label: string;
   show?: (item: T) => boolean;
   disabled?: (item: T) => boolean;
@@ -70,6 +74,16 @@ export interface TableCellActionSelectMulti<T> extends TableCellAction<T> {
   items: () => TableCellActionSelectItem[];
   onSelectMulti: (item: T, selectedIds: number[], onResponse: (response: ActionResponse) => void) => void;
   resetWhenSelectedId?: number;
+}
+
+export interface TableCellActionCheckbox<T> extends TableCellAction<T> {
+  checkedResolver: (item: T) => boolean;
+  onCheck: (item: T, checked: boolean) => void;
+  selectedItemResolver?: never;
+  items?: never;
+  onSelectMulti?: never;
+  resetWhenSelectedId?: never;
+  onSelect?: never;
 }
 
 interface TableCellActionSelectItem {

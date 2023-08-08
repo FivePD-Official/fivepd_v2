@@ -15,6 +15,11 @@ public class Rank
     public int Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the required minimum experience points for the progression system.
+    /// </summary>
+    public int RequiredXp { get; set; }
+
+    /// <summary>
     /// Gets or sets the name.
     /// </summary>
     public string Name { get; set; }

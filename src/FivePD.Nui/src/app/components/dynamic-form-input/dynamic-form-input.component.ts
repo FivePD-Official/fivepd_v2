@@ -38,6 +38,7 @@ export class DynamicFormInputComponent implements OnInit {
       this.form = new FormGroup({
         [this.field.key]: this.pseudoFormControl,
       });
+      this.pseudoFormControl.setValue(this.field.value);
     }
 
     this.setLabels();

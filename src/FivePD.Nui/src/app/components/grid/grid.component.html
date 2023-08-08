@@ -57,6 +57,10 @@
               *ngIf="action.type === 'select' && (action.show ? action.show(item.originalItem) : true)"
               [field]="getSelectField(action, item)"
               (onChange)="onTableCellActionSelect(action, item, $event)"/>
+            <app-dynamic-form-input
+              *ngIf="action.type === 'checkbox' && (action.show ? action.show(item.originalItem) : true)"
+              [field]="getCheckboxField(action, item)"
+              (onChange)="onTableCellActionCheckbox(action, item, $event)"/>
           </ng-container>
         </div>
       </div>

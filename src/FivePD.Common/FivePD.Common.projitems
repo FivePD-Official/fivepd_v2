@@ -16,7 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DatabaseConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\FeatureFlagsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DispatchActionItemConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\ProgressionSystemConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\UnitConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\VehiclesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Loadout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\MenuConfigs\DutyMenuConfig.cs" />

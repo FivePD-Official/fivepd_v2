@@ -33,4 +33,8 @@ public sealed record GeneralConfig : IInternalGeneralConfig
     public List<DispatchActionItemConfig> DispatchActions { get; init; } = new();
 
     public FeatureFlagsConfig FeatureFlags { get; init; } = new();
+
+    public ProgressionSystemConfig ProgressionSystem { get; init; } = new();
+
+    public VehiclesConfig Vehicles { get; init; } = new();
 }
