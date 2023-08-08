@@ -361,28 +361,36 @@ internal class Bootstrapper : BaseScript
                 throw new DatabaseUsageException("No database context is available for usage");
             }
 
-            if (db.Database.EnsureCreated())
-            {
-                log?.Information("The database did not exist, it has been created");
-            }
-
+            var migrations = db.Database.GetPendingMigrations().ToList();
+            var databaseCreated = db.Database.EnsureCreated();
             if (!db.Database.CanConnect())
             {
                 throw new DatabaseUsageException("Database connection failed");
             }
 
-            var migrations = db.Database.GetPendingMigrations();
+            switch (databaseCreated)
+            {
+                case true:
+                {
+                    log?.Information("The database did not exist, it has been created");
+                
+                    db.Database.ExecuteSqlRaw("CREATE TABLE __efmigrationshistory (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
+                
+                    foreach (var migration in migrations)
+                    {
+                        log?.Information("Upgrading the database to {Version}", migration);
+                        db.Database.ExecuteSqlRaw("INSERT INTO __efmigrationshistory (MigrationId, ProductVersion) VALUES ({0}, {1})", migration, "3.1.26");
+                    }
 
-            try
-            {
-                log?.Information("Upgrading the database to {Version}", migrations.Last());
-                db.Database.Migrate();
+                    break;
+                }
+                case false when migrations.Count > 0:
+                    log?.Information("Upgrading the database to {Version}", migrations.Last());
+                    db.Database.Migrate();
+                    break;
             }
-            catch (Exception)
-            {
-                // Throws when there are no migrations to run. Not an issue. Continue.
-                log?.Information("The database is up to date");
-            }
+
+            log?.Information("The database is up to date");
         }
         catch (Exception e)
         {
