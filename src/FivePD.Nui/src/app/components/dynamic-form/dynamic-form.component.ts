@@ -33,28 +33,18 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.columnsGridStyle = `1fr / repeat(${this.columns}, 1fr)`;
 
-    this.createForm();
+    this.form = this.createForm();
     this.createColumns();
 
     this.originalFormValue = this.form.value;
-
-    if (this.disableSubmitWithOriginalValue) {
-      this.form.valueChanges.subscribe(() => {
-        if (deepEqual(this.originalFormValue, this.form.value)) {
-          this.form.markAsPristine();
-        } else {
-          this.form.markAsDirty();
-        }
-      });
-    }
   }
 
   ngOnChanges(): void {
-    this.createForm();
+    this.form = this.createForm();
     this.createColumns();
   }
 
-  createForm(): void {
+  createForm(): FormGroup {
     const group: Record<string, FormControl | FormGroup> = {};
     this.formFields.forEach(field => {
       let formControl;
@@ -96,7 +86,20 @@ export class DynamicFormComponent implements OnInit, OnChanges {
       }
       group[field.key] = formControl;
     });
-    this.form = new FormGroup(group);
+    const form = new FormGroup(group);
+
+    if (this.disableSubmitWithOriginalValue) {
+      form.valueChanges.subscribe(() => {
+        const equal = deepEqual(this.originalFormValue, this.form.value);
+        if (equal) {
+          this.form.markAsPristine();
+        } else {
+          this.form.markAsDirty();
+        }
+      });
+    }
+
+    return form;
   }
 
   createColumns(): void {
@@ -121,6 +124,15 @@ export class DynamicFormComponent implements OnInit, OnChanges {
         this.form.markAsPristine();
       }
     });
+  }
+
+  revert(): void {
+    if (!this.originalFormValue) {
+      return;
+    }
+
+    this.form.setValue(this.originalFormValue);
+    this.form.markAsPristine();
   }
 
 }

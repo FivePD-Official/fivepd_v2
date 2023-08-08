@@ -68,7 +68,14 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     this.control?.valueChanges?.subscribe(value => {
+      console.log(value)
       this.onChange.emit(value);
+      if (this.field.type === 'dropdown') {
+        const selectItem = this.dropdownFilteredItems.find(item => item.key === value);
+        if (selectItem) {
+          this.onDropdownSelect(selectItem, false);
+        }
+      }
     });
   }
 
@@ -84,13 +91,13 @@ export class DynamicFormInputComponent implements OnInit {
     this.dropdownOpen = !this.dropdownOpen;
   }
 
-  onDropdownSelect(selectItem: DropdownItem): void {
+  onDropdownSelect(selectItem: DropdownItem, updateControl: boolean = true): void {
     this.dropdownOpen = false;
 
     if ('selectedItemResolver' in this.field.dropdownOptions!) {
-      this.setSelectedItem(selectItem);
+      this.setSelectedItem(selectItem, updateControl);
     } else if ('selectedItemsResolver' in this.field.dropdownOptions!) {
-      this.setSelectedItems(selectItem);
+      this.setSelectedItems(selectItem, updateControl);
     }
   }
 
@@ -112,12 +119,14 @@ export class DynamicFormInputComponent implements OnInit {
     this.multiSelectLabel = this.field.dropdownOptions.label;
   }
 
-  private setSelectedItem(selectedItem: DropdownItem, isCalledAtInit: boolean = false): void {
+  private setSelectedItem(selectedItem: DropdownItem, updateControl: boolean = false): void {
     if (!this.field.dropdownOptions) {
       return;
     }
 
-    this.form?.controls[this.field.key].patchValue(selectedItem.key);
+    if (updateControl) {
+      this.form?.controls[this.field.key].patchValue(selectedItem.key);
+    }
     this.dropdownSelectedItem = selectedItem;
     this.filterDropdownItems();
 
@@ -126,10 +135,10 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     this.setMultiSelectLabel();
-    this.updateFormState(isCalledAtInit);
+    this.updateFormState(updateControl);
   }
 
-  private setSelectedItems(selectedItem: DropdownItem, isCalledAtInit: boolean = false): void {
+  private setSelectedItems(selectedItem: DropdownItem, updateControl: boolean = false): void {
     if (!this.field.dropdownOptions) {
       return;
     }
@@ -141,7 +150,10 @@ export class DynamicFormInputComponent implements OnInit {
     } else {
       value.push(selectedItem.key);
     }
-    this.form?.controls[this.field.key].setValue(value);
+
+    if (updateControl) {
+      this.form?.controls[this.field.key].setValue(value);
+    }
 
     const valueIndex2 = this.dropdownSelectedItems.findIndex(x => x.key === selectedItem.key);
     if (valueIndex2 > -1) {
@@ -152,7 +164,7 @@ export class DynamicFormInputComponent implements OnInit {
 
     this.setMultiSelectLabel();
     this.filterDropdownItems();
-    this.updateFormState(isCalledAtInit);
+    this.updateFormState(updateControl);
   }
 
   private updateFormState(isCalledAtInit: boolean): void {

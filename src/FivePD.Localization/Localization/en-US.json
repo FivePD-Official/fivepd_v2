@@ -45,6 +45,7 @@
   "UI.ACTION.LEAVE": "Leave",
   "UI.ACTION.RENAME": "Rename",
   "UI.ACTION.REQUEST_TO_JOIN": "Request to join",
+  "UI.ACTION.REVERT": "Revert",
   "UI.ACTION.SAVE": "Save",
   "UI.ACTION.SET_CALLSIGN": "Set callsign",
   "UI.ACTION.SET_RANK": "Set rank",
