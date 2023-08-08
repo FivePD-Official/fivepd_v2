@@ -125,7 +125,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
 
         var user = player.User;
-        if (user.KeepRankWithProgressionSystem)
+        if (user.FixedRank)
         {
             return;
         }
@@ -174,7 +174,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
 
         var user = player.User;
-        if (user.KeepRankWithProgressionSystem)
+        if (user.FixedRank)
         {
             return;
         }
@@ -486,7 +486,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 return;
             }
 
-            user.KeepRankWithProgressionSystem = request.FixedRank;
+            user.FixedRank = request.FixedRank;
             this._databaseContext.SaveChanges();
             networkCallbackDelegate.Invoke(new ActionResponse
             {

@@ -450,7 +450,7 @@ export class DepartmentsViewComponent implements OnInit {
           {
             type: 'checkbox',
             label: '',
-            checkedResolver: user => user.KeepRankWithProgressionSystem,
+            checkedResolver: user => user.FixedRank,
             onCheck: (user, checked) => {
               this.userService.changeFixedRank({
                 UserId: user.Id,

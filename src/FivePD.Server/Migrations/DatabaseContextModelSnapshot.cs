@@ -200,6 +200,9 @@ namespace FivePD.Server.Migrations
                     b.Property<int?>("DivisionId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("FixedRank")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("IdentifierDiscord")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -214,9 +217,6 @@ namespace FivePD.Server.Migrations
 
                     b.Property<string>("IdentifierXbl")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<bool>("KeepRankWithProgressionSystem")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");

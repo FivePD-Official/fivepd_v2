@@ -101,7 +101,7 @@ public class User
     /// Gets or sets a value indicating whether the rank can be increased or decreased by the progression system.
     /// Enable this if you want to keep the rank of the user.
     /// </summary>
-    public bool KeepRankWithProgressionSystem { get; set; }
+    public bool FixedRank { get; set; }
 
     /// <summary>
     /// Gets whether the user has the specified role.

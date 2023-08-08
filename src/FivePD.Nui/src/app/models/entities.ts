@@ -15,7 +15,7 @@ export interface User extends WithId {
   DivisionId?: number;
   RankId?: number;
   Xp: number;
-  KeepRankWithProgressionSystem: boolean;
+  FixedRank: boolean;
 }
 
 export interface Department extends WithId {
