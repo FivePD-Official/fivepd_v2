@@ -9,7 +9,7 @@ export class CustomValidators {
   }
 
   static callsignFormat(): ValidatorFn {
-    return Validators.pattern('^[NL0-9-*]{1,10}$');
+    return Validators.pattern('^[A-Z0-9-*]+');
   }
 
   static date(): ValidatorFn {

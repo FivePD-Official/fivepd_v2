@@ -15,6 +15,7 @@ using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
+using FivePD.Server.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FivePD.Server.Services;
@@ -852,13 +853,13 @@ public class DepartmentService : IDepartmentService
                 user.RankId = department.DefaultRankId;
             }
 
-            var callsignMatchesWithFormat = !string.IsNullOrEmpty(user.Callsign) && new Regex("^[NL0-9-*]{1,10}$").IsMatch(user.Callsign);
+            var callsignMatchesWithFormat = !string.IsNullOrEmpty(user.Callsign) && new Regex("^[A-Z0-9-*]+").IsMatch(user.Callsign);
             if (string.IsNullOrEmpty(user.Callsign) || !callsignMatchesWithFormat)
             {
                 string callsign;
                 do
                 {
-                    callsign = this.GenerateCallsign(department.CallsignFormat);
+                    callsign = new CallsignGenerator(department.CallsignFormat).GenerateCallsign();
                 }
                 while (department.Users.Any(x => x.Callsign == callsign));
 
@@ -909,35 +910,5 @@ public class DepartmentService : IDepartmentService
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
         }
-    }
-
-    private string GenerateCallsign(string format)
-    {
-        var value = new char[format.Length];
-
-        for (var i = 0; i < format.Length; i++)
-        {
-            var c = format[i];
-            value[i] = c switch
-            {
-                'L' => this.GetRandomLetter(),
-                'N' => this.GetRandomNumber(),
-                _ => c,
-            };
-        }
-
-        return new string(value);
-    }
-
-    private char GetRandomLetter()
-    {
-        const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        return letters[this._randomService.Random.Next(letters.Length)];
-    }
-
-    private char GetRandomNumber()
-    {
-        const string numbers = "0123456789";
-        return numbers[this._randomService.Random.Next(numbers.Length)];
     }
 }

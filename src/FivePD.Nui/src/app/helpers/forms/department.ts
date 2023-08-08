@@ -22,6 +22,14 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
                   <td><b>-</b><td>
                   <td>(${localizationService.translate('UI.LABEL.DASH.SINGULAR')})<td>
                 </tr>
+                <tr>
+                  <td><b>A-Z</b><td>
+                  <td>(${localizationService.translate('UI.LABEL.ANY_LETTER')})<td>
+                </tr>
+                <tr>
+                  <td><b>0-9</b><td>
+                  <td>(${localizationService.translate('UI.LABEL.ANY_NUMBER')})<td>
+                </tr>
               </table>
             `,
     validators: [CustomValidators.callsignFormat()],
