@@ -555,19 +555,19 @@ public class LooseDataService : ILooseDataService
                 return;
             }
 
-            if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
-            {
-                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
-                return;
-            }
-
-            var attribute = this._databaseContext.LooseDataAttributes
-                .FirstOrDefault(attr => attr.Id == request.Attribute.Id);
+            var attribute = this._databaseContext.LooseDataAttributes.FirstOrDefault(attr => attr.Id == request.Attribute.Id);
             if (attribute is null)
             {
                 networkCallbackDelegate.InvokeWithUnexpectedError();
                 return;
             }
+
+            if (set.Attributes.Where(attr => attr.Id != attribute.Id).Any(attr => attr.Name == request.Attribute.Name))
+            {
+                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
+                return;
+            }
+
 
             var attributeOldName = attribute.Name;
             attribute.Name = request.Attribute.Name;
