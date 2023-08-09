@@ -215,6 +215,7 @@ public class DepartmentService : IDepartmentService
             user.DepartmentId = null;
             user.DivisionId = null;
             user.RankId = null;
+            user.Callsign = string.Empty;
             this._databaseContext.SaveChanges();
             this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs
             {
