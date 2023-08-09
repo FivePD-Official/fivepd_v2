@@ -57,6 +57,7 @@ import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
 import { InformationComponent } from './pages/information/information.component';
 import { NotMdtComponent } from './pages/not-mdt/not-mdt.component';
+import { DispatchComponent } from './pages/mdt/dispatch/dispatch.component';
 
 @NgModule({
   declarations: [
@@ -96,6 +97,7 @@ import { NotMdtComponent } from './pages/not-mdt/not-mdt.component';
     DynamicFormDirective,
     InformationComponent,
     NotMdtComponent,
+    DispatchComponent,
   ],
   imports: [
     BrowserModule,

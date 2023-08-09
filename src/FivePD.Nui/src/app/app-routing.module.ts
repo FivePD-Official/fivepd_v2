@@ -17,11 +17,16 @@ import { DevtoolsCalloutsComponent } from './pages/mdt/devtools/devtools-callout
 import { DevtoolsViewComponent } from './pages/mdt/devtools/devtools-view/devtools-view.component';
 import { InformationComponent } from "./pages/information/information.component";
 import { NotMdtComponent } from "./pages/not-mdt/not-mdt.component";
+import { DispatchComponent } from "./pages/mdt/dispatch/dispatch.component";
 
 const mdtRoutes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent
+  },
+  {
+    path: 'dispatch',
+    component: DispatchComponent
   },
   {
     path: 'reports',

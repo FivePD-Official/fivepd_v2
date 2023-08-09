@@ -24,6 +24,12 @@ export class SidebarComponent {
   isSidebarCollapsed: boolean = false;
   routes: Route[] = [
     {
+      title: 'DISPATCH',
+      path: () => '/mdt/dispatch',
+      icon: IconType.Squares,
+      show: () => true,
+    },
+    {
       title: 'UI.LABEL.DASHBOARD',
       path: () => '/mdt/dashboard',
       icon: IconType.Squares,
