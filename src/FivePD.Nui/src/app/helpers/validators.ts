@@ -24,13 +24,19 @@ export class CustomValidators {
   }
 
   static nameShouldNotBeTaken(nameValidatorFn: (name: string) => Observable<NameTakenResponse>): AsyncValidatorFn {
-    return control => control.valueChanges.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-      switchMap(value => nameValidatorFn(value)),
-      map(unique => unique.Taken ? {nameTaken: true} : null),
-      first(),
-    );
+    return control => {
+      if (!control?.valueChanges) {
+        return new Promise(resolve => resolve(null));
+      }
+
+      return control.valueChanges.pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap(value => nameValidatorFn(value)),
+        map(unique => unique.Taken ? {nameTaken: true} : null),
+        first(),
+      );
+    }
   }
 
 }

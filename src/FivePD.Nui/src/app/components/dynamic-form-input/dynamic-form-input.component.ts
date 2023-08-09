@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { DropdownItem, DropdownMultiOptions, DropdownSingleOptions, FormInputBase } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 
@@ -68,7 +68,6 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     this.control?.valueChanges?.subscribe(value => {
-      console.log(value)
       this.onChange.emit(value);
       if (this.field.type === 'dropdown') {
         const selectItem = this.dropdownFilteredItems.find(item => item.key === value);

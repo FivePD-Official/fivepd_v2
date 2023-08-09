@@ -625,7 +625,7 @@ export class DepartmentsViewComponent implements OnInit {
         key: 'Name',
         required: true,
         label: 'UI.LABEL.NAME.SINGULAR',
-        // TODO FIX asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
+        asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
       new NumberInput({

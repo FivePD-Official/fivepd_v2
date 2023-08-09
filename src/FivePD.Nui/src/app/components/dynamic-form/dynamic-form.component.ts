@@ -55,8 +55,8 @@ export class DynamicFormComponent implements OnInit, OnChanges {
         });
         formControl = new FormGroup(nestedGroup);
       } else {
-        const validators = field.validators;
-        const asyncValidators = field.asyncValidators;
+        const validators = [...field.validators];
+        const asyncValidators = [...field.asyncValidators];
 
         if (field.required) {
           if (field.type === 'dropdown') {
