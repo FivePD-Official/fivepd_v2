@@ -4,7 +4,7 @@ import { NameTakenResponse } from '@models';
 
 export class CustomValidators {
 
-  static callsign(): ValidatorFn {
+  static onlyLetters(): ValidatorFn {
     return Validators.pattern('^[a-zA-Z]+$');
   }
 
@@ -26,7 +26,7 @@ export class CustomValidators {
   static nameShouldNotBeTaken(nameValidatorFn: (name: string) => Observable<NameTakenResponse>): AsyncValidatorFn {
     return control => {
       if (!control?.valueChanges) {
-        return new Promise(resolve => resolve(null));
+        return Promise.resolve(null);
       }
 
       return control.valueChanges.pipe(

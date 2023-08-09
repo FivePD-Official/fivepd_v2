@@ -652,7 +652,7 @@ export class DepartmentsViewComponent implements OnInit {
         key: 'Callsign',
         label: 'UI.LABEL.CALLSIGN.TITLE',
         helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
-        validators: [CustomValidators.callsign()],
+        validators: [CustomValidators.onlyLetters()],
         value: this.department.Callsign,
       }),
       createDepartmentCallsignFormatInputField(this._localization, this.department),

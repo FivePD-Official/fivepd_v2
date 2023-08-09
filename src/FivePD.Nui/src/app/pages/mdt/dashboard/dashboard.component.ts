@@ -277,7 +277,7 @@ export class DashboardComponent implements OnInit {
           key: 'Callsign',
           label: 'UI.LABEL.CALLSIGN.TITLE',
           helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
-          validators: [CustomValidators.callsign()]
+          validators: [CustomValidators.onlyLetters()]
         }),
         createDepartmentCallsignFormatInputField(this._localization),
         new NumberInput({
