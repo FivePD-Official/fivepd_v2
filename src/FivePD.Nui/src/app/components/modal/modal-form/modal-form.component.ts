@@ -34,7 +34,7 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   populateForm(): void {
-    const { fields, valueResolver } = this.modalRef.options as ModalFormOptions<any>;
+    const {fields, valueResolver} = this.modalRef.options as ModalFormOptions<any>;
     if (!fields) {
       return;
     }

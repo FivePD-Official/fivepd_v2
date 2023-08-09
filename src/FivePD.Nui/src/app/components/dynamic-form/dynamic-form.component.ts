@@ -1,15 +1,34 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import { FormInputBase, FormSubmitEvent } from '@models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import deepEqual from 'fast-deep-equal/es6';
 import { CustomValidators } from '../../helpers/validators';
+import { DynamicFormInputComponent } from "../dynamic-form-input/dynamic-form-input.component";
+import { ModalRef } from "@services/modals/modal/modal-ref";
+import { Subject, takeUntil } from "rxjs";
+
+type RemoveFocusTrap = () => void;
 
 @Component({
   selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.sass']
 })
-export class DynamicFormComponent implements OnInit, OnChanges {
+export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+
+  destroy$ = new Subject<void>();
 
   @Input() title?: string;
   @Input() subtitle?: string;
@@ -23,6 +42,14 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
   @Input() showSubmitButton = false;
 
+  @Input() modalRef?: ModalRef;
+  @Input() focusFirstField = false;
+  removeFocusTrap?: RemoveFocusTrap;
+  modalRefLoading = false;
+  currentFocus?: Element | null;
+
+  @ViewChildren(DynamicFormInputComponent, {read: ElementRef}) inputs?: QueryList<ElementRef>;
+
   @Output() onSubmit = new EventEmitter<FormSubmitEvent>();
 
   form!: FormGroup;
@@ -32,16 +59,32 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.columnsGridStyle = `1fr / repeat(${this.columns}, 1fr)`;
-
-    this.form = this.createForm();
-    this.createColumns();
-
     this.originalFormValue = this.form.value;
   }
 
   ngOnChanges(): void {
     this.form = this.createForm();
     this.createColumns();
+
+    this.modalRef?.loading.pipe(takeUntil(this.destroy$)).subscribe(loading => this.modalRefLoading = loading);
+
+    this.inputs?.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.removeFocusTrap = this.trapFocus();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.removeFocusTrap) {
+      this.removeFocusTrap();
+    }
+
+    this.destroy$.next();
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.removeFocusTrap) {
+      this.removeFocusTrap = this.trapFocus();
+    }
   }
 
   createForm(): FormGroup {
@@ -135,4 +178,70 @@ export class DynamicFormComponent implements OnInit, OnChanges {
     this.form.markAsPristine();
   }
 
+  private trapFocus(): RemoveFocusTrap {
+    if (!this.focusFirstField) {
+      return () => {
+      };
+    }
+
+    const focusableEls = this.focusInFirstField();
+    const firstFocusableEl = focusableEls[0];
+    const lastFocusableEl = focusableEls[focusableEls.length - 1];
+    this.currentFocus = focusableEls.length ? firstFocusableEl : null;
+
+    const handleFocus = (e: FocusEvent) => {
+      if (!e?.target) {
+        return;
+      }
+      e.preventDefault();
+
+      if (focusableEls.includes(e.target as HTMLElement)) {
+        this.currentFocus = e.target as HTMLElement;
+      } else {
+        if (this.currentFocus === firstFocusableEl) {
+          (lastFocusableEl as any)?.focus();
+        } else {
+          (firstFocusableEl as any)?.focus();
+        }
+        this.currentFocus = document.activeElement;
+      }
+    };
+
+    document.addEventListener('focus', handleFocus, true);
+
+    return () => {
+      document.removeEventListener('focus', handleFocus, true);
+    };
+  }
+
+  private focusInFirstField(): Element[] {
+    if (!this.focusFirstField || !this.inputs || this.modalRefLoading) {
+      return [];
+    }
+
+    const modal = document.querySelector('app-modal-form');
+    if (!modal) {
+      return [];
+    }
+
+    const focusableEls = [...this.inputs].reduce((prev, curr) => {
+      const inputs = curr.nativeElement.querySelectorAll('input, textarea')
+      for (const input of inputs) {
+        prev.push(input);
+      }
+      return prev;
+    }, [] as Element[]);
+
+    if (!focusableEls.length) {
+      return [];
+    }
+
+    const firstFocusableEl = focusableEls[0];
+    if (firstFocusableEl.nodeName !== 'BUTTON') {
+      this.currentFocus = firstFocusableEl;
+      (firstFocusableEl as HTMLInputElement).focus();
+    }
+
+    return focusableEls;
+  }
 }

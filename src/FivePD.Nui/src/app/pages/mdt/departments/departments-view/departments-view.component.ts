@@ -183,24 +183,6 @@ export class DepartmentsViewComponent implements OnInit {
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('UI.ACTION.DELETE'),
-          onClick: division => {
-            this._modalConfirmService.open({
-              title: 'UI.LABEL.DIVISION.DELETE.TITLE',
-              description: this._localization.translate('UI.LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
-              buttons: {
-                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
-              },
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(() => this._departmentService.deleteDivision(division.Id)),
-                this._modalService.handleResponse()
-              ).subscribe(() => this.getDivisions(true))
-          }
-        },
-        {
-          type: 'button',
           label: this._localization.translate('UI.ACTION.EDIT'),
           onClick: division => {
             this._modalFormService.open<Division>({
@@ -228,7 +210,25 @@ export class DepartmentsViewComponent implements OnInit {
                 this._modalService.handleResponse()
               ).subscribe(() => this.getDivisions(true))
           }
-        }
+        },
+        {
+          type: 'button',
+          label: this._localization.translate('UI.ACTION.DELETE'),
+          onClick: division => {
+            this._modalConfirmService.open({
+              title: 'UI.LABEL.DIVISION.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
+              buttons: {
+                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+              },
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._departmentService.deleteDivision(division.Id)),
+                this._modalService.handleResponse()
+              ).subscribe(() => this.getDivisions(true))
+          }
+        },
       ]
     })
   ];
@@ -302,24 +302,6 @@ export class DepartmentsViewComponent implements OnInit {
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('UI.ACTION.DELETE'),
-          onClick: rank => {
-            this._modalConfirmService.open({
-              title: 'UI.LABEL.RANK.DELETE.TITLE',
-              description: this._localization.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
-              buttons: {
-                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
-              },
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(() => this._departmentService.deleteRank(rank.Id)),
-                this._modalService.handleResponse()
-              ).subscribe(() => this.getRanks(true))
-          }
-        },
-        {
-          type: 'button',
           label: this._localization.translate('UI.ACTION.EDIT'),
           onClick: rank => {
             this._modalFormService.open<FormattedRank>({
@@ -375,6 +357,24 @@ export class DepartmentsViewComponent implements OnInit {
                   Permission: res.value!['Permission'],
                   RequiredXp: res.value!['RequiredXp'],
                 })),
+                this._modalService.handleResponse()
+              ).subscribe(() => this.getRanks(true))
+          }
+        },
+        {
+          type: 'button',
+          label: this._localization.translate('UI.ACTION.DELETE'),
+          onClick: rank => {
+            this._modalConfirmService.open({
+              title: 'UI.LABEL.RANK.DELETE.TITLE',
+              description: this._localization.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
+              buttons: {
+                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+              },
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._departmentService.deleteRank(rank.Id)),
                 this._modalService.handleResponse()
               ).subscribe(() => this.getRanks(true))
           }

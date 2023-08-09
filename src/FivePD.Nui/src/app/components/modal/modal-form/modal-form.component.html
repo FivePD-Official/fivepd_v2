@@ -1,8 +1,7 @@
-<app-dynamic-form
-  appDynamicForm
-  *ngIf="fields.length"
-  [formFields]="fields"
-  [limitWidth]="false"
-  (onSubmit)="submit($event)"
-  [columns]="modalRef.options.columns || 1">
-</app-dynamic-form>
+<app-dynamic-form *ngIf="fields.length"
+                  [formFields]="fields"
+                  [limitWidth]="false"
+                  (onSubmit)="submit($event)"
+                  [focusFirstField]="true"
+                  [modalRef]="modalRef"
+                  [columns]="modalRef.options.columns || 1"/>

@@ -7,10 +7,10 @@ export class ModalRef<T = any> {
 
   private readonly result$ = new Subject<ModalResponse>();
   private readonly loader$ = new BehaviorSubject<ModalLoader | undefined>(undefined);
+  private readonly loading$ = new BehaviorSubject<boolean>(false);
   public modalComponentRef!: ComponentRef<ModalComponent>;
   public readonly options: ModalOptions<T>;
   private _loader?: ModalLoader;
-  private _loading = false;
 
   constructor(options: ModalOptions<T>) {
     this.options = options;
@@ -24,18 +24,22 @@ export class ModalRef<T = any> {
     return this.loader$;
   }
 
+  get loading(): Observable<boolean> {
+    return this.loading$;
+  }
+
   close(result: ModalResponse): void {
     this.result$.next(result);
   }
 
   startLoading(label: string): void {
     this._loader = {label};
-    this._loading = true;
+    this.loading$.next(true);
     this.loader$.next(this._loader);
   }
 
   stopLoading(): void {
-    this._loading = false;
+    this.loading$.next(false);
     this.loader$.next(undefined);
   }
 }

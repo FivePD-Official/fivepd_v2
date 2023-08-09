@@ -1,5 +1,4 @@
 import {
-  AfterViewChecked,
   AfterViewInit,
   ApplicationRef,
   ChangeDetectorRef,
@@ -22,14 +21,12 @@ import { ModalRef } from '@services/modals/modal/modal-ref';
 import { ModalLoader } from '@models';
 import { Subject, takeUntil } from 'rxjs';
 
-type RemoveFocusTrap = () => void;
-
 @Component({
   selector: 'app-modal',
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.sass']
 })
-export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+export class ModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   destroy$ = new Subject<void>();
   componentRef!: ComponentRef<any>;
@@ -37,7 +34,6 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked, 
   dynamicFormComponent?: DynamicFormComponent;
   @ViewChild('modalContainer') modalContainer!: ElementRef;
   @ViewChild('modalContent') modalContent!: ElementRef;
-  removeFocusTrap?: RemoveFocusTrap;
   loader?: ModalLoader;
 
   constructor(
@@ -62,17 +58,7 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked, 
     this.loadChildComponent(this.childComponentType);
   }
 
-  ngAfterViewChecked(): void {
-    if (!this.removeFocusTrap) {
-      this.removeFocusTrap = this.trapFocus();
-    }
-  }
-
   ngOnDestroy(): void {
-    if (this.removeFocusTrap) {
-      this.removeFocusTrap();
-    }
-
     if (this.componentRef) {
       this.componentRef.destroy();
       this._appRef.detachView(this.componentRef.hostView);
@@ -121,44 +107,6 @@ export class ModalComponent implements OnInit, AfterViewInit, AfterViewChecked, 
         this.dynamicFormComponent = form;
       })
     }
-    this.trapFocus();
+    this._changeDetector.detectChanges()
   }
-
-  // TODO: Fix. The query results are empty after appending the component element.
-  private trapFocus(): RemoveFocusTrap {
-    const focusableEls: HTMLElement[] = [...this.modalContent.nativeElement.querySelectorAll('input, textarea, button:not([disabled])')];
-    const firstFocusableEl = focusableEls[0];
-    const lastFocusableEl = focusableEls[focusableEls.length - 1];
-    let currentFocus: Element | null = null;
-
-    if (firstFocusableEl?.nodeName !== 'BUTTON') {
-      firstFocusableEl?.focus();
-      currentFocus = firstFocusableEl;
-    }
-
-    const handleFocus = (e: FocusEvent) => {
-      if (!e?.target) {
-        return;
-      }
-      e.preventDefault();
-
-      if (focusableEls.includes(e.target as HTMLElement)) {
-        currentFocus = e.target as HTMLElement;
-      } else {
-        if (currentFocus === firstFocusableEl) {
-          lastFocusableEl?.focus();
-        } else {
-          firstFocusableEl?.focus();
-        }
-        currentFocus = document.activeElement;
-      }
-    };
-
-    document.addEventListener('focus', handleFocus, true);
-
-    return () => {
-      document.removeEventListener('focus', handleFocus, true);
-    };
-  };
-
 }
