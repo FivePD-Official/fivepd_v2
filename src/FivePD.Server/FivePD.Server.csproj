@@ -41,6 +41,13 @@
         <Delete Files="@(RemovableGeneratedFiles)" />
     </Target>
 
+    <!-- Make internals visible to the unit test project -->
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>FivePD.UnitTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
     <!-- Copy static files to respective directories -->
     <ItemGroup>
         <StaticFiles Include="..\FivePD.Statics\**\*.*" />

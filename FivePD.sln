@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.Localization", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FivePD.StartupProject", "src\FivePD.StartupProject\FivePD.StartupProject.csproj", "{29865DEC-420B-4EEF-8A84-B8A8052B89E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FivePD.UnitTests", "src\FivePD.UnitTests\FivePD.UnitTests.csproj", "{CA43CB29-0BCD-4BD7-B22D-96ED2DCDC70B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{29865DEC-420B-4EEF-8A84-B8A8052B89E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29865DEC-420B-4EEF-8A84-B8A8052B89E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29865DEC-420B-4EEF-8A84-B8A8052B89E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA43CB29-0BCD-4BD7-B22D-96ED2DCDC70B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA43CB29-0BCD-4BD7-B22D-96ED2DCDC70B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA43CB29-0BCD-4BD7-B22D-96ED2DCDC70B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA43CB29-0BCD-4BD7-B22D-96ED2DCDC70B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
