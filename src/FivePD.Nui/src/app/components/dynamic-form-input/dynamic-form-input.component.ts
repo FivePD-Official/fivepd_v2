@@ -68,7 +68,6 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     this.control?.valueChanges?.subscribe(value => {
-      this.onChange.emit(value);
       if (this.field.type === 'dropdown') {
         const selectItem = this.dropdownFilteredItems.find(item => item.key === value);
         if (selectItem) {
@@ -76,6 +75,12 @@ export class DynamicFormInputComponent implements OnInit {
         }
       }
     });
+
+    if (this.field.type === 'dropdown') {
+      if (this.control.value === undefined) {
+        this.control?.patchValue(-1);
+      }
+    }
   }
 
   get control() {
@@ -124,7 +129,7 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     if (updateControl) {
-      this.form?.controls[this.field.key].patchValue(selectedItem.key);
+      this.control?.patchValue(selectedItem.key);
     }
     this.dropdownSelectedItem = selectedItem;
     this.filterDropdownItems();
@@ -151,7 +156,7 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     if (updateControl) {
-      this.form?.controls[this.field.key].setValue(value);
+      this.control?.setValue(value);
     }
 
     const valueIndex2 = this.dropdownSelectedItems.findIndex(x => x.key === selectedItem.key);

@@ -13,7 +13,7 @@ export function createAttributesFormFields(localizationService: LocalizationServ
       key: 'DataType',
       label: localizationService.translate('UI.LABEL.TYPE.SINGULAR'),
       required: true,
-      readonly: true,
+      value: value?.DataType,
       dropdownOptions: {
         size: 'normal',
         label: localizationService.translate('UI.LABEL.TYPE.SINGULAR'),
