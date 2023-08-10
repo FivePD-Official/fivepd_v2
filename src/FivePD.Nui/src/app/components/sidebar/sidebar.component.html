@@ -27,6 +27,11 @@
                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
                    before:bg-zinc-800 hover:before:bg-zinc-700"
             (click)="enableDispatchMode()">
+      <div app-icon
+           className="relative h-[24px] text-zinc-400 mr-2"
+           [ngClassName]="{ 'rotate-180 mr-0': isSidebarCollapsed }"
+           name="PhoneArrowDown">
+      </div>
       <span class="relative text-lg text-zinc-400">
         Enter dispatch mode
       </span>

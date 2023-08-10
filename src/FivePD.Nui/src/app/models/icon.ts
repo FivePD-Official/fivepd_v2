@@ -15,4 +15,5 @@
   Link = 'Link',
   Report = 'Report',
   CodeBracket = 'CodeBracket',
+  PhoneArrowDown = 'PhoneArrowDown',
 }
