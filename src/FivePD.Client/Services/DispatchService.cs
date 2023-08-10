@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
@@ -50,6 +52,13 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
 
         this._eventHandlerDictionary[Events.Dispatch.SendCalloutToDispatcher] += new Action<string>(this.OnCalloutReceived);
         this._eventHandlerDictionary[Events.Dispatch.RemoveCalloutFromDispatcher] += new Action<string>(this.OnCalloutRemove);
+        
+        this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetActiveCallouts, calloutForDispatcherDtoList =>
+        {
+            var callout = JsonConvert.DeserializeObject<List<DispatcherCalloutDTO>>(calloutForDispatcherDtoList);
+            var callouts = callout.Select(x => new DispatcherCalloutDTOClientWrapper(x, x.Location.GetStreetName())).ToList();
+            return JsonConvert.SerializeObject(callouts);
+        });
     }
 
     private void OnCalloutReceived(string calloutForDispatcherDto)

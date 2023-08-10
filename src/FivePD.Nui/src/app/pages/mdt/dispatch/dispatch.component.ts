@@ -87,6 +87,10 @@ export class DispatchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this._dispatchService.getActiveCallouts().subscribe(callouts => {
+      this.incomingCallouts = callouts.map(c => this.mapCallout(c));
+    });
+
     this.timeoutIntervalId = setInterval(() => {
       const now = new Date();
       for (const callout of this.incomingCallouts) {
@@ -111,6 +115,53 @@ export class DispatchComponent implements OnInit {
       infinite: true,
     });
 
+    this.initializeMap();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.timeoutIntervalId);
+    this.mymap.remove();
+    this.incomingCallouts = [];
+  }
+
+  customIcon(type: IconType) {
+    return LIcon({
+      iconUrl: `/assets/map/icons/${type}.png`,
+      iconSize: [23, 28],
+      iconAnchor: [23, 28],
+      popupAnchor: [-10, -27],
+    });
+  }
+
+  getPriorityLabel(callout: DispatcherCalloutDTOClientWrapper): string {
+    switch (callout.Callout.Priority) {
+      case FIncidentPriority.Code1:
+        return 'LABEL.PRIORITY.CODE1';
+      case FIncidentPriority.Code2:
+        return 'LABEL.PRIORITY.CODE2';
+      case FIncidentPriority.Code3:
+        return 'LABEL.PRIORITY.CODE3';
+    }
+
+    return '-';
+  }
+
+  jumpToCallout(callout: DispatcherCalloutDTOClientWrapper): void {
+    if (!this.mymap) {
+      return;
+    }
+
+    try {
+      this.mymap.setView([callout.Callout.Location.Y, callout.Callout.Location.X], this.defaultZoom);
+    } catch (_) {
+    }
+  }
+
+  dismissCallout(callout: DispatcherCalloutDTOClientWrapper): void {
+    this._dispatchService.dismissCallout(callout).subscribe();
+  }
+
+  private initializeMap(): void {
     const atlasMapSouthWest = latLng([-4034.146341463414, -5631.870330422804]);
     const atlasMapNorthEast = latLng([8380.487804878048, 6648.944755779789]);
     const atlasBounds = latLngBounds(atlasMapSouthWest, atlasMapNorthEast);
@@ -141,46 +192,8 @@ export class DispatchComponent implements OnInit {
     });
   }
 
-  ngOnDestroy(): void {
-    clearInterval(this.timeoutIntervalId);
-  }
-
-  customIcon(type: IconType) {
-    return LIcon({
-      iconUrl: `/assets/map/icons/${type}.png`,
-      iconSize: [23, 28],
-      iconAnchor: [23, 28],
-      popupAnchor: [-10, -27],
-    });
-  }
-
-  getPriorityLabel(callout: DispatcherCalloutDTOClientWrapper): string {
-    switch (callout.Callout.Priority) {
-      case FIncidentPriority.Code1:
-        return 'LABEL.PRIORITY.CODE1';
-      case FIncidentPriority.Code2:
-        return 'LABEL.PRIORITY.CODE2';
-      case FIncidentPriority.Code3:
-        return 'LABEL.PRIORITY.CODE3';
-    }
-
-    return '-';
-  }
-
-  jumpToCallout(callout: DispatcherCalloutDTOClientWrapper): void {
-    this.mymap.setView([callout.Callout.Location.Y, callout.Callout.Location.X], this.defaultZoom);
-  }
-
-  dismissCallout(callout: DispatcherCalloutDTOClientWrapper): void {
-    this._dispatchService.dismissCallout(callout).subscribe();
-  }
-
   private onCalloutReceived(callout: DispatcherCalloutDTOClientWrapper): void {
-    this.incomingCallouts.push({
-      ...callout,
-      timeout: 0,
-      generatedAt: new Date(callout.Callout.GeneratedAt)
-    });
+    this.incomingCallouts.push(this.mapCallout(callout));
     // this.mymap.eachLayer(layer => {
     // if(layer['_latlng']) {
     //   layer.remove();
@@ -201,6 +214,14 @@ export class DispatchComponent implements OnInit {
     this.calloutMarkers.get(calloutId)?.remove();
     this.calloutMarkers.delete(calloutId);
     this.incomingCallouts = this.incomingCallouts.filter(x => x.Callout.Id !== calloutId);
+  }
+
+  private mapCallout(callout: DispatcherCalloutDTOClientWrapper): Callout {
+    return {
+      ...callout,
+      timeout: 0,
+      generatedAt: new Date(callout.Callout.GeneratedAt)
+    };
   }
 
   private calculateSecondsDifference(date1: Date, date2: Date): number {

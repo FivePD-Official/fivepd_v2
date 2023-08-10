@@ -41,7 +41,13 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
         this._eventHandlerDictionary[Events.Dispatch.DismissCallout] += new Action<Player, ExpandoObject>(this.OnCalloutDismissed);
     }
 
-    private void OnEnableForPlayer([FromSource] Player player)
+    [UIEvent(Events.UI.Dispatch.GetActiveCallouts)]
+    private void GetActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        networkCallbackDelegate.InvokeWithJson(this._calloutStoreService.ActiveCallouts.Select(x => x.Callout.ToCalloutForDispatcherDTO()).ToList());
+    }
+
+private void OnEnableForPlayer([FromSource] Player player)
     {
         var fPlayer = FPlayer.FromPlayer(player);
         fPlayer.Dispatcher.Value = true;

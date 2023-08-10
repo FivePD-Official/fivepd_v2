@@ -20,6 +20,10 @@ export class DispatchService {
   ) {
   }
 
+  getActiveCallouts(): Observable<DispatcherCalloutDTOClientWrapper[]> {
+    return this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getActiveCallouts', {});
+  }
+
   enable(): void {
     this._store.dispatch(enableDispatchMode());
     this._router.navigate(['mdt', 'dispatch']);

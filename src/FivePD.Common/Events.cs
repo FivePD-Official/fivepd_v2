@@ -213,6 +213,8 @@ internal readonly record struct Events
         
         public readonly record struct Dispatch
         {
+            public const string GetActiveCallouts = "fivepd:ui:dispatch:getActiveCallouts";
+
             public const string Enable = "fivepd:ui:dispatch:enable";
 
             public const string Disable = "fivepd:ui:dispatch:disable";
