@@ -11,8 +11,8 @@ Unit:
 
 Callout:
   DispatchType: manual # auto = automatic dispatch, manual = manual dispatch
-  MinIntervalInMs: 10000
-  MaxIntervalInMs: 15000
+  MinIntervalInMs: 2000
+  MaxIntervalInMs: 5000
   MaxActiveCallouts: 4 # 0 = unlimited, 0+ = limited
   DispatchTimeoutInMs: 30000 # dispatchers have 30 seconds to assign a unit to a callout
   DynamicDispatch: # dynamic dispatch is only available when DispatchType is set to auto

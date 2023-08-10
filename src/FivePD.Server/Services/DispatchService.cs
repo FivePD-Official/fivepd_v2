@@ -47,7 +47,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
         networkCallbackDelegate.InvokeWithJson(this._calloutStoreService.ActiveCallouts.Select(x => x.Callout.ToCalloutForDispatcherDTO()).ToList());
     }
 
-private void OnEnableForPlayer([FromSource] Player player)
+    private void OnEnableForPlayer([FromSource] Player player)
     {
         var fPlayer = FPlayer.FromPlayer(player);
         fPlayer.Dispatcher.Value = true;
@@ -77,6 +77,7 @@ private void OnEnableForPlayer([FromSource] Player player)
 
     void IInternalDispatchService.SendCalloutToDispatchers(Callout callout)
     {
+        var sentToAnyPlayer = false;
         foreach (var player in this._playerList)
         {
             var fPlayer = FPlayer.FromPlayer(player);
@@ -85,8 +86,14 @@ private void OnEnableForPlayer([FromSource] Player player)
                 continue;
             }
 
+            sentToAnyPlayer = true;
             this._sentCallouts.Add(callout);
             player.TriggerEvent(Events.Dispatch.SendCalloutToDispatcher, JsonConvert.SerializeObject(callout.ToCalloutForDispatcherDTO()));
+        }
+
+        if (!sentToAnyPlayer)
+        {
+            this._calloutStoreService.ActiveCallouts.RemoveAll(x => x.Callout == callout);
         }
     }
 
