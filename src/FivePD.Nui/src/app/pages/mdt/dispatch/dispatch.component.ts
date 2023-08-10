@@ -13,17 +13,13 @@ import {
   tileLayer,
   Transformation
 } from 'leaflet';
-import { EventService } from "@services/event/event.service";
-import { CalloutRemoveFromDispatcher, DispatcherCalloutDTOClientWrapper } from "../../../models/callout";
-import { FIncidentPriority, NuiEventType } from "@enums";
-import { ConfigService } from "@services/config/config.service";
-import { GeneralConfig } from "@models";
+import { DispatcherCalloutDTOClientWrapper } from "../../../models/callout";
+import { FIncidentPriority } from "@enums";
 import { DispatchService } from "@services/dispatch/dispatch.service";
-
-type Callout = DispatcherCalloutDTOClientWrapper & {
-  timeout: number;
-  generatedAt: Date;
-}
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
+import { dispatchModeMapZoom } from "@store/app.actions";
 
 type IconType = 'callout' | 'unit';
 
@@ -34,7 +30,7 @@ type IconType = 'callout' | 'unit';
 })
 export class DispatchComponent implements OnInit {
 
-  readonly defaultZoom = 3;
+  defaultZoom: number = 3;
 
   readonly center_x = 117.3;
   readonly center_y = 172.8;
@@ -53,50 +49,37 @@ export class DispatchComponent implements OnInit {
     "Example": this.ExampleGroup,
   };
 
-  generalConfig?: GeneralConfig;
+  mdtVisible: boolean = false;
 
-  mymap!: LMap;
+  map?: LMap;
   CUSTOM_CRS: any;
-  marker: any;
 
   calloutMarkers: Map<string, Marker> = new Map();
-  maxTimeout: number = 0;
-  timeoutIntervalId: any;
 
   // layersControl = L.control.layers({ "Satelite": SateliteStyle,"Atlas": AtlasStyle,"Grid":GridStyle}).addTo(mymap);
 
-  incomingCallouts: Callout[] = [];
-
   constructor(
-    private readonly _eventService: EventService,
-    private readonly _configService: ConfigService,
-    private readonly _dispatchService: DispatchService,
+    public readonly dispatchService: DispatchService,
+    private readonly _store: Store<GlobalState>,
   ) {
-    _configService.getGeneralConfig().subscribe(config => {
-      this.generalConfig = config;
-      this.maxTimeout = Math.round(config.config.Callout.DispatchTimeoutInMs / 1000);
+    _store.pipe(takeUntilDestroyed()).subscribe(state => {
+      this.defaultZoom = state.app.dispatchModeMapZoom;
     });
 
-    _eventService
-      .onEvent<DispatcherCalloutDTOClientWrapper>(NuiEventType.SendCalloutToDispatcher)
-      .subscribe(callout => this.onCalloutReceived(callout));
+    this.dispatchService.incomingCallouts$.pipe(takeUntilDestroyed()).subscribe(callouts => {
+      this.map?.eachLayer(layer => {
+        if (layer instanceof Marker)
+          layer.remove();
+      });
 
-    _eventService
-      .onEvent<CalloutRemoveFromDispatcher>(NuiEventType.RemoveCalloutFromDispatcher)
-      .subscribe(event => this.onCalloutRemove(event.CalloutId));
+      for (const callout of callouts) {
+        this.createCalloutMarker(callout);
+      }
+    });
   }
 
   ngOnInit(): void {
-    this._dispatchService.getActiveCallouts().subscribe(callouts => {
-      this.incomingCallouts = callouts.map(c => this.mapCallout(c));
-    });
-
-    this.timeoutIntervalId = setInterval(() => {
-      const now = new Date();
-      for (const callout of this.incomingCallouts) {
-        callout.timeout = this.maxTimeout - Math.round(this.calculateSecondsDifference(callout.generatedAt, now));
-      }
-    }, 1000);
+    this.dispatchService.getActiveCallouts();
 
     this.CUSTOM_CRS = extend({}, CRS.Simple, {
       projection: Projection.LonLat,
@@ -119,9 +102,6 @@ export class DispatchComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.timeoutIntervalId);
-    this.mymap.remove();
-    this.incomingCallouts = [];
   }
 
   customIcon(type: IconType) {
@@ -146,26 +126,26 @@ export class DispatchComponent implements OnInit {
     return '-';
   }
 
-  jumpToCallout(callout: DispatcherCalloutDTOClientWrapper): void {
-    if (!this.mymap) {
+  jumpToMarker(callout: DispatcherCalloutDTOClientWrapper): void {
+    if (!this.map) {
       return;
     }
 
     try {
-      this.mymap.setView([callout.Callout.Location.Y, callout.Callout.Location.X], this.defaultZoom);
+      this.map.setView([callout.Callout.Location.Y, callout.Callout.Location.X], 3);
     } catch (_) {
     }
   }
 
   dismissCallout(callout: DispatcherCalloutDTOClientWrapper): void {
-    this._dispatchService.dismissCallout(callout).subscribe();
+    this.dispatchService.dismissCallout(callout).subscribe();
   }
 
   private initializeMap(): void {
     const atlasMapSouthWest = latLng([-4034.146341463414, -5631.870330422804]);
     const atlasMapNorthEast = latLng([8380.487804878048, 6648.944755779789]);
     const atlasBounds = latLngBounds(atlasMapSouthWest, atlasMapNorthEast);
-    this.mymap = map('map', {
+    this.map = map('map', {
       crs: this.CUSTOM_CRS,
       minZoom: 2,
       maxZoom: 5,
@@ -175,57 +155,62 @@ export class DispatchComponent implements OnInit {
       zoom: this.defaultZoom,
       zoomControl: false,
     });
-    this.mymap.setMaxBounds(atlasBounds);
+    this.map.setMaxBounds(atlasBounds);
 
-    this.mymap.on('drag', () => {
-      this.mymap.panInsideBounds(atlasBounds, {animate: false});
+    this.map.on('drag', () => {
+      this.map?.panInsideBounds(atlasBounds, {animate: false});
     });
 
-    this.mymap.on('click', e => {
-      if (this.marker) { // check
-        this.mymap.removeLayer(this.marker);
-      }
-      const {lat, lng} = e.latlng;
-      const zoom = 3;
-      this.marker = new Marker([lat, lng]).addTo(this.Icons["Example"]).bindPopup("<b>X: " + lng.toFixed(3) + " | Y: " + lat.toFixed(3) + "</b>");
-      this.mymap.setView([lat, lng], zoom);
+    this.map.on('zoom', e => {
+      this._store.dispatch(dispatchModeMapZoom({payload: e.target['_zoom']}));
     });
+
+    // this.map.on('click', e => {
+    //   if (this.marker) { // check
+    //     this.map?.removeLayer(this.marker);
+    //   }
+    //   const {lat, lng} = e.latlng;
+    //   const zoom = 3;
+    //   this.marker = new Marker([lat, lng]).addTo(this.Icons["Example"]).bindPopup("<b>X: " + lng.toFixed(3) + " | Y: " + lat.toFixed(3) + "</b>");
+    //   this.map?.setView([lat, lng], zoom);
+    // });
   }
 
   private onCalloutReceived(callout: DispatcherCalloutDTOClientWrapper): void {
-    this.incomingCallouts.push(this.mapCallout(callout));
     // this.mymap.eachLayer(layer => {
     // if(layer['_latlng']) {
     //   layer.remove();
     // }
     // });
 
+    this.createCalloutMarker(callout);
+    this.jumpToMarker(callout);
+    // $("#markerSkripta").empty().append("<script>"+azurirajmarker+"</script>");
+  }
+
+  private onCalloutRemove(calloutId: string): void {
+    if (this.mdtVisible) {
+      const m = this.calloutMarkers.get(calloutId);
+      if (m) {
+        m.remove();
+        this.calloutMarkers.delete(calloutId);
+      }
+    }
+  }
+
+  private createCalloutMarker(callout: DispatcherCalloutDTOClientWrapper): void {
+    console.log('creating marker', callout.Callout.Id);
     const {X, Y} = callout.Callout.Location;
     const marker = new Marker([Y, X])
       .addTo(this.Icons["Example"])
       .bindPopup("<b>X: " + X + " | Y: " + Y + "</b>")
       .setIcon(this.customIcon('callout'));
-    this.calloutMarkers.set(callout.Callout.Id, marker);
-    this.jumpToCallout(callout);
-    // $("#markerSkripta").empty().append("<script>"+azurirajmarker+"</script>");
-  }
 
-  private onCalloutRemove(calloutId: string): void {
-    this.calloutMarkers.get(calloutId)?.remove();
-    this.calloutMarkers.delete(calloutId);
-    this.incomingCallouts = this.incomingCallouts.filter(x => x.Callout.Id !== calloutId);
-  }
-
-  private mapCallout(callout: DispatcherCalloutDTOClientWrapper): Callout {
-    return {
-      ...callout,
-      timeout: 0,
-      generatedAt: new Date(callout.Callout.GeneratedAt)
-    };
-  }
-
-  private calculateSecondsDifference(date1: Date, date2: Date): number {
-    const millisecondsDifference = Math.abs((date2 as any) - (date1 as any));
-    return millisecondsDifference / 1000;
+    const existingMarker = this.calloutMarkers.get(callout.Callout.Id);
+    if (existingMarker || (existingMarker && this.map?.hasLayer(existingMarker))) {
+      existingMarker.remove();
+    } else {
+      this.calloutMarkers.set(callout.Callout.Id, marker);
+    }
   }
 }

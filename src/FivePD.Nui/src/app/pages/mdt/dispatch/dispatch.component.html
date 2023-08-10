@@ -2,10 +2,10 @@
   <div class="w-full flex flex-col">
     <p class="common-title">Incoming callouts</p>
     <div class="w-full flex flex-col mt-4">
-      <div *ngFor="let callout of incomingCallouts" class="rounded-lg bg-zinc-800 p-4 mb-4 flex flex-col gap-2">
+      <div *ngFor="let callout of (dispatchService.incomingCallouts$ | async)" class="rounded-lg bg-zinc-800 p-4 mb-4 flex flex-col gap-2">
         <div class="w-full flex flex-row items-center justify-between">
           <p class="text-lg font-medium text-zinc-100">{{ callout.Callout.Title }}</p>
-          <p class="text-sm font-medium text-zinc-400">Auto-cancel in: {{ callout.timeout }}s</p>
+          <p class="text-sm font-medium text-zinc-400">Auto-dismiss in: {{ callout.timeout }}s</p>
         </div>
         <div class="grid grid-rows-1 grid-cols-[2fr_1fr] gap-4">
           <div>
@@ -21,7 +21,7 @@
               <app-button [fullWidth]="true"
                           label="Jump to marker"
                           variant="tertiary-bg"
-                          (onClick)="jumpToCallout(callout)"/>
+                          (onClick)="jumpToMarker(callout)"/>
               <app-button [fullWidth]="true"
                           label="Dismiss"
                           variant="secondary"

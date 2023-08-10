@@ -17,6 +17,7 @@ export class WindowService {
   visible: boolean = false; // TODO: this is only needed because of the close event spam
   previousMdtPath: string[] = ['mdt', 'dashboard'];
 
+  visibleMdt$ = new BehaviorSubject(false);
   showInformation = new BehaviorSubject(false);
   showMenu = new BehaviorSubject(false);
 
@@ -54,6 +55,7 @@ export class WindowService {
 
   show(): void {
     this.visible = true;
+    this.visibleMdt$.next(true);
     document.body.style.display = 'block';
   }
 
@@ -72,6 +74,7 @@ export class WindowService {
 
   closeMDT(): void {
     this._router.navigate(['']);
+    this.visibleMdt$.next(false);
     this.triggerCloseEvent();
   }
 

@@ -14,3 +14,5 @@ export const clearDevToolsCoordinates = createAction('[app] clear dev tools coor
 export const enableDispatchMode = createAction('[app] enable dispatch mode');
 
 export const disableDispatchMode = createAction('[app] disable dispatch mode');
+
+export const dispatchModeMapZoom = createAction('[app] dispatch mode map zoom', props<{ payload: number }>());
