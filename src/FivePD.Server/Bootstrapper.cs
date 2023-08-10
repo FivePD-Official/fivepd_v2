@@ -308,6 +308,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<CalloutDistributionService>();
         services.AddSingleton<ICalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutDistributionService>());
+        
+        services.AddSingleton<DispatchService>();
+        services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
+        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DispatchService>());
 
         // Find and register addons
         services.Scan(scan => scan

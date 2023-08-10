@@ -210,6 +210,13 @@ internal readonly record struct Events
 
             public const string Dispatch = "fivepd:ui:callout:dispatch";
         }
+        
+        public readonly record struct Dispatch
+        {
+            public const string Enable = "fivepd:ui:dispatch:enable";
+
+            public const string Disable = "fivepd:ui:dispatch:disable";
+        }
     }
 
     public readonly record struct DevTools
@@ -268,5 +275,16 @@ internal readonly record struct Events
     public readonly record struct Config
     {
         public const string Get = "fivepd:config:getGeneral";
+    }
+    
+    public readonly record struct Dispatch
+    {
+        public const string EnableForPlayer = "fivepd:dispatch:enableForPlayer";
+
+        public const string DisableForPlayer = "fivepd:dispatch:disableForPlayer";
+
+        public const string SendCalloutToDispatcher = "fivepd:dispatch:sendCalloutToDispatcher";
+
+        public const string RemoveCalloutFromDispatcher = "fivepd:dispatch:removeCalloutFromDispatcher";
     }
 }

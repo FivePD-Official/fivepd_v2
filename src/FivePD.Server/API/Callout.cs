@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Models;
@@ -44,6 +45,9 @@ public abstract class Callout : IIncident, IInternalIncident
     /// <inheritdoc />
     public ReadOnlyCollection<Unit> Units => this._units.AsReadOnly();
 
+    /// <inheritdoc />
+    public DateTime GeneratedAt { get; internal set; }
+
     /// <summary>
     /// Invoked before <see cref="Callout.CanBeDispatched"/>.
     /// </summary>
@@ -82,6 +86,20 @@ public abstract class Callout : IIncident, IInternalIncident
     /// </summary>
     /// <returns>A Task.</returns>
     public abstract Task OnCompleted(); // TODO: Should be invoked when all players are Code 4 or a player has pressed the "End incident" button
+
+    #pragma warning disable
+    internal DispatcherCalloutDTO ToCalloutForDispatcherDTO()
+    {
+        return new DispatcherCalloutDTO
+        {
+            Id = this.Id.ToString(),
+            Title = this.Title,
+            Description = this.Description,
+            Priority = this.Priority,
+            Location = this.Location,
+            GeneratedAt = this.GeneratedAt,
+        };
+    }
 
     /// <summary>
     /// Gets or sets the units.

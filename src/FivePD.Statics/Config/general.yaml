@@ -10,11 +10,11 @@ Unit:
   Join: free # free = anyone can join, request = players have to request to join
 
 Callout:
-  AutomaticGeneration: true
+  DispatchType: manual # auto = automatic dispatch, manual = manual dispatch
   MinIntervalInMs: 5000
-  MaxIntervalInMs: 10000
-  MaxActiveCallouts: 0 # 0 = unlimited, 0+ = limited
-  DynamicDispatch:
+  MaxIntervalInMs: 15000
+  MaxActiveCallouts: 4 # 0 = unlimited, 0+ = limited
+  DynamicDispatch: # dynamic dispatch is only available when DispatchType is set to auto
     Enabled: false # true = only units within the specified radius will be dispatched, false = all units
     Radius: 200 # radius measured from callout position
 
@@ -31,7 +31,7 @@ ProgressionSystem:
     Death: -50
     VehicleImpounded: 50
 
-FeatureFlags:
+FeatureFlags: # TODO rename to Features
   DiscordRichPresence: true
   DutyNotification: true
   DisableWantedLevel: true

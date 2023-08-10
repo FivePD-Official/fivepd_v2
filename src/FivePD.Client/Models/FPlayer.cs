@@ -31,6 +31,7 @@ public class FPlayer : FStatefulContainer
         this.DutyStatus = new FStateBagObservable<FDutyStatus>(this, StateBagKeys.DutyStatus, FDutyStatus.OffDuty);
         this.Availability = new FStateBagObservable<FPlayerAvailability>(this, StateBagKeys.Availability, FPlayerAvailability.NotReceiving);
         this.Status = new FStateBagObservable<string>(this, StateBagKeys.Status, string.Empty);
+        this.Dispatcher = new FStateBagObservable<bool>(this, StateBagKeys.Dispatcher, false);
     }
 
     /// <summary>
@@ -52,6 +53,11 @@ public class FPlayer : FStatefulContainer
     /// Gets the player's status observable.
     /// </summary>
     public FStateBagObservable<string> Status { get; private set; }
+
+    /// <summary>
+    /// Gets the player's observable with a value indicating if the player is in dispatcher mode.
+    /// </summary>
+    public FStateBagObservable<bool> Dispatcher { get; private set; }
 
     /// <summary>
     /// Attempts to get the player with the specified netId.

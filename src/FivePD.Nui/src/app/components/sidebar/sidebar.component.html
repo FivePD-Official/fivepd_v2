@@ -26,6 +26,14 @@
     <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3
                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
                    before:bg-zinc-800 hover:before:bg-zinc-700"
+            (click)="enableDispatchMode()">
+      <span class="relative text-lg text-zinc-400">
+        Enter dispatch mode
+      </span>
+    </button>
+    <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3
+                   before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
+                   before:bg-zinc-800 hover:before:bg-zinc-700"
             (click)="toggleSidebarCollapse()">
       <div app-icon
            className="relative h-[24px] text-zinc-400 mr-2"

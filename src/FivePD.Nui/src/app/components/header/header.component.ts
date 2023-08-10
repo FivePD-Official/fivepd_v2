@@ -4,6 +4,9 @@ import { WindowService } from '@services/window/window.service';
 import { GlobalState } from '@store';
 import { Store } from '@ngrx/store';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { disableDispatchMode } from "@store/app.actions";
+import { Router } from "@angular/router";
+import { DispatchService } from "@services/dispatch/dispatch.service";
 
 @Component({
   selector: 'app-header',
@@ -13,16 +16,24 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export class HeaderComponent implements OnInit {
 
   user?: User;
+  dispatchMode: boolean = false;
 
   constructor(
-    private readonly store: Store<GlobalState>,
-    public window: WindowService,
+    private readonly _store: Store<GlobalState>,
+    private readonly _dispatchService: DispatchService,
+    public readonly window: WindowService,
   ) {
-    store.pipe(takeUntilDestroyed()).subscribe(res => {
-      this.user = res.user.details.User;
+    _store.pipe(takeUntilDestroyed()).subscribe(state => {
+      this.user = state.user.details.User;
+      this.dispatchMode = state.app.dispatchMode;
     });
   }
 
   ngOnInit(): void {
   }
+
+  disableDispatchMode(): void {
+    this._dispatchService.disable();
+  }
+
 }

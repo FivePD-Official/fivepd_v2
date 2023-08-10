@@ -1,7 +1,14 @@
-<header class="relative z-50 w-full h-[80px] flex flex-row items-center justify-between border-b border-color">
-  <div class="flex flex-row items-center mx-8">
-    <p class="text-lg font-bold text-zinc-200">{{ user?.Department?.Name ?? ('UI.LABEL.NOT_IN_DEPARTMENT' | translate) }}</p>
-  </div>
+<header class="relative z-50 w-full h-[80px] flex flex-row items-center justify-between border-b border-color pl-8">
+  <ng-container *ngIf="!dispatchMode; else dispatch">
+    <div class="flex flex-row items-center">
+      <p class="text-lg font-bold text-zinc-200">
+        {{ user?.Department?.Name ?? ('UI.LABEL.NOT_IN_DEPARTMENT' | translate) }}
+      </p>
+    </div>
+  </ng-container>
+  <ng-template #dispatch>
+    <app-button (onClick)="disableDispatchMode()" variant="tertiary" label="Exit dispatch mode"/>
+  </ng-template>
   <div class="flex flex-row items-center h-full">
     <p class="text-zinc-200 px-8">
       Logged in as <b>{{ user?.Name }}</b>

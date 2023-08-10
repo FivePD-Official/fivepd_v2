@@ -11,12 +11,14 @@ using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 using Serilog;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services;
 
@@ -30,6 +32,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     private readonly ILogger _logger;
     private readonly IInternalCalloutManagerService _calloutManagerService;
     private readonly IUnitService _unitService;
+    private readonly IDispatchService _dispatchService;
 
     private readonly Stopwatch _nextCalloutTimer = new();
     private int _nextCalloutInMs;
@@ -44,6 +47,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
     /// <param name="calloutManagerService">The <see cref="ICalloutManagerService"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
+    /// <param name="dispatchService">The <see cref="IDispatchService"/> to use.</param>
     public CalloutDistributionService(
         ITickQueueService tickQueueService,
         IConfigService configService,
@@ -51,7 +55,8 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         ILogger logger,
         IConfirmationService confirmationService,
         IInternalCalloutManagerService calloutManagerService,
-        IUnitService unitService)
+        IUnitService unitService,
+        IDispatchService dispatchService)
     {
         this._tickQueueService = tickQueueService;
         this._configService = configService;
@@ -60,6 +65,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._confirmationService = confirmationService;
         this._calloutManagerService = calloutManagerService;
         this._unitService = unitService;
+        this._dispatchService = dispatchService;
     }
 
     /// <inheritdoc/>
@@ -71,11 +77,6 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <inheritdoc/>
     public void RegisterEvents()
     {
-        if (!this._configService.GeneralConfig.Callout.AutomaticGeneration)
-        {
-            return;
-        }
-
         this._nextCalloutInMs = this._randomService.Random.Next(
             this._configService.GeneralConfig.Callout.MinIntervalInMs,
             this._configService.GeneralConfig.Callout.MaxIntervalInMs);
@@ -121,6 +122,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         callout.Description = properties.Description;
         callout.Priority = properties.Priority;
         callout.ActivityRadius = properties.ActivityRadius;
+        callout.GeneratedAt = DateTime.Now;
 
         if (properties.Locations is not null)
         {
@@ -149,13 +151,20 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 
-        var notifiedUnits = this.DispatchCalloutToUnits(calloutHolder);
-        this.OnCalloutDispatched?.Invoke(this, new DispatchedCallout
+        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
         {
-            Callout = callout,
-            NotifiedUnits = notifiedUnits,
-        });
-        await callout.OnDispatched(notifiedUnits);
+            var notifiedUnits = this.DispatchCalloutToUnits(calloutHolder);
+            this.OnCalloutDispatched?.Invoke(this, new DispatchedCallout
+            {
+                Callout = callout,
+                NotifiedUnits = notifiedUnits,
+            });
+            await callout.OnDispatched(notifiedUnits);
+        }
+        else
+        {
+            this._dispatchService.SendCalloutToDispatchers(calloutHolder.Callout);
+        }
     }
 
     private List<Unit> DispatchCalloutToUnits(CalloutHolder calloutHolder)

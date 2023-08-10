@@ -2,9 +2,11 @@ import { Component } from '@angular/core';
 import { GlobalState } from '@store';
 import { IconType, User } from '@models';
 import { Store } from '@ngrx/store';
-import { toggleSidebarCollapse } from '@store/app.actions';
+import { enableDispatchMode, toggleSidebarCollapse } from '@store/app.actions';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from "@angular/router";
+import { DispatchService } from "@services/dispatch/dispatch.service";
 
 interface Route {
   title: string;
@@ -23,12 +25,6 @@ export class SidebarComponent {
   user?: User;
   isSidebarCollapsed: boolean = false;
   routes: Route[] = [
-    {
-      title: 'DISPATCH',
-      path: () => '/mdt/dispatch',
-      icon: IconType.Squares,
-      show: () => true,
-    },
     {
       title: 'UI.LABEL.DASHBOARD',
       path: () => '/mdt/dashboard',
@@ -74,17 +70,22 @@ export class SidebarComponent {
   ];
 
   constructor(
-    private readonly store: Store<GlobalState>,
+    private readonly _store: Store<GlobalState>,
     private readonly _userService: UserService,
+    private readonly _dispatchService: DispatchService,
   ) {
-    store.pipe(takeUntilDestroyed()).subscribe(res => {
+    _store.pipe(takeUntilDestroyed()).subscribe(res => {
       this.isSidebarCollapsed = res.app.isSidebarCollapsed;
       this.user = res.user.details.User;
     });
   }
 
   toggleSidebarCollapse(): void {
-    this.store.dispatch(toggleSidebarCollapse());
+    this._store.dispatch(toggleSidebarCollapse());
+  }
+
+  enableDispatchMode(): void {
+    this._dispatchService.enable();
   }
 
 }

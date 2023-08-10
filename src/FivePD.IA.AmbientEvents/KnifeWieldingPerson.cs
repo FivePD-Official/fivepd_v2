@@ -28,7 +28,15 @@ public class KnifeWieldingPerson : Callout
             Description = "A person is wielding a knife.",
             ActivityRadius = 20f,
             Priority = FIncidentPriority.Code3,
-            Location = new Vector3(723.24f, -148.43f, 50.49f),
+            // Location = new Vector3(723.24f, -148.43f, 50.49f),
+            Locations = new []
+            {
+                new Vector3(723.24f, -148.43f, 50.49f),
+                new Vector3(-2613.39917f, 1871.93274f, 167.319855f),
+                new Vector3(-1026.67212f, 4320.706f, 69.5507f),
+                new Vector3(1670.75269f, 3575.47168f, 35.61455f),
+                new Vector3(-1003.07983f, 1170.85571f, 218.741821f),
+            }
         });
     }
 

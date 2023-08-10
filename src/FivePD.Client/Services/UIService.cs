@@ -152,6 +152,8 @@ internal class UIService : IUIService, IServiceWithEvents
             Events.UI.Unit.Leave,
             Events.UI.Callout.GetAllTypes,
             Events.UI.Callout.Dispatch,
+            Events.UI.Dispatch.Enable,
+            Events.UI.Dispatch.Disable,
         });
     }
 

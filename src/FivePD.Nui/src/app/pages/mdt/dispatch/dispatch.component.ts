@@ -13,6 +13,9 @@ import {
   tileLayer,
   Transformation
 } from 'leaflet';
+import { EventService } from "@services/event/event.service";
+import { CalloutRemoveFromDispatcher, DispatcherCalloutDTOClientWrapper } from "../../../models/callout";
+import { FIncidentPriority, NuiEventType } from "@enums";
 
 @Component({
   selector: 'app-dispatch',
@@ -20,6 +23,8 @@ import {
   styleUrls: ['./dispatch.component.sass']
 })
 export class DispatchComponent implements OnInit {
+
+  readonly defaultZoom = 3;
 
   readonly center_x = 117.3;
   readonly center_y = 172.8;
@@ -41,9 +46,22 @@ export class DispatchComponent implements OnInit {
   mymap!: LMap;
   CUSTOM_CRS: any;
   marker: any;
-  azurirajmarker: any;
+
+  calloutMarkers: Map<string, Marker> = new Map();
 
   // layersControl = L.control.layers({ "Satelite": SateliteStyle,"Atlas": AtlasStyle,"Grid":GridStyle}).addTo(mymap);
+
+  incomingCallouts: DispatcherCalloutDTOClientWrapper[] = [];
+
+  constructor(private readonly _eventService: EventService) {
+    _eventService
+      .onEvent<DispatcherCalloutDTOClientWrapper>(NuiEventType.SendCalloutToDispatcher)
+      .subscribe(callout => this.onCalloutReceived(callout));
+
+    _eventService
+      .onEvent<CalloutRemoveFromDispatcher>(NuiEventType.RemoveCalloutFromDispatcher)
+      .subscribe(event => this.onCalloutRemove(event.CalloutId));
+  }
 
   ngOnInit(): void {
     this.CUSTOM_CRS = extend({}, CRS.Simple, {
@@ -73,7 +91,7 @@ export class DispatchComponent implements OnInit {
       preferCanvas: false,
       layers: [this.AtlasStyle, this.Icons["Example"]],
       center: [0, 0],
-      zoom: 3,
+      zoom: this.defaultZoom,
       zoomControl: false,
     });
     this.mymap.setMaxBounds(atlasBounds);
@@ -90,7 +108,6 @@ export class DispatchComponent implements OnInit {
       const zoom = 3;
       this.marker = new Marker([lat, lng]).addTo(this.Icons["Example"]).bindPopup("<b>X: " + lng.toFixed(3) + " | Y: " + lat.toFixed(3) + "</b>");
       this.mymap.setView([lat, lng], zoom);
-      this.mymap.removeLayer(this.azurirajmarker);
     });
   }
 
@@ -103,30 +120,54 @@ export class DispatchComponent implements OnInit {
     });
   }
 
-  // $("#formular").submit(function( event ) {
-  //
-  //   event.preventDefault();
-  //   if ($.trim($("#xinput").val()) === "" || $.trim($("#yinput").val()) === "") {
-  //     alert('Please fill X and Y coords');
-  //     return false;
-  //   }
-  //
-  //   mymap.eachLayer((layer) => {
-  //     if(layer['_latlng']!=undefined)
-  //       layer.remove();
-  //   });
-  //
-  //
-  //
-  //
-  //   var zoom = 16;
-  //   var xpoz = $("#xinput").val();
-  //   var ypoz = $("#yinput").val();
-  //   azurirajmarker = new L.marker([ypoz,xpoz]).addTo(Icons["Example"]).bindPopup("<b>X: "+xpoz+" | Y: "+ypoz+"</b>");
-  //   mymap.setView([ypoz, xpoz], zoom);
-  //   $("#markerSkripta").empty().append("<script>"+azurirajmarker+"</script>");
-  //
-  // });
+  getPriorityLabel(callout: DispatcherCalloutDTOClientWrapper): string {
+    switch (callout.Callout.Priority) {
+      case FIncidentPriority.Code1:
+        return 'LABEL.PRIORITY.CODE1';
+      case FIncidentPriority.Code2:
+        return 'LABEL.PRIORITY.CODE2';
+      case FIncidentPriority.Code3:
+        return 'LABEL.PRIORITY.CODE3';
+    }
 
+    return '-';
+  }
 
+  jumpToCallout(callout: DispatcherCalloutDTOClientWrapper): void {
+    this.mymap.setView([callout.Callout.Location.Y, callout.Callout.Location.X], this.defaultZoom);
+  }
+
+  get dateNow() {
+    return new Date();
+  }
+
+  calculateSecondsDifference(date1: string, date2: Date): number {
+    console.log({date1, date2});
+    const millisecondsDifference = Math.abs((date2 as any) - (new Date(date1) as any));
+    const secondsDifference = millisecondsDifference / 1000;
+    return secondsDifference;
+  }
+
+  private onCalloutReceived(callout: DispatcherCalloutDTOClientWrapper): void {
+    this.incomingCallouts.push(callout);
+    // this.mymap.eachLayer(layer => {
+    // if(layer['_latlng']) {
+    //   layer.remove();
+    // }
+    // });
+
+    const {X, Y} = callout.Callout.Location;
+    const marker = new Marker([Y, X]).addTo(this.Icons["Example"]).bindPopup("<b>X: " + X + " | Y: " + Y + "</b>");
+    this.calloutMarkers.set(callout.Callout.Id, marker);
+    this.jumpToCallout(callout);
+    // $("#markerSkripta").empty().append("<script>"+azurirajmarker+"</script>");
+  }
+
+  private onCalloutRemove(calloutId: string): void {
+    this.calloutMarkers.get(calloutId)?.remove();
+    this.calloutMarkers.delete(calloutId);
+    this.incomingCallouts = this.incomingCallouts.filter(x => x.Callout.Id !== calloutId);
+  }
+
+  protected readonly Date = Date;
 }

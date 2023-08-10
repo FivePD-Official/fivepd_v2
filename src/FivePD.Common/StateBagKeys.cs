@@ -9,4 +9,6 @@ internal readonly record struct StateBagKeys
     public const string Availability = "FivePD:Availability";
 
     public const string Status = "FivePD:Status";
+
+    public const string Dispatcher = "FivePD:Dispatcher";
 }

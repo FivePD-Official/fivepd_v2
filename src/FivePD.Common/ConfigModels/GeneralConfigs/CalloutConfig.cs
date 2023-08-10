@@ -4,7 +4,17 @@
 
 public sealed record CalloutConfig
 {
-    public bool AutomaticGeneration { get; init; }
+    public string DispatchType { get; init; } = "AUTO";
+    
+    public bool DispatchTypeAuto()
+    {
+        return this.DispatchType.ToUpper() == "AUTO";
+    }
+
+    public bool DispatchTypeManual()
+    {
+        return this.DispatchType.ToUpper() == "MANUAL";
+    }
 
     public int MinIntervalInMs { get; init; }
 

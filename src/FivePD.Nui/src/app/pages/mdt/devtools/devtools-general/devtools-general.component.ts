@@ -58,14 +58,14 @@ export class DevtoolsGeneralComponent {
           label: 'Copy',
           show: () => true,
           disabled: () => false,
-          onClick: item => this.copyToClipboard(`${item.X}, ${item.Y}, ${item.Z}`),
+          onClick: item => this.copyToClipboard(`${item.X}f, ${item.Y}f, ${item.Z}f`),
         },
         {
           type: 'button',
           label: 'Copy Vector3',
           show: () => true,
           disabled: () => false,
-          onClick: item => this.copyToClipboard(`new Vector3(${item.X}, ${item.Y}, ${item.Z})`),
+          onClick: item => this.copyToClipboard(`new Vector3(${item.X}f, ${item.Y}f, ${item.Z}f)`),
         },
       ]
     }

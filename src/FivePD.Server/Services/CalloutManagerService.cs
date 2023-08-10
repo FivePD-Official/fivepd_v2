@@ -22,9 +22,12 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     private readonly ITickQueueService _tickQueueService;
     private readonly IProgressionSystemService _progressionSystemService;
     private readonly IConfigService _configService;
+    private readonly IDispatchService _dispatchService;
 
     private readonly List<CalloutType> _calloutTypes = new();
     private readonly List<CalloutHolder> _activeCallouts = new();
+
+    private readonly int _maxCalloutTimeout;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutManagerService"/> class.
@@ -33,16 +36,21 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
     /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
+    /// <param name="dispatchService">The <see cref="IDispatchService"/> to use.</param>
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickQueueService tickQueueService,
         IProgressionSystemService progressionSystemService,
-        IConfigService configService)
+        IConfigService configService,
+        IDispatchService dispatchService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickQueueService = tickQueueService;
         this._progressionSystemService = progressionSystemService;
         this._configService = configService;
+        this._dispatchService = dispatchService;
+
+        this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto() ? 10000 : 30000;
     }
 
     /// <inheritdoc/>
@@ -74,6 +82,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     {
         this._eventHandlerDictionary[Events.Callout.OnPlayerEnteredInActivityZone] += new Action<Player, string>(this.OnPlayerEnteredInActivityZone);
         this.RegisterCallouts();
+
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);
     }
 
@@ -95,7 +104,16 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
 
     private void CheckCallouts()
     {
-        this._activeCallouts.RemoveAll(x => x.Timer.ElapsedMilliseconds >= 10000 && x.Callout.Units.Count == 0);
+        var calloutsToRemove = this._activeCallouts
+            .Where(x => x.Timer.ElapsedMilliseconds >= this._maxCalloutTimeout && x.Callout.Units.Count == 0)
+            .ToList();
+
+        foreach (var callout in calloutsToRemove)
+        {
+            this._dispatchService.RemoveCalloutFromDispatchers(callout.Callout);
+            this._activeCallouts.Remove(callout);
+        }
+
         foreach (var calloutHolder in this._activeCallouts)
         {
             if (calloutHolder.Callout.Units.Count > 0)

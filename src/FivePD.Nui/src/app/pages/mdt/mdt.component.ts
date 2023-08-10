@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { Observable } from 'rxjs';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-mdt',
@@ -10,12 +11,16 @@ import { Observable } from 'rxjs';
 })
 export class MdtComponent implements OnInit {
 
-  isSidebarCollapsed$: Observable<boolean>;
+  isSidebarCollapsed: boolean = false;
+  dispatchMode: boolean = false;
 
   constructor(
-    private readonly store: Store<GlobalState>,
+    private readonly _store: Store<GlobalState>,
   ) {
-    this.isSidebarCollapsed$ = this.store.select('app', 'isSidebarCollapsed');
+    _store.pipe(takeUntilDestroyed()).subscribe(state => {
+      this.dispatchMode = state.app.dispatchMode;
+      this.isSidebarCollapsed = state.app.isSidebarCollapsed;
+    });
   }
 
   ngOnInit(): void {

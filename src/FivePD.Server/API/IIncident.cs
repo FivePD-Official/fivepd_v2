@@ -35,6 +35,11 @@ public interface IIncident
     /// Gets the attached units to the incident.
     /// </summary>
     public ReadOnlyCollection<Unit> Units { get; }
+
+    /// <summary>
+    /// Gets the generated date time of the incident.
+    /// </summary>
+    public DateTime GeneratedAt { get; }
 }
 
 /// <summary>

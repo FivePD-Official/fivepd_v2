@@ -2,7 +2,7 @@
 import { createReducer, on } from '@ngrx/store';
 import {
   addDevToolsCoordinate,
-  clearDevToolsCoordinates,
+  clearDevToolsCoordinates, disableDispatchMode, enableDispatchMode,
   setMdtPath,
   toggleSidebarCollapse
 } from '@store/app.actions';
@@ -27,6 +27,7 @@ export interface AppStateModel {
   isSidebarCollapsed: boolean;
   previousMdtPath: string[];
   devTools: DevToolsState;
+  dispatchMode: boolean;
 }
 
 const devToolsDefaultState: DevToolsState = {
@@ -43,6 +44,7 @@ const initialState: AppStateModel = {
   isSidebarCollapsed: false,
   previousMdtPath: ['mdt', 'dashboard'],
   devTools: devToolsDefaultState,
+  dispatchMode: false,
 };
 
 export const appReducer = createReducer(
@@ -65,5 +67,11 @@ export const appReducer = createReducer(
     _state.devTools.coordinates.Items = [];
     _state.devTools.coordinates.PageSize = 0;
     return _state;
+  }),
+  on(enableDispatchMode, (state) => {
+    return {...state, dispatchMode: true};
+  }),
+  on(disableDispatchMode, (state) => {
+    return {...state, dispatchMode: false};
   }),
 );

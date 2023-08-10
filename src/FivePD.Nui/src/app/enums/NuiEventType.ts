@@ -17,4 +17,6 @@ export enum NuiEventType {
   PlaySound = 'sound:play',
   PlayText = 'sound:playText',
   InformationUpdate = 'information:update',
+  SendCalloutToDispatcher = 'fivepd:dispatch:sendCalloutToDispatcher',
+  RemoveCalloutFromDispatcher = 'fivepd:dispatch:removeCalloutFromDispatcher',
 }

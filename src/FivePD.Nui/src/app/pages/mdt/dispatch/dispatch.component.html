@@ -1,3 +1,25 @@
-<div class="relative inset-0 w-full h-full">
-  <div id="map" class="w-full h-full bg-zinc-900"></div>
+<div class="relative inset-0 w-full h-full grid grid-rows-1 grid-cols-2 gap-6">
+  <div class="w-full flex flex-col mt-10">
+    <p class="common-title">Incoming callouts</p>
+    <div class="w-full flex flex-col mt-4">
+      <div *ngFor="let callout of incomingCallouts" class="rounded-lg bg-zinc-800 p-4 mb-4 grid grid-rows-1 grid-cols-[2fr_1fr] gap-4">
+        <div>
+          <p class="text-sm font-medium text-zinc-400">Auto-cancel in: 0s</p>
+          <p class="font-medium text-lg text-zinc-100">{{ callout.Callout.Title }}</p>
+          <p class="text-zinc-400">{{ callout.Callout.Description }}</p>
+          <div class="mt-4 w-full flex flex-row items-center justify-start gap-4">
+            <p class="text-zinc-300">{{ getPriorityLabel(callout) | translate }}</p>
+            <div class="h-[20px] w-[1px] bg-zinc-400"></div>
+            <p class="text-zinc-300">{{ callout.Address }}</p>
+          </div>
+        </div>
+        <div class="w-full flex flex-col items-end justify-center">
+          <app-button label="Jump to marker" variant="tertiary-bg" (onClick)="jumpToCallout(callout)"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="relative inset-0 w-full h-full">
+    <div id="map" class="w-full h-full bg-zinc-900"></div>
+  </div>
 </div>
