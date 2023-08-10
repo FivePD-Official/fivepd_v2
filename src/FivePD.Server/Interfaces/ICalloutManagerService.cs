@@ -54,6 +54,6 @@ internal interface IInternalCalloutManagerService
     public List<Type> CalloutTypes();
 }
 
-internal sealed record CalloutHolder(Callout Callout, Stopwatch Timer);
+internal sealed record CalloutHolder(Callout Callout, Type Type, Stopwatch Timer);
 
 internal sealed record CalloutType(Type Type, string AssemblyName);

@@ -125,17 +125,30 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         callout.ActivityRadius = properties.ActivityRadius;
         callout.GeneratedAt = DateTime.Now;
 
+        var activeCalloutsWithSameType = this._calloutManagerService.ActiveCallouts
+            .Where(x => x.Type == type)
+            .ToList();
         if (properties.Locations is not null)
         {
-            var locations = properties.Locations.ToList();
-            var locationsCount = locations.Count;
-            if (locationsCount > 0)
+            var locations = properties.Locations
+                .Where(l => activeCalloutsWithSameType.All(c => c.Callout.Location != l))
+                .ToList();
+            if (locations.Count > 0)
             {
-                callout.Location = locations[this._randomService.Random.Next(0, locationsCount)];
+                callout.Location = locations[this._randomService.Random.Next(0, locations.Count)];
+            }
+            else
+            {
+                return;
             }
         }
         else
         {
+            if (activeCalloutsWithSameType.Any(c => c.Callout.Location == properties.Location))
+            {
+                return;
+            }
+
             callout.Location = properties.Location;
         }
 
@@ -148,7 +161,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
             }
         }
 
-        var calloutHolder = new CalloutHolder(callout, new Stopwatch());
+        var calloutHolder = new CalloutHolder(callout, type, new Stopwatch());
         this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 
