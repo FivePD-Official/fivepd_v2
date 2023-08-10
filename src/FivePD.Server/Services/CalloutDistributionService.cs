@@ -32,7 +32,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     private readonly ILogger _logger;
     private readonly IInternalCalloutManagerService _calloutManagerService;
     private readonly IUnitService _unitService;
-    private readonly IDispatchService _dispatchService;
+    private readonly IInternalDispatchService _internalDispatchService;
 
     private readonly Stopwatch _nextCalloutTimer = new();
     private int _nextCalloutInMs;
@@ -47,7 +47,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
     /// <param name="calloutManagerService">The <see cref="ICalloutManagerService"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
-    /// <param name="dispatchService">The <see cref="IDispatchService"/> to use.</param>
+    /// <param name="internalDispatchService">The <see cref="IInternalDispatchService"/> to use.</param>
     public CalloutDistributionService(
         ITickQueueService tickQueueService,
         IConfigService configService,
@@ -56,7 +56,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         IConfirmationService confirmationService,
         IInternalCalloutManagerService calloutManagerService,
         IUnitService unitService,
-        IDispatchService dispatchService)
+        IInternalDispatchService internalDispatchService)
     {
         this._tickQueueService = tickQueueService;
         this._configService = configService;
@@ -65,7 +65,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         this._confirmationService = confirmationService;
         this._calloutManagerService = calloutManagerService;
         this._unitService = unitService;
-        this._dispatchService = dispatchService;
+        this._internalDispatchService = internalDispatchService;
     }
 
     /// <inheritdoc/>
@@ -104,10 +104,11 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
 
         var calloutTypes = this._calloutManagerService.CalloutTypes();
         var calloutType = calloutTypes[this._randomService.Random.Next(0, calloutTypes.Count)];
-        await this.DispatchCalloutAsync(calloutType);
+        await this.GenerateCalloutAsync(calloutType);
     }
 
-    private async Task DispatchCalloutAsync(Type type, bool invokeCanBeDispatch = true)
+    // TODO move to ICalloutGenerationService so IDispatchService can use this ICalloutDistributionService
+    private async Task GenerateCalloutAsync(Type type, bool invokeCanBeDispatch = true)
     {
         var callout = (Callout)ServiceLocator.GetService(type);
         if (callout is null)
@@ -163,7 +164,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         }
         else
         {
-            this._dispatchService.SendCalloutToDispatchers(calloutHolder.Callout);
+            this._internalDispatchService.SendCalloutToDispatchers(calloutHolder.Callout);
         }
     }
 
@@ -288,7 +289,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         }
 
 #pragma warning disable CS4014
-        this.DispatchCalloutAsync(calloutType, false);
+        this.GenerateCalloutAsync(calloutType, false);
 #pragma warning restore CS4014
 
         networkCallbackDelegate.Invoke(null);

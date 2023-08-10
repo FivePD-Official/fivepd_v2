@@ -18,14 +18,14 @@ namespace FivePD.Server.Services;
 /// <inheritdoc cref="FivePD.Server.Interfaces.ICalloutManagerService" />
 public class CalloutManagerService : ICalloutManagerService, IInternalCalloutManagerService, IServiceWithEvents
 {
+    private const int AutoDispatchCalloutTimeoutInMs = 10000;
+
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickQueueService _tickQueueService;
     private readonly IProgressionSystemService _progressionSystemService;
     private readonly IConfigService _configService;
-    private readonly IDispatchService _dispatchService;
-
-    private readonly List<CalloutType> _calloutTypes = new();
-    private readonly List<CalloutHolder> _activeCallouts = new();
+    private readonly IInternalDispatchService _dispatchService;
+    private readonly IInternalCalloutStoreService _calloutStoreService;
 
     private readonly int _maxCalloutTimeout;
 
@@ -36,39 +36,44 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
     /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
-    /// <param name="dispatchService">The <see cref="IDispatchService"/> to use.</param>
+    /// <param name="internalDispatchService">The <see cref="IInternalDispatchService"/> to use.</param>
+    /// <param name="calloutStoreService">The <see cref="ICalloutStoreService"/> to use.</param>
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickQueueService tickQueueService,
         IProgressionSystemService progressionSystemService,
         IConfigService configService,
-        IDispatchService dispatchService)
+        IDispatchService internalDispatchService,
+        ICalloutStoreService calloutStoreService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickQueueService = tickQueueService;
         this._progressionSystemService = progressionSystemService;
         this._configService = configService;
-        this._dispatchService = dispatchService;
+        this._dispatchService = (IInternalDispatchService)internalDispatchService;
+        this._calloutStoreService = (IInternalCalloutStoreService)calloutStoreService;
 
-        this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto() ? 10000 : 30000;
+        this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto()
+            ? AutoDispatchCalloutTimeoutInMs
+            : this._configService.GeneralConfig.Callout.DispatchTimeoutInMs;
     }
 
     /// <inheritdoc/>
     public event EventHandler<Callout> OnCalloutCompleted;
 
     /// <inheritdoc/>
-    List<CalloutHolder> IInternalCalloutManagerService.ActiveCallouts => this._activeCallouts;
+    List<CalloutHolder> IInternalCalloutManagerService.ActiveCallouts => this._calloutStoreService.ActiveCallouts;
 
     /// <inheritdoc/>
     List<Type> IInternalCalloutManagerService.CalloutTypes()
     {
-        return this._calloutTypes.Select(x => x.Type).ToList();
+        return this._calloutStoreService.CalloutTypes.Select(x => x.Type).ToList();
     }
 
     /// <inheritdoc />
     public List<Callout> ActiveCallouts()
     {
-        return this._activeCallouts.Select(x => x.Callout).ToList();
+        return this._calloutStoreService.ActiveCallouts.Select(x => x.Callout).ToList();
     }
 
     /// <inheritdoc />
@@ -98,23 +103,23 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         foreach (var callout in callouts)
         {
             var type = callout.GetType();
-            this._calloutTypes.Add(new CalloutType(type, type.Assembly.GetName().Name));
+            this._calloutStoreService.CalloutTypes.Add(new CalloutType(type, type.Assembly.GetName().Name));
         }
     }
 
     private void CheckCallouts()
     {
-        var calloutsToRemove = this._activeCallouts
+        var calloutsToRemove = this._calloutStoreService.ActiveCallouts
             .Where(x => x.Timer.ElapsedMilliseconds >= this._maxCalloutTimeout && x.Callout.Units.Count == 0)
             .ToList();
 
         foreach (var callout in calloutsToRemove)
         {
             this._dispatchService.RemoveCalloutFromDispatchers(callout.Callout);
-            this._activeCallouts.Remove(callout);
+            this._calloutStoreService.ActiveCallouts.Remove(callout);
         }
 
-        foreach (var calloutHolder in this._activeCallouts)
+        foreach (var calloutHolder in this._calloutStoreService.ActiveCallouts)
         {
             if (calloutHolder.Callout.Units.Count > 0)
             {
@@ -142,12 +147,12 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
             }
         }
 
-        this._activeCallouts.RemoveAll(x => x.Callout.Id == callout.Id);
+        this._calloutStoreService.ActiveCallouts.RemoveAll(x => x.Callout.Id == callout.Id);
     }
 
     private void OnPlayerEnteredInActivityZone([FromSource] Player player, string calloutId)
     {
-        var callout = this._activeCallouts.FirstOrDefault(x => x.Callout.Id.ToString() == calloutId);
+        var callout = this._calloutStoreService.ActiveCallouts.FirstOrDefault(x => x.Callout.Id.ToString() == calloutId);
         if (callout is null)
         {
             return;
@@ -159,7 +164,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     [UIEvent(Events.Callout.GetAllActiveUI)]
     private void GetAllActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var activeCallouts = this._activeCallouts
+        var activeCallouts = this._calloutStoreService.ActiveCallouts
             .Where(x => x.Callout.Units.Count > 0)
             .Select(x => new CalloutDTO.CalloutToClientDTO
             {
@@ -182,7 +187,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     [UIEvent(Events.UI.Callout.GetAllTypes)]
     private void GetAllCalloutTypesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var types = this._calloutTypes.Select(x => new CalloutDTO.CalloutTypeToUIDTO
+        var types = this._calloutStoreService.CalloutTypes.Select(x => new CalloutDTO.CalloutTypeToUIDTO
         {
             TypeName = x.Type.Name,
             AssemblyName = x.AssemblyName,

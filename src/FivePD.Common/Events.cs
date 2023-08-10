@@ -286,5 +286,7 @@ internal readonly record struct Events
         public const string SendCalloutToDispatcher = "fivepd:dispatch:sendCalloutToDispatcher";
 
         public const string RemoveCalloutFromDispatcher = "fivepd:dispatch:removeCalloutFromDispatcher";
+
+        public const string DismissCallout = "fivepd:dispatch:dismissCallout";
     }
 }

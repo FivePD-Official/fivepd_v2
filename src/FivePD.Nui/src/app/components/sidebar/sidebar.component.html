@@ -29,11 +29,10 @@
             (click)="enableDispatchMode()">
       <div app-icon
            className="relative h-[24px] text-zinc-400 mr-2"
-           [ngClassName]="{ 'rotate-180 mr-0': isSidebarCollapsed }"
            name="PhoneArrowDown">
       </div>
-      <span class="relative text-lg text-zinc-400">
-        Enter dispatch mode
+      <span class="relative text-lg text-zinc-400" [ngClass]="{ 'hidden': isSidebarCollapsed }">
+        Dispatch mode
       </span>
     </button>
     <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3

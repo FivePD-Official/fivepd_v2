@@ -24,6 +24,8 @@ public sealed record CalloutConfig
     
     public DynamicDispatchConfig DynamicDispatch { get; init; } = new();
 
+    public int DispatchTimeoutInMs { get; init; }
+
     public sealed record DynamicDispatchConfig
     {
         public bool Enabled { get; init; }

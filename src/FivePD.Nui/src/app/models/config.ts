@@ -3,6 +3,17 @@
     Join: string;
     MaxMembers: number;
   };
+  Callout: {
+    DispatchType: 'auto' | 'manual';
+    MinIntervalInMs: number;
+    MaxIntervalInMs: number;
+    MaxActiveCallouts: number;
+    DispatchTimeoutInMs: number;
+    DynamicDispatch: {
+      Enabled: boolean;
+      Radius: number;
+    };
+  }
   FeatureFlags: {
     DiscordRichPresence: boolean;
     DutyNotification: boolean;
@@ -30,4 +41,11 @@ export class GeneralConfig {
     return this._config.Unit.Join.toUpperCase() === 'REQUEST';
   }
 
+  dispatchTypeAuto(): boolean {
+    return this._config.Callout.DispatchType.toUpperCase() === 'AUTO';
+  }
+
+  dispatchTypeManual(): boolean {
+    return this._config.Callout.DispatchType.toUpperCase() === 'MANUAL';
+  }
 }

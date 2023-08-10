@@ -304,6 +304,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
         services.AddSingleton<IInternalCalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutManagerService>());
+        
+        services.AddSingleton<CalloutStoreService>();
+        services.AddSingleton<ICalloutStoreService>(provider => provider.GetRequiredService<CalloutStoreService>());
+        services.AddSingleton<IInternalCalloutStoreService>(provider => provider.GetRequiredService<CalloutStoreService>());
 
         services.AddSingleton<CalloutDistributionService>();
         services.AddSingleton<ICalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
@@ -311,6 +315,7 @@ internal class Bootstrapper : BaseScript
         
         services.AddSingleton<DispatchService>();
         services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
+        services.AddSingleton<IInternalDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DispatchService>());
 
         // Find and register addons

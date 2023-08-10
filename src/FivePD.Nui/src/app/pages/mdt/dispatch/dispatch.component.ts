@@ -16,6 +16,16 @@ import {
 import { EventService } from "@services/event/event.service";
 import { CalloutRemoveFromDispatcher, DispatcherCalloutDTOClientWrapper } from "../../../models/callout";
 import { FIncidentPriority, NuiEventType } from "@enums";
+import { ConfigService } from "@services/config/config.service";
+import { GeneralConfig } from "@models";
+import { DispatchService } from "@services/dispatch/dispatch.service";
+
+type Callout = DispatcherCalloutDTOClientWrapper & {
+  timeout: number;
+  generatedAt: Date;
+}
+
+type IconType = 'callout' | 'unit';
 
 @Component({
   selector: 'app-dispatch',
@@ -43,17 +53,30 @@ export class DispatchComponent implements OnInit {
     "Example": this.ExampleGroup,
   };
 
+  generalConfig?: GeneralConfig;
+
   mymap!: LMap;
   CUSTOM_CRS: any;
   marker: any;
 
   calloutMarkers: Map<string, Marker> = new Map();
+  maxTimeout: number = 0;
+  timeoutIntervalId: any;
 
   // layersControl = L.control.layers({ "Satelite": SateliteStyle,"Atlas": AtlasStyle,"Grid":GridStyle}).addTo(mymap);
 
-  incomingCallouts: DispatcherCalloutDTOClientWrapper[] = [];
+  incomingCallouts: Callout[] = [];
 
-  constructor(private readonly _eventService: EventService) {
+  constructor(
+    private readonly _eventService: EventService,
+    private readonly _configService: ConfigService,
+    private readonly _dispatchService: DispatchService,
+  ) {
+    _configService.getGeneralConfig().subscribe(config => {
+      this.generalConfig = config;
+      this.maxTimeout = Math.round(config.config.Callout.DispatchTimeoutInMs / 1000);
+    });
+
     _eventService
       .onEvent<DispatcherCalloutDTOClientWrapper>(NuiEventType.SendCalloutToDispatcher)
       .subscribe(callout => this.onCalloutReceived(callout));
@@ -64,6 +87,13 @@ export class DispatchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.timeoutIntervalId = setInterval(() => {
+      const now = new Date();
+      for (const callout of this.incomingCallouts) {
+        callout.timeout = this.maxTimeout - Math.round(this.calculateSecondsDifference(callout.generatedAt, now));
+      }
+    }, 1000);
+
     this.CUSTOM_CRS = extend({}, CRS.Simple, {
       projection: Projection.LonLat,
       scale: function (zoom: any) {
@@ -111,12 +141,16 @@ export class DispatchComponent implements OnInit {
     });
   }
 
-  customIcon(icon: any) {
+  ngOnDestroy(): void {
+    clearInterval(this.timeoutIntervalId);
+  }
+
+  customIcon(type: IconType) {
     return LIcon({
-      iconUrl: `blips/${icon}.png`,
-      iconSize: [30, 30],
-      iconAnchor: [20, 20],
-      popupAnchor: [-10, -27]
+      iconUrl: `/assets/map/icons/${type}.png`,
+      iconSize: [23, 28],
+      iconAnchor: [23, 28],
+      popupAnchor: [-10, -27],
     });
   }
 
@@ -137,19 +171,16 @@ export class DispatchComponent implements OnInit {
     this.mymap.setView([callout.Callout.Location.Y, callout.Callout.Location.X], this.defaultZoom);
   }
 
-  get dateNow() {
-    return new Date();
-  }
-
-  calculateSecondsDifference(date1: string, date2: Date): number {
-    console.log({date1, date2});
-    const millisecondsDifference = Math.abs((date2 as any) - (new Date(date1) as any));
-    const secondsDifference = millisecondsDifference / 1000;
-    return secondsDifference;
+  dismissCallout(callout: DispatcherCalloutDTOClientWrapper): void {
+    this._dispatchService.dismissCallout(callout).subscribe();
   }
 
   private onCalloutReceived(callout: DispatcherCalloutDTOClientWrapper): void {
-    this.incomingCallouts.push(callout);
+    this.incomingCallouts.push({
+      ...callout,
+      timeout: 0,
+      generatedAt: new Date(callout.Callout.GeneratedAt)
+    });
     // this.mymap.eachLayer(layer => {
     // if(layer['_latlng']) {
     //   layer.remove();
@@ -157,7 +188,10 @@ export class DispatchComponent implements OnInit {
     // });
 
     const {X, Y} = callout.Callout.Location;
-    const marker = new Marker([Y, X]).addTo(this.Icons["Example"]).bindPopup("<b>X: " + X + " | Y: " + Y + "</b>");
+    const marker = new Marker([Y, X])
+      .addTo(this.Icons["Example"])
+      .bindPopup("<b>X: " + X + " | Y: " + Y + "</b>")
+      .setIcon(this.customIcon('callout'));
     this.calloutMarkers.set(callout.Callout.Id, marker);
     this.jumpToCallout(callout);
     // $("#markerSkripta").empty().append("<script>"+azurirajmarker+"</script>");
@@ -169,5 +203,8 @@ export class DispatchComponent implements OnInit {
     this.incomingCallouts = this.incomingCallouts.filter(x => x.Callout.Id !== calloutId);
   }
 
-  protected readonly Date = Date;
+  private calculateSecondsDifference(date1: Date, date2: Date): number {
+    const millisecondsDifference = Math.abs((date2 as any) - (date1 as any));
+    return millisecondsDifference / 1000;
+  }
 }
