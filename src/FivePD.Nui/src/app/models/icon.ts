@@ -16,4 +16,6 @@
   Report = 'Report',
   CodeBracket = 'CodeBracket',
   PhoneArrowDown = 'PhoneArrowDown',
+  ArrowsPointingOut = 'ArrowsPointingOut',
+  ArrowsPointingIn = 'ArrowsPointingIn',
 }

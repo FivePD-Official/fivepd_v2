@@ -2,7 +2,7 @@
 import { createReducer, on } from '@ngrx/store';
 import {
   addDevToolsCoordinate,
-  clearDevToolsCoordinates, disableDispatchMode, dispatchModeMapZoom, enableDispatchMode,
+  clearDevToolsCoordinates, disableDispatchMode, dispatchModeMapZoom, enableDispatchMode, setWindowMaximized,
   setMdtPath,
   toggleSidebarCollapse
 } from '@store/app.actions';
@@ -29,6 +29,7 @@ export interface AppStateModel {
   devTools: DevToolsState;
   dispatchMode: boolean;
   dispatchModeMapZoom: number;
+  windowMaximized: boolean;
 }
 
 const devToolsDefaultState: DevToolsState = {
@@ -47,6 +48,7 @@ const initialState: AppStateModel = {
   devTools: devToolsDefaultState,
   dispatchMode: false,
   dispatchModeMapZoom: 3,
+  windowMaximized: false,
 };
 
 export const appReducer = createReducer(
@@ -78,5 +80,11 @@ export const appReducer = createReducer(
   }),
   on(dispatchModeMapZoom, (state, action) => {
     return {...state, dispatchModeMapZoom: action.payload };
-  })
+  }),
+  on(dispatchModeMapZoom, (state, action) => {
+    return {...state, dispatchModeMapZoom: action.payload };
+  }),
+  on(setWindowMaximized, (state, action) => {
+    return {...state, windowMaximized: action.payload };
+  }),
 );

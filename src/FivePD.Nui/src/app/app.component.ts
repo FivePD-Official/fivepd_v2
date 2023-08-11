@@ -19,15 +19,15 @@ import { ConfigService } from "@services/config/config.service";
 })
 export class AppComponent implements OnInit {
 
+  calculatedContainerMargin: string = '';
+
   constructor(
-    private _http: HttpClient,
-    private _event: EventService,
-    private _window: WindowService,
-    private _localization: LocalizationService,
-    private _router: Router,
-    private _looseData: LooseDataService,
-    private readonly store: Store<GlobalState>,
-    private _menu: MenuService,
+    private readonly _window: WindowService, // do not remove OR refactor so event used in it are subscribed here
+    private readonly _event: EventService,
+    private readonly _localization: LocalizationService,
+    private readonly _router: Router,
+    private readonly _store: Store<GlobalState>,
+    private readonly _menu: MenuService,
     private readonly _configService: ConfigService,
   ) {}
 
@@ -37,9 +37,22 @@ export class AppComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       filter(event => event.url !== '/' && event.url.startsWith('/mdt'))
     ).subscribe(event => {
-      this.store.dispatch(setMdtPath({payload: event.url.split('/')}));
+      this._store.dispatch(setMdtPath({payload: event.url.split('/')}));
     });
     window.addEventListener('message', event => this._event.next(event.data));
+
+    this._store.subscribe(state => {
+      const mainContainer = document.querySelector('.main-container') as HTMLDivElement;
+      if (!mainContainer) {
+        return;
+      }
+
+      if (state.app.windowMaximized) {
+        mainContainer.style.inset = '0';
+      } else {
+        mainContainer.style.inset = this.calculatedContainerMargin;
+      }
+    });
   }
 
   onLoad(): void {
@@ -69,7 +82,8 @@ export class AppComponent implements OnInit {
         return;
       }
 
-      mainContainer.style.margin = `${tbMargin}px ${lrMargin}px`;
+      this.calculatedContainerMargin = `${tbMargin}px ${lrMargin}px`;
+      mainContainer.style.inset = this.calculatedContainerMargin;
     });
   }
 }

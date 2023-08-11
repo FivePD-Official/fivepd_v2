@@ -13,6 +13,7 @@ export class MdtComponent implements OnInit {
 
   isSidebarCollapsed: boolean = false;
   dispatchMode: boolean = false;
+  windowMaximized: boolean = false;
 
   constructor(
     private readonly _store: Store<GlobalState>,
@@ -20,6 +21,7 @@ export class MdtComponent implements OnInit {
     _store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.dispatchMode = state.app.dispatchMode;
       this.isSidebarCollapsed = state.app.isSidebarCollapsed;
+      this.windowMaximized = state.app.windowMaximized;
     });
   }
 
