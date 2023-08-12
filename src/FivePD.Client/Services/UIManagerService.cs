@@ -42,12 +42,21 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
             Events.NuiEventType.ClientReady,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
             {
-                this._loggerService.Info("Starting FivePD NUI...");
+                this._loggerService.Info("FivePD UI is ready");
+
+                this._hasFocus = false;
+                Cfx.API.SetNuiFocus(false, false);
+
                 this._ready = true;
+
+                this._mdtOpen = false;
+                this._informationOpen = false;
+                this.MenuOpen = false;
+
                 cb.Invoke(true);
             }));
     }
-    
+
     /// <inheritdoc />
     public void SendMessage(string data)
     {
@@ -90,7 +99,7 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
 
             return;
         }
-        
+
         if (type == Events.NuiEventType.MenuView)
         {
             if (this.MenuOpen)
@@ -113,12 +122,12 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
                     { "menuId", menuId },
                 });
             }
-            
+
             Cfx.API.SetNuiFocus(false, false);
 
             return;
         }
-        
+
         if (type == Events.NuiEventType.Information)
         {
             if (this._informationOpen)
@@ -131,18 +140,16 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
                 this._hasFocus = true;
                 this._informationOpen = true;
             }
-            
+
             Cfx.API.SetNuiFocus(false, false);
             this.SendMessage(new JObject
             {
                 { "type", type },
                 { "menuId", string.Empty },
             });
-
-            return;
         }
     }
-    
+
     /// <inheritdoc />
     [Keybind(KeybindIdentifiers.MenuClose, "BACK", "Close menu")]
     public void Hide()
