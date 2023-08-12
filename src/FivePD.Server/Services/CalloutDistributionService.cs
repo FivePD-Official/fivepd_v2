@@ -11,20 +11,19 @@ using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
-using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 using Serilog;
-using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.ICalloutDistributionService" />
 internal class CalloutDistributionService : ICalloutDistributionService, IServiceWithEvents
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly ITickQueueService _tickQueueService;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
@@ -40,6 +39,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
     /// </summary>
+    /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
@@ -49,6 +49,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="internalDispatchService">The <see cref="IInternalDispatchService"/> to use.</param>
     public CalloutDistributionService(
+        IServiceProvider serviceProvider,
         ITickQueueService tickQueueService,
         IConfigService configService,
         IRandomService randomService,
@@ -58,6 +59,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         IUnitService unitService,
         IInternalDispatchService internalDispatchService)
     {
+        this._serviceProvider = serviceProvider;
         this._tickQueueService = tickQueueService;
         this._configService = configService;
         this._randomService = randomService;
@@ -110,7 +112,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     // TODO move to ICalloutGenerationService so IDispatchService can use this ICalloutDistributionService
     private async Task GenerateCalloutAsync(Type type, bool invokeCanBeDispatch = true)
     {
-        var callout = (Callout)ServiceLocator.GetService(type);
+        var callout = (Callout)this._serviceProvider.GetService(type);
         if (callout is null)
         {
             this._logger.Warning("A callout with the type of \"{Type}\" could not be instantiated.", type);
