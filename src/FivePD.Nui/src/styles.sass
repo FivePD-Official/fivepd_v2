@@ -16,6 +16,7 @@
   user-select: none
   letter-spacing: 0.2px
   transition: var(--transition)
+
   &::before, &::after
     transition: var(--transition)
 
@@ -34,8 +35,15 @@
 ::selection
   @apply text-white bg-primary
 
+.leaflet-container // this rule might not be needed
+  transform: translate3d(0, 0, 0)
+  overflow: hidden
+
 .leaflet-control-container
   display: none !important
+
+.leaflet-container img.leaflet-tile
+  mix-blend-mode: color !important
 
 app-root
 

@@ -41,6 +41,7 @@ export class DispatchComponent implements OnInit {
     maxZoom: 5,
     id: 'styleAtlas map',
     keepBuffer: 100,
+    noWrap: true,
   });
 
   readonly ExampleGroup = layerGroup();
