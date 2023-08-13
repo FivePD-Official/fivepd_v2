@@ -187,7 +187,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     {
         var filteredUnits = this._unitService.Units()
             .Where(unit => this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
-            .Where(unit => unit.Players.All(p => p.Availability.Value == FPlayerAvailability.Receiving));
+            .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving);
         if (this._configService.GeneralConfig.Callout.DynamicDispatch.Enabled)
         {
             filteredUnits = filteredUnits.Where(unit =>
@@ -208,6 +208,9 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                 }
 
                 unitAccepted = true;
+                unit.Availability.Value = FUnitAvailability.NotReceiving;
+                unit.Callout = new SimpleCallout(calloutHolder.Callout);
+                ((IInternalUnit)unit).InternalCallout = calloutHolder.Callout;
 
                 ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
                 calloutHolder.Callout.OnAccepted(unit);
@@ -283,7 +286,6 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                             return;
                         }
 
-                        player.Availability.Value = FPlayerAvailability.NotReceiving;
                         OnAccepted();
                     });
             }

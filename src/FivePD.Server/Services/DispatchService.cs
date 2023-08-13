@@ -4,11 +4,14 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.DTO;
 using FivePD.Server.API;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Models;
+using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 
@@ -23,15 +26,18 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _playerList;
     private readonly IInternalCalloutStoreService _calloutStoreService;
+    private readonly IUnitService _unitService;
 
     public DispatchService(
         EventHandlerDictionary eventHandlerDictionary,
         PlayerList playerList,
-        ICalloutStoreService calloutStoreService)
+        ICalloutStoreService calloutStoreService,
+        IUnitService unitService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerList = playerList;
         this._calloutStoreService = (IInternalCalloutStoreService)calloutStoreService;
+        this._unitService = unitService;
     }
 
     public void RegisterEvents()
@@ -45,6 +51,20 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
     private void GetActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         networkCallbackDelegate.InvokeWithJson(this._calloutStoreService.ActiveCallouts.Select(x => x.Callout.ToCalloutForDispatcherDTO()).ToList());
+    }
+
+    [UIEvent(Events.UI.Dispatch.GetUnits)]
+    private void GetUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var units = this._unitService.Units().Select(unit => new DispatcherUnitDTO
+        {
+            Callsign = unit.Callsign,
+            Players = unit.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
+            Availability = unit.Availability.Value,
+            Status = unit.Status.Value,
+            AttachedCallout = unit.Callout is null ? null : new SimpleCallout(((IInternalUnit)unit).InternalCallout),
+        }).ToList();
+        networkCallbackDelegate.InvokeWithJson(units);
     }
 
     private void OnEnableForPlayer([FromSource] Player player)

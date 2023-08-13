@@ -1,9 +1,11 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.DTO;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Models;
+using FivePD.Common;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
@@ -15,6 +17,7 @@ namespace FivePD.Client.Services;
 /// <inheritdoc cref="FivePD.Client.Interfaces.ILocalPlayerService" />
 internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
 {
+    private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILocalizationService _localizationService;
     private readonly IConfigService _configService;
     private readonly ITickService _tickService;
@@ -36,15 +39,18 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
     /// Initializes a new instance of the <see cref="LocalPlayerService" /> class.
     /// </summary>
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
     public LocalPlayerService(
+        EventHandlerDictionary eventHandlerDictionary,
         ILocalizationService localizationService,
         IConfigService configService,
         ITickService tickService,
         IUIManagerService uiManagerService)
     {
+        this._eventHandlerDictionary = eventHandlerDictionary;
         this._localizationService = localizationService;
         this._configService = configService;
         this._tickService = tickService;
@@ -55,17 +61,23 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
 #pragma warning restore CS4014
 
         this.Player.DutyStatus.Subscribe(this.ListenForDutyStatusChanges);
-        this.Player.Availability.Subscribe(this.ListenForAvailabilityStatusChanges);
-        this.Player.Status.Subscribe(this.ListenForPlayerStatusChanges);
     }
 
     /// <inheritdoc />
     public FPlayer Player { get; } = FPlayer.FromNetId(Game.Player.ServerId);
 
+    /// <inheritdoc />
+    public FUnitAvailability Availability { get; private set; } = FUnitAvailability.NotReceiving;
+
+    /// <inheritdoc />
+    public string Status { get; private set; } = string.Empty;
+
     /// <inheritdoc/>
     public void RegisterEvents()
     {
         this._tickService.OnTick += this.OnTickAsync;
+        this._eventHandlerDictionary[Events.Player.UpdateUnitAvailability] += new Action<int>(availability => this.ListenForAvailabilityStatusChanges((FUnitAvailability)availability));
+        this._eventHandlerDictionary[Events.Player.UpdateUnitStatus] += new Action<string>(this.ListenForStatusChanges);
     }
 
     /// <inheritdoc/>
@@ -119,15 +131,17 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
         this.UpdateInformationInUI();
     }
 
-    private void ListenForAvailabilityStatusChanges(FPlayerAvailability availability)
+    private void ListenForAvailabilityStatusChanges(FUnitAvailability availability)
     {
+        this.Availability = availability;
         this._information.Availability = availability;
         this.UpdateDiscordStatus();
         this.UpdateInformationInUI();
     }
 
-    private void ListenForPlayerStatusChanges(string status)
+    private void ListenForStatusChanges(string status)
     {
+        this.Status = status;
         this._information.Status = status;
         this.UpdateInformationInUI();
     }

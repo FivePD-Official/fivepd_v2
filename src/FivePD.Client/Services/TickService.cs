@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Client.Interfaces;
 
 namespace FivePD.Client.Services;
 
 /// <inheritdoc />
-internal class TickService : ITickService
+internal class TickService : ITickService, IServiceWithEvents
 {
     private readonly AddTickHandler _addTickHandler;
 
     private readonly RemoveTickHandler _removeTickHandler;
+
+    private readonly ConcurrentDictionary<string, IntervalTask> _intervalTasks = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TickService"/> class.
@@ -28,5 +32,68 @@ internal class TickService : ITickService
         add => this._addTickHandler(value);
 
         remove => this._removeTickHandler(value);
+    }
+
+    /// <inheritdoc/>
+    public void RegisterEvents()
+    {
+        this.OnTick += () =>
+        {
+            var dateNowTicks = DateTime.Now.Ticks;
+            foreach (var task in this._intervalTasks.Values)
+            {
+                var ticksDiff = dateNowTicks - task.Date.Ticks;
+                var millisecondsDiff = ticksDiff / TimeSpan.TicksPerMillisecond;
+
+                if (millisecondsDiff >= task.IntervalInMs)
+                {
+                    task.Action?.Invoke();
+                    task.TaskAction?.Invoke();
+                    task.Date = DateTime.Now;
+                }
+            }
+
+            return Task.FromResult(0);
+        };
+    }
+
+    /// <inheritdoc />
+    public Guid EnqueueInterval(Action action, int intervalInMs)
+    {
+        var guid = Guid.NewGuid();
+
+        Debug.WriteLine("EnqueueInterval");
+        this._intervalTasks[guid.ToString()] = new IntervalTask(action, intervalInMs);
+
+        return guid;
+    }
+
+    /// <inheritdoc />
+    public void DequeueInterval(Guid guid)
+    {
+        this._intervalTasks.TryRemove(guid.ToString(), out _);
+    }
+
+    private sealed class IntervalTask
+    {
+        public IntervalTask(Action action, int intervalInMs = 0)
+        {
+            this.Action = action;
+            this.IntervalInMs = intervalInMs;
+        }
+
+        public IntervalTask(Func<Task> action, int intervalInMs = 0)
+        {
+            this.TaskAction = action;
+            this.IntervalInMs = intervalInMs;
+        }
+
+        public Action Action { get; }
+
+        public Func<Task> TaskAction { get; }
+
+        public int IntervalInMs { get; }
+
+        public DateTime Date { get; set; } = DateTime.Now;
     }
 }

@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
@@ -60,6 +61,7 @@ public class UnitService : IUnitService
         }
 
         var unit = new Unit(callsign, player);
+        unit.Availability.Value = FUnitAvailability.Receiving;
         this._units.Add(unit);
 
         return unit;

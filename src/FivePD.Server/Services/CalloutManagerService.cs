@@ -11,6 +11,7 @@ using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Models;
 using FivePD.Server.QueryHelpers;
 
 namespace FivePD.Server.Services;
@@ -139,10 +140,12 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         this.OnCalloutCompleted?.Invoke(this, callout);
         foreach (var unit in callout.Units)
         {
+            unit.Availability.Value = FUnitAvailability.Receiving;
+            unit.Callout = null;
+            ((IInternalUnit)unit).InternalCallout = null;
             this._progressionSystemService.AddExperiencePoints(unit, this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.CalloutCompleted);
             foreach (var player in unit.Players)
             {
-                player.Availability.Value = FPlayerAvailability.Receiving;
                 player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnCompleted);
             }
         }

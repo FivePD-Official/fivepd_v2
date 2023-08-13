@@ -129,6 +129,10 @@ internal class Bootstrapper : BaseScript
         var services = new ServiceProviderBuilder();
 
         services
+            .Register(() => this.Players)
+            .As<PlayerList>();
+
+        services
             .Register(() => this.EventHandlers)
             .As<EventHandlerDictionary>();
 
@@ -162,7 +166,9 @@ internal class Bootstrapper : BaseScript
 
         services
             .RegisterType<TickService>()
-            .As<ITickService>();
+            .As<ITickService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
 
         services
             .RegisterType<ScreenDecorService>()

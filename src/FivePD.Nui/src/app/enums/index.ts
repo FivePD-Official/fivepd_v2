@@ -28,7 +28,7 @@ export enum FDutyStatus {
   OnDuty,
 }
 
-export enum FPlayerAvailability {
+export enum FUnitAvailability {
   Receiving,
   NotReceiving,
 }

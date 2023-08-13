@@ -12,6 +12,10 @@ internal readonly record struct Events
     public readonly record struct Player
     {
         public const string OnConnected = "fivepd:player:onConnected";
+
+        public const string UpdateUnitAvailability = "fivepd:player:updateUnitAvailability";
+
+        public const string UpdateUnitStatus = "fivepd:player:updateUnitStatus";
     }
 
     public readonly record struct Ped
@@ -214,6 +218,10 @@ internal readonly record struct Events
         public readonly record struct Dispatch
         {
             public const string GetActiveCallouts = "fivepd:ui:dispatch:getActiveCallouts";
+
+            public const string GetUnits = "fivepd:ui:dispatch:getUnits";
+
+            public const string UpdatePlayers = "fivepd:ui:dispatch:updatePlayers";
 
             public const string Enable = "fivepd:ui:dispatch:enable";
 

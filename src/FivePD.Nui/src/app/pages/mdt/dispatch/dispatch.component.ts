@@ -14,14 +14,15 @@ import {
   Transformation
 } from 'leaflet';
 import { DispatcherCalloutDTOClientWrapper } from "../../../models/callout";
-import { FIncidentPriority } from "@enums";
+import { FIncidentPriority, FUnitAvailability } from "@enums";
 import { DispatchService } from "@services/dispatch/dispatch.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { dispatchModeMapZoom } from "@store/app.actions";
+import { DispatcherUnitDTO, SimplePlayer } from "@models";
 
-type IconType = 'callout' | 'unit';
+type IconType = 'callout' | 'player';
 
 @Component({
   selector: 'app-dispatch',
@@ -44,18 +45,17 @@ export class DispatchComponent implements OnInit {
     noWrap: true,
   });
 
-  readonly ExampleGroup = layerGroup();
-
-  readonly Icons = {
-    "Example": this.ExampleGroup,
-  };
-
-  mdtVisible: boolean = false;
+  readonly markerLayerGroup = layerGroup();
 
   map?: LMap;
   CUSTOM_CRS: any;
 
+  incomingCallouts: DispatcherCalloutDTOClientWrapper[] = [];
   calloutMarkers: Map<string, Marker> = new Map();
+
+  units: DispatcherUnitDTO[] = [];
+  players: SimplePlayer[] = [];
+  playerMarkers: Map<number, Marker> = new Map();
 
   // layersControl = L.control.layers({ "Satelite": SateliteStyle,"Atlas": AtlasStyle,"Grid":GridStyle}).addTo(mymap);
 
@@ -68,19 +68,45 @@ export class DispatchComponent implements OnInit {
     });
 
     this.dispatchService.incomingCallouts$.pipe(takeUntilDestroyed()).subscribe(callouts => {
-      this.map?.eachLayer(layer => {
-        if (layer instanceof Marker)
-          layer.remove();
-      });
+      const calloutsToRemove = this.incomingCallouts.filter(x => !callouts.some(y => y.Callout.Id === x.Callout.Id));
+      const calloutsToAdd = callouts.filter(x => !this.incomingCallouts.some(y => y.Callout.Id === x.Callout.Id));
 
-      for (const callout of callouts) {
+      for (const callout of calloutsToRemove) {
+        const marker = this.calloutMarkers.get(callout.Callout.Id);
+        marker?.remove();
+        this.calloutMarkers.delete(callout.Callout.Id);
+      }
+
+      for (const callout of calloutsToAdd) {
         this.createCalloutMarker(callout);
       }
+
+      this.incomingCallouts = callouts;
+    });
+
+    this.dispatchService.units$.pipe(takeUntilDestroyed()).subscribe(units => {
+      this.units = units;
+    });
+
+    this.dispatchService.players$.pipe(takeUntilDestroyed()).subscribe(players => {
+      const playersToRemove = this.players.filter(x => !players.some(y => y.NetworkId === x.NetworkId));
+      for (const player of playersToRemove) {
+        const marker = this.playerMarkers.get(player.NetworkId);
+        marker?.remove();
+        this.playerMarkers.delete(player.NetworkId);
+      }
+
+      for (const player of players) {
+        this.createOrUpdatePlayerMarker(player);
+      }
+
+      this.players = players;
     });
   }
 
   ngOnInit(): void {
     this.dispatchService.getActiveCallouts();
+    this.dispatchService.getUnits();
 
     this.CUSTOM_CRS = extend({}, CRS.Simple, {
       projection: Projection.LonLat,
@@ -151,7 +177,7 @@ export class DispatchComponent implements OnInit {
       minZoom: 2,
       maxZoom: 5,
       preferCanvas: false,
-      layers: [this.AtlasStyle, this.Icons["Example"]],
+      layers: [this.AtlasStyle, this.markerLayerGroup],
       center: [0, 0],
       zoom: this.defaultZoom,
       zoomControl: false,
@@ -177,41 +203,29 @@ export class DispatchComponent implements OnInit {
     // });
   }
 
-  private onCalloutReceived(callout: DispatcherCalloutDTOClientWrapper): void {
-    // this.mymap.eachLayer(layer => {
-    // if(layer['_latlng']) {
-    //   layer.remove();
-    // }
-    // });
-
-    this.createCalloutMarker(callout);
-    this.jumpToMarker(callout);
-    // $("#markerSkripta").empty().append("<script>"+azurirajmarker+"</script>");
-  }
-
-  private onCalloutRemove(calloutId: string): void {
-    if (this.mdtVisible) {
-      const m = this.calloutMarkers.get(calloutId);
-      if (m) {
-        m.remove();
-        this.calloutMarkers.delete(calloutId);
-      }
-    }
-  }
-
   private createCalloutMarker(callout: DispatcherCalloutDTOClientWrapper): void {
-    console.log('creating marker', callout.Callout.Id);
-    const {X, Y} = callout.Callout.Location;
-    const marker = new Marker([Y, X])
-      .addTo(this.Icons["Example"])
-      .bindPopup("<b>X: " + X + " | Y: " + Y + "</b>")
-      .setIcon(this.customIcon('callout'));
-
     const existingMarker = this.calloutMarkers.get(callout.Callout.Id);
-    if (existingMarker || (existingMarker && this.map?.hasLayer(existingMarker))) {
-      existingMarker.remove();
-    } else {
+    if (!existingMarker) {
+      const {X, Y} = callout.Callout.Location;
+      const marker = new Marker([Y, X])
+        .addTo(this.markerLayerGroup)
+        .bindPopup("<b>X: " + X + " | Y: " + Y + "</b>")
+        .setIcon(this.customIcon('callout'));
       this.calloutMarkers.set(callout.Callout.Id, marker);
     }
   }
+
+  private createOrUpdatePlayerMarker(player: SimplePlayer): void {
+    const marker = this.playerMarkers.get(player.NetworkId);
+    if (marker && this.map?.hasLayer(marker)) {
+      marker.setLatLng([player.Position.Y, player.Position.X]);
+    } else {
+      const marker = new Marker([player.Position.Y, player.Position.X])
+        .addTo(this.markerLayerGroup)
+        .setIcon(this.customIcon('player'));
+      this.playerMarkers.set(player.NetworkId, marker);
+    }
+  }
+
+  protected readonly FUnitAvailability = FUnitAvailability;
 }

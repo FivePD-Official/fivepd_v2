@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { EventService } from "@services/event/event.service";
 import { NuiEventType } from "@enums";
 import { InformationUpdateDTO } from "@models";
-import { FDutyStatus, FIncidentPriority, FPlayerAvailability } from "@enums";
+import { FDutyStatus, FIncidentPriority, FUnitAvailability } from "@enums";
 
 @Component({
   selector: 'app-information',
@@ -15,7 +15,7 @@ export class InformationComponent implements OnInit {
     type: '',
     Status: '-',
     DutyStatus: FDutyStatus.OffDuty,
-    Availability: FPlayerAvailability.NotReceiving,
+    Availability: FUnitAvailability.NotReceiving,
   };
 
   constructor(private readonly _eventService: EventService) {
@@ -32,7 +32,7 @@ export class InformationComponent implements OnInit {
   }
 
   get FPlayerAvailability() {
-    return FPlayerAvailability;
+    return FUnitAvailability;
   }
 
   get priorityLabel(): string {

@@ -13,7 +13,7 @@ internal sealed record InformationUpdateDTO
 
     public FDutyStatus DutyStatus { get; set; }
 
-    public FPlayerAvailability Availability { get; set; }
+    public FUnitAvailability Availability { get; set; }
 
     public ClientCalloutWrapper CalloutWrapper { get; set; }
 }

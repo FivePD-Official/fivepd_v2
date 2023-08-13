@@ -1,5 +1,5 @@
 ﻿import { User, Vector3 } from "./entities";
-import { FDutyStatus, FIncidentPriority, FPlayerAvailability } from "@enums";
+import { FDutyStatus, FIncidentPriority, FUnitAvailability } from "@enums";
 
 export interface ActionResponse {
   Status: boolean;
@@ -124,7 +124,7 @@ export interface GetSafeZoneSize {
 export interface InformationUpdateDTO extends BaseNuiEvent {
   Status: string;
   DutyStatus: FDutyStatus;
-  Availability: FPlayerAvailability;
+  Availability: FUnitAvailability;
   CalloutWrapper?: {
     Callout: {
       Id: string;
@@ -141,4 +141,29 @@ export interface InformationUpdateDTO extends BaseNuiEvent {
 export interface CalloutTypeDTO {
   TypeName: string;
   AssemblyName: string;
+}
+
+export interface SimpleCallout {
+  Id: string;
+  Title: string;
+  Description: string;
+  Priority: FIncidentPriority;
+  ActivityRadius: number;
+  Location: Vector3;
+  GeneratedAt: string;
+}
+
+export interface DispatcherUnitDTO extends UnitDTO {
+  Status: string;
+  Availability: FUnitAvailability;
+  AttachedCallout?: SimpleCallout;
+}
+
+export interface SimplePlayer {
+  NetworkId: number;
+  Position: Vector3;
+}
+
+export interface UpdatePlayersEvent extends BaseNuiEvent {
+  Players: SimplePlayer[];
 }

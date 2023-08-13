@@ -9,6 +9,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { EventService } from "@services/event/event.service";
 import { NuiEventType } from "@enums";
 import { ConfigService } from "@services/config/config.service";
+import { DispatcherUnitDTO, SimplePlayer, UnitDTO, UpdatePlayersEvent } from "@models";
 
 export type Callout = DispatcherCalloutDTOClientWrapper & {
   timeout: number;
@@ -21,6 +22,8 @@ export type Callout = DispatcherCalloutDTOClientWrapper & {
 export class DispatchService {
 
   readonly incomingCallouts$ = new BehaviorSubject<Callout[]>([]);
+  readonly units$ = new BehaviorSubject<DispatcherUnitDTO[]>([]);
+  readonly players$ = new BehaviorSubject<SimplePlayer[]>([]);
   maxTimeout: number = 0;
 
   constructor(
@@ -42,6 +45,10 @@ export class DispatchService {
       .onEvent<CalloutRemoveFromDispatcher>(NuiEventType.RemoveCalloutFromDispatcher)
       .subscribe(event => this.onCalloutRemove(event.CalloutId));
 
+    _eventService
+      .onEvent<UpdatePlayersEvent>(NuiEventType.UpdatePlayers)
+      .subscribe(event => this.onPlayersUpdate(event));
+
     this.updateCalloutTimeouts();
     setInterval(() => {
       this.updateCalloutTimeouts();
@@ -51,6 +58,12 @@ export class DispatchService {
   getActiveCallouts(): void {
     this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getActiveCallouts', {}).subscribe(callouts => {
       this.incomingCallouts$.next(callouts.map(c => this.mapCallout(c)));
+    });
+  }
+
+  getUnits(): void {
+    this._http.post<DispatcherUnitDTO[]>('fivepd:ui:dispatch:getUnits', {}).subscribe(units => {
+      this.units$.next(units);
     });
   }
 
@@ -78,6 +91,10 @@ export class DispatchService {
 
   private onCalloutRemove(calloutId: string): void {
     this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== calloutId)]);
+  }
+
+  private onPlayersUpdate(event: UpdatePlayersEvent): void {
+    this.players$.next(event.Players);
   }
 
   private mapCallout(callout: DispatcherCalloutDTOClientWrapper): Callout {

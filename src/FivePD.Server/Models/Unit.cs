@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FivePD.Common.Enums;
+using FivePD.Common.Models;
+using FivePD.Server.API;
 using FivePD.Server.EntityWrappers;
 
 namespace FivePD.Server.Models;
@@ -30,6 +33,8 @@ public class Unit : IInternalUnit
     {
         this.Callsign = callsign;
         this._players.Add(player);
+        this.Availability.Subscribe(this.ListenForAvailabilityChanges);
+        this.Status.Subscribe(this.ListenForStatusChanges);
     }
 
     /// <summary>
@@ -41,7 +46,19 @@ public class Unit : IInternalUnit
     {
         this.Callsign = callsign;
         this._players.AddRange(players);
+        this.Availability.Subscribe(this.ListenForAvailabilityChanges);
+        this.Status.Subscribe(this.ListenForStatusChanges);
     }
+
+    /// <summary>
+    /// Gets the player's call availability observable.
+    /// </summary>
+    public FObservable<FUnitAvailability> Availability { get; private set; } = new(FUnitAvailability.NotReceiving);
+
+    /// <summary>
+    /// Gets the player's status observable.
+    /// </summary>
+    public FObservable<string> Status { get; private set; } = new(string.Empty);
 
     /// <summary>
     /// Gets or sets the callsign.
@@ -49,9 +66,17 @@ public class Unit : IInternalUnit
     public string Callsign { get; set; }
 
     /// <summary>
+    /// Gets the currently attached callout.
+    /// </summary>
+    public SimpleCallout Callout { get; internal set; }
+
+    /// <summary>
     /// Gets the players in the unit.
     /// </summary>
     public ReadOnlyCollection<FPlayer> Players => this._players.AsReadOnly();
+
+    /// <inheritdoc/>
+    Callout IInternalUnit.InternalCallout { get; set; }
 
     /// <summary>
     /// Adds a player to the unit.
@@ -73,6 +98,22 @@ public class Unit : IInternalUnit
     {
         this._players.RemoveAll(x => x.NetId == player.NetId);
     }
+
+    private void ListenForAvailabilityChanges(FUnitAvailability availability)
+    {
+        foreach (var player in this._players)
+        {
+            player.GetUnderlyingPlayer().TriggerEvent(Common.Events.Player.UpdateUnitAvailability, availability);
+        }
+    }
+
+    private void ListenForStatusChanges(string status)
+    {
+        foreach (var player in this._players)
+        {
+            player.GetUnderlyingPlayer().TriggerEvent(Common.Events.Player.UpdateUnitStatus, status);
+        }
+    }
 }
 
 #pragma warning disable
@@ -82,4 +123,6 @@ internal interface IInternalUnit
     public void AddPlayer(FPlayer player);
 
     public void RemovePlayer(FPlayer player);
+
+    public Callout InternalCallout { get; set; }
 }

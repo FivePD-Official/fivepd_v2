@@ -71,7 +71,11 @@ public sealed class DispatchMenu : Menu
                 {
                     actions.Add(player =>
                     {
-                        player.Status.Value = status.Title;
+                        var unit = player.Unit;
+                        if (unit is not null)
+                        {
+                            unit.Status.Value = status.Title;
+                        }
                     });
                 }
 
@@ -80,7 +84,6 @@ public sealed class DispatchMenu : Menu
                     actions.Add(player =>
                     {
                         player.DutyStatus.Value = FDutyStatus.OnDuty;
-                        player.Availability.Value = FPlayerAvailability.Receiving;
                     });
                 }
                 
@@ -89,18 +92,17 @@ public sealed class DispatchMenu : Menu
                     actions.Add(player =>
                     {
                         player.DutyStatus.Value = FDutyStatus.OffDuty;
-                        player.Availability.Value = FPlayerAvailability.NotReceiving;
                     });
                 }
 
                 if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanReceiveCallouts))
                 {
-                    actions.Add(player => player.Availability.Value = FPlayerAvailability.Receiving);
+                    actions.Add(player => player.Unit.Availability.Value = FUnitAvailability.Receiving);
                 }
 
                 if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanNotReceiveCallouts))
                 {
-                    actions.Add(player => player.Availability.Value = FPlayerAvailability.NotReceiving);
+                    actions.Add(player => player.Unit.Availability.Value = FUnitAvailability.NotReceiving);
                 }
 
                 if (status.OnSelect.Contains(DispatchActionOnSelectKeys.CompleteCurrentCallout))
