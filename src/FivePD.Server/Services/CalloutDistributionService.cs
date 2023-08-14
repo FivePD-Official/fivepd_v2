@@ -123,9 +123,16 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         callout.Id = Guid.NewGuid();
         callout.Title = properties.Title;
         callout.Description = properties.Description;
-        callout.Priority = properties.Priority;
         callout.ActivityRadius = properties.ActivityRadius;
         callout.GeneratedAt = DateTime.Now;
+        if (properties.RandomPriority)
+        {
+            callout.Priority = (FIncidentPriority)this._randomService.Random.Next(0, 3);
+        }
+        else
+        {
+            callout.Priority = properties.Priority;
+        }
 
         var activeCalloutsWithSameType = this._calloutManagerService.ActiveCallouts
             .Where(x => x.Type == type)

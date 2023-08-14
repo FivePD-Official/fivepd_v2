@@ -183,7 +183,6 @@ internal class UIService : IUIService, IServiceWithEvents
     [Keybind(KeybindIdentifiers.MenuMoveDown, "DOWN", "Move down in menu")]
     public void MenuControlDown()
     {
-        Debug.WriteLine($"{this._uiManagerService.MenuOpen}");
         if (!this._uiManagerService.MenuOpen)
         {
             return;

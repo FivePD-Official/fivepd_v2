@@ -159,6 +159,11 @@ export interface DispatcherUnitDTO extends UnitDTO {
   AttachedCallout?: SimpleCallout;
 }
 
+export interface CommonDispatcherUnitDTO extends UnitDTO {
+  Status: string;
+  Availability: FUnitAvailability;
+}
+
 export interface SimplePlayer {
   NetworkId: number;
   Position: Vector3;
@@ -166,4 +171,12 @@ export interface SimplePlayer {
 
 export interface UpdatePlayersEvent extends BaseNuiEvent {
   Players: SimplePlayer[];
+}
+
+export interface OnUnitCreated extends BaseNuiEvent {
+  Unit: CommonDispatcherUnitDTO;
+}
+
+export interface OnUnitRemoved extends BaseNuiEvent {
+  Callsign: string;
 }

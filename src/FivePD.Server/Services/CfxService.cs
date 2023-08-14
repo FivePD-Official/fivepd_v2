@@ -19,10 +19,8 @@ public class CfxService : ICfxService
 
     public async Task<FVehicle> GetClosestVehicle(FPlayer player, Vector3 location, float radius)
     {
-        Debug.WriteLine("b");
         var vehicleNetworkId = await this._eventService.TriggerEventStrictAsync(player.GetUnderlyingPlayer(), "fivepd:cfx:getClosestVehicle", location, radius);
         var vehicle = Entity.FromNetworkId(int.Parse(vehicleNetworkId)) as Vehicle;
-        Debug.WriteLine("a");
         return FVehicle.FromVehicle(vehicle);
     }
 

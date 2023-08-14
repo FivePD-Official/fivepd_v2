@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Server.API;
 
@@ -17,9 +18,4 @@ internal record struct DispatcherUnitDTO
     public FUnitAvailability Availability;
 
     public SimpleCallout AttachedCallout;
-}
-
-internal sealed record DispatcherUnitDTOClientWrapper(DispatcherUnitDTO Callout)
-{
-    public string type = Common.Events.Dispatch.SendCalloutToDispatcher;
 }

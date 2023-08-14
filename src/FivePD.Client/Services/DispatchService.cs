@@ -6,6 +6,7 @@ using CitizenFX.Core;
 using FivePD.Client.DTO;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
     private readonly ILocalPlayerService _localPlayerService;
     private readonly ITickService _tickService;
     private readonly PlayerList _playerList;
-    
+
     private Guid _uiPlayerUpdateIntervalId;
 
     public DispatchService(
@@ -48,6 +49,7 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
                 this._uiPlayerUpdateIntervalId = this._tickService.EnqueueInterval(() =>
                 {
                     var players = this._playerList
+                        .Where(p => !string.IsNullOrEmpty(FPlayer.FromNetId(p.ServerId).UnitCallsign.Value))
                         .Select(p => new SimplePlayer(p.ServerId, p.Character.Position))
                         .ToList();
                     this._uiManagerService.SendMessage(new JObject
@@ -86,6 +88,8 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
 
         this._eventHandlerDictionary[Events.Dispatch.SendCalloutToDispatcher] += new Action<string>(this.OnCalloutReceived);
         this._eventHandlerDictionary[Events.Dispatch.RemoveCalloutFromDispatcher] += new Action<string>(this.OnCalloutRemove);
+        this._eventHandlerDictionary[Events.Dispatch.OnUnitCreated] += new Action<string>(this.OnUnitCreated);
+        this._eventHandlerDictionary[Events.Dispatch.OnUnitRemoved] += new Action<string>(this.OnUnitRemoved);
 
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetActiveCallouts, calloutForDispatcherDtoList =>
         {
@@ -109,6 +113,22 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
         {
             { "type", Events.Dispatch.RemoveCalloutFromDispatcher },
             { "CalloutId", calloutId },
+        });
+    }
+
+    private void OnUnitCreated(string serializedUnit)
+    {
+        var unit = JsonConvert.DeserializeObject<CommonDispatcherUnitDTO>(serializedUnit);
+        var wrapper = new CommonDispatcherUnitDTOClientWrapper(unit);
+        this._uiManagerService.SendMessage(JsonConvert.SerializeObject(wrapper));
+    }
+
+    private void OnUnitRemoved(string unitCallsign)
+    {
+        this._uiManagerService.SendMessage(new JObject
+        {
+            { "Callsign", unitCallsign },
+            { "type", Events.Dispatch.OnUnitRemoved },
         });
     }
 }

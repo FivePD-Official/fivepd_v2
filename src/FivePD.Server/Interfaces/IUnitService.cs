@@ -12,6 +12,16 @@ namespace FivePD.Server.Interfaces;
 public interface IUnitService
 {
     /// <summary>
+    /// Invoked when a unit is created.
+    /// </summary>
+    public event EventHandler<Unit> OnUnitCreated;
+
+    /// <summary>
+    /// Invoked when a unit is removed.
+    /// </summary>
+    public event EventHandler<Unit> OnUnitRemoved;
+
+    /// <summary>
     /// Invoked when a player joined a unit.
     /// </summary>
     public event EventHandler<UnitPlayerEventArgs> OnPlayerJoinedUnit;

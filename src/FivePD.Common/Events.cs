@@ -298,5 +298,9 @@ internal readonly record struct Events
         public const string RemoveCalloutFromDispatcher = "fivepd:dispatch:removeCalloutFromDispatcher";
 
         public const string DismissCallout = "fivepd:dispatch:dismissCallout";
+
+        public const string OnUnitCreated = "fivepd:dispatch:onUnitCreated";
+
+        public const string OnUnitRemoved = "fivepd:dispatch:onUnitRemoved";
     }
 }

@@ -22,7 +22,12 @@ public readonly record struct CalloutSetupProperties
     /// <summary>
     /// Gets the priority of the callout.
     /// </summary>
-    public required FIncidentPriority Priority { get; init; }
+    public FIncidentPriority Priority { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether the priority should be randomized.
+    /// </summary>
+    public bool RandomPriority { get; init; }
 
     /// <summary>
     /// Gets the activity radius of the callout.

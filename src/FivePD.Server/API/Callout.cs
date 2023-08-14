@@ -55,17 +55,24 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task<CalloutSetupProperties> Setup();
 
     /// <summary>
-    /// Invoke before <see cref="Callout.OnDispatched"/>.
+    /// Invoked before sent to the players or the dispatchers.
     /// </summary>
     /// <returns>A bool whether the callout should be dispatched or not.</returns>
     public abstract Task<bool> CanBeDispatched();
 
     /// <summary>
-    /// Invoked before <see cref="Callout.OnAccepted"/>.
+    /// Invoked only when DispatchType is "auto" and before <see cref="Callout.OnAccepted"/>.
     /// </summary>
-    /// <param name="notifiedUnits">The units that were notified about this callout and can accept to respond.</param>
+    /// <param name="units">The units that were notified about this callout and can accept to respond.</param>
     /// <returns>A Task.</returns>
-    public abstract Task OnDispatched(List<Unit> notifiedUnits);
+    public abstract Task OnDispatched(List<Unit> units);
+
+    /// <summary>
+    /// Invoked only when DispatchType is "manual" and when a dispatcher assigns a unit to the callout.
+    /// </summary>
+    /// <param name="units">The unit that has been assigned to the callout.</param>
+    /// <returns>A Task.</returns>
+    public abstract Task OnDispatched(Unit units);
 
     /// <summary>
     /// Invoke when a unit accepts the callout.

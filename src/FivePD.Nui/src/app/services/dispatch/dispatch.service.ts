@@ -9,7 +9,14 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { EventService } from "@services/event/event.service";
 import { NuiEventType } from "@enums";
 import { ConfigService } from "@services/config/config.service";
-import { DispatcherUnitDTO, SimplePlayer, UnitDTO, UpdatePlayersEvent } from "@models";
+import {
+  CommonDispatcherUnitDTO,
+  DispatcherUnitDTO,
+  OnUnitCreated, OnUnitRemoved,
+  SimplePlayer,
+  UnitDTO,
+  UpdatePlayersEvent
+} from "@models";
 
 export type Callout = DispatcherCalloutDTOClientWrapper & {
   timeout: number;
@@ -48,6 +55,14 @@ export class DispatchService {
     _eventService
       .onEvent<UpdatePlayersEvent>(NuiEventType.UpdatePlayers)
       .subscribe(event => this.onPlayersUpdate(event));
+
+    _eventService
+      .onEvent<OnUnitCreated>(NuiEventType.OnUnitCreated)
+      .subscribe(event => this.onUnitCreated(event.Unit));
+
+    _eventService
+      .onEvent<OnUnitRemoved>(NuiEventType.OnUnitRemoved)
+      .subscribe(event => this.onUnitRemoved(event.Callsign));
 
     this.updateCalloutTimeouts();
     setInterval(() => {
@@ -97,6 +112,14 @@ export class DispatchService {
     this.players$.next(event.Players);
   }
 
+  private onUnitCreated(unit: CommonDispatcherUnitDTO): void {
+    this.units$.next([...this.units$.value, unit]);
+  }
+
+  private onUnitRemoved(callsign: string): void {
+    this.units$.next([...this.units$.value.filter(x => x.Callsign !== callsign)]);
+  }
+
   private mapCallout(callout: DispatcherCalloutDTOClientWrapper): Callout {
     const generatedAt = new Date(callout.Callout.GeneratedAt);
     return {
@@ -108,7 +131,8 @@ export class DispatchService {
 
   private updateCalloutTimeouts(): void {
     for (const callout of this.incomingCallouts$.value) {
-      callout.timeout = this.calculateTimeout(callout);
+      const calculatedTimeout = this.calculateTimeout(callout);
+      callout.timeout = calculatedTimeout < 0 ? 0 : calculatedTimeout;
     }
   }
 

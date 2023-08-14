@@ -11,4 +11,6 @@ internal readonly record struct StateBagKeys
     public const string Status = "FivePD:Status";
 
     public const string Dispatcher = "FivePD:Dispatcher";
+
+    public const string UnitCallsign = "FivePD:UnitCallsign";
 }

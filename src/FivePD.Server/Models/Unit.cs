@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.Models.DTO;
 
 namespace FivePD.Server.Models;
 
@@ -87,6 +89,7 @@ public class Unit : IInternalUnit
         if (this._players.FirstOrDefault(x => x.NetId == player.NetId) is null)
         {
             this._players.Add(player);
+            player.UnitCallsign.Value = this.Callsign;
         }
     }
 
@@ -97,6 +100,38 @@ public class Unit : IInternalUnit
     void IInternalUnit.RemovePlayer(FPlayer player)
     {
         this._players.RemoveAll(x => x.NetId == player.NetId);
+        player.UnitCallsign.Value = string.Empty;
+    }
+
+    /// <summary>
+    /// A.
+    /// </summary>
+    /// <returns>B.</returns>
+    internal DispatcherUnitDTO ToDispatcherDTO()
+    {
+        return new DispatcherUnitDTO
+        {
+            Callsign = this.Callsign,
+            Players = this.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
+            Availability = this.Availability.Value,
+            Status = this.Status.Value,
+            AttachedCallout = this.Callout is null ? null : new SimpleCallout(((IInternalUnit)this).InternalCallout),
+        };
+    }
+
+    /// <summary>
+    /// A.
+    /// </summary>
+    /// <returns>B.</returns>
+    internal CommonDispatcherUnitDTO ToCommonDispatcherDTO()
+    {
+        return new CommonDispatcherUnitDTO
+        {
+            Callsign = this.Callsign,
+            Players = this.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
+            Availability = this.Availability.Value,
+            Status = this.Status.Value,
+        };
     }
 
     private void ListenForAvailabilityChanges(FUnitAvailability availability)

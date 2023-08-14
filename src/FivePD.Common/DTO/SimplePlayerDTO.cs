@@ -1,4 +1,4 @@
-﻿namespace FivePD.Server.Models.DTO;
+﻿namespace FivePD.Common.DTO;
 
 #pragma warning disable
 

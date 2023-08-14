@@ -98,8 +98,6 @@ public class FObservable<T> : IDisposable
     {
         // Removes the given action from the list of observers.
         this._observers.Remove(action);
-
-        Debug.WriteLine("removed...");
     }
 
     /// <inheritdoc />

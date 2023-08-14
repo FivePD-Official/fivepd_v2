@@ -20,4 +20,6 @@ export enum NuiEventType {
   SendCalloutToDispatcher = 'fivepd:dispatch:sendCalloutToDispatcher',
   RemoveCalloutFromDispatcher = 'fivepd:dispatch:removeCalloutFromDispatcher',
   UpdatePlayers = 'fivepd:ui:dispatch:updatePlayers',
+  OnUnitCreated = 'fivepd:dispatch:onUnitCreated',
+  OnUnitRemoved = 'fivepd:dispatch:onUnitRemoved',
 }

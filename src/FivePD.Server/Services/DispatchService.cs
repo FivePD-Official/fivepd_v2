@@ -40,11 +40,22 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
         this._unitService = unitService;
     }
 
+    public List<FPlayer> Dispatchers()
+    {
+        return this._playerList
+            .Select(FPlayer.FromPlayer)
+            .Where(p => p.Dispatcher.Value)
+            .ToList();;
+    }
+
     public void RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Dispatch.EnableForPlayer] += new Action<Player>(this.OnEnableForPlayer);
         this._eventHandlerDictionary[Events.Dispatch.DisableForPlayer] += new Action<Player>(this.OnDisableForPlayer);
         this._eventHandlerDictionary[Events.Dispatch.DismissCallout] += new Action<Player, ExpandoObject>(this.OnCalloutDismissed);
+
+        this._unitService.OnUnitCreated += this.OnUnitCreated;
+        this._unitService.OnUnitRemoved += this.OnUnitRemoved;
     }
 
     [UIEvent(Events.UI.Dispatch.GetActiveCallouts)]
@@ -56,14 +67,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
     [UIEvent(Events.UI.Dispatch.GetUnits)]
     private void GetUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var units = this._unitService.Units().Select(unit => new DispatcherUnitDTO
-        {
-            Callsign = unit.Callsign,
-            Players = unit.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
-            Availability = unit.Availability.Value,
-            Status = unit.Status.Value,
-            AttachedCallout = unit.Callout is null ? null : new SimpleCallout(((IInternalUnit)unit).InternalCallout),
-        }).ToList();
+        var units = this._unitService.Units().Select(unit => unit.ToDispatcherDTO()).ToList();
         networkCallbackDelegate.InvokeWithJson(units);
     }
 
@@ -92,6 +96,22 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
             }
 
             player.TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, request.Id);
+        }
+    }
+
+    private void OnUnitCreated(object _, Unit unit)
+    {
+        foreach (var dispatcher in this.Dispatchers())
+        {
+            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitCreated, JsonConvert.SerializeObject(unit.ToCommonDispatcherDTO()));
+        }
+    }
+    
+    private void OnUnitRemoved(object _, Unit unit)
+    {
+        foreach (var dispatcher in this.Dispatchers())
+        {
+            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitRemoved, unit.Callsign);
         }
     }
 

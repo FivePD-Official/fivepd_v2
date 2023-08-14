@@ -22,7 +22,25 @@ import { GlobalState } from "@store";
 import { dispatchModeMapZoom } from "@store/app.actions";
 import { DispatcherUnitDTO, SimplePlayer } from "@models";
 
-type IconType = 'callout' | 'player';
+type MarkerIconProperties = {
+  readonly size: [number, number];
+}
+type MarkerIconName = 'code3' | 'code2' | 'code1' | 'player';
+
+const markerIcons: Record<MarkerIconName, MarkerIconProperties> = {
+  code3: {
+    size: [33, 38],
+  },
+  code2: {
+    size: [33, 38],
+  },
+  code1: {
+    size: [33, 38],
+  },
+  player: {
+    size: [38, 38],
+  }
+};
 
 @Component({
   selector: 'app-dispatch',
@@ -33,13 +51,16 @@ export class DispatchComponent implements OnInit {
 
   defaultZoom: number = 3;
 
+  readonly minZoom = 2;
+  readonly maxZoom = 5;
+
   readonly center_x = 117.3;
   readonly center_y = 172.8;
   readonly scale_x = 0.02072;
   readonly scale_y = 0.0205;
   readonly AtlasStyle = tileLayer('/assets/atlas/{z}/tile_{x}_{y}.jpg', {
-    minZoom: 2,
-    maxZoom: 5,
+    minZoom: this.minZoom,
+    maxZoom: this.maxZoom,
     id: 'styleAtlas map',
     keepBuffer: 100,
     noWrap: true,
@@ -48,7 +69,7 @@ export class DispatchComponent implements OnInit {
   readonly markerLayerGroup = layerGroup();
 
   map?: LMap;
-  CUSTOM_CRS: any;
+  customCrs: any;
 
   incomingCallouts: DispatcherCalloutDTOClientWrapper[] = [];
   calloutMarkers: Map<string, Marker> = new Map();
@@ -105,10 +126,11 @@ export class DispatchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('asd')
     this.dispatchService.getActiveCallouts();
     this.dispatchService.getUnits();
 
-    this.CUSTOM_CRS = extend({}, CRS.Simple, {
+    this.customCrs = extend({}, CRS.Simple, {
       projection: Projection.LonLat,
       scale: function (zoom: any) {
         return Math.pow(2, zoom);
@@ -117,8 +139,8 @@ export class DispatchComponent implements OnInit {
         return Math.log(sc) / 0.6931471805599453;
       },
       distance: function (pos1: any, pos2: any) {
-        var x_difference = pos2.lng - pos1.lng;
-        var y_difference = pos2.lat - pos1.lat;
+        const x_difference = pos2.lng - pos1.lng;
+        const y_difference = pos2.lat - pos1.lat;
         return Math.sqrt(x_difference * x_difference + y_difference * y_difference);
       },
       transformation: new Transformation(this.scale_x, this.center_x, -this.scale_y, this.center_y),
@@ -131,11 +153,12 @@ export class DispatchComponent implements OnInit {
   ngOnDestroy(): void {
   }
 
-  customIcon(type: IconType) {
+  customIcon(name: MarkerIconName) {
+    const markerIcon = markerIcons[name];
     return LIcon({
-      iconUrl: `/assets/map/icons/${type}.png`,
-      iconSize: [23, 28],
-      iconAnchor: [23, 28],
+      iconUrl: `/assets/map/icons/${name}.png`,
+      iconSize: markerIcon.size,
+      iconAnchor: markerIcon.size,
       popupAnchor: [-10, -27],
     });
   }
@@ -149,8 +172,6 @@ export class DispatchComponent implements OnInit {
       case FIncidentPriority.Code3:
         return 'LABEL.PRIORITY.CODE3';
     }
-
-    return '-';
   }
 
   jumpToMarker(callout: DispatcherCalloutDTOClientWrapper): void {
@@ -159,7 +180,7 @@ export class DispatchComponent implements OnInit {
     }
 
     try {
-      this.map.setView([callout.Callout.Location.Y, callout.Callout.Location.X], 3);
+      this.map.setView([callout.Callout.Location.Y, callout.Callout.Location.X], 4);
     } catch (_) {
     }
   }
@@ -173,9 +194,9 @@ export class DispatchComponent implements OnInit {
     const atlasMapNorthEast = latLng([8380.487804878048, 6648.944755779789]);
     const atlasBounds = latLngBounds(atlasMapSouthWest, atlasMapNorthEast);
     this.map = map('map', {
-      crs: this.CUSTOM_CRS,
-      minZoom: 2,
-      maxZoom: 5,
+      crs: this.customCrs,
+      minZoom: this.minZoom,
+      maxZoom: this.maxZoom,
       preferCanvas: false,
       layers: [this.AtlasStyle, this.markerLayerGroup],
       center: [0, 0],
@@ -191,26 +212,27 @@ export class DispatchComponent implements OnInit {
     this.map.on('zoom', e => {
       this._store.dispatch(dispatchModeMapZoom({payload: e.target['_zoom']}));
     });
-
-    // this.map.on('click', e => {
-    //   if (this.marker) { // check
-    //     this.map?.removeLayer(this.marker);
-    //   }
-    //   const {lat, lng} = e.latlng;
-    //   const zoom = 3;
-    //   this.marker = new Marker([lat, lng]).addTo(this.Icons["Example"]).bindPopup("<b>X: " + lng.toFixed(3) + " | Y: " + lat.toFixed(3) + "</b>");
-    //   this.map?.setView([lat, lng], zoom);
-    // });
   }
 
   private createCalloutMarker(callout: DispatcherCalloutDTOClientWrapper): void {
     const existingMarker = this.calloutMarkers.get(callout.Callout.Id);
     if (!existingMarker) {
       const {X, Y} = callout.Callout.Location;
+      let icon: MarkerIconName;
+      switch (callout.Callout.Priority) {
+        case FIncidentPriority.Code1:
+          icon = 'code1';
+          break;
+        case FIncidentPriority.Code2:
+          icon = 'code2';
+          break;
+        case FIncidentPriority.Code3:
+          icon = 'code3';
+          break;
+      }
       const marker = new Marker([Y, X])
         .addTo(this.markerLayerGroup)
-        .bindPopup("<b>X: " + X + " | Y: " + Y + "</b>")
-        .setIcon(this.customIcon('callout'));
+        .setIcon(this.customIcon(icon));
       this.calloutMarkers.set(callout.Callout.Id, marker);
     }
   }
@@ -228,4 +250,5 @@ export class DispatchComponent implements OnInit {
   }
 
   protected readonly FUnitAvailability = FUnitAvailability;
+  protected readonly FIncidentPriority = FIncidentPriority;
 }

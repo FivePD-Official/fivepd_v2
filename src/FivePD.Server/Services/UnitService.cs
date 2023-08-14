@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
@@ -41,6 +42,12 @@ public class UnitService : IUnitService
     }
 
     /// <inheritdoc/>
+    public event EventHandler<Unit> OnUnitCreated;
+
+    /// <inheritdoc/>
+    public event EventHandler<Unit> OnUnitRemoved;
+
+    /// <inheritdoc/>
     public event EventHandler<UnitPlayerEventArgs> OnPlayerJoinedUnit;
 
     /// <inheritdoc/>
@@ -64,6 +71,10 @@ public class UnitService : IUnitService
         unit.Availability.Value = FUnitAvailability.Receiving;
         this._units.Add(unit);
 
+        player.UnitCallsign.Value = callsign;
+
+        this.OnUnitCreated?.Invoke(this, unit);
+
         return unit;
     }
 
@@ -75,8 +86,18 @@ public class UnitService : IUnitService
             return null;
         }
 
-        var unit = new Unit(callsign, players);
+        var fPlayers = players.ToList();
+
+        var unit = new Unit(callsign, fPlayers);
+        unit.Availability.Value = FUnitAvailability.Receiving;
         this._units.Add(unit);
+
+        foreach (var player in fPlayers)
+        {
+            player.UnitCallsign.Value = callsign;
+        }
+
+        this.OnUnitCreated?.Invoke(this, unit);
 
         return unit;
     }
@@ -106,6 +127,7 @@ public class UnitService : IUnitService
         if (unit.Players.Count == 0)
         {
             this._units.Remove(unit);
+            this.OnUnitRemoved?.Invoke(this, unit);
         }
     }
 

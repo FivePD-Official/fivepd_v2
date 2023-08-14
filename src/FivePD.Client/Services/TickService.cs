@@ -62,7 +62,6 @@ internal class TickService : ITickService, IServiceWithEvents
     {
         var guid = Guid.NewGuid();
 
-        Debug.WriteLine("EnqueueInterval");
         this._intervalTasks[guid.ToString()] = new IntervalTask(action, intervalInMs);
 
         return guid;
