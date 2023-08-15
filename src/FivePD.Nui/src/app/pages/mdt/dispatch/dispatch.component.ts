@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {
   CRS,
-  extend,
+  extend, icon,
   icon as LIcon,
   latLng,
   latLngBounds,
@@ -15,12 +15,12 @@ import {
 } from 'leaflet';
 import { DispatcherCalloutDTOClientWrapper } from "../../../models/callout";
 import { FIncidentPriority, FUnitAvailability } from "@enums";
-import { DispatchService } from "@services/dispatch/dispatch.service";
+import { Callout, DispatchService } from "@services/dispatch/dispatch.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { dispatchModeMapZoom } from "@store/app.actions";
-import { DispatcherUnitDTO, SimplePlayer } from "@models";
+import { DispatcherUnitDTO, Dropdown, DropdownItem, SimplePlayer } from "@models";
 
 type MarkerIconProperties = {
   readonly size: [number, number];
@@ -58,7 +58,7 @@ export class DispatchComponent implements OnInit {
   readonly center_y = 172.8;
   readonly scale_x = 0.02072;
   readonly scale_y = 0.0205;
-  readonly AtlasStyle = tileLayer('/assets/atlas/{z}/tile_{x}_{y}.jpg', {
+  readonly AtlasStyle = tileLayer('/assets/map/styles/atlas/{z}/tile_{x}_{y}.jpg', {
     minZoom: this.minZoom,
     maxZoom: this.maxZoom,
     id: 'styleAtlas map',
@@ -71,7 +71,8 @@ export class DispatchComponent implements OnInit {
   map?: LMap;
   customCrs: any;
 
-  incomingCallouts: DispatcherCalloutDTOClientWrapper[] = [];
+  incomingCallouts: Callout[] = [];
+  activeCallouts: Callout[] = [];
   calloutMarkers: Map<string, Marker> = new Map();
 
   units: DispatcherUnitDTO[] = [];
@@ -89,7 +90,9 @@ export class DispatchComponent implements OnInit {
     });
 
     this.dispatchService.incomingCallouts$.pipe(takeUntilDestroyed()).subscribe(callouts => {
-      const calloutsToRemove = this.incomingCallouts.filter(x => !callouts.some(y => y.Callout.Id === x.Callout.Id));
+      const calloutsToRemove = this.incomingCallouts
+        .filter(x => !callouts.some(y => y.Callout.Id === x.Callout.Id))
+        .filter(x => !this.activeCallouts.some(y => y.Callout.Id === x.Callout.Id));
       const calloutsToAdd = callouts.filter(x => !this.incomingCallouts.some(y => y.Callout.Id === x.Callout.Id));
 
       for (const callout of calloutsToRemove) {
@@ -103,6 +106,10 @@ export class DispatchComponent implements OnInit {
       }
 
       this.incomingCallouts = callouts;
+    });
+
+    this.dispatchService.activeCallouts$.pipe(takeUntilDestroyed()).subscribe(callouts => {
+      this.activeCallouts = callouts;
     });
 
     this.dispatchService.units$.pipe(takeUntilDestroyed()).subscribe(units => {
@@ -126,8 +133,7 @@ export class DispatchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('asd')
-    this.dispatchService.getActiveCallouts();
+    this.dispatchService.getIncomingCallouts();
     this.dispatchService.getUnits();
 
     this.customCrs = extend({}, CRS.Simple, {
@@ -187,6 +193,33 @@ export class DispatchComponent implements OnInit {
 
   dismissCallout(callout: DispatcherCalloutDTOClientWrapper): void {
     this.dispatchService.dismissCallout(callout).subscribe();
+  }
+
+  getAssignCalloutToUnitsField(callout: DispatcherCalloutDTOClientWrapper): Dropdown {
+    const dropdown = new Dropdown({
+      key: '#',
+      dropdownOptions: {
+        label: 'Assign units',
+        items: this.units
+          .filter(unit => !this.activeCallouts.some(c => c.units.some(u => u === unit.Callsign)))
+          .map(unit => ({ key: unit.Callsign, label: unit.Callsign })),
+        size: 'small',
+        height: 'base',
+        variant: 'tertiary-bg',
+        selectedItemsResolver: () => false,
+      },
+      required: false,
+    });
+
+    return dropdown;
+  }
+
+  onAssignCalloutToUnitsFieldChange(unitCallsigns: string[], callout: Callout): void {
+    this.dispatchService.assignCalloutToUnits(unitCallsigns, callout);
+  }
+
+  join(a: string[]): string {
+    return a.join(', ');
   }
 
   private initializeMap(): void {

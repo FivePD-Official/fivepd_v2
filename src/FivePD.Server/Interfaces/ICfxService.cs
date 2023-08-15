@@ -37,4 +37,7 @@ public interface ICfxService
         bool isPed,
         int vertexIndex,
         bool fixedRot);
+
+    #pragma warning disable
+    public void SetPedIntoVehicle(int ped, int vehicle, int seatIndex);
 }

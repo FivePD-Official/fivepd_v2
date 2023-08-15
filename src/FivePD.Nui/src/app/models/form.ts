@@ -1,6 +1,7 @@
 ﻿import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
 import { Paths } from './_dev/nested-object-keys';
 import { ActionResponse } from './nui-event-responses';
+import { ButtonVariants } from "./button";
 
 export interface FormSubmitEvent {
   value: object;
@@ -8,22 +9,28 @@ export interface FormSubmitEvent {
 }
 
 export interface DropdownItem {
-  key: number;
+  key: any;
   label: string;
 }
+
+export type DropdownVariants = Extract<ButtonVariants, 'secondary' | 'tertiary' | 'tertiary-bg'>;
+
+export type DropdownHeightVariants = 'base' | 'sm';
 
 export interface DropdownBaseOptions {
   label: string;
   items: DropdownItem[];
   size: 'small' | 'normal';
+  height?: DropdownHeightVariants;
+  variant: DropdownVariants;
 }
 
 export interface DropdownSingleOptions {
-  selectedItemResolver?: (dropdownItemKey: number) => boolean;
+  selectedItemResolver?: (dropdownItemKey: any) => boolean;
 }
 
 export interface DropdownMultiOptions {
-  selectedItemsResolver: (dropdownItemKey: number) => boolean;
+  selectedItemsResolver: (dropdownItemKey: any) => boolean;
   resetWhenSelectedId?: number;
 }
 

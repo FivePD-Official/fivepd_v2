@@ -8,17 +8,17 @@ const variants: Record<ButtonVariants, string> = {
               before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
               before:bg-primary
               disabled:cursor-not-allowed disabled:opacity-50`,
-  'secondary': `text-zinc-900 dark:text-white flex flex-col justify-center items-center
+  'secondary': `text-white flex flex-col justify-center items-center
               border border-zinc-600 rounded-md
               before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
               before:bg-transparent
               disabled:cursor-not-allowed disabled:opacity-50`,
-  'tertiary': `text-black dark:text-white flex flex-col justify-center items-center
+  'tertiary': `text-white flex flex-col justify-center items-center
               border border-transparent
               before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
               before:bg-zinc-800
               disabled:cursor-not-allowed disabled:opacity-50`,
-  'tertiary-bg': `text-black dark:text-white flex flex-col justify-center items-center
+  'tertiary-bg': `text-white flex flex-col justify-center items-center
               border border-transparent
               before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
               before:bg-zinc-700

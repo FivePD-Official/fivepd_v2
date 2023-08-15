@@ -127,7 +127,14 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         callout.GeneratedAt = DateTime.Now;
         if (properties.RandomPriority)
         {
-            callout.Priority = (FIncidentPriority)this._randomService.Random.Next(0, 3);
+#pragma warning disable
+            callout.Priority = this._calloutManagerService.ActiveCallouts.Count switch
+            {
+                0 => FIncidentPriority.Code2,
+                1 => FIncidentPriority.Code3,
+                _ => FIncidentPriority.Code1
+            };
+            // callout.Priority = (FIncidentPriority)this._randomService.Random.Next(0, 3);
         }
         else
         {

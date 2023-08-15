@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
@@ -67,18 +68,6 @@ public sealed class DispatchMenu : Menu
 
             if (status.OnSelect is not null)
             {
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetStatus))
-                {
-                    actions.Add(player =>
-                    {
-                        var unit = player.Unit;
-                        if (unit is not null)
-                        {
-                            unit.Status.Value = status.Title;
-                        }
-                    });
-                }
-
                 if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOnDuty))
                 {
                     actions.Add(player =>
@@ -118,6 +107,18 @@ public sealed class DispatchMenu : Menu
                 if (status.OnSelect.Contains(DispatchActionOnSelectKeys.RequestBackup))
                 {
                     actions.Add(player => this._backupManagerService.TriggerBackupRequest(player.Unit));
+                }
+                
+                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetStatus))
+                {
+                    actions.Add(player =>
+                    {
+                        var unit = player.Unit;
+                        if (unit is not null)
+                        {
+                            unit.Status.Value = status.Title;
+                        }
+                    });
                 }
             }
 

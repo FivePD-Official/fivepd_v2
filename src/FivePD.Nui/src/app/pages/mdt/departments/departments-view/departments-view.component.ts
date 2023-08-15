@@ -646,6 +646,7 @@ export class DepartmentsViewComponent implements OnInit {
           selectedItemResolver: (item) => item === this.department!.DefaultRankId,
           items: this.ranksDropdown,
           size: 'normal',
+          variant: 'secondary'
         },
       }),
       new TextInput({

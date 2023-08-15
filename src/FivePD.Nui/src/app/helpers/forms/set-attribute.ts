@@ -16,6 +16,7 @@ export function createAttributesFormFields(localizationService: LocalizationServ
       value: value?.DataType,
       dropdownOptions: {
         size: 'normal',
+        variant: 'secondary',
         label: localizationService.translate('UI.LABEL.TYPE.SINGULAR'),
         selectedItemResolver: itemKey => value?.DataType === itemKey,
         items: [

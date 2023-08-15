@@ -52,6 +52,11 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
                         .Where(p => !string.IsNullOrEmpty(FPlayer.FromNetId(p.ServerId).UnitCallsign.Value))
                         .Select(p => new SimplePlayer(p.ServerId, p.Character.Position))
                         .ToList();
+                    var peds = World.GetAllPeds()
+                        .Where(x => x.State["asd"] is not null && x.State["asd"] == true)
+                        .Select(p => new SimplePlayer(p.NetworkId, p.Position))
+                        .ToList();
+                    players.AddRange(peds);
                     this._uiManagerService.SendMessage(new JObject
                     {
                         { "type", Events.UI.Dispatch.UpdatePlayers },
@@ -91,13 +96,14 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
         this._eventHandlerDictionary[Events.Dispatch.OnUnitCreated] += new Action<string>(this.OnUnitCreated);
         this._eventHandlerDictionary[Events.Dispatch.OnUnitRemoved] += new Action<string>(this.OnUnitRemoved);
 
-        this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetActiveCallouts, calloutForDispatcherDtoList =>
+        this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetIncomingCallouts, calloutForDispatcherDtoList =>
         {
             var callout = JsonConvert.DeserializeObject<List<DispatcherCalloutDTO>>(calloutForDispatcherDtoList);
             var callouts = callout.Select(x => new DispatcherCalloutDTOClientWrapper(x, x.Location.GetStreetName())).ToList();
             return JsonConvert.SerializeObject(callouts);
         });
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Dispatch.GetUnits);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Dispatch.AssignCalloutToUnits);
     }
 
     private void OnCalloutReceived(string calloutForDispatcherDto)

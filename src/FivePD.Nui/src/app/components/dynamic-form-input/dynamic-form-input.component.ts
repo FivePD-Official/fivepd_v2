@@ -1,7 +1,31 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { DropdownItem, DropdownMultiOptions, DropdownSingleOptions, FormInputBase } from '@models';
+import {
+  ButtonVariants, DropdownHeightVariants,
+  DropdownItem,
+  DropdownMultiOptions,
+  DropdownSingleOptions,
+  DropdownVariants,
+  FormInputBase
+} from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
+
+const dropdownSelectedItemVariants: Record<DropdownVariants, string> = {
+  'secondary': `border border-zinc-600 hover:border-zinc-400 bg-transparent
+                before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
+                before:bg-transparent`,
+  'tertiary': `border border-zinc-800
+               before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
+               before:bg-zinc-800 hover:before:bg-zinc-700`,
+  'tertiary-bg': `border border-zinc-700
+                  before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
+                  before:bg-zinc-700 hover:before:bg-zinc-600`,
+};
+
+const dropdownHeightVariants: Record<DropdownHeightVariants, string> = {
+  'base': 'h-[40px]',
+  'sm': 'h-[35px]',
+};
 
 @Component({
   selector: 'app-dynamic-form-input',
@@ -23,8 +47,8 @@ export class DynamicFormInputComponent implements OnInit {
   pseudoFormControl = new FormControl('');
 
   dropdownOpen: boolean = false;
-  dropdownSelectedItem: { key: number, label: string } = {key: -1, label: ''};
-  dropdownSelectedItems: { key: number, label: string }[] = [];
+  dropdownSelectedItem: DropdownItem = {key: -1, label: ''};
+  dropdownSelectedItems: DropdownItem[] = [];
   dropdownFilteredItems: DropdownItem[] = [];
   multiSelectLabel: string = '';
 
@@ -59,6 +83,9 @@ export class DynamicFormInputComponent implements OnInit {
         if (selectedItems) {
           this.form?.controls[this.field.key].setValue(selectedItems.map(x => x.key));
           this.dropdownSelectedItems = selectedItems.map(x => ({key: x.key, label: x.label}));
+          for (const item of this.dropdownSelectedItems) {
+            this.setSelectedItems(item, true);
+          }
         }
       } else {
         this.control?.patchValue(-1);
@@ -85,6 +112,24 @@ export class DynamicFormInputComponent implements OnInit {
 
   get control() {
     return this.form?.controls[this.field.key] ?? this.pseudoFormControl;
+  }
+
+  get dropdownSelectedItemClassName() {
+    if (!this.field.dropdownOptions) {
+      return {};
+    }
+
+    const className = {
+      [dropdownSelectedItemVariants[this.field.dropdownOptions?.variant]]: true
+    };
+
+    if (this.field.dropdownOptions?.height) {
+      className[dropdownHeightVariants[this.field.dropdownOptions?.height]] = true;
+    } else {
+      className[dropdownHeightVariants['base']] = true;
+    }
+
+    return className;
   }
 
   toggleDropdown(): void {
@@ -130,6 +175,8 @@ export class DynamicFormInputComponent implements OnInit {
 
     if (updateControl) {
       this.control?.patchValue(selectedItem.key);
+    } else {
+      this.onChange.emit(selectedItem.key);
     }
     this.dropdownSelectedItem = selectedItem;
     this.filterDropdownItems();
@@ -165,6 +212,8 @@ export class DynamicFormInputComponent implements OnInit {
     } else {
       this.dropdownSelectedItems.push(selectedItem);
     }
+
+    this.onChange.emit(this.dropdownSelectedItems.map(x => x.key));
 
     this.setMultiSelectLabel();
     this.filterDropdownItems();

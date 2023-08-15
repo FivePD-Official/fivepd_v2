@@ -217,7 +217,7 @@ internal readonly record struct Events
         
         public readonly record struct Dispatch
         {
-            public const string GetActiveCallouts = "fivepd:ui:dispatch:getActiveCallouts";
+            public const string GetIncomingCallouts = "fivepd:ui:dispatch:getIncomingCallouts";
 
             public const string GetUnits = "fivepd:ui:dispatch:getUnits";
 
@@ -302,5 +302,7 @@ internal readonly record struct Events
         public const string OnUnitCreated = "fivepd:dispatch:onUnitCreated";
 
         public const string OnUnitRemoved = "fivepd:dispatch:onUnitRemoved";
+
+        public const string AssignCalloutToUnits = "fivepd:dispatch:assignCalloutToUnits";
     }
 }

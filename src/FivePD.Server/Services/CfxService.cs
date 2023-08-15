@@ -60,4 +60,9 @@ public class CfxService : ICfxService
             vertexIndex,
             fixedRot);
     }
+
+    public void SetPedIntoVehicle(int ped, int vehicle, int seatIndex)
+    {
+        BaseScript.TriggerClientEvent("fivepd:cfx:SetPedIntoVehicle", ped, vehicle, seatIndex);
+    }
 }

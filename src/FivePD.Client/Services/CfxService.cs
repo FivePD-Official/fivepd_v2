@@ -50,5 +50,14 @@ public class CfxService : ICfxService, IServiceWithEvents
             var entity2 = Entity.FromNetworkId(i1);
             Cfx.API.AttachEntityToEntity(entity1.Handle, entity2.Handle, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
         });
+        this._eventHandlerDictionary["fivepd:cfx:SetPedIntoVehicle"] += new Action<
+            int,
+            int,
+            int>((i, i1, i2) =>
+        {
+            var entity1 = Entity.FromNetworkId(i);
+            entity1.State["asd"] = true;
+            Cfx.API.SetPedIntoVehicle(entity1.Handle, i1, i2);
+        });
     }
 }

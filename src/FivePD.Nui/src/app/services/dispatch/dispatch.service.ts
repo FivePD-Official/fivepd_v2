@@ -21,6 +21,7 @@ import {
 export type Callout = DispatcherCalloutDTOClientWrapper & {
   timeout: number;
   generatedAt: Date;
+  units: string[];
 }
 
 @Injectable({
@@ -29,6 +30,7 @@ export type Callout = DispatcherCalloutDTOClientWrapper & {
 export class DispatchService {
 
   readonly incomingCallouts$ = new BehaviorSubject<Callout[]>([]);
+  readonly activeCallouts$ = new BehaviorSubject<Callout[]>([]);
   readonly units$ = new BehaviorSubject<DispatcherUnitDTO[]>([]);
   readonly players$ = new BehaviorSubject<SimplePlayer[]>([]);
   maxTimeout: number = 0;
@@ -70,8 +72,8 @@ export class DispatchService {
     }, 1000);
   }
 
-  getActiveCallouts(): void {
-    this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getActiveCallouts', {}).subscribe(callouts => {
+  getIncomingCallouts(): void {
+    this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getIncomingCallouts', {}).subscribe(callouts => {
       this.incomingCallouts$.next(callouts.map(c => this.mapCallout(c)));
     });
   }
@@ -97,6 +99,18 @@ export class DispatchService {
   dismissCallout(callout: DispatcherCalloutDTOClientWrapper): Observable<void> {
     return this._http.post<void>('fivepd:dispatch:dismissCallout', {
       Id: callout.Callout.Id
+    });
+  }
+
+  assignCalloutToUnits(unitCallsigns: string[], callout: Callout) {
+    if (!this.activeCallouts$.value.some(x => x.Callout.Id === callout.Callout.Id)) {
+      this.activeCallouts$.next([...this.activeCallouts$.value, {...callout, units: [...unitCallsigns]}]);
+      this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== callout.Callout.Id)]);
+    }
+
+    return this._http.post<void>('fivepd:dispatch:assignCalloutToUnits', {
+      UnitCallsigns: unitCallsigns,
+      CalloutId: callout.Callout.Id
     });
   }
 
@@ -126,6 +140,7 @@ export class DispatchService {
       ...callout,
       timeout: this.calculateTimeout(callout as Callout),
       generatedAt,
+      units: [],
     };
   }
 

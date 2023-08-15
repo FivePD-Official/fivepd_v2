@@ -58,10 +58,12 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
         this._unitService.OnUnitRemoved += this.OnUnitRemoved;
     }
 
-    [UIEvent(Events.UI.Dispatch.GetActiveCallouts)]
+    [UIEvent(Events.UI.Dispatch.GetIncomingCallouts)]
     private void GetActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        networkCallbackDelegate.InvokeWithJson(this._calloutStoreService.ActiveCallouts.Select(x => x.Callout.ToCalloutForDispatcherDTO()).ToList());
+        networkCallbackDelegate.InvokeWithJson(this._calloutStoreService.ActiveCallouts
+            .Where(callout => callout.Callout.Units.Count == 0)
+            .Select(x => x.Callout.ToCalloutForDispatcherDTO()).ToList());
     }
 
     [UIEvent(Events.UI.Dispatch.GetUnits)]
@@ -69,6 +71,30 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
     {
         var units = this._unitService.Units().Select(unit => unit.ToDispatcherDTO()).ToList();
         networkCallbackDelegate.InvokeWithJson(units);
+    }
+    
+    [UIEvent(Events.Dispatch.AssignCalloutToUnits)]
+    private void AssignCalloutToUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<AssignCalloutToUnitsRequest>();
+        var callout = this._calloutStoreService.ActiveCallouts.FirstOrDefault(x => x.Callout.Id == Guid.Parse(request.CalloutId));
+        if (callout is null)
+        {
+            return;
+        }
+        
+        foreach (var unit in this._unitService.Units().Where(unit => request.UnitCallsigns.Contains(unit.Callsign)))
+        {
+            ((IInternalIncident)callout.Callout).Units.Add(unit);
+        }
+        
+        // foreach (var dispatcher in this.Dispatchers())
+        // {
+        //     dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnCalloutAssignedToUnits, JsonConvert.SerializeObject(callout.Callout.ToCalloutForDispatcherDTO()));
+        // }
+
+        networkCallbackDelegate.Invoke(null);
+        // networkCallbackDelegate.InvokeWithJson(callout.Callout.ToCalloutForDispatcherDTO());
     }
 
     private void OnEnableForPlayer([FromSource] Player player)
@@ -87,15 +113,9 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
     {
         var request = expandoObject.ConvertTo<StringIdRequest>();
         this._calloutStoreService.ActiveCallouts.RemoveAll(x => x.Callout.Id == Guid.Parse(request.Id));
-        foreach (var p in this._playerList)
+        foreach (var p in this.Dispatchers())
         {
-            var fPlayer = FPlayer.FromPlayer(p);
-            if (!fPlayer.Dispatcher.Value)
-            {
-                continue;
-            }
-
-            player.TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, request.Id);
+            p.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, request.Id);
         }
     }
 

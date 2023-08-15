@@ -53,16 +53,10 @@
 
 .dropdown
   @apply relative
-  &.dropdown--normal
-    @apply h-[40px]
-    .dropdown-selected-item
-      @apply h-full border border-zinc-600 hover:border-zinc-400 bg-transparent
   &.dropdown--small
-    @apply h-[35px]
     .dropdown-selected-item
-      @apply h-full bg-zinc-700
-    &:hover .dropdown-selected-item
-      @apply bg-zinc-600
+      p
+        @apply text-sm font-medium
   &.dropdown--readonly
     .dropdown-selected-item
       @apply cursor-not-allowed
@@ -75,10 +69,7 @@
     @apply hidden
 
   .dropdown-selected-item
-    @apply h-[35px] rounded-md px-3 flex flex-row items-center justify-between cursor-pointer hover:bg-zinc-800
-
-    p
-      @apply text-zinc-300
+    @apply relative rounded-md px-3 flex flex-row items-center justify-between cursor-pointer
 
     svg
       @apply h-[20px] ml-3 text-zinc-300
@@ -93,9 +84,9 @@
 
   &.dropdown--open
     .dropdown-selected-item
-      @apply rounded-bl-none rounded-br-none
+      @apply before:rounded-bl-none before:rounded-br-none rounded-bl-none rounded-br-none
       svg
         @apply rotate-180
 
     .dropdown-items
-      @apply flex
+      @apply absolute flex

@@ -94,6 +94,8 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
         label: action.label,
         items: action.items(),
         size: 'small',
+        height: 'sm',
+        variant: 'tertiary-bg',
       },
       required: false,
     });

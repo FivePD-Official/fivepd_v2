@@ -43,6 +43,7 @@ export function mapAttributesToFields(attributes: SetAttribute[], entity?: Mappe
           }),
           label: attr.Label ?? '?',
           size: 'normal',
+          variant: 'secondary',
         };
 
         if (entity) {

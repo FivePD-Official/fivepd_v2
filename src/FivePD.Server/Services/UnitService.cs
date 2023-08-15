@@ -39,6 +39,11 @@ public class UnitService : IUnitService
         this._notificationService = notificationService;
         this._confirmationService = confirmationService;
         this._configService = configService;
+
+        var unit = new Unit("U-10");
+        unit.Availability.Value = FUnitAvailability.Receiving;
+        unit.Status.Value = "10-8";
+        this._units.Add(unit);
     }
 
     /// <inheritdoc/>
