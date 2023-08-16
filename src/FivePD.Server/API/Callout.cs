@@ -49,7 +49,7 @@ public abstract class Callout : IIncident, IInternalIncident
     public DateTime GeneratedAt { get; internal set; }
 
     /// <summary>
-    /// Invoked before <see cref="Callout.CanBeDispatched"/>.
+    /// Invoked before <see cref="CanBeDispatched"/>.
     /// </summary>
     /// <returns>The properties of the callout.</returns>
     public abstract Task<CalloutSetupProperties> Setup();
@@ -61,7 +61,7 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task<bool> CanBeDispatched();
 
     /// <summary>
-    /// Invoked only when DispatchType is "auto" and before <see cref="Callout.OnAccepted"/>.
+    /// Invoked only when DispatchType is "auto" and before <see cref="OnAccepted"/>.
     /// </summary>
     /// <param name="units">The units that were notified about this callout and can accept to respond.</param>
     /// <returns>A Task.</returns>
@@ -75,7 +75,7 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task OnDispatched(Unit units);
 
     /// <summary>
-    /// Invoke when a unit accepts the callout.
+    /// Invoked only when DispatchType is "auto" and when a dispatcher assigns a unit to the callout.
     /// </summary>
     /// <param name="unit">The unit that accepted to respond.</param>
     /// <returns>A Task.</returns>
@@ -89,7 +89,7 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task OnPlayerEnteredInActivityZone(FPlayer player);
 
     /// <summary>
-    /// Invoked when any attached player completes the callout.
+    /// Invoked when any assigned unit completes the callout.
     /// </summary>
     /// <returns>A Task.</returns>
     public abstract Task OnCompleted(); // TODO: Should be invoked when all players are Code 4 or a player has pressed the "End incident" button

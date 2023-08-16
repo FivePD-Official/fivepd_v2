@@ -127,14 +127,16 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         callout.GeneratedAt = DateTime.Now;
         if (properties.RandomPriority)
         {
-#pragma warning disable
-            callout.Priority = this._calloutManagerService.ActiveCallouts.Count switch
-            {
-                0 => FIncidentPriority.Code2,
-                1 => FIncidentPriority.Code3,
-                _ => FIncidentPriority.Code1
-            };
-            // callout.Priority = (FIncidentPriority)this._randomService.Random.Next(0, 3);
+            #pragma warning disable
+            // TEST DISPATCH
+            // callout.Priority = this._calloutManagerService.ActiveCallouts.Count switch
+            // {
+            //     0 => FIncidentPriority.Code2,
+            //     1 => FIncidentPriority.Code3,
+            //     _ => FIncidentPriority.Code1
+            // };
+            #pragma warning restore
+            callout.Priority = (FIncidentPriority)this._randomService.Random.Next(0, 3);
         }
         else
         {
@@ -227,7 +229,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                 ((IInternalUnit)unit).InternalCallout = calloutHolder.Callout;
 
                 ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
-                calloutHolder.Callout.OnAccepted(unit);
+                calloutHolder.Callout.OnAccepted(unit); // TODO: this should not be called when a dispatcher assigns the callout, so when DispatchType = manual
                 this.OnCalloutAccepted?.Invoke(this, new AcceptedCallout
                 {
                     Callout = calloutHolder.Callout,

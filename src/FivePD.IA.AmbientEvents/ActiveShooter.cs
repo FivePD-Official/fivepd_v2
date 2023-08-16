@@ -32,7 +32,7 @@ public class ActiveShooter : Callout
             Description = suspectCount switch
             {
                 1 => "Reports of an active shooter.",
-                _ => $"Reports of {suspectCount} active shooters."
+                _ => $"Reports of {suspectCount} active shooters.",
             },
             ActivityRadius = 20f,
             RandomPriority = true,
@@ -43,7 +43,7 @@ public class ActiveShooter : Callout
                 new Vector3(-1026.67212f, 4320.706f, 69.5507f),
                 new Vector3(1670.75269f, 3575.47168f, 35.61455f),
                 new Vector3(-1003.07983f, 1170.85571f, 218.741821f),
-            }
+            },
         });
     }
 
@@ -55,30 +55,35 @@ public class ActiveShooter : Callout
     public override Task OnDispatched(List<Unit> units)
     {
         this._logger.Information($"OnDispatched - {units.Count} units");
-        return Task.FromResult(0);
+
+        return Task.CompletedTask;
     }
-    
+
     public override Task OnDispatched(Unit units)
     {
         this._logger.Information($"OnDispatched - {units.Callsign}");
-        return Task.FromResult(0);
+
+        return Task.CompletedTask;
     }
 
     public override Task OnAccepted(Unit unit)
     {
         this._logger.Information($"OnAccepted - {unit.Callsign}");
-        return Task.FromResult(0);
+
+        return Task.CompletedTask;
     }
 
     public override Task OnCompleted()
     {
         this._logger.Information($"OnCompleted");
-        return Task.FromResult(0);
+
+        return Task.CompletedTask;
     }
 
     public override Task OnPlayerEnteredInActivityZone(FPlayer player)
     {
         this._logger.Information($"OnPlayerEnteredInActivityZone: {player.GetUnderlyingPlayer().Name}");
-        return Task.FromResult(0);
+
+        return Task.CompletedTask;
     }
 }

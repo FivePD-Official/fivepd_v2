@@ -21,6 +21,7 @@ public readonly record struct CalloutSetupProperties
 
     /// <summary>
     /// Gets the priority of the callout.
+    /// If <see cref="RandomPriority"/> is set to true, this property will be ignored.
     /// </summary>
     public FIncidentPriority Priority { get; init; }
 
@@ -36,11 +37,14 @@ public readonly record struct CalloutSetupProperties
 
     /// <summary>
     /// Gets the location of the callout.
+    /// If <see cref="Locations"/> is set, this property will be ignored.
     /// </summary>
     public Vector3 Location { get; init; }
 
     /// <summary>
     /// Gets the locations of the callout.
+    /// If this property is set, <see cref="Location"/> will be ignored.
+    /// A random location will be picked from this list.
     /// </summary>
     public IEnumerable<Vector3> Locations { get; init; }
 }
