@@ -4,7 +4,7 @@
 /// Provides functionality related
 /// to development.
 /// </summary>
-internal interface IDevUtilitiesService
+internal interface IDevToolsService
 {
     /// <summary>
     /// Prints a development message to

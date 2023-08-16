@@ -156,8 +156,8 @@ internal class Bootstrapper : BaseScript
             .As<ILoggerService>();
 
         services
-            .RegisterType<DevUtilitiesService>()
-            .As<IDevUtilitiesService>()
+            .RegisterType<DevToolsService>()
+            .As<IDevToolsService>()
             .IsSingleton();
 
         services

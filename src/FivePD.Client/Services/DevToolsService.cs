@@ -3,16 +3,16 @@
 namespace FivePD.Client.Services;
 
 /// <inheritdoc />
-internal class DevUtilitiesService : IDevUtilitiesService
+internal class DevToolsService : IDevToolsService
 {
     private readonly INotificationService _notificationService;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DevUtilitiesService"/> class.
+    /// Initializes a new instance of the <see cref="DevToolsService"/> class.
     /// </summary>
     /// <param name="notificationService">The
     /// <see cref="INotificationService"/> to use.</param>
-    public DevUtilitiesService(INotificationService notificationService)
+    public DevToolsService(INotificationService notificationService)
     {
         this._notificationService = notificationService;
     }
