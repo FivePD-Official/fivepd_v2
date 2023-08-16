@@ -1,5 +1,3 @@
-export * from './NuiEventType';
-
 export enum MenuItemType {
   Button,
   List,

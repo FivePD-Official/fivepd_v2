@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from "@services/event/event.service";
-import { NuiEventType } from "@enums";
 import { InformationUpdateDTO } from "@models";
 import { FDutyStatus, FIncidentPriority, FUnitAvailability } from "@enums";
 
@@ -12,7 +11,7 @@ import { FDutyStatus, FIncidentPriority, FUnitAvailability } from "@enums";
 export class InformationComponent implements OnInit {
 
   public information: InformationUpdateDTO = {
-    type: '',
+    Event: '',
     Status: '-',
     DutyStatus: FDutyStatus.OffDuty,
     Availability: FUnitAvailability.NotReceiving,
@@ -22,7 +21,7 @@ export class InformationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._eventService.onEvent<InformationUpdateDTO>(NuiEventType.InformationUpdate).subscribe(information => {
+    this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
       this.information = information;
     });
   }

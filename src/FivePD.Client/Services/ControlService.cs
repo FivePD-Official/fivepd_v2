@@ -107,8 +107,8 @@ internal class ControlService : IControlService, IServiceWithEvents
             holdableKeybind.ClearTimer();
             this._uiService.SendMessage(new JObject
             {
-                { "type", Events.NuiEventType.TimerBar },
-                { "show", false },
+                { "Event", Events.UIEvent.TimerBar },
+                { "Show", false },
             });
             this._actions.Remove(holdableKeybind);
         }
@@ -216,8 +216,8 @@ internal class ControlService : IControlService, IServiceWithEvents
             item.ClearTimer();
             this._uiService.SendMessage(new JObject
             {
-                { "type", Events.NuiEventType.TimerBar },
-                { "show", false },
+                { "Event", Events.UIEvent.TimerBar },
+                { "Show", false },
             });
             this._actions.Remove(item);
         }

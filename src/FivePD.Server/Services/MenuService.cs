@@ -115,9 +115,9 @@ public class MenuService : IMenuService, IServiceWithEvents
         this.SetValueOfProperty(actualPropertyMember, propertyObj, value);
         player.TriggerEvent(Events.UI.Menu.UpdateMenuItem, new JObject
         {
-            { "hashcode", propertyObj.GetHashCode().ToString() },
-            { "property", propertyMember.Name },
-            { "value", JToken.FromObject(value) },
+            { "Hashcode", propertyObj.GetHashCode().ToString() },
+            { "Property", propertyMember.Name },
+            { "Value", JToken.FromObject(value) },
         });
     }
 

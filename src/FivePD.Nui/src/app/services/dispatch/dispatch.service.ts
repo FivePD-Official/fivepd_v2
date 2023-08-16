@@ -7,14 +7,12 @@ import { HttpClient } from "@angular/common/http";
 import { CalloutRemoveFromDispatcher, DispatcherCalloutDTOClientWrapper } from "../../models/callout";
 import { BehaviorSubject, Observable } from "rxjs";
 import { EventService } from "@services/event/event.service";
-import { NuiEventType } from "@enums";
 import { ConfigService } from "@services/config/config.service";
 import {
   CommonDispatcherUnitDTO,
   DispatcherUnitDTO,
   OnUnitCreated, OnUnitRemoved,
   SimplePlayer,
-  UnitDTO,
   UpdatePlayersEvent
 } from "@models";
 
@@ -47,23 +45,23 @@ export class DispatchService {
     });
 
     _eventService
-      .onEvent<DispatcherCalloutDTOClientWrapper>(NuiEventType.SendCalloutToDispatcher)
+      .onEvent<DispatcherCalloutDTOClientWrapper>('fivepd:dispatch:sendCalloutToDispatcher')
       .subscribe(callout => this.onCalloutReceived(callout));
 
     _eventService
-      .onEvent<CalloutRemoveFromDispatcher>(NuiEventType.RemoveCalloutFromDispatcher)
+      .onEvent<CalloutRemoveFromDispatcher>('fivepd:dispatch:removeCalloutFromDispatcher')
       .subscribe(event => this.onCalloutRemove(event.CalloutId));
 
     _eventService
-      .onEvent<UpdatePlayersEvent>(NuiEventType.UpdatePlayers)
+      .onEvent<UpdatePlayersEvent>('fivepd:ui:dispatch:updatePlayers')
       .subscribe(event => this.onPlayersUpdate(event));
 
     _eventService
-      .onEvent<OnUnitCreated>(NuiEventType.OnUnitCreated)
+      .onEvent<OnUnitCreated>('fivepd:dispatch:onUnitCreated')
       .subscribe(event => this.onUnitCreated(event.Unit));
 
     _eventService
-      .onEvent<OnUnitRemoved>(NuiEventType.OnUnitRemoved)
+      .onEvent<OnUnitRemoved>('fivepd:dispatch:onUnitRemoved')
       .subscribe(event => this.onUnitRemoved(event.Callsign));
 
     this.updateCalloutTimeouts();

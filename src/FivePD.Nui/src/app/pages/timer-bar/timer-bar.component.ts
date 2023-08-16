@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { NuiEventType } from '@enums';
 import { TimerBarEvent } from '@models';
 import { Subscription } from 'rxjs';
 
@@ -23,7 +22,7 @@ export class TimerBarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.event$ = this._event.onEvent<TimerBarEvent>(NuiEventType.TimerBar).subscribe(res => this.onEvent(res));
+    this.event$ = this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timerBar').subscribe(res => this.onEvent(res));
   }
 
   ngOnDestroy(): void {
@@ -31,9 +30,9 @@ export class TimerBarComponent implements OnInit {
   }
 
   onEvent(res: TimerBarEvent): void {
-    this.showTimerBar = res.show;
+    this.showTimerBar = res.Show;
 
-    if (!res.show) {
+    if (!res.Show) {
       this.title = '';
       this.timeToHold = 0;
       this.percentage = 0;
@@ -41,8 +40,8 @@ export class TimerBarComponent implements OnInit {
       return;
     }
 
-    this.title = res.title;
-    this.timeToHold = res.timeToHold;
+    this.title = res.Title;
+    this.timeToHold = res.TimeToHold;
 
     console.log(this.title)
     console.log(this.timeToHold)

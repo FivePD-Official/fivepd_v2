@@ -28,7 +28,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
 import { EventService } from "@services/event/event.service";
-import { FDutyStatus, FIncidentPriority, NuiEventType } from "@enums";
+import { FDutyStatus, FIncidentPriority } from "@enums";
 import { CalloutService } from "@services/callout/callout.service";
 
 @Component({
@@ -195,7 +195,7 @@ export class DashboardComponent implements OnInit {
     private readonly _calloutService: CalloutService,
   ) {
     _store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
-    _eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+    _eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').subscribe(() => {
       this.getDepartments();
       this.getUnits();
       this.getCallouts();

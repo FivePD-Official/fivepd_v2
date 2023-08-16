@@ -10,7 +10,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-defer(() => fromFetch('https://fivepd/ready'))
+defer(() => fromFetch('https://fivepd/fivepd:ui:ready'))
   .pipe(
     map(res => {
       if (res.status === 200) {

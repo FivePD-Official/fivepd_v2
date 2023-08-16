@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { NuiEventType } from '@enums';
 import { EventService } from '@services/event/event.service';
 import { BaseNuiEvent, MenuShowEvent, TimerBarEvent } from '@models';
 import { Router } from '@angular/router';
@@ -28,25 +27,25 @@ export class WindowService {
     private _userService: UserService,
     private readonly store: Store<GlobalState>,
   ) {
-    this._event.onEvent<TimerBarEvent>('webpackInvalid' as NuiEventType).subscribe(() => this.close());
-    this._event.onEvent<TimerBarEvent>('webpackOk' as NuiEventType).subscribe(() => this.close());
+    this._event.onEvent<TimerBarEvent>('webpackInvalid').subscribe(() => this.close());
+    this._event.onEvent<TimerBarEvent>('webpackOk').subscribe(() => this.close());
     window.addEventListener('keydown', event => {
       if (event.code === 'Escape') {
         this.close();
       }
     });
 
-    this._event.onEvent<BaseNuiEvent>(NuiEventType.Close).subscribe(() => this.close()) // TODO: investigate why this subscription spams after the first close event
-    this._event.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+    this._event.onEvent<BaseNuiEvent>('fivepd:ui:close').subscribe(() => this.close()) // TODO: investigate why this subscription spams after the first close event
+    this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').subscribe(() => {
       this._userService.refreshData();
       this.onMdtOpen();
     });
-    this._event.onEvent<BaseNuiEvent>(NuiEventType.Information).subscribe(() => {
+    this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:information').subscribe(() => {
       this.onInformationOpen();
     });
-    this._event.onEvent<MenuShowEvent>(NuiEventType.MenuView).subscribe(() => this.onMenuOpen());
-    this._event.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(res => this.onRadialMenuOpen(res));
-    this._event.onEvent<TimerBarEvent>(NuiEventType.TimerBar).subscribe(res => this.onTimerBarEvent(res));
+    this._event.onEvent<MenuShowEvent>('fivepd:ui:view:menu').subscribe(() => this.onMenuOpen());
+    this._event.onEvent<MenuShowEvent>('fivepd:ui:view:radialMenu').subscribe(res => this.onRadialMenuOpen(res));
+    this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timerBar').subscribe(res => this.onTimerBarEvent(res));
 
     this.store.subscribe(state => {
       this.previousMdtPath = state.app.previousMdtPath;
@@ -69,7 +68,7 @@ export class WindowService {
   }
 
   triggerCloseEvent(): void {
-    this._http.post(NuiEventType.Close, {}).subscribe();
+    this._http.post('fivepd:ui:close', {}).subscribe();
   }
 
   closeMDT(): void {
@@ -97,11 +96,11 @@ export class WindowService {
 
   private onRadialMenuOpen(res: MenuShowEvent): void {
     this.show();
-    this._router.navigate(['radial-menu', res.menuId]);
+    this._router.navigate(['radial-menu', res.MenuId]);
   }
 
   private onTimerBarEvent(res: TimerBarEvent): void {
-    if (res.show) {
+    if (res.Show) {
       this.show();
       this._router.navigate(['timer-bar']);
     } else {

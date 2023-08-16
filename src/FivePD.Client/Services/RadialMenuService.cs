@@ -175,20 +175,20 @@ internal class RadialMenuService : IRadialMenuService
         {
             this._uiService.SendMessage(new JObject
             {
-                { "type", Events.NuiEventType.RadialMenuControl },
-                { "control", "down" },
-                { "x", coordinates.X },
-                { "y", coordinates.Y },
+                { "Event", Events.UIEvent.RadialMenuControl },
+                { "Control", "down" },
+                { "X", coordinates.X },
+                { "Y", coordinates.Y },
             });
         }
         else if (Cfx.API.IsDisabledControlJustReleased(2, 237))
         {
             this._uiService.SendMessage(new JObject
             {
-                { "type", Events.NuiEventType.RadialMenuControl },
-                { "control", "up" },
-                { "x", coordinates.X },
-                { "y", coordinates.Y },
+                { "Event", Events.UIEvent.RadialMenuControl },
+                { "Control", "up" },
+                { "X", coordinates.X },
+                { "Y", coordinates.Y },
             });
         }
 
@@ -196,10 +196,10 @@ internal class RadialMenuService : IRadialMenuService
         {
             this._uiService.SendMessage(new JObject
             {
-                { "type", Events.NuiEventType.RadialMenuControl },
-                { "control", "up" },
-                { "x", coordinates.X },
-                { "y", coordinates.Y },
+                { "Event", Events.UIEvent.RadialMenuControl },
+                { "Control", "up" },
+                { "X", coordinates.X },
+                { "Y", coordinates.Y },
             });
             this._lastMousePosition = new MouseCoordinate(coordinates.X, coordinates.Y);
         }

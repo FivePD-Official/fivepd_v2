@@ -8,10 +8,10 @@ import {
   MenuItem,
   MenuListItem,
   RadialMenu,
-  RadialMenuObjectsEvent, TimerBarEvent,
+  RadialMenuObjectsEvent,
   UpdateMenuItemEvent
 } from '@models';
-import { MenuItemType, NuiEventType } from '@enums';
+import { MenuItemType } from '@enums';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -27,7 +27,7 @@ export class MenuService {
     private _http: HttpClient,
   ) {
     // this._event.onEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(res => this.onRadialMenuObjectsEvent(res));
-    this._event.onEvent<UpdateMenuItemEvent>(NuiEventType.UpdateMenuItem).subscribe(res => this.onUpdateMenuItemEvent(res));
+    this._event.onEvent<UpdateMenuItemEvent>('fivepd:menu:update_item').subscribe(res => this.onUpdateMenuItemEvent(res));
   }
 
   load(): void {
@@ -86,9 +86,9 @@ export class MenuService {
   private onUpdateMenuItemEvent(res: UpdateMenuItemEvent): void {
     for (const menu of this._menus) {
       for (const item of menu.items) {
-        if (item.hashcode === res.hashcode) {
-          if (Reflect.has(item, res.property)) {
-            Reflect.set(item, res.property, res.value);
+        if (item.hashcode === res.Hashcode) {
+          if (Reflect.has(item, res.Property)) {
+            Reflect.set(item, res.Property, res.Value);
           }
           break;
         }

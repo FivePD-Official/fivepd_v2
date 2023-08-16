@@ -40,10 +40,13 @@ public class UnitService : IUnitService
         this._confirmationService = confirmationService;
         this._configService = configService;
 
-        var unit = new Unit("U-10");
-        unit.Availability.Value = FUnitAvailability.Receiving;
-        unit.Status.Value = "10-8";
-        this._units.Add(unit);
+        #pragma warning disable
+        // TEST DISPATCH
+        // var unit = new Unit("U-10");
+        // unit.Availability.Value = FUnitAvailability.Receiving;
+        // unit.Status.Value = "10-8";
+        // this._units.Add(unit);
+        #pragma warning restore
     }
 
     /// <inheritdoc/>

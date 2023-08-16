@@ -48,7 +48,7 @@ internal class UIService : IUIService, IServiceWithEvents
 
         // Listens for NUI close event
         this._eventHandlerDictionary.AddUIEvent(
-            Events.NuiEventType.Close,
+            Events.UIEvent.Close,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
             {
                 this._uiManagerService.Close();
@@ -158,13 +158,13 @@ internal class UIService : IUIService, IServiceWithEvents
     /// <inheritdoc />
     public void OpenMDT()
     {
-        this._uiManagerService.Show(Events.NuiEventType.Mdt);
+        this._uiManagerService.Show(Events.UIEvent.Mdt);
     }
 
     /// <inheritdoc />
     public void OpenInformation()
     {
-        this._uiManagerService.Show(Events.NuiEventType.Information, string.Empty);
+        this._uiManagerService.Show(Events.UIEvent.Information, string.Empty);
     }
 
     /// <inheritdoc />
@@ -176,7 +176,7 @@ internal class UIService : IUIService, IServiceWithEvents
             return;
         }
 
-        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuUp + "\"}");
+        this._uiManagerService.SendMessage("{\"Event\": \"" + Events.UIEvent.MenuUp + "\"}");
     }
 
     /// <inheritdoc />
@@ -188,7 +188,7 @@ internal class UIService : IUIService, IServiceWithEvents
             return;
         }
 
-        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuDown + "\"}");
+        this._uiManagerService.SendMessage("{\"Event\": \"" + Events.UIEvent.MenuDown + "\"}");
     }
 
     /// <inheritdoc />
@@ -200,7 +200,7 @@ internal class UIService : IUIService, IServiceWithEvents
             return;
         }
 
-        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuLeft + "\"}");
+        this._uiManagerService.SendMessage("{\"Event\": \"" + Events.UIEvent.MenuLeft + "\"}");
     }
 
     /// <inheritdoc />
@@ -212,7 +212,7 @@ internal class UIService : IUIService, IServiceWithEvents
             return;
         }
 
-        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuRight + "\"}");
+        this._uiManagerService.SendMessage("{\"Event\": \"" + Events.UIEvent.MenuRight + "\"}");
     }
 
     /// <inheritdoc />
@@ -224,7 +224,7 @@ internal class UIService : IUIService, IServiceWithEvents
             return;
         }
 
-        this._uiManagerService.SendMessage("{\"type\": \"" + Events.NuiEventType.MenuSelect + "\"}");
+        this._uiManagerService.SendMessage("{\"Event\": \"" + Events.UIEvent.MenuSelect + "\"}");
     }
 
     /// <inheritdoc />
@@ -233,7 +233,7 @@ internal class UIService : IUIService, IServiceWithEvents
         // Centers cursor
         Cfx.API.SetCursorLocation(0.5f, 0.5f);
 
-        this._uiManagerService.Show(Events.NuiEventType.RadialMenu, menuId);
+        this._uiManagerService.Show(Events.UIEvent.RadialMenu, menuId);
     }
 
     private void RegisterUIEvents(string[] events)

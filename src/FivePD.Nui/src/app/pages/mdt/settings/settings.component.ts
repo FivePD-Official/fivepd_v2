@@ -5,7 +5,7 @@ import { filter, switchMap } from 'rxjs';
 import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 import { LocalizationService } from '@services/localization/localization.service';
-import { DefaultSetId, NuiEventType } from '@enums';
+import { DefaultSetId } from '@enums';
 import { Store } from '@ngrx/store';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { GlobalState } from '@store';
@@ -204,7 +204,7 @@ export class SettingsComponent {
       this.getSettings();
     });
 
-    _eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+    _eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').pipe(takeUntilDestroyed()).subscribe(() => {
       this.getSettings();
     });
   }

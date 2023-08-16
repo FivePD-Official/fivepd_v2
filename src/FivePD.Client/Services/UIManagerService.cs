@@ -39,7 +39,7 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
     {
         // Listens for NUI status checks
         this._eventHandlerDictionary.AddUIEvent(
-            Events.NuiEventType.ClientReady,
+            Events.UIEvent.ClientReady,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) =>
             {
                 this._loggerService.Info("FivePD UI is ready");
@@ -77,7 +77,7 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
             return;
         }
 
-        if (type == Events.NuiEventType.Mdt)
+        if (type == Events.UIEvent.Mdt)
         {
             if (this._mdtOpen)
             {
@@ -91,8 +91,8 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
                 this._mdtOpen = true;
                 this.SendMessage(new JObject
                 {
-                    { "type", type },
-                    { "menuId", string.Empty },
+                    { "Event", type },
+                    { "MenuId", string.Empty },
                 });
                 Cfx.API.SetNuiFocus(true, true);
             }
@@ -100,7 +100,7 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
             return;
         }
 
-        if (type == Events.NuiEventType.MenuView)
+        if (type == Events.UIEvent.MenuView)
         {
             if (this.MenuOpen)
             {
@@ -108,8 +108,8 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
                 this.MenuOpen = false;
                 this.SendMessage(new JObject
                 {
-                    { "type", type },
-                    { "menuId", string.Empty },
+                    { "Event", type },
+                    { "MenuId", string.Empty },
                 });
             }
             else
@@ -118,8 +118,8 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
                 this.MenuOpen = true;
                 this.SendMessage(new JObject
                 {
-                    { "type", type },
-                    { "menuId", menuId },
+                    { "Event", type },
+                    { "MenuId", menuId },
                 });
             }
 
@@ -128,7 +128,7 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
             return;
         }
 
-        if (type == Events.NuiEventType.Information)
+        if (type == Events.UIEvent.Information)
         {
             if (this._informationOpen)
             {
@@ -144,8 +144,8 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
             Cfx.API.SetNuiFocus(false, false);
             this.SendMessage(new JObject
             {
-                { "type", type },
-                { "menuId", string.Empty },
+                { "Event", type },
+                { "MenuId", string.Empty },
             });
         }
     }
@@ -164,8 +164,8 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
         Cfx.API.SetNuiFocus(false, false);
         this.SendMessage(new JObject
         {
-            { "type", Events.NuiEventType.MenuView },
-            { "menuId", string.Empty },
+            { "Event", Events.UIEvent.MenuView },
+            { "MenuId", string.Empty },
         });
     }
 
@@ -182,10 +182,10 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
         Cfx.API.SetNuiFocus(false, false);
         this.SendMessage(new JObject
         {
-            { "type", Events.NuiEventType.TimerBar },
-            { "show", true },
-            { "title", "test" },
-            { "timeToHold", timeToHoldInMs },
+            { "Event", Events.UIEvent.TimerBar },
+            { "Show", true },
+            { "Title", "test" },
+            { "TimeToHold", timeToHoldInMs },
         });
     }
 }

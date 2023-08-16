@@ -59,7 +59,7 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
                     players.AddRange(peds);
                     this._uiManagerService.SendMessage(new JObject
                     {
-                        { "type", Events.UI.Dispatch.UpdatePlayers },
+                        { "Event", Events.UI.Dispatch.UpdatePlayers },
                         { "Players", JArray.FromObject(players) }
                     });
                 }, 5000);
@@ -117,7 +117,7 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
     {
         this._uiManagerService.SendMessage(new JObject
         {
-            { "type", Events.Dispatch.RemoveCalloutFromDispatcher },
+            { "Event", Events.Dispatch.RemoveCalloutFromDispatcher },
             { "CalloutId", calloutId },
         });
     }
@@ -133,8 +133,8 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
     {
         this._uiManagerService.SendMessage(new JObject
         {
+            { "Event", Events.Dispatch.OnUnitRemoved },
             { "Callsign", unitCallsign },
-            { "type", Events.Dispatch.OnUnitRemoved },
         });
     }
 }

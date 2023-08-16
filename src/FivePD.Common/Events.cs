@@ -55,37 +55,37 @@ internal readonly record struct Events
         public const string GetLocalizationFromNui = "fivepd:localization:getLocalizationFromNui";
     }
 
-    public readonly record struct NuiEventType
+    public readonly record struct UIEvent
     {
-        public const string ClientReady = "ready";
+        public const string ClientReady = "fivepd:ui:ready";
 
-        public const string Close = "close";
+        public const string Close = "fivepd:ui:close";
 
-        public const string Mdt = "view:mdt";
+        public const string Mdt = "fivepd:ui:view:mdt";
 
-        public const string Information = "view:information";
+        public const string Information = "fivepd:ui:view:information";
 
-        public const string MenuView = "view:menu";
+        public const string MenuView = "fivepd:ui:view:menu";
 
-        public const string RadialMenu = "view:radial_menu";
+        public const string RadialMenu = "fivepd:ui:view:radialMenu";
 
-        public const string TimerBar = "view:timer_bar";
+        public const string TimerBar = "fivepd:ui:view:timer_bar";
 
-        public const string MenuUp = "menu:control_up";
+        public const string MenuUp = "fivepd:menu:control_up";
 
-        public const string MenuDown = "menu:control_down";
+        public const string MenuDown = "fivepd:menu:control_down";
 
-        public const string MenuLeft = "menu:control_left";
+        public const string MenuLeft = "fivepd:menu:control_left";
 
-        public const string MenuRight = "menu:control_right";
+        public const string MenuRight = "fivepd:menu:control_right";
 
-        public const string MenuSelect = "menu:control_select";
+        public const string MenuSelect = "fivepd:menu:control_select";
 
-        public const string RadialMenuControl = "radial_menu:control";
+        public const string RadialMenuControl = "fivepd:radialMenu:control";
 
-        public const string PlaySound = "sound:play";
+        public const string PlaySound = "fivepd:sound:play";
 
-        public const string Speak = "sound:speak";
+        public const string Speak = "fivepd:sound:speak";
     }
 
     public readonly record struct UI

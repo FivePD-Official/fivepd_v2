@@ -4,24 +4,22 @@ import {
   ElementRef,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
-  QueryList, SimpleChanges,
+  QueryList,
+  SimpleChanges,
   ViewChildren
 } from '@angular/core';
-import { MenuItemType, NuiEventType } from '@enums';
+import { MenuItemType } from '@enums';
 import { BaseNuiEvent, Menu, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
-import { ActivatedRoute } from '@angular/router';
-import { MenuService } from '@services/menu/menu.service';
 import { EventService } from '@services/event/event.service';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.sass']
 })
-export class MenuComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input() menu!: Menu;
 
@@ -30,42 +28,30 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   menuContainer: HTMLElement | null = null;
   selectorNode: HTMLElement | null = null;
   menuItems: MenuItem[] = [];
-  controlEvent$: Subscription | null = null;
 
   @ViewChildren('item') items!: QueryList<ElementRef<HTMLDivElement>>;
 
   constructor(
-    private _route: ActivatedRoute,
-    private _menuService: MenuService,
     private _event: EventService,
   ) {
+    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_up')
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.onMenuUp());
+    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_down')
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.onMenuDown());
+    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_left')
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.onMenuLeft());
+    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_right')
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.onMenuRight());
+    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_select')
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.onMenuSelect());
   }
 
   ngOnInit(): void {
-    this.controlEvent$ = this._event.onEvent<BaseNuiEvent>(NuiEventType.MenuUp, NuiEventType.MenuDown, NuiEventType.MenuLeft, NuiEventType.MenuRight, NuiEventType.MenuSelect).subscribe(event => {
-      switch (event.type) {
-        case NuiEventType.MenuUp: {
-          this.onMenuUp();
-          break;
-        }
-        case NuiEventType.MenuDown: {
-          this.onMenuDown();
-          break;
-        }
-        case NuiEventType.MenuLeft: {
-          this.onMenuLeft();
-          break;
-        }
-        case NuiEventType.MenuRight: {
-          this.onMenuRight();
-          break;
-        }
-        case NuiEventType.MenuSelect: {
-          this.onMenuSelect();
-          break;
-        }
-      }
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -84,17 +70,13 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     if (this.items) {
       const currentItemNode = this.items.get(this.currentItemIndex);
-      currentItemNode?.nativeElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+      currentItemNode?.nativeElement.scrollIntoView({behavior: 'auto', block: 'nearest'});
     }
   }
 
   ngAfterViewInit(): void {
     this.menuContainer = document.querySelector('.menu-items');
     this.selectorNode = document.querySelector('#selector');
-  }
-
-  ngOnDestroy(): void {
-    this.controlEvent$?.unsubscribe();
   }
 
   public get MenuItemType() {
@@ -120,7 +102,10 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     const currentItemNode = this.items.get(this.currentItemIndex);
     this.selectorNode.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
-    currentItemNode?.nativeElement.scrollIntoView({ behavior: previousIndex === 0 ? 'auto' : 'smooth', block: 'nearest' });
+    currentItemNode?.nativeElement.scrollIntoView({
+      behavior: previousIndex === 0 ? 'auto' : 'smooth',
+      block: 'nearest'
+    });
   }
 
   onMenuDown(): void {
@@ -145,19 +130,22 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     const currentItemNode = this.items.get(this.currentItemIndex);
     this.selectorNode.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
-    currentItemNode?.nativeElement.scrollIntoView({ behavior: previousIndex > this.currentItemIndex ? 'auto' : 'smooth', block: 'nearest' });
+    currentItemNode?.nativeElement.scrollIntoView({
+      behavior: previousIndex > this.currentItemIndex ? 'auto' : 'smooth',
+      block: 'nearest'
+    });
   }
 
   onMenuLeft(): void {
-    this.onListSlide(NuiEventType.MenuLeft);
+    this.onListSlide('left');
   }
 
   onMenuRight(): void {
-    this.onListSlide(NuiEventType.MenuRight);
+    this.onListSlide('right');
   }
 
   onMenuSelect() {
-    if (!this.selectorNode || !this.items?.length|| !this.menuItems) {
+    if (!this.selectorNode || !this.items?.length || !this.menuItems) {
       return;
     }
 
@@ -191,7 +179,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     }
   }
 
-  onListSlide(dir: string): void {
+  onListSlide(dir: 'left' | 'right'): void {
     if (!this.selectorNode || !this.items?.length || !this.menuItems) {
       return;
     }
@@ -205,13 +193,13 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     const leftArrow = currentItemNode?.nativeElement.querySelector('.left-arrow');
     const rightArrow = currentItemNode?.nativeElement.querySelector('.right-arrow');
 
-    const arrow = dir === NuiEventType.MenuLeft ? leftArrow : rightArrow;
+    const arrow = dir === 'left' ? leftArrow : rightArrow;
     arrow!.classList.add('on-press');
     setTimeout(() => {
       arrow!.classList.remove('on-press');
     }, 100);
 
-    if (dir === NuiEventType.MenuLeft) {
+    if (dir === 'left') {
       currentItem.prev();
     } else {
       currentItem.next();

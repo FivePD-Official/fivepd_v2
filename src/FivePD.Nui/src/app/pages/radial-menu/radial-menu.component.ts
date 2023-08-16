@@ -2,14 +2,13 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { Subscription } from 'rxjs';
 import { MenuShowEvent, RadialMenu, RadialMenuControlEvent } from '@models';
 import { EventService } from '@services/event/event.service';
-import { NuiEventType } from '@enums';
 import { ActivatedRoute } from '@angular/router';
 import { MenuService } from '@services/menu/menu.service';
 import { HttpClient } from '@angular/common/http';
 
 interface MousePosition {
-  x: number;
-  y: number;
+  X: number;
+  Y: number;
 }
 
 @Component({
@@ -26,8 +25,8 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
 
   selectedMenu: RadialMenu | null = null;
   selectedItemIndex: number = -1;
-  currentMousePosition: MousePosition = { x: 0, y: 0 };
-  lastMousePosition: MousePosition = { x: 0, y: 0 };
+  currentMousePosition: MousePosition = { X: 0, Y: 0 };
+  lastMousePosition: MousePosition = { X: 0, Y: 0 };
   lastSelectAngle: number = -1;
 
   constructor(
@@ -41,20 +40,20 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
     this.findSelectedMenu(this._route.snapshot.params['id']);
     this.drawCanvas();
 
-    this.menuShowEvent$ = this._event.onEvent<MenuShowEvent>(NuiEventType.RadialMenu).subscribe(event => {
+    this.menuShowEvent$ = this._event.onEvent<MenuShowEvent>('fivepd:ui:view:radialMenu').subscribe(event => {
       this.resetValues();
-      this.findSelectedMenu(event.menuId);
+      this.findSelectedMenu(event.MenuId);
       this.drawCanvas();
     });
 
-    this.menuControlEvent$ = this._event.onEvent<RadialMenuControlEvent>(NuiEventType.RadialMenuControl).subscribe(event => {
-      const { x, y, control } = event;
-      if (control === 'up' || control === 'down') {
-        if (x && y) {
-          this.currentMousePosition = { x, y };
+    this.menuControlEvent$ = this._event.onEvent<RadialMenuControlEvent>('fivepd:radialMenu:control').subscribe(event => {
+      const { X, Y, Control } = event;
+      if (Control === 'up' || Control === 'down') {
+        if (X && Y) {
+          this.currentMousePosition = { X: X, Y: Y };
           this.onMouseMove();
         }
-      } else if (control === 'select') {
+      } else if (Control === 'select') {
         if (this.selectedItemIndex !== -1) {
           this._http.post(`fivepd:radialMenu:trigger_item_${this.selectedMenu?.Items[this.selectedItemIndex].Hashcode}`, {}).subscribe();
           this.resetValues();
@@ -71,8 +70,8 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
   resetValues(): void {
     this.lastSelectAngle = -1;
     this.selectedItemIndex = -1;
-    this.currentMousePosition = { x: 0, y: 0 };
-    this.lastMousePosition = { x: 0, y: 0 };
+    this.currentMousePosition = { X: 0, Y: 0 };
+    this.lastMousePosition = { X: 0, Y: 0 };
   }
 
   findSelectedMenu(id: string): void {
@@ -81,8 +80,8 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
 
   onMouseMove(): void {
     // Compute the change from last time around
-    const deltaX = this.currentMousePosition.x - this.lastMousePosition.x;
-    const deltaY = this.currentMousePosition.y - this.lastMousePosition.y;
+    const deltaX = this.currentMousePosition.X - this.lastMousePosition.X;
+    const deltaY = this.currentMousePosition.Y - this.lastMousePosition.Y;
 
     // Take the inverse tangent of the movement
     let angle = Math.atan2(deltaY, deltaX);

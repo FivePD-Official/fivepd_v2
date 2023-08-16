@@ -25,8 +25,8 @@ internal class SoundService : ISoundService
     {
         this._uiService.SendMessage(new JObject
         {
-            { "type", Events.NuiEventType.PlaySound },
-            { "sound", sound.GetDescription() },
+            { "Event", Events.UIEvent.PlaySound },
+            { "Sound", sound.GetDescription() },
         });
     }
 
@@ -35,8 +35,8 @@ internal class SoundService : ISoundService
     {
         this._uiService.SendMessage(new JObject
         {
-            { "type", Events.NuiEventType.Speak },
-            { "textToPlay", text },
+            { "Event", Events.UIEvent.Speak },
+            { "TextToPlay", text },
         });
     }
 }

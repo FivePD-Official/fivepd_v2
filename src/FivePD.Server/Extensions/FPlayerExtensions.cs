@@ -17,7 +17,7 @@ internal static class FPlayerExtensions
     /// <param name="data">The data to send..</param>
     public static void TriggerEvent(this FPlayer player, string eventName, JObject data)
     {
-        data["type"] = eventName;
+        data["Event"] = eventName;
         player.GetUnderlyingPlayer().TriggerEvent(eventName, JsonConvert.SerializeObject(data));
     }
 }

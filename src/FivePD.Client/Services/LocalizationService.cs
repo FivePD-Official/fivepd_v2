@@ -50,8 +50,8 @@ internal class LocalizationService : ILocalizationService, IServiceWithEvents
             this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
             Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
             {
-                { "type", Events.UI.Player.LocalizationChange },
-                { "data", localization },
+                { "Event", Events.UI.Player.LocalizationChange },
+                { "Data", localization },
             }));
         });
 
@@ -70,8 +70,8 @@ internal class LocalizationService : ILocalizationService, IServiceWithEvents
                 this.LocalizationChanged?.Invoke(this, locale);
                 Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
                 {
-                    { "type", Events.UI.Player.LocalizationChange },
-                    { "data", localization },
+                    { "Event", Events.UI.Player.LocalizationChange },
+                    { "Data", localization },
                 }));
             }));
     }

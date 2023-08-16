@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { filter, Observable, ReplaySubject } from 'rxjs';
-import { BaseNuiEvent, User } from '@models';
-import { NuiEventType } from '@enums';
+import { BaseNuiEvent } from '@models';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -23,7 +22,7 @@ export class EventService {
     if (!this.hadFirstEvent) {
       this.hadFirstEvent = true;
       document.body.style.display = 'none';
-      this._http.post(NuiEventType.Close, {}).subscribe();
+      this._http.post('fivepd:ui:close', {}).subscribe();
     }
 
     if (!environment.production) {
@@ -33,10 +32,10 @@ export class EventService {
     this._events$.next(data);
   }
 
-  onEvent<T>(...events: NuiEventType[]): Observable<T> {
+  onEvent<T>(...events: string[]): Observable<T> {
     return this._events$
       .pipe(
-        filter((event: BaseNuiEvent) => (events as string[]).includes(event.type))
+        filter((event: BaseNuiEvent) => (events as string[]).includes(event.Event))
       ) as any as Observable<T>;
   }
 }

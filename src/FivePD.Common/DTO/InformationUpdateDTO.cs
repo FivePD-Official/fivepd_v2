@@ -7,7 +7,7 @@ namespace FivePD.Client.DTO;
 
 internal sealed record InformationUpdateDTO
 {
-    public readonly string type = "information:update";
+    public readonly string Event = "fivepd:ui:information:update";
 
     public string Status { get; set; }
 

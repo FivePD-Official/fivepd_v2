@@ -1,6 +1,5 @@
 import { Injectable, SecurityContext } from '@angular/core';
 import { LocalizationChangeEvent } from '@models';
-import { NuiEventType } from '@enums';
 import { HttpClient } from '@angular/common/http';
 import { EventService } from '@services/event/event.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -19,8 +18,8 @@ export class LocalizationService {
     private _event: EventService,
     private sanitizer: DomSanitizer,
   ) {
-    this._event.onEvent<LocalizationChangeEvent>(NuiEventType.LocalizationChange).subscribe(localization => {
-      this.set(JSON.parse(localization.data))
+    this._event.onEvent<LocalizationChangeEvent>('fivepd:player:localizationChange').subscribe(localization => {
+      this.set(JSON.parse(localization.Data))
     });
   }
 

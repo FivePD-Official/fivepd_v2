@@ -13,7 +13,7 @@ export interface NameTakenResponse {
 }
 
 export interface BaseNuiEvent {
-  type: string;
+  Event: string;
 }
 
 export interface GetAllMenusResponse extends BaseNuiEvent {
@@ -43,37 +43,37 @@ export interface RadialMenuObjectsEvent extends BaseNuiEvent {
 }
 
 export interface LocalizationChangeEvent extends BaseNuiEvent {
-  data: string;
+  Data: string;
 }
 
 export interface MenuShowEvent extends BaseNuiEvent {
-  menuId: string;
+  MenuId: string;
 }
 
 export interface RadialMenuControlEvent extends BaseNuiEvent {
-  control: 'select' | 'up' | 'down';
-  x?: number;
-  y: number;
+  Control: 'select' | 'up' | 'down';
+  X?: number;
+  Y: number;
 }
 
 export interface UpdateMenuItemEvent extends BaseNuiEvent {
-  hashcode: string;
-  property: string;
-  value: any;
+  Hashcode: string;
+  Property: string;
+  Value: any;
 }
 
 export interface SoundEvent extends BaseNuiEvent {
-  sound: string;
+  Sound: string;
 }
 
 export interface SoundSpeakEvent extends BaseNuiEvent {
-  textToPlay: string;
+  TextToPlay: string;
 }
 
 export interface TimerBarEvent extends BaseNuiEvent {
-  show: boolean;
-  title: string;
-  timeToHold: number;
+  Show: boolean;
+  Title: string;
+  TimeToHold: number;
 }
 
 export interface SimplePlayerDTO {

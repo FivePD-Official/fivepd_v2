@@ -32,7 +32,6 @@ import { CustomValidators } from '../../../../helpers/validators';
 import { ModalService } from '@services/modals/modal/modal.service';
 import { Store } from '@ngrx/store';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NuiEventType } from "@enums";
 import { EventService } from "@services/event/event.service";
 import { ConfigService } from "@services/config/config.service";
 
@@ -257,7 +256,7 @@ export class DepartmentsViewComponent implements OnInit {
       this.getDepartment();
     });
 
-    _eventService.onEvent<BaseNuiEvent>(NuiEventType.Mdt).subscribe(() => {
+    _eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').pipe(takeUntilDestroyed()).subscribe(() => {
       this.getDepartment();
     });
   }
