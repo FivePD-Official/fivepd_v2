@@ -3,10 +3,12 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.DTO;
+using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.ConfigModels;
+using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using Newtonsoft.Json;
@@ -26,7 +28,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
     private readonly InformationUpdateDTO _information = new();
     private GeneralConfig _generalConfig = new()
     {
-        FeatureFlags = new()
+        FeatureFlags = new FeatureFlagsConfig
         {
             DiscordRichPresence = true,
             DutyNotification = false,
@@ -78,6 +80,12 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
         this._tickService.OnTick += this.OnTickAsync;
         this._eventHandlerDictionary[Events.Player.UpdateUnitAvailability] += new Action<int>(availability => this.ListenForAvailabilityStatusChanges((FUnitAvailability)availability));
         this._eventHandlerDictionary[Events.Player.UpdateUnitStatus] += new Action<string>(this.ListenForStatusChanges);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.GetDetails);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeDivision);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeRank);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.GetAllPageable);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeRole);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeFixedRank);
     }
 
     /// <inheritdoc/>

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Dynamic;
-using System.Linq;
 using CitizenFX.Core;
 using FivePD.Client.Attributes;
-using FivePD.Client.DTO;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
-using FivePD.Client.Models;
 using FivePD.Client.Utilities;
 using FivePD.Common;
 using Newtonsoft.Json;
@@ -56,10 +53,6 @@ internal class UIService : IUIService, IServiceWithEvents
             }));
 
         this._eventHandlerDictionary.AddUIEvent(
-            Events.DevTools.GetCurrentPlayerCoordinate,
-            new Action<ExpandoObject, CallbackDelegate>((body, cb) => { cb.Invoke(JsonConvert.SerializeObject(Game.PlayerPed.Position)); }));
-
-        this._eventHandlerDictionary.AddUIEvent(
             Events.UI.Config.GetGeneralConfig,
             new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
             {
@@ -80,79 +73,6 @@ internal class UIService : IUIService, IServiceWithEvents
                     ["SafeZoneSize"] = Cfx.API.GetSafeZoneSize(),
                 }));
             }));
-
-        this._eventHandlerDictionary.AddUIToServerEventOverrideData(
-            Events.Callout.GetAllActiveUI,
-            serverResponse =>
-            {
-                var callouts = JsonConvert.DeserializeObject<Page<CalloutDTO.CalloutToClientDTO>>(serverResponse);
-                var newCallouts = callouts.Items.Select(callout => new CalloutDTO.CalloutToUIDTO
-                    {
-                        Title = callout.Title,
-                        Description = callout.Description,
-                        Units = callout.Units,
-                        Address = callout.Location.GetStreetName(),
-                    })
-                    .ToList();
-                var newPage = new Page<CalloutDTO.CalloutToUIDTO>
-                {
-                    Items = newCallouts,
-                    CurrentPage = 1,
-                    ItemCount = newCallouts.Count,
-                    PageCount = 1,
-                    PageSize = newCallouts.Count,
-                };
-
-                return JsonConvert.SerializeObject(newPage);
-            });
-
-        this.RegisterUIEvents(new[]
-        {
-            Events.DevTools.DeleteEntities,
-            Events.UI.Department.List,
-            Events.UI.Department.List,
-            Events.UI.Department.GetById,
-            Events.UI.Department.GetUsers,
-            Events.UI.Department.GetRank,
-            Events.UI.Department.GetRanks,
-            Events.UI.Department.GetDivision,
-            Events.UI.Department.GetDivisions,
-            Events.UI.Department.DeleteDivision,
-            Events.UI.Department.EditDivision,
-            Events.UI.Department.CreateDivision,
-            Events.UI.Department.DeleteRank,
-            Events.UI.Department.EditRank,
-            Events.UI.Department.CreateRank,
-            Events.UI.Department.Join,
-            Events.UI.Department.Leave,
-            Events.UI.Department.Edit,
-            Events.UI.Department.Delete,
-            Events.UI.Department.Create,
-            Events.UI.Department.CheckIfDepartmentNameTaken,
-            Events.UI.Player.GetDetails,
-            Events.UI.Player.ChangeDivision,
-            Events.UI.Player.ChangeRank,
-            Events.UI.Player.GetAllPageable,
-            Events.UI.Player.ChangeRole,
-            Events.UI.Player.ChangeFixedRank,
-            Events.UI.LooseData.GetEntity,
-            Events.UI.LooseData.GetEntities,
-            Events.UI.LooseData.AddEntity,
-            Events.UI.LooseData.EditEntity,
-            Events.UI.LooseData.DeleteEntity,
-            Events.UI.LooseData.GetSetAttribute,
-            Events.UI.LooseData.GetSetAttributes,
-            Events.UI.LooseData.GetSetAttributesPageable,
-            Events.UI.LooseData.AddSetAttribute,
-            Events.UI.LooseData.EditSetAttribute,
-            Events.UI.LooseData.DeleteSetAttribute,
-            Events.UI.Unit.GetAll,
-            Events.UI.Unit.Join,
-            Events.UI.Unit.RequestToJoin,
-            Events.UI.Unit.Leave,
-            Events.UI.Callout.GetAllTypes,
-            Events.UI.Callout.Dispatch,
-        });
     }
 
     /// <inheritdoc />
@@ -234,13 +154,5 @@ internal class UIService : IUIService, IServiceWithEvents
         Cfx.API.SetCursorLocation(0.5f, 0.5f);
 
         this._uiManagerService.Show(Events.UIEvent.RadialMenu, menuId);
-    }
-
-    private void RegisterUIEvents(string[] events)
-    {
-        foreach (var e in events)
-        {
-            this._eventHandlerDictionary.AddUIToServerEvent(e);
-        }
     }
 }

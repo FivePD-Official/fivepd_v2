@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Dynamic;
+using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
@@ -44,6 +47,33 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
         this._eventHandlerDictionary.AddUIEvent(
             Events.UI.Callout.GetActive,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this._currentCallout)); }));
+
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Callout.GetAllTypes);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Callout.Dispatch);
+        this._eventHandlerDictionary.AddUIToServerEventOverrideData(
+            Events.Callout.GetAllActiveUI,
+            serverResponse =>
+            {
+                var callouts = JsonConvert.DeserializeObject<Page<CalloutDTO.CalloutToClientDTO>>(serverResponse);
+                var newCallouts = callouts.Items.Select(callout => new CalloutDTO.CalloutToUIDTO
+                    {
+                        Title = callout.Title,
+                        Description = callout.Description,
+                        Units = callout.Units,
+                        Address = callout.Location.GetStreetName(),
+                    })
+                    .ToList();
+                var newPage = new Page<CalloutDTO.CalloutToUIDTO>
+                {
+                    Items = newCallouts,
+                    CurrentPage = 1,
+                    ItemCount = newCallouts.Count,
+                    PageCount = 1,
+                    PageSize = newCallouts.Count,
+                };
+
+                return JsonConvert.SerializeObject(newPage);
+            });
     }
 
     private void OnAccepted(string serializedCallout)

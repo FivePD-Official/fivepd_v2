@@ -158,6 +158,7 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<DevToolsService>()
             .As<IDevToolsService>()
+            .As<IServiceWithEvents>()
             .IsSingleton();
 
         services
@@ -265,6 +266,24 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<DispatchService>()
             .As<IDispatchService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
+
+        services
+            .RegisterType<DepartmentService>()
+            .As<IDepartmentService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
+
+        services
+            .RegisterType<LooseDataService>()
+            .As<ILooseDataService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
+
+        services
+            .RegisterType<UnitService>()
+            .As<IUnitService>()
             .As<IServiceWithEvents>()
             .IsSingleton();
 
