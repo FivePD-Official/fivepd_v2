@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common.Enums;
-using FivePD.Server.API;
 using FivePD.Server.Database;
-using FivePD.Server.EntityWrappers;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
-using FivePD.Server.Models;
 using FivePD.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +31,6 @@ internal class Bootstrapper : BaseScript
     private ServiceProvider _provider;
 
     private bool _isStopped;
-    private Dictionary<Assembly, AddonDefinition> _assembliesWithDefinitions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
@@ -67,11 +61,11 @@ internal class Bootstrapper : BaseScript
         // Enqueue pre-bootstrap phase.
         this._phases.Add(this.PerformPreBootstrapPhase, false);
 
-        // Enqueue addon location phase.
-        this._phases.Add(this.PerformAddonLocationPhase, false);
-
         // Enqueue service location phase.
         this._phases.Add(this.PerformServiceLocationPhase, false);
+
+        // Enqueue addon location phase.
+        this._phases.Add(this.PerformAddonLocationPhase, false);
 
         // Enqueue post-bootstrap phase.
         this._phases.Add(this.PerformPostBootstrapPhase, false);
@@ -178,46 +172,17 @@ internal class Bootstrapper : BaseScript
     }
 
     /// <summary>
-    /// Locates addons and their definitions.
-    /// </summary>
-    private void PerformAddonLocationPhase()
-    {
-        // Addons have full(ish) access to the complete suite of services
-        // made available to core services. Thus, we need to find our addons
-        // prior to actually assembling a service this._provider. The addon locator takes one
-        // parameter, a logger, so we create it early.
-        this._bootstrapLogger.Information(
-            "Bootstrapping server version {@Version}",
-            Assembly.GetExecutingAssembly().GetName().Version.ToString());
-
-        var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
-
-        this._assembliesWithDefinitions = new Dictionary<Assembly, AddonDefinition>();
-
-        var allAddons = addonLocator.GetAddons().ToList();
-
-        // Load addon assemblies
-        foreach (var addon in allAddons)
-        {
-            this._bootstrapLogger.Information(
-                "Registering addon \"{@AddonName}\" version {@AddonVersion}",
-                addon.FriendlyName,
-                addon.FriendlyVersion);
-
-            foreach (var assembly in addon.Assemblies)
-            {
-                var asm = Assembly.Load(assembly);
-                this._assembliesWithDefinitions.Add(asm, addon);
-            }
-        }
-    }
-#pragma warning disable
-
-    /// <summary>
     /// Locates and registers services.
     /// </summary>
     private void PerformServiceLocationPhase()
     {
+        #pragma warning disable
+        // TODO 
+        // this._bootstrapLogger.Information(
+        //     "Bootstrapping server version {@Version}",
+        //     Assembly.GetExecutingAssembly().GetName().Version.ToString());
+        #pragma warning restore
+
         var services = new ServiceCollection();
 
         // Find and register core services
@@ -226,7 +191,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton(this.Players);
         services.AddDbContext<DatabaseContext>();
 
-        services.AddSingleton<IAddonMetadataService, AddonMetadataService>();
+        services.AddSingleton<AddonMetadataService>();
+        services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
         services.AddTransient<IAddonLoggerService, AddonLoggerService>();
         services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
         services.AddSingleton<IAddonFileHandlerService, AddonFileHandlerService>();
@@ -318,23 +285,29 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IInternalDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DispatchService>());
 
-        // Find and register addons
-        services.Scan(scan => scan
-            .FromAssemblies(this._assembliesWithDefinitions.Keys)
-            .AddClasses(classes => classes.AssignableTo<IAddon>())
-            .AsSelfWithInterfaces()
-            .WithSingletonLifetime());
-
-        // Find and register callouts
-        var s = services.Scan(scan => scan
-            .FromAssemblies(this._assembliesWithDefinitions.Keys)
-            .AddClasses(classes => classes.Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(typeof(Callout))))
-            .As<Callout>()
-            .AsSelf());
-
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);
+    }
+
+    /// <summary>
+    /// Locates addons and their definitions.
+    /// </summary>
+    private void PerformAddonLocationPhase()
+    {
+        var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "AddonLocator");
+        if (this._provider is null)
+        {
+            log?.Fatal("The service provider must be initialized prior to locating addons.");
+            this.OnStopped();
+            return;
+        }
+
+        var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
+        var addonDefinitions = addonLocator.GetAddons().ToList();
+        var addonContainerService = this._provider.GetService<IAddonMetadataService>();
+        addonContainerService.LoadAssemblies(addonDefinitions);
+        addonContainerService.FindAndRegisterAddons();
     }
 
     /// <summary>
@@ -342,12 +315,6 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     private void PerformPostBootstrapPhase()
     {
-        var addonMetadataService = this._provider.GetService<IAddonMetadataService>();
-        foreach (var assembly in this._assembliesWithDefinitions)
-        {
-            addonMetadataService?.RegisterAddonAssemblyWithDefinition(assembly.Key, assembly.Value);
-        }
-
         var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
 
         this.LogDiagnostics();
@@ -425,10 +392,10 @@ internal class Bootstrapper : BaseScript
         var tickQueueService = this._provider.GetService<ITickQueueService>();
 
         // Grab an instance of every addon entrypoint
-        foreach (var addon in this._provider.GetServices<IAddon>())
+        foreach (var extension in this._provider.GetService<IInternalAddonMetadataService>().Extensions)
         {
             // Lazy load it
-            tickQueueService.EnqueueAsync(() => addon.OnStartedAsync());
+            tickQueueService.EnqueueAsync(() => extension.OnStartedAsync());
         }
     }
 
@@ -451,9 +418,9 @@ internal class Bootstrapper : BaseScript
         log?.Debug("Running addon shutdown routine");
 
         // Grab an instance of every addon entrypoint and "stop" it
-        foreach (var addon in this._provider.GetServices<IAddon>())
+        foreach (var extension in this._provider.GetService<IInternalAddonMetadataService>().Extensions)
         {
-            addon.OnStoppedAsync();
+            extension.OnStoppedAsync();
         }
 
         log?.Debug("Addon shutdown complete. Running disposal routine");

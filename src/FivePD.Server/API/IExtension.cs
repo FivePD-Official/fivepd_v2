@@ -3,9 +3,9 @@
 namespace FivePD.Server.API;
 
 /// <summary>
-/// Represents a server-sided addon.
+/// Represents an extension.
 /// </summary>
-public interface IAddon
+public interface IExtension
 {
     /// <summary>
     /// Executed when the addon is loaded by the GAR.

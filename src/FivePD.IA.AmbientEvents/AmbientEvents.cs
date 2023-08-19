@@ -11,7 +11,7 @@ namespace FivePD.IA.AmbientEvents;
 
 #pragma warning disable
 
-public class AmbientEvents : IAddon
+public class AmbientEvents : IExtension
 {
     private readonly IAddonLoggerService _logger;
     private readonly IEntityService _entityService;

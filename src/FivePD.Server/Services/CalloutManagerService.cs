@@ -27,6 +27,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     private readonly IConfigService _configService;
     private readonly IInternalDispatchService _dispatchService;
     private readonly IInternalCalloutStoreService _calloutStoreService;
+    private readonly IAddonMetadataService _addonMetadataService;
 
     private readonly int _maxCalloutTimeout;
 
@@ -39,13 +40,15 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="internalDispatchService">The <see cref="IInternalDispatchService"/> to use.</param>
     /// <param name="calloutStoreService">The <see cref="ICalloutStoreService"/> to use.</param>
+    /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickQueueService tickQueueService,
         IProgressionSystemService progressionSystemService,
         IConfigService configService,
         IDispatchService internalDispatchService,
-        ICalloutStoreService calloutStoreService)
+        ICalloutStoreService calloutStoreService,
+        IAddonMetadataService addonMetadataService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickQueueService = tickQueueService;
@@ -53,6 +56,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         this._configService = configService;
         this._dispatchService = (IInternalDispatchService)internalDispatchService;
         this._calloutStoreService = (IInternalCalloutStoreService)calloutStoreService;
+        this._addonMetadataService = addonMetadataService;
 
         this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto()
             ? AutoDispatchCalloutTimeoutInMs
@@ -64,12 +68,6 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
 
     /// <inheritdoc/>
     List<CalloutHolder> IInternalCalloutManagerService.ActiveCallouts => this._calloutStoreService.ActiveCallouts;
-
-    /// <inheritdoc/>
-    List<Type> IInternalCalloutManagerService.CalloutTypes()
-    {
-        return this._calloutStoreService.CalloutTypes.Select(x => x.Type).ToList();
-    }
 
     /// <inheritdoc />
     public List<Callout> ActiveCallouts()
@@ -87,8 +85,6 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     public void RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Callout.OnPlayerEnteredInActivityZone] += new Action<Player, string>(this.OnPlayerEnteredInActivityZone);
-        this.RegisterCallouts();
-
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);
     }
 
@@ -96,16 +92,6 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     public void CompleteCalloutOfPlayer(FPlayer player)
     {
         this.CompleteCallout(this.GetPlayerCallout(player));
-    }
-
-    private void RegisterCallouts()
-    {
-        var callouts = (IEnumerable<Callout>)ServiceLocator.GetServices(typeof(Callout));
-        foreach (var callout in callouts)
-        {
-            var type = callout.GetType();
-            this._calloutStoreService.CalloutTypes.Add(new CalloutType(type, type.Assembly.GetName().Name));
-        }
     }
 
     private void CheckCallouts()
@@ -190,7 +176,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     [UIEvent(Events.UI.Callout.GetAllTypes)]
     private void GetAllCalloutTypesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var types = this._calloutStoreService.CalloutTypes.Select(x => new CalloutDTO.CalloutTypeToUIDTO
+        var types = ((IInternalAddonMetadataService)this._addonMetadataService).CalloutTypes.Select(x => new CalloutDTO.CalloutTypeToUIDTO
         {
             TypeName = x.Type.Name,
             AssemblyName = x.AssemblyName,

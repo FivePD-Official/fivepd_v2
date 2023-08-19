@@ -17,13 +17,14 @@ using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 using Serilog;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.ICalloutDistributionService" />
 internal class CalloutDistributionService : ICalloutDistributionService, IServiceWithEvents
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly ITickQueueService _tickQueueService;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
@@ -39,7 +40,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
     /// </summary>
-    /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
+    /// <param name="addonMetadataService">The <see cref="IInternalAddonMetadataService"/> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
@@ -49,7 +50,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="internalDispatchService">The <see cref="IInternalDispatchService"/> to use.</param>
     public CalloutDistributionService(
-        IServiceProvider serviceProvider,
+        IInternalAddonMetadataService addonMetadataService,
         ITickQueueService tickQueueService,
         IConfigService configService,
         IRandomService randomService,
@@ -59,7 +60,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         IUnitService unitService,
         IInternalDispatchService internalDispatchService)
     {
-        this._serviceProvider = serviceProvider;
+        this._addonMetadataService = addonMetadataService;
         this._tickQueueService = tickQueueService;
         this._configService = configService;
         this._randomService = randomService;
@@ -104,15 +105,15 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
             this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Restart();
 
-        var calloutTypes = this._calloutManagerService.CalloutTypes();
+        var calloutTypes = this._addonMetadataService.CalloutTypes;
         var calloutType = calloutTypes[this._randomService.Random.Next(0, calloutTypes.Count)];
-        await this.GenerateCalloutAsync(calloutType);
+        await this.GenerateCalloutAsync(calloutType.Type);
     }
 
     // TODO move to ICalloutGenerationService so IDispatchService can use this ICalloutDistributionService
     private async Task GenerateCalloutAsync(Type type, bool invokeCanBeDispatch = true)
     {
-        var callout = (Callout)this._serviceProvider.GetService(type);
+        var callout = this._addonMetadataService.InstantiateCallout(type);
         if (callout is null)
         {
             this._logger.Warning("A callout with the type of \"{Type}\" could not be instantiated.", type);
@@ -127,7 +128,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         callout.GeneratedAt = DateTime.Now;
         if (properties.RandomPriority)
         {
-            #pragma warning disable
+#pragma warning disable
             // TEST DISPATCH
             // callout.Priority = this._calloutManagerService.ActiveCallouts.Count switch
             // {
@@ -135,7 +136,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
             //     1 => FIncidentPriority.Code3,
             //     _ => FIncidentPriority.Code1
             // };
-            #pragma warning restore
+#pragma warning restore
             callout.Priority = (FIncidentPriority)this._randomService.Random.Next(0, 3);
         }
         else
@@ -224,9 +225,9 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                 }
 
                 unitAccepted = true;
-                unit.Availability.Value = FUnitAvailability.NotReceiving;
-                unit.Callout = new SimpleCallout(calloutHolder.Callout);
-                ((IInternalUnit)unit).InternalCallout = calloutHolder.Callout;
+                unit.Availability.Value = FUnitAvailability.NotReceiving; // TODO: add to DispatchService.AssignCalloutToUnitsUI
+                unit.Callout = new SimpleCallout(calloutHolder.Callout); // TODO: add to DispatchService.AssignCalloutToUnitsUI
+                ((IInternalUnit)unit).InternalCallout = calloutHolder.Callout; // TODO: add to DispatchService.AssignCalloutToUnitsUI
 
                 ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
                 calloutHolder.Callout.OnAccepted(unit); // TODO: this should not be called when a dispatcher assigns the callout, so when DispatchType = manual
@@ -236,6 +237,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                     Unit = unit,
                 });
 
+                // TODO: add to DispatchService.AssignCalloutToUnitsUI
                 foreach (var player in unit.Players)
                 {
                     player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
@@ -314,7 +316,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     private void DispatchCalloutUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<DispatchCalloutRequest>();
-        var calloutType = this._calloutManagerService.CalloutTypes().FirstOrDefault(x => x.Name == request.TypeName);
+        var calloutType = this._addonMetadataService.CalloutTypes.FirstOrDefault(x => x.Type.Name == request.TypeName);
         if (calloutType is null)
         {
             networkCallbackDelegate.Invoke(null);
@@ -322,7 +324,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         }
 
 #pragma warning disable CS4014
-        this.GenerateCalloutAsync(calloutType, false);
+        this.GenerateCalloutAsync(calloutType.Type, false);
 #pragma warning restore CS4014
 
         networkCallbackDelegate.Invoke(null);

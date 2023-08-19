@@ -10,7 +10,5 @@ public interface ICalloutStoreService
 
 internal interface IInternalCalloutStoreService
 {
-    public List<CalloutType> CalloutTypes { get; }
-
     public List<CalloutHolder> ActiveCallouts { get; }
 }

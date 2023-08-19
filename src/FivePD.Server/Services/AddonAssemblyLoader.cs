@@ -25,7 +25,7 @@ public class AddonAssemblyLoader : IAddonAssemblyLoader
     {
         var asm = Assembly.Load(assemblyBytes);
 
-        foreach (var type in asm.GetTypes().Where(x => typeof(IAddon).IsAssignableFrom(x)))
+        foreach (var type in asm.GetTypes().Where(x => typeof(IExtension).IsAssignableFrom(x)))
         {
             this._logger.Debug("Found class {@Type} that identified as an addon entrypoint", type.FullName);
         }
