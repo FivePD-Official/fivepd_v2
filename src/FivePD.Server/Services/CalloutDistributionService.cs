@@ -17,15 +17,17 @@ using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 using Serilog;
-using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services;
+
+#pragma warning disable CS4014
+#pragma warning disable S3241
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.ICalloutDistributionService" />
 internal class CalloutDistributionService : ICalloutDistributionService, IServiceWithEvents
 {
     private readonly IInternalAddonMetadataService _addonMetadataService;
-    private readonly ITickQueueService _tickQueueService;
+    private readonly IInternalTickQueueService _tickQueueService;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
     private readonly IConfirmationService _confirmationService;
@@ -41,7 +43,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
     /// </summary>
     /// <param name="addonMetadataService">The <see cref="IInternalAddonMetadataService"/> to use.</param>
-    /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
+    /// <param name="tickQueueService">The <see cref="IInternalTickQueueService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
@@ -51,7 +53,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
     /// <param name="internalDispatchService">The <see cref="IInternalDispatchService"/> to use.</param>
     public CalloutDistributionService(
         IInternalAddonMetadataService addonMetadataService,
-        ITickQueueService tickQueueService,
+        IInternalTickQueueService tickQueueService,
         IConfigService configService,
         IRandomService randomService,
         ILogger logger,
@@ -84,10 +86,10 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
             this._configService.GeneralConfig.Callout.MinIntervalInMs,
             this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Start();
-        this._tickQueueService.EnqueueInterval(this.GenerateCalloutAsync, 1000);
+        this._tickQueueService.OnTick += this.OnTick;
     }
 
-    private async Task GenerateCalloutAsync()
+    private void OnTick(object sender, EventArgs e)
     {
         if (this._configService.GeneralConfig.Callout.MaxActiveCallouts > 0 &&
             this._calloutManagerService.ActiveCallouts.Count >= this._configService.GeneralConfig.Callout.MaxActiveCallouts)
@@ -100,18 +102,23 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
             return;
         }
 
+        this.GenerateCallout();
+
         this._nextCalloutInMs = this._randomService.Random.Next(
             this._configService.GeneralConfig.Callout.MinIntervalInMs,
             this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Restart();
+    }
 
+    private void GenerateCallout()
+    {
         var calloutTypes = this._addonMetadataService.CalloutTypes;
         var calloutType = calloutTypes[this._randomService.Random.Next(0, calloutTypes.Count)];
-        await this.GenerateCalloutAsync(calloutType.Type);
+        this.GenerateCalloutOfTypeAsync(calloutType.Type);
     }
 
     // TODO move to ICalloutGenerationService so IDispatchService can use this ICalloutDistributionService
-    private async Task GenerateCalloutAsync(Type type, bool invokeCanBeDispatch = true)
+    private async Task GenerateCalloutOfTypeAsync(Type type, bool invokeCanBeDispatch = true)
     {
         var callout = this._addonMetadataService.InstantiateCallout(type);
         if (callout is null)
@@ -324,7 +331,7 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         }
 
 #pragma warning disable CS4014
-        this.GenerateCalloutAsync(calloutType.Type, false);
+        this.GenerateCalloutOfTypeAsync(calloutType.Type, false);
 #pragma warning restore CS4014
 
         networkCallbackDelegate.Invoke(null);

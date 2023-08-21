@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace FivePD.Server.Interfaces;
 
@@ -9,6 +10,11 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 internal interface IInternalTickQueueService
 {
+    /// <summary>
+    /// Triggers on every tick.
+    /// </summary>
+    event EventHandler OnTick;
+
     /// <summary>
     /// Works through the queue, executing
     /// tasks and returning their values.

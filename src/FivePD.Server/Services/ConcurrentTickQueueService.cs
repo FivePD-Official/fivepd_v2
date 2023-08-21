@@ -17,6 +17,15 @@ public class ConcurrentTickQueueService : ITickQueueService, IInternalTickQueueS
 
     private readonly ConcurrentDictionary<string, IntervalTask> _intervalTasks = new();
 
+    private readonly ConcurrentBag<EventHandler> _onTickActions = new();
+
+    /// <inheritdoc/>
+    event EventHandler IInternalTickQueueService.OnTick
+    {
+        add => this._onTickActions.Add(value);
+        remove => this._onTickActions.TryTake(out value);
+    }
+
     /// <inheritdoc />
     public Task OnTickAsync()
     {
@@ -42,6 +51,11 @@ public class ConcurrentTickQueueService : ITickQueueService, IInternalTickQueueS
                 task.TaskAction?.Invoke();
                 task.Stopwatch.Restart();
             }
+        }
+
+        foreach (var action in this._onTickActions)
+        {
+            action?.Invoke(this, EventArgs.Empty);
         }
 
         return Task.CompletedTask;
