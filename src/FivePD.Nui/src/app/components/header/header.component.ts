@@ -4,11 +4,8 @@ import { WindowService } from '@services/window/window.service';
 import { GlobalState } from '@store';
 import { Store } from '@ngrx/store';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { disableDispatchMode, setWindowMaximized } from "@store/app.actions";
-import { Router } from "@angular/router";
+import { setWindowMaximized } from "@store/app.actions";
 import { DispatchService } from "@services/dispatch/dispatch.service";
-import { Browser } from "leaflet";
-import win = Browser.win;
 
 @Component({
   selector: 'app-header',
@@ -36,6 +33,10 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  get dateNow() {
+    return new Date();
+  }
+
   disableDispatchMode(): void {
     this._dispatchService.disable();
   }
@@ -43,7 +44,4 @@ export class HeaderComponent implements OnInit {
   toggleMaximizedWindow(): void {
     this._store.dispatch(setWindowMaximized({payload: !this.windowMaximized}));
   }
-
-  protected readonly Browser = Browser;
-  protected readonly win = win;
 }
