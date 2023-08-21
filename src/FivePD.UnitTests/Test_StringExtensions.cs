@@ -7,7 +7,7 @@ namespace FivePD.Server.Tests;
 #pragma warning disable
 
 [TestFixture]
-internal class StringExtensions
+internal class Test_StringExtensions
 {
     [Test]
     public void ReplaceParams_Without_Parameters()

@@ -13,7 +13,6 @@ namespace FivePD.Server.Tests;
 internal class CallsignGeneratorTests
 {
     private const string RandomLetterWithSeed0 = "S";
-    private const string RandomNumberWithSeed0 = "8";
 
     [SetUp]
     public void Init()
@@ -34,7 +33,7 @@ internal class CallsignGeneratorTests
     {
         var callsignGenerator = new CallsignGenerator("LN");
         var callsign = callsignGenerator.GenerateCallsign();
-        Assert.AreEqual($"{RandomLetterWithSeed0}{RandomNumberWithSeed0}", callsign);
+        Assert.AreEqual($"{RandomLetterWithSeed0}8", callsign);
     }
     
     [Test]
@@ -50,6 +49,14 @@ internal class CallsignGeneratorTests
     {
         var callsignGenerator = new CallsignGenerator("*LL*NN");
         var callsign = callsignGenerator.GenerateCallsign();
-        Assert.AreEqual($"L{RandomLetterWithSeed0}N{RandomNumberWithSeed0}", callsign);
+        Assert.AreEqual($"L{RandomLetterWithSeed0}N8", callsign);
+    }
+
+    [Test]
+    public void Generate_Dynamic_Callsign_With_W()
+    {
+        var callsignGenerator = new CallsignGenerator("N-W-NN");
+        var callsign = callsignGenerator.GenerateCallsign();
+        Assert.AreEqual($"7-V-75", callsign);
     }
 }

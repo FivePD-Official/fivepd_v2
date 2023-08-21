@@ -39,6 +39,7 @@ public class CallsignGenerator
                 generatedChar = placeholder switch
                 {
                     'L' => this.GetRandomLetter(),
+                    'W' => this.GetRandomLetter(),
                     'N' => this.GetRandomNumber(),
                     _ => placeholder
                 };
