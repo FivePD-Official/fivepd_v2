@@ -11,6 +11,7 @@ import { environment } from '../../../environments/environment';
 export class EventService {
 
   hadFirstEvent = false;
+  // TODO !!!!!!! replace ReplaySubject with Behavior, not sure why this was needed -> a lot of requests go out because of this
   private _events$ = new ReplaySubject<BaseNuiEvent>(10);
 
   constructor(
