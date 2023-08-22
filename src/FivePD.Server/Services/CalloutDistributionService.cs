@@ -1,22 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
-using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
-using FivePD.Server.Attributes;
-using FivePD.Server.Extensions;
+using FivePD.Server.Database;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
-using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace FivePD.Server.Services;
 
@@ -24,193 +19,126 @@ namespace FivePD.Server.Services;
 #pragma warning disable S3241
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.ICalloutDistributionService" />
-internal class CalloutDistributionService : ICalloutDistributionService, IServiceWithEvents
+public class CalloutDistributionService : ICalloutDistributionService, IInternalCalloutDistributionService
 {
-    private readonly IInternalAddonMetadataService _addonMetadataService;
-    private readonly IInternalTickQueueService _tickQueueService;
+    private readonly DatabaseContext _databaseContext;
     private readonly IConfigService _configService;
-    private readonly IRandomService _randomService;
     private readonly IConfirmationService _confirmationService;
-    private readonly ILogger _logger;
-    private readonly IInternalCalloutManagerService _calloutManagerService;
     private readonly IUnitService _unitService;
-    private readonly IInternalDispatchService _internalDispatchService;
-
-    private readonly Stopwatch _nextCalloutTimer = new();
-    private int _nextCalloutInMs;
+    private readonly PlayerList _playerList;
+    private readonly ICalloutStoreService _calloutStoreService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
     /// </summary>
-    /// <param name="addonMetadataService">The <see cref="IInternalAddonMetadataService"/> to use.</param>
-    /// <param name="tickQueueService">The <see cref="IInternalTickQueueService"/> to use.</param>
+    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
-    /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
-    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
-    /// <param name="calloutManagerService">The <see cref="ICalloutManagerService"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
-    /// <param name="internalDispatchService">The <see cref="IInternalDispatchService"/> to use.</param>
+    /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
+    /// <param name="calloutStoreService">The <see cref="ICalloutStoreService"/> to use.</param>
     public CalloutDistributionService(
-        IInternalAddonMetadataService addonMetadataService,
-        IInternalTickQueueService tickQueueService,
+        DatabaseContext databaseContext,
         IConfigService configService,
-        IRandomService randomService,
-        ILogger logger,
         IConfirmationService confirmationService,
-        IInternalCalloutManagerService calloutManagerService,
         IUnitService unitService,
-        IInternalDispatchService internalDispatchService)
+        PlayerList playerList,
+        ICalloutStoreService calloutStoreService)
     {
-        this._addonMetadataService = addonMetadataService;
-        this._tickQueueService = tickQueueService;
+        this._databaseContext = databaseContext;
         this._configService = configService;
-        this._randomService = randomService;
-        this._logger = logger;
         this._confirmationService = confirmationService;
-        this._calloutManagerService = calloutManagerService;
         this._unitService = unitService;
-        this._internalDispatchService = internalDispatchService;
+        this._playerList = playerList;
+        this._calloutStoreService = calloutStoreService;
     }
 
     /// <inheritdoc/>
-    public event EventHandler<DispatchedCallout> OnCalloutDispatched;
+    public event EventHandler<DispatchedCalloutEventArgs> OnCalloutDispatched;
 
     /// <inheritdoc/>
-    public event EventHandler<AcceptedCallout> OnCalloutAccepted;
+    public event EventHandler<AcceptedCalloutEventArgs> OnCalloutAccepted;
+
+    /// <inheritdoc />
+    public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitAssignedToCallout;
 
     /// <inheritdoc/>
-    public void RegisterEvents()
+    void IInternalCalloutDistributionService.DistributeCallout(CalloutHolder calloutHolder)
     {
-        this._nextCalloutInMs = this._randomService.Random.Next(
-            this._configService.GeneralConfig.Callout.MinIntervalInMs,
-            this._configService.GeneralConfig.Callout.MaxIntervalInMs);
-        this._nextCalloutTimer.Start();
-        this._tickQueueService.OnTick += this.OnTick;
-    }
-
-    private void OnTick(object sender, EventArgs e)
-    {
-        if (this._configService.GeneralConfig.Callout.MaxActiveCallouts > 0 &&
-            this._calloutManagerService.ActiveCallouts.Count >= this._configService.GeneralConfig.Callout.MaxActiveCallouts)
-        {
-            return;
-        }
-
-        if (this._nextCalloutTimer.ElapsedMilliseconds < this._nextCalloutInMs)
-        {
-            return;
-        }
-
-        this.GenerateCallout();
-
-        this._nextCalloutInMs = this._randomService.Random.Next(
-            this._configService.GeneralConfig.Callout.MinIntervalInMs,
-            this._configService.GeneralConfig.Callout.MaxIntervalInMs);
-        this._nextCalloutTimer.Restart();
-    }
-
-    private void GenerateCallout()
-    {
-        var calloutTypes = this._addonMetadataService.CalloutTypes;
-        var calloutType = calloutTypes[this._randomService.Random.Next(0, calloutTypes.Count)];
-        this.GenerateCalloutOfTypeAsync(calloutType.Type);
-    }
-
-    // TODO move to ICalloutGenerationService so IDispatchService can use this ICalloutDistributionService
-    private async Task GenerateCalloutOfTypeAsync(Type type, bool invokeCanBeDispatch = true)
-    {
-        var callout = this._addonMetadataService.InstantiateCallout(type);
-        if (callout is null)
-        {
-            this._logger.Warning("A callout with the type of \"{Type}\" could not be instantiated.", type);
-            return;
-        }
-
-        var properties = await callout.Setup();
-        callout.Id = Guid.NewGuid();
-        callout.Title = properties.Title;
-        callout.Description = properties.Description;
-        callout.ActivityRadius = properties.ActivityRadius;
-        callout.GeneratedAt = DateTime.Now;
-        if (properties.RandomPriority)
-        {
-#pragma warning disable
-            // TEST DISPATCH
-            // callout.Priority = this._calloutManagerService.ActiveCallouts.Count switch
-            // {
-            //     0 => FIncidentPriority.Code2,
-            //     1 => FIncidentPriority.Code3,
-            //     _ => FIncidentPriority.Code1
-            // };
-#pragma warning restore
-            callout.Priority = (FIncidentPriority)this._randomService.Random.Next(0, 3);
-        }
-        else
-        {
-            callout.Priority = properties.Priority;
-        }
-
-        var activeCalloutsWithSameType = this._calloutManagerService.ActiveCallouts
-            .Where(x => x.Type == type)
-            .ToList();
-        if (properties.Locations is not null)
-        {
-            var locations = properties.Locations
-                .Where(l => activeCalloutsWithSameType.All(c => c.Callout.Location != l))
-                .ToList();
-            if (locations.Count > 0)
-            {
-                callout.Location = locations[this._randomService.Random.Next(0, locations.Count)];
-            }
-            else
-            {
-                return;
-            }
-        }
-        else
-        {
-            if (activeCalloutsWithSameType.Any(c => c.Callout.Location == properties.Location))
-            {
-                return;
-            }
-
-            callout.Location = properties.Location;
-        }
-
-        if (invokeCanBeDispatch)
-        {
-            var canBeDispatched = await callout.CanBeDispatched();
-            if (!canBeDispatched)
-            {
-                return;
-            }
-        }
-
-        var calloutHolder = new CalloutHolder(callout, type, new Stopwatch());
-        this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
-        calloutHolder.Timer.Start();
-
         if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
         {
             var notifiedUnits = this.DispatchCalloutToUnits(calloutHolder);
-            this.OnCalloutDispatched?.Invoke(this, new DispatchedCallout
+            if (notifiedUnits.Count > 0)
             {
-                Callout = callout,
-                NotifiedUnits = notifiedUnits,
-            });
-            await callout.OnDispatched(notifiedUnits);
+                this.OnCalloutDispatched?.Invoke(this, new DispatchedCalloutEventArgs(calloutHolder.Callout, notifiedUnits));
+                calloutHolder.Callout.OnDispatched(notifiedUnits);
+            }
         }
         else
         {
-            this._internalDispatchService.SendCalloutToDispatchers(calloutHolder.Callout);
+            var sentToAnyPlayer = false;
+            foreach (var player in this._playerList)
+            {
+                var fPlayer = FPlayer.FromPlayer(player);
+                if (!fPlayer.Dispatcher.Value)
+                {
+                    continue;
+                }
+
+                sentToAnyPlayer = true;
+                player.TriggerEvent(Events.Dispatch.SendCalloutToDispatcher, JsonConvert.SerializeObject(calloutHolder.Callout.ToCalloutForDispatcherDTO()));
+            }
+
+            if (!sentToAnyPlayer)
+            {
+                ((IInternalCalloutStoreService)this._calloutStoreService).ActiveCallouts.RemoveAll(x => x.Callout == calloutHolder.Callout);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public void AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false)
+    {
+        if (callout.Units.Contains(unit))
+        {
+            return;
+        }
+
+        ((IInternalIncident)callout).Units.Add(unit);
+
+        unit.Availability.Value = FUnitAvailability.NotReceiving;
+        unit.Callout = new SimpleCallout(callout);
+        ((IInternalUnit)unit).InternalCallout = callout;
+
+        if (acceptedByUnit)
+        {
+            callout.OnAccepted(unit);
+            this.OnCalloutAccepted?.Invoke(this, new AcceptedCalloutEventArgs(callout, unit));
+        }
+        else
+        {
+            callout.OnUnitAssigned(unit);
+            this.OnUnitAssignedToCallout?.Invoke(this, new UnitAssignedToCalloutEventArgs(callout, unit));
+        }
+
+        foreach (var player in unit.Players)
+        {
+            player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
+            {
+                Id = callout.Id.ToString(),
+                Title = callout.Title,
+                Description = callout.Description,
+                Location = callout.Location,
+                Priority = callout.Priority,
+                ActivityRadius = callout.ActivityRadius,
+            }));
         }
     }
 
     private List<Unit> DispatchCalloutToUnits(CalloutHolder calloutHolder)
     {
         var filteredUnits = this._unitService.Units()
-            .Where(unit => this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .Where(unit => this._calloutStoreService.ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving);
         if (this._configService.GeneralConfig.Callout.DynamicDispatch.Enabled)
         {
@@ -232,31 +160,8 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
                 }
 
                 unitAccepted = true;
-                unit.Availability.Value = FUnitAvailability.NotReceiving; // TODO: add to DispatchService.AssignCalloutToUnitsUI
-                unit.Callout = new SimpleCallout(calloutHolder.Callout); // TODO: add to DispatchService.AssignCalloutToUnitsUI
-                ((IInternalUnit)unit).InternalCallout = calloutHolder.Callout; // TODO: add to DispatchService.AssignCalloutToUnitsUI
 
-                ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
-                calloutHolder.Callout.OnAccepted(unit); // TODO: this should not be called when a dispatcher assigns the callout, so when DispatchType = manual
-                this.OnCalloutAccepted?.Invoke(this, new AcceptedCallout
-                {
-                    Callout = calloutHolder.Callout,
-                    Unit = unit,
-                });
-
-                // TODO: add to DispatchService.AssignCalloutToUnitsUI
-                foreach (var player in unit.Players)
-                {
-                    player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
-                    {
-                        Id = calloutHolder.Callout.Id.ToString(),
-                        Title = calloutHolder.Callout.Title,
-                        Description = calloutHolder.Callout.Description,
-                        Location = calloutHolder.Callout.Location,
-                        Priority = calloutHolder.Callout.Priority,
-                        ActivityRadius = calloutHolder.Callout.ActivityRadius,
-                    }));
-                }
+                this.AssignUnitToCallout(unit, calloutHolder.Callout, true);
             }
 
             var priorityCodeLabel = string.Empty;
@@ -317,23 +222,5 @@ internal class CalloutDistributionService : ICalloutDistributionService, IServic
         }
 
         return notifiedUnits;
-    }
-
-    [UIEvent(Events.UI.Callout.Dispatch)]
-    private void DispatchCalloutUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var request = expandoObject.ConvertTo<DispatchCalloutRequest>();
-        var calloutType = this._addonMetadataService.CalloutTypes.FirstOrDefault(x => x.Type.Name == request.TypeName);
-        if (calloutType is null)
-        {
-            networkCallbackDelegate.Invoke(null);
-            return;
-        }
-
-#pragma warning disable CS4014
-        this.GenerateCalloutOfTypeAsync(calloutType.Type, false);
-#pragma warning restore CS4014
-
-        networkCallbackDelegate.Invoke(null);
     }
 }

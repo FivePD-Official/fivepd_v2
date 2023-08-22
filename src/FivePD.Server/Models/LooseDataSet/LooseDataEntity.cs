@@ -26,7 +26,7 @@ public class LooseDataEntity
     /// <summary>
     /// Gets or sets the values of this entity.
     /// </summary>
-    public IList<LooseDataValue> Values { get; set; }
+    public IEnumerable<LooseDataValue> Values { get; set; }
 
     /// <summary>
     /// Gets or sets the values of this entity.

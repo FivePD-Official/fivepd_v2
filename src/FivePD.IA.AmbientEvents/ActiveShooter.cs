@@ -59,9 +59,9 @@ public class ActiveShooter : Callout
         return Task.CompletedTask;
     }
 
-    public override Task OnDispatched(Unit units)
+    public override Task OnUnitAssigned(Unit unit)
     {
-        this._logger.Information($"OnDispatched - {units.Callsign}");
+        this._logger.Information($"OnUnitAssigned - {unit.Callsign}");
 
         return Task.CompletedTask;
     }

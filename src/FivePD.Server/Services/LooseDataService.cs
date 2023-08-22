@@ -119,7 +119,7 @@ public class LooseDataService : ILooseDataService
                                     ? DateTime.Now
                                     : null),
                         };
-                        entity.Values.Add(value);
+                        this._databaseContext.LooseDataValues.Add(value);
                     }
                 }
             }
@@ -522,9 +522,9 @@ public class LooseDataService : ILooseDataService
                     Value = JsonConvert.SerializeObject(
                         request.Attribute.DataType == LooseDataAttribute.LooseDataType.Date
                             ? DateTime.Now
-                            : (object)null),
+                            : null),
                 };
-                entity.Values.Add(value);
+                this._databaseContext.LooseDataValues.Add(value);
             }
 
             this._databaseContext.SaveChanges();
@@ -597,6 +597,7 @@ public class LooseDataService : ILooseDataService
                 .Include(set => set.Attributes)
                 .Include(set => set.Entities)
                 .ThenInclude(entities => entities.Values)
+                .ThenInclude(looseDataValue => looseDataValue.Attribute)
                 .FirstOrDefault(set => set.Id == request.SetId);
             if (set is null)
             {
@@ -806,7 +807,9 @@ public class LooseDataService : ILooseDataService
 
     private void InternalUpdateEntity(string setId, int entityId, Dictionary<string, object> newValues)
     {
-        var set = this._databaseContext.LooseDataSets.FirstOrDefault(set => set.Id == setId);
+        var set = this._databaseContext.LooseDataSets
+            .Include(looseDataSet => looseDataSet.Attributes)
+            .FirstOrDefault(set => set.Id == setId);
         if (set is null)
         {
             return;
@@ -831,6 +834,7 @@ public class LooseDataService : ILooseDataService
 
         var entityValues = this._databaseContext.LooseDataValues
             .Include(value => value.Entity)
+            .Include(looseDataValue => looseDataValue.Attribute)
             .Where(value => value.Entity.Id == entityId)
             .ToList();
         foreach (var dataValue in entityValues)

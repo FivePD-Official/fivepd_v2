@@ -21,22 +21,23 @@ namespace FivePD.Server.Services;
 
 public class DispatchService : IDispatchService, IInternalDispatchService, IServiceWithEvents
 {
-    private readonly List<Callout> _sentCallouts = new();
-
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _playerList;
     private readonly IInternalCalloutStoreService _calloutStoreService;
+    private readonly ICalloutDistributionService _calloutDistributionService;
     private readonly IUnitService _unitService;
 
     public DispatchService(
         EventHandlerDictionary eventHandlerDictionary,
         PlayerList playerList,
         ICalloutStoreService calloutStoreService,
+        ICalloutDistributionService calloutDistributionService,
         IUnitService unitService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerList = playerList;
         this._calloutStoreService = (IInternalCalloutStoreService)calloutStoreService;
+        this._calloutDistributionService = calloutDistributionService;
         this._unitService = unitService;
     }
 
@@ -77,16 +78,17 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
     private void AssignCalloutToUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AssignCalloutToUnitsRequest>();
-        var callout = this._calloutStoreService.ActiveCallouts.FirstOrDefault(x => x.Callout.Id == Guid.Parse(request.CalloutId));
-        if (callout is null)
+        var calloutHolder = this._calloutStoreService.ActiveCallouts.FirstOrDefault(x => x.Callout.Id == Guid.Parse(request.CalloutId));
+        if (calloutHolder is null)
         {
             return;
         }
         
         foreach (var unit in this._unitService.Units().Where(unit => request.UnitCallsigns.Contains(unit.Callsign)))
         {
-            ((IInternalIncident)callout.Callout).Units.Add(unit);
+            this._calloutDistributionService.AssignUnitToCallout(unit, calloutHolder.Callout);
         }
+        
         
         // foreach (var dispatcher in this.Dispatchers())
         // {
@@ -94,7 +96,6 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
         // }
 
         networkCallbackDelegate.Invoke(null);
-        // networkCallbackDelegate.InvokeWithJson(callout.Callout.ToCalloutForDispatcherDTO());
     }
 
     private void OnEnableForPlayer([FromSource] Player player)
@@ -135,28 +136,6 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
         }
     }
 
-    void IInternalDispatchService.SendCalloutToDispatchers(Callout callout)
-    {
-        var sentToAnyPlayer = false;
-        foreach (var player in this._playerList)
-        {
-            var fPlayer = FPlayer.FromPlayer(player);
-            if (!fPlayer.Dispatcher.Value)
-            {
-                continue;
-            }
-
-            sentToAnyPlayer = true;
-            this._sentCallouts.Add(callout);
-            player.TriggerEvent(Events.Dispatch.SendCalloutToDispatcher, JsonConvert.SerializeObject(callout.ToCalloutForDispatcherDTO()));
-        }
-
-        if (!sentToAnyPlayer)
-        {
-            this._calloutStoreService.ActiveCallouts.RemoveAll(x => x.Callout == callout);
-        }
-    }
-
     void IInternalDispatchService.RemoveCalloutFromDispatchers(Callout callout)
     {
         foreach (var player in this._playerList)
@@ -167,7 +146,6 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
                 continue;
             }
 
-            this._sentCallouts.Remove(callout);
             player.TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, callout.Id.ToString());
         }
     }

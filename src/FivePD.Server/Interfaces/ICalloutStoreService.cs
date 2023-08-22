@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using FivePD.Server.API;
 
 namespace FivePD.Server.Interfaces;
 
@@ -6,6 +8,7 @@ namespace FivePD.Server.Interfaces;
 
 public interface ICalloutStoreService
 {
+    public List<Callout> ActiveCallouts { get; }
 }
 
 internal interface IInternalCalloutStoreService

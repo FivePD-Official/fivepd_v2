@@ -1,20 +1,47 @@
 ﻿using System;
+using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
+using FivePD.Server.Models;
 
 namespace FivePD.Server.Interfaces;
 
 /// <summary>
 /// Responsible for creating and distributing callouts.
 /// </summary>
-internal interface ICalloutDistributionService
+public interface ICalloutDistributionService
 {
     /// <summary>
-    /// Invoked when a callout is dispatched.
+    /// Invoked when a callout is dispatched to units.
     /// </summary>
-    public event EventHandler<DispatchedCallout> OnCalloutDispatched;
+    public event EventHandler<DispatchedCalloutEventArgs> OnCalloutDispatched;
 
     /// <summary>
     /// Invoked when a callout is accepted.
     /// </summary>
-    public event EventHandler<AcceptedCallout> OnCalloutAccepted;
+    public event EventHandler<AcceptedCalloutEventArgs> OnCalloutAccepted;
+
+    /// <summary>
+    /// Invoked when a unit is assigned to a callout.
+    /// </summary>
+    public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitAssignedToCallout;
+
+    /// <summary>
+    /// Assigns a unit to a callout.
+    /// </summary>
+    /// <param name="unit">The unit.</param>
+    /// <param name="callout">The callout.</param>
+    /// <param name="acceptedByUnit">true = accepted by a unit; false = assigned by a dispatcher or an addon.</param>
+    public void AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false);
+}
+
+/// <summary>
+/// Responsible for distributing callouts to units or dispatchers.
+/// </summary>
+internal interface IInternalCalloutDistributionService
+{
+    /// <summary>
+    /// Distributes a callout to units or dispatchers, according to the configuration.
+    /// </summary>
+    /// <param name="calloutHolder">The callout.</param>
+    public void DistributeCallout(CalloutHolder calloutHolder);
 }

@@ -276,7 +276,11 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<CalloutDistributionService>();
         services.AddSingleton<ICalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutDistributionService>());
+        services.AddSingleton<IInternalCalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
+
+        services.AddSingleton<CalloutGenerationService>();
+        services.AddSingleton<ICalloutGenerationService>(provider => provider.GetRequiredService<CalloutGenerationService>());
+        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutGenerationService>());
         
         services.AddSingleton<DispatchService>();
         services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
