@@ -83,9 +83,6 @@ export class DynamicFormInputComponent implements OnInit {
         if (selectedItems) {
           this.form?.controls[this.field.key].setValue(selectedItems.map(x => x.key));
           this.dropdownSelectedItems = selectedItems.map(x => ({key: x.key, label: x.label}));
-          for (const item of this.dropdownSelectedItems) {
-            this.setSelectedItems(item, true);
-          }
         }
       } else {
         this.control?.patchValue(-1);
@@ -202,15 +199,15 @@ export class DynamicFormInputComponent implements OnInit {
       value.push(selectedItem.key);
     }
 
-    if (updateControl) {
-      this.control?.setValue(value);
-    }
-
     const valueIndex2 = this.dropdownSelectedItems.findIndex(x => x.key === selectedItem.key);
     if (valueIndex2 > -1) {
       this.dropdownSelectedItems.splice(valueIndex2, 1);
     } else {
       this.dropdownSelectedItems.push(selectedItem);
+    }
+
+    if (updateControl) {
+      this.control?.setValue(value);
     }
 
     this.onChange.emit(this.dropdownSelectedItems.map(x => x.key));
