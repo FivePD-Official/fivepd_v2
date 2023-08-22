@@ -84,7 +84,7 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
     {
         foreach (var addon in definitions)
         {
-            this._logger.Information(
+            this._logger.ForContext("SourceIdentifier", "AddonLocator").Information(
                 "Registering addon \"{@AddonName}\" version {@AddonVersion}",
                 addon.FriendlyName,
                 addon.FriendlyVersion);

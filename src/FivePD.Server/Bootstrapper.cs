@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Server.Database;
@@ -152,7 +153,9 @@ internal class Bootstrapper : BaseScript
 
         // Once completed, log the phase duration
         this._stopwatch.Stop();
+#if DEBUG
         this._bootstrapLogger.Information("Bootstrap phase completed in {duration}ms", this._stopwatch.ElapsedMilliseconds);
+#endif
 
         // Mark the phase as completed
         this._phases[phase.Key] = true;
@@ -176,12 +179,7 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     private void PerformServiceLocationPhase()
     {
-        #pragma warning disable
-        // TODO 
-        // this._bootstrapLogger.Information(
-        //     "Bootstrapping server version {@Version}",
-        //     Assembly.GetExecutingAssembly().GetName().Version.ToString());
-        #pragma warning restore
+        this._bootstrapLogger.Debug("Bootstrapping server version {@Version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
         var services = new ServiceCollection();
 
@@ -457,8 +455,6 @@ internal class Bootstrapper : BaseScript
     {
         var log = this._provider.GetService<ILogger>()!.ForContext("SourceIdentifier", "Bootstrapper");
 
-        log.Debug(
-            "Running Cfx version {@Version}",
-            Cfx.API.GetConvar("version", "Unknown"));
+        log.Debug("Running Cfx version {@Version}", Cfx.API.GetConvar("version", "Unknown"));
     }
 }
