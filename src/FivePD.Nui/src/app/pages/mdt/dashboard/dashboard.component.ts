@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {
   BaseNuiEvent,
-  Button, CalloutDTO, ClientCalloutWrapper,
+  Button,
+  CalloutDTO,
+  ClientCalloutWrapper,
   Collation,
   Column,
   Department,
@@ -15,7 +17,7 @@ import {
 import { DepartmentService } from '@services/entity/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
-import { filter, switchMap } from 'rxjs';
+import { filter, first, shareReplay, switchMap } from 'rxjs';
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
 import { UserRole, UserService } from '@services/user/user.service';
 import { CustomValidators } from '../../../helpers/validators';
@@ -194,21 +196,14 @@ export class DashboardComponent implements OnInit {
     private readonly _eventService: EventService,
     private readonly _calloutService: CalloutService,
   ) {
-    _store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
-    _eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').subscribe(() => {
-      this.getDepartments();
-      this.getUnits();
-      this.getCallouts();
-      this.getActiveCallout();
+    _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
+      this.user = state.user.details;
     });
   }
 
   ngOnInit(): void {
     this.getGeneralConfig();
-    this.getDepartments();
-    this.getUnits();
-    this.getCallouts();
-    this.getActiveCallout();
+    this.load();
   }
 
   get priorityLabel(): string {
@@ -228,34 +223,41 @@ export class DashboardComponent implements OnInit {
     return '-';
   }
 
-  getGeneralConfig(): void {
-    this._configService.getGeneralConfig().subscribe(res => {
-      this.generalConfig = res;
-    });
-  }
-
   getDepartments(): void {
     this._departmentService.getDepartments(this.departmentsCollation).subscribe(res => {
       this.departments = res;
     });
   }
 
-  getUnits(): void {
+  private getGeneralConfig(): void {
+    this._configService.getGeneralConfig().subscribe(res => {
+      this.generalConfig = res;
+    });
+  }
+
+  private getUnits(): void {
     this._unitService.getAll().subscribe(res => {
       this.units = res;
     });
   }
 
-  getCallouts(): void {
+  private getCallouts(): void {
     this._calloutService.getAll().subscribe(res => {
       this.callouts = res;
     });
   }
 
-  getActiveCallout(): void {
+  private getActiveCallout(): void {
     this._calloutService.getActive().subscribe(res => {
       this.activeCallout = res;
     });
+  }
+
+  private load(): void {
+    this.getDepartments();
+    this.getUnits();
+    this.getCallouts();
+    this.getActiveCallout();
   }
 
   onDepartmentsCollationChange(collation: Collation): void {

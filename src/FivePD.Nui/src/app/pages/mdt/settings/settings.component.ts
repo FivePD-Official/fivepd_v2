@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-import { AttributeDataType, BaseNuiEvent, Button, Collation, Column, Page, SetAttribute, User } from '@models';
+import { Component, OnInit } from '@angular/core';
+import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, switchMap } from 'rxjs';
+import { filter, first, switchMap } from 'rxjs';
 import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 import { LocalizationService } from '@services/localization/localization.service';
@@ -20,7 +20,7 @@ import { EventService } from "@services/event/event.service";
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.sass']
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
 
   protected readonly UserRole = UserRole;
 
@@ -199,18 +199,17 @@ export class SettingsComponent {
     private readonly _store: Store<GlobalState>,
     private readonly _eventService: EventService,
   ) {
-    _store.pipe(takeUntilDestroyed()).subscribe(state => {
+    _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
       this.user = state.user.details.User;
-      this.getSettings();
-    });
-
-    _eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').pipe(takeUntilDestroyed()).subscribe(() => {
-      this.getSettings();
     });
   }
 
+  ngOnInit(): void {
+    this.getSettings();
+  }
+
   private getSettings(): void {
-    if (!this.userService.userHasRole(UserRole.Admin)) {
+    if (!this.user || !this.userService.userHasRole(UserRole.Admin)) {
       return;
     }
 

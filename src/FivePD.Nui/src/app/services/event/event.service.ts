@@ -11,7 +11,6 @@ import { environment } from '../../../environments/environment';
 export class EventService {
 
   hadFirstEvent = false;
-  // TODO !!!!!!! replace ReplaySubject with Behavior, not sure why this was needed -> a lot of requests go out because of this
   private _events$ = new ReplaySubject<BaseNuiEvent>(10);
 
   constructor(
@@ -36,7 +35,7 @@ export class EventService {
   onEvent<T>(...events: string[]): Observable<T> {
     return this._events$
       .pipe(
-        filter((event: BaseNuiEvent) => (events as string[]).includes(event.Event))
-      ) as any as Observable<T>;
+        filter(event => events.includes(event.Event)),
+      ) as Observable<T>;
   }
 }

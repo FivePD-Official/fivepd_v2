@@ -255,14 +255,11 @@ export class DepartmentsViewComponent implements OnInit {
     _route.params.pipe(takeUntilDestroyed()).subscribe(() => {
       this.getDepartment();
     });
-
-    _eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').pipe(takeUntilDestroyed()).subscribe(() => {
-      this.getDepartment();
-    });
   }
 
   ngOnInit(): void {
     this.getGeneralConfig();
+    this.getDepartment();
   }
 
   private getGeneralConfig(): void {
