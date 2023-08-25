@@ -8,15 +8,15 @@ using FivePD.Server.Models.LooseDataSet;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="IArrestReportService" />
-public class ArrestArrestReportService : IArrestReportService, IServiceWithEvents
+public class ArrestReportService : IArrestReportService, IServiceWithEvents
 {
     private readonly ILooseDataService _looseDataService;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ArrestArrestReportService"/> class.
+    /// Initializes a new instance of the <see cref="ArrestReportService"/> class.
     /// </summary>
     /// <param name="looseDataService">The <see cref="ILooseDataService"/> to use.</param>
-    public ArrestArrestReportService(ILooseDataService looseDataService)
+    public ArrestReportService(ILooseDataService looseDataService)
     {
         this._looseDataService = looseDataService;
     }
