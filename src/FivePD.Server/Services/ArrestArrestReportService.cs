@@ -7,36 +7,36 @@ using FivePD.Server.Models.LooseDataSet;
 
 namespace FivePD.Server.Services;
 
-/// <inheritdoc cref="FivePD.Server.Interfaces.IReportService" />
-public class ReportService : IReportService, IServiceWithEvents
+/// <inheritdoc cref="IArrestReportService" />
+public class ArrestArrestReportService : IArrestReportService, IServiceWithEvents
 {
     private readonly ILooseDataService _looseDataService;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReportService"/> class.
+    /// Initializes a new instance of the <see cref="ArrestArrestReportService"/> class.
     /// </summary>
     /// <param name="looseDataService">The <see cref="ILooseDataService"/> to use.</param>
-    public ReportService(ILooseDataService looseDataService)
+    public ArrestArrestReportService(ILooseDataService looseDataService)
     {
         this._looseDataService = looseDataService;
     }
 
     /// <inheritdoc />
-    public IDisposable OnArrestReportAdd(Action<LooseDataEntity> observer)
+    public IDisposable OnArrestReportAdded(Action<LooseDataEntity> observer)
     {
-        return this._looseDataService.OnAdd<ArrestReportSet>(observer);
+        return this._looseDataService.OnAdded<ArrestReportSet>(observer);
     }
 
     /// <inheritdoc />
-    public IDisposable OnArrestReportEdit(Action<LooseDataEntity> observer)
+    public IDisposable OnArrestReportEdited(Action<LooseDataEntity> observer)
     {
-        return this._looseDataService.OnEdit<ArrestReportSet>(observer);
+        return this._looseDataService.OnEdited<ArrestReportSet>(observer);
     }
 
     /// <inheritdoc />
-    public IDisposable OnArrestReportDelete(Action<LooseDataEntity> observer)
+    public IDisposable OnArrestReportDeleted(Action<LooseDataEntity> observer)
     {
-        return this._looseDataService.OnDelete<ArrestReportSet>(observer);
+        return this._looseDataService.OnDeleted<ArrestReportSet>(observer);
     }
 
     /// <inheritdoc />

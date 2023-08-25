@@ -36,19 +36,19 @@ public class LooseDataService : ILooseDataService
     }
 
     /// <inheritdoc />
-    public IDisposable OnAdd<TS>(Action<LooseDataEntity> observer)
+    public IDisposable OnAdded<TS>(Action<LooseDataEntity> observer)
     {
         return this.OnEvent<TS>(LooseDataEntityObservableType.Add, observer);
     }
 
     /// <inheritdoc />
-    public IDisposable OnEdit<TS>(Action<LooseDataEntity> observer)
+    public IDisposable OnEdited<TS>(Action<LooseDataEntity> observer)
     {
         return this.OnEvent<TS>(LooseDataEntityObservableType.Edit, observer);
     }
 
     /// <inheritdoc />
-    public IDisposable OnDelete<TS>(Action<LooseDataEntity> observer)
+    public IDisposable OnDeleted<TS>(Action<LooseDataEntity> observer)
     {
         return this.OnEvent<TS>(LooseDataEntityObservableType.Delete, observer);
     }

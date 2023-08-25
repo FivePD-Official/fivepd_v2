@@ -9,28 +9,28 @@ namespace FivePD.Server.Interfaces;
 /// <summary>
 /// Provides easy access to reportable entities through <see cref="ILooseDataService"/>.
 /// </summary>
-public interface IReportService
+public interface IArrestReportService
 {
     /// <summary>
     /// Fires when an entity is added to <see cref="ArrestReportSet"/> either via the API or the NUI.
     /// </summary>
     /// <param name="observer">The action that will executed upon firing with the added entity.</param>
     /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnArrestReportAdd(Action<LooseDataEntity> observer);
+    public IDisposable OnArrestReportAdded(Action<LooseDataEntity> observer);
 
     /// <summary>
     /// Fires when an entity is edited in <see cref="ArrestReportSet"/> either via the API or the NUI.
     /// </summary>
     /// <param name="observer">The action that will executed upon firing with the edited entity.</param>
     /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnArrestReportEdit(Action<LooseDataEntity> observer);
+    public IDisposable OnArrestReportEdited(Action<LooseDataEntity> observer);
 
     /// <summary>
     /// Fires when an entity is deleted from <see cref="ArrestReportSet"/> either via the API or the NUI.
     /// </summary>
     /// <param name="observer">The action that will executed upon firing with the deleted entity.</param>
     /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnArrestReportDelete(Action<LooseDataEntity> observer);
+    public IDisposable OnArrestReportDeleted(Action<LooseDataEntity> observer);
 
     /// <summary>
     /// Inserts an entity into <see cref="ArrestReportSet"/>.
