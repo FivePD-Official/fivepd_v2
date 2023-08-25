@@ -1,7 +1,10 @@
 <div class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl">
   <div #modalContainer
-       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg bg-zinc-800 w-[500px]"
-       [ngClass]="{ 'w-[30vw]': modalRef.options.columns ? modalRef.options.columns > 1 : false }">
+       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg bg-zinc-800"
+       [ngClass]="{
+        'w-[30vw]': (modalRef.options.columns || 1) > 1,
+        'w-[500px]': (modalRef.options.columns || 1) === 1
+       }">
     <div class="mb-4">
       <div class="flex flex-row items-center justify-between">
         <p class="text-2xl font-bold text-zinc-100">{{ modalRef.options.title | translate }}</p>
@@ -29,6 +32,7 @@
         <div class="flex flex-row items-center justify-end gap-2.5">
           <app-button
             *ngIf="modalRef.options.buttons?.cancel"
+            type="button"
             [variant]="modalRef.options.buttons!.cancel.variant"
             [label]="modalRef.options.buttons!.cancel.label | translate"
             (onClick)="close()"/>

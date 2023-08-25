@@ -63,7 +63,7 @@
   "UI.ERROR.DIVISION.EDIT.TITLE": "Couldn't edit division",
   "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION": "A division with this name already exists.",
   "UI.ERROR.FIELD.FORMAT": "The format is incorrect.",
-  "UI.ERROR.FIELD.INVALID_DATE": "Invalid date. Format: MM/DD/YYYY.",
+  "UI.ERROR.FIELD.INVALID_DATE": "Invalid date. Format: MM-DD-YYYY.",
   "UI.ERROR.FIELD.MAX": "The maximum value is {{value}}.",
   "UI.ERROR.FIELD.MIN": "The minimum value is {{value}}.",
   "UI.ERROR.FIELD.NAME_TAKEN": "Name taken.",
