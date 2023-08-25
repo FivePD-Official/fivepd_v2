@@ -5,6 +5,7 @@ using FivePD.Common.Enums;
 using FivePD.Server.API;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Addons;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.IA.AmbientEvents;

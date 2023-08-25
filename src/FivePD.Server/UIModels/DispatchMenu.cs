@@ -6,6 +6,7 @@ using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models.AssistanceServiceModels;
 using FivePD.Server.UIModels.MenuModels;
 

@@ -1,4 +1,4 @@
-﻿namespace FivePD.Server.Interfaces;
+﻿namespace FivePD.Server.Interfaces.Addons;
 
 /// <summary>
 /// Provides access to basic logging

@@ -4,7 +4,7 @@ using FivePD.Server.Exceptions;
 using FivePD.Server.Models;
 using FivePD.Server.Models.LooseDataSet;
 
-namespace FivePD.Server.Interfaces;
+namespace FivePD.Server.Interfaces.LooseData;
 
 /// <summary>
 /// Provides easy access to reportable entities through <see cref="ILooseDataService"/>.

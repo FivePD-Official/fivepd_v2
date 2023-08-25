@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using FivePD.Server.API;
 using FivePD.Server.Models;
 
-namespace FivePD.Server.Interfaces;
+namespace FivePD.Server.Interfaces.Addons;
 
 /// <summary>
 /// Provides easy access to information about addons.

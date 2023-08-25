@@ -10,7 +10,13 @@ using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Addons;
+using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Services;
+using FivePD.Server.Services.Addons;
+using FivePD.Server.Services.Callouts;
+using FivePD.Server.Services.LooseData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -237,9 +243,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LocalizationService>());
 
-        services.AddSingleton<ArrestArrestReportService>();
-        services.AddSingleton<IArrestReportService>(provider => provider.GetRequiredService<ArrestArrestReportService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ArrestArrestReportService>());
+        services.AddSingleton<ArrestReportService>();
+        services.AddSingleton<IArrestReportService>(provider => provider.GetRequiredService<ArrestReportService>());
+        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ArrestReportService>());
 
         services.AddSingleton<EventService>();
         services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());

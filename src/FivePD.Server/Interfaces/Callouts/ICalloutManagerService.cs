@@ -4,7 +4,7 @@ using System.Diagnostics;
 using FivePD.Server.API;
 using FivePD.Server.EntityWrappers;
 
-namespace FivePD.Server.Interfaces;
+namespace FivePD.Server.Interfaces.Callouts;
 
 /// <summary>
 /// Responsible for managing callouts.

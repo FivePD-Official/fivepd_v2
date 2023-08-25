@@ -17,7 +17,7 @@ using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.LooseData;
 
 /// <inheritdoc />
 public class LooseDataService : ILooseDataService

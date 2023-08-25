@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using FivePD.Common.Enums;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models;
 using FivePD.Server.Models.LooseDataSet;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.LooseData;
 
 /// <inheritdoc cref="IArrestReportService" />
 public class ArrestReportService : IArrestReportService, IServiceWithEvents

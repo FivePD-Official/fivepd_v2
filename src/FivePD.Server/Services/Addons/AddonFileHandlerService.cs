@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Addons;
 using Newtonsoft.Json;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.Addons;
 
 /// <inheritdoc />
 public class AddonFileHandlerService : IAddonFileHandlerService

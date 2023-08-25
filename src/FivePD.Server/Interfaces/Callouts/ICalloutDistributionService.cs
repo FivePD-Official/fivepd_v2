@@ -3,7 +3,7 @@ using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Models;
 
-namespace FivePD.Server.Interfaces;
+namespace FivePD.Server.Interfaces.Callouts;
 
 /// <summary>
 /// Responsible for creating and distributing callouts.

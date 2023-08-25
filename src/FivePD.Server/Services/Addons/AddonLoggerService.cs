@@ -1,8 +1,8 @@
 ﻿using System;
-using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Addons;
 using Serilog;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.Addons;
 
 /// <inheritdoc />
 public class AddonLoggerService : IAddonLoggerService

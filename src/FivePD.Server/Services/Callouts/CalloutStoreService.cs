@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FivePD.Server.API;
-using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Callouts;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.Callouts;
 
 #pragma warning disable
 

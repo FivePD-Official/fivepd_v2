@@ -1,4 +1,4 @@
-﻿namespace FivePD.Server.Interfaces;
+﻿namespace FivePD.Server.Interfaces.Callouts;
 
 #pragma warning disable
 

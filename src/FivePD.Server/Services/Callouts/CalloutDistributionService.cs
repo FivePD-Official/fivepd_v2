@@ -10,15 +10,16 @@ using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
 using Newtonsoft.Json;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.Callouts;
 
 #pragma warning disable CS4014
 #pragma warning disable S3241
 
-/// <inheritdoc cref="FivePD.Server.Interfaces.ICalloutDistributionService" />
+/// <inheritdoc cref="ICalloutDistributionService" />
 public class CalloutDistributionService : ICalloutDistributionService, IInternalCalloutDistributionService
 {
     private readonly DatabaseContext _databaseContext;

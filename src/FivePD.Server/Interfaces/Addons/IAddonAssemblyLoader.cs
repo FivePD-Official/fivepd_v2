@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace FivePD.Server.Interfaces;
+namespace FivePD.Server.Interfaces.Addons;
 
 /// <summary>
 /// Responsible for receiving assemblies and preparing them for

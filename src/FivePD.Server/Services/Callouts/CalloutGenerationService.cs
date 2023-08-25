@@ -9,10 +9,12 @@ using FivePD.Common.Enums;
 using FivePD.Server.Attributes;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Addons;
+using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models.Requests;
 using Serilog;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.Callouts;
 
 #pragma warning disable
 
