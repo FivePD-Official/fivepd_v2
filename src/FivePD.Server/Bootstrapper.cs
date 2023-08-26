@@ -244,8 +244,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LocalizationService>());
 
         services.AddSingleton<ArrestReportService>();
-        services.AddSingleton<IArrestReportService>(provider => provider.GetRequiredService<ArrestReportService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ArrestReportService>());
+        
+        services.AddSingleton<IncidentReportService>();
+        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<IncidentReportService>());
 
         services.AddSingleton<EventService>();
         services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());

@@ -1,85 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FivePD.Common.Enums;
-using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models;
-using FivePD.Server.Models.LooseDataSet;
+using FivePD.Server.Models.LooseData;
 
 namespace FivePD.Server.Services.LooseData;
 
-/// <inheritdoc cref="IArrestReportService" />
-public class ArrestReportService : IArrestReportService, IServiceWithEvents
+/// <inheritdoc />
+public class ArrestReportService : LooseDataRepository<ArrestReportSet>
 {
-    private readonly ILooseDataService _looseDataService;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ArrestReportService"/> class.
     /// </summary>
     /// <param name="looseDataService">The <see cref="ILooseDataService"/> to use.</param>
     public ArrestReportService(ILooseDataService looseDataService)
+        : base(looseDataService)
     {
-        this._looseDataService = looseDataService;
     }
 
     /// <inheritdoc />
-    public IDisposable OnArrestReportAdded(Action<LooseDataEntity> observer)
+    protected override List<LooseDataAttribute> RegisterSetAttributes()
     {
-        return this._looseDataService.OnAdded<ArrestReportSet>(observer);
-    }
-
-    /// <inheritdoc />
-    public IDisposable OnArrestReportEdited(Action<LooseDataEntity> observer)
-    {
-        return this._looseDataService.OnEdited<ArrestReportSet>(observer);
-    }
-
-    /// <inheritdoc />
-    public IDisposable OnArrestReportDeleted(Action<LooseDataEntity> observer)
-    {
-        return this._looseDataService.OnDeleted<ArrestReportSet>(observer);
-    }
-
-    /// <inheritdoc />
-    public void AddArrestReport(LooseDataEntity arrestReport)
-    {
-        this._looseDataService.AddEntity<ArrestReportSet>(arrestReport);
-    }
-
-    /// <inheritdoc />
-    public void UpdateArrestReport(LooseDataEntity arrestReport)
-    {
-        this._looseDataService.UpdateEntity(arrestReport);
-    }
-
-    /// <inheritdoc />
-    public void DeleteArrestReport(LooseDataEntity arrestReport)
-    {
-        this._looseDataService.DeleteEntity(arrestReport);
-    }
-
-    /// <inheritdoc />
-    public LooseDataEntity GetArrestReport(int id)
-    {
-        return this._looseDataService.GetEntity(id);
-    }
-
-    /// <inheritdoc />
-    public List<LooseDataEntity> GetArrestReports()
-    {
-        return this._looseDataService.GetEntities<ArrestReportSet>();
-    }
-
-    /// <inheritdoc />
-    public void RegisterEvents()
-    {
-        this._looseDataService.RegisterSetAttributes<ArrestReportSet>(new List<LooseDataAttribute>
+        return new List<LooseDataAttribute>
         {
             new()
             {
                 Name = "DepartmentId",
                 Label = "Department",
-                DataType = LooseDataAttribute.LooseDataType.Integer,
+                DataType = LooseDataType.Integer,
                 Required = false,
                 ShowInGrid = false,
                 Readonly = true,
@@ -88,7 +36,7 @@ public class ArrestReportService : IArrestReportService, IServiceWithEvents
             {
                 Name = "DateOfSubmit",
                 Label = "Date of submit",
-                DataType = LooseDataAttribute.LooseDataType.Date,
+                DataType = LooseDataType.Date,
                 Required = false,
                 ShowInGrid = true,
                 Readonly = true,
@@ -97,7 +45,7 @@ public class ArrestReportService : IArrestReportService, IServiceWithEvents
             {
                 Name = "DateOfArrest",
                 Label = "Date of arrest",
-                DataType = LooseDataAttribute.LooseDataType.Date,
+                DataType = LooseDataType.Date,
                 Required = true,
                 ShowInGrid = true,
             },
@@ -105,28 +53,28 @@ public class ArrestReportService : IArrestReportService, IServiceWithEvents
             {
                 Name = "AddressOfArrest",
                 Label = "Address of arrest",
-                DataType = LooseDataAttribute.LooseDataType.ShortString,
+                DataType = LooseDataType.ShortString,
                 Required = true,
             },
             new()
             {
                 Name = "Weapons",
                 Label = "Weapons",
-                DataType = LooseDataAttribute.LooseDataType.ShortString,
+                DataType = LooseDataType.ShortString,
                 Required = false,
             },
             new()
             {
                 Name = "Narrative",
                 Label = "Narrative",
-                DataType = LooseDataAttribute.LooseDataType.LongString,
+                DataType = LooseDataType.LongString,
                 Required = true,
             },
             new()
             {
                 Name = "ArresteeName",
                 Label = "Name of arrestee",
-                DataType = LooseDataAttribute.LooseDataType.ShortString,
+                DataType = LooseDataType.ShortString,
                 Required = true,
                 ShowInGrid = true,
                 Order = 1,
@@ -135,21 +83,21 @@ public class ArrestReportService : IArrestReportService, IServiceWithEvents
             {
                 Name = "ArresteeBirthdate",
                 Label = "Birthdate of arrestee",
-                DataType = LooseDataAttribute.LooseDataType.Date,
+                DataType = LooseDataType.Date,
                 Required = true,
             },
             new()
             {
                 Name = "ArresteeAge",
                 Label = "Age of arrestee",
-                DataType = LooseDataAttribute.LooseDataType.Integer,
+                DataType = LooseDataType.Integer,
                 Required = true,
             },
             new()
             {
                 Name = "ArresteeGender",
                 Label = "Gender of arrestee",
-                DataType = LooseDataAttribute.LooseDataType.Integer,
+                DataType = LooseDataType.Integer,
                 Required = true,
                 Options = new LooseDataAttribute.AttributeOptions
                 {
@@ -164,9 +112,9 @@ public class ArrestReportService : IArrestReportService, IServiceWithEvents
             {
                 Name = "ArresteeRace",
                 Label = "Race of arrestee",
-                DataType = LooseDataAttribute.LooseDataType.ShortString,
+                DataType = LooseDataType.ShortString,
                 Required = true,
             },
-        });
+        };
     }
 }

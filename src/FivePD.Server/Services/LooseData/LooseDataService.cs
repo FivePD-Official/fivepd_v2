@@ -10,8 +10,8 @@ using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
-using FivePD.Server.Interfaces;
-using FivePD.Server.Models.LooseDataSet;
+using FivePD.Server.Interfaces.LooseData;
+using FivePD.Server.Models.LooseData;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -42,9 +42,9 @@ public class LooseDataService : ILooseDataService
     }
 
     /// <inheritdoc />
-    public IDisposable OnEdited<TS>(Action<LooseDataEntity> observer)
+    public IDisposable OnUpdated<TS>(Action<LooseDataEntity> observer)
     {
-        return this.OnEvent<TS>(LooseDataEntityObservableType.Edit, observer);
+        return this.OnEvent<TS>(LooseDataEntityObservableType.Update, observer);
     }
 
     /// <inheritdoc />
@@ -79,8 +79,12 @@ public class LooseDataService : ILooseDataService
                 return;
             }
 
+            if (assemblyName != "FivePD" && setIdAttr.Id.StartsWith("fivepd_"))
+            {
+                return;
+            }
+
 #pragma warning disable
-            // TODO: add check for official set names (e.g. fivepd_arrest_report)
             // TODO: add check for duplicate attributes
 #pragma warning enable
 
@@ -115,7 +119,7 @@ public class LooseDataService : ILooseDataService
                             Entity = entity,
                             Attribute = addedAttributeEntry.Entity,
                             Value = JsonConvert.SerializeObject(
-                                attr.DataType == LooseDataAttribute.LooseDataType.Date
+                                attr.DataType == LooseDataType.Date
                                     ? DateTime.Now
                                     : null),
                         };
@@ -520,7 +524,7 @@ public class LooseDataService : ILooseDataService
                     Entity = entity,
                     Attribute = addedAttributeEntry.Entity,
                     Value = JsonConvert.SerializeObject(
-                        request.Attribute.DataType == LooseDataAttribute.LooseDataType.Date
+                        request.Attribute.DataType == LooseDataType.Date
                             ? DateTime.Now
                             : null),
                 };
@@ -843,7 +847,7 @@ public class LooseDataService : ILooseDataService
         }
 
         this._databaseContext.SaveChanges();
-        this.InvokeEvent(LooseDataEntityObservableType.Edit, this.FindSetTypeById(setId), this.InternalGetEntity(entityId));
+        this.InvokeEvent(LooseDataEntityObservableType.Update, this.FindSetTypeById(setId), this.InternalGetEntity(entityId));
     }
 
     private Type FindSetTypeById(string setId)

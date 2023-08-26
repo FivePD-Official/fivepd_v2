@@ -1,4 +1,4 @@
-﻿namespace FivePD.Server.Models.LooseDataSet;
+﻿namespace FivePD.Server.Models.LooseData;
 
 /// <summary>
 /// Defines the possible types of <see cref="LooseDataEntityObservable"/>.
@@ -13,7 +13,7 @@ public enum LooseDataEntityObservableType
     /// <summary>
     /// Fires when an entity has been edited in a set.
     /// </summary>
-    Edit,
+    Update,
 
     /// <summary>
     /// Fires when an entity has been deleted from a set.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FivePD.Server.Models.LooseDataSet;
+namespace FivePD.Server.Models.LooseData;
 
 /// <summary>
 /// Represents a dynamic data set.

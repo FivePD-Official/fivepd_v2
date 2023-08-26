@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using FivePD.Server.Exceptions;
-using FivePD.Server.Models.LooseDataSet;
+using FivePD.Server.Models.LooseData;
 
-namespace FivePD.Server.Interfaces;
+namespace FivePD.Server.Interfaces.LooseData;
 
 /// <summary>
 /// Handles the dynamic data sets and entities.
@@ -60,7 +60,7 @@ public interface ILooseDataService
     /// <param name="observer">The action that will executed upon firing with the edited entity.</param>
     /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
     /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnEdited<TS>(Action<LooseDataEntity> observer);
+    public IDisposable OnUpdated<TS>(Action<LooseDataEntity> observer);
 
     /// <summary>
     /// Fires when an entity from the given <typeparamref name="TS"/> set is deleted

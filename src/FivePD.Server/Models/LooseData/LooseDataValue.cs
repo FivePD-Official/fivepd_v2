@@ -1,4 +1,4 @@
-﻿namespace FivePD.Server.Models.LooseDataSet;
+﻿namespace FivePD.Server.Models.LooseData;
 
 /// <summary>
 /// Represents an entity's attribute value.

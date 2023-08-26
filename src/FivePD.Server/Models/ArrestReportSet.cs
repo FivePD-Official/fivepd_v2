@@ -6,6 +6,6 @@ namespace FivePD.Server.Models;
 /// Represents a set containing the arrest reports.
 /// </summary>
 [LooseDataSetId("fivepd_arrest_report")]
-public class ArrestReportSet : FivePD.Server.Models.LooseDataSet.LooseDataSet
+public class ArrestReportSet : LooseData.LooseDataSet
 {
 }

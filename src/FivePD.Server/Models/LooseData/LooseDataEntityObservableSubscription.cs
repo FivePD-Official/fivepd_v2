@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FivePD.Server.Models.LooseDataSet;
+namespace FivePD.Server.Models.LooseData;
 
 /// <summary>
 /// Represents a dynamic entity observable subscription.

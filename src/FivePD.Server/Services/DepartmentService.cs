@@ -25,19 +25,16 @@ public class DepartmentService : IDepartmentService
 {
     private readonly DatabaseContext _databaseContext;
     private readonly IPlayerDataService _playerDataService;
-    private readonly IRandomService _randomService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DepartmentService"/> class.
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerDataService">The <see cref="PlayerDataService"/> to use.</param>
-    /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
-    public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService, IRandomService randomService)
+    public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService)
     {
         this._databaseContext = databaseContext;
         this._playerDataService = playerDataService;
-        this._randomService = randomService;
     }
 
     /// <inheritdoc />

@@ -1,6 +1,6 @@
 ﻿using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
-using FivePD.Server.Models.LooseDataSet;
+using FivePD.Server.Models.LooseData;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
