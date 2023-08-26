@@ -50,7 +50,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
     }
     
     /// <inheritdoc/>
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._nextCalloutInMs = this._randomService.Random.Next(
             this._configService.GeneralConfig.Callout.MinIntervalInMs,

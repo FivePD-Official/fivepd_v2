@@ -56,7 +56,7 @@ public class ConfigService : IConfigService, IServiceWithEvents
     public List<string> Lastnames => this._fileHandlerService.LoadStringList("/Config/last-names.txt");
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Config.Get] += new Action<string, NetworkCallbackDelegate>(this.OnGetConfig);
     }

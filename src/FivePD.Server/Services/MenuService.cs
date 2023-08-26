@@ -43,7 +43,7 @@ public class MenuService : IMenuService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this.Register<DutyMenu>();
         this.Register<DispatchMenu>();

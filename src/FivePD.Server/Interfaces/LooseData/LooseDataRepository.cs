@@ -24,7 +24,7 @@ public abstract class LooseDataRepository<TS> : IServiceWithEvents
         this._looseDataService = looseDataService;
     }
     
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._looseDataService.RegisterSetAttributes<TS>(this.RegisterSetAttributes());
     }

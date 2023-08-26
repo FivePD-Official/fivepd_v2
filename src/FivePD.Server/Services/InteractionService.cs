@@ -41,7 +41,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._controlService.RegisterKeybind(
             Controls.TryAlertEntityAsync.Id,

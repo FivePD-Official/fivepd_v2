@@ -67,7 +67,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     public event EventHandler<PlayerDivisionChangeEventArgs> PlayerDivisionChanged;
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
 

@@ -29,7 +29,7 @@ public class VehicleService : IVehicleService, IServiceWithEvents
     }
 
     /// <inheritdoc/>
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Vehicle.Generate] += new Action<string>(this.GenerateVehicle);
     }

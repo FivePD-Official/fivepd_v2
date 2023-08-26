@@ -9,5 +9,5 @@ public interface IServiceWithEvents
     /// <summary>
     /// Registers all events related to the current class.
     /// </summary>
-    void RegisterEvents();
+    internal void RegisterEvents();
 }

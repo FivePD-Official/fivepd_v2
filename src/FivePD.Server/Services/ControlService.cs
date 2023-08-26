@@ -26,7 +26,7 @@ public class ControlService : IControlService, IServiceWithEvents
     }
         
     /// <inheritdoc />
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Control.GetAll] += new Action<NetworkCallbackDelegate>(this.OnGetAll);
     }

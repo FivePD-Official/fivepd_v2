@@ -26,7 +26,7 @@ public class LocalizationService : ILocalizationService, IServiceWithEvents
     public Dictionary<string, string> AvailableLocalizations { get; private set; } = new();
 
     /// <inheritdoc/>
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this.GetLocalizations();
 

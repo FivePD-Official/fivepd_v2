@@ -84,7 +84,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Callout.OnPlayerEnteredInActivityZone] += new Action<Player, string>(this.OnPlayerEnteredInActivityZone);
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);

@@ -30,7 +30,7 @@ public class EventService : IEventService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Generic.Callback] += new Action<string, string>((eventId, value) =>
         {

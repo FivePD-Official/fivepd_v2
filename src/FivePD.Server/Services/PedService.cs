@@ -35,7 +35,7 @@ public class PedService : IPedService, IServiceWithEvents
     }
 
     /// <inheritdoc/>
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
         this._eventHandlerDictionary[Events.Ped.Search] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.Search);

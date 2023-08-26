@@ -26,7 +26,7 @@ public class UIService : IUIService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    void IServiceWithEvents.RegisterEvents()
     {
         this.RegisterEventAttributes();
     }
