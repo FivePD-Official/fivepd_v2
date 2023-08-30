@@ -67,6 +67,10 @@ export class ModalEntityViewComponent implements OnInit {
         name = 'User';
         value = entityWrapper.entity['User']['Name'] ?? '-';
       }
+      if (name === 'Incident' && entityWrapper.entity['Incident']) {
+        name = 'Incident';
+        value = entityWrapper.entity['Incident']['Title'] ?? '-';
+      }
 
       // Replace enum index with value
       if (attr.Options?.Items) {

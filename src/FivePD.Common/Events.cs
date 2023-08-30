@@ -305,4 +305,9 @@ internal readonly record struct Events
 
         public const string AssignCalloutToUnits = "fivepd:dispatch:assignCalloutToUnits";
     }
+    
+    public readonly record struct IncidentHistory
+    {
+        public const string GetAllOfUser = "fivepd:incidentHistory:getAllOfUser";
+    }
 }

@@ -144,6 +144,8 @@ export class DynamicFormInputComponent implements OnInit {
       this.setSelectedItem(selectItem, updateControl);
     } else if ('selectedItemsResolver' in this.field.dropdownOptions!) {
       this.setSelectedItems(selectItem, updateControl);
+    } else {
+      this.setSelectedItem(selectItem, updateControl);
     }
   }
 

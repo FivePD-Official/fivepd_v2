@@ -287,6 +287,12 @@ internal class Bootstrapper : BaseScript
             .As<IServiceWithEvents>()
             .IsSingleton();
 
+        services
+            .RegisterType<IncidentHistoryService>()
+            .As<IIncidentHistoryService>()
+            .As<IServiceWithEvents>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);

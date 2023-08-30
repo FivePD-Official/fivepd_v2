@@ -44,8 +44,8 @@
          (clickOutside)="dropdownOpen = false"
          [ngClass]="{
           'dropdown--open': dropdownOpen,
-          'dropdown--normal': field.dropdownOptions!['size'] === 'normal',
-          'dropdown--small': field.dropdownOptions!['size'] === 'small',
+          'dropdown--normal': !field.dropdownOptions?.size || field.dropdownOptions?.size === 'normal',
+          'dropdown--small': field.dropdownOptions?.size === 'small',
           'dropdown--readonly': field.readonly
          }">
       <input [formControlName]="field.key" [attr.id]="field.key" type="number"/>

@@ -17,6 +17,7 @@ export enum Gender {
 
 export enum DefaultSetId {
   ArrestReport = 'fivepd_arrest_report',
+  IncidentReport = 'fivepd_incident_report',
 }
 
 export type SetId = DefaultSetId | string;
@@ -35,4 +36,9 @@ export enum FIncidentPriority {
   Code1,
   Code2,
   Code3,
+}
+
+export enum FIncidentType {
+  Callout,
+  TrafficStop,
 }

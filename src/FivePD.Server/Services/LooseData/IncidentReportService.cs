@@ -33,6 +33,15 @@ public class IncidentReportService : LooseDataRepository<IncidentReportSet>
             },
             new()
             {
+                Name = "UserId",
+                Label = "User",
+                DataType = LooseDataType.Integer,
+                Required = false,
+                ShowInGrid = false,
+                Readonly = true,
+            },
+            new()
+            {
                 Name = "DateOfSubmit",
                 Label = "Date of submit",
                 DataType = LooseDataType.Date,

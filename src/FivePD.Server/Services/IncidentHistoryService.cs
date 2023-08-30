@@ -1,9 +1,17 @@
-﻿using System.Linq;
+﻿using System.Dynamic;
+using System.Linq;
+using System.Net.NetworkInformation;
+using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Server.API;
+using FivePD.Server.Attributes;
 using FivePD.Server.Database;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Models.DTO;
+using FivePD.Server.Models.Requests;
 
 namespace FivePD.Server.Services;
 
@@ -61,5 +69,21 @@ internal class IncidentHistoryService : IIncidentHistoryService, IInternalIncide
     {
         this._databaseContext.IncidentHistories.Add(incidentHistory);
         this._databaseContext.SaveChangesAsync();
+    }
+
+    [UIEvent(Events.IncidentHistory.GetAllOfUser)]
+    private void GetIncidentsOfUser(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<IdRequest>();
+        var incidentHistories = this._databaseContext.IncidentHistories
+            .Where(x => x.Users.Any(y => y.User.Id == request.Id))
+            .Select(x => new SimpleIncidentHistoryDTO
+            {
+                Id = x.Id,
+                Title = x.Title,
+                GeneratedAt = x.GeneratedAt,
+            });
+
+        networkCallbackDelegate.InvokeWithJson(incidentHistories);
     }
 }

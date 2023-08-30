@@ -6,3 +6,10 @@
   [data]="arrestReports"
   [columns]="arrestReportColumns"
   (onCollationChange)="onArrestReportCollationChange($event)"/>
+
+<app-grid
+  [title]="'UI.LABEL.INCIDENT_REPORT.PLURAL' | translate"
+  [buttons]="incidentReportButtons"
+  [data]="incidentReports"
+  [columns]="incidentReportColumns"
+  (onCollationChange)="onIncidentReportCollationChange($event)"/>

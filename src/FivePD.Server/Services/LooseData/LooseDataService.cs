@@ -417,6 +417,12 @@ public class LooseDataService : ILooseDataService
             var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
             entity.MappedValues["User"] = user;
         }
+        
+        if (entity.MappedValues.ContainsKey("IncidentId"))
+        {
+            var user = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == (entity.MappedValues["IncidentId"] as long? ?? 0));
+            entity.MappedValues["Incident"] = user;
+        }
 
         return entity;
     }

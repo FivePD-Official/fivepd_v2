@@ -1,4 +1,5 @@
 import { SetAttribute } from './loose-data';
+import { FIncidentPriority, FIncidentType } from "@enums";
 
 export interface WithId {
   Id: number;
@@ -77,3 +78,23 @@ export interface Vector3 {
   Y: number;
   Z: number;
 }
+
+export interface IncidentHistory {
+  Id: number;
+  IncidentId: string;
+  Title: string;
+  Description: string;
+  Location: string;
+  Priority: FIncidentPriority;
+  Type: FIncidentType,
+  GeneratedAt: string;
+  Users: IncidentHistoryUser[];
+}
+
+export interface IncidentHistoryUser {
+  Id: number;
+  User: User;
+  IncidentHistory: IncidentHistory;
+}
+
+export type SimpleIncidentHistory = Pick<IncidentHistory, 'Id' | 'Title' | 'GeneratedAt'>;

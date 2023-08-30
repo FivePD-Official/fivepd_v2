@@ -1,7 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
+import {
+  Button,
+  Collation,
+  Column,
+  Dropdown,
+  FormInputBase,
+  MappedLooseDataEntity,
+  Page,
+  SimpleIncidentHistory,
+  User
+} from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, switchMap } from 'rxjs';
+import { filter, map, of, switchMap } from 'rxjs';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 import { LocalizationService } from '@services/localization/localization.service';
 import { DefaultSetId } from '@enums';
@@ -15,6 +25,7 @@ import { ModalFormService } from '@services/modals/modal-form/modal-form.service
 import { ModalService } from '@services/modals/modal/modal.service';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { IncidentHistoryService } from '@services/incident-history/incident-history.service';
 
 @Component({
   selector: 'app-reports',
@@ -61,6 +72,60 @@ export class ReportsComponent implements OnInit {
   arrestReports?: Page<MappedLooseDataEntity>;
   arrestReportColumns: Column<MappedLooseDataEntity>[] = [];
 
+  incidentReportButtons: Button[] = [
+    {
+      type: 'button',
+      label: this._localization.translate('UI.ACTION.CREATE'),
+      show: () => true,
+      disabled: () => !this.user?.Department,
+      tooltip: {
+        enabled: () => !this.user?.Department,
+        text: this._localization.translate('UI.LABEL.ARREST_REPORT.CREATE.TOOLTIP'),
+        placement: 'left',
+      },
+      onClick: () => this.modalFormService.open({
+        title: 'UI.ACTION.CREATE',
+        buttons: {
+          submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+        },
+        fields: (incidents) => {
+          const incidentsToShow: SimpleIncidentHistory[] = Array.isArray(incidents) ? incidents : [];
+          return [
+            new Dropdown({
+              key: 'IncidentId',
+              label: 'UI.LABEL.INCIDENT_REPORT.INCIDENT',
+              required: true,
+              dropdownOptions: {
+                label: 'UI.LABEL.INCIDENT_REPORT.INCIDENT',
+                size: 'normal',
+                variant: 'secondary',
+                items: incidentsToShow.map(incident => ({
+                  key: incident.Id,
+                  label: `${incident.Title} (${incident.GeneratedAt})`,
+                })),
+              }
+            }),
+            ...mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.IncidentReport))];
+        },
+        valueResolver: new ValueResolver({}, this._incidentHistoryService.getAllOfUser()),
+      }).result
+        .pipe(
+          filter(res => res.success),
+          switchMap(res => this._looseData.addEntity(DefaultSetId.IncidentReport, {
+            UserId: this.user!.Id,
+            DateOfSubmit: new Date(),
+            ...res.value!,
+          })),
+          this._modal.handleResponse()
+        ).subscribe(() => this.getIncidentReports())
+    }
+  ];
+  incidentReportCollation: Collation = {
+    Page: 1,
+  };
+  incidentReports?: Page<MappedLooseDataEntity>;
+  incidentReportColumns: Column<MappedLooseDataEntity>[] = [];
+
   constructor(
     private readonly store: Store<GlobalState>,
     private _looseData: LooseDataService,
@@ -69,6 +134,7 @@ export class ReportsComponent implements OnInit {
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
     private readonly _userService: UserService,
+    private readonly _incidentHistoryService: IncidentHistoryService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details.User;
@@ -77,6 +143,7 @@ export class ReportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getArrestReports();
+    this.getIncidentReports();
   }
 
   getArrestReports(): void {
@@ -160,6 +227,100 @@ export class ReportsComponent implements OnInit {
   onArrestReportCollationChange(collation: Collation): void {
     this.arrestReportCollation = collation;
     this.getArrestReports();
+  }
+
+  getIncidentReports(): void {
+    this._looseData.getEntities(DefaultSetId.IncidentReport, this.incidentReportCollation).subscribe(wrapper => {
+      this.incidentReports = wrapper.page;
+      this.incidentReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
+        {
+          index: 0,
+          item: new Column<MappedLooseDataEntity>({
+            header: 'ID',
+            valueResolver: item => item.Id.toString(),
+          }),
+        },
+        {
+          index: 1,
+          item: new Column<MappedLooseDataEntity>({
+            header: 'Incident',
+            valueResolver: item => item['IncidentId'].toString(),
+            linkResolver: item => `/mdt/incidents/${item['IncidentId']}`,
+          }),
+        },
+        {
+          index: 2,
+          item: new Column<MappedLooseDataEntity>({
+            header: 'Submitted by',
+            valueResolver: item => item['User'] ? item['User']['Name'] : '',
+          }),
+        },
+      ]);
+      this.incidentReportColumns.push(
+        {
+          header: 'Actions',
+          show: () => true,
+          actions: [
+            {
+              type: 'button',
+              label: this._localization.translate('UI.ACTION.VIEW'),
+              show: () => true,
+              onClick: entity => {
+                this._modal.open(ModalEntityViewComponent, {
+                  title: 'UI.LABEL.INCIDENT_REPORT.SINGULAR',
+                }, new Map().set(ENTITY, entity).set(ATTRIBUTES, wrapper.attributes));
+              }
+            },
+            {
+              type: 'button',
+              label: this._localization.translate('UI.ACTION.EDIT'),
+              show: () => this._userService.userHasRole(UserRole.Admin),
+              onClick: entity => {
+                this.modalFormService.open({
+                    title: 'UI.ACTION.EDIT',
+                    buttons: {
+                      submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                    },
+                    fields: updatedEntity => mapAttributesToFields(this._looseData.getSetAttributes(entity.SetId), updatedEntity),
+                    valueResolver: new ValueResolver(entity, this._looseData.getEntity(entity.SetId, entity.Id), v => v.entity)
+                  }
+                ).result
+                  .pipe(
+                    filter(res => res.success),
+                    switchMap(res => this._looseData.editEntity(DefaultSetId.IncidentReport, entity.Id, {...entity, ...res.value!})),
+                    this._modal.handleResponse(),
+                  )
+                  .subscribe(() => this.getIncidentReports());
+              }
+            },
+            {
+              type: 'button',
+              label: this._localization.translate('UI.ACTION.DELETE'),
+              show: () => this._userService.userHasRole(UserRole.Admin),
+              onClick: item => {
+                this.modalConfirmService.open({
+                  title: 'UI.LABEL.INCIDENT_REPORT.DELETE.TITLE',
+                  description: this._localization.translate('UI.LABEL.INCIDENT_REPORT.DELETE.DESCRIPTION'),
+                  buttons: {
+                    submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                  },
+                }).result
+                  .pipe(
+                    filter(res => res.success),
+                    switchMap(() => this._looseData.deleteEntity(DefaultSetId.IncidentReport, item.Id)),
+                    this._modal.handleResponse()
+                  ).subscribe(() => this.getIncidentReports())
+              }
+            }
+          ],
+        }
+      );
+    });
+  }
+
+  onIncidentReportCollationChange(collation: Collation): void {
+    this.incidentReportCollation = collation;
+    this.getIncidentReports();
   }
 
 }

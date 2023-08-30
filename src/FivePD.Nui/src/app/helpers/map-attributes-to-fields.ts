@@ -12,7 +12,7 @@
   TextInput
 } from '@models';
 
-export function mapAttributesToFields(attributes: SetAttribute[], entity?: MappedLooseDataEntity): FormInputBase<any>[] {
+export function mapAttributesToFields(attributes: SetAttribute[], entity?: MappedLooseDataEntity, additionalFields: FormInputBase<any>[] = []): FormInputBase<any>[] {
   const fields: FormInputBase<any>[] = [];
   for (const attr of attributes.filter(a => !a.Readonly)) {
     const options: FormInputBaseOptions<any> = {
@@ -69,6 +69,8 @@ export function mapAttributesToFields(attributes: SetAttribute[], entity?: Mappe
 
     fields.push(inputField);
   }
+
+  fields.push(...additionalFields);
 
   return fields;
 }
