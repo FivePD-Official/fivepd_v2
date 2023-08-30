@@ -294,6 +294,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IInternalDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DispatchService>());
+        
+        services.AddSingleton<IncidentHistoryService>();
+        services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
+        services.AddSingleton<IInternalIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
 
         this._provider = services.BuildServiceProvider();
 

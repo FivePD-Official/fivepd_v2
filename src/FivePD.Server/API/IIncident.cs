@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CitizenFX.Core;
+using FivePD.Common.Enums;
 using FivePD.Server.Models;
 
 namespace FivePD.Server.API;
@@ -25,6 +26,11 @@ public interface IIncident
     /// Gets the description of the incident.
     /// </summary>
     public string Description { get; }
+
+    /// <summary>
+    /// Gets the priority of the incident.
+    /// </summary>
+    public FIncidentPriority Priority { get; }
 
     /// <summary>
     /// Gets the location of the incident.

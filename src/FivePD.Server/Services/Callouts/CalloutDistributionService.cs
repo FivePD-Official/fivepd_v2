@@ -22,12 +22,12 @@ namespace FivePD.Server.Services.Callouts;
 /// <inheritdoc cref="ICalloutDistributionService" />
 public class CalloutDistributionService : ICalloutDistributionService, IInternalCalloutDistributionService
 {
-    private readonly DatabaseContext _databaseContext;
     private readonly IConfigService _configService;
     private readonly IConfirmationService _confirmationService;
     private readonly IUnitService _unitService;
     private readonly PlayerList _playerList;
     private readonly ICalloutStoreService _calloutStoreService;
+    private readonly IInternalIncidentHistoryService _internalIncidentHistoryService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
@@ -38,20 +38,22 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="calloutStoreService">The <see cref="ICalloutStoreService"/> to use.</param>
+    /// <param name="internalIncidentHistoryService">The <see cref="IInternalIncidentHistoryService"/> to use.</param>
     public CalloutDistributionService(
         DatabaseContext databaseContext,
         IConfigService configService,
         IConfirmationService confirmationService,
         IUnitService unitService,
         PlayerList playerList,
-        ICalloutStoreService calloutStoreService)
+        ICalloutStoreService calloutStoreService,
+        IIncidentHistoryService internalIncidentHistoryService)
     {
-        this._databaseContext = databaseContext;
         this._configService = configService;
         this._confirmationService = confirmationService;
         this._unitService = unitService;
         this._playerList = playerList;
         this._calloutStoreService = calloutStoreService;
+        this._internalIncidentHistoryService = (IInternalIncidentHistoryService)internalIncidentHistoryService;
     }
 
     /// <inheritdoc/>
@@ -100,6 +102,8 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <inheritdoc />
     public void AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false)
     {
+        this._internalIncidentHistoryService.AddUnitToIncidentHistory(callout, FIncidentType.Callout, unit);
+
         if (callout.Units.Contains(unit))
         {
             return;

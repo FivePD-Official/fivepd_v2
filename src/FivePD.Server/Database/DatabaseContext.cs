@@ -76,6 +76,16 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<LooseDataValue> LooseDataValues { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the incident histories.
+    /// </summary>
+    public DbSet<IncidentHistory> IncidentHistories { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing the assigned users of an incident history.
+    /// </summary>
+    public DbSet<IncidentHistoryUser> IncidentHistoryUsers { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -128,7 +138,9 @@ public class DatabaseContext : DbContext
             type.Property(t => t.Options)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
-                    v => JsonConvert.DeserializeObject<LooseDataAttribute.AttributeOptions>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                    v => JsonConvert.DeserializeObject<LooseDataAttribute.AttributeOptions>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
         modelBuilder.Entity<LooseDataEntity>(type =>
@@ -142,5 +154,10 @@ public class DatabaseContext : DbContext
             type.HasOne(t => t.Attribute);
             type.HasOne(t => t.Entity);
         });
+
+        modelBuilder.Entity<IncidentHistory>()
+            .HasMany(incidentHistory => incidentHistory.Users)
+            .WithOne(user => user.IncidentHistory)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -64,7 +64,60 @@ namespace FivePD.Server.Migrations
                     b.ToTable("Divisions");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseDataSet.LooseDataAttribute", b =>
+            modelBuilder.Entity("FivePD.Server.Models.IncidentHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("GeneratedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("IncidentId")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IncidentHistories");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.IncidentHistoryUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IncidentHistoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IncidentHistoryId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("IncidentHistoryUsers");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,7 +166,7 @@ namespace FivePD.Server.Migrations
                     b.ToTable("LooseDataAttributes");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseDataSet.LooseDataEntity", b =>
+            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,7 +182,7 @@ namespace FivePD.Server.Migrations
                     b.ToTable("LooseDataEntities");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseDataSet.LooseDataSet", b =>
+            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataSet", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
@@ -139,7 +192,7 @@ namespace FivePD.Server.Migrations
                     b.ToTable("LooseDataSets");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseDataSet.LooseDataValue", b =>
+            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataValue", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -256,27 +309,39 @@ namespace FivePD.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseDataSet.LooseDataAttribute", b =>
+            modelBuilder.Entity("FivePD.Server.Models.IncidentHistoryUser", b =>
                 {
-                    b.HasOne("FivePD.Server.Models.LooseDataSet.LooseDataSet", "Set")
+                    b.HasOne("FivePD.Server.Models.IncidentHistory", "IncidentHistory")
+                        .WithMany("Users")
+                        .HasForeignKey("IncidentHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("FivePD.Server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.LooseData.LooseDataSet", "Set")
                         .WithMany("Attributes")
                         .HasForeignKey("SetId");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseDataSet.LooseDataEntity", b =>
+            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataEntity", b =>
                 {
-                    b.HasOne("FivePD.Server.Models.LooseDataSet.LooseDataSet", "Set")
+                    b.HasOne("FivePD.Server.Models.LooseData.LooseDataSet", "Set")
                         .WithMany("Entities")
                         .HasForeignKey("SetId");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseDataSet.LooseDataValue", b =>
+            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataValue", b =>
                 {
-                    b.HasOne("FivePD.Server.Models.LooseDataSet.LooseDataAttribute", "Attribute")
+                    b.HasOne("FivePD.Server.Models.LooseData.LooseDataAttribute", "Attribute")
                         .WithMany()
                         .HasForeignKey("AttributeId");
 
-                    b.HasOne("FivePD.Server.Models.LooseDataSet.LooseDataEntity", "Entity")
+                    b.HasOne("FivePD.Server.Models.LooseData.LooseDataEntity", "Entity")
                         .WithMany("Values")
                         .HasForeignKey("EntityId")
                         .OnDelete(DeleteBehavior.Cascade);

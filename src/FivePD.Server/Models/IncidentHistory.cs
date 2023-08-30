@@ -15,19 +15,24 @@ public class IncidentHistory
     public int Id { get; set; }
 
     /// <summary>
-    /// Gets the title of the incident.
+    /// Gets or sets the identifier which is/was used to runtime reference this record.
     /// </summary>
-    public string Title { get; }
+    public string IncidentId { get; set; }
 
     /// <summary>
-    /// Gets the description of the incident.
+    /// Gets or sets the title of the incident.
     /// </summary>
-    public string Description { get; }
+    public string Title { get; set; }
 
     /// <summary>
-    /// Gets the location of the incident.
+    /// Gets or sets the description of the incident.
     /// </summary>
-    public string Location { get; }
+    public string Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the location of the incident.
+    /// </summary>
+    public string Location { get; set; }
 
     /// <summary>
     /// Gets or sets the priority of the incident.
@@ -40,9 +45,9 @@ public class IncidentHistory
     public FIncidentType Type { get; set; }
 
     /// <summary>
-    /// Gets the generated date time of the incident.
+    /// Gets or sets the generated date time of the incident.
     /// </summary>
-    public DateTime GeneratedAt { get; }
+    public DateTime GeneratedAt { get; set; }
 
     /// <summary>
     /// Gets or sets the users who were involved in this incident.
