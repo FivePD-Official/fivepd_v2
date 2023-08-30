@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace FivePD.Server.Models.DTO;
 
@@ -17,8 +18,8 @@ internal class DepartmentResponse : Department
         this.CallsignFormat = department.CallsignFormat;
         this.MaxUsers = department.MaxUsers;
         this.Divisions = department.Divisions;
-        this.Ranks = Enumerable.Empty<Rank>();
-        this.Users = Enumerable.Empty<User>();
+        this.Ranks = new List<Rank>();
+        this.Users = new List<User>();
 
         this.UserCount = department.Users.Count();
     }
