@@ -15,10 +15,10 @@ public class LooseDataSet
     /// <summary>
     /// Gets or sets the entities of this set.
     /// </summary>
-    public IEnumerable<LooseDataEntity> Entities { get; set; }
+    public IList<LooseDataEntity> Entities { get; set; }
 
     /// <summary>
     /// Gets or sets the attributes of this set.
     /// </summary>
-    public IEnumerable<LooseDataAttribute> Attributes { get; set; }
+    public IList<LooseDataAttribute> Attributes { get; set; }
 }

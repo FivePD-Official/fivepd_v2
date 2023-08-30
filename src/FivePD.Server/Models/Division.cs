@@ -25,5 +25,5 @@ public class Division
     /// <summary>
     /// Gets or sets the users of this division.
     /// </summary>
-    public IEnumerable<User> Users { get; set; }
+    public IList<User> Users { get; set; }
 }

@@ -7,17 +7,21 @@ using FivePD.Server.Models;
 
 namespace FivePD.Server.Services;
 
-#pragma warning disable
-
+/// <inheritdoc cref="FivePD.Server.Interfaces.IIncidentHistoryService" />
 internal class IncidentHistoryService : IIncidentHistoryService, IInternalIncidentHistoryService
 {
     private readonly DatabaseContext _databaseContext;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IncidentHistoryService"/> class.
+    /// </summary>
+    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     public IncidentHistoryService(DatabaseContext databaseContext)
     {
         this._databaseContext = databaseContext;
     }
 
+    /// <inheritdoc/>
     public void AddUnitToIncidentHistory(IIncident incident, FIncidentType incidentType, Unit unit)
     {
         var incidentHistory = this._databaseContext.IncidentHistories
@@ -43,7 +47,7 @@ internal class IncidentHistoryService : IIncidentHistoryService, IInternalIncide
 
         foreach (var player in unit.Players)
         {
-            this._databaseContext.IncidentHistoryUsers.Add(new IncidentHistoryUser
+            incidentHistory.Users.Add(new IncidentHistoryUser
             {
                 IncidentHistory = incidentHistory,
                 User = player.User,

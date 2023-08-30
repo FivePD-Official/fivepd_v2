@@ -47,17 +47,17 @@ public class Department
     /// <summary>
     /// Gets or sets the users of this department.
     /// </summary>
-    public IEnumerable<User> Users { get; set; }
+    public IList<User> Users { get; set; }
 
     /// <summary>
     /// Gets or sets the divisions of this department.
     /// </summary>
-    public IEnumerable<Division> Divisions { get; set; }
+    public IList<Division> Divisions { get; set; }
 
     /// <summary>
     /// Gets or sets the ranks of this department.
     /// </summary>
-    public IEnumerable<Rank> Ranks { get; set; }
+    public IList<Rank> Ranks { get; set; }
 
     /// <summary>
     /// Initializes a new instance of <see cref="DepartmentResponse"/>.

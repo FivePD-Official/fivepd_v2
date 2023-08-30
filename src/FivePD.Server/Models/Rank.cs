@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-#pragma warning disable SA1402
-
 namespace FivePD.Server.Models;
 
 /// <summary>
@@ -37,7 +35,7 @@ public class Rank
     /// <summary>
     /// Gets or sets the users of this ranks.
     /// </summary>
-    public IEnumerable<User> Users { get; set; }
+    public IList<User> Users { get; set; }
 
     /// <summary>
     /// Defines the actions a given <see cref="Rank"/> can do.
