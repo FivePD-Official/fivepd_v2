@@ -13,6 +13,7 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.LooseData;
+using FivePD.Server.Models;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
@@ -79,6 +80,9 @@ internal class Bootstrapper : BaseScript
 
         // Enqueue addon startup phase.
         this._phases.Add(this.PerformAddonEnqueuePhase, false);
+
+        // Enqueue database prefill phase.
+        this._phases.Add(this.PrefillDatabase, false);
 
         // Begin running phases.
         this.Tick += this.RunNextPhaseAsync;
@@ -410,6 +414,67 @@ internal class Bootstrapper : BaseScript
         {
             // Lazy load it
             tickQueueService.EnqueueAsync(() => extension.OnStartedAsync());
+        }
+    }
+
+    /// <summary>
+    /// Enqueues database prefill.
+    /// </summary>
+    private void PrefillDatabase()
+    {
+        var databaseContext = this._provider.GetService<DatabaseContext>();
+        if (databaseContext is null)
+        {
+            return;
+        }
+        
+        if (!databaseContext.Departments.Any())
+        {
+            var department = new Department
+            {
+                Name = "Los Santos Police Department",
+                Callsign = "LSPD",
+                MaxUsers = 0,
+                CallsignFormat = "*L*S-NN",
+                Ranks = new List<Rank>
+                {
+                    new()
+                    {
+                        Name = "Officer I",
+                        RequiredXp = 0,
+                        Permission = new Rank.Permissions
+                        {
+                            Kick = false,
+                            SetCallsign = false,
+                            SetRank = false,
+                        }
+                    },
+                    new()
+                    {
+                        Name = "Officer II",
+                        RequiredXp = 0,
+                        Permission = new Rank.Permissions
+                        {
+                            Kick = false,
+                            SetCallsign = false,
+                            SetRank = false,
+                        }
+                    },
+                    new()
+                    {
+                        Name = "Sergeant",
+                        RequiredXp = 0,
+                        Permission = new Rank.Permissions
+                        {
+                            Kick = false,
+                            SetCallsign = false,
+                            SetRank = false,
+                        }
+                    },
+                },
+            };
+            databaseContext.Departments.Add(department);
+            databaseContext.SaveChangesAsync();
         }
     }
 

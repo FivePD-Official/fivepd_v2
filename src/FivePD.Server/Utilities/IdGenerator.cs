@@ -2,10 +2,15 @@
 
 namespace FivePD.Server.Utilities;
 
-#pragma warning disable
-
+/// <summary>
+/// Provides a simple way to generate unique IDs.
+/// </summary>
 public static class IdGenerator
 {
+    /// <summary>
+    /// Generates a unique ID.
+    /// </summary>
+    /// <returns>The generated ID.</returns>
     public static string Generate()
     {
         var guid = Guid.NewGuid().ToString();
