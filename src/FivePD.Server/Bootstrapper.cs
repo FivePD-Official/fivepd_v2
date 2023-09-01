@@ -367,10 +367,7 @@ internal class Bootstrapper : BaseScript
                 case true:
                 {
                     log?.Information("The database did not exist, it has been created");
-                
                     db.Database.ExecuteSqlRaw("CREATE TABLE __efmigrationshistory (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
-                
-                    log?.Information("Applying migrations to the database");
                     foreach (var migration in migrations)
                     {
                         db.Database.ExecuteSqlRaw("INSERT INTO __efmigrationshistory (MigrationId, ProductVersion) VALUES ({0}, {1})", migration, "3.1.26");
