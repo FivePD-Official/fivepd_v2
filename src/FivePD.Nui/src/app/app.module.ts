@@ -58,6 +58,7 @@ import { ConfigService } from "@services/config/config.service";
 import { InformationComponent } from './pages/information/information.component';
 import { NotMdtComponent } from './pages/not-mdt/not-mdt.component';
 import { DispatchComponent } from './pages/mdt/dispatch/dispatch.component';
+import { AttributeGridOptions } from "./pages/mdt/settings/_service/attribute-grid-options";
 
 @NgModule({
   declarations: [
@@ -133,6 +134,7 @@ import { DispatchComponent } from './pages/mdt/dispatch/dispatch.component';
     UnitService,
     ConfigService,
     LooseDataService,
+    AttributeGridOptions,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomHttpInterceptor,

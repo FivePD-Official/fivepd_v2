@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AttributeDataType, Button, Collation, Column, Page, SetAttribute, User } from '@models';
+import { Button, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, first, switchMap } from 'rxjs';
-import { createAttributesFormFields } from '../../../helpers/forms/set-attribute';
-import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
+import { first } from 'rxjs';
 import { LocalizationService } from '@services/localization/localization.service';
 import { DefaultSetId } from '@enums';
 import { Store } from '@ngrx/store';
@@ -14,6 +12,7 @@ import { ModalService } from '@services/modals/modal/modal.service';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventService } from "@services/event/event.service";
+import { AttributeGridOptions } from "./_service/attribute-grid-options";
 
 @Component({
   selector: 'app-settings',
@@ -30,131 +29,41 @@ export class SettingsComponent implements OnInit {
   arrestReportAttributesCollation: Collation = {
     Page: 1,
   };
-  arrestReportAttributesColumns: Column<SetAttribute>[] = [
-    {
-      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-      show: () => true,
-      accessorKey: 'Name',
-    },
-    {
-      header: this._localization.translate('UI.LABEL.TYPE.SINGULAR'),
-      show: () => true,
-      valueResolver: attr => {
-        switch (attr.DataType) {
-          case AttributeDataType.ShortString:
-            return this._localization.translate('UI.LABEL.SHORT_TEXT.SINGULAR');
-          case AttributeDataType.LongString:
-            return this._localization.translate('UI.LABEL.LONG_TEXT.SINGULAR');
-          case AttributeDataType.Integer:
-            return this._localization.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR');
-          case AttributeDataType.Bool:
-            return this._localization.translate('UI.LABEL.CHECKBOX.SINGULAR');
-          case AttributeDataType.Date:
-            return this._localization.translate('UI.LABEL.DATE.SINGULAR');
-          default:
-            return '-';
-        }
-      },
-    },
-    {
-      header: this._localization.translate('UI.LABEL.REQUIRED'),
-      show: () => true,
-      valueResolver: item => this._localization.translate(item.Required ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
-    },
-    {
-      header: this._localization.translate('UI.LABEL.ADDED_BY'),
-      show: () => true,
-      accessorKey: 'AddonId',
-    },
-    {
-      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => this.userService.userHasRole(UserRole.Admin),
-      actions: [
-        {
-          type: 'button',
-          label: this._localization.translate('UI.ACTION.EDIT'),
-          show: item => item.AddonId === 'admin',
-          onClick: attribute => {
-            this._modalFormService.open({
-              title: 'UI.LABEL.ATTRIBUTE.EDIT',
-              buttons: {
-                submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
-              },
-              fields: updatedAttribute => createAttributesFormFields(this._localization, updatedAttribute),
-              valueResolver: new ValueResolver<SetAttribute>(attribute, this._looseData.getSetAttribute(DefaultSetId.ArrestReport, attribute.Id))
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(res => this._looseData.editSetAttribute(DefaultSetId.ArrestReport, {
-                  Id: attribute.Id,
-                  Name: res.value['Name'],
-                  Label: res.value['Label'],
-                  HelpLabel: res.value['HelpLabel'],
-                  Placeholder: res.value['Placeholder'],
-                  Required: res.value['Required'],
-                  ShowInGrid: res.value['ShowInGrid'],
-                })),
-                this._modalService.handleResponse()
-              ).subscribe(() => this.getArrestReportAttributes())
-          }
-        },
-        {
-          type: 'button',
-          label: this._localization.translate('UI.ACTION.DELETE'),
-          show: item => item.AddonId === 'admin',
-          onClick: item => {
-            this._modalConfirmService.open({
-              title: 'UI.LABEL.ATTRIBUTE.DELETE.TITLE',
-              description: this._localization.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {attribute: item.Name}),
-              buttons: {
-                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
-              },
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(() => this._looseData.deleteSetAttribute(DefaultSetId.ArrestReport, item.Id)),
-                this._modalService.handleResponse()
-              ).subscribe(() => {
-              this.arrestReportAttributesCollation.Page = 1;
-              this.getArrestReportAttributes();
-            })
-          }
-        }
-      ]
+  arrestReportAttributesColumns: Column<SetAttribute>[] = this._attributeGridOptions.createColumnList(
+    DefaultSetId.ArrestReport,
+    () => this.getArrestReportAttributes(),
+    () => {
+      this.arrestReportAttributesCollation.Page = 1;
+      this.getArrestReportAttributes();
     }
-  ];
-  arrestReportAttributesButtons: Button[] = [
-    {
-      label: this._localization.translate('UI.ACTION.CREATE_ATTRIBUTE'),
-      show: () => true,
-      disabled: () => false,
-      onClick: () => {
-        this._modalFormService.open({
-          title: 'UI.ACTION.CREATE_ATTRIBUTE',
-          buttons: {
-            submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
-          },
-          fields: () => createAttributesFormFields(this._localization)
-        }).result
-          .pipe(
-            filter(res => res.success),
-            switchMap(res => this._looseData.addSetAttribute(DefaultSetId.ArrestReport, {
-              Name: res.value['Name'],
-              DataType: res.value['DataType'],
-              Label: res.value['Label'],
-              HelpLabel: res.value['HelpLabel'],
-              Placeholder: res.value['Placeholder'],
-              Required: res.value['Required'],
-              ShowInGrid: res.value['ShowInGrid'],
-            })),
-            this._modalService.handleResponse()
-          ).subscribe(() => {
-          this.arrestReportAttributesCollation.Page = 1;
-          this.getArrestReportAttributes();
-        })
-      }
+  );
+  arrestReportAttributesButtons: Button[] = this._attributeGridOptions.createButtons(
+    DefaultSetId.ArrestReport,
+    () => {
+      this.arrestReportAttributesCollation.Page = 1;
+      this.getArrestReportAttributes();
     }
-  ];
+  );
+
+  incidentReportAttributes?: Page<SetAttribute>;
+  incidentReportAttributesCollation: Collation = {
+    Page: 1,
+  };
+  incidentReportAttributesColumns: Column<SetAttribute>[] = this._attributeGridOptions.createColumnList(
+    DefaultSetId.IncidentReport,
+    () => this.getIncidentReportAttributes(),
+    () => {
+      this.incidentReportAttributesCollation.Page = 1;
+      this.getIncidentReportAttributes();
+    }
+  );
+  incidentReportAttributesButtons: Button[] = this._attributeGridOptions.createButtons(
+    DefaultSetId.IncidentReport,
+    () => {
+      this.incidentReportAttributesCollation.Page = 1;
+      this.getIncidentReportAttributes();
+    }
+  );
 
   users?: Page<User>;
   usersCollation: Collation = {
@@ -198,6 +107,7 @@ export class SettingsComponent implements OnInit {
     private readonly _localization: LocalizationService,
     private readonly _store: Store<GlobalState>,
     private readonly _eventService: EventService,
+    private readonly _attributeGridOptions: AttributeGridOptions,
   ) {
     _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
       this.user = state.user.details.User;
@@ -214,6 +124,7 @@ export class SettingsComponent implements OnInit {
     }
 
     this.getArrestReportAttributes();
+    this.getIncidentReportAttributes();
     this.getUsers();
   }
 
@@ -226,6 +137,17 @@ export class SettingsComponent implements OnInit {
   onArrestReportAttributesCollationChange(collation: Collation): void {
     this.arrestReportAttributesCollation = collation;
     this.getArrestReportAttributes();
+  }
+
+  getIncidentReportAttributes(): void {
+    this._looseData.getSetAttributesPage(DefaultSetId.IncidentReport, this.incidentReportAttributesCollation).subscribe(res => {
+      this.incidentReportAttributes = res;
+    });
+  }
+
+  onIncidentReportAttributesCollationChange(collation: Collation): void {
+    this.incidentReportAttributesCollation = collation;
+    this.getIncidentReportAttributes();
   }
 
   getUsers(): void {
