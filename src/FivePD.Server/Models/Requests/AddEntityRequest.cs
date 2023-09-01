@@ -8,7 +8,7 @@ internal record struct AddEntityRequest
 {
     public string SetId { get; set; }
 
-    public int EntityId { get; set; }
+    public string EntityId { get; set; }
 
     public ExpandoObject Entity { get; set; }
 }

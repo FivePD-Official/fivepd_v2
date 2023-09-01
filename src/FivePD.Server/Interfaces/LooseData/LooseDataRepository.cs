@@ -59,7 +59,7 @@ public abstract class LooseDataRepository<TS> : IServiceWithEvents
         this._looseDataService.DeleteEntity(arrestReport);
     }
 
-    public LooseDataEntity Get(int id)
+    public LooseDataEntity Get(string id)
     {
         return this._looseDataService.GetEntity(id);
     }

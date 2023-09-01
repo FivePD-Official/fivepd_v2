@@ -283,7 +283,7 @@ public class LooseDataService : ILooseDataService
     }
 
     /// <inheritdoc />
-    public LooseDataEntity GetEntity(int id)
+    public LooseDataEntity GetEntity(string id)
     {
         return this.InternalGetEntity(id);
     }
@@ -319,7 +319,7 @@ public class LooseDataService : ILooseDataService
         }
     }
 
-    private LooseDataEntity InternalGetEntity(int id)
+    private LooseDataEntity InternalGetEntity(string id)
     {
         try
         {
@@ -815,7 +815,7 @@ public class LooseDataService : ILooseDataService
         return entityEntry.Entity;
     }
 
-    private void InternalUpdateEntity(string setId, int entityId, Dictionary<string, object> newValues)
+    private void InternalUpdateEntity(string setId, string entityId, Dictionary<string, object> newValues)
     {
         var set = this._databaseContext.LooseDataSets
             .Include(looseDataSet => looseDataSet.Attributes)

@@ -102,7 +102,7 @@ public interface ILooseDataService
     /// <param name="id">The id of the entity.</param>
     /// <returns>The first entity with the given id.</returns>
     /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
-    public LooseDataEntity GetEntity(int id);
+    public LooseDataEntity GetEntity(string id);
 
     /// <summary>
     /// Finds and maps all entities of the given set.

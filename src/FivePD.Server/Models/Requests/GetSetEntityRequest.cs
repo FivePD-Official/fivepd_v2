@@ -6,5 +6,5 @@ internal record struct GetSetEntityRequest
 {
     public string SetId { get; set; }
 
-    public int Id { get; set; }
+    public string Id { get; set; }
 }

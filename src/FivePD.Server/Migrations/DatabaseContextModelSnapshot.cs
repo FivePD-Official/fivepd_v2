@@ -168,9 +168,8 @@ namespace FivePD.Server.Migrations
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("SetId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
@@ -201,8 +200,8 @@ namespace FivePD.Server.Migrations
                     b.Property<int?>("AttributeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EntityId")
-                        .HasColumnType("int");
+                    b.Property<string>("EntityId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Value")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using FivePD.Server.Utilities;
 
 namespace FivePD.Server.Models.LooseData;
 
@@ -11,7 +12,7 @@ public class LooseDataEntity
     /// <summary>
     /// Gets or sets the id of this entity.
     /// </summary>
-    public int Id { get; set; }
+    public string Id { get; set; } = IdGenerator.Generate();
 
     /// <summary>
     /// Gets or sets the id of the <see cref="LooseDataSet"/> which this entity belongs to.
