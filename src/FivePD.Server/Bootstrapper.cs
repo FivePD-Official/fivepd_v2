@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
 
@@ -343,7 +344,13 @@ internal class Bootstrapper : BaseScript
         }
 
         // Register shutdown routine listener
-        this.EventHandlers["onResourceStop"] += new Action(this.OnStopped);
+        this.EventHandlers["onResourceStop"] += new Action<string>((resource) =>
+        {
+            if (resource.ToUpper() == "FIVEPD")
+            {
+                this.OnStopped();
+            }
+        });
 
         try
         {
