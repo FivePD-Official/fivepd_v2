@@ -23,7 +23,7 @@ internal static class LifecycleHandler
     {
         if (exception is MySqlException || exception.InnerException is MySqlException)
         {
-            logger.Fatal("Database connection error. Please make sure your database is running and configured correctly.");
+            logger.Fatal("Database connection error. Make sure your database is running and configured correctly.");
             OnStopped?.Invoke(null, EventArgs.Empty);
             IsStopped = true;
         }
