@@ -465,10 +465,6 @@ export class DepartmentsViewComponent implements OnInit {
     this.isUserInDepartment = this.user?.DepartmentId === this.department?.Id;
   }
 
-  get title(): string {
-    return `${this._localization.translate('UI.LABEL.DEPARTMENT.SINGULAR')} ${(this.department?.Name ? '(' + this.department?.Name + ')' : '')}`;
-  }
-
   get ranksDropdown(): DropdownItem[] {
     return this.department?.Ranks?.map(rank => {
       return {

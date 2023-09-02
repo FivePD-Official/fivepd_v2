@@ -1,4 +1,4 @@
-<app-page-header [title]="title">
+<app-page-header [title]="department?.Name ?? ('UI.LABEL.DEPARTMENT.SINGULAR' | translate)">
   <app-button [label]="'UI.ACTION.JOIN' | translate"
               [show]="!isUserInDepartment"
               variant="secondary"
