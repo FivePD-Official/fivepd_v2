@@ -12,7 +12,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IMarkerService" />
-internal class MarkerService : IMarkerService, IServiceWithEvents
+internal class MarkerService : IMarkerService, IServiceWithEvents, IDisposableService
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;
@@ -38,6 +38,12 @@ internal class MarkerService : IMarkerService, IServiceWithEvents
         this._tickService.OnTick += this.DrawMarkersAsync;
     }
 
+    /// <inheritdoc/>
+    public void InternalDispose()
+    {
+        this._tickService.OnTick -= this.DrawMarkersAsync;
+    }
+
     private void AddMarker(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<MarkerDTO.Add>(serializedRequest);
@@ -51,6 +57,7 @@ internal class MarkerService : IMarkerService, IServiceWithEvents
 
     private Task DrawMarkersAsync()
     {
+        Debug.WriteLine("MARKER TICK");
         foreach (var marker in this._markersToDraw.Values)
         {
             Cfx.API.DrawMarker(

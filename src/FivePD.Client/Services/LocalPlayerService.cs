@@ -17,7 +17,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.ILocalPlayerService" />
-internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
+internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDisposableService
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILocalizationService _localizationService;
@@ -86,6 +86,12 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeRole);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeFixedRank);
+    }
+
+    /// <inheritdoc/>
+    public void InternalDispose()
+    {
+        this._tickService.OnTick -= this.OnTickAsync;
     }
 
     /// <inheritdoc/>

@@ -23,6 +23,8 @@ internal static class LifecycleHandler
             .NewLine()
             .Red("An error occurred on the server. Stopping FivePD."));
 
+        ServiceLocator.Dispose();
+
         IsStopped = true;
     }
 }

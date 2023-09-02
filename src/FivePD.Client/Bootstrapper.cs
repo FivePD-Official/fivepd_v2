@@ -175,6 +175,7 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<ScreenDecorService>()
             .As<IScreenDecorService>()
+            .As<IDisposableService>()
             .IsSingleton();
 
         services
@@ -197,6 +198,7 @@ internal class Bootstrapper : BaseScript
             .RegisterType<ControlService>()
             .As<IControlService>()
             .As<IServiceWithEvents>()
+            .As<IDisposableService>()
             .IsSingleton();
 
         services
@@ -232,6 +234,7 @@ internal class Bootstrapper : BaseScript
             .RegisterType<LocalPlayerService>()
             .As<ILocalPlayerService>()
             .As<IServiceWithEvents>()
+            .As<IDisposableService>()
             .IsSingleton();
 
         services
@@ -244,18 +247,21 @@ internal class Bootstrapper : BaseScript
             .RegisterType<MarkerService>()
             .As<IMarkerService>()
             .As<IServiceWithEvents>()
+            .As<IDisposableService>()
             .IsSingleton();
 
         services
             .RegisterType<ConfirmationService>()
             .As<IConfirmationService>()
             .As<IServiceWithEvents>()
+            .As<IDisposableService>()
             .IsSingleton();
 
         services
             .RegisterType<CalloutManagerService>()
             .As<ICalloutManagerService>()
             .As<IServiceWithEvents>()
+            .As<IDisposableService>()
             .IsSingleton();
 
         services
@@ -268,6 +274,7 @@ internal class Bootstrapper : BaseScript
             .RegisterType<DispatchService>()
             .As<IDispatchService>()
             .As<IServiceWithEvents>()
+            .As<IDisposableService>()
             .IsSingleton();
 
         services

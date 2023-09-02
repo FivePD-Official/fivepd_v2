@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FivePD.Client.Interfaces;
 
 namespace FivePD.Client.Injection;
+
+#pragma warning disable S3881
 
 /// <summary>
 /// Provides an interface to resolve registered services. Built using an <see cref="ServiceProviderBuilder"/>.
 /// </summary>
-internal class ServiceProvider
+internal class ServiceProvider : IDisposable
 {
     private readonly Dictionary<string, object> _instances = new();
     private readonly List<Registration> _registrations;
+
+    private bool _disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceProvider"/> class.
@@ -21,6 +26,11 @@ internal class ServiceProvider
     {
         this._registrations = registrations;
     }
+
+    /// <summary>
+    /// Finalizes an instance of the <see cref="ServiceProvider"/> class.
+    /// </summary>
+    ~ServiceProvider() => this.Dispose();
 
     /// <summary>
     /// Resolves a matching instance of the given <paramref name="type"/>.
@@ -93,6 +103,37 @@ internal class ServiceProvider
     {
         var resolveType = typeof(T);
         return this.ResolveAll(resolveType).Cast<T>();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Dispose of the observable.
+    /// </summary>
+    /// <param name="disposing">If we're disposing
+    /// manually.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            var disposableServices = this.ResolveAll<IDisposableService>();
+            foreach (var disposableService in disposableServices)
+            {
+                disposableService.InternalDispose();
+            }
+
+            this._instances.Clear();
+        }
+
+        if (!this._disposed)
+        {
+            this._disposed = true;
+        }
     }
 
     private object ResolveSingleInstance(Registration registration)

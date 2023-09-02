@@ -18,7 +18,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IControlService" />
-internal class ControlService : IControlService, IServiceWithEvents
+internal class ControlService : IControlService, IServiceWithEvents, IDisposableService
 {
     private readonly ITickService _tickService;
     private readonly IUIManagerService _uiService;
@@ -71,6 +71,12 @@ internal class ControlService : IControlService, IServiceWithEvents
         }
 
         this._tickService.OnTick += this.WaitForHoldAsync;
+    }
+
+    /// <inheritdoc/>
+    public void InternalDispose()
+    {
+        this._tickService.OnTick -= this.WaitForHoldAsync;
     }
 
     /// <inheritdoc />

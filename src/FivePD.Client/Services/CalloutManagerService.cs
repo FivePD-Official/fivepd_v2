@@ -16,7 +16,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.ICalloutManagerService" />
-internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvents
+internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvents, IDisposableService
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;
@@ -41,6 +41,8 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
     /// <inheritdoc/>
     public void RegisterEvents()
     {
+        this._tickService.OnTick += this.OnTickAsync;
+
         this._eventHandlerDictionary[Events.Callout.OnAccepted] += new Action<string>(this.OnAccepted);
         this._eventHandlerDictionary[Events.Callout.OnCompleted] += new Action(this.OnCompleted);
 
@@ -76,13 +78,17 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
             });
     }
 
+    /// <inheritdoc/>
+    public void InternalDispose()
+    {
+        this._tickService.OnTick -= this.OnTickAsync;
+    }
+
     private void OnAccepted(string serializedCallout)
     {
         var callout = JsonConvert.DeserializeObject<ClientCallout>(serializedCallout);
         this._currentCallout = new ClientCalloutWrapper(callout, callout.Location.GetStreetName());
         this._localPlayerService.UpdateInformationCallout(this._currentCallout);
-
-        this._tickService.OnTick += this.OnTickAsync;
 
         this._calloutBlip = World.CreateBlip(callout.Location, callout.ActivityRadius);
         var blipColor = callout.Priority switch

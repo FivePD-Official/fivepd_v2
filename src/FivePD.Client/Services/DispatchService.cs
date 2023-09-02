@@ -16,7 +16,7 @@ namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class DispatchService : IDispatchService, IServiceWithEvents
+internal class DispatchService : IDispatchService, IServiceWithEvents, IDisposableService
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IUIManagerService _uiManagerService;
@@ -104,6 +104,11 @@ internal class DispatchService : IDispatchService, IServiceWithEvents
         });
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Dispatch.GetUnits);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Dispatch.AssignCalloutToUnits);
+    }
+
+    public void InternalDispose()
+    {
+        this._tickService.DequeueInterval(this._uiPlayerUpdateIntervalId);
     }
 
     private void OnCalloutReceived(string calloutForDispatcherDto)

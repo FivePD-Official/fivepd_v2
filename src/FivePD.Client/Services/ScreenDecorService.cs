@@ -7,7 +7,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc />
-internal class ScreenDecorService : IScreenDecorService
+internal class ScreenDecorService : IScreenDecorService, IDisposableService
 {
     private readonly ITickService _tickService;
     private readonly ILocalizationService _localizationService;
@@ -65,6 +65,12 @@ internal class ScreenDecorService : IScreenDecorService
             this._showProtectionNotice = value;
             this.BuildText();
         }
+    }
+
+    /// <inheritdoc/>
+    public void InternalDispose()
+    {
+        this._tickService.OnTick -= this.DrawOnScreenAsync;
     }
 
     /// <inheritdoc />

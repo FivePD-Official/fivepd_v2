@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CitizenFX.Core;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Common.Models;
@@ -13,9 +12,7 @@ namespace FivePD.Common.Models;
 /// </summary>
 /// <typeparam name="T">The serializable type
 /// being persisted.</typeparam>
-#pragma warning disable SA1649
 public class FObservable<T> : IDisposable
-#pragma warning restore SA1649
 {
     private readonly List<Action<T>> _observers = new();
     private bool _disposed;

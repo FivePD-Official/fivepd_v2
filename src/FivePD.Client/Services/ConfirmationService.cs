@@ -12,7 +12,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IConfirmationService" />
-internal class ConfirmationService : IConfirmationService, IServiceWithEvents
+internal class ConfirmationService : IConfirmationService, IServiceWithEvents, IDisposableService
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;
@@ -51,6 +51,12 @@ internal class ConfirmationService : IConfirmationService, IServiceWithEvents
         this._eventHandlerDictionary[Events.Generic.Action] += new Action<string, string>(this.OnActionTrigger);
         this._tickService.OnTick += this.OnKeypressAsync;
         this._controlService.RegisterKeybind(Controls.ConfirmAction.Id, Controls.ConfirmAction.Key, "Confirms an action.", this.OnConfirm);
+    }
+
+    /// <inheritdoc/>
+    public void InternalDispose()
+    {
+        this._tickService.OnTick -= this.OnKeypressAsync;
     }
 
     private void OnActionTrigger(string callbackId, string serializedAction)

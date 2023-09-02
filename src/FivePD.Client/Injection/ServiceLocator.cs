@@ -22,4 +22,9 @@ internal static class ServiceLocator
     {
         return (T)serviceProvider.Resolve(typeof(T));
     }
+
+    public static void Dispose()
+    {
+        serviceProvider.Dispose();
+    }
 }
