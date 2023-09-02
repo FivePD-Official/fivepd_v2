@@ -166,6 +166,11 @@ internal class ControlService : IControlService, IServiceWithEvents
             $"+{id}",
             new Action(() =>
             {
+                if (LifecycleHandler.IsStopped)
+                {
+                    return;
+                }
+
                 Cfx.API.CancelEvent();
                 onPress?.Invoke();
             }),

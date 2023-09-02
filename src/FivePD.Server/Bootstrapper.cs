@@ -6,6 +6,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
@@ -38,14 +39,17 @@ internal class Bootstrapper : BaseScript
 
     private ServiceProvider _provider;
 
-    private bool _isStopped;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
     /// Used as the entrypoint for the Cfx server runtime.
     /// </summary>
     public Bootstrapper()
     {
+        LifecycleHandler.OnStopped += (_, _) =>
+        {
+            this.OnStopped();
+        };
+
         // Prepare the server for development if applicable.
 #if DEBUG
         ConfigureForDevelopment();
@@ -86,14 +90,6 @@ internal class Bootstrapper : BaseScript
 
         // Begin running phases.
         this.Tick += this.RunNextPhaseAsync;
-    }
-
-    /// <summary>
-    /// Terminates the resource.
-    /// </summary>
-    internal void StopGamemode()
-    {
-        this.OnStopped();
     }
 
 #if DEBUG
@@ -249,7 +245,7 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<ArrestReportService>();
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ArrestReportService>());
-        
+
         services.AddSingleton<IncidentReportService>();
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<IncidentReportService>());
 
@@ -281,7 +277,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
         services.AddSingleton<IInternalCalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutManagerService>());
-        
+
         services.AddSingleton<CalloutStoreService>();
         services.AddSingleton<ICalloutStoreService>(provider => provider.GetRequiredService<CalloutStoreService>());
         services.AddSingleton<IInternalCalloutStoreService>(provider => provider.GetRequiredService<CalloutStoreService>());
@@ -293,12 +289,13 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<CalloutGenerationService>();
         services.AddSingleton<ICalloutGenerationService>(provider => provider.GetRequiredService<CalloutGenerationService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutGenerationService>());
-        
+        services.AddSingleton<IDisposableService>(provider => provider.GetRequiredService<CalloutGenerationService>());
+
         services.AddSingleton<DispatchService>();
         services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IInternalDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DispatchService>());
-        
+
         services.AddSingleton<IncidentHistoryService>();
         services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
         services.AddSingleton<IInternalIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
@@ -306,6 +303,7 @@ internal class Bootstrapper : BaseScript
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);
+        LifecycleHandler.SetLogger(this._provider.GetService<ILogger>());
     }
 
     /// <summary>
@@ -367,7 +365,8 @@ internal class Bootstrapper : BaseScript
                 case true:
                 {
                     log?.Information("The database did not exist, it has been created");
-                    db.Database.ExecuteSqlRaw("CREATE TABLE __efmigrationshistory (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
+                    db.Database.ExecuteSqlRaw(
+                        "CREATE TABLE __efmigrationshistory (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
                     foreach (var migration in migrations)
                     {
                         db.Database.ExecuteSqlRaw("INSERT INTO __efmigrationshistory (MigrationId, ProductVersion) VALUES ({0}, {1})", migration, "3.1.26");
@@ -426,7 +425,7 @@ internal class Bootstrapper : BaseScript
         {
             return;
         }
-        
+
         if (!databaseContext.Departments.Any())
         {
             var department = new Department
@@ -483,26 +482,33 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     private void OnStopped()
     {
-        if (this._isStopped)
+        if (LifecycleHandler.IsStopped)
         {
             return;
         }
 
         var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
-
         log?.Information("Stopping FivePD");
 
-        this._isStopped = true;
-
-        log?.Debug("Running addon shutdown routine");
+        LifecycleHandler.IsStopped = true;
+        
+        // Dispose all internal services with the interface IDisposableService
+        foreach (var service in this._provider.GetServices<IDisposableService>())
+        {
+            service.InternalDispose();
+        }
 
         // Grab an instance of every addon entrypoint and "stop" it
         foreach (var extension in this._provider.GetService<IInternalAddonMetadataService>().Extensions)
         {
             extension.OnStoppedAsync();
         }
-
-        log?.Debug("Addon shutdown complete. Running disposal routine");
+        
+        // Notify every player that the resource is stopping and prevent any actions on client-side
+        foreach (var player in this.Players)
+        {
+            player.TriggerEvent(Events.Lifecycle.Stop);
+        }
 
         try
         {

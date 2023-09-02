@@ -81,23 +81,16 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     /// <inheritdoc/>
     public User FindUserByLicense(Player player, bool withChangeTracking = true)
     {
-        try
+        var query = this._databaseContext.Users.AsQueryable();
+        if (!withChangeTracking)
         {
-            var query = this._databaseContext.Users.AsQueryable();
-            if (!withChangeTracking)
-            {
-                query = query.AsNoTracking();
-            }
+            query = query.AsNoTracking();
+        }
 
-            return query
-                .Include(user => user.Department)
-                .WhereAnyIdMatches(player)
-                .FirstOrDefault();
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        return query
+            .Include(user => user.Department)
+            .WhereAnyIdMatches(player)
+            .FirstOrDefault();
     }
 
     /// <inheritdoc />
@@ -157,7 +150,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
 
         user.RankId = nextRank.Id;
-        this._databaseContext.SaveChanges();
+        this._databaseContext.SaveChangesAsync();
         this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
         {
             Rank = nextRank,
@@ -206,7 +199,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         }
 
         user.RankId = previousRank.Id;
-        this._databaseContext.SaveChanges();
+        this._databaseContext.SaveChangesAsync();
         this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
         {
             Rank = previousRank,
@@ -282,82 +275,79 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             return;
         }
 
-        try
+        var userCount = this._databaseContext.Users.Count();
+        var existingUser = this._databaseContext.Users.WhereAnyIdMatches(player).FirstOrDefault();
+        if (existingUser is null)
         {
-            var userCount = this._databaseContext.Users.Count();
-            var existingUser = this._databaseContext.Users.WhereAnyIdMatches(player).FirstOrDefault();
-            if (existingUser is null)
+            var user = new User
             {
-                var user = new User
-                {
-                    Name = player.Name,
-                    IdentifierLicense = player.Identifiers["license"] ?? string.Empty,
-                    IdentifierDiscord = player.Identifiers["discord"] ?? string.Empty,
-                    IdentifierSteam = player.Identifiers["steam"] ?? string.Empty,
-                    IdentifierXbl = player.Identifiers["xbl"] ?? string.Empty,
-                    IdentifierLive = player.Identifiers["live"] ?? string.Empty,
-                };
-                if (userCount == 0)
-                {
-                    user.Role = (int)UserRole.Admin;
-                }
-
-                this._databaseContext.Users.Add(user);
+                Name = player.Name,
+                IdentifierLicense = player.Identifiers["license"] ?? string.Empty,
+                IdentifierDiscord = player.Identifiers["discord"] ?? string.Empty,
+                IdentifierSteam = player.Identifiers["steam"] ?? string.Empty,
+                IdentifierXbl = player.Identifiers["xbl"] ?? string.Empty,
+                IdentifierLive = player.Identifiers["live"] ?? string.Empty,
+            };
+            if (userCount == 0)
+            {
+                user.Role = (int)UserRole.Admin;
             }
 
-            this._databaseContext.SaveChanges();
+            this._databaseContext.Users.Add(user);
         }
-        catch (Exception e)
-        {
-            throw new DatabaseUsageException("Failed to access database", e);
-        }
+
+        this._databaseContext.SaveChanges();
     }
 
     private User GetPlayerDetails(Player player)
     {
-        try
-        {
-            return this._databaseContext.Users
-                .AsNoTracking()
-                .WhereAnyIdMatches(player)
-                .FirstOrDefault();
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        return this._databaseContext.Users
+            .AsNoTracking()
+            .WhereAnyIdMatches(player)
+            .FirstOrDefault();
     }
 
     [UIEvent(Events.UI.Player.GetDetails, true)]
     private void GetPlayerDetailsUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var user = this._databaseContext.Users
-                .AsNoTracking()
-                .Include(user => user.Department)
-                .Include(user => user.Division)
-                .Include(user => user.Rank)
-                .WhereAnyIdMatches(player)
-                .FirstOrDefault();
-            networkCallbackDelegate.InvokeWithJson(user is null
-                ? null
-                : new PlayerDetailsDTO(player.Handle, user, FPlayer.FromNetId(player.Handle).DutyStatus.Value));
-        }
-        catch (Exception)
-        {
-            networkCallbackDelegate.Invoke(null);
-        }
+        var user = this._databaseContext.Users
+            .AsNoTracking()
+            .Include(user => user.Department)
+            .Include(user => user.Division)
+            .Include(user => user.Rank)
+            .WhereAnyIdMatches(player)
+            .FirstOrDefault();
+        networkCallbackDelegate.InvokeWithJson(user is null
+            ? null
+            : new PlayerDetailsDTO(player.Handle, user, FPlayer.FromNetId(player.Handle).DutyStatus.Value));
     }
 
     [UIEvent(Events.UI.Player.ChangeDivision, true)]
     private void ChangePlayerDivisionFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
+        var playerChangeRequest = expandoObject.ConvertTo<PlayerChangeRequest>();
+        var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
+        if (user is null)
         {
-            var playerChangeRequest = expandoObject.ConvertTo<PlayerChangeRequest>();
-            var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
-            if (user is null)
+            networkCallbackDelegate.Invoke(new ActionResponse
+            {
+                Status = false,
+                Title = "UI.ERROR.UNEXPECTED",
+                Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
+            }.ToString());
+            return;
+        }
+
+        Division division;
+        if (playerChangeRequest.IdToChange == -1)
+        {
+            user.DivisionId = null;
+            division = null;
+        }
+        else
+        {
+            division = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
+            if (division is null)
             {
                 networkCallbackDelegate.Invoke(new ActionResponse
                 {
@@ -368,189 +358,130 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 return;
             }
 
-            Division division;
-            if (playerChangeRequest.IdToChange == -1)
-            {
-                user.DivisionId = null;
-                division = null;
-            }
-            else
-            {
-                division = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
-                if (division is null)
-                {
-                    networkCallbackDelegate.Invoke(new ActionResponse
-                    {
-                        Status = false,
-                        Title = "UI.ERROR.UNEXPECTED",
-                        Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
-                    }.ToString());
-                    return;
-                }
-
-                user.DivisionId = playerChangeRequest.IdToChange;
-            }
-
-            this._databaseContext.SaveChanges();
-            this.PlayerDivisionChanged?.Invoke(this, new PlayerDivisionChangeEventArgs
-            {
-                Division = division,
-                Player = FPlayer.FromPlayer(player),
-            });
-            networkCallbackDelegate.Invoke(new ActionResponse
-            {
-                Status = true,
-                Title = "UI.LABEL.SUCCESS.CHANGE",
-                Description = "UI.LABEL.DIVISION.SUCCESS.CHANGE",
-                Params = new Dictionary<string, string>
-                {
-                    { "player", user.Name },
-                },
-            }.ToString());
+            user.DivisionId = playerChangeRequest.IdToChange;
         }
-        catch (Exception)
+
+        this._databaseContext.SaveChanges();
+        this.PlayerDivisionChanged?.Invoke(this, new PlayerDivisionChangeEventArgs
         {
-            networkCallbackDelegate.Invoke(new ActionResponse
+            Division = division,
+            Player = FPlayer.FromPlayer(player),
+        });
+        networkCallbackDelegate.Invoke(new ActionResponse
+        {
+            Status = true,
+            Title = "UI.LABEL.SUCCESS.CHANGE",
+            Description = "UI.LABEL.DIVISION.SUCCESS.CHANGE",
+            Params = new Dictionary<string, string>
             {
-                Status = false,
-                Title = "UI.ERROR.UNEXPECTED",
-                Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
-            }.ToString());
-        }
+                { "player", user.Name },
+            },
+        }.ToString());
     }
 
     [UIEvent(Events.UI.Player.ChangeRank, true)]
     private void ChangePlayerRankFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
+        var playerChangeRequest = expandoObject.ConvertTo<PlayerChangeRequest>();
+        var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
+        if (user is null)
         {
-            var playerChangeRequest = expandoObject.ConvertTo<PlayerChangeRequest>();
-            var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
-            if (user is null)
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        Rank rank;
+        if (playerChangeRequest.IdToChange == -1)
+        {
+            user.RankId = null;
+            rank = null;
+        }
+        else
+        {
+            rank = this._databaseContext.Ranks.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
+            if (rank is null)
             {
                 networkCallbackDelegate.InvokeWithUnexpectedError();
                 return;
             }
 
-            Rank rank;
-            if (playerChangeRequest.IdToChange == -1)
-            {
-                user.RankId = null;
-                rank = null;
-            }
-            else
-            {
-                rank = this._databaseContext.Ranks.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
-                if (rank is null)
-                {
-                    networkCallbackDelegate.InvokeWithUnexpectedError();
-                    return;
-                }
-
-                user.RankId = playerChangeRequest.IdToChange;
-            }
-
-            this._databaseContext.SaveChanges();
-            this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
-            {
-                Rank = rank,
-                Player = FPlayer.FromPlayer(player),
-            });
-            networkCallbackDelegate.Invoke(new ActionResponse
-            {
-                Status = true,
-                Title = "UI.LABEL.SUCCESS.CHANGE",
-                Description = "UI.LABEL.RANK.SUCCESS.CHANGE",
-                Params = new Dictionary<string, string>
-                {
-                    { "player", user.Name },
-                },
-            }.ToString());
+            user.RankId = playerChangeRequest.IdToChange;
         }
-        catch (Exception)
+
+        this._databaseContext.SaveChanges();
+        this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
-        }
+            Rank = rank,
+            Player = FPlayer.FromPlayer(player),
+        });
+        networkCallbackDelegate.Invoke(new ActionResponse
+        {
+            Status = true,
+            Title = "UI.LABEL.SUCCESS.CHANGE",
+            Description = "UI.LABEL.RANK.SUCCESS.CHANGE",
+            Params = new Dictionary<string, string>
+            {
+                { "player", user.Name },
+            },
+        }.ToString());
     }
 
     [UIEvent(Events.UI.Player.ChangeFixedRank)]
     private void ChangePlayerFixedRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
+        var request = expandoObject.ConvertTo<PlayerChangeFixedRankRequest>();
+        var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == request.UserId);
+        if (user is null)
         {
-            var request = expandoObject.ConvertTo<PlayerChangeFixedRankRequest>();
-            var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == request.UserId);
-            if (user is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            user.FixedRank = request.FixedRank;
-            this._databaseContext.SaveChanges();
-            networkCallbackDelegate.Invoke(new ActionResponse
-            {
-                Status = true,
-                Title = "UI.LABEL.SUCCESS.CHANGE",
-                Description = request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
-                Params = new Dictionary<string, string>
-                {
-                    { "name", user.Name },
-                },
-            }.ToString());
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine(e.Message);
             networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
         }
+
+        user.FixedRank = request.FixedRank;
+        this._databaseContext.SaveChanges();
+        networkCallbackDelegate.Invoke(new ActionResponse
+        {
+            Status = true,
+            Title = "UI.LABEL.SUCCESS.CHANGE",
+            Description = request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
+            Params = new Dictionary<string, string>
+            {
+                { "name", user.Name },
+            },
+        }.ToString());
     }
 
     [UIEvent(Events.UI.Player.GetAllPageable)]
     private void GetAllPageable(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<GetSetRequest>();
-            var page = this._databaseContext.Users
-                .AsNoTracking()
-                .Paginate(request.Page, new Filters<User>());
+        var request = expandoObject.ConvertTo<GetSetRequest>();
+        var page = this._databaseContext.Users
+            .AsNoTracking()
+            .Paginate(request.Page, new Filters<User>());
 
-            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
-        }
-        catch (Exception)
-        {
-            networkCallbackDelegate.Invoke(null);
-        }
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
     }
 
     [UIEvent(Events.UI.Player.ChangeRole)]
     private void ChangeRole(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
+        var request = expandoObject.ConvertTo<ChangePlayerRoleRequest>();
+        var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.UserId);
+        if (user is null)
         {
-            var request = expandoObject.ConvertTo<ChangePlayerRoleRequest>();
-            var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.UserId);
-            if (user is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
 
-            user.Role = request.Roles.Sum();
-            this._databaseContext.SaveChanges();
-            networkCallbackDelegate.InvokeWithResponse(
-                true,
-                "UI.LABEL.SUCCESS.CHANGE",
-                "UI.LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
-                new Dictionary<string, string>
-                {
-                    { "name", user.Name },
-                });
-        }
-        catch (Exception)
-        {
-            networkCallbackDelegate.Invoke(null);
-        }
+        user.Role = request.Roles.Sum();
+        this._databaseContext.SaveChanges();
+        networkCallbackDelegate.InvokeWithResponse(
+            true,
+            "UI.LABEL.SUCCESS.CHANGE",
+            "UI.LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
+            new Dictionary<string, string>
+            {
+                { "name", user.Name },
+            });
     }
 }

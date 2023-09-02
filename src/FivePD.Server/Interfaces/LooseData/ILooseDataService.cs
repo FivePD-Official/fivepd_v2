@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using FivePD.Server.Exceptions;
 using FivePD.Server.Models.LooseData;
 
 namespace FivePD.Server.Interfaces.LooseData;
@@ -15,7 +14,6 @@ public interface ILooseDataService
     /// </summary>
     /// <param name="attributes">The attributes to register.</param>
     /// <typeparam name="TS">The type of the set.</typeparam>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void RegisterSetAttributes<TS>(List<LooseDataAttribute> attributes)
         where TS : LooseDataSet;
 
@@ -28,7 +26,6 @@ public interface ILooseDataService
     /// <param name="newAttributeValues">The new values of the attribute.</param>
     /// <typeparam name="TS">The set to delete the attribute from.</typeparam>
     /// <exception cref="ArgumentException">When the executing addon tries to delete another addon's attribute.</exception>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void UpdateSetAttribute<TS>(string attributeName, LooseDataAttribute newAttributeValues)
         where TS : LooseDataSet;
 
@@ -40,7 +37,6 @@ public interface ILooseDataService
     /// <param name="attributeName">The attribute's name to delete.</param>
     /// <typeparam name="TS">The set to delete the attribute from.</typeparam>
     /// <exception cref="ArgumentException">When the executing addon tries to delete another addon's attribute.</exception>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void DeleteSetAttribute<TS>(string attributeName)
         where TS : LooseDataSet;
 
@@ -78,7 +74,6 @@ public interface ILooseDataService
     /// </summary>
     /// <param name="entityToAdd">The entity to insert.</param>
     /// <typeparam name="TS">The type of the set where the entity should be inserted.</typeparam>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void AddEntity<TS>(LooseDataEntity entityToAdd)
         where TS : LooseDataSet;
 
@@ -86,14 +81,12 @@ public interface ILooseDataService
     /// Updates the values of the entity in the database.
     /// </summary>
     /// <param name="entityToUpdate">The entity to update.</param>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void UpdateEntity(LooseDataEntity entityToUpdate);
 
     /// <summary>
     /// Deletes an entity.
     /// </summary>
     /// <param name="entityToDelete">The entity to delete.</param>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void DeleteEntity(LooseDataEntity entityToDelete);
 
     /// <summary>
@@ -101,7 +94,6 @@ public interface ILooseDataService
     /// </summary>
     /// <param name="id">The id of the entity.</param>
     /// <returns>The first entity with the given id.</returns>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public LooseDataEntity GetEntity(string id);
 
     /// <summary>
@@ -109,7 +101,6 @@ public interface ILooseDataService
     /// </summary>
     /// <typeparam name="TS">The type of the set which entities are needed.</typeparam>
     /// <returns>All entities of the set.</returns>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public List<LooseDataEntity> GetEntities<TS>()
         where TS : LooseDataSet;
 }

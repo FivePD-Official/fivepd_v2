@@ -13,12 +13,13 @@ using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models.Requests;
 using Serilog;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services.Callouts;
 
 #pragma warning disable
 
-internal class CalloutGenerationService : ICalloutGenerationService, IServiceWithEvents
+internal class CalloutGenerationService : ICalloutGenerationService, IServiceWithEvents, IDisposableService
 {
     private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly IInternalCalloutManagerService _calloutManagerService;
@@ -47,6 +48,11 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
         this._logger = logger;
         this._tickQueueService = tickQueueService;
         this._calloutDistributionService = calloutDistributionService;
+    }
+
+    void IDisposableService.InternalDispose()
+    {
+        this._tickQueueService.OnTick -= this.OnTick;
     }
     
     /// <inheritdoc/>

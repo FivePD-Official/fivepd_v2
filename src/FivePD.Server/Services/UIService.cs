@@ -4,7 +4,9 @@ using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Server.Attributes;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using Serilog;
 
 namespace FivePD.Server.Services;
 
@@ -13,16 +15,22 @@ public class UIService : IUIService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UIService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
-    public UIService(EventHandlerDictionary eventHandlerDictionary, IServiceProvider serviceProvider)
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    public UIService(
+        EventHandlerDictionary eventHandlerDictionary,
+        IServiceProvider serviceProvider,
+        ILogger logger)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._serviceProvider = serviceProvider;
+        this._logger = logger;
     }
 
     /// <inheritdoc />
@@ -51,13 +59,46 @@ public class UIService : IUIService, IServiceWithEvents
             var obj = this._serviceProvider.GetService(interfaceType);
             if (obj is null)
             {
-                throw new ArgumentException($"Can't register event method '{attribute.Event}'. Make sure that its declaring type has an interface and has been registered as a service.");
+                throw new ArgumentException(
+                    $"Can't register event method '{attribute.Event}'. Make sure that its declaring type has an interface and has been registered as a service.");
             }
 
-            var type = attribute.WithPlayer
-                ? typeof(Action<Player, ExpandoObject, NetworkCallbackDelegate>)
-                : typeof(Action<ExpandoObject, NetworkCallbackDelegate>);
-            this._eventHandlerDictionary[attribute.Event] += Delegate.CreateDelegate(type, obj, methodInfo);
+            if (attribute.WithPlayer)
+            {
+                this._eventHandlerDictionary.Add(
+                    attribute.Event,
+                    new Action<Player, ExpandoObject, NetworkCallbackDelegate>(([FromSource] player, expandoObject, networkCallbackDelegate) =>
+                    {
+                        this.HandleEvent(obj, methodInfo, networkCallbackDelegate, new[] { player, (object)expandoObject, networkCallbackDelegate });
+                    }));
+            }
+            else
+            {
+                this._eventHandlerDictionary.Add(
+                    attribute.Event,
+                    new Action<ExpandoObject, NetworkCallbackDelegate>((expandoObject, networkCallbackDelegate) =>
+                    {
+                        this.HandleEvent(obj, methodInfo, networkCallbackDelegate, new[] { (object)expandoObject, networkCallbackDelegate });
+                    }));
+            }
+        }
+    }
+
+    private void HandleEvent(object obj, MethodInfo methodInfo, NetworkCallbackDelegate networkCallbackDelegate, object[] parameters)
+    {
+        if (LifecycleHandler.IsStopped)
+        {
+            return;
+        }
+
+        try
+        {
+            methodInfo.Invoke(obj, parameters);
+        }
+        catch (Exception e)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            LifecycleHandler.HandleError(e);
         }
     }
 }

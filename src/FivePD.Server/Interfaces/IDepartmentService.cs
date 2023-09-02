@@ -72,7 +72,6 @@ public interface IDepartmentService
     /// <param name="department">The department to insert.</param>
     /// <exception cref="ArgumentException">The provided department or its name is null.</exception>
     /// <exception cref="DepartmentExistsWithNameException">A department already exists with the same name.</exception>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     /// <returns>The created department object with change tracking.</returns>
     public Department CreateDepartment(Department department);
 
@@ -80,7 +79,6 @@ public interface IDepartmentService
     /// Removes a <see cref="Database"/> from the 'departments' table.
     /// </summary>
     /// <param name="department">The department to remove.</param>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void RemoveDepartment(Department department);
 
     /// <summary>
@@ -103,19 +101,12 @@ public interface IDepartmentService
     public Department GetDepartmentById(int id, bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false);
 
     /// <summary>
-    /// Saves all changes made to any <see cref="Department"/> object.
-    /// </summary>
-    /// <returns>If the operation was successful.</returns>
-    public bool SaveChanges();
-
-    /// <summary>
     /// Adds the given player to the given department.
     /// </summary>
     /// <param name="user">The user to update.</param>
     /// <param name="department">The department to which the user will be added.</param>
     /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
     /// <exception cref="DepartmentFullException">The provided department is full.</exception>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void AddPlayerToDepartment(User user, Department department);
 
     /// <summary>
@@ -125,7 +116,6 @@ public interface IDepartmentService
     /// <param name="department">The department to which the user will be added.</param>
     /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
     /// <exception cref="DepartmentFullException">The provided department is full.</exception>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void AddPlayerToDepartment(Player player, Department department);
 
     /// <summary>
@@ -133,7 +123,6 @@ public interface IDepartmentService
     /// </summary>
     /// <param name="user">The user to update.</param>
     /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void RemovePlayerFromDepartment(User user);
 
     /// <summary>
@@ -141,7 +130,6 @@ public interface IDepartmentService
     /// </summary>
     /// <param name="player">The user to update.</param>
     /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
-    /// <exception cref="DatabaseUsageException">Database error during connection or usage at runtime.</exception>
     public void RemovePlayerFromDepartment(Player player);
 }
 

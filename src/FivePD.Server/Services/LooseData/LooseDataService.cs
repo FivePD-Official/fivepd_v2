@@ -8,7 +8,6 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
-using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models.LooseData;
@@ -57,229 +56,194 @@ public class LooseDataService : ILooseDataService
     public void RegisterSetAttributes<TS>(List<LooseDataAttribute> attributes)
         where TS : LooseDataSet
     {
-        try
+        var assemblyName = this.GetExecutingAssemblyName();
+        if (string.IsNullOrEmpty(assemblyName))
         {
-            var assemblyName = this.GetExecutingAssemblyName();
-            if (string.IsNullOrEmpty(assemblyName))
-            {
-                return;
-            }
+            return;
+        }
 
-            if (assemblyName == "CitizenFX.Core")
-            {
-                assemblyName = "FivePD";
-            }
+        if (assemblyName == "CitizenFX.Core")
+        {
+            assemblyName = "FivePD";
+        }
 
-            var setType = typeof(TS);
-            this._activeSetTypes[setType] = assemblyName;
+        var setType = typeof(TS);
+        this._activeSetTypes[setType] = assemblyName;
 
-            var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
-            if (setIdAttr is null)
-            {
-                return;
-            }
+        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        if (setIdAttr is null)
+        {
+            return;
+        }
 
-            if (assemblyName != "FivePD" && setIdAttr.Id.StartsWith("fivepd_"))
-            {
-                return;
-            }
+        if (assemblyName != "FivePD" && setIdAttr.Id.StartsWith("fivepd_"))
+        {
+            return;
+        }
 
 #pragma warning disable
-            // TODO: add check for duplicate attributes
+        // TODO: add check for duplicate attributes
 #pragma warning enable
 
-            var set = this._databaseContext.LooseDataSets
-                .Include(set => set.Attributes)
-                .Include(set => set.Entities)
-                .ThenInclude(entities => entities.Values)
-                .FirstOrDefault(set => set.Id == setIdAttr.Id);
-            if (set is null)
-            {
-                set = Activator.CreateInstance<TS>();
-                set.Id = setIdAttr.Id;
-                this._databaseContext.LooseDataSets.Add(set);
-            }
+        var set = this._databaseContext.LooseDataSets
+            .Include(set => set.Attributes)
+            .Include(set => set.Entities)
+            .ThenInclude(entities => entities.Values)
+            .FirstOrDefault(set => set.Id == setIdAttr.Id);
+        if (set is null)
+        {
+            set = Activator.CreateInstance<TS>();
+            set.Id = setIdAttr.Id;
+            this._databaseContext.LooseDataSets.Add(set);
+        }
 
-            foreach (var attr in attributes)
-            {
-                attr.AddonId = this._activeSetTypes[setType];
-            }
+        foreach (var attr in attributes)
+        {
+            attr.AddonId = this._activeSetTypes[setType];
+        }
 
-            if (set.Attributes != null && set.Attributes.Any())
+        if (set.Attributes != null && set.Attributes.Any())
+        {
+            foreach (var attr in attributes.Where(attr => set.Attributes.All(setAttr => setAttr.Name != attr.Name)))
             {
-                foreach (var attr in attributes.Where(attr => set.Attributes.All(setAttr => setAttr.Name != attr.Name)))
+                attr.Set = set;
+                var addedAttributeEntry = this._databaseContext.LooseDataAttributes.Add(attr);
+                this._databaseContext.SaveChanges();
+                foreach (var entity in set.Entities)
                 {
-                    attr.Set = set;
-                    var addedAttributeEntry = this._databaseContext.LooseDataAttributes.Add(attr);
-                    this._databaseContext.SaveChanges();
-                    foreach (var entity in set.Entities)
+                    var value = new LooseDataValue
                     {
-                        var value = new LooseDataValue
-                        {
-                            Entity = entity,
-                            Attribute = addedAttributeEntry.Entity,
-                            Value = JsonConvert.SerializeObject(
-                                attr.DataType == LooseDataType.Date
-                                    ? DateTime.Now
-                                    : null),
-                        };
-                        this._databaseContext.LooseDataValues.Add(value);
-                    }
+                        Entity = entity,
+                        Attribute = addedAttributeEntry.Entity,
+                        Value = JsonConvert.SerializeObject(
+                            attr.DataType == LooseDataType.Date
+                                ? DateTime.Now
+                                : null),
+                    };
+                    this._databaseContext.LooseDataValues.Add(value);
                 }
             }
-            else
-            {
-                set.Attributes = attributes;
-            }
-
-            this._databaseContext.SaveChanges();
         }
-        catch (Exception e)
+        else
         {
-            throw new DatabaseUsageException("Failed to access database", e);
+            set.Attributes = attributes;
         }
+
+        this._databaseContext.SaveChanges();
     }
 
     /// <inheritdoc />
     public void UpdateSetAttribute<TS>(string attributeName, LooseDataAttribute newAttributeValues)
         where TS : LooseDataSet
     {
-        try
+        var assemblyName = this.GetExecutingAssemblyName();
+        if (string.IsNullOrEmpty(assemblyName))
         {
-            var assemblyName = this.GetExecutingAssemblyName();
-            if (string.IsNullOrEmpty(assemblyName))
-            {
-                return;
-            }
-
-            var setType = typeof(TS);
-            if (!this._activeSetTypes.ContainsKey(setType))
-            {
-                return;
-            }
-
-            var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
-            if (setIdAttr is null)
-            {
-                return;
-            }
-
-            var attributeToUpdate = this._databaseContext.LooseDataAttributes
-                .FirstOrDefault(attr => attr.Name == attributeName);
-            if (attributeToUpdate is null)
-            {
-                return;
-            }
-
-            if (attributeToUpdate.AddonId == "FivePD Gamemode" || attributeToUpdate.AddonId != assemblyName)
-            {
-                throw new ArgumentException("Can't update attribute of a different addon");
-            }
-
-            attributeToUpdate.Name = newAttributeValues.Name;
-            attributeToUpdate.Label = newAttributeValues.Label;
-            attributeToUpdate.HelpLabel = newAttributeValues.HelpLabel;
-            attributeToUpdate.Placeholder = newAttributeValues.Placeholder;
-            attributeToUpdate.Options = newAttributeValues.Options;
-            attributeToUpdate.Readonly = newAttributeValues.Readonly;
-            attributeToUpdate.Required = newAttributeValues.Required;
-            attributeToUpdate.Order = newAttributeValues.Order;
-            attributeToUpdate.ShowInGrid = newAttributeValues.ShowInGrid;
-            this._databaseContext.SaveChanges();
+            return;
         }
-        catch (Exception e)
+
+        var setType = typeof(TS);
+        if (!this._activeSetTypes.ContainsKey(setType))
         {
-            throw new DatabaseUsageException("Failed to access database", e);
+            return;
         }
+
+        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        if (setIdAttr is null)
+        {
+            return;
+        }
+
+        var attributeToUpdate = this._databaseContext.LooseDataAttributes
+            .FirstOrDefault(attr => attr.Name == attributeName);
+        if (attributeToUpdate is null)
+        {
+            return;
+        }
+
+        if (attributeToUpdate.AddonId == "FivePD Gamemode" || attributeToUpdate.AddonId != assemblyName)
+        {
+            throw new ArgumentException("Can't update attribute of a different addon");
+        }
+
+        attributeToUpdate.Name = newAttributeValues.Name;
+        attributeToUpdate.Label = newAttributeValues.Label;
+        attributeToUpdate.HelpLabel = newAttributeValues.HelpLabel;
+        attributeToUpdate.Placeholder = newAttributeValues.Placeholder;
+        attributeToUpdate.Options = newAttributeValues.Options;
+        attributeToUpdate.Readonly = newAttributeValues.Readonly;
+        attributeToUpdate.Required = newAttributeValues.Required;
+        attributeToUpdate.Order = newAttributeValues.Order;
+        attributeToUpdate.ShowInGrid = newAttributeValues.ShowInGrid;
+        this._databaseContext.SaveChanges();
     }
 
     /// <inheritdoc />
     public void DeleteSetAttribute<TS>(string attributeName)
         where TS : LooseDataSet
     {
-        try
+        var assemblyName = this.GetExecutingAssemblyName();
+        if (string.IsNullOrEmpty(assemblyName))
         {
-            var assemblyName = this.GetExecutingAssemblyName();
-            if (string.IsNullOrEmpty(assemblyName))
-            {
-                return;
-            }
-
-            var setType = typeof(TS);
-            if (!this._activeSetTypes.ContainsKey(setType))
-            {
-                return;
-            }
-
-            var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
-            if (setIdAttr is null)
-            {
-                return;
-            }
-
-            var attributeToDelete = this._databaseContext.LooseDataAttributes
-                .FirstOrDefault(attr => attr.Name == attributeName);
-            if (attributeToDelete is null)
-            {
-                return;
-            }
-
-            if (attributeToDelete.AddonId == "FivePD Gamemode" || attributeToDelete.AddonId != assemblyName)
-            {
-                throw new ArgumentException("Can't delete attribute of a different addon");
-            }
-
-            var valuesToDelete = this._databaseContext.LooseDataValues
-                .Include(value => value.Attribute)
-                .Where(value => value.Attribute.Id == attributeToDelete.Id);
-            this._databaseContext.LooseDataValues.RemoveRange(valuesToDelete);
-            this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
-            this._databaseContext.SaveChanges();
+            return;
         }
-        catch (Exception e)
+
+        var setType = typeof(TS);
+        if (!this._activeSetTypes.ContainsKey(setType))
         {
-            throw new DatabaseUsageException("Failed to access database", e);
+            return;
         }
+
+        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        if (setIdAttr is null)
+        {
+            return;
+        }
+
+        var attributeToDelete = this._databaseContext.LooseDataAttributes
+            .FirstOrDefault(attr => attr.Name == attributeName);
+        if (attributeToDelete is null)
+        {
+            return;
+        }
+
+        if (attributeToDelete.AddonId == "FivePD Gamemode" || attributeToDelete.AddonId != assemblyName)
+        {
+            throw new ArgumentException("Can't delete attribute of a different addon");
+        }
+
+        var valuesToDelete = this._databaseContext.LooseDataValues
+            .Include(value => value.Attribute)
+            .Where(value => value.Attribute.Id == attributeToDelete.Id);
+        this._databaseContext.LooseDataValues.RemoveRange(valuesToDelete);
+        this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
+        this._databaseContext.SaveChanges();
     }
 
     /// <inheritdoc />
     public void AddEntity<TS>(LooseDataEntity entityToAdd)
         where TS : LooseDataSet
     {
-        try
+        var setType = typeof(TS);
+        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        if (setIdAttr is null)
         {
-            var setType = typeof(TS);
-            var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
-            if (setIdAttr is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            this.InternalAddEntity(setIdAttr.Id, entityToAdd, entityToAdd.MappedValues);
-        }
-        catch (Exception e)
-        {
-            throw new DatabaseUsageException("Failed to access database", e);
-        }
+        this.InternalAddEntity(setIdAttr.Id, entityToAdd, entityToAdd.MappedValues);
     }
 
     /// <inheritdoc />
     public void UpdateEntity(LooseDataEntity entityToUpdate)
     {
-        try
+        var originalEntity = this.GetEntity(entityToUpdate.Id);
+        if (originalEntity is null)
         {
-            var originalEntity = this.GetEntity(entityToUpdate.Id);
-            if (originalEntity is null)
-            {
-                throw new ArgumentException("No entity exist with the given id");
-            }
+            throw new ArgumentException("No entity exist with the given id");
+        }
 
-            this.InternalUpdateEntity(originalEntity.SetId, originalEntity.Id, entityToUpdate.MappedValues);
-        }
-        catch (Exception e)
-        {
-            throw new DatabaseUsageException("Failed to access database", e);
-        }
+        this.InternalUpdateEntity(originalEntity.SetId, originalEntity.Id, entityToUpdate.MappedValues);
     }
 
     /// <inheritdoc />
@@ -298,97 +262,69 @@ public class LooseDataService : ILooseDataService
     /// <inheritdoc />
     public void DeleteEntity(LooseDataEntity entityToDelete)
     {
-        try
+        var entity = this._databaseContext.LooseDataEntities
+            .Include(entity => entity.Values)
+            .Include(entity => entity.Set)
+            .FirstOrDefault(entity => entity.Id == entityToDelete.Id);
+        if (entity is null)
         {
-            var entity = this._databaseContext.LooseDataEntities
-                .Include(entity => entity.Values)
-                .Include(entity => entity.Set)
-                .FirstOrDefault(entity => entity.Id == entityToDelete.Id);
-            if (entity is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            this._databaseContext.LooseDataEntities.Remove(entity);
-            this._databaseContext.SaveChanges();
-            this.InvokeEvent(LooseDataEntityObservableType.Delete, this.FindSetTypeById(entity.Set.Id), this.MapEntity(entity));
-        }
-        catch (Exception e)
-        {
-            throw new DatabaseUsageException("Failed to access database", e);
-        }
+        this._databaseContext.LooseDataEntities.Remove(entity);
+        this._databaseContext.SaveChanges();
+        this.InvokeEvent(LooseDataEntityObservableType.Delete, this.FindSetTypeById(entity.Set.Id), this.MapEntity(entity));
     }
 
     private LooseDataEntity InternalGetEntity(string id)
     {
-        try
-        {
-            var entity = this._databaseContext.LooseDataEntities
-                .Include(entity => entity.Values)
-                .ThenInclude(values => values.Attribute)
-                .Include(entity => entity.Set)
-                .ThenInclude(set => set.Attributes)
-                .FirstOrDefault(entity => entity.Id == id);
+        var entity = this._databaseContext.LooseDataEntities
+            .Include(entity => entity.Values)
+            .ThenInclude(values => values.Attribute)
+            .Include(entity => entity.Set)
+            .ThenInclude(set => set.Attributes)
+            .FirstOrDefault(entity => entity.Id == id);
 
-            var mappedEntity = entity is null ? null : this.MapEntity(entity);
-            return mappedEntity;
-        }
-        catch (Exception e)
-        {
-            throw new DatabaseUsageException("Failed to access database", e);
-        }
+        var mappedEntity = entity is null ? null : this.MapEntity(entity);
+        return mappedEntity;
     }
 
     private List<LooseDataEntity> GetEntitiesWithOptionalType<TS>(Type setType)
         where TS : LooseDataSet
     {
-        try
+        var setIdAttr = (setType ?? typeof(TS)).GetCustomAttribute<LooseDataSetIdAttribute>();
+        if (setIdAttr is null)
         {
-            var setIdAttr = (setType ?? typeof(TS)).GetCustomAttribute<LooseDataSetIdAttribute>();
-            if (setIdAttr is null)
-            {
-                return new List<LooseDataEntity>();
-            }
-
-            var entities = this._databaseContext.LooseDataEntities
-                .Include(entity => entity.Values)
-                .Include(entity => entity.Set)
-                .ThenInclude(set => set.Attributes)
-                .Where(entity => entity.Set.Id == setIdAttr.Id)
-                .ToList();
-
-            return entities.Select(this.MapEntity).ToList();
+            return new List<LooseDataEntity>();
         }
-        catch (Exception e)
-        {
-            throw new DatabaseUsageException("Failed to access database", e);
-        }
+
+        var entities = this._databaseContext.LooseDataEntities
+            .Include(entity => entity.Values)
+            .Include(entity => entity.Set)
+            .ThenInclude(set => set.Attributes)
+            .Where(entity => entity.Set.Id == setIdAttr.Id)
+            .ToList();
+
+        return entities.Select(this.MapEntity).ToList();
     }
 
     private Page<LooseDataEntity> GetEntitiesPage(Type setType, int pageNumber, Filters<LooseDataEntity> filters)
     {
-        try
-        {
-            var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
-            if (setIdAttr is null)
-            {
-                return new Page<LooseDataEntity>();
-            }
-
-            var page = this._databaseContext.LooseDataEntities
-                .Include(entity => entity.Values)
-                .Include(entity => entity.Set)
-                .ThenInclude(set => set.Attributes)
-                .Where(entity => entity.Set.Id == setIdAttr.Id)
-                .Paginate(pageNumber, filters);
-
-            page.Items = page.Items.Select(this.MapEntity).ToList();
-            return page;
-        }
-        catch (Exception)
+        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        if (setIdAttr is null)
         {
             return new Page<LooseDataEntity>();
         }
+
+        var page = this._databaseContext.LooseDataEntities
+            .Include(entity => entity.Values)
+            .Include(entity => entity.Set)
+            .ThenInclude(set => set.Attributes)
+            .Where(entity => entity.Set.Id == setIdAttr.Id)
+            .Paginate(pageNumber, filters);
+
+        page.Items = page.Items.Select(this.MapEntity).ToList();
+        return page;
     }
 
     private LooseDataEntity MapEntity(LooseDataEntity entity)
@@ -417,7 +353,7 @@ public class LooseDataService : ILooseDataService
             var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
             entity.MappedValues["User"] = user;
         }
-        
+
         if (entity.MappedValues.ContainsKey("IncidentId"))
         {
             var user = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == entity.MappedValues["IncidentId"]);
@@ -430,346 +366,269 @@ public class LooseDataService : ILooseDataService
     [UIEvent(Events.UI.LooseData.GetSetAttribute)]
     private void GetSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<IdRequest>();
-            var attribute = this._databaseContext.LooseDataAttributes
-                .AsNoTracking()
-                .FirstOrDefault(set => set.Id == request.Id);
+        var request = expandoObject.ConvertTo<IdRequest>();
+        var attribute = this._databaseContext.LooseDataAttributes
+            .AsNoTracking()
+            .FirstOrDefault(set => set.Id == request.Id);
 
-            if (attribute is null)
-            {
-                networkCallbackDelegate.Invoke(null);
-                return;
-            }
-
-            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(attribute));
-        }
-        catch (Exception)
+        if (attribute is null)
         {
             networkCallbackDelegate.Invoke(null);
+            return;
         }
+
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(attribute));
     }
 
     [UIEvent(Events.UI.LooseData.GetSetAttributes)]
     private void GetSetAttributesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<GetSetRequest>();
-            var set = this._databaseContext.LooseDataSets
-                .Include(set => set.Attributes)
-                .FirstOrDefault(set => set.Id == request.SetId);
+        var request = expandoObject.ConvertTo<GetSetRequest>();
+        var set = this._databaseContext.LooseDataSets
+            .Include(set => set.Attributes)
+            .FirstOrDefault(set => set.Id == request.SetId);
 
-            if (set is null)
-            {
-                networkCallbackDelegate.Invoke(null);
-                return;
-            }
-
-            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(set.Attributes));
-        }
-        catch (Exception)
+        if (set is null)
         {
             networkCallbackDelegate.Invoke(null);
+            return;
         }
+
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(set.Attributes));
     }
 
     [UIEvent(Events.UI.LooseData.GetSetAttributesPageable)]
     private void GetSetAttributesPageableFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<GetSetRequest>();
-            var page = this._databaseContext.LooseDataAttributes
-                .AsNoTracking()
-                .Include(attr => attr.Set)
-                .Where(attr => attr.Set.Id == request.SetId)
-                .Paginate(request.Page, new Filters<LooseDataAttribute>());
+        var request = expandoObject.ConvertTo<GetSetRequest>();
+        var page = this._databaseContext.LooseDataAttributes
+            .AsNoTracking()
+            .Include(attr => attr.Set)
+            .Where(attr => attr.Set.Id == request.SetId)
+            .Paginate(request.Page, new Filters<LooseDataAttribute>());
 
-            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
-        }
-        catch (Exception)
-        {
-            networkCallbackDelegate.Invoke(null);
-        }
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
     }
 
     [UIEvent(Events.UI.LooseData.AddSetAttribute)]
     private void AddSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<AddSetAttributeRequest>();
-            var set = this._databaseContext.LooseDataSets
-                .Include(set => set.Attributes)
-                .Include(set => set.Entities)
-                .ThenInclude(entities => entities.Values)
-                .FirstOrDefault(set => set.Id == request.SetId);
-            if (set is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
-            {
-                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.CREATE.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
-                return;
-            }
-
-            request.Attribute.AddonId = LooseDataAttribute.AddedByAdminAddonId;
-            request.Attribute.Set = set;
-            var addedAttributeEntry = this._databaseContext.LooseDataAttributes.Add(request.Attribute);
-            this._databaseContext.SaveChanges();
-
-            foreach (var entity in set.Entities)
-            {
-                var value = new LooseDataValue
-                {
-                    Entity = entity,
-                    Attribute = addedAttributeEntry.Entity,
-                    Value = JsonConvert.SerializeObject(
-                        request.Attribute.DataType == LooseDataType.Date
-                            ? DateTime.Now
-                            : null),
-                };
-                this._databaseContext.LooseDataValues.Add(value);
-            }
-
-            this._databaseContext.SaveChanges();
-            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.ATTRIBUTE.SUCCESS.CREATE", new Dictionary<string, string>
-            {
-                { "attribute", request.Attribute.Name },
-            });
-        }
-        catch (Exception)
+        var request = expandoObject.ConvertTo<AddSetAttributeRequest>();
+        var set = this._databaseContext.LooseDataSets
+            .Include(set => set.Attributes)
+            .Include(set => set.Entities)
+            .ThenInclude(entities => entities.Values)
+            .FirstOrDefault(set => set.Id == request.SetId);
+        if (set is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
         }
+
+        if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
+        {
+            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.CREATE.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
+            return;
+        }
+
+        request.Attribute.AddonId = LooseDataAttribute.AddedByAdminAddonId;
+        request.Attribute.Set = set;
+        var addedAttributeEntry = this._databaseContext.LooseDataAttributes.Add(request.Attribute);
+        this._databaseContext.SaveChanges();
+
+        foreach (var entity in set.Entities)
+        {
+            var value = new LooseDataValue
+            {
+                Entity = entity,
+                Attribute = addedAttributeEntry.Entity,
+                Value = JsonConvert.SerializeObject(
+                    request.Attribute.DataType == LooseDataType.Date
+                        ? DateTime.Now
+                        : null),
+            };
+            this._databaseContext.LooseDataValues.Add(value);
+        }
+
+        this._databaseContext.SaveChanges();
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.ATTRIBUTE.SUCCESS.CREATE", new Dictionary<string, string>
+        {
+            { "attribute", request.Attribute.Name },
+        });
     }
 
     [UIEvent(Events.UI.LooseData.EditSetAttribute)]
     private void EditSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<EditSetAttributeRequest>();
+        var request = expandoObject.ConvertTo<EditSetAttributeRequest>();
 
-            var set = this._databaseContext.LooseDataSets
-                .Include(set => set.Attributes)
-                .FirstOrDefault(set => set.Id == request.SetId);
-            if (set is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            var attribute = this._databaseContext.LooseDataAttributes.FirstOrDefault(attr => attr.Id == request.Attribute.Id);
-            if (attribute is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            if (set.Attributes.Where(attr => attr.Id != attribute.Id).Any(attr => attr.Name == request.Attribute.Name))
-            {
-                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
-                return;
-            }
-
-
-            var attributeOldName = attribute.Name;
-            attribute.Name = request.Attribute.Name;
-            attribute.Label = request.Attribute.Label;
-            attribute.HelpLabel = request.Attribute.HelpLabel;
-            attribute.Placeholder = request.Attribute.Placeholder;
-            attribute.Required = request.Attribute.Required;
-            this._databaseContext.SaveChanges();
-            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ATTRIBUTE.SUCCESS.EDIT", new Dictionary<string, string>
-            {
-                { "attribute", attributeOldName },
-            });
-        }
-        catch (Exception)
+        var set = this._databaseContext.LooseDataSets
+            .Include(set => set.Attributes)
+            .FirstOrDefault(set => set.Id == request.SetId);
+        if (set is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
         }
+
+        var attribute = this._databaseContext.LooseDataAttributes.FirstOrDefault(attr => attr.Id == request.Attribute.Id);
+        if (attribute is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        if (set.Attributes.Where(attr => attr.Id != attribute.Id).Any(attr => attr.Name == request.Attribute.Name))
+        {
+            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
+            return;
+        }
+
+
+        var attributeOldName = attribute.Name;
+        attribute.Name = request.Attribute.Name;
+        attribute.Label = request.Attribute.Label;
+        attribute.HelpLabel = request.Attribute.HelpLabel;
+        attribute.Placeholder = request.Attribute.Placeholder;
+        attribute.Required = request.Attribute.Required;
+        this._databaseContext.SaveChanges();
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ATTRIBUTE.SUCCESS.EDIT", new Dictionary<string, string>
+        {
+            { "attribute", attributeOldName },
+        });
     }
 
     [UIEvent(Events.UI.LooseData.DeleteSetAttribute)]
     private void DeleteSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<DeleteSetAttributeRequest>();
-            var set = this._databaseContext.LooseDataSets
-                .Include(set => set.Attributes)
-                .Include(set => set.Entities)
-                .ThenInclude(entities => entities.Values)
-                .ThenInclude(looseDataValue => looseDataValue.Attribute)
-                .FirstOrDefault(set => set.Id == request.SetId);
-            if (set is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            var attributeToDelete = this._databaseContext.LooseDataAttributes
-                .FirstOrDefault(attr => attr.Id == request.AttributeId);
-            if (attributeToDelete is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            foreach (var entity in set.Entities)
-            {
-                foreach (var value in entity.Values.Where(value => value.Attribute.Id == request.AttributeId))
-                {
-                    this._databaseContext.LooseDataValues.Remove(value);
-                }
-            }
-
-            var attributeName = attributeToDelete.Name;
-            this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
-            this._databaseContext.SaveChanges();
-            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
-            {
-                { "attribute", attributeName },
-            });
-        }
-        catch (Exception)
+        var request = expandoObject.ConvertTo<DeleteSetAttributeRequest>();
+        var set = this._databaseContext.LooseDataSets
+            .Include(set => set.Attributes)
+            .Include(set => set.Entities)
+            .ThenInclude(entities => entities.Values)
+            .ThenInclude(looseDataValue => looseDataValue.Attribute)
+            .FirstOrDefault(set => set.Id == request.SetId);
+        if (set is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
         }
+
+        var attributeToDelete = this._databaseContext.LooseDataAttributes
+            .FirstOrDefault(attr => attr.Id == request.AttributeId);
+        if (attributeToDelete is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        foreach (var entity in set.Entities)
+        {
+            foreach (var value in entity.Values.Where(value => value.Attribute.Id == request.AttributeId))
+            {
+                this._databaseContext.LooseDataValues.Remove(value);
+            }
+        }
+
+        var attributeName = attributeToDelete.Name;
+        this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
+        this._databaseContext.SaveChanges();
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
+        {
+            { "attribute", attributeName },
+        });
     }
 
     [UIEvent(Events.UI.LooseData.GetEntity)]
     private void GetEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<GetSetEntityRequest>();
-            var setType = this.FindSetTypeById(request.SetId);
-            if (setType is null)
-            {
-                networkCallbackDelegate.Invoke(null);
-                return;
-            }
-
-            var entity = this.InternalGetEntity(request.Id);
-            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entity));
-        }
-        catch (Exception)
+        var request = expandoObject.ConvertTo<GetSetEntityRequest>();
+        var setType = this.FindSetTypeById(request.SetId);
+        if (setType is null)
         {
             networkCallbackDelegate.Invoke(null);
+            return;
         }
+
+        var entity = this.InternalGetEntity(request.Id);
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entity));
     }
 
     [UIEvent(Events.UI.LooseData.GetEntities)]
     private void GetEntitiesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<GetSetEntitiesRequest>();
-            var setType = this.FindSetTypeById(request.SetId);
-            if (setType is null)
-            {
-                networkCallbackDelegate.Invoke(null);
-                return;
-            }
-
-            var filters = new Filters<LooseDataEntity>();
-            var entities = this.GetEntitiesPage(setType, request.Page, filters);
-            networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entities));
-        }
-        catch (Exception)
+        var request = expandoObject.ConvertTo<GetSetEntitiesRequest>();
+        var setType = this.FindSetTypeById(request.SetId);
+        if (setType is null)
         {
             networkCallbackDelegate.Invoke(null);
+            return;
         }
+
+        var filters = new Filters<LooseDataEntity>();
+        var entities = this.GetEntitiesPage(setType, request.Page, filters);
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entities));
     }
 
     [UIEvent(Events.UI.LooseData.AddEntity)]
     private void AddEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<AddEntityRequest>();
-            var setType = this.FindSetTypeById(request.SetId);
-            if (setType is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            var addedEntity = this.InternalAddEntity(request.SetId, new LooseDataEntity(), new Dictionary<string, object>(request.Entity));
-            if (addedEntity is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
-        }
-        catch (Exception)
+        var request = expandoObject.ConvertTo<AddEntityRequest>();
+        var setType = this.FindSetTypeById(request.SetId);
+        if (setType is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
         }
+
+        var addedEntity = this.InternalAddEntity(request.SetId, new LooseDataEntity(), new Dictionary<string, object>(request.Entity));
+        if (addedEntity is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
     [UIEvent(Events.UI.LooseData.EditEntity)]
     private void UpdateEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<AddEntityRequest>();
-            var setType = this.FindSetTypeById(request.SetId);
-            if (setType is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            this.InternalUpdateEntity(request.SetId, request.EntityId, new Dictionary<string, object>(request.Entity));
-            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
-        }
-        catch (Exception)
+        var request = expandoObject.ConvertTo<AddEntityRequest>();
+        var setType = this.FindSetTypeById(request.SetId);
+        if (setType is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
         }
+
+        this.InternalUpdateEntity(request.SetId, request.EntityId, new Dictionary<string, object>(request.Entity));
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.LooseData.DeleteEntity)]
     private void DeleteEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        try
-        {
-            var request = expandoObject.ConvertTo<DeleteEntityRequest>();
-            var setType = this.FindSetTypeById(request.SetId);
-            if (setType is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            var entityToDelete = this._databaseContext.LooseDataEntities
-                .FirstOrDefault(entity => entity.Id == request.Id);
-            if (entityToDelete is null)
-            {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
-                return;
-            }
-
-            this._databaseContext.LooseDataEntities.Remove(entityToDelete);
-            this._databaseContext.SaveChanges();
-            this.InvokeEvent(LooseDataEntityObservableType.Delete, setType, entityToDelete);
-            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
-        }
-        catch (Exception)
+        var request = expandoObject.ConvertTo<DeleteEntityRequest>();
+        var setType = this.FindSetTypeById(request.SetId);
+        if (setType is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
         }
+
+        var entityToDelete = this._databaseContext.LooseDataEntities
+            .FirstOrDefault(entity => entity.Id == request.Id);
+        if (entityToDelete is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        this._databaseContext.LooseDataEntities.Remove(entityToDelete);
+        this._databaseContext.SaveChanges();
+        this.InvokeEvent(LooseDataEntityObservableType.Delete, setType, entityToDelete);
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
     private LooseDataEntity InternalAddEntity(string setId, LooseDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)

@@ -41,6 +41,7 @@ internal class Bootstrapper : BaseScript
     public Bootstrapper()
     {
         TriggerServerEvent(Events.Player.OnConnected);
+        this.EventHandlers[Events.Lifecycle.Stop] += new Action(LifecycleHandler.OnStopped);
 
         // Initialize the logger.
         this._bootstrapLogger = new LoggerService();
