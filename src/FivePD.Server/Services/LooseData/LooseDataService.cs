@@ -420,7 +420,7 @@ public class LooseDataService : ILooseDataService
         
         if (entity.MappedValues.ContainsKey("IncidentId"))
         {
-            var user = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == (entity.MappedValues["IncidentId"] as long? ?? 0));
+            var user = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == entity.MappedValues["IncidentId"]);
             entity.MappedValues["Incident"] = user;
         }
 

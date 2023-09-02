@@ -1,0 +1,7 @@
+<app-page-header [title]="'UI.LABEL.INCIDENT.PLURAL' | translate"/>
+
+<app-grid
+  [title]="'UI.LABEL.INCIDENT.PLURAL' | translate"
+  [data]="incidentHistoryPage"
+  [columns]="incidentHistoryPageColumnDef"
+  (onCollationChange)="onIncidentHistoryPageCollationChange($event)"/>

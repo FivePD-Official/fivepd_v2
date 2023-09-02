@@ -308,6 +308,10 @@ internal readonly record struct Events
     
     public readonly record struct IncidentHistory
     {
+        public const string Get = "fivepd:incidentHistory:get";
+
+        public const string GetAll = "fivepd:incidentHistory:getAll";
+
         public const string GetAllOfUser = "fivepd:incidentHistory:getAllOfUser";
     }
 }

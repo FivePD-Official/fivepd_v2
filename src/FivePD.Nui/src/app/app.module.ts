@@ -24,7 +24,7 @@ import { ButtonComponent } from './components/button/button.component';
 import { DynamicFormComponent } from './components/dynamic-form/dynamic-form.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DynamicFormInputComponent } from './components/dynamic-form-input/dynamic-form-input.component';
-import { DepartmentService } from '@services/entity/department.service';
+import { DepartmentService } from '@services/department/department.service';
 import { ModalComponent } from './components/modal/modal.component';
 import { GridComponent } from './components/grid/grid.component';
 import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
@@ -59,6 +59,7 @@ import { InformationComponent } from './pages/information/information.component'
 import { NotMdtComponent } from './pages/not-mdt/not-mdt.component';
 import { DispatchComponent } from './pages/mdt/dispatch/dispatch.component';
 import { AttributeGridOptions } from "./pages/mdt/settings/_service/attribute-grid-options";
+import { IncidentHistoryComponent } from './pages/mdt/incident-history/incident-history.component';
 
 @NgModule({
   declarations: [
@@ -99,6 +100,7 @@ import { AttributeGridOptions } from "./pages/mdt/settings/_service/attribute-gr
     InformationComponent,
     NotMdtComponent,
     DispatchComponent,
+    IncidentHistoryComponent,
   ],
   imports: [
     BrowserModule,

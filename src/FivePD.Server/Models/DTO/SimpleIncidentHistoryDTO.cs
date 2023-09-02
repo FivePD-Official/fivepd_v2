@@ -6,7 +6,7 @@ namespace FivePD.Server.Models.DTO;
 
 internal record struct SimpleIncidentHistoryDTO
 {
-    public int Id { get; init; }
+    public string Id { get; init; }
     
     public string Title { get; init; }
     

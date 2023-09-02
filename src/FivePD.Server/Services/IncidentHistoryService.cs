@@ -1,6 +1,5 @@
 ﻿using System.Dynamic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
@@ -12,6 +11,8 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
+using FivePD.Server.QueryHelpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace FivePD.Server.Services;
 
@@ -69,6 +70,26 @@ internal class IncidentHistoryService : IIncidentHistoryService, IInternalIncide
     {
         this._databaseContext.IncidentHistories.Add(incidentHistory);
         this._databaseContext.SaveChangesAsync();
+    }
+
+    [UIEvent(Events.IncidentHistory.GetAll)]
+    private void GetAllUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<IncidentHistoryGetAllRequest>();
+
+        var filters = new Filters<IncidentHistory>();
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Id),
+            department => department.Id.ToLower().Contains(request.Filters.Id.ToLower()));
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Title),
+            department => department.Title.ToLower().Contains(request.Filters.Title.ToLower()));
+
+        var page = this._databaseContext.IncidentHistories
+            .AsNoTracking()
+            .Paginate(request.Page, filters);
+
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 
     [UIEvent(Events.IncidentHistory.GetAllOfUser)]

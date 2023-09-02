@@ -14,7 +14,7 @@ import {
   TextInput,
   UnitDTO
 } from '@models';
-import { DepartmentService } from '@services/entity/department.service';
+import { DepartmentService } from '@services/department/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
 import { filter, first, shareReplay, switchMap } from 'rxjs';

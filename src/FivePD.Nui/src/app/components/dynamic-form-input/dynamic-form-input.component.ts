@@ -98,6 +98,10 @@ export class DynamicFormInputComponent implements OnInit {
           this.onDropdownSelect(selectItem, false);
         }
       }
+
+      if (this.field.type === 'text' || this.field.type === 'textarea') {
+        this.onChange.emit(value);
+      }
     });
 
     if (this.field.type === 'dropdown') {

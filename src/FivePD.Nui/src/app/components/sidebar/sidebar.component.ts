@@ -50,6 +50,12 @@ export class SidebarComponent {
       show: () => true,
     },
     {
+      title: 'UI.LABEL.INCIDENT.PLURAL',
+      path: () => '/mdt/incidents',
+      icon: IconType.Report,
+      show: () => true,
+    },
+    {
       title: 'UI.LABEL.SETTINGS',
       path: () => '/mdt/settings',
       icon: IconType.Cog,

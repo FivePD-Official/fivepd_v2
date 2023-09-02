@@ -66,9 +66,8 @@ namespace FivePD.Server.Migrations
 
             modelBuilder.Entity("FivePD.Server.Models.IncidentHistory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -102,8 +101,8 @@ namespace FivePD.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("IncidentHistoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("IncidentHistoryId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");

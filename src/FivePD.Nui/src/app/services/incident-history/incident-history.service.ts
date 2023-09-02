@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { SimpleIncidentHistory } from "@models";
+import { Collation, Department, IncidentHistory, Page, SimpleIncidentHistory } from "@models";
 import { GlobalState } from "@store";
 import { Store } from "@ngrx/store";
 
@@ -17,6 +17,16 @@ export class IncidentHistoryService {
     private readonly _store: Store<GlobalState>,
   ) {
     _store.select('user', 'details', 'User', 'Id').subscribe(userId => this.userId = userId);
+  }
+
+  get(id: string): Observable<IncidentHistory> {
+    return this._http.post<IncidentHistory>('fivepd:incidentHistory:get', {
+      Id: id,
+    });
+  }
+
+  getAll(collation?: Collation): Observable<Page<IncidentHistory>> {
+    return this._http.post<Page<IncidentHistory>>('fivepd:incidentHistory:getAll', collation);
   }
 
   getAllOfUser(): Observable<SimpleIncidentHistory[]> {

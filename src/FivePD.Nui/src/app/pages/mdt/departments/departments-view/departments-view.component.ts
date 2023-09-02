@@ -18,7 +18,7 @@ import {
   TextInput,
   User
 } from '@models';
-import { DepartmentService } from '@services/entity/department.service';
+import { DepartmentService } from '@services/department/department.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
 import { filter, switchMap } from 'rxjs';

@@ -80,7 +80,7 @@ export interface Vector3 {
 }
 
 export interface IncidentHistory {
-  Id: number;
+  Id: string;
   IncidentId: string;
   Title: string;
   Description: string;

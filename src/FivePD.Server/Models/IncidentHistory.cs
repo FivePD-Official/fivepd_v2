@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FivePD.Common.Enums;
+using FivePD.Server.Utilities;
 
 namespace FivePD.Server.Models;
 
@@ -12,7 +13,7 @@ public class IncidentHistory
     /// <summary>
     /// Gets or sets the identifier.
     /// </summary>
-    public int Id { get; set; }
+    public string Id { get; set; } = IdGenerator.Generate();
 
     /// <summary>
     /// Gets or sets the identifier which is/was used to runtime reference this record.
