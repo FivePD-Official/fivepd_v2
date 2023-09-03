@@ -22,6 +22,8 @@ public interface IAddonMetadataService
     /// <returns>An <see cref="AddonDefinition"/> for the currently executing assembly.</returns>
     public AddonDefinition GetExecutingAddonDefinition();
 
+    // TODO: change to internal LoadAssemblies and FindAndRegisterAddons
+
     /// <summary>
     /// Loads.
     /// </summary>
