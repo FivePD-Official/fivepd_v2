@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Models;
+using FivePD.Server.Models.Events;
 
 namespace FivePD.Server.Interfaces;
 
@@ -84,21 +85,17 @@ public interface IDepartmentService
     /// <summary>
     /// Selects and returns all departments.
     /// </summary>
-    /// <param name="includeRanks">Specifies whether to include the departments' ranks in the query or not.</param>
-    /// <param name="includeDivisions">Specifies whether to include the departments' divisions in the query or not.</param>
-    /// <param name="includeUsers">Specifies whether to include the departments' users in the query or not.</param>
+    /// <param name="options">The options to use when querying the database.</param>
     /// <returns>A list of departments.</returns>
-    public IEnumerable<Department> GetDepartments(bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false);
+    public IEnumerable<Department> GetDepartments(DepartmentQueryOptions options = default);
 
     /// <summary>
     /// Finds the first department with the given identifier.
     /// </summary>
     /// <param name="id">The identifier to search for.</param>
-    /// <param name="includeRanks">Specifies whether to include the department's ranks in the query or not.</param>
-    /// <param name="includeDivisions">Specifies whether to include the department's divisions in the query or not.</param>
-    /// <param name="includeUsers">Specifies whether to include the department's users in the query or not.</param>
+    /// <param name="options">The options to use when querying the database.</param>
     /// <returns>The found department.</returns>
-    public Department GetDepartmentById(int id, bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false);
+    public Department GetDepartmentById(int id, DepartmentQueryOptions options = default);
 
     /// <summary>
     /// Adds the given player to the given department.
@@ -133,21 +130,12 @@ public interface IDepartmentService
     public void RemovePlayerFromDepartment(Player player);
 }
 
-// TODO: should be moved to its own file somewhere
-
 /// <summary>
-/// Provides additional information regarding a player's
-/// department change, both when they join or leave one.
+/// Provides options for querying departments.
 /// </summary>
-public class PlayerDepartmentChangeEventArgs : EventArgs
-{
-    /// <summary>
-    /// Gets or sets the player who is affected by this change.
-    /// </summary>
-    public User User { get; set; }
-
-    /// <summary>
-    /// Gets or sets the department which the player has joined or left.
-    /// </summary>
-    public Department Department { get; set; }
-}
+/// <param name="IncludeRanks">Specifies whether to include ranks in the query.</param>
+/// <param name="IncludeDivisions">Specifies whether to include divisions in the query.</param>
+/// <param name="IncludeUsers">Specifies whether to include users in the query.</param>
+#pragma warning disable SA1313
+public readonly record struct DepartmentQueryOptions(bool IncludeRanks, bool IncludeDivisions, bool IncludeUsers);
+#pragma warning restore SA1313

@@ -13,6 +13,7 @@ using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
+using FivePD.Server.Models.Events;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using FivePD.Server.Utilities;
@@ -108,21 +109,21 @@ public class DepartmentService : IDepartmentService
     }
 
     /// <inheritdoc />
-    public IEnumerable<Department> GetDepartments(bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false)
+    public IEnumerable<Department> GetDepartments(DepartmentQueryOptions options = default)
     {
         return this._databaseContext.Departments
-            .IncludeIf(includeDivisions, dept => dept.Divisions)
-            .IncludeIf(includeRanks, dept => dept.Ranks)
-            .IncludeIf(includeUsers, dept => dept.Users);
+            .IncludeIf(options.IncludeDivisions, dept => dept.Divisions)
+            .IncludeIf(options.IncludeRanks, dept => dept.Ranks)
+            .IncludeIf(options.IncludeUsers, dept => dept.Users);
     }
 
     /// <inheritdoc />
-    public Department GetDepartmentById(int id, bool includeRanks = false, bool includeDivisions = false, bool includeUsers = false)
+    public Department GetDepartmentById(int id, DepartmentQueryOptions options = default)
     {
         return this._databaseContext.Departments
-            .IncludeIf(includeDivisions, dept => dept.Divisions)
-            .IncludeIf(includeRanks, dept => dept.Ranks)
-            .IncludeIf(includeUsers, dept => dept.Users)
+            .IncludeIf(options.IncludeDivisions, dept => dept.Divisions)
+            .IncludeIf(options.IncludeRanks, dept => dept.Ranks)
+            .IncludeIf(options.IncludeUsers, dept => dept.Users)
             .FirstOrDefault(department => department.Id == id);
     }
 
@@ -143,11 +144,7 @@ public class DepartmentService : IDepartmentService
         user.DivisionId = null;
         user.RankId = null;
         this._databaseContext.SaveChangesAsync();
-        this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs
-        {
-            User = user,
-            Department = department,
-        });
+        this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 
     /// <inheritdoc />
@@ -170,11 +167,7 @@ public class DepartmentService : IDepartmentService
         user.RankId = null;
         user.Callsign = string.Empty;
         this._databaseContext.SaveChangesAsync();
-        this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs
-        {
-            User = user,
-            Department = department,
-        });
+        this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 
     /// <inheritdoc />
