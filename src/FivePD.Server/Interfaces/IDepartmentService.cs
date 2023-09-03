@@ -20,7 +20,7 @@ public interface IDepartmentService
     /// <summary>
     /// Fires when a department has been edited.
     /// </summary>
-    public event EventHandler<Department> DepartmentEdited;
+    public event EventHandler<Department> DepartmentUpdated;
 
     /// <summary>
     /// Fires when a department has been deleted.
@@ -35,7 +35,7 @@ public interface IDepartmentService
     /// <summary>
     /// Fires when a rank has been edited.
     /// </summary>
-    public event EventHandler<Rank> RankEdited;
+    public event EventHandler<Rank> RankUpdated;
 
     /// <summary>
     /// Fires when a rank has been deleted.
@@ -50,7 +50,7 @@ public interface IDepartmentService
     /// <summary>
     /// Fires when a division has been edited.
     /// </summary>
-    public event EventHandler<Division> DivisionEdited;
+    public event EventHandler<Division> DivisionUpdated;
 
     /// <summary>
     /// Fires when a division has been deleted.
@@ -68,7 +68,7 @@ public interface IDepartmentService
     public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerLeftDepartment;
 
     /// <summary>
-    /// Inserts a <see cref="Database"/> into the 'departments' table.
+    /// Inserts a <see cref="Department"/> into the 'departments' table.
     /// </summary>
     /// <param name="department">The department to insert.</param>
     /// <exception cref="ArgumentException">The provided department or its name is null.</exception>
@@ -77,7 +77,7 @@ public interface IDepartmentService
     public Department CreateDepartment(Department department);
 
     /// <summary>
-    /// Removes a <see cref="Database"/> from the 'departments' table.
+    /// Removes a <see cref="Department"/> from the 'departments' table.
     /// </summary>
     /// <param name="department">The department to remove.</param>
     public void RemoveDepartment(Department department);

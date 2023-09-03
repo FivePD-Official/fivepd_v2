@@ -42,7 +42,7 @@ public class DepartmentService : IDepartmentService
     public event EventHandler<Department> DepartmentCreated;
 
     /// <inheritdoc />
-    public event EventHandler<Department> DepartmentEdited;
+    public event EventHandler<Department> DepartmentUpdated;
 
     /// <inheritdoc />
     public event EventHandler<Department> DepartmentDeleted;
@@ -57,7 +57,7 @@ public class DepartmentService : IDepartmentService
     public event EventHandler<Rank> RankCreated;
 
     /// <inheritdoc />
-    public event EventHandler<Rank> RankEdited;
+    public event EventHandler<Rank> RankUpdated;
 
     /// <inheritdoc />
     public event EventHandler<Rank> RankDeleted;
@@ -66,7 +66,7 @@ public class DepartmentService : IDepartmentService
     public event EventHandler<Division> DivisionCreated;
 
     /// <inheritdoc />
-    public event EventHandler<Division> DivisionEdited;
+    public event EventHandler<Division> DivisionUpdated;
 
     /// <inheritdoc />
     public event EventHandler<Division> DivisionDeleted;
@@ -85,7 +85,7 @@ public class DepartmentService : IDepartmentService
         }
 
         var departmentExists = this._databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name);
-        if (departmentExists != null)
+        if (departmentExists is not null)
         {
             throw new DepartmentExistsWithNameException();
         }
@@ -371,7 +371,7 @@ public class DepartmentService : IDepartmentService
         var divisionToEditOldName = divisionToEdit.Name;
         divisionToEdit.Name = renameDivisionRequest.Name;
         this._databaseContext.SaveChanges();
-        this.DivisionEdited?.Invoke(this, divisionToEdit);
+        this.DivisionUpdated?.Invoke(this, divisionToEdit);
         networkCallbackDelegate.InvokeWithResponse(
             true,
             "UI.LABEL.SUCCESS.EDIT",
@@ -483,7 +483,7 @@ public class DepartmentService : IDepartmentService
         rankToEdit.Permission = editRankRequest.Permission;
         rankToEdit.RequiredXp = editRankRequest.RequiredXp;
         this._databaseContext.SaveChanges();
-        this.RankEdited?.Invoke(this, rankToEdit);
+        this.RankUpdated?.Invoke(this, rankToEdit);
         networkCallbackDelegate.InvokeWithResponse(
             true,
             "UI.LABEL.SUCCESS.EDIT",
@@ -575,7 +575,7 @@ public class DepartmentService : IDepartmentService
         department.MaxUsers = editDepartmentRequest.MaxUsers;
         department.DefaultRankId = editDepartmentRequest.DefaultRankId == -1 ? (int?)null : editDepartmentRequest.DefaultRankId;
         this._databaseContext.SaveChanges();
-        this.DepartmentEdited?.Invoke(this, department);
+        this.DepartmentUpdated?.Invoke(this, department);
         networkCallbackDelegate.InvokeWithResponse(
             true,
             "UI.LABEL.SUCCESS.EDIT",
