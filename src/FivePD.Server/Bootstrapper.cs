@@ -322,7 +322,7 @@ internal class Bootstrapper : BaseScript
 
         var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
         var addonDefinitions = addonLocator.GetAddons().ToList();
-        var addonContainerService = this._provider.GetService<IAddonMetadataService>();
+        var addonContainerService = this._provider.GetService<IInternalAddonMetadataService>();
         addonContainerService.LoadAssemblies(addonDefinitions);
         addonContainerService.FindAndRegisterAddons();
     }

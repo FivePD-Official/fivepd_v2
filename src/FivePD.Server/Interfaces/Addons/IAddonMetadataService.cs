@@ -15,25 +15,6 @@ public interface IAddonMetadataService
     /// Gets the loaded callout types.
     /// </summary>
     public ReadOnlyCollection<Type> CalloutTypes { get; }
-
-    /// <summary>
-    /// Gets information about the executing addon.
-    /// </summary>
-    /// <returns>An <see cref="AddonDefinition"/> for the currently executing assembly.</returns>
-    public AddonDefinition GetExecutingAddonDefinition();
-
-    // TODO: change to internal LoadAssemblies and FindAndRegisterAddons
-
-    /// <summary>
-    /// Loads.
-    /// </summary>
-    /// <param name="definitions">The definitions to load.</param>
-    public void LoadAssemblies(List<AddonDefinition> definitions);
-
-    /// <summary>
-    /// Aasd.
-    /// </summary>
-    public void FindAndRegisterAddons();
 }
 
 /// <summary>
@@ -57,6 +38,23 @@ internal interface IInternalAddonMetadataService
     /// <param name="type">The type.</param>
     /// <returns>The callout.</returns>
     public Callout InstantiateCallout(Type type);
+
+    /// <summary>
+    /// Gets information about the executing addon.
+    /// </summary>
+    /// <returns>An <see cref="AddonDefinition"/> for the currently executing assembly.</returns>
+    public AddonDefinition GetExecutingAddonDefinition();
+
+    /// <summary>
+    /// Loads assemblies from a list of definitions.
+    /// </summary>
+    /// <param name="definitions">The definitions to load.</param>
+    public void LoadAssemblies(List<AddonDefinition> definitions);
+
+    /// <summary>
+    /// Finds and registers addons.
+    /// </summary>
+    public void FindAndRegisterAddons();
 }
 
 internal sealed record CalloutType(Type Type, string AssemblyName);

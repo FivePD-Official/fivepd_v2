@@ -8,7 +8,7 @@ namespace FivePD.Server.Services.Addons;
 /// <inheritdoc />
 public class AddonFileHandlerService : IAddonFileHandlerService
 {
-    private readonly IAddonMetadataService _addonMetadataService;
+    private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly Dictionary<string, Dictionary<string, object>> _deserializedFileCache = new();
 
     /// <summary>
@@ -17,7 +17,7 @@ public class AddonFileHandlerService : IAddonFileHandlerService
     /// <param name="addonMetadataService"> The <see cref="IAddonMetadataService"/> to use.</param>
     public AddonFileHandlerService(IAddonMetadataService addonMetadataService)
     {
-        this._addonMetadataService = addonMetadataService;
+        this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
     }
 
     /// <inheritdoc />

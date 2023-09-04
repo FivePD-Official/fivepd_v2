@@ -8,7 +8,7 @@ namespace FivePD.Server.Services.Addons;
 public class AddonLoggerService : IAddonLoggerService
 {
     private readonly ILogger _logger;
-    private readonly IAddonMetadataService _addonMetadataService;
+    private readonly IInternalAddonMetadataService _addonMetadataService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AddonLoggerService"/> class.
@@ -18,7 +18,7 @@ public class AddonLoggerService : IAddonLoggerService
     public AddonLoggerService(ILogger logger, IAddonMetadataService addonMetadataService)
     {
         this._logger = logger;
-        this._addonMetadataService = addonMetadataService;
+        this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
     }
 
     /// <inheritdoc />
