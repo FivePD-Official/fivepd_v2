@@ -5,7 +5,7 @@ export type ButtonSizes = 'base' | 'sm';
 
 export interface Button {
   label: string;
-  theme?: ButtonVariants;
+  variant?: ButtonVariants;
   size?: ButtonSizes;
   type?: 'button' | 'submit';
   show: () => boolean;

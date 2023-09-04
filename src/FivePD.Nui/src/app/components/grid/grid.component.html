@@ -5,7 +5,7 @@
     <div *ngIf="buttons" class="flex flex-row items-center justify-between gap-2">
       <app-button
         *ngFor="let button of buttons"
-        variant="secondary"
+        [variant]="button.variant || 'secondary'"
         [link]="button.link"
         [label]="button.label | translate"
         [show]="button.show()"

@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { DevtoolsService } from '@services/devtools/devtools.service';
-import { Observable } from 'rxjs';
-import { formatDate } from '@helpers';
-import { Button, Column, Page } from '@models';
+import { filter } from 'rxjs';
+import { Button, Column, DeleteEntityType, Page } from '@models';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { CoordinateWithDate } from '@store/app.reducer';
 import { addDevToolsCoordinate, clearDevToolsCoordinates } from '@store/app.actions';
-import { DeleteEntityType } from '@models';
+import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
+import { ModalService } from "@services/modals/modal/modal.service";
+import { NotificationService } from "@services/notification/notification.service";
 
 @Component({
   selector: 'app-devtools-general',
@@ -16,8 +17,43 @@ import { DeleteEntityType } from '@models';
 })
 export class DevtoolsGeneralComponent {
 
-  coordinates$: Observable<Page<CoordinateWithDate>>;
+  coordinates?: Page<CoordinateWithDate>;
   coordinatesButtons: Button[] = [
+    {
+      type: 'button',
+      label: 'Copy all Vector3',
+      variant: 'tertiary-bg',
+      show: () => true,
+      disabled: () => (this.coordinates?.Items ?? []).length === 0,
+      onClick: () => {
+        const text = this.coordinates!.Items.map(item => `new Vector3(${item.X}f, ${item.Y}f, ${item.Z}f)`).join(',\n');
+        this.copyToClipboard(text);
+      }
+    },
+    {
+      type: 'button',
+      label: 'Clear',
+      variant: 'tertiary-bg',
+      show: () => true,
+      disabled: () => (this.coordinates?.Items ?? []).length === 0,
+      onClick: () => {
+        this._modalConfirmService.open({
+          title: 'Clear coordinates',
+          description: 'Are you sure you want to clear all coordinates?',
+          buttons: {
+            submit: {
+              label: 'Clear',
+              variant: 'danger',
+            },
+          },
+        }).result
+          .pipe(
+            filter(res => res.success),
+            this._modalService.close(),
+          )
+          .subscribe(() => this.store.dispatch(clearDevToolsCoordinates()));
+      }
+    },
     {
       type: 'button',
       label: 'Get current coordinate',
@@ -29,13 +65,6 @@ export class DevtoolsGeneralComponent {
           this.store.dispatch(addDevToolsCoordinate({payload: coordinate}))
         });
       }
-    },
-    {
-      type: 'button',
-      label: 'Clear',
-      show: () => true,
-      disabled: () => false,
-      onClick: () => this.store.dispatch(clearDevToolsCoordinates()),
     },
   ];
   coordinatesColumns: Column<CoordinateWithDate>[] = [
@@ -74,8 +103,11 @@ export class DevtoolsGeneralComponent {
   constructor(
     private readonly devtools: DevtoolsService,
     private readonly store: Store<GlobalState>,
+    private readonly _modalService: ModalService,
+    private readonly _modalConfirmService: ModalConfirmService,
+    private readonly _notificationService: NotificationService,
   ) {
-    this.coordinates$ = this.store.select('app', 'devTools', 'coordinates');
+    this.store.select('app', 'devTools', 'coordinates').subscribe(coordinates => this.coordinates = coordinates);
   }
 
   get DeleteEntityType() {
@@ -104,6 +136,12 @@ export class DevtoolsGeneralComponent {
     }
 
     document.body.removeChild(textArea);
+
+    this._notificationService.show({
+      type: 'success',
+      title: 'Copied to clipboard',
+      description: 'Copied the selected item to your clipboard.',
+    });
   }
 
 }

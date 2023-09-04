@@ -35,6 +35,19 @@ export class ModalService {
     return modalRef;
   }
 
+  public close<T>(): MonoTypeOperatorFunction<T> {
+    return source => {
+      return source.pipe(
+        tap(() => this.modalRef?.stopLoading()),
+        tap(() => {
+          if (this.modalRef) {
+            this.removeModalComponentFromMdtView(this.modalRef.modalComponentRef)
+          }
+        })
+      )
+    }
+  }
+
   public handleResponse(): MonoTypeOperatorFunction<ActionResponse> {
     return source => {
       return source.pipe(
