@@ -47,7 +47,7 @@ ProgressionSystem:
     Death: -50
     VehicleImpounded: 50
 
-FeatureFlags: # TODO rename to Features
+Features:
   DiscordRichPresence: true
   DutyNotification: true
   DisableWantedLevel: true

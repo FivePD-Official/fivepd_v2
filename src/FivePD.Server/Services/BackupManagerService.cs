@@ -31,7 +31,7 @@ public class BackupManagerService : IBackupManagerService
 
     public void TriggerBackupRequest(Unit requestingUnit)
     {
-        if (!this._configService.GeneralConfig.FeatureFlags.Backups)
+        if (!this._configService.GeneralConfig.Features.Backups)
         {
             return;
         }

@@ -28,7 +28,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDi
     private readonly InformationUpdateDTO _information = new();
     private GeneralConfig _generalConfig = new()
     {
-        FeatureFlags = new FeatureFlagsConfig
+        Features = new FeatureFlagsConfig
         {
             DiscordRichPresence = true,
             DutyNotification = false,
@@ -109,13 +109,13 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDi
 
     private Task OnTickAsync()
     {
-        if (!this._generalConfig.FeatureFlags.DisableWantedLevel)
+        if (!this._generalConfig.Features.DisableWantedLevel)
         {
             return Task.FromResult(0);
         }
 
-        if (!this._generalConfig.FeatureFlags.DisableWantedLevelAllTime &&
-            (this._generalConfig.FeatureFlags.DisableWantedLevelAllTime || this.Player.DutyStatus.Value != FDutyStatus.OnDuty))
+        if (!this._generalConfig.Features.DisableWantedLevelAllTime &&
+            (this._generalConfig.Features.DisableWantedLevelAllTime || this.Player.DutyStatus.Value != FDutyStatus.OnDuty))
         {
             return Task.FromResult(0);
         }
@@ -163,7 +163,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDi
     // Called when the player's duty status changes.
     private void UpdateDiscordStatus()
     {
-        if (!this._generalConfig.FeatureFlags.DiscordRichPresence)
+        if (!this._generalConfig.Features.DiscordRichPresence)
         {
             Cfx.API.SetDiscordAppId(string.Empty);
             Cfx.API.SetDiscordRichPresenceAsset(string.Empty);

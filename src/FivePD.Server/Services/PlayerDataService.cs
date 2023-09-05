@@ -112,7 +112,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     /// <inheritdoc />
     public void IncreaseRank(FPlayer player)
     {
-        if (!this._configService.GeneralConfig.FeatureFlags.ProgressionSystem)
+        if (!this._configService.GeneralConfig.Features.ProgressionSystem)
         {
             return;
         }
@@ -161,7 +161,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     /// <inheritdoc/>
     public void DecreaseRank(FPlayer player)
     {
-        if (!this._configService.GeneralConfig.FeatureFlags.ProgressionSystem)
+        if (!this._configService.GeneralConfig.Features.ProgressionSystem)
         {
             return;
         }
@@ -215,7 +215,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
 
     private void SubscribeToOnDutyStatusChange(Player player)
     {
-        if (!this._configService.GeneralConfig.FeatureFlags.DutyNotification)
+        if (!this._configService.GeneralConfig.Features.DutyNotification)
         {
             return;
         }
