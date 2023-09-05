@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Enums;
-using FivePD.Server.EntityWrappers;
-using FivePD.Server.EntityWrappers.PedWrapper;
-using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Services;
 
@@ -50,7 +46,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     {
         this._eventHandlerDictionary[Events.Ped.OnAlerted] += new Action<Player, int>(this.OnAlerted);
     }
-    
+
     private async void OnAlerted([FromSource] Player player, int networkId)
     {
         var ped = this._pedService.TryGetPed(networkId);
@@ -59,6 +55,8 @@ public class InteractionService : IInteractionService, IServiceWithEvents
             return;
         }
 
+        Cfx.API.SetEntityDistanceCullingRadius(ped.GetUnderlyingPed.Handle, 10000f);
+
         ped.Properties.SetAlwaysKeepTask(true);
         ped.Properties.SetBlockPermanentEvents(true);
 
@@ -66,7 +64,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
         {
             ped.Task.LeaveVehicle();
         }
-        
+
         ped.Task.StandStill(-1);
         ped.Task.TurnTo(player.Character);
 
