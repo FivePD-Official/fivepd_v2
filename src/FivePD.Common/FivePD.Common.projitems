@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DatabaseConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\FeatureFlagsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DispatchActionItemConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\PedsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\ProgressionSystemConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\UnitConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\VehiclesConfig.cs" />
@@ -61,7 +62,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DynamicExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientCallout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfirmationProperties.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservableSubscription.cs" />

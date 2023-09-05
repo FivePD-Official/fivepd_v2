@@ -214,6 +214,35 @@ namespace FivePD.Server.Migrations
                     b.ToTable("LooseDataValues");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.PedHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Birthdate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Firstname")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Items")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Lastname")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Warrants")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PedHistories");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.Rank", b =>
                 {
                     b.Property<int>("Id")

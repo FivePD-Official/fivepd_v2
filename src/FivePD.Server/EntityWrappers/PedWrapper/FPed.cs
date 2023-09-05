@@ -72,4 +72,14 @@ public sealed class FPed : FEntity
     {
         return new FPed(new CommonFPed(new CommonFPedBuilder(ped.NetworkId)));
     }
+
+    /// <summary>
+    /// Created an <see cref="FPed"/> wrapper from the specified <see cref="Ped"/>.
+    /// </summary>
+    /// <param name="networkId">The network ID of the ped.</param>
+    /// <returns>The FPed.</returns>
+    public static FPed FromNetId(int networkId)
+    {
+        return new FPed(new CommonFPed(new CommonFPedBuilder(networkId)));
+    }
 }

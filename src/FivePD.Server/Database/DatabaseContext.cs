@@ -1,4 +1,6 @@
-﻿using FivePD.Server.Interfaces;
+﻿using System.Collections.Generic;
+using FivePD.Common.ConfigModels;
+using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.LooseData;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +88,11 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<IncidentHistoryUser> IncidentHistoryUsers { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the ped histories.
+    /// </summary>
+    public DbSet<PedHistory> PedHistories { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -159,5 +166,22 @@ public class DatabaseContext : DbContext
             .HasMany(incidentHistory => incidentHistory.Users)
             .WithOne(user => user.IncidentHistory)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PedHistory>(type =>
+        {
+            type.Property(t => t.Items)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<Item>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+            type.Property(t => t.Warrants)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<string>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        });
     }
 }

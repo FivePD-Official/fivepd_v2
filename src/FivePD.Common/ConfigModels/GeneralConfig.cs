@@ -36,5 +36,7 @@ public sealed record GeneralConfig : IInternalGeneralConfig
 
     public ProgressionSystemConfig ProgressionSystem { get; init; } = new();
 
+    public PedsConfig Peds { get; init; } = new();
+
     public VehiclesConfig Vehicles { get; init; } = new();
 }

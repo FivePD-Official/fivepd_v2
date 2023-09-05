@@ -1,7 +1,9 @@
 ﻿using System;
 using CitizenFX.Core;
+using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Common;
+using FivePD.Common.Enums;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Services;
@@ -13,6 +15,7 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
     private readonly IPedService _pedService;
     private readonly IVehicleService _vehicleService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly IControlService _controlService;
 
     /// <summary>
     /// Initializes a new instance of
@@ -21,20 +24,28 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
     /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
     /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
     public InteractionService(
         IPedService pedService,
         IVehicleService vehicleService,
-        EventHandlerDictionary eventHandlerDictionary)
+        EventHandlerDictionary eventHandlerDictionary,
+        IControlService controlService)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._controlService = controlService;
     }
 
     /// <inheritdoc />
     public void RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
+        this._controlService.RegisterKeybind(
+            Controls.TryAlertEntityAsync.Id,
+            Controls.TryAlertEntityAsync.Key,
+            Controls.TryAlertEntityAsync.Title,
+            this.TryAlertEntity);
     }
 
     /// <inheritdoc/>
@@ -180,7 +191,7 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
             BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, "-1");
             return;
         }
-            
+
         // We need to make sure the entity is of the correct type.
         // If it's not, then we'll return null.
         if (type == "ped" && Cfx.API.IsEntityAPed(possibleEntity.Handle))
@@ -189,7 +200,7 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
             BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, possibleEntity.NetworkId.ToString());
             return;
         }
-            
+
         // TODO: seems not to be working
         if (type == "vehicle" && Cfx.API.IsEntityAVehicle(possibleEntity.Handle))
         {
@@ -197,7 +208,27 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
             BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, possibleEntity.NetworkId.ToString());
             return;
         }
-            
+
         BaseScript.TriggerServerEvent(Events.Generic.Callback, eventId, "-1");
+    }
+
+    private void TryAlertEntity()
+    {
+        var ped = this.GetLikelyTargetEntity<Ped>();
+        if (ped is null)
+        {
+            return;
+        }
+
+        if (ped.IsDead)
+        {
+            return;
+        }
+
+        ped.CreateBlip(FBlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
+
+        // TODO: prevent multiple alerts - statebag?
+        this._pedService.GeneratePed(ped);
+        BaseScript.TriggerServerEvent(Events.Ped.OnAlerted, ped.NetworkId);
     }
 }

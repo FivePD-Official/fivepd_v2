@@ -40,6 +40,8 @@ internal readonly record struct Events
         public const string WeaponCollection = "fivepd:ped:weaponCollection";
 
         public const string WeaponCollectionWithReturn = "fivepd:ped:weaponCollectionWithReturn";
+
+        public const string OnAlerted = "fivepd:ped:onAlerted";
     }
 
     public readonly record struct Vehicle

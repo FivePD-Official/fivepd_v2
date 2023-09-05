@@ -19,6 +19,21 @@ Callout:
     Enabled: false # true = only units within the specified radius will be dispatched, false = all units
     Radius: 200 # radius measured from callout position
 
+Peds:
+  ChanceToReusePedHistory: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again
+  ChanceForAnyWarrant: 10 # should be between 0-100. the higher the number, the more likely that a ped has a warrant
+  MaxWarrants: 2 # the maximum amount of warrants a ped can have
+  Warrants:
+    - Arrest Warrant
+    - Search Warrant
+    - Alias Warrant
+    - Bench Warrant
+    - Capias Warrant
+    - Capias Pro Fine Warrant
+    - Civil Capias Warrant
+    - Fugitive Warrant
+    - Governor's Warrant
+
 Vehicles:
   Police:
     EnableSpikeStripInAllVehicles: true

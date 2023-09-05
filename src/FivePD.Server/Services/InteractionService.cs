@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
@@ -19,6 +20,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     private readonly IControlService _controlService;
     private readonly IEventService _eventService;
     private readonly ITickQueueService _tickQueueService;
+    private readonly EventHandlerDictionary _eventHandlerDictionary;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InteractionService"/> class.
@@ -26,98 +28,48 @@ public class InteractionService : IInteractionService, IServiceWithEvents
     /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
     /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     public InteractionService(
         IPedService pedService,
         IVehicleService vehicleService,
         IControlService controlService,
         IEventService eventService,
-        ITickQueueService tickQueueService)
+        ITickQueueService tickQueueService,
+        EventHandlerDictionary eventHandlerDictionary)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
         this._controlService = controlService;
         this._eventService = eventService;
         this._tickQueueService = tickQueueService;
+        this._eventHandlerDictionary = eventHandlerDictionary;
     }
 
     /// <inheritdoc />
     void IServiceWithEvents.RegisterEvents()
     {
-        this._controlService.RegisterKeybind(
-            Controls.TryAlertEntityAsync.Id,
-            Controls.TryAlertEntityAsync.Key,
-            Controls.TryAlertEntityAsync.Title,
-            player => this._tickQueueService.EnqueueAsync(() => this.TryAlertEntityAsync(player)));
+        this._eventHandlerDictionary[Events.Ped.OnAlerted] += new Action<Player, int>(this.OnAlerted);
     }
-
-    /// <inheritdoc />
-    public async Task TryAlertEntityAsync(Player player)
+    
+    private async void OnAlerted([FromSource] Player player, int networkId)
     {
-        Debug.WriteLine("invoked: TryAlertEntityAsync");
-        // TODO: return if player is in vehicle
-
-        var ped = await this.GetTargetedEntityAsync<FPed>(player);
+        var ped = this._pedService.TryGetPed(networkId);
         if (ped is null)
         {
             return;
         }
 
-        if (await ped.Properties.IsDead)
-        {
-            // TODO
-            return;
-        }
+        ped.Properties.SetAlwaysKeepTask(true);
+        ped.Properties.SetBlockPermanentEvents(true);
 
         if (await ped.Properties.IsInVehicle)
         {
-            // Targeting a ped in a vehicle.
-            // TODO this._pedService.PedLeaveVehicleWithHandsUp(ped);
-            return;
+            ped.Task.LeaveVehicle();
         }
-
-        // TODO this._pedService.StopPed(ped);
-        ped.Properties.CreateBlip(FBlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
-
-        ped.Properties.SetAlwaysKeepTask(true);
-        ped.Properties.SetBlockPermanentEvents(true);
+        
         ped.Task.StandStill(-1);
         ped.Task.TurnTo(player.Character);
 
         Debug.WriteLine($"Alerted ped with net ID of {ped.GetFPed.NetworkId}");
-    }
-
-#pragma warning disable
-    public async Task<T> GetTargetedEntityAsync<T>(Player player)
-        where T : FEntity
-    {
-        var type = string.Empty;
-        if (typeof(T) == typeof(FPed))
-        {
-            type = "ped";
-        }
-        else if (typeof(T) == typeof(FVehicle))
-        {
-            type = "vehicle";
-        }
-
-        var networkId = await this._eventService.TriggerEventAsync(player, Events.Interaction.GetTargetedEntity, type);
-        if (networkId == "-1")
-        {
-            return null;
-        }
-
-        if (typeof(T) == typeof(FPed))
-        {
-            var fPed = this._pedService.TryGetPed(int.Parse(networkId));
-            return fPed as T;
-        }
-
-        if (typeof(T) == typeof(FVehicle))
-        {
-            var fVehicle = this._vehicleService.TryGetVehicle(int.Parse(networkId));
-            return fVehicle as T;
-        }
-
-        return null;
     }
 }

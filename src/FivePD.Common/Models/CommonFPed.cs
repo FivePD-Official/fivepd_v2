@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
@@ -23,6 +24,7 @@ public class CommonFPed : CommonFEntity
         this.Lastname = builder.Lastname;
         this.Birthdate = builder.Birthdate;
         this.Items = builder.Items;
+        this.Warrants = builder.Warrants;
     }
 
     /// <summary>
@@ -34,6 +36,11 @@ public class CommonFPed : CommonFEntity
         : base(networkId)
     {
     }
+
+    /// <summary>
+    /// Gets the ped's history ID.
+    /// </summary>
+    public int PedHistoryId { get; internal set; }
 
     /// <summary>
     /// Gets the ped's gender.
@@ -53,12 +60,17 @@ public class CommonFPed : CommonFEntity
     /// <summary>
     /// Gets the ped's birthdate.
     /// </summary>
-    public Date Birthdate { get; }
+    public DateTime Birthdate { get; }
 
     /// <summary>
     /// Gets the items of the ped.
     /// </summary>
     public List<Item> Items { get; }
+
+    /// <summary>
+    /// Gets the warrants of the ped.
+    /// </summary>
+    public List<string> Warrants { get; }
 
     /// <inheritdoc />
     public override string ToString()
