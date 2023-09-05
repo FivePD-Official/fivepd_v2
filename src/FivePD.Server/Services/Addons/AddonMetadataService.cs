@@ -105,7 +105,7 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
             // Find and register extensions
             var extensionTypes = assembly
                 .GetTypes()
-                .Where(type => type.IsAssignableFrom(typeof(IExtension)));
+                .Where(type => typeof(IExtension).IsAssignableFrom(type));
             foreach (var extensionType in extensionTypes)
             {
                 try

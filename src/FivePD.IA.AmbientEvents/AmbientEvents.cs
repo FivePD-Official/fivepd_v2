@@ -18,13 +18,20 @@ public class AmbientEvents : IExtension
     private readonly IEntityService _entityService;
     private readonly ICfxService _cfxService;
     private readonly IUnitService _unitService;
+    private readonly IAddonFileHandlerService _fileHandlerService;
 
-    public AmbientEvents(IAddonLoggerService logger, IEntityService entityService, ICfxService cfxService, IUnitService unitService)
+    public AmbientEvents(
+        IAddonLoggerService logger, 
+        IEntityService entityService, 
+        ICfxService cfxService, 
+        IUnitService unitService,
+        IAddonFileHandlerService fileHandlerService)
     {
         this._logger = logger;
         this._entityService = entityService;
         this._cfxService = cfxService;
         this._unitService = unitService;
+        this._fileHandlerService = fileHandlerService;
     }
 
     public async Task OnStartedAsync()

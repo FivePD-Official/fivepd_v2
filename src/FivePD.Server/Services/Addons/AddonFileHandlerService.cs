@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using FivePD.Server.Interfaces.Addons;
 using Newtonsoft.Json;
+using Serilog;
+using YamlDotNet.Serialization;
 
 namespace FivePD.Server.Services.Addons;
 
@@ -9,15 +11,18 @@ namespace FivePD.Server.Services.Addons;
 public class AddonFileHandlerService : IAddonFileHandlerService
 {
     private readonly IInternalAddonMetadataService _addonMetadataService;
+    private readonly ILogger _logger;
     private readonly Dictionary<string, Dictionary<string, object>> _deserializedFileCache = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AddonFileHandlerService"/> class.
     /// </summary>
     /// <param name="addonMetadataService"> The <see cref="IAddonMetadataService"/> to use.</param>
-    public AddonFileHandlerService(IAddonMetadataService addonMetadataService)
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    public AddonFileHandlerService(IAddonMetadataService addonMetadataService, ILogger logger)
     {
         this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
+        this._logger = logger;
     }
 
     /// <inheritdoc />
@@ -50,21 +55,32 @@ public class AddonFileHandlerService : IAddonFileHandlerService
                 fileCache = this._deserializedFileCache[addonDefinition.Name] = new Dictionary<string, object>();
             }
 
-            try
+            var content = addonDefinition.Files[path];
+            T deserializedObject;
+            if (path.EndsWith(".json"))
             {
-                var deserializedObject = JsonConvert.DeserializeObject<T>(addonDefinition.Files[path]);
+                deserializedObject = JsonConvert.DeserializeObject<T>(content);
                 fileCache[path] = deserializedObject;
-
-                return deserializedObject;
             }
-            catch (Exception)
+            else if (path.EndsWith(".yaml"))
             {
-                return Activator.CreateInstance<T>();
+                var serializer = new DeserializerBuilder().Build();
+                deserializedObject = serializer.Deserialize<T>(string.IsNullOrEmpty(content) || content.Length <= 1 ? "." : content);
             }
+            else
+            {
+                deserializedObject = Activator.CreateInstance<T>();
+            }
+
+            return deserializedObject;
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return default;
+            this._logger.Error(
+                "An error occured while parsing the {Path} file, the default values will be used. Make sure that the JSON or YAML formatting is correct. Exception: {Exception}",
+                path,
+                e);
+            return Activator.CreateInstance<T>();
         }
     }
 }
