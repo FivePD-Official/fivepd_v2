@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
@@ -23,7 +22,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
-using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
 
@@ -46,10 +44,7 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     public Bootstrapper()
     {
-        LifecycleHandler.OnStopped += (_, _) =>
-        {
-            this.OnStopped();
-        };
+        LifecycleHandler.OnStopped += (_, _) => this.OnStopped();
 
         // Prepare the server for development if applicable.
 #if DEBUG
@@ -70,9 +65,6 @@ internal class Bootstrapper : BaseScript
         // Creates log context for bootstrapping.
         this._bootstrapLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
         this._bootstrapLogger.Information("Starting FivePD...");
-
-        // Enqueue pre-bootstrap phase.
-        this._phases.Add(this.PerformPreBootstrapPhase, false);
 
         // Enqueue service location phase.
         this._phases.Add(this.PerformServiceLocationPhase, false);
@@ -118,7 +110,7 @@ internal class Bootstrapper : BaseScript
         var phase = this._phases.FirstOrDefault(x => !x.Value);
 
         // If no phase is found, we're done
-        if (phase.Key == null)
+        if (phase.Key is null)
         {
             // Log that we're done
             this._bootstrapLogger.Information("FivePD bootstrapping has completed");
@@ -145,15 +137,13 @@ internal class Bootstrapper : BaseScript
             this.Tick -= this.RunNextPhaseAsync;
 
             // Log the problem
-            this._bootstrapLogger.Fatal("An error occurred during bootstrapping and the FivePD has halted to prevent further issues.");
+            this._bootstrapLogger.Fatal("An error occurred during bootstrapping, stopping FivePD to prevent further issues.");
             this._bootstrapLogger.Fatal("Exception: {exception}", e.Message);
             this._bootstrapLogger.Debug("Stacktrace: {stacktrace}", e.StackTrace);
-            if (e.InnerException != null)
+            if (e.InnerException is not null)
             {
                 this._bootstrapLogger.Debug("Inner exception: {innerException}", e.InnerException);
             }
-
-            this._bootstrapLogger.Fatal("There is an error above that caused FivePD to stop");
 
             return Task.CompletedTask;
         }
@@ -171,17 +161,6 @@ internal class Bootstrapper : BaseScript
     }
 
     /// <summary>
-    /// Performs pre-startup tasks.
-    /// </summary>
-    private void PerformPreBootstrapPhase()
-    {
-        // todo: validate certs for sentry and our in-house api
-#pragma warning disable S4830
-        ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-#pragma warning restore S4830
-    }
-
-    /// <summary>
     /// Locates and registers services.
     /// </summary>
     private void PerformServiceLocationPhase()
@@ -196,13 +175,16 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton(this.Players);
         services.AddDbContext<DatabaseContext>();
 
-        services.AddSingleton<AddonMetadataService>();
-        services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
-        services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        // Addons
         services.AddTransient<IAddonLoggerService, AddonLoggerService>();
         services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
         services.AddSingleton<IAddonFileHandlerService, AddonFileHandlerService>();
 
+        services.AddSingleton<AddonMetadataService>();
+        services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+
+        // Other
         services.AddSingleton<IFileHandlerService, FileHandlerService>();
         services.AddSingleton<ICommandService, CommandService>();
         services.AddSingleton<IDevToolsService, DevToolsService>();
@@ -218,11 +200,6 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<ICfxService, CfxService>();
         services.AddSingleton<IBackupManagerService, BackupManagerService>();
         services.AddSingleton<IProgressionSystemService, ProgressionSystemService>();
-
-#pragma warning disable
-        // !! SERVICES WITH EVENTS SHOULD BE SINGLETONS
-        // !! AND SHOULD BE REGISTERED AS THE ONES BELOW THIS COMMENT !!
-#pragma warning enable
 
         services.AddSingleton<ConfigService>();
         services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());
@@ -316,7 +293,7 @@ internal class Bootstrapper : BaseScript
         if (this._provider is null)
         {
             log?.Fatal("The service provider must be initialized prior to locating addons.");
-            this.OnStopped();
+            LifecycleHandler.Stop();
             return;
         }
 
@@ -339,7 +316,7 @@ internal class Bootstrapper : BaseScript
         if (!this.IsSafeToRun())
         {
             log?.Fatal("FivePD cannot run in this environment. Verify all prerequisites have been met and try again");
-            this.OnStopped();
+            LifecycleHandler.Stop();
             return;
         }
 
@@ -348,7 +325,7 @@ internal class Bootstrapper : BaseScript
         {
             if (resource.ToUpper() == "FIVEPD")
             {
-                this.OnStopped();
+                LifecycleHandler.Stop();
             }
         });
 
@@ -381,6 +358,7 @@ internal class Bootstrapper : BaseScript
 
                     break;
                 }
+
                 case false when migrations.Count > 0:
                     log?.Information("Upgrading the database to {Version}", migrations.Last());
                     db.Database.Migrate();
@@ -452,7 +430,7 @@ internal class Bootstrapper : BaseScript
                             Kick = false,
                             SetCallsign = false,
                             SetRank = false,
-                        }
+                        },
                     },
                     new()
                     {
@@ -463,7 +441,7 @@ internal class Bootstrapper : BaseScript
                             Kick = false,
                             SetCallsign = false,
                             SetRank = false,
-                        }
+                        },
                     },
                     new()
                     {
@@ -474,7 +452,7 @@ internal class Bootstrapper : BaseScript
                             Kick = false,
                             SetCallsign = false,
                             SetRank = false,
-                        }
+                        },
                     },
                 },
             };
@@ -497,8 +475,6 @@ internal class Bootstrapper : BaseScript
         var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
         log?.Information("Stopping FivePD");
 
-        LifecycleHandler.IsStopped = true;
-        
         // Dispose all internal services with the interface IDisposableService
         foreach (var service in this._provider.GetServices<IDisposableService>())
         {
@@ -510,7 +486,7 @@ internal class Bootstrapper : BaseScript
         {
             extension.OnStoppedAsync();
         }
-        
+
         // Notify every player that the resource is stopping and prevent any actions on client-side
         foreach (var player in this.Players)
         {

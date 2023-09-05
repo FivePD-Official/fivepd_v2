@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using MySql.Data.MySqlClient;
 using Serilog;
 
@@ -18,6 +19,11 @@ internal static class LifecycleHandler
     }
 
     public static event EventHandler OnStopped;
+
+    public static void Stop()
+    {
+        OnStopped?.Invoke(null, EventArgs.Empty);
+    }
 
     public static void HandleError(Exception exception)
     {
