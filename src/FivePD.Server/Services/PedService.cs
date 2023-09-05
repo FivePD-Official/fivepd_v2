@@ -14,21 +14,22 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IPedService" />
-public class PedService : IPedService, IServiceWithEvents
+public class PedService : IPedService, IServiceWithEvents, IDisposableService
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
-
-    // TODO: check for not existing peds and remove them
-    private readonly ConcurrentDictionary<int, FPed> _peds = new();
     private readonly DatabaseContext _databaseContext;
     private readonly IRandomService _randomService;
+    private readonly ITickQueueService _tickQueueService;
+
+    private readonly ConcurrentDictionary<int, FPed> _peds = new();
+    private Guid _checkPedsId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PedService"/> class.
@@ -37,16 +38,19 @@ public class PedService : IPedService, IServiceWithEvents
     /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
+    /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
     public PedService(
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
         DatabaseContext databaseContext,
-        IRandomService randomService)
+        IRandomService randomService,
+        ITickQueueService tickQueueService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._databaseContext = databaseContext;
         this._randomService = randomService;
+        this._tickQueueService = tickQueueService;
     }
 
     /// <inheritdoc/>
@@ -54,6 +58,13 @@ public class PedService : IPedService, IServiceWithEvents
     {
         this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
         this._eventHandlerDictionary[Events.Ped.Search] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.Search);
+        this._checkPedsId = this._tickQueueService.EnqueueInterval(this.CheckPeds, 1000);
+    }
+
+    /// <inheritdoc/>
+    void IDisposableService.InternalDispose()
+    {
+        this._tickQueueService.DequeueInterval(this._checkPedsId);
     }
 
     /// <inheritdoc/>
@@ -69,6 +80,17 @@ public class PedService : IPedService, IServiceWithEvents
         this._peds[networkId] = ped;
 
         return ped;
+    }
+
+    private void CheckPeds()
+    {
+        foreach (var netId in this._peds.Keys)
+        {
+            if (!Cfx.API.DoesEntityExist(netId))
+            {
+                this._peds.TryRemove(netId, out _);
+            }
+        }
     }
 
     private void GeneratePed(string serializedFPedBuilder)
@@ -134,6 +156,7 @@ public class PedService : IPedService, IServiceWithEvents
         this._peds[fPed.NetworkId] = new FPed(fPed);
     }
 
+    // TODO: refactor to use the PedHistories
     private void Search(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<PedSearchRequest>();
