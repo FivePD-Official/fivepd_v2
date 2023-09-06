@@ -20,7 +20,88 @@ public class CfxService : ICfxService, IServiceWithEvents
 
     public void RegisterEvents()
     {
-        this._eventHandlerDictionary["fivepd:cfx:getClosestVehicle"] += new Action<string, Vector3, float>((callbackId, location, radius) =>
+        this._eventHandlerDictionary[Events.Cfx.AddAmmoToPed] += new Action<int, uint, int>((ped, weaponHash, ammo) =>
+        {
+            var entity = Entity.FromNetworkId(ped);
+            if (entity is null)
+            {
+                return;
+            }
+
+            Cfx.API.AddAmmoToPed(entity.Handle, weaponHash, ammo);
+        });
+
+        this._eventHandlerDictionary[Events.Cfx.AddAmmoToPedByType] += new Action<int, int, int>((ped, ammoType, ammo) =>
+        {
+            var entity = Entity.FromNetworkId(ped);
+            if (entity is null)
+            {
+                return;
+            }
+
+            Cfx.API.AddAmmoToPedByType(entity.Handle, ammoType, ammo);
+        });
+
+        this._eventHandlerDictionary[Events.Cfx.AddArmourToPed] += new Action<int, int>((ped, amount) =>
+        {
+            var entity = Entity.FromNetworkId(ped);
+            if (entity is null)
+            {
+                return;
+            }
+
+            Cfx.API.AddArmourToPed(entity.Handle, amount);
+        });
+
+        this._eventHandlerDictionary[Events.Cfx.AddPedAmmo] += new Action<int, int, int>((ped, ammoType, amount) =>
+        {
+            var entity = Entity.FromNetworkId(ped);
+            if (entity is null)
+            {
+                return;
+            }
+
+            Cfx.API.AddPedAmmo(entity.Handle, ammoType, amount);
+        });
+
+        this._eventHandlerDictionary[Events.Cfx.ApplyDamageToPed] += new Action<int, int, bool>((ped, damageAmount, armorFirst) =>
+        {
+            var entity = Entity.FromNetworkId(ped);
+            if (entity is null)
+            {
+                return;
+            }
+
+            Cfx.API.ApplyDamageToPed(entity.Handle, damageAmount, armorFirst);
+        });
+
+        this._eventHandlerDictionary[Events.Cfx.ApplyForceToEntity] +=
+            new Action<int, int, float, float, float, float, float, float, int, bool, bool, bool, bool, bool>(
+                (entityId, forceType, x, y, z, offX, offY, offZ, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12, p13) =>
+                {
+                    var entity = Entity.FromNetworkId(entityId);
+                    if (entity is null)
+                    {
+                        return;
+                    }
+
+                    Cfx.API.ApplyForceToEntity(entity.Handle, forceType, x, y, z, offX, offY, offZ, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12,
+                        p13);
+                });
+
+        this._eventHandlerDictionary[Events.Cfx.ApplyForceToEntityCenterOfMass] += new Action<int, int, float, float, float, bool, bool, bool, bool>(
+            (entityId, forceType, x, y, z, p5, isDirectionRel, isForceRel, p8) =>
+            {
+                var entity = Entity.FromNetworkId(entityId);
+                if (entity is null)
+                {
+                    return;
+                }
+
+                Cfx.API.ApplyForceToEntityCenterOfMass(entity.Handle, forceType, x, y, z, p5, isDirectionRel, isForceRel, p8);
+            });
+
+        this._eventHandlerDictionary[Events.Cfx.GetClosestVehicle] += new Action<string, Vector3, float>((callbackId, location, radius) =>
         {
             Debug.WriteLine("asdasd");
             Debug.WriteLine($"{callbackId}");
@@ -29,7 +110,8 @@ public class CfxService : ICfxService, IServiceWithEvents
             var closestVehicle = World.GetAllVehicles().FirstOrDefault(x => World.GetDistance(x.Position, location) <= radius);
             BaseScript.TriggerServerEvent(Events.Generic.Callback, callbackId, closestVehicle?.NetworkId ?? 0);
         });
-        this._eventHandlerDictionary["fivepd:cfx:AttachEntityToEntity"] += new Action<
+
+        this._eventHandlerDictionary[Events.Cfx.AttachEntityToEntity] += new Action<
             int,
             int,
             int,
@@ -48,15 +130,25 @@ public class CfxService : ICfxService, IServiceWithEvents
         {
             var entity1 = Entity.FromNetworkId(i);
             var entity2 = Entity.FromNetworkId(i1);
+            if (entity1 is null || entity2 is null)
+            {
+                return;
+            }
+
             Cfx.API.AttachEntityToEntity(entity1.Handle, entity2.Handle, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
         });
-        this._eventHandlerDictionary["fivepd:cfx:SetPedIntoVehicle"] += new Action<
+
+        this._eventHandlerDictionary[Events.Cfx.SetPedIntoVehicle] += new Action<
             int,
             int,
             int>((i, i1, i2) =>
         {
             var entity1 = Entity.FromNetworkId(i);
-            entity1.State["asd"] = true;
+            if (entity1 is null)
+            {
+                return;
+            }
+
             Cfx.API.SetPedIntoVehicle(entity1.Handle, i1, i2);
         });
     }

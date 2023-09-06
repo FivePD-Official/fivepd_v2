@@ -9,7 +9,7 @@ namespace FivePD.Common;
 // {type} is optional, either "server" or "client"
 internal readonly record struct Events
 {
-    public readonly record struct Lifecycle 
+    public readonly record struct Lifecycle
     {
         public const string Stop = "fivepd:lifecycle:stop";
     }
@@ -47,7 +47,7 @@ internal readonly record struct Events
     public readonly record struct Vehicle
     {
         public const string Generate = "fivepd:vehicle:generate";
-        
+
         public const string GetProperty = "fivepd:vehicle:getProperty";
 
         public const string SetProperty = "fivepd:vehicle:setProperty";
@@ -212,16 +212,16 @@ internal readonly record struct Events
 
             public const string GetSafeZoneSize = "fivepd:config:getSafeZoneSize";
         }
-        
+
         public readonly record struct Callout
         {
             public const string GetActive = "fivepd:ui:callout:getActive";
-            
+
             public const string GetAllTypes = "fivepd:ui:callout:getAllTypes";
 
             public const string Dispatch = "fivepd:ui:callout:dispatch";
         }
-        
+
         public readonly record struct Dispatch
         {
             public const string GetIncomingCallouts = "fivepd:ui:dispatch:getIncomingCallouts";
@@ -288,12 +288,12 @@ internal readonly record struct Events
 
         public const string GetAllActiveUI = "fivepd:callout:getAllActiveUI";
     }
-    
+
     public readonly record struct Config
     {
         public const string Get = "fivepd:config:getGeneral";
     }
-    
+
     public readonly record struct Dispatch
     {
         public const string EnableForPlayer = "fivepd:dispatch:enableForPlayer";
@@ -312,7 +312,7 @@ internal readonly record struct Events
 
         public const string AssignCalloutToUnits = "fivepd:dispatch:assignCalloutToUnits";
     }
-    
+
     public readonly record struct IncidentHistory
     {
         public const string Get = "fivepd:incidentHistory:get";
@@ -320,5 +320,38 @@ internal readonly record struct Events
         public const string GetAll = "fivepd:incidentHistory:getAll";
 
         public const string GetAllOfUser = "fivepd:incidentHistory:getAllOfUser";
+    }
+
+    public readonly record struct Cfx
+    {
+        // void AddAmmoToPed(int ped,uint weaponHash,int ammo);
+        public const string AddAmmoToPed = "fivepd:cfx:AddAmmoToPed";
+
+        // void AddAmmoToPedByType(int ped,int ammoType,int ammo);
+        public const string AddAmmoToPedByType = "fivepd:cfx:AddAmmoToPedByType";
+
+        // void AddArmourToPed(int ped,int amount);
+        public const string AddArmourToPed = "fivepd:cfx:AddArmourToPed";
+
+        // void AddPedAmmo(int ped,int ammoType,int ammo);;
+        public const string AddPedAmmo = "fivepd:cfx:AddPedAmmo";
+
+        // void ApplyDamageToPed(int ped,int damageAmount,bool armorFirst);;
+        public const string ApplyDamageToPed = "fivepd:cfx:ApplyDamageToPed";
+
+        // void ApplyForceToEntity(int entity,int forceType,float x,float y,float z,float offX,float offY,float offZ,int boneIndex,bool isDirectionRel,bool ignoreUpVec,bool isForceRel,bool p12,bool p13);;
+        public const string ApplyForceToEntity = "fivepd:cfx:ApplyForceToEntity";
+
+        // void ApplyForceToEntityCenterOfMass(int entity,int forceType,float x,float y,float z,bool p5,bool isDirectionRel,bool isForceRel,bool p8);;
+        public const string ApplyForceToEntityCenterOfMass = "fivepd:cfx:ApplyForceToEntityCenterOfMass";
+
+        // int  GetClosestVehicle(float x,float y,float z,float radius,uint modelHash,int flags);
+        public const string GetClosestVehicle = "fivepd:cfx:GetClosestVehicle";
+
+        // void AttachEntityToEntity(int entity1,int entity2,int boneIndex,float xPos,float yPos,float zPos,float xRot,float yRot,float zRot,bool p9,bool useSoftPinning,bool collision,bool isPed,int rotationOrder,bool fixedRot);
+        public const string AttachEntityToEntity = "fivepd:cfx:AttachEntityToEntity";
+
+        // void SetPedIntoVehicle(int ped,int vehicle,int seatIndex);
+        public const string SetPedIntoVehicle = "fivepd:cfx:SetPedIntoVehicle";
     }
 }

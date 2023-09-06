@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
@@ -17,15 +18,66 @@ public class CfxService : ICfxService
         this._eventService = eventService;
     }
 
-    public async Task<FVehicle> GetClosestVehicle(FPlayer player, Vector3 location, float radius)
+    public void AddAmmoToPed(int ped, uint weaponHash, int ammo)
     {
-        var vehicleNetworkId = await this._eventService.TriggerEventStrictAsync(player.GetUnderlyingPlayer(), "fivepd:cfx:getClosestVehicle", location, radius);
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.AddAmmoToPed, weaponHash, ammo);
+    }
+
+    public void AddAmmoToPedByType(int ped, int ammoType, int ammo)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.AddAmmoToPedByType, ammoType, ammo);
+    }
+
+    public void AddArmourToPed(int ped, int amount)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.AddArmourToPed, ped, amount);
+    }
+
+    public void AddPedAmmo(int ped, int ammoType, int ammo)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.AddPedAmmo, ped, ammoType, ammo);
+    }
+
+    public void ApplyDamageToPed(int ped, int damageAmount, bool armorFirst)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.ApplyDamageToPed, ped, damageAmount, armorFirst);
+    }
+
+    public void ApplyForceToEntity(
+        int entity,
+        int forceType,
+        float x,
+        float y,
+        float z,
+        float offX,
+        float offY,
+        float offZ,
+        int boneIndex,
+        bool isDirectionRel,
+        bool ignoreUpVec,
+        bool isForceRel,
+        bool p12,
+        bool p13)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.ApplyForceToEntity, entity, forceType, x, y, z, offX,
+            offY, offZ,
+            boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12, p13);
+    }
+
+    public void ApplyForceToEntityCenterOfMass(int entity, int forceType, float x, float y, float z, bool p5, bool isDirectionRel, bool isForceRel, bool p8)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.ApplyForceToEntityCenterOfMass, entity, forceType, x, y,
+            z, p5, isDirectionRel, isForceRel, p8);
+    }
+
+    public async Task<FVehicle> GetClosestVehicle(Vector3 location, float radius)
+    {
+        var vehicleNetworkId = await this._eventService.TriggerEventAsync(null, Events.Cfx.GetClosestVehicle, location, radius);
         var vehicle = Entity.FromNetworkId(int.Parse(vehicleNetworkId)) as Vehicle;
         return FVehicle.FromVehicle(vehicle);
     }
 
     public void AttachEntityToEntity(
-        FPlayer player,
         int entity1,
         int entity2,
         int boneIndex,
@@ -39,30 +91,16 @@ public class CfxService : ICfxService
         bool useSoftPinning,
         bool collision,
         bool isPed,
-        int vertexIndex,
+        int rotationOrder,
         bool fixedRot)
     {
-        player.GetUnderlyingPlayer().TriggerEvent(
-            "fivepd:cfx:AttachEntityToEntity",
-            entity1,
-            entity2,
-            boneIndex,
-            xPos,
-            yPos,
-            zPos,
-            xRot,
-            yRot,
-            zRot,
-            p9,
-            useSoftPinning,
-            collision,
-            isPed,
-            vertexIndex,
-            fixedRot);
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity1).Owner, Events.Cfx.AttachEntityToEntity, entity1, entity2, boneIndex, xPos,
+            yPos, zPos, xRot, yRot, zRot, p9,
+            useSoftPinning, collision, isPed, rotationOrder, fixedRot);
     }
 
     public void SetPedIntoVehicle(int ped, int vehicle, int seatIndex)
     {
-        BaseScript.TriggerClientEvent("fivepd:cfx:SetPedIntoVehicle", ped, vehicle, seatIndex);
+        BaseScript.TriggerClientEvent(Events.Cfx.SetPedIntoVehicle, ped, vehicle, seatIndex);
     }
 }

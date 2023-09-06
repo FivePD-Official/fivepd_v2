@@ -9,19 +9,37 @@ namespace FivePD.Server.Interfaces;
 
 public interface ICfxService
 {
-    public Task<FVehicle> GetClosestVehicle(FPlayer player, Vector3 location, float radius);
+    public void AddAmmoToPed(int ped, uint weaponHash, int ammo);
 
-    /// <summary>
-    /// Attaches entity1 to bone (boneIndex) of entity2.
-    /// boneIndex - this is different to boneID, use GET_PED_BONE_INDEX to get the index from the ID. use the index for attaching to specific bones. entity1 will be attached to entity2's centre if bone index given doesn't correspond to bone indexes for that entity type.
-    /// useSoftPinning - when 2 entities with collision collide and form into a ball they will break the attachment of the entity that they were attached to. Or when an entity is attached far away and then the resets.
-    /// collision - controls collision between the two entities (FALSE disables collision).
-    /// isPed - pitch doesnt work when false and roll will only work on negative numbers (only peds)
-    /// vertexIndex - position of vertex
-    /// fixedRot - if false it ignores entity vector
-    /// </summary>
+    public void AddAmmoToPedByType(int ped, int ammoType, int ammo);
+
+    public void AddArmourToPed(int ped, int amount);
+
+    public void AddPedAmmo(int ped, int ammoType, int ammo);
+
+    public void ApplyDamageToPed(int ped, int damageAmount, bool armorFirst);
+
+    public void ApplyForceToEntity(
+        int entity,
+        int forceType,
+        float x,
+        float y,
+        float z,
+        float offX,
+        float offY,
+        float offZ,
+        int boneIndex,
+        bool isDirectionRel,
+        bool ignoreUpVec,
+        bool isForceRel,
+        bool p12,
+        bool p13);
+
+    public void ApplyForceToEntityCenterOfMass(int entity, int forceType, float x, float y, float z, bool p5, bool isDirectionRel, bool isForceRel, bool p8);
+
+    public Task<FVehicle> GetClosestVehicle(Vector3 location, float radius);
+
     public void AttachEntityToEntity(
-        FPlayer player,
         int entity1,
         int entity2,
         int boneIndex,
@@ -35,9 +53,8 @@ public interface ICfxService
         bool useSoftPinning,
         bool collision,
         bool isPed,
-        int vertexIndex,
+        int rotationOrder,
         bool fixedRot);
 
-    #pragma warning disable
     public void SetPedIntoVehicle(int ped, int vehicle, int seatIndex);
 }

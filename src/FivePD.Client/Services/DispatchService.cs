@@ -53,7 +53,6 @@ internal class DispatchService : IDispatchService, IServiceWithEvents, IDisposab
                         .Select(p => new SimplePlayer(p.ServerId, p.Character.Position))
                         .ToList();
                     var peds = World.GetAllPeds()
-                        .Where(x => x.State["asd"] is not null && x.State["asd"] == true)
                         .Select(p => new SimplePlayer(p.NetworkId, p.Position))
                         .ToList();
                     players.AddRange(peds);

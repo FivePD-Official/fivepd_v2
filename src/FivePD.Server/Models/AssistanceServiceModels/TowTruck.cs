@@ -34,7 +34,7 @@ public class TowTruck : AssistanceService
 
     public override async Task Setup()
     {
-        this._targetVehicle = await this._cfxService.GetClosestVehicle(this.RequestedBy, this.RequestedBy.GetUnderlyingPlayer().Character.Position, 20f);
+        this._targetVehicle = await this._cfxService.GetClosestVehicle(this.RequestedBy.GetUnderlyingPlayer().Character.Position, 20f);
     }
 
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
@@ -81,7 +81,6 @@ public class TowTruck : AssistanceService
         await Task.Delay(2000);
 
         this._cfxService.AttachEntityToEntity(
-            this.RequestedBy,
             this._targetVehicle.GetUnderlyingVehicle.NetworkId,
             this._towTruck.GetUnderlyingVehicle.NetworkId,
             0,
