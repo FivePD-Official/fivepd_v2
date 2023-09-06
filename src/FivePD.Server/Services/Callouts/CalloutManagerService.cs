@@ -40,7 +40,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
     /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
-    /// <param name="internalDispatchService">The <see cref="IInternalDispatchService"/> to use.</param>
+    /// <param name="dispatchService">The <see cref="IDispatchService"/> to use.</param>
     /// <param name="calloutStoreService">The <see cref="ICalloutStoreService"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     public CalloutManagerService(
@@ -48,7 +48,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         ITickQueueService tickQueueService,
         IProgressionSystemService progressionSystemService,
         IConfigService configService,
-        IDispatchService internalDispatchService,
+        IDispatchService dispatchService,
         ICalloutStoreService calloutStoreService,
         IAddonMetadataService addonMetadataService)
     {
@@ -56,7 +56,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         this._tickQueueService = tickQueueService;
         this._progressionSystemService = progressionSystemService;
         this._configService = configService;
-        this._dispatchService = (IInternalDispatchService)internalDispatchService;
+        this._dispatchService = (IInternalDispatchService)dispatchService;
         this._calloutStoreService = (IInternalCalloutStoreService)calloutStoreService;
         this._addonMetadataService = addonMetadataService;
 

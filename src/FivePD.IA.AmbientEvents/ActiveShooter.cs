@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common.Enums;
 using FivePD.Server.API;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
