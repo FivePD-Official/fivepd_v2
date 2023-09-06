@@ -11,17 +11,17 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-        <OutputPath>$(SolutionDir)/dev/FXServer-Data/resources/fivepd/Libraries/IA/AmbientEvents</OutputPath>
+        <OutputPath>$(SolutionDir)/dev/FXServer-Data/resources/fivepd/Libraries/Addons/AmbientEvents</OutputPath>
         <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\scripts\RestartLocalFXServer.ps1</PostBuildEvent>
     </PropertyGroup>
     
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-        <OutputPath>$(SolutionDir)/build-public/Libraries/IA/AmbientEvents</OutputPath>
+        <OutputPath>$(SolutionDir)/build-public/Libraries/Addons/AmbientEvents</OutputPath>
         <DebugType>none</DebugType>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <OutputPath>../build-public/Libraries/IA/AmbientEvents</OutputPath>
+        <OutputPath>../build-public/Libraries/Addons/AmbientEvents</OutputPath>
         <DebugType>none</DebugType>
     </PropertyGroup>
 

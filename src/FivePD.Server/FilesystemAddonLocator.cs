@@ -20,7 +20,7 @@ internal class FilesystemAddonLocator
 
     private static readonly string[] AddonDirectories =
     {
-        Path.Combine(ResourcePath, "Libraries", "IA"),
+        Path.Combine(ResourcePath, "Libraries", "Addons"),
     };
 
     private readonly ILogger _logger;
