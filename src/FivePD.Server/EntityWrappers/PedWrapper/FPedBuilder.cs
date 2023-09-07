@@ -42,7 +42,7 @@ public class FPedBuilder : CommonFPedBuilder
     /// <summary>
     /// Gets the licenses of the ped.
     /// </summary>
-    public List<License> Licenses { get; private set; } = new();
+    public List<PedLicense> Licenses { get; private set; } = new();
 
     /// <summary>
     /// Sets the firstname of the ped.
@@ -163,16 +163,16 @@ public class FPedBuilder : CommonFPedBuilder
     /// <summary>
     /// Adds a license to the ped.
     /// </summary>
-    /// <param name="license">The license to add.</param>
+    /// <param name="pedLicense">The license to add.</param>
     /// <returns>The <see cref="CommonFPedBuilder"/> instance.</returns>
-    public FPedBuilder WithLicense(License license)
+    public FPedBuilder WithLicense(PedLicense pedLicense)
     {
-        if (this.Licenses.Any(x => x.Type == license.Type))
+        if (this.Licenses.Any(x => x.Type == pedLicense.Type))
         {
             return this;
         }
 
-        this.Licenses.Add(license);
+        this.Licenses.Add(pedLicense);
 
         return this;
     }
@@ -182,7 +182,7 @@ public class FPedBuilder : CommonFPedBuilder
     /// </summary>
     /// <param name="licenses">The licenses to add.</param>
     /// <returns>The <see cref="CommonFPedBuilder"/> instance.</returns>
-    public FPedBuilder WithLicenses(IEnumerable<License> licenses)
+    public FPedBuilder WithLicenses(IEnumerable<PedLicense> licenses)
     {
         foreach (var license in licenses)
         {
@@ -204,14 +204,14 @@ public class FPedBuilder : CommonFPedBuilder
     /// <returns>The <see cref="CommonFPedBuilder"/> instance.</returns>
     public FPedBuilder WithRandomLicenses(LicensesConfig licensesConfig)
     {
-        var licenses = new List<License>();
+        var licenses = new List<PedLicense>();
 
-        var asd = new Dictionary<LicenseType, LicensesConfig.LicenseConfig>
+        var asd = new Dictionary<PedLicenseType, LicensesConfig.LicenseConfig>
         {
-            [LicenseType.Driving] = licensesConfig.Driving,
-            [LicenseType.Fishing] = licensesConfig.Fishing,
-            [LicenseType.Hunting] = licensesConfig.Hunting,
-            [LicenseType.Ccw] = licensesConfig.Ccw,
+            [PedLicenseType.Driving] = licensesConfig.Driving,
+            [PedLicenseType.Fishing] = licensesConfig.Fishing,
+            [PedLicenseType.Hunting] = licensesConfig.Hunting,
+            [PedLicenseType.Ccw] = licensesConfig.Ccw,
         };
 
         foreach (var config in asd)
@@ -227,7 +227,7 @@ public class FPedBuilder : CommonFPedBuilder
                 ? issueDate.AddYears(-Random.Next(1, 3))
                 : issueDate.AddYears(Random.Next(1, 11));
 
-            licenses.Add(new License
+            licenses.Add(new PedLicense
             {
                 Type = config.Key,
                 IssueDate = issueDate,

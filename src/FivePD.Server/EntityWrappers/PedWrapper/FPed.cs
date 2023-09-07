@@ -118,7 +118,7 @@ public sealed class FPed : FEntity
     /// <summary>
     /// Gets the licenses of the ped.
     /// </summary>
-    public List<License> Licenses { get; }
+    public List<PedLicense> Licenses { get; }
 
     /// <summary>
     /// Created an <see cref="FPed"/> wrapper from the specified <see cref="FPlayer"/>.
@@ -153,14 +153,14 @@ public sealed class FPed : FEntity
     /// <summary>
     /// Checks if the ped has a license.
     /// </summary>
-    /// <param name="licenseType">The license type to check.</param>
+    /// <param name="pedLicenseType">The license type to check.</param>
     /// <returns>True if the ped has the license, false otherwise.</returns>
-    public bool HasLicense(LicenseType licenseType) => this.Licenses.Exists(x => x.Type == licenseType);
+    public bool HasLicense(PedLicenseType pedLicenseType) => this.Licenses.Exists(x => x.Type == pedLicenseType);
 
     /// <summary>
     /// Gets the license of the specified type.
     /// </summary>
-    /// <param name="licenseType">The license type to get.</param>
+    /// <param name="pedLicenseType">The license type to get.</param>
     /// <returns>The license.</returns>
-    public License GetLicense(LicenseType licenseType) => this.Licenses.FirstOrDefault(x => x.Type == licenseType);
+    public PedLicense GetLicense(PedLicenseType pedLicenseType) => this.Licenses.FirstOrDefault(x => x.Type == pedLicenseType);
 }

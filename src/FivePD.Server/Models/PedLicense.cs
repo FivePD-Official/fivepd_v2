@@ -6,7 +6,7 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a license.
 /// </summary>
-public class License
+public class PedLicense
 {
     /// <summary>
     /// Gets or sets the identifier.
@@ -21,7 +21,7 @@ public class License
     /// <summary>
     /// Gets or sets the type.
     /// </summary>
-    public LicenseType Type { get; set; }
+    public PedLicenseType Type { get; set; }
 
     /// <summary>
     /// Gets or sets the date of issue.

@@ -48,5 +48,5 @@ public class PedHistory
     /// <summary>
     /// Gets or sets the licenses.
     /// </summary>
-    public IList<License> Licenses { get; set; }
+    public IList<PedLicense> Licenses { get; set; }
 }

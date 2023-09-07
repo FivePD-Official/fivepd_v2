@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-public enum LicenseType
+public enum PedLicenseType
 {
     Driving,
     Fishing,

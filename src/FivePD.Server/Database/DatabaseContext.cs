@@ -96,7 +96,7 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the ped licenses.
     /// </summary>
-    public DbSet<License> Licenses { get; set; }
+    public DbSet<PedLicense> PedLicenses { get; set; }
 
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
