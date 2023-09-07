@@ -13,7 +13,7 @@ export class WelcomeModalComponent {
 
   get description1() {
     return this._localizationService.translate('WELCOME_MODAL.DESCRIPTION_1', {
-      documentationLink: '<span class="text-primary">https://docs.fivepd.com</span>',
+      guidesLink: '<span class="text-primary">https://guides.fivepd.com</span>',
     }, false);
   }
 
