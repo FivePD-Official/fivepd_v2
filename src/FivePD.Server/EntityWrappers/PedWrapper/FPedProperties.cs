@@ -30,7 +30,7 @@ public sealed class FPedProperties
     {
         this._fPed = fPed;
         this._eventService = ServiceLocator.GetService<IEventService>();
-        this._gender = this._fPed.GetFPed.Gender;
+        this._gender = this._fPed.Gender;
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public sealed class FPedProperties
 
         var gender = (FGender)await this.GetPropertyIntAsync(FPedPropertiesDTO.Events.Gender);
         this._gender = gender;
-        this._fPed.GetFPed.Gender = gender;
+        this._fPed.Gender = gender;
         this._fetchedGender = true;
 
         return gender;
@@ -735,25 +735,25 @@ public sealed class FPedProperties
 
     private async Task<int> GetPropertyIntAsync(string property)
     {
-        var value = await this._eventService.TriggerEventAsync(this._fPed.Owner, Events.Ped.GetProperty, this._fPed.GetFPed.NetworkId, property);
+        var value = await this._eventService.TriggerEventAsync(this._fPed.Owner, Events.Ped.GetProperty, this._fPed.NetworkId, property);
         return int.Parse(value);
     }
 
     private async Task<float> GetPropertyFloatAsync(string property)
     {
-        var value = await this._eventService.TriggerEventAsync(this._fPed.Owner, Events.Ped.GetProperty, this._fPed.GetFPed.NetworkId, property);
+        var value = await this._eventService.TriggerEventAsync(this._fPed.Owner, Events.Ped.GetProperty, this._fPed.NetworkId, property);
         return float.Parse(value);
     }
 
     private async Task<bool> GetPropertyBoolAsync(string property)
     {
-        var value = await this._eventService.TriggerEventAsync(this._fPed.Owner, Events.Ped.GetProperty, this._fPed.GetFPed.NetworkId, property);
+        var value = await this._eventService.TriggerEventAsync(this._fPed.Owner, Events.Ped.GetProperty, this._fPed.NetworkId, property);
         return bool.Parse(value);
     }
 
     private void SetProperty<T>(string property, T value)
     {
-        this._eventService.TriggerEventWithoutCallback(this._fPed.Owner, Events.Ped.SetProperty, this._fPed.GetFPed.NetworkId, property, value.ToString());
+        this._eventService.TriggerEventWithoutCallback(this._fPed.Owner, Events.Ped.SetProperty, this._fPed.NetworkId, property, value.ToString());
     }
 
     private void InvokeMethod<T>(string method, T args = default)
@@ -763,7 +763,7 @@ public sealed class FPedProperties
             Events.Ped.InvokeMethod,
             JsonConvert.SerializeObject(new FPedPropertiesDTO.InvokeMethodRequest
             {
-                NetworkId = this._fPed.GetFPed.NetworkId,
+                NetworkId = this._fPed.NetworkId,
                 Method = method,
                 Args = JsonConvert.SerializeObject(args),
             }));

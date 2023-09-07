@@ -68,6 +68,6 @@ public class InteractionService : IInteractionService, IServiceWithEvents
         ped.Task.StandStill(-1);
         ped.Task.TurnTo(player.Character);
 
-        Debug.WriteLine($"Alerted ped with net ID of {ped.GetFPed.NetworkId}");
+        Debug.WriteLine($"Alerted ped with net ID of {ped.NetworkId}");
     }
 }

@@ -21,18 +21,32 @@ Callout:
 
 Peds:
   ChanceToReusePedHistory: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again
-  ChanceForAnyWarrant: 10 # should be between 0-100. the higher the number, the more likely that a ped has a warrant
-  MaxWarrants: 2 # the maximum amount of warrants a ped can have
+  Licenses:
+    Driving:
+      ChanceToHave: 100 # should be between 0-100. the higher the number, the more likely that a ped has a driving license
+      ChanceForExpired: 10 # should be between 0-100. the higher the number, the more likely that a ped has an invalid driving license
+    Fishing:
+      ChanceToHave: 100
+      ChanceForExpired: 100
+    Hunting:
+      ChanceToHave: 100
+      ChanceForExpired: 50
+    Ccw:
+      ChanceToHave: 50
+      ChanceForExpired: 0
   Warrants:
-    - Arrest Warrant
-    - Search Warrant
-    - Alias Warrant
-    - Bench Warrant
-    - Capias Warrant
-    - Capias Pro Fine Warrant
-    - Civil Capias Warrant
-    - Fugitive Warrant
-    - Governor's Warrant
+    ChanceToHaveAny: 10 # should be between 0-100. the higher the number, the more likely that a ped has a warrant
+    MaxAmount: 2 # the maximum amount of warrants a ped can have
+    Items:
+      - Arrest Warrant
+      - Search Warrant
+      - Alias Warrant
+      - Bench Warrant
+      - Capias Warrant
+      - Capias Pro Fine Warrant
+      - Civil Capias Warrant
+      - Fugitive Warrant
+      - Governor's Warrant
 
 Vehicles:
   Police:

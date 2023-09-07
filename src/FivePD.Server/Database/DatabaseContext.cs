@@ -93,11 +93,16 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<PedHistory> PedHistories { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the ped licenses.
+    /// </summary>
+    public DbSet<License> Licenses { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var config = this._configService?.GeneralConfig?.Database;
-        if (config != null)
+        if (config is not null)
         {
             optionsBuilder.UseMySql(config.ToString());
         }
@@ -182,6 +187,10 @@ public class DatabaseContext : DbContext
                     v => JsonConvert.DeserializeObject<List<string>>(
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+            type.HasMany(pedHistory => pedHistory.Licenses)
+                .WithOne(license => license.PedHistory)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

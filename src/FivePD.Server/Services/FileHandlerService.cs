@@ -63,7 +63,7 @@ public class FileHandlerService : IFileHandlerService
             }
             else
             {
-                var serializer = new DeserializerBuilder().Build();
+                var serializer = new DeserializerBuilder().IgnoreUnmatchedProperties().Build();
                 deserializedObject = serializer.Deserialize<T>(string.IsNullOrEmpty(content) || content.Length <= 1 ? "." : content);
             }
 

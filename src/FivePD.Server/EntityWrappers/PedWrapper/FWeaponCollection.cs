@@ -126,7 +126,7 @@ public class FWeaponCollection
             Events.Ped.WeaponCollection,
             JsonConvert.SerializeObject(new WeaponCollectionDTO.WeaponCollectionRequest
             {
-                NetworkId = this._fPed.GetFPed.NetworkId,
+                NetworkId = this._fPed.NetworkId,
                 SubEvent = subEvent,
                 Args = JsonConvert.SerializeObject(args),
             }));
@@ -139,7 +139,7 @@ public class FWeaponCollection
             Events.Ped.WeaponCollectionWithReturn,
             JsonConvert.SerializeObject(new WeaponCollectionDTO.WeaponCollectionRequest
             {
-                NetworkId = this._fPed.GetFPed.NetworkId,
+                NetworkId = this._fPed.NetworkId,
                 SubEvent = subEvent,
                 Args = JsonConvert.SerializeObject(args),
             }));

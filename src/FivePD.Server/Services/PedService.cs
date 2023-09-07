@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
@@ -14,6 +15,7 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -95,49 +97,54 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
 
     private void GeneratePed(string serializedFPedBuilder)
     {
-        var fPedBuilder = JsonConvert.DeserializeObject<CommonFPedBuilder>(serializedFPedBuilder);
-        if (fPedBuilder is null || this._peds.ContainsKey(fPedBuilder.NetworkId))
+        var commonFPedBuilder = JsonConvert.DeserializeObject<CommonFPedBuilder>(serializedFPedBuilder);
+        if (commonFPedBuilder is null || this._peds.ContainsKey(commonFPedBuilder.NetworkId))
         {
             return;
         }
 
-        CommonFPed fPed = null;
+        var fPedBuilder = new FPedBuilder(commonFPedBuilder);
+
+        FPed fPed = null;
         if (this._configService.GeneralConfig.Peds.ChanceToReusePedHistory != 0 &&
             this._randomService.Random.Next(1, 101) <= this._configService.GeneralConfig.Peds.ChanceToReusePedHistory)
         {
             var pedHistory = this._databaseContext.PedHistories
                 .OrderBy(_ => Guid.NewGuid())
-                .FirstOrDefault(ped => ped.Gender == fPedBuilder.Gender);
+                .Include(pedHistory => pedHistory.Licenses)
+                .FirstOrDefault(ped => ped.Gender == commonFPedBuilder.Gender);
             if (pedHistory is not null)
             {
-                var builder = fPedBuilder
+                fPed = fPedBuilder
                     .WithFirstname(pedHistory.Firstname)
                     .WithLastname(pedHistory.Lastname)
                     .WithBirthdate(pedHistory.Birthdate)
                     .WithItems(pedHistory.Items, true)
-                    .WithWarrants(new CommonFPedBuilder.WithWarrantsOptions
+                    .WithWarrants(new FPedBuilder.WithWarrantsOptions
                     {
                         Warrants = pedHistory.Warrants,
                         IncludeAll = true,
-                    });
-                fPed = new CommonFPed(builder);
+                    })
+                    .WithLicenses(pedHistory.Licenses)
+                    .Build();
             }
         }
 
         if (fPed is null)
         {
             fPed = fPedBuilder
-                .WithFirstname(fPedBuilder.Gender == FGender.Female ? this._configService.FemaleFirstnames : this._configService.MaleFirstnames)
+                .WithFirstname(commonFPedBuilder.Gender == FGender.Female ? this._configService.FemaleFirstnames : this._configService.MaleFirstnames)
                 .WithLastname(this._configService.Lastnames)
                 .WithBirthdate()
                 .WithItems(this._configService.Items)
-                .WithWarrants(new CommonFPedBuilder.WithWarrantsOptions
+                .WithWarrants(new FPedBuilder.WithWarrantsOptions
                 {
-                    Warrants = this._configService.GeneralConfig.Peds.Warrants,
+                    Warrants = this._configService.GeneralConfig.Peds.Warrants.Items,
                     IncludeAll = false,
-                    MaxWarrants = this._configService.GeneralConfig.Peds.MaxWarrants,
-                    ChanceForAnyWarrant = this._configService.GeneralConfig.Peds.ChanceForAnyWarrant,
+                    MaxWarrants = this._configService.GeneralConfig.Peds.Warrants.MaxAmount,
+                    ChanceForAnyWarrant = this._configService.GeneralConfig.Peds.Warrants.ChanceToHaveAny,
                 })
+                .WithRandomLicenses(this._configService.GeneralConfig.Peds.Licenses)
                 .Build();
             this._databaseContext.PedHistories.Add(new PedHistory
             {
@@ -147,16 +154,17 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
                 Gender = fPed.Gender,
                 Items = fPed.Items,
                 Warrants = fPed.Warrants,
+                Licenses = fPed.Licenses,
             });
             this._databaseContext.SaveChangesAsync();
         }
 
         Debug.WriteLine($"ped net id {fPed.NetworkId} - {fPed.Firstname} {fPed.Lastname}");
 
-        this._peds[fPed.NetworkId] = new FPed(fPed);
+        this._peds[fPed.NetworkId] = fPed;
     }
 
-    // TODO: refactor to use the PedHistories
+    // TODO: refactor to use the PedHistories with proper paging, etc..
     private void Search(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<PedSearchRequest>();
@@ -165,19 +173,18 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
 
         if (!string.IsNullOrEmpty(request.Firstname))
         {
-            pedsQueryable = pedsQueryable.Where(ped => ped.Value.GetFPed.Firstname.ToLower().Contains(request.Firstname.ToLower()));
+            pedsQueryable = pedsQueryable.Where(ped => ped.Value.Firstname.ToLower().Contains(request.Firstname.ToLower()));
         }
 
         if (!string.IsNullOrEmpty(request.Lastname))
         {
-            pedsQueryable = pedsQueryable.Where(ped => ped.Value.GetFPed.Lastname.ToLower().Contains(request.Lastname.ToLower()));
+            pedsQueryable = pedsQueryable.Where(ped => ped.Value.Lastname.ToLower().Contains(request.Lastname.ToLower()));
         }
 
-        // TODO: Maybe use proper paging? Return all peds if the search params are empty?
-        var peds = pedsQueryable.Select(ped => ped.Value.GetFPed).ToList();
+        var peds = pedsQueryable.Select(ped => ped.Value).ToList();
         var page = new Page<CommonFPed>
         {
-            Items = peds,
+            Items = new List<CommonFPed>(),
             CurrentPage = 1,
             ItemCount = peds.Count,
             PageCount = 1,

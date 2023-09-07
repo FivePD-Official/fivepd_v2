@@ -38,14 +38,9 @@ public class CommonFPed : CommonFEntity
     }
 
     /// <summary>
-    /// Gets the ped's history ID.
-    /// </summary>
-    public int PedHistoryId { get; internal set; }
-
-    /// <summary>
     /// Gets the ped's gender.
     /// </summary>
-    public FGender Gender { get; internal set; }
+    public FGender Gender { get; }
 
     /// <summary>
     /// Gets the ped's firstname.

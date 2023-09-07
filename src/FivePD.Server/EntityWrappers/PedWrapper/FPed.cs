@@ -1,6 +1,11 @@
-﻿using CitizenFX.Core;
+﻿using System;
+using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Common.Builders;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.Enums;
 using FivePD.Common.Models;
+using FivePD.Server.Models;
 
 namespace FivePD.Server.EntityWrappers.PedWrapper;
 
@@ -9,18 +14,44 @@ namespace FivePD.Server.EntityWrappers.PedWrapper;
 /// </summary>
 public sealed class FPed : FEntity
 {
-    private readonly CommonFPed _fPed;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FPed"/> class.
     /// </summary>
     /// <param name="fPed">The FPed to use.</param>
     public FPed(CommonFPed fPed)
     {
-        this._fPed = fPed;
         this.Properties = new(this);
         this.Task = new(this);
         this.Weapons = new(this);
+
+        this.NetworkId = fPed.NetworkId;
+        this.Birthdate = fPed.Birthdate;
+        this.Firstname = fPed.Firstname;
+        this.Lastname = fPed.Lastname;
+        this.Gender = fPed.Gender;
+        this.Items = fPed.Items;
+        this.Warrants = fPed.Warrants;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FPed"/> class.
+    /// </summary>
+    /// <param name="fPedBuilder">The FPedBuilder to use.</param>
+    public FPed(FPedBuilder fPedBuilder)
+    {
+        this.Licenses = fPedBuilder.Licenses;
+        this.Properties = new(this);
+        this.Task = new(this);
+        this.Weapons = new(this);
+
+        this.NetworkId = fPedBuilder.NetworkId;
+        this.Birthdate = fPedBuilder.Birthdate;
+        this.Firstname = fPedBuilder.Firstname;
+        this.Lastname = fPedBuilder.Lastname;
+        this.Gender = fPedBuilder.Gender;
+        this.Items = fPedBuilder.Items;
+        this.Warrants = fPedBuilder.Warrants;
+        this.Licenses = fPedBuilder.Licenses;
     }
 
     /// <summary>
@@ -39,19 +70,54 @@ public sealed class FPed : FEntity
     public FWeaponCollection Weapons { get; private set; }
 
     /// <summary>
-    /// Gets the underlying <see cref="CommonFPed"/>.
-    /// </summary>
-    public CommonFPed GetFPed => this._fPed;
-
-    /// <summary>
     /// Gets the underlying <see cref="Ped"/>.
     /// </summary>
-    public Ped GetUnderlyingPed => Entity.FromNetworkId(this._fPed.NetworkId) as Ped;
+    public Ped GetUnderlyingPed => Entity.FromNetworkId(this.NetworkId) as Ped;
 
     /// <summary>
     /// Gets the owner of the <see cref="FPed"/>.
     /// </summary>
     public Player Owner => this.GetUnderlyingPed.Owner;
+
+    /// <summary>
+    /// Gets the entity's network identifier.
+    /// </summary>
+    public int NetworkId { get; }
+
+    /// <summary>
+    /// Gets the gender of the ped.
+    /// </summary>
+    public FGender Gender { get; internal set; }
+
+    /// <summary>
+    /// Gets the firstname of the ped.
+    /// </summary>
+    public string Firstname { get; }
+
+    /// <summary>
+    /// Gets the lastname of the ped.
+    /// </summary>
+    public string Lastname { get; }
+
+    /// <summary>
+    /// Gets the birthdate of the ped.
+    /// </summary>
+    public DateTime Birthdate { get; }
+
+    /// <summary>
+    /// Gets the items of the ped.
+    /// </summary>
+    public List<Item> Items { get; }
+
+    /// <summary>
+    /// Gets the warrants of the ped.
+    /// </summary>
+    public List<string> Warrants { get; }
+
+    /// <summary>
+    /// Gets the licenses of the ped.
+    /// </summary>
+    public List<License> Licenses { get; }
 
     /// <summary>
     /// Created an <see cref="FPed"/> wrapper from the specified <see cref="FPlayer"/>.

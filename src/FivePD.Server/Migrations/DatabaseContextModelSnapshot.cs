@@ -116,6 +116,30 @@ namespace FivePD.Server.Migrations
                     b.ToTable("IncidentHistoryUsers");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.License", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("PedHistoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedHistoryId");
+
+                    b.ToTable("Licenses");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>
                 {
                     b.Property<int>("Id")
@@ -352,6 +376,14 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.License", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.PedHistory", "PedHistory")
+                        .WithMany("Licenses")
+                        .HasForeignKey("PedHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>

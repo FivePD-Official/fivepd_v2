@@ -598,7 +598,7 @@ public sealed class FPedTasks
             Events.Ped.SetTask,
             JsonConvert.SerializeObject(new FPedTasksDTO.SetPedTaskRequest
             {
-                NetworkId = this._fPed.GetFPed.NetworkId,
+                NetworkId = this._fPed.NetworkId,
                 Task = task,
                 Args = JsonConvert.SerializeObject(args),
             }));

@@ -44,4 +44,9 @@ public class PedHistory
     /// Gets or sets the warrants.
     /// </summary>
     public List<string> Warrants { get; set; }
+
+    /// <summary>
+    /// Gets or sets the licenses.
+    /// </summary>
+    public IList<License> Licenses { get; set; }
 }
