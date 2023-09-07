@@ -8,16 +8,6 @@ namespace FivePD.Server.Models;
 /// </summary>
 public class License
 {
-#pragma warning disable
-    public enum LicenseType
-    {
-        Driving,
-        Fishing,
-        Hunting,
-        Ccw,
-    }
-#pragma warning restore
-
     /// <summary>
     /// Gets or sets the identifier.
     /// </summary>

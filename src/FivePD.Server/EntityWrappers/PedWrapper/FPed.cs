@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
@@ -148,4 +149,18 @@ public sealed class FPed : FEntity
     {
         return new FPed(new CommonFPed(new CommonFPedBuilder(networkId)));
     }
+
+    /// <summary>
+    /// Checks if the ped has a license.
+    /// </summary>
+    /// <param name="licenseType">The license type to check.</param>
+    /// <returns>True if the ped has the license, false otherwise.</returns>
+    public bool HasLicense(LicenseType licenseType) => this.Licenses.Exists(x => x.Type == licenseType);
+
+    /// <summary>
+    /// Gets the license of the specified type.
+    /// </summary>
+    /// <param name="licenseType">The license type to get.</param>
+    /// <returns>The license.</returns>
+    public License GetLicense(LicenseType licenseType) => this.Licenses.FirstOrDefault(x => x.Type == licenseType);
 }

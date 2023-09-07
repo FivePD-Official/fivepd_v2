@@ -206,12 +206,12 @@ public class FPedBuilder : CommonFPedBuilder
     {
         var licenses = new List<License>();
 
-        var asd = new Dictionary<License.LicenseType, LicensesConfig.LicenseConfig>
+        var asd = new Dictionary<LicenseType, LicensesConfig.LicenseConfig>
         {
-            [License.LicenseType.Driving] = licensesConfig.Driving,
-            [License.LicenseType.Fishing] = licensesConfig.Fishing,
-            [License.LicenseType.Hunting] = licensesConfig.Hunting,
-            [License.LicenseType.Ccw] = licensesConfig.Ccw,
+            [LicenseType.Driving] = licensesConfig.Driving,
+            [LicenseType.Fishing] = licensesConfig.Fishing,
+            [LicenseType.Hunting] = licensesConfig.Hunting,
+            [LicenseType.Ccw] = licensesConfig.Ccw,
         };
 
         foreach (var config in asd)
