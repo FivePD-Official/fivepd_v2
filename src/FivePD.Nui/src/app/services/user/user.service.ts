@@ -27,6 +27,10 @@ export class UserService {
     store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
   }
 
+  dismissWelcomeModal(): Observable<void> {
+    return this._http.post('fivepd:player:dismissedWelcomeModal', {});
+  }
+
   userHasRole(...roles: UserRole[]): boolean {
     if (!this.user?.User) {
       return false;

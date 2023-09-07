@@ -101,6 +101,8 @@ internal readonly record struct Events
         {
             public const string GetDetails = "fivepd:player:getDetails";
 
+            public const string DismissedWelcomeModal = "fivepd:player:dismissedWelcomeModal";
+
             public const string ChangeDivision = "fivepd:player:changeDivision";
 
             public const string ChangeRank = "fivepd:player:changeRank";

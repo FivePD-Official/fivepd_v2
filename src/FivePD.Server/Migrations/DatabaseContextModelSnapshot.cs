@@ -280,6 +280,9 @@ namespace FivePD.Server.Migrations
                     b.Property<int?>("DivisionId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("FirstLogin")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<bool>("FixedRank")
                         .HasColumnType("tinyint(1)");
 

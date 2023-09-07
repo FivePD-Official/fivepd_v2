@@ -5,6 +5,7 @@ export interface WithId {
   Id: number;
 }
 export interface User extends WithId {
+  FirstLogin: boolean;
   Name: string;
   License: string;
   Role: number;

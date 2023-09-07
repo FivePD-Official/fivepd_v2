@@ -60,6 +60,7 @@ import { NotMdtComponent } from './pages/not-mdt/not-mdt.component';
 import { DispatchComponent } from './pages/mdt/dispatch/dispatch.component';
 import { AttributeGridOptions } from "./pages/mdt/settings/_service/attribute-grid-options";
 import { IncidentHistoryComponent } from './pages/mdt/incident-history/incident-history.component';
+import { WelcomeModalComponent } from './components/modal/welcome-modal/welcome-modal.component';
 
 @NgModule({
   declarations: [
@@ -101,6 +102,7 @@ import { IncidentHistoryComponent } from './pages/mdt/incident-history/incident-
     NotMdtComponent,
     DispatchComponent,
     IncidentHistoryComponent,
+    WelcomeModalComponent,
   ],
   imports: [
     BrowserModule,

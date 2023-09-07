@@ -81,6 +81,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDi
         this._eventHandlerDictionary[Events.Player.UpdateUnitAvailability] += new Action<int>(availability => this.ListenForAvailabilityStatusChanges((FUnitAvailability)availability));
         this._eventHandlerDictionary[Events.Player.UpdateUnitStatus] += new Action<string>(this.ListenForStatusChanges);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.GetDetails);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.DismissedWelcomeModal);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeDivision);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeRank);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.GetAllPageable);

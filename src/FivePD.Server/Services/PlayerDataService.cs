@@ -281,6 +281,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         {
             var user = new User
             {
+                FirstLogin = true,
                 Name = player.Name,
                 IdentifierLicense = player.Identifiers["license"] ?? string.Empty,
                 IdentifierDiscord = player.Identifiers["discord"] ?? string.Empty,
@@ -320,6 +321,23 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         networkCallbackDelegate.InvokeWithJson(user is null
             ? null
             : new PlayerDetailsDTO(player.Handle, user, FPlayer.FromNetId(player.Handle).DutyStatus.Value));
+    }
+
+    [UIEvent(Events.UI.Player.DismissedWelcomeModal, true)]
+    private void DismissedWelcomeModalUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var user = this._databaseContext.Users
+            .WhereAnyIdMatches(player)
+            .FirstOrDefault();
+        if (user is null)
+        {
+            networkCallbackDelegate.Invoke(null);
+            return;
+        }
+
+        user.FirstLogin = false;
+        this._databaseContext.SaveChangesAsync();
+        networkCallbackDelegate.Invoke(null);
     }
 
     [UIEvent(Events.UI.Player.ChangeDivision, true)]

@@ -11,6 +11,9 @@ import { GlobalState } from '@store';
 import { setMdtPath } from '@store/app.actions';
 import { MenuService } from '@services/menu/menu.service';
 import { ConfigService } from "@services/config/config.service";
+import { ModalService } from "@services/modals/modal/modal.service";
+import { WelcomeModalComponent } from "./components/modal/welcome-modal/welcome-modal.component";
+import { UserService } from "@services/user/user.service";
 
 @Component({
   selector: 'app-root',
@@ -29,6 +32,8 @@ export class AppComponent implements OnInit {
     private readonly _store: Store<GlobalState>,
     private readonly _menu: MenuService,
     private readonly _configService: ConfigService,
+    private readonly _modalService: ModalService,
+    private readonly _userService: UserService,
   ) {
   }
 
@@ -42,7 +47,7 @@ export class AppComponent implements OnInit {
     });
     window.addEventListener('message', event => this._event.next(event.data));
 
-    this._store.subscribe(state => {
+    this._store.select('app', 'windowMaximized').subscribe(windowMaximized => {
       const mainContainer = document.querySelector('.main-container') as HTMLDivElement;
       if (!mainContainer) {
         return;
@@ -50,13 +55,39 @@ export class AppComponent implements OnInit {
 
       const enableAnimations = this.disableAnimations();
 
-      if (state.app.windowMaximized) {
+      if (windowMaximized) {
         mainContainer.style.inset = '0';
       } else {
         mainContainer.style.inset = this.calculatedContainerMargin;
       }
 
       enableAnimations();
+    });
+
+    this._store.select('user').subscribe(state => {
+      if (state.details?.User?.FirstLogin && !state.hasShownWelcomeModal) {
+        this._modalService.open(WelcomeModalComponent, {
+          title: this._localization.translate('WELCOME_MODAL.TITLE'),
+          columns: 2,
+          buttons: {
+            cancel: {
+              variant: 'secondary',
+              label: this._localization.translate('UI.ACTION.CANCEL'),
+            },
+            submit: {
+              variant: 'primary',
+              label: this._localization.translate('WELCOME_MODAL.SUBMIT'),
+            }
+          }
+        }).result
+          .pipe(
+            filter(result => result.success),
+            this._modalService.close(),
+          )
+          .subscribe(() => {
+            this._userService.dismissWelcomeModal().subscribe();
+          });
+      }
     });
   }
 

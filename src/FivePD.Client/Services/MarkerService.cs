@@ -57,7 +57,6 @@ internal class MarkerService : IMarkerService, IServiceWithEvents, IDisposableSe
 
     private Task DrawMarkersAsync()
     {
-        Debug.WriteLine("MARKER TICK");
         foreach (var marker in this._markersToDraw.Values)
         {
             Cfx.API.DrawMarker(

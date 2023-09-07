@@ -23,6 +23,11 @@ public class User
     public int Id { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the user is playing for the first time.
+    /// </summary>
+    public bool FirstLogin { get; set; }
+
+    /// <summary>
     /// Gets or sets the name.
     /// </summary>
     public string Name { get; set; }
