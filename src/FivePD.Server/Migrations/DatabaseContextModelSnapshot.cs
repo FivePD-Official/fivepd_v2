@@ -277,6 +277,9 @@ namespace FivePD.Server.Migrations
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("DismissedWelcomeMessage")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int?>("DivisionId")
                         .HasColumnType("int");
 

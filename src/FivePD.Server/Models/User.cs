@@ -28,6 +28,11 @@ public class User
     public bool FirstLogin { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the user has dismissed the welcome message.
+    /// </summary>
+    public bool DismissedWelcomeMessage { get; set; }
+
+    /// <summary>
     /// Gets or sets the name.
     /// </summary>
     public string Name { get; set; }

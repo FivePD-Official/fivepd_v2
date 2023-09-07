@@ -6,6 +6,7 @@ export interface WithId {
 }
 export interface User extends WithId {
   FirstLogin: boolean;
+  DismissedWelcomeMessage: boolean;
   Name: string;
   License: string;
   Role: number;

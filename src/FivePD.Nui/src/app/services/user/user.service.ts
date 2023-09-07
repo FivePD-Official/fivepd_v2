@@ -28,7 +28,7 @@ export class UserService {
   }
 
   dismissWelcomeModal(): Observable<void> {
-    return this._http.post('fivepd:player:dismissedWelcomeModal', {});
+    return this._http.post<void>('fivepd:player:dismissedWelcomeModal', {});
   }
 
   userHasRole(...roles: UserRole[]): boolean {

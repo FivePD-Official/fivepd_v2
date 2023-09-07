@@ -295,9 +295,18 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             }
 
             this._databaseContext.Users.Add(user);
+            this._databaseContext.SaveChanges();
         }
+        else
+        {
+            if (!existingUser.FirstLogin)
+            {
+                return;
+            }
 
-        this._databaseContext.SaveChanges();
+            existingUser.FirstLogin = false;
+            this._databaseContext.SaveChanges();
+        }
     }
 
     private User GetPlayerDetails(Player player)
@@ -335,7 +344,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             return;
         }
 
-        user.FirstLogin = false;
+        user.DismissedWelcomeMessage = true;
         this._databaseContext.SaveChangesAsync();
         networkCallbackDelegate.Invoke(null);
     }

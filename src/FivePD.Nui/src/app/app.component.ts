@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
     });
 
     this._store.select('user').subscribe(state => {
-      if (state.details?.User?.FirstLogin && !state.hasShownWelcomeModal) {
+      if (!state.details?.User?.DismissedWelcomeMessage && !state.hasShownWelcomeModal) {
         this._modalService.open(WelcomeModalComponent, {
           title: this._localization.translate('WELCOME_MODAL.TITLE'),
           columns: 2,
