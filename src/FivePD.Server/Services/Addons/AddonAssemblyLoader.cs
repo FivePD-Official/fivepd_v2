@@ -7,7 +7,7 @@ using Serilog;
 namespace FivePD.Server.Services.Addons;
 
 /// <inheritdoc />
-public class AddonAssemblyLoader : IAddonAssemblyLoader
+internal class AddonAssemblyLoader : IAddonAssemblyLoader
 {
     private readonly ILogger _logger;
 

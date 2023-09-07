@@ -6,7 +6,7 @@ namespace FivePD.Server.Interfaces.Addons;
 /// Responsible for receiving assemblies and preparing them for
 /// invocation by other parts of the game mode.
 /// </summary>
-public interface IAddonAssemblyLoader
+internal interface IAddonAssemblyLoader
 {
     /// <summary>
     /// Initializes an addon assembly from bytes.
