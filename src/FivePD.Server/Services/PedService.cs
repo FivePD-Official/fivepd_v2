@@ -8,6 +8,7 @@ using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
+using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Extensions;
@@ -59,7 +60,6 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
     void IServiceWithEvents.RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
-        this._eventHandlerDictionary[Events.Ped.Search] += new Action<ExpandoObject, NetworkCallbackDelegate>(this.Search);
         this._checkPedsId = this._tickQueueService.EnqueueInterval(this.CheckPeds, 1000);
     }
 
@@ -164,33 +164,28 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
         this._peds[fPed.NetworkId] = fPed;
     }
 
-    // TODO: refactor to use the PedHistories with proper paging, etc..
-    private void Search(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.PedHistory.GetAll)]
+    private void GetAllUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var request = expandoObject.ConvertTo<PedSearchRequest>();
+        var request = expandoObject.ConvertTo<PedHistoryGetAllRequest>();
 
-        var pedsQueryable = this._peds.AsQueryable();
+        Debug.WriteLine($"asd {request.Filters.Gender}");
 
-        if (!string.IsNullOrEmpty(request.Firstname))
-        {
-            pedsQueryable = pedsQueryable.Where(ped => ped.Value.Firstname.ToLower().Contains(request.Firstname.ToLower()));
-        }
+        var filters = new Filters<PedHistory>();
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Firstname),
+            pedHistory => pedHistory.Firstname.ToLower().Contains(request.Filters.Firstname.ToLower()));
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Lastname),
+            pedHistory => pedHistory.Lastname.ToLower().Contains(request.Filters.Lastname.ToLower()));
+        filters.Add(
+            request.Filters.Gender != -1,
+            pedHistory => pedHistory.Gender == (FGender)request.Filters.Gender);
 
-        if (!string.IsNullOrEmpty(request.Lastname))
-        {
-            pedsQueryable = pedsQueryable.Where(ped => ped.Value.Lastname.ToLower().Contains(request.Lastname.ToLower()));
-        }
+        var page = this._databaseContext.PedHistories
+            .AsNoTracking()
+            .Paginate(request.Page, filters);
 
-        var peds = pedsQueryable.Select(ped => ped.Value).ToList();
-        var page = new Page<CommonFPed>
-        {
-            Items = new List<CommonFPed>(),
-            CurrentPage = 1,
-            ItemCount = peds.Count,
-            PageCount = 1,
-            PageSize = peds.Count,
-        };
-
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 }

@@ -14,7 +14,7 @@
       Radius: number;
     };
   }
-  FeatureFlags: {
+  Features: {
     DiscordRichPresence: boolean;
     DutyNotification: boolean;
     DisableWantedLevel: boolean;

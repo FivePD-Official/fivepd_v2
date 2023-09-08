@@ -34,5 +34,9 @@ internal static class LifecycleHandler
             OnStopped?.Invoke(null, EventArgs.Empty);
             IsStopped = true;
         }
+        else
+        {
+            logger.Error("Unhandled exception: {exception}", exception);
+        }
     }
 }

@@ -10,7 +10,7 @@ export enum DateFormat {
   YMD
 }
 
-export enum Gender {
+export enum FGender {
   Male,
   Female,
 }
@@ -41,4 +41,11 @@ export enum FIncidentPriority {
 export enum FIncidentType {
   Callout,
   TrafficStop,
+}
+
+export enum PedLicenseType {
+  Driving,
+  Fishing,
+  Hunting,
+  Ccw,
 }

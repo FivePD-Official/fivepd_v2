@@ -243,6 +243,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<PedService>();
         services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PedService>());
+        services.AddSingleton<IDisposableService>(provider => provider.GetRequiredService<PedService>());
 
         services.AddSingleton<VehicleService>();
         services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());

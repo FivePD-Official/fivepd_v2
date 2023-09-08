@@ -55,7 +55,7 @@ public class UIService : IUIService, IServiceWithEvents
             var attribute = methodInfo.GetCustomAttribute<UIEventAttribute>();
             var interfaceType = methodInfo.DeclaringType?
                 .GetInterfaces()
-                .FirstOrDefault(type => type != typeof(IServiceWithEvents));
+                .FirstOrDefault(type => type != typeof(IServiceWithEvents) && type != typeof(IDisposableService));
             var obj = this._serviceProvider.GetService(interfaceType);
             if (obj is null)
             {

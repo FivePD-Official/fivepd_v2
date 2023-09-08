@@ -16,7 +16,6 @@ using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services.LooseData;
 
@@ -101,10 +100,6 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         {
             return;
         }
-
-#pragma warning disable
-        // TODO: add check for duplicate attributes
-#pragma warning enable
 
         var set = this._databaseContext.LooseDataSets
             .Include(set => set.Attributes)
@@ -377,7 +372,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         if (entity.MappedValues.ContainsKey("IncidentId"))
         {
-            var user = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == entity.MappedValues["IncidentId"]);
+            var user = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == entity.MappedValues["IncidentId"] as string);
             entity.MappedValues["Incident"] = user;
         }
 
@@ -504,7 +499,6 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
             return;
         }
-
 
         var attributeOldName = attribute.Name;
         attribute.Name = request.Attribute.Name;

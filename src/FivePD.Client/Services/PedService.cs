@@ -31,7 +31,10 @@ internal class PedService : IPedService, IServiceWithEvents
     /// <inheritdoc />
     public void RegisterEvents()
     {
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.Ped.Search);
+        // TODO: move to PedHistory service
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.Get);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAll);
+
         this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedPropertyAsync);
         this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);

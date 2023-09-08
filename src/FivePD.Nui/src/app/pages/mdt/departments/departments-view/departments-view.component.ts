@@ -74,7 +74,7 @@ export class DepartmentsViewComponent implements OnInit {
             }),
           ];
 
-          if (this.generalConfig?.config.FeatureFlags.ProgressionSystem) {
+          if (this.generalConfig?.config.Features.ProgressionSystem) {
             fields.push(new NumberInput({
               key: 'RequiredXp',
               label: this._localization.translate('UI.LABEL.REQUIRED_XP'),
@@ -124,18 +124,21 @@ export class DepartmentsViewComponent implements OnInit {
   ];
   ranksCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   ranksColumns: Column<FormattedRank>[] = [];
 
   users?: Page<FormattedUser>;
   usersCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   usersColumns: Column<FormattedUser>[] = [];
 
   divisions?: Page<Division>;
   divisionsCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   divisionsButtons: Button[] = [
     {
@@ -285,7 +288,7 @@ export class DepartmentsViewComponent implements OnInit {
       }),
     ];
 
-    if (this.generalConfig?.config.FeatureFlags.ProgressionSystem) {
+    if (this.generalConfig?.config.Features.ProgressionSystem) {
       columns.push(new Column<FormattedRank>({
         header: this._localization.translate('UI.LABEL.REQUIRED_XP'),
         accessorKey: 'RequiredXp',
@@ -313,7 +316,7 @@ export class DepartmentsViewComponent implements OnInit {
                   }),
                 ];
 
-                if (this.generalConfig?.config.FeatureFlags.ProgressionSystem) {
+                if (this.generalConfig?.config.Features.ProgressionSystem) {
                   fields.push(new NumberInput({
                     key: 'RequiredXp',
                     label: this._localization.translate('UI.LABEL.REQUIRED_XP'),
@@ -438,7 +441,7 @@ export class DepartmentsViewComponent implements OnInit {
       }),
     ];
 
-    if (this.generalConfig?.config.FeatureFlags.ProgressionSystem) {
+    if (this.generalConfig?.config.Features.ProgressionSystem) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.RANK.FIXED'),
         show: () => this.userService.userHasRole(UserRole.Admin),

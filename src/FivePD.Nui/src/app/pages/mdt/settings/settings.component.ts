@@ -28,6 +28,7 @@ export class SettingsComponent implements OnInit {
   arrestReportAttributes?: Page<SetAttribute>;
   arrestReportAttributesCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   arrestReportAttributesColumns: Column<SetAttribute>[] = this._attributeGridOptions.createColumnList(
     DefaultSetId.ArrestReport,
@@ -48,6 +49,7 @@ export class SettingsComponent implements OnInit {
   incidentReportAttributes?: Page<SetAttribute>;
   incidentReportAttributesCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   incidentReportAttributesColumns: Column<SetAttribute>[] = this._attributeGridOptions.createColumnList(
     DefaultSetId.IncidentReport,
@@ -68,6 +70,7 @@ export class SettingsComponent implements OnInit {
   users?: Page<User>;
   usersCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   usersColumns: Column<User>[] = [
     new Column<User>({

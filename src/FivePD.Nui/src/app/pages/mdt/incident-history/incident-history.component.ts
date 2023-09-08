@@ -15,6 +15,7 @@ export class IncidentHistoryComponent {
   incidentHistoryPage?: Page<IncidentHistory>;
   incidentHistoryPageCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   incidentHistoryPageColumnDef: Column<IncidentHistory>[] = [
     new Column({

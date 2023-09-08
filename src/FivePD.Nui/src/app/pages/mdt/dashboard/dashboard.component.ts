@@ -55,6 +55,7 @@ export class DashboardComponent implements OnInit {
   ];
   departmentsCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   departmentsColumnDef: Column<Department>[] = [
     new Column<Department>({

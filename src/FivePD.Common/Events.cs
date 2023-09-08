@@ -27,8 +27,6 @@ internal readonly record struct Events
     {
         public const string Generate = "fivepd:ped:generate";
 
-        public const string Search = "fivepd:ped:search";
-
         public const string GetProperty = "fivepd:ped:getProperty";
 
         public const string SetProperty = "fivepd:ped:setProperty";
@@ -43,7 +41,7 @@ internal readonly record struct Events
 
         public const string OnAlerted = "fivepd:ped:onAlerted";
     }
-
+    
     public readonly record struct Vehicle
     {
         public const string Generate = "fivepd:vehicle:generate";
@@ -322,6 +320,13 @@ internal readonly record struct Events
         public const string GetAll = "fivepd:incidentHistory:getAll";
 
         public const string GetAllOfUser = "fivepd:incidentHistory:getAllOfUser";
+    }
+
+    public readonly record struct PedHistory
+    {
+        public const string Get = "fivepd:pedHistory:get";
+
+        public const string GetAll = "fivepd:pedHistory:getAll";
     }
 
     public readonly record struct Cfx

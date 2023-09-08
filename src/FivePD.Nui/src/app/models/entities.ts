@@ -1,9 +1,14 @@
 import { SetAttribute } from './loose-data';
-import { FIncidentPriority, FIncidentType } from "@enums";
+import { FGender, FIncidentPriority, FIncidentType, PedLicenseType } from "@enums";
 
 export interface WithId {
   Id: number;
 }
+
+export interface WithStringId {
+  Id: string;
+}
+
 export interface User extends WithId {
   FirstLogin: boolean;
   DismissedWelcomeMessage: boolean;
@@ -100,3 +105,18 @@ export interface IncidentHistoryUser {
 }
 
 export type SimpleIncidentHistory = Pick<IncidentHistory, 'Id' | 'Title' | 'GeneratedAt'>;
+
+export interface PedHistory extends WithId {
+  Gender: FGender;
+  Firstname: string;
+  Lastname: string;
+  Birthdate: string;
+  Warrants: string[];
+  Licenses: PedLicense[];
+}
+
+export interface PedLicense extends WithStringId {
+  Type: PedLicenseType;
+  IssueDate: string;
+  ExpirationDate: string;
+}

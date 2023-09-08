@@ -68,6 +68,7 @@ export class ReportsComponent implements OnInit {
   ];
   arrestReportCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   arrestReports?: Page<MappedLooseDataEntity>;
   arrestReportColumns: Column<MappedLooseDataEntity>[] = [];
@@ -122,6 +123,7 @@ export class ReportsComponent implements OnInit {
   ];
   incidentReportCollation: Collation = {
     Page: 1,
+    Filters: {},
   };
   incidentReports?: Page<MappedLooseDataEntity>;
   incidentReportColumns: Column<MappedLooseDataEntity>[] = [];
