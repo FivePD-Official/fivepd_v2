@@ -60,28 +60,29 @@ public abstract class LooseDataRepository<TS> : IServiceWithEvents, IDisposableS
     /// <summary>
     /// Adds a new entity.
     /// </summary>
-    /// <param name="arrestReport">The entity to add.</param>
-    public void Add(LooseDataEntity arrestReport)
+    /// <param name="entity">The entity to add.</param>
+    /// <returns>The inserted entity.</returns>
+    public LooseDataEntity Add(LooseDataEntity entity)
     {
-        this._looseDataService.AddEntity<TS>(arrestReport);
+        return this._looseDataService.AddEntity<TS>(entity);
     }
 
     /// <summary>
     /// Updates an entity.
     /// </summary>
-    /// <param name="arrestReport">The entity to update.</param>
-    public void Update(LooseDataEntity arrestReport)
+    /// <param name="entity">The entity to update.</param>
+    public void Update(LooseDataEntity entity)
     {
-        this._looseDataService.UpdateEntity(arrestReport);
+        this._looseDataService.UpdateEntity(entity);
     }
 
     /// <summary>
     /// Deletes an entity.
     /// </summary>
-    /// <param name="arrestReport">The entity to delete.</param>
-    public void Delete(LooseDataEntity arrestReport)
+    /// <param name="entity">The entity to delete.</param>
+    public void Delete(LooseDataEntity entity)
     {
-        this._looseDataService.DeleteEntity(arrestReport);
+        this._looseDataService.DeleteEntity(entity);
     }
 
     /// <summary>

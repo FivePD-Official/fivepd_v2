@@ -188,7 +188,6 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IFileHandlerService, FileHandlerService>();
         services.AddSingleton<ICommandService, CommandService>();
         services.AddSingleton<IDevToolsService, DevToolsService>();
-        services.AddSingleton<ILooseDataService, LooseDataService>();
         services.AddSingleton<IDepartmentService, DepartmentService>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IEntityService, EntityService>();
@@ -200,6 +199,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<ICfxService, CfxService>();
         services.AddSingleton<IBackupManagerService, BackupManagerService>();
         services.AddSingleton<IProgressionSystemService, ProgressionSystemService>();
+
+        services.AddSingleton<LooseDataService>();
+        services.AddSingleton<ILooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
+        services.AddSingleton<IInternalLooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
 
         services.AddSingleton<ConfigService>();
         services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());
@@ -223,9 +226,11 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<ArrestReportService>();
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ArrestReportService>());
+        services.AddSingleton<IDisposableService>(provider => provider.GetRequiredService<ArrestReportService>());
 
         services.AddSingleton<IncidentReportService>();
         services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<IncidentReportService>());
+        services.AddSingleton<IDisposableService>(provider => provider.GetRequiredService<IncidentReportService>());
 
         services.AddSingleton<EventService>();
         services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
@@ -474,6 +479,9 @@ internal class Bootstrapper : BaseScript
 
         var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
         log?.Information("Stopping FivePD");
+
+        var looseData = this._provider.GetService<ILooseDataService>();
+        ((IInternalLooseDataService)looseData).DisposeAddonRepositories();
 
         // Dispose all internal services with the interface IDisposableService
         foreach (var service in this._provider.GetServices<IDisposableService>())

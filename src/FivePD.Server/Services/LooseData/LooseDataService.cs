@@ -9,21 +9,24 @@ using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Extensions;
+using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models.LooseData;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services.LooseData;
 
-/// <inheritdoc />
-public class LooseDataService : ILooseDataService
+/// <inheritdoc cref="FivePD.Server.Interfaces.LooseData.ILooseDataService" />
+public class LooseDataService : ILooseDataService, IInternalLooseDataService
 {
     private readonly DatabaseContext _databaseContext;
     private readonly List<LooseDataEntityObservable> _observables = new();
     private readonly Dictionary<Type, string> _activeSetTypes = new();
+    private readonly List<object> _addonRepositoryInstances = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LooseDataService"/> class.
@@ -32,6 +35,24 @@ public class LooseDataService : ILooseDataService
     public LooseDataService(DatabaseContext databaseContext)
     {
         this._databaseContext = databaseContext;
+    }
+
+    /// <inheritdoc/>
+    void IInternalLooseDataService.DisposeAddonRepositories()
+    {
+        foreach (var addonRepositoryInstance in this._addonRepositoryInstances)
+        {
+            ((IDisposableService)addonRepositoryInstance).InternalDispose();
+        }
+    }
+
+    /// <inheritdoc />
+    public void RegisterAddonRepository<TLooseDataSet, TLooseDataRepository>(TLooseDataRepository repository)
+        where TLooseDataSet : LooseDataSet
+        where TLooseDataRepository : LooseDataRepository<TLooseDataSet>
+    {
+        this._addonRepositoryInstances.Add(repository);
+        ((IServiceWithEvents)repository).RegisterEvents();
     }
 
     /// <inheritdoc />
@@ -221,17 +242,17 @@ public class LooseDataService : ILooseDataService
     }
 
     /// <inheritdoc />
-    public void AddEntity<TS>(LooseDataEntity entityToAdd)
+    public LooseDataEntity AddEntity<TS>(LooseDataEntity entityToAdd)
         where TS : LooseDataSet
     {
         var setType = typeof(TS);
         var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
         if (setIdAttr is null)
         {
-            return;
+            return null;
         }
 
-        this.InternalAddEntity(setIdAttr.Id, entityToAdd, entityToAdd.MappedValues);
+        return this.InternalAddEntity(setIdAttr.Id, entityToAdd, entityToAdd.MappedValues);
     }
 
     /// <inheritdoc />

@@ -10,6 +10,16 @@ namespace FivePD.Server.Interfaces.LooseData;
 public interface ILooseDataService
 {
     /// <summary>
+    /// Registers the given <paramref name="repository"/>.
+    /// </summary>
+    /// <param name="repository">The repository to register.</param>
+    /// <typeparam name="TS">The type of the set to register.</typeparam>
+    /// <typeparam name="TR">The type of the repository to register.</typeparam>
+    public void RegisterAddonRepository<TS, TR>(TR repository)
+        where TS : LooseDataSet
+        where TR : LooseDataRepository<TS>;
+
+    /// <summary>
     /// Registers attributes to the given dynamic data set type.
     /// </summary>
     /// <param name="attributes">The attributes to register.</param>
@@ -74,7 +84,8 @@ public interface ILooseDataService
     /// </summary>
     /// <param name="entityToAdd">The entity to insert.</param>
     /// <typeparam name="TS">The type of the set where the entity should be inserted.</typeparam>
-    public void AddEntity<TS>(LooseDataEntity entityToAdd)
+    /// <returns>The inserted entity.</returns>
+    public LooseDataEntity AddEntity<TS>(LooseDataEntity entityToAdd)
         where TS : LooseDataSet;
 
     /// <summary>
@@ -103,4 +114,15 @@ public interface ILooseDataService
     /// <returns>All entities of the set.</returns>
     public List<LooseDataEntity> GetEntities<TS>()
         where TS : LooseDataSet;
+}
+
+/// <summary>
+/// Handles the dynamic data sets and entities.
+/// </summary>
+internal interface IInternalLooseDataService
+{
+    /// <summary>
+    /// Disposes all addon repositories.
+    /// </summary>
+    public void DisposeAddonRepositories();
 }
