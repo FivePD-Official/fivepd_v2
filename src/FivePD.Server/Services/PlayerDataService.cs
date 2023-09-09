@@ -215,13 +215,10 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
 
     private void SubscribeToOnDutyStatusChange(Player player)
     {
-        Debug.WriteLine("a", this._configService.GeneralConfig.Features.DutyNotification);
         if (!this._configService.GeneralConfig.Features.DutyNotification)
         {
             return;
         }
-
-        Debug.WriteLine("b");
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
         fPlayer.DutyStatus.Value = FDutyStatus.OffDuty;
