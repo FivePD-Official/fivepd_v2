@@ -327,6 +327,8 @@ internal readonly record struct Events
         public const string Get = "fivepd:pedHistory:get";
 
         public const string GetAll = "fivepd:pedHistory:getAll";
+
+        public const string GetAllSimple = "fivepd:pedHistory:getAllSimple";
     }
 
     public readonly record struct Cfx

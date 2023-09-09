@@ -16,6 +16,7 @@ using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FivePD.Server.Services.LooseData;
 
@@ -364,16 +365,50 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             entity.MappedValues["Department"] = department;
         }
 
+        if (entity.MappedValues.ContainsKey("DepartmentIds"))
+        {
+            var ids = (entity.MappedValues["DepartmentIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+            var user = this._databaseContext.Departments.Where(department => ids.Contains(department.Id)).ToList();
+            entity.MappedValues["DepartmentIds"] = user;
+        }
+
         if (entity.MappedValues.ContainsKey("UserId"))
         {
             var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
             entity.MappedValues["User"] = user;
         }
 
-        if (entity.MappedValues.ContainsKey("IncidentId"))
+        if (entity.MappedValues.ContainsKey("UserIds"))
         {
-            var user = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == entity.MappedValues["IncidentId"] as string);
+            var ids = (entity.MappedValues["UserIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+            var user = this._databaseContext.Users.Where(user => ids.Contains(user.Id)).ToList();
+            entity.MappedValues["Users"] = user;
+        }
+
+        if (entity.MappedValues.ContainsKey("IncidentHistoryId"))
+        {
+            var user = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == entity.MappedValues["IncidentHistoryId"] as string);
+            entity.MappedValues["IncidentHistory"] = user;
+        }
+
+        if (entity.MappedValues.ContainsKey("IncidentHistoryIds"))
+        {
+            var ids = (entity.MappedValues["IncidentHistoryIds"] as JArray)?.Select(x => x.ToString()).ToList();
+            var user = this._databaseContext.IncidentHistories.Where(incidentHistory => ids.Contains(incidentHistory.Id)).ToList();
+            entity.MappedValues["IncidentHistories"] = user;
+        }
+
+        if (entity.MappedValues.ContainsKey("PedHistoryId"))
+        {
+            var user = this._databaseContext.PedHistories.FirstOrDefault(pedHistory => pedHistory.Id == (entity.MappedValues["PedHistoryId"] as long? ?? 0));
             entity.MappedValues["Incident"] = user;
+        }
+
+        if (entity.MappedValues.ContainsKey("PedHistoryIds"))
+        {
+            var ids = (entity.MappedValues["PedHistoryIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+            var user = this._databaseContext.PedHistories.Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
+            entity.MappedValues["PedHistories"] = user;
         }
 
         return entity;
@@ -393,7 +428,8 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(attribute));
+        attribute.Set = null;
+        networkCallbackDelegate.InvokeWithJson(attribute);
     }
 
     [UIEvent(Events.UI.LooseData.GetSetAttributes)]
@@ -410,7 +446,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(set.Attributes));
+        foreach (var attribute in set.Attributes)
+        {
+            attribute.Set = null;
+        }
+
+        networkCallbackDelegate.InvokeWithJson(set.Attributes);
     }
 
     [UIEvent(Events.UI.LooseData.GetSetAttributesPageable)]
@@ -566,7 +607,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         }
 
         var entity = this.InternalGetEntity(request.Id);
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entity));
+        networkCallbackDelegate.InvokeWithJson(entity);
     }
 
     [UIEvent(Events.UI.LooseData.GetEntities)]

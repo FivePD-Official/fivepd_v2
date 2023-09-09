@@ -121,3 +121,5 @@ export interface PedLicense extends WithStringId {
   ExpirationDate: string;
   Valid: boolean;
 }
+
+export type SimplePedHistory = Pick<PedHistory, 'Id' | 'Firstname' | 'Lastname' | 'Birthdate' | 'Gender'>

@@ -51,20 +51,6 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
             },
             new()
             {
-                Name = "AddressOfArrest",
-                Label = "Address of arrest",
-                DataType = LooseDataType.ShortString,
-                Required = true,
-            },
-            new()
-            {
-                Name = "Weapons",
-                Label = "Weapons",
-                DataType = LooseDataType.ShortString,
-                Required = false,
-            },
-            new()
-            {
                 Name = "Narrative",
                 Label = "Narrative",
                 DataType = LooseDataType.LongString,
@@ -72,48 +58,12 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
             },
             new()
             {
-                Name = "ArresteeName",
-                Label = "Name of arrestee",
-                DataType = LooseDataType.ShortString,
-                Required = true,
-                ShowInGrid = true,
-                Order = 1,
-            },
-            new()
-            {
-                Name = "ArresteeBirthdate",
-                Label = "Birthdate of arrestee",
-                DataType = LooseDataType.Date,
-                Required = true,
-            },
-            new()
-            {
-                Name = "ArresteeAge",
-                Label = "Age of arrestee",
-                DataType = LooseDataType.Integer,
-                Required = true,
-            },
-            new()
-            {
-                Name = "ArresteeGender",
-                Label = "Gender of arrestee",
-                DataType = LooseDataType.Integer,
-                Required = true,
-                Options = new LooseDataAttribute.AttributeOptions
-                {
-                    Items = new Dictionary<int, string>
-                    {
-                        { (int)FGender.Male, "Male" },
-                        { (int)FGender.Female, "Female" },
-                    },
-                },
-            },
-            new()
-            {
-                Name = "ArresteeRace",
-                Label = "Race of arrestee",
-                DataType = LooseDataType.ShortString,
-                Required = true,
+                Name = "PedHistoryIds",
+                Label = "PedHistoryIds",
+                DataType = LooseDataType.IntegerList,
+                Required = false,
+                ShowInGrid = false,
+                Readonly = true,
             },
         };
     }

@@ -1,8 +1,20 @@
 <div class="grid gap-7 w-full" *ngIf="entityValueColumns.length" [ngStyle]="{ grid: columnsGridStyle }">
   <div *ngFor="let col of entityValueColumns">
     <div class="mb-5" *ngFor="let item of col">
-      <p class="font-medium text-zinc-400">{{ item.name }}</p>
-      <p class="text-zinc-200">{{ item.value }}</p>
+      <p class="font-medium text-zinc-400 mb-1.5">{{ item.name }}</p>
+      <ng-container *ngIf="typeof(item.value) === 'string'; else links">
+        <p class="text-zinc-200">{{ item.value }}</p>
+      </ng-container>
+      <ng-template #links>
+        <div class="flex flex-col gap-2.5">
+          <button *ngFor="let link of $any(item.value)"
+                  (click)="onLinkClick(link)"
+                  class="group flex flex-row items-center text-zinc-300 hover:text-white">
+            {{ link.label }}
+            <div app-icon name="Link" className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
+          </button>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>

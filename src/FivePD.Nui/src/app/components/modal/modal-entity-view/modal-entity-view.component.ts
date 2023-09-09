@@ -1,14 +1,27 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { ATTRIBUTES, ENTITY } from './entity-token';
-import { AttributeDataType, LooseDataEntityWrapper, MappedLooseDataEntity, SetAttribute } from '@models';
+import {
+  AttributeDataType, Department,
+  IncidentHistory,
+  LooseDataEntityWrapper,
+  MappedLooseDataEntity,
+  PedHistory,
+  SetAttribute, User
+} from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { formatDate } from '@helpers';
 import { tap } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
+import { Router } from "@angular/router";
+
+interface EntityValueLink {
+  label: string;
+  link: (string | number)[];
+}
 
 interface EntityValue {
   name: string;
-  value: string;
+  value: string | EntityValueLink[];
 }
 
 @Component({
@@ -26,6 +39,7 @@ export class ModalEntityViewComponent implements OnInit {
     @Inject(ENTITY) private mappedEntity: MappedLooseDataEntity,
     @Inject(ATTRIBUTES) private attributes: SetAttribute[],
     private _looseData: LooseDataService,
+    private readonly _router: Router,
   ) {
   }
 
@@ -38,6 +52,15 @@ export class ModalEntityViewComponent implements OnInit {
     this.columnsGridStyle = `1fr / repeat(${this.modalRef.options?.columns ?? 1}, 1fr)`;
   }
 
+  typeof(value: any): string {
+    return typeof value;
+  }
+
+  onLinkClick(link: EntityValueLink): void {
+    this.modalRef.close({value: {}, success: true});
+    this._router.navigate(link.link);
+  }
+
   private getEntity(): void {
     this.modalRef.startLoading('Updating...');
     this._looseData.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id)
@@ -45,6 +68,7 @@ export class ModalEntityViewComponent implements OnInit {
         tap(() => this.modalRef.stopLoading())
       )
       .subscribe(res => {
+        console.log(res)
         this.mapEntityValues(res);
       });
   }
@@ -52,29 +76,90 @@ export class ModalEntityViewComponent implements OnInit {
   private mapEntityValues(entityWrapper: LooseDataEntityWrapper): void {
     const values: EntityValue[] = [];
     for (const attr of entityWrapper.attributes) {
+      let name = attr.Label ?? '<Missing label>';
       let value = entityWrapper.entity[attr.Name];
+
       if (value instanceof Date) {
-        value = formatDate(value);
+        values.push({
+          name,
+          value: formatDate(value, 'none'),
+        });
+        continue;
       }
 
-      let name = attr.Label ?? '<Missing label>';
+      let entityValue: EntityValue = {
+        name,
+        value,
+      };
+
       // Replace dedicated field IDs with their Name
       if (name === 'Department' && entityWrapper.entity['Department']) {
-        name = 'Department';
-        value = entityWrapper.entity['Department']['Name'] ?? '-';
+        entityValue.name = 'Department';
+        entityValue.value = entityWrapper.entity['Department']['Name'] ?? '-';
       }
+
+      if (name === 'DepartmentIds' && entityWrapper.entity['Departments']) {
+        entityValue.name = 'Departments';
+        entityValue.value = entityWrapper.entity['DepartmentIds'].map((id: number) => {
+          const department = (entityWrapper.entity['Departments'] as Department[]).find(x => x.Id === id);
+          return {
+            label: department ? department.Name : 'Unknown',
+            link: ['mdt', 'departments', id],
+          } satisfies EntityValueLink;
+        });
+      }
+
       if (name === 'User' && entityWrapper.entity['User']) {
-        name = 'User';
-        value = entityWrapper.entity['User']['Name'] ?? '-';
+        entityValue.name = 'User';
+        entityValue.value = entityWrapper.entity['User']['Name'] ?? '-';
       }
-      if (name === 'Incident' && entityWrapper.entity['Incident']) {
-        name = 'Incident';
-        value = entityWrapper.entity['Incident']['Title'] ?? '-';
+
+      if (name === 'UserIds' && entityWrapper.entity['Users']) {
+        entityValue.name = 'Users';
+        entityValue.value = entityWrapper.entity['UserIds'].map((id: number) => {
+          const user = (entityWrapper.entity['Users'] as User[]).find(x => x.Id === id);
+          return {
+            label: user ? user.Name : 'Unknown',
+            link: ['mdt', 'users', id], // TODO: no route for this
+          } satisfies EntityValueLink;
+        });
+      }
+
+      if (name === 'IncidentHistory' && entityWrapper.entity['IncidentHistory']) {
+        entityValue.name = 'Incident';
+        entityValue.value = entityWrapper.entity['IncidentHistory']['Title'] ?? '-';
+      }
+
+      if (name === 'IncidentHistoryIds' && entityWrapper.entity['IncidentHistories']) {
+        entityValue.name = 'Incidents';
+        entityValue.value = entityWrapper.entity['IncidentHistoryIds'].map((id: string) => {
+          const incidentHistory = (entityWrapper.entity['IncidentHistories'] as IncidentHistory[]).find(x => x.Id === id);
+          return {
+            label: incidentHistory ? incidentHistory.Title : 'Unknown',
+            link: ['mdt', 'incidents', id],
+          } satisfies EntityValueLink;
+        });
+      }
+
+      if (name === 'PedHistory' && entityWrapper.entity['PedHistory']) {
+        entityValue.name = 'Citizen'; // TODO: Rename?
+        entityValue.value = entityWrapper.entity['PedHistory']['Title'] ?? '-';
+      }
+
+      if (name === 'PedHistoryIds' && entityWrapper.entity['PedHistories']) {
+        entityValue.name = 'Citizens'; // TODO: Rename?
+        entityValue.value = entityWrapper.entity['PedHistoryIds'].map((id: number) => {
+          const pedHistory = (entityWrapper.entity['PedHistories'] as PedHistory[]).find(x => x.Id === id);
+          return {
+            label: pedHistory ? pedHistory.Firstname + ' ' + pedHistory.Lastname : 'Unknown',
+            link: ['mdt', 'citizen-database', id],
+          } satisfies EntityValueLink;
+        });
       }
 
       // Replace enum index with value
       if (attr.Options?.Items) {
-        value = attr.Options.Items[value];
+        entityValue.value = attr.Options.Items[value];
       }
 
       // In case of strings replace empty value with a dash
@@ -83,13 +168,10 @@ export class ModalEntityViewComponent implements OnInit {
           attr.DataType === AttributeDataType.LongString) &&
         !value
       ) {
-        value = '-';
+        entityValue.value = '-';
       }
 
-      values.push({
-        name: name,
-        value,
-      });
+      values.push(entityValue);
     }
 
     const columns = [];

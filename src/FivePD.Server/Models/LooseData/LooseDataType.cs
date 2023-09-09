@@ -30,4 +30,9 @@ public enum LooseDataType
     /// This type will display a date input field in forms.
     /// </summary>
     Date,
+
+    /// <summary>
+    /// This type is used for mapping to entities and displaying them in some form.
+    /// </summary>
+    IntegerList,
 }

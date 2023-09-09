@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { Collation, Page, PedHistory } from "@models";
+import { Collation, Page, PedHistory, SimplePedHistory } from "@models";
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +26,10 @@ export class PedHistoryService {
     }
 
     return this._http.post<Page<PedHistory>>('fivepd:pedHistory:getAll', collation);
+  }
+
+  getAllSimple(): Observable<SimplePedHistory[]> {
+    return this._http.post<SimplePedHistory[]>('fivepd:pedHistory:getAllSimple', {});
   }
 
 }

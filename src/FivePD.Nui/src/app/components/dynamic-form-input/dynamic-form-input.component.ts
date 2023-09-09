@@ -71,18 +71,20 @@ export class DynamicFormInputComponent implements OnInit {
       this.dropdownFilteredItems = items;
       this.dropdownSelectedItem.label = label;
 
-      if ('selectedItemResolver' in this.field.dropdownOptions) {
+      if (this.field.dropdownOptions.type === 'single' && 'selectedItemResolver' in this.field.dropdownOptions) {
         const item = items.find(item => (this.field.dropdownOptions as DropdownSingleOptions).selectedItemResolver!(item.key));
         if (item) {
           this.setSelectedItem(item, true);
         }
-      } else if ('selectedItemsResolver' in this.field.dropdownOptions) {
+      } else if (this.field.dropdownOptions.type === 'multi') {
         this.multiSelect = true;
-        this.pseudoFormControl.setValue([] as any);
-        const selectedItems = items.filter(item => (this.field.dropdownOptions as DropdownMultiOptions).selectedItemsResolver!(item.key));
-        if (selectedItems) {
-          this.form?.controls[this.field.key].setValue(selectedItems.map(x => x.key));
-          this.dropdownSelectedItems = selectedItems.map(x => ({key: x.key, label: x.label}));
+        this.control?.setValue([] as any);
+        if ('selectedItemsResolver' in this.field.dropdownOptions) {
+          const selectedItems = items.filter(item => (this.field.dropdownOptions as DropdownMultiOptions).selectedItemsResolver!(item.key));
+          if (selectedItems) {
+            this.control?.setValue(selectedItems.map(x => x.key));
+            this.dropdownSelectedItems = selectedItems.map(x => ({key: x.key, label: x.label}));
+          }
         }
       } else {
         this.control?.patchValue(-1);
@@ -144,9 +146,9 @@ export class DynamicFormInputComponent implements OnInit {
   onDropdownSelect(selectItem: DropdownItem, updateControl: boolean = true): void {
     this.dropdownOpen = false;
 
-    if ('selectedItemResolver' in this.field.dropdownOptions!) {
+    if (this.field.dropdownOptions?.type === 'single') {
       this.setSelectedItem(selectItem, updateControl);
-    } else if ('selectedItemsResolver' in this.field.dropdownOptions!) {
+    } else if (this.field.dropdownOptions?.type === 'multi') {
       this.setSelectedItems(selectItem, updateControl);
     } else {
       this.setSelectedItem(selectItem, updateControl);

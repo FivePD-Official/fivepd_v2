@@ -24,7 +24,7 @@ public class IncidentReportService : LooseDataRepository<IncidentReportSet>
         {
             new()
             {
-                Name = "IncidentId",
+                Name = "IncidentHistoryId",
                 Label = "Incident",
                 DataType = LooseDataType.Integer,
                 Required = false,

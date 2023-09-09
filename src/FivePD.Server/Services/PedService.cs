@@ -14,6 +14,7 @@ using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -196,5 +197,23 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
             .Include(pedHistory => pedHistory.Licenses)
             .FirstOrDefault(x => x.Id == request.Id);
         networkCallbackDelegate.InvokeWithJson(pedHistory);
+    }
+
+    [UIEvent(Events.PedHistory.GetAllSimple)]
+    private void GetAllSimpleUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var simplePedHistories = this._databaseContext.PedHistories
+            .AsNoTracking()
+            .Select(x => new SimplePedHistoryDTO
+            {
+                Id = x.Id,
+                Birthdate = x.Birthdate,
+                Gender = x.Gender,
+                Lastname = x.Lastname,
+                Firstname = x.Firstname,
+            })
+            .ToList();
+
+        networkCallbackDelegate.InvokeWithJson(simplePedHistories);
     }
 }

@@ -23,6 +23,7 @@ export interface DropdownBaseOptions {
   size: 'small' | 'normal';
   height?: DropdownHeightVariants;
   variant: DropdownVariants;
+  type?: 'single' | 'multi';
 }
 
 export interface DropdownSingleOptions {
@@ -89,6 +90,14 @@ export abstract class FormInputBase<T> {
     this.validators = options.validators || [];
     this.asyncValidators = options.asyncValidators || [];
     this.checkboxGroup = options.checkboxGroup || [];
+
+    if (this.dropdownOptions) {
+      if ('selectedItemResolver' in this.dropdownOptions) {
+        this.dropdownOptions.type = 'single';
+      } else if ('selectedItemsResolver' in this.dropdownOptions) {
+        this.dropdownOptions.type = 'multi';
+      }
+    }
   }
 
   public get type() {
