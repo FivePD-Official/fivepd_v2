@@ -153,6 +153,13 @@ export class ReportsComponent implements OnInit {
       this.arrestReports = wrapper.page;
       this.arrestReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
+          index: 0,
+          item: new Column<MappedLooseDataEntity>({
+            header: 'UI.LABEL.ID.SHORT.SINGULAR',
+            valueResolver: item => item.Id.toString(),
+          }),
+        },
+        {
           index: 1,
           item: new Column<MappedLooseDataEntity>({
             header: 'Department',
@@ -238,7 +245,7 @@ export class ReportsComponent implements OnInit {
         {
           index: 0,
           item: new Column<MappedLooseDataEntity>({
-            header: 'ID',
+            header: 'UI.LABEL.ID.SHORT.SINGULAR',
             valueResolver: item => item.Id.toString(),
           }),
         },

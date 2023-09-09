@@ -61,6 +61,7 @@ import { DispatchComponent } from './pages/mdt/dispatch/dispatch.component';
 import { AttributeGridOptions } from "./pages/mdt/settings/_service/attribute-grid-options";
 import { IncidentHistoryComponent } from './pages/mdt/incident-history/incident-history.component';
 import { WelcomeModalComponent } from './components/modal/welcome-modal/welcome-modal.component';
+import { CitizenDatabaseIdComponent } from './pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component';
 
 @NgModule({
   declarations: [
@@ -103,6 +104,7 @@ import { WelcomeModalComponent } from './components/modal/welcome-modal/welcome-
     DispatchComponent,
     IncidentHistoryComponent,
     WelcomeModalComponent,
+    CitizenDatabaseIdComponent,
   ],
   imports: [
     BrowserModule,

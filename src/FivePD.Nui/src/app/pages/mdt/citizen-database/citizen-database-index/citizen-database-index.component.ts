@@ -13,6 +13,7 @@ import {
 import { formatDate } from "@helpers";
 import { FGender } from "@enums";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-citizen-database-index',
@@ -53,8 +54,13 @@ export class CitizenDatabaseIndexComponent implements OnInit {
   ];
   citizensColumns: Column<PedHistory>[] = [
     new Column({
-      header: 'Name',
-      valueResolver: item => `${item.Firstname} ${item.Lastname}`,
+      header: 'Firstname',
+      accessorKey: 'Firstname',
+      show: () => true,
+    }),
+    new Column({
+      header: 'Lastname',
+      accessorKey: 'Lastname',
       show: () => true,
     }),
     new Column({
@@ -69,11 +75,16 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     }),
   ];
 
-  constructor(private readonly _pedHistoryService: PedHistoryService) {
+  constructor(private readonly _pedHistoryService: PedHistoryService,
+              private readonly _router: Router) {
   }
 
   ngOnInit(): void {
     this.getAll();
+  }
+
+  citizensRowLinkResolver(item: PedHistory): string {
+    return `/mdt/citizen-database/${item.Id}`;
   }
 
   onSearchSubmit(event: FormSubmitEvent): void {

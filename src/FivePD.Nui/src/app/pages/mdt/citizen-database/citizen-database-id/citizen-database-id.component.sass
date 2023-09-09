@@ -1,0 +1,16 @@
+.grid-item
+  @apply w-full h-full
+
+  .grid-item--content
+    @apply relative flex w-full h-[240px] mt-4 rounded-lg bg-zinc-800 p-4
+
+    .no-data
+      @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-medium text-zinc-400 text-center max-w-[25ch]
+
+.grid-item--details
+  ul
+    li
+      p
+        @apply font-medium text-zinc-400 mb-1
+        + p
+          @apply text-lg text-zinc-200

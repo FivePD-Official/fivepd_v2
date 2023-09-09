@@ -15,6 +15,7 @@ import {
 } from '@models';
 import { debounceTime, Subject } from 'rxjs';
 import { formatDate } from '@helpers';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-grid',
@@ -28,6 +29,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   @Input() columns: Column<T>[] = [];
   @Input() data: Page<T> | undefined | null;
   @Input() showPagination: boolean = true;
+  @Input() rowLinkResolver?: (item: T) => string;
 
   formattedColumns: Column<T>[] = [];
   formattedRows: FormattedRow<T>[] = [];
@@ -42,7 +44,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   @Output() onCellAction = new EventEmitter();
   @Output() onCollationChange = new EventEmitter<Collation>();
 
-  constructor() { }
+  constructor(private readonly _router: Router) { }
 
   ngOnInit(): void {
     this.filter$.pipe(
@@ -127,9 +129,8 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     this.formattedRows = this.data?.Items?.map((item: any) => {
       const row: FormattedRow<any> = [];
 
+      const originalItem = {...item};
       for (const value of Object.values(this.formattedColumns)) {
-
-        const originalItem = {...item};
         const mappedItem = this.mapEntity({...item});
 
         let newValue = '';
@@ -143,7 +144,6 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
           value: newValue,
           originalItem,
         };
-
 
         if (value.actions) {
           rowItem.actions = value.actions;
@@ -244,6 +244,12 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   headerButtonOnClick(button: Button): void {
     if (button.onClick) {
       button.onClick();
+    }
+  }
+
+  onRowClick(row: FormattedRowItem<T>[]): void {
+    if (this.rowLinkResolver) {
+      this._router.navigateByUrl(this.rowLinkResolver(row[0].originalItem));
     }
   }
 }

@@ -119,4 +119,5 @@ export interface PedLicense extends WithStringId {
   Type: PedLicenseType;
   IssueDate: string;
   ExpirationDate: string;
+  Valid: boolean;
 }

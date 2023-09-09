@@ -19,6 +19,9 @@ import { InformationComponent } from "./pages/information/information.component"
 import { NotMdtComponent } from "./pages/not-mdt/not-mdt.component";
 import { DispatchComponent } from "./pages/mdt/dispatch/dispatch.component";
 import { IncidentHistoryComponent } from "./pages/mdt/incident-history/incident-history.component";
+import {
+  CitizenDatabaseIdComponent
+} from "./pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component";
 
 const mdtRoutes: Routes = [
   {
@@ -47,6 +50,10 @@ const mdtRoutes: Routes = [
       {
         path: '',
         component: CitizenDatabaseIndexComponent
+      },
+      {
+        path: ':id',
+        component: CitizenDatabaseIdComponent,
       }
     ]
   },

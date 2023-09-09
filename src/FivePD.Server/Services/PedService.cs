@@ -169,8 +169,6 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
     {
         var request = expandoObject.ConvertTo<PedHistoryGetAllRequest>();
 
-        Debug.WriteLine($"asd {request.Filters.Gender}");
-
         var filters = new Filters<PedHistory>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Firstname),
@@ -187,5 +185,16 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
             .Paginate(request.Page, filters);
 
         networkCallbackDelegate.InvokeWithJson(page);
+    }
+
+    [UIEvent(Events.PedHistory.Get)]
+    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<IdRequest>();
+        var pedHistory = this._databaseContext.PedHistories
+            .AsNoTracking()
+            .Include(pedHistory => pedHistory.Licenses)
+            .FirstOrDefault(x => x.Id == request.Id);
+        networkCallbackDelegate.InvokeWithJson(pedHistory);
     }
 }

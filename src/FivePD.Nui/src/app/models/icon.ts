@@ -18,4 +18,5 @@
   PhoneArrowDown = 'PhoneArrowDown',
   ArrowsPointingOut = 'ArrowsPointingOut',
   ArrowsPointingIn = 'ArrowsPointingIn',
+  Information = 'Information',
 }

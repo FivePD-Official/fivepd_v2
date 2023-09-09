@@ -36,7 +36,9 @@
     </form>
 
     <div *ngFor="let row of formattedRows"
-         class="table-row">
+         class="table-row"
+         [ngClass]="{'cursor-pointer': !!rowLinkResolver}"
+         (click)="onRowClick(row)">
       <div *ngFor="let item of row" class="table-cell">
         <p *ngIf="item.link && !item.actions && !item.value">-</p>
         <a *ngIf="item.link && !item.actions && item.value"

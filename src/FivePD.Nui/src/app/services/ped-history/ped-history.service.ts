@@ -10,7 +10,11 @@ export class PedHistoryService {
 
   constructor(private readonly _http: HttpClient) { }
 
-  get(id: number): Observable<PedHistory> {
+  get(id: number | string): Observable<PedHistory> {
+    if (typeof id === 'string') {
+      id = parseInt(id);
+    }
+
     return this._http.post<PedHistory>('fivepd:pedHistory:get', {
       Id: id,
     });
