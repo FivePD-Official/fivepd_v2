@@ -23,7 +23,7 @@ public class IncidentHistoryService : IIncidentHistoryService, IServiceWithEvent
     public void RegisterEvents()
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.IncidentHistory.Get);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.IncidentHistory.GetAll);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.IncidentHistory.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.IncidentHistory.GetAllOfUser);
     }
 }

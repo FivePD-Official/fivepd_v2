@@ -176,8 +176,8 @@ public class DepartmentService : IDepartmentService
         this.RemovePlayerFromDepartment(this._playerDataService.FindUserByLicense(player));
     }
 
-    [UIEvent(Events.UI.Department.List)]
-    private void GetDepartmentsForNui(ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Department.GetAllPageable)]
+    private void GetAllPageableUI(ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var departmentsRequest = departmentsRequestString.ConvertTo<DepartmentsRequest>();
 
@@ -198,8 +198,8 @@ public class DepartmentService : IDepartmentService
         networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
     }
 
-    [UIEvent(Events.UI.Department.GetById)]
-    private void GetDepartmentByIdForNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Department.Get)]
+    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
         var department = this._databaseContext.Departments

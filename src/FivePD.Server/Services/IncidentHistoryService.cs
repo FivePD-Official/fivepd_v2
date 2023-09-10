@@ -72,8 +72,8 @@ internal class IncidentHistoryService : IIncidentHistoryService, IInternalIncide
         this._databaseContext.SaveChangesAsync();
     }
 
-    [UIEvent(Events.IncidentHistory.GetAll)]
-    private void GetAllUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.IncidentHistory.GetAllPageable)]
+    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IncidentHistoryGetAllRequest>();
 

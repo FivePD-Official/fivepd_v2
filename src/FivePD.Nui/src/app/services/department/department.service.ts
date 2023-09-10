@@ -17,13 +17,13 @@ export class DepartmentService {
     if (typeof id === 'string') {
       id = parseInt(id);
     }
-    return this._http.post<Department>('fivepd:department:getById', {
+    return this._http.post<Department>('fivepd:department:get', {
       Id: id,
     });
   }
 
   getDepartments(departmentsRequest?: Collation): Observable<Page<Department>> {
-    return this._http.post<Page<Department>>('fivepd:department:list', departmentsRequest);
+    return this._http.post<Page<Department>>('fivepd:department:getAllPageable', departmentsRequest);
   }
 
   createDepartment(department: object): Observable<ActionResponse> {

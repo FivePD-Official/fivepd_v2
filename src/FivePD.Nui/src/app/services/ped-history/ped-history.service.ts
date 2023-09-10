@@ -25,7 +25,7 @@ export class PedHistoryService {
       collation.Filters['Gender'] = -1;
     }
 
-    return this._http.post<Page<PedHistory>>('fivepd:pedHistory:getAll', collation);
+    return this._http.post<Page<PedHistory>>('fivepd:pedHistory:getAllPageable', collation);
   }
 
   getAllSimple(): Observable<SimplePedHistory[]> {

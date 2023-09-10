@@ -26,7 +26,7 @@ export class IncidentHistoryService {
   }
 
   getAll(collation?: Collation): Observable<Page<IncidentHistory>> {
-    return this._http.post<Page<IncidentHistory>>('fivepd:incidentHistory:getAll', collation);
+    return this._http.post<Page<IncidentHistory>>('fivepd:incidentHistory:getAllPageable', collation);
   }
 
   getAllOfUser(): Observable<SimpleIncidentHistory[]> {

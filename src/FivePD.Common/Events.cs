@@ -116,9 +116,9 @@ internal readonly record struct Events
 
         public readonly record struct Department
         {
-            public const string List = "fivepd:department:list";
+            public const string GetAllPageable = "fivepd:department:getAllPageable";
 
-            public const string GetById = "fivepd:department:getById";
+            public const string Get = "fivepd:department:get";
 
             public const string GetUsers = "fivepd:department:getUsers";
 
@@ -324,7 +324,7 @@ internal readonly record struct Events
     {
         public const string Get = "fivepd:incidentHistory:get";
 
-        public const string GetAll = "fivepd:incidentHistory:getAll";
+        public const string GetAllPageable = "fivepd:incidentHistory:getAllPageable";
 
         public const string GetAllOfUser = "fivepd:incidentHistory:getAllOfUser";
     }
@@ -333,7 +333,7 @@ internal readonly record struct Events
     {
         public const string Get = "fivepd:pedHistory:get";
 
-        public const string GetAll = "fivepd:pedHistory:getAll";
+        public const string GetAllPageable = "fivepd:pedHistory:getAllPageable";
 
         public const string GetAllSimple = "fivepd:pedHistory:getAllSimple";
     }

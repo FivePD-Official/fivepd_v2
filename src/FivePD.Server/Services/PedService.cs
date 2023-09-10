@@ -166,8 +166,8 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
         this._peds[fPed.NetworkId] = fPed;
     }
 
-    [UIEvent(Events.PedHistory.GetAll)]
-    private void GetAllUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.PedHistory.GetAllPageable)]
+    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<PedHistoryGetAllRequest>();
 

@@ -33,7 +33,7 @@ internal class PedService : IPedService, IServiceWithEvents
     {
         // TODO: move to PedHistory service
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.Get);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAll);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAllSimple);
 
         this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedPropertyAsync);

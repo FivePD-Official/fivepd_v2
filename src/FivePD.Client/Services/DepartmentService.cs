@@ -22,8 +22,8 @@ public class DepartmentService : IDepartmentService, IServiceWithEvents
     /// <inheritdoc/>
     public void RegisterEvents()
     {
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.List);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetById);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetAllPageable);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Get);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetUsers);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetRank);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetRanks);
