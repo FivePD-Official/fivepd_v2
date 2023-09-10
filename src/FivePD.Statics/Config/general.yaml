@@ -61,6 +61,18 @@ ProgressionSystem:
     Death: -50
     VehicleImpounded: 50
 
+AssistanceServices:
+  SpawnType: auto # auto = automatic spawn locations, manual = should specify SpawnLocations
+  SpawnLocations: # optional; only used when SpawnType is set to manual, a random location will be picked for each type
+    Ambulance:
+      - X: 0
+        Y: -1.5
+        Z: 1
+    TowTruck:
+      - X: 0
+        Y: -1.5
+        Z: 1
+
 Features:
   DiscordRichPresence: true
   DutyNotification: true

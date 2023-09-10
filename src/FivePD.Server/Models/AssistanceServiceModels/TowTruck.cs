@@ -22,9 +22,11 @@ public class TowTruck : AssistanceService
     private FVehicle _towTruck;
     private FVehicle _targetVehicle;
 
-    private Vector3 _spawnLocation = new Vector3(704.09f, -117.47f, 52.83f);
-
-    public TowTruck(IEntityService entityService, IConfigService configService, IRandomService randomService, ICfxService cfxService)
+    public TowTruck(
+        IEntityService entityService,
+        IConfigService configService,
+        IRandomService randomService,
+        ICfxService cfxService)
     {
         this._entityService = entityService;
         this._configService = configService;
@@ -42,8 +44,8 @@ public class TowTruck : AssistanceService
         var serviceVehicle =
             this._configService.VehiclesConfig.TowTruck[this._randomService.Random.Next(0, this._configService.VehiclesConfig.TowTruck.Count)];
 
-        this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Benny, this._spawnLocation, 0f);
-        this._towTruck = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this._spawnLocation, 0f);
+        this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Benny, this.SpawnLocation, 0f);
+        this._towTruck = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, 0f);
 
         this._towTruck.Properties.CreateBlip(FBlipSprite.TowTruck, FBlipColor.TrevorOrange, "Tow truck");
 
