@@ -4,13 +4,17 @@
 
 internal sealed record Controls
 {
-    public static readonly Control TryAlertEntityAsync = new("fivepd::tryAlertEntityAsync", "E");
-
-    public static readonly Control ConfirmAction = new("fivepd::confirmAction", "F1", "Confirms an action");
-
+    // Menus
     public static readonly Control DutyMenu = new("fivepd::dutyMenu", "F10", "Duty menu");
 
     public static readonly Control AssistanceMenu = new("fivepd::assistanceMenu", "F4", "Assistance menu");
+
+    public static readonly Control InteractionMenu = new("fivepd::interactionMenu", "X", "Interaction menu");
+
+    // Other
+    public static readonly Control TryAlertEntityAsync = new("fivepd::tryAlertEntityAsync", "E");
+
+    public static readonly Control ConfirmAction = new("fivepd::confirmAction", "F1", "Confirms an action");
 
     public static readonly Control OpenMDT = new("fivepd::openMDT", "B", "Open MDT");
 

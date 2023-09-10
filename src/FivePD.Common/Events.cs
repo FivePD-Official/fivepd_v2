@@ -254,6 +254,11 @@ internal readonly record struct Events
     {
         public const string GetTargetedEntity = "fivepd:interaction:getTargetedEntity";
     }
+    
+    public readonly record struct Entity
+    {
+        public const string GetClosestEntityToPlayer = "fivepd:entity:getClosestEntityToPlayer";
+    }
 
     public readonly record struct Generic
     {

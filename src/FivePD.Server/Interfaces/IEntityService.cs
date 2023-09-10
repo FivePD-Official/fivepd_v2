@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 
@@ -35,4 +36,13 @@ public interface IEntityService
     /// <param name="location">A location where the prop will spawn.</param>
     /// <returns>The spawned prop.</returns>
     Task<Prop> SpawnPropAsync(int model, Vector3 location);
+
+    /// <summary>
+    /// Gets the closest entity to a player.
+    /// </summary>
+    /// <param name="player">The player to use.</param>
+    /// <typeparam name="T">The type of entity to get.</typeparam>
+    /// <returns>The closest entity.</returns>
+    public Task<T> GetClosestEntityToPlayerAsync<T>(Player player)
+        where T : FEntity;
 }

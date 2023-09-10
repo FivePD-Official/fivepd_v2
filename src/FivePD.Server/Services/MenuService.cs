@@ -47,6 +47,7 @@ public class MenuService : IMenuService, IServiceWithEvents
     {
         this.Register<DutyMenu>();
         this.Register<DispatchMenu>();
+        this.Register<InteractionMenu>();
 
         this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string>(this.OnButtonSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, bool>(this.OnCheckboxSelect);

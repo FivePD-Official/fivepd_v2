@@ -87,11 +87,12 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
 
     private void CheckPeds()
     {
-        foreach (var netId in this._peds.Keys)
+        foreach (var keyValuePair in this._peds)
         {
-            if (!Cfx.API.DoesEntityExist(netId))
+            var underlyingPed = keyValuePair.Value.GetUnderlyingPed;
+            if (underlyingPed is null || !Cfx.API.DoesEntityExist(underlyingPed.Handle))
             {
-                this._peds.TryRemove(netId, out _);
+                this._peds.TryRemove(keyValuePair.Key, out _);
             }
         }
     }
