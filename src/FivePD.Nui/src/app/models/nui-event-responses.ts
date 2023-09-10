@@ -90,6 +90,7 @@ export interface PlayerDetailsDTO {
   NetworkId: string;
   User: User;
   DutyStatus: FDutyStatus;
+  UnitCallsign: string;
 }
 
 interface ClientCallout {
@@ -111,6 +112,7 @@ export interface ClientCalloutWrapper {
 }
 
 export interface CalloutDTO {
+  Id: string;
   Title: string;
   Description: string;
   Address: string;
@@ -156,7 +158,7 @@ export interface SimpleCallout {
 export interface DispatcherUnitDTO extends UnitDTO {
   Status: string;
   Availability: FUnitAvailability;
-  AttachedCallout?: SimpleCallout;
+  AssignedCallout?: SimpleCallout;
 }
 
 export interface CommonDispatcherUnitDTO extends UnitDTO {

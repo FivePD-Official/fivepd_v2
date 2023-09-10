@@ -115,7 +115,7 @@ public class Unit : IInternalUnit
             Players = this.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
             Availability = this.Availability.Value,
             Status = this.Status.Value,
-            AttachedCallout = this.Callout is null ? null : new SimpleCallout(((IInternalUnit)this).InternalCallout),
+            AssignedCallout = this.Callout is null ? null : new SimpleCallout(((IInternalUnit)this).InternalCallout),
         };
     }
 

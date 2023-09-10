@@ -31,7 +31,8 @@ public interface ICalloutDistributionService
     /// <param name="unit">The unit.</param>
     /// <param name="callout">The callout.</param>
     /// <param name="acceptedByUnit">true = accepted by a unit; false = assigned by a dispatcher or an addon.</param>
-    public void AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false);
+    /// <returns>true if the unit was assigned to the callout; otherwise, false.</returns>
+    public bool AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false);
 }
 
 /// <summary>

@@ -17,5 +17,5 @@ internal record struct DispatcherUnitDTO
 
     public FUnitAvailability Availability;
 
-    public SimpleCallout AttachedCallout;
+    public SimpleCallout AssignedCallout;
 }

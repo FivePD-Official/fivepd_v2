@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -7,11 +8,13 @@ using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
-using FivePD.Server.Database;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
+using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services.Callouts;
@@ -98,13 +101,13 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     }
 
     /// <inheritdoc />
-    public void AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false)
+    public bool AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false)
     {
         this._incidentHistoryService.AddUnitToIncidentHistory(callout, FIncidentType.Callout, unit);
 
         if (callout.Units.Contains(unit))
         {
-            return;
+            return false;
         }
 
         ((IInternalIncident)callout).Units.Add(unit);
@@ -136,6 +139,8 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                 ActivityRadius = callout.ActivityRadius,
             }));
         }
+
+        return true;
     }
 
     private List<Unit> DispatchCalloutToUnits(CalloutHolder calloutHolder)
@@ -225,5 +230,27 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         }
 
         return notifiedUnits;
+    }
+
+    [UIEvent(Events.Callout.SelfAssign, true)]
+    private void SelfAssignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<StringIdRequest>();
+
+        var callout = this._calloutStoreService.ActiveCallouts.FirstOrDefault(x => x.Id == Guid.Parse(request.Id));
+        if (callout is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        var fPlayer = FPlayer.FromPlayer(player);
+        if (fPlayer.Unit is null)
+        {
+            return;
+        }
+
+        var assignedToCallout = this.AssignUnitToCallout(fPlayer.Unit, callout);
+        networkCallbackDelegate.InvokeWithResponse(assignedToCallout, "UI.LABEL.SUCCESS.SELF_ASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
     }
 }

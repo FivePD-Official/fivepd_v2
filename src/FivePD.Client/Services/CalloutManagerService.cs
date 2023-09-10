@@ -52,6 +52,7 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
 
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Callout.GetAllTypes);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Callout.Dispatch);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Callout.SelfAssign);
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(
             Events.Callout.GetAllActiveUI,
             serverResponse =>
@@ -59,6 +60,7 @@ internal class CalloutManagerService : ICalloutManagerService, IServiceWithEvent
                 var callouts = JsonConvert.DeserializeObject<Page<CalloutDTO.CalloutToClientDTO>>(serverResponse);
                 var newCallouts = callouts.Items.Select(callout => new CalloutDTO.CalloutToUIDTO
                     {
+                        Id = callout.Id,
                         Title = callout.Title,
                         Description = callout.Description,
                         Units = callout.Units,

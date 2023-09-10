@@ -9,6 +9,8 @@ public sealed record CalloutDTO
 {
     public sealed record CalloutToClientDTO
     {
+        public string Id { get; init; }
+
         public string Title { get; init; }
 
         public string Description { get; init; }
@@ -20,6 +22,8 @@ public sealed record CalloutDTO
     
     public sealed record CalloutToUIDTO
     {
+        public string Id { get; init; }
+
         public string Title { get; init; }
 
         public string Description { get; init; }

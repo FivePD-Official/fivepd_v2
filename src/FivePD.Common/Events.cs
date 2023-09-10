@@ -287,6 +287,8 @@ internal readonly record struct Events
         public const string OnCompleted = "fivepd:callout:onCompleted";
 
         public const string GetAllActiveUI = "fivepd:callout:getAllActiveUI";
+
+        public const string SelfAssign = "fivepd:callout:selfAssign";
     }
 
     public readonly record struct Config

@@ -4,4 +4,13 @@ namespace FivePD.Server.Models.DTO;
 
 #pragma warning disable
 
-internal sealed record PlayerDetailsDTO(string NetworkId, User User, FDutyStatus DutyStatus);
+internal sealed record PlayerDetailsDTO
+{
+    public string NetworkId { get; init; }
+
+    public User User { get; init; }
+
+    public FDutyStatus DutyStatus { get; init; }
+
+    public string UnitCallsign { get; init; }
+}

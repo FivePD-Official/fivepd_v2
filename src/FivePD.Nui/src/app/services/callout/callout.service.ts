@@ -21,11 +21,11 @@ export class CalloutService {
     return this._http.post<Page<CalloutDTO>>('fivepd:callout:getAllActiveUI', {});
   }
 
-  // join(unit: UnitDTO): Observable<ActionResponse> {
-  //   return this._http.post<ActionResponse>('fivepd:unit:join', {
-  //     Callsign: unit.Callsign,
-  //   });
-  // }
+  selfAssign(callout: CalloutDTO): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:callout:selfAssign', {
+      Id: callout.Id,
+    });
+  }
 
   getAllTypes(): Observable<Page<CalloutTypeDTO>> {
     return this._http.post<Page<CalloutTypeDTO>>('fivepd:ui:callout:getAllTypes', {});

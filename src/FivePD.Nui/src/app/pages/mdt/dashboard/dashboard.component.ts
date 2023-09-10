@@ -182,6 +182,23 @@ export class DashboardComponent implements OnInit {
       header: 'UI.LABEL.UNIT.PLURAL',
       valueResolver: item => item.Units.join(', '),
     }),
+    new Column<CalloutDTO>({
+      header: 'UI.LABEL.ACTION.PLURAL',
+      actions: [
+        {
+          type: 'button',
+          label: 'Self-assign',
+          show: callout => !!this.user?.UnitCallsign && callout.Units.every(x => x !== this.user?.UnitCallsign),
+          onClick: callout => {
+            this._calloutService.selfAssign(callout).subscribe(res => {
+              if (res.Status) {
+                callout.Units.push(this.user!.UnitCallsign!);
+              }
+            });
+          }
+        }
+      ]
+    }),
   ];
 
   constructor(

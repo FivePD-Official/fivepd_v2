@@ -1,4 +1,4 @@
-import { ActionResponse } from '@models';
+import { ActionResponse, ButtonVariants } from '@models';
 
 export interface ColumnOptions<T> {
   header: string;

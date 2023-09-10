@@ -159,6 +159,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
             .Where(x => x.Callout.Units.Count > 0)
             .Select(x => new CalloutDTO.CalloutToClientDTO
             {
+                Id = x.Callout.Id.ToString(),
                 Title = x.Callout.Title,
                 Description = x.Callout.Description,
                 Location = x.Callout.Location,

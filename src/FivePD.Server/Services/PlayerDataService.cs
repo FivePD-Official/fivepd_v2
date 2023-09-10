@@ -327,9 +327,23 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             .Include(user => user.Rank)
             .WhereAnyIdMatches(player)
             .FirstOrDefault();
-        networkCallbackDelegate.InvokeWithJson(user is null
-            ? null
-            : new PlayerDetailsDTO(player.Handle, user, FPlayer.FromNetId(player.Handle).DutyStatus.Value));
+
+        if (user is null)
+        {
+            networkCallbackDelegate.InvokeWithJson(null);
+            return;
+        }
+
+        var fPlayer = FPlayer.FromNetId(player.Handle);
+        var unit = fPlayer.Unit;
+
+        networkCallbackDelegate.InvokeWithJson(new PlayerDetailsDTO
+        {
+            NetworkId = player.Handle,
+            User = user,
+            DutyStatus = fPlayer.DutyStatus.Value,
+            UnitCallsign = unit is null ? string.Empty : unit.Callsign,
+        });
     }
 
     [UIEvent(Events.UI.Player.DismissedWelcomeModal, true)]
