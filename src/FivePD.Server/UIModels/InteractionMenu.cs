@@ -52,6 +52,12 @@ public sealed class InteractionMenu : Menu
                     return;
                 }
 
+                // TODO: something likes this, to allow searching dead peds as well (they won't be necessarily Stopped), so need to also generate data on-the-fly if this value is false
+                // if (!fPed.HasGeneratedData.Value)
+                // {
+                //     return;
+                // }
+
                 var itemList = new GtaStyleText()
                     .Blue("Items: ")
                     .Reset();
