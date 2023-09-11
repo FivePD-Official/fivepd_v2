@@ -8,7 +8,7 @@ namespace FivePD.Common.Models;
 /// Represents a single stateful datum. A property defined with
 /// this type will be automatically persisted
 /// assuming the property's class is of the
-/// <see cref="FStatefulContainer"/> type.
+/// <see cref="IFStatefulContainer"/> type.
 /// </summary>
 /// <typeparam name="T">The serializable type
 /// being persisted.</typeparam>

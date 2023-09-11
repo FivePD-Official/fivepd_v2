@@ -55,6 +55,8 @@ public class InteractionService : IInteractionService, IServiceWithEvents
             return;
         }
 
+        ped.Stopped.Value = true;
+
         Cfx.API.SetEntityDistanceCullingRadius(ped.GetUnderlyingPed.Handle, 10000f);
 
         ped.Properties.SetAlwaysKeepTask(true);

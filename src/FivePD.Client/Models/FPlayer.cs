@@ -13,7 +13,7 @@ namespace FivePD.Client.Models;
 /// The base player class.
 /// Provides a wrapper around game functionality for easier interactions with the framework.
 /// </summary>
-public class FPlayer : FStatefulContainer
+public class FPlayer : IFStatefulContainer
 {
     private static readonly List<FPlayer> CachedPlayers = new();
 
@@ -96,13 +96,13 @@ public class FPlayer : FStatefulContainer
     }
 
     /// <inheritdoc />
-    public override string GetStateKey()
+    public string GetStateKey()
     {
         return $"player:{this.NetId}";
     }
 
     /// <inheritdoc />
-    public override StateBag GetStateBag()
+    public StateBag GetStateBag()
     {
         return this.GetUnderlyingPlayer().State;
     }

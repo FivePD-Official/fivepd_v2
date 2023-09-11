@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
@@ -13,7 +14,7 @@ namespace FivePD.Server.EntityWrappers.PedWrapper;
 /// <summary>
 /// Represents a wrapper around a <see cref="CommonFPed"/> to provide additional functionality.
 /// </summary>
-public sealed class FPed : FEntity
+public class FPed : FEntity, IFStatefulContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FPed"/> class.
@@ -32,6 +33,8 @@ public sealed class FPed : FEntity
         this.Gender = fPed.Gender;
         this.Items = fPed.Items;
         this.Warrants = fPed.Warrants;
+
+        this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Stopped, false);
     }
 
     /// <summary>
@@ -53,7 +56,14 @@ public sealed class FPed : FEntity
         this.Items = fPedBuilder.Items;
         this.Warrants = fPedBuilder.Warrants;
         this.Licenses = fPedBuilder.Licenses;
+
+        this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Stopped, false);
     }
+
+    /// <summary>
+    /// Gets the ped's observable with a value indicating if the ped is stopped.
+    /// </summary>
+    public FStateBagObservable<bool> Stopped { get; private set; }
 
     /// <summary>
     /// Gets the properties of the <see cref="FPed"/>.
@@ -148,6 +158,18 @@ public sealed class FPed : FEntity
     public static FPed FromNetId(int networkId)
     {
         return new FPed(new CommonFPed(new CommonFPedBuilder(networkId)));
+    }
+
+    /// <inheritdoc />
+    public string GetStateKey()
+    {
+        return $"ped:{this.GetUnderlyingPed.NetworkId}";
+    }
+
+    /// <inheritdoc />
+    public StateBag GetStateBag()
+    {
+        return this.GetUnderlyingPed.State;
     }
 
     /// <summary>

@@ -9,7 +9,7 @@ namespace FivePD.Common.Models;
 /// Represents a single stateful datum. A property defined with
 /// this type will be automatically persisted
 /// assuming the property's class is of the
-/// <see cref="FStatefulContainer"/> type.
+/// <see cref="IFStatefulContainer"/> type.
 /// </summary>
 /// <typeparam name="T">The serializable type
 /// being persisted.</typeparam>
@@ -36,8 +36,8 @@ public class FStateBagObservable<T> : IDisposable
     /// <param name="defaultValue">The value to set, if undefined.</param>
     public FStateBagObservable(object container, string key, T defaultValue)
     {
-        this._containerName = ((FStatefulContainer)container).GetStateKey();
-        this._stateBag = ((FStatefulContainer)container).GetStateBag();
+        this._containerName = ((IFStatefulContainer)container).GetStateKey();
+        this._stateBag = ((IFStatefulContainer)container).GetStateBag();
         this._key = key;
 
         if (this._stateBag[this._key] == null)

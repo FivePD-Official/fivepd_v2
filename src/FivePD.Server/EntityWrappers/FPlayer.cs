@@ -16,7 +16,7 @@ namespace FivePD.Server.EntityWrappers;
 /// The base player class.
 /// Provides a wrapper around game functionality for easier interactions with the framework.
 /// </summary>
-public class FPlayer : FStatefulContainer, IFPlayerWithMenus
+public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
 {
     private static readonly List<FPlayer> CachedPlayers = new();
     private List<Menu> _menus = new();
@@ -122,9 +122,15 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     }
 
     /// <inheritdoc />
-    public override string GetStateKey()
+    public string GetStateKey()
     {
         return $"player:{this.NetId}";
+    }
+
+    /// <inheritdoc />
+    public StateBag GetStateBag()
+    {
+        return this.GetUnderlyingPlayer().State;
     }
 
     /// <summary>
@@ -138,12 +144,6 @@ public class FPlayer : FStatefulContainer, IFPlayerWithMenus
     {
         type ??= typeof(T);
         return (T)this._menus.FirstOrDefault(m => m.GetType() == type);
-    }
-
-    /// <inheritdoc />
-    public override StateBag GetStateBag()
-    {
-        return this.GetUnderlyingPlayer().State;
     }
 
     /// <inheritdoc/>

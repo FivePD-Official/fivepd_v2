@@ -72,7 +72,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\FStateBagObservable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FStateBagObservableSubscription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFPed.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\FStatefulContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\IFStatefulContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFVehicle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\FPedPropertiesDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\FPedTasksDTO.cs" />

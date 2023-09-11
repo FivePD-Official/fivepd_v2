@@ -7,19 +7,19 @@ namespace FivePD.Common.Models;
 /// that stores data for a specific
 /// instance of a thing.
 /// </summary>
-public abstract class FStatefulContainer
+public interface IFStatefulContainer
 {
     /// <summary>
     /// Gets the underlying statebag
     /// key defined by the entity type.
     /// </summary>
     /// <returns>The key for the statebag.</returns>
-    public abstract string GetStateKey();
+    public string GetStateKey();
 
     /// <summary>
     /// Gets the underlying statebag
     /// for this instance.
     /// </summary>
     /// <returns>The statebag.</returns>
-    public abstract StateBag GetStateBag();
+    public StateBag GetStateBag();
 }
