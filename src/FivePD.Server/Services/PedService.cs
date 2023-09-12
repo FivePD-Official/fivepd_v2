@@ -162,7 +162,7 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
             this._databaseContext.SaveChangesAsync();
         }
 
-        Debug.WriteLine($"ped net id {fPed.NetworkId} - {fPed.Firstname} {fPed.Lastname}");
+        Debug.WriteLine($"Generated PED data: net id {fPed.NetworkId} - {fPed.Firstname} {fPed.Lastname}");
 
         fPed.HasGeneratedData.Value = true;
         this._peds[fPed.NetworkId] = fPed;

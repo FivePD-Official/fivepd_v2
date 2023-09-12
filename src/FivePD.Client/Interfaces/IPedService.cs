@@ -1,4 +1,5 @@
 ﻿using CitizenFX.Core;
+using FivePD.Client.Models;
 using FivePD.Common.Models;
 
 namespace FivePD.Client.Interfaces;
@@ -18,5 +19,6 @@ internal interface IPedService
     /// Generates a ped's <see cref="CommonFPed"/> object.
     /// </summary>
     /// <param name="ped">The ped that's data need to be generated and stored on the server.</param>
-    public void GeneratePed(Ped ped);
+    /// <returns>The <see cref="FPed"/> object.</returns>
+    public FPed GeneratePed(Ped ped);
 }

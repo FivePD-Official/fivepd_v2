@@ -164,6 +164,11 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
 
     private void TryAlertEntity()
     {
+        if (Game.PlayerPed.IsInVehicle())
+        {
+            return;
+        }
+
         var ped = this.GetLikelyTargetEntity<Ped>();
         if (ped is null)
         {
@@ -175,10 +180,10 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
             return;
         }
 
-        var fPed = new FPed(ped);
-        if (!fPed.HasGeneratedData.Value)
+        var fPed = this._pedService.GeneratePed(ped);
+        if (fPed is null)
         {
-            this._pedService.GeneratePed(ped);
+            return;
         }
 
         if (fPed.Stopped.Value)

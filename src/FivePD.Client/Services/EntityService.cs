@@ -53,11 +53,8 @@ internal class EntityService : IEntityService, IServiceWithEvents
 
         if (type == "ped")
         {
-            var fPed = new FPed((Ped)Entity.FromNetworkId(closestEntity.NetworkId));
-            if (!fPed.HasGeneratedData.Value)
-            {
-                this._pedService.GeneratePed(fPed.Ped);
-            }
+            var ped = Entity.FromNetworkId(closestEntity.NetworkId) as Ped;
+            this._pedService.GeneratePed(ped);
         }
 
 

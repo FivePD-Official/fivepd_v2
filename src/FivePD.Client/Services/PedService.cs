@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.DTO;
@@ -59,11 +60,22 @@ internal class PedService : IPedService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void GeneratePed(Ped ped)
+    public FPed GeneratePed(Ped ped)
     {
-        var fPedBuilder = new CommonFPedBuilder(ped.NetworkId)
-            .WithGender((FGender)ped.Gender);
-        BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
+        if (ped is null)
+        {
+            return null;
+        }
+
+        var fPed = new FPed(ped);
+        if (!fPed.HasGeneratedData.Value)
+        {
+            var fPedBuilder = new CommonFPedBuilder(ped.NetworkId)
+                .WithGender((FGender)ped.Gender);
+            BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
+        }
+
+        return fPed;
     }
 
     private async void GetPedPropertyAsync(string eventCallbackId, int networkId, string property)

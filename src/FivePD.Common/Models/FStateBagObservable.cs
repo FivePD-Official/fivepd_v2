@@ -60,6 +60,11 @@ public class FStateBagObservable<T> : IDisposable
     {
         get
         {
+            if (this._stateBag is null)
+            {
+                return default;
+            }
+
             var value = this._stateBag[this._key];
             if (value is null && typeof(T).IsValueType)
             {

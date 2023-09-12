@@ -22,15 +22,16 @@ public class FPed : FEntity, IFStatefulContainer
     /// <param name="fPed">The FPed to use.</param>
     public FPed(CommonFPed fPed)
     {
-        this.Create();
-
         this.NetworkId = fPed.NetworkId;
+
         this.Birthdate = fPed.Birthdate;
         this.Firstname = fPed.Firstname;
         this.Lastname = fPed.Lastname;
         this.Gender = fPed.Gender;
         this.Items = fPed.Items;
         this.Warrants = fPed.Warrants;
+
+        this.Create();
     }
 
     /// <summary>
@@ -39,10 +40,9 @@ public class FPed : FEntity, IFStatefulContainer
     /// <param name="fPedBuilder">The FPedBuilder to use.</param>
     public FPed(FPedBuilder fPedBuilder)
     {
-        this.Create();
+        this.NetworkId = fPedBuilder.NetworkId;
 
         this.Licenses = fPedBuilder.Licenses;
-        this.NetworkId = fPedBuilder.NetworkId;
         this.Birthdate = fPedBuilder.Birthdate;
         this.Firstname = fPedBuilder.Firstname;
         this.Lastname = fPedBuilder.Lastname;
@@ -50,19 +50,9 @@ public class FPed : FEntity, IFStatefulContainer
         this.Items = fPedBuilder.Items;
         this.Warrants = fPedBuilder.Warrants;
         this.Licenses = fPedBuilder.Licenses;
-    }
 
-#pragma warning disable
-    private void Create()
-    {
-        this.Properties = new(this);
-        this.Task = new(this);
-        this.Weapons = new(this);
-
-        this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Stopped, false);
-        this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Ped.HasGeneratedData, false);
+        this.Create();
     }
-#pragma warning restore
 
     /// <summary>
     /// Gets the ped's observable with a value indicating if the ped is stopped.
@@ -178,7 +168,7 @@ public class FPed : FEntity, IFStatefulContainer
     /// <inheritdoc />
     public StateBag GetStateBag()
     {
-        return this.GetUnderlyingPed.State;
+        return this.GetUnderlyingPed?.State;
     }
 
     /// <summary>
@@ -194,4 +184,16 @@ public class FPed : FEntity, IFStatefulContainer
     /// <param name="pedLicenseType">The license type to get.</param>
     /// <returns>The license.</returns>
     public PedLicense GetLicense(PedLicenseType pedLicenseType) => this.Licenses.FirstOrDefault(x => x.Type == pedLicenseType);
+
+#pragma warning disable
+    private void Create()
+    {
+        this.Properties = new(this);
+        this.Task = new(this);
+        this.Weapons = new(this);
+
+        this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Stopped, false);
+        this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Ped.HasGeneratedData, false);
+    }
+#pragma warning restore
 }
