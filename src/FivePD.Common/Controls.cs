@@ -12,7 +12,7 @@ internal sealed record Controls
     public static readonly Control InteractionMenu = new("fivepd::interactionMenu", "X", "Interaction menu");
 
     // Other
-    public static readonly Control TryAlertEntityAsync = new("fivepd::tryAlertEntityAsync", "E");
+    public static readonly Control TryAlertEntityAsync = new("fivepd::tryAlertEntityAsync", "E", "Try to alert entity", 1000);
 
     public static readonly Control ConfirmAction = new("fivepd::confirmAction", "F1", "Confirms an action");
 
@@ -20,12 +20,14 @@ internal sealed record Controls
 
     public static readonly Control OpenInformation = new("fivepd::openInformation", "I", "Open information panel");
 
-    public sealed record Control(string Id, string Key, string Title = "")
+    public sealed record Control(string Id, string Key, string Title = "", int TimeToHoldInMs = 0)
     {
         public string Id { get; private set; } = Id;
 
         public string Key { get; private set; } = Key;
 
         public string Title { get; private set; } = Title;
+
+        public int TimeToHoldInMs { get; private set; } = TimeToHoldInMs;
     }
 }

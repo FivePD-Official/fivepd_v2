@@ -89,15 +89,16 @@ internal class ControlService : IControlService, IServiceWithEvents, IDisposable
     public void RegisterMomentaryKeybind(string id, string key, string title, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
     {
         var holdableKeybind = new HoldableKeybind(onPress, (int)Math.Floor(timeToHoldInMs * 0.05));
-        var isInvokable = false;
+        var isInvokable = canInvokeOnPress?.Invoke() ?? true;
 
         void HoldableOnPress()
         {
-            isInvokable = canInvokeOnPress?.Invoke() ?? true;
             if (!isInvokable)
             {
                 return;
             }
+
+            Debug.WriteLine("HoldableOnPress");
 
             this._uiService.ShowTimerBar(timeToHoldInMs);
             this._actions.Add(holdableKeybind);
@@ -109,6 +110,8 @@ internal class ControlService : IControlService, IServiceWithEvents, IDisposable
             {
                 return;
             }
+
+            Debug.WriteLine("HoldableOnRelease");
 
             holdableKeybind.ClearTimer();
             this._uiService.SendMessage(new JObject
@@ -217,6 +220,7 @@ internal class ControlService : IControlService, IServiceWithEvents, IDisposable
             item.IncrementTimer();
             if (item.Timer == item.TimeToHoldInMs)
             {
+                Debug.WriteLine($"Invoking {item.OnPress.Method.Name} - {item.Timer} - {item.TimeToHoldInMs}");
                 item.OnPress?.Invoke();
                 toBeRemoved.Add(item);
             }

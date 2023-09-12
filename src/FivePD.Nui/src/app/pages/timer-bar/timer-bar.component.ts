@@ -22,7 +22,7 @@ export class TimerBarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.event$ = this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timerBar').subscribe(res => this.onEvent(res));
+    this.event$ = this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onEvent(res));
   }
 
   ngOnDestroy(): void {

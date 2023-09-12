@@ -45,7 +45,7 @@ export class WindowService {
     });
     this._event.onEvent<MenuShowEvent>('fivepd:ui:view:menu').subscribe(() => this.onMenuOpen());
     this._event.onEvent<MenuShowEvent>('fivepd:ui:view:radialMenu').subscribe(res => this.onRadialMenuOpen(res));
-    this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timerBar').subscribe(res => this.onTimerBarEvent(res));
+    this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onTimerBarEvent(res));
 
     this.store.subscribe(state => {
       this.previousMdtPath = state.app.previousMdtPath;
