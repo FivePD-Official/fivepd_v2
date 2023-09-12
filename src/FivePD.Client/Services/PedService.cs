@@ -730,7 +730,21 @@ internal class PedService : IPedService, IServiceWithEvents
             case FPedTasksDTO.Events.PlayAnimation:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.PlayAnimation>(request.Args);
-                ped.Task.PlayAnimation(args.AnimDict, args.AnimName);
+
+                async void RunAsync()
+                {
+                    // TODO: is this needed?
+                    Cfx.API.RequestAnimDict(args.AnimDict);
+                    while (!Cfx.API.HasAnimDictLoaded(args.AnimDict))
+                    {
+                        await BaseScript.Delay(0);
+                    }
+
+                    ped.Task.PlayAnimation(args.AnimDict, args.AnimName);
+                }
+                
+                RunAsync();
+
                 break;
             }
 

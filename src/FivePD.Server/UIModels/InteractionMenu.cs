@@ -40,11 +40,10 @@ public sealed class InteractionMenu : Menu
         this.PatDown = new MenuButtonItem("Pat down the ped", "asd");
         this.PatDown.OnSelect += player =>
         {
+#pragma warning disable
             async void RunAsync()
             {
-                #pragma warning disable
-                // var playerPed = FPed.FromFPlayer(player);
-                // playerPed.Task.PlayAnimation();
+                var playerPed = FPed.FromFPlayer(player);
 
                 var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
                 if (fPed is null)
@@ -57,29 +56,40 @@ public sealed class InteractionMenu : Menu
                     return;
                 }
 
+                fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
+                // playerPed.Task.PlayAnimation("anim@gangops@morgue@table@", "player_search");
+
                 var itemList = new GtaStyleText()
                     .Blue("Items: ")
                     .Reset();
-                for (var i = 0; i < fPed.Items.Count; i++)
+                if (fPed.Items.Count > 0)
                 {
-                    if (fPed.Items[i].Illegal)
+                    for (var i = 0; i < fPed.Items.Count; i++)
                     {
-                        itemList.Red(fPed.Items[i].Title);
-                    }
-                    else
-                    {
-                        itemList.Append(fPed.Items[i].Title);
-                    }
+                        if (fPed.Items[i].Illegal)
+                        {
+                            itemList.Red(fPed.Items[i].Title);
+                        }
+                        else
+                        {
+                            itemList.Append(fPed.Items[i].Title);
+                        }
 
-                    if (i < fPed.Items.Count - 1)
-                    {
-                        itemList.Append(", ");
+                        if (i < fPed.Items.Count - 1)
+                        {
+                            itemList.Append(", ");
+                        }
                     }
                 }
+                else
+                {
+                    itemList.Append("-");
+                }
 
-                // playerPed.Task.ClearAnimation();
+                // playerPed.Task.ClearAnimation("random@domestic", "kneeling_base");
                 this._notificationService.ShowNotification(player, itemList.Build());
             }
+#pragma warning restore
 
             RunAsync();
         };
