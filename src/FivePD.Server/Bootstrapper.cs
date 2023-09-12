@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Database;
-using FivePD.Server.EntityWrappers;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
@@ -15,7 +14,6 @@ using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models;
-using FivePD.Server.Models.AssistanceServiceModels;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
@@ -24,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
 
@@ -317,9 +316,14 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     private void PerformPostBootstrapPhase()
     {
+        Debug.WriteLine("PerformPostBootstrapPhase 1");
+
         var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
+        Debug.WriteLine("PerformPostBootstrapPhase 2");
 
         this.LogDiagnostics();
+
+        Debug.WriteLine("PerformPostBootstrapPhase 3");
 
         if (!this.IsSafeToRun())
         {
@@ -327,6 +331,8 @@ internal class Bootstrapper : BaseScript
             LifecycleHandler.Stop();
             return;
         }
+
+        Debug.WriteLine("PerformPostBootstrapPhase 4");
 
         // Register shutdown routine listener
         this.EventHandlers["onResourceStop"] += new Action<string>((resource) =>
@@ -337,13 +343,18 @@ internal class Bootstrapper : BaseScript
             }
         });
 
+        Debug.WriteLine("PerformPostBootstrapPhase 5");
+
         try
         {
             var db = this._provider.GetService<DatabaseContext>();
+            Debug.WriteLine("PerformPostBootstrapPhase 6");
             if (db is null)
             {
                 throw new DatabaseUsageException("No database context is available for usage");
             }
+
+            Debug.WriteLine("PerformPostBootstrapPhase 7");
 
             var migrations = db.Database.GetPendingMigrations().ToList();
             var databaseCreated = db.Database.EnsureCreated();
@@ -352,10 +363,13 @@ internal class Bootstrapper : BaseScript
                 throw new DatabaseUsageException("Database connection failed");
             }
 
+            Debug.WriteLine("PerformPostBootstrapPhase 8");
+
             switch (databaseCreated)
             {
                 case true:
                 {
+                    Debug.WriteLine("PerformPostBootstrapPhase 9 TRUE");
                     log?.Information("The database did not exist, it has been created");
                     db.Database.ExecuteSqlRaw(
                         "CREATE TABLE __efmigrationshistory (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
@@ -368,10 +382,13 @@ internal class Bootstrapper : BaseScript
                 }
 
                 case false when migrations.Count > 0:
+                    Debug.WriteLine("PerformPostBootstrapPhase 9 FALSE");
                     log?.Information("Upgrading the database to {Version}", migrations.Last());
                     db.Database.Migrate();
                     break;
             }
+
+            Debug.WriteLine("PerformPostBootstrapPhase 10");
 
             log?.Information("The database is up to date");
         }
@@ -381,11 +398,15 @@ internal class Bootstrapper : BaseScript
                 "The configured database is invalid or offline. Verify the connection settings in the /Config/database file and try again.", e);
         }
 
+        Debug.WriteLine("PerformPostBootstrapPhase 11");
+
         // Register all event listeners for services
         foreach (var service in this._provider.GetServices<IServiceWithEvents>())
         {
             service.RegisterEvents();
         }
+
+        Debug.WriteLine("PerformPostBootstrapPhase 12");
 
         var tickQueueService = this._provider.GetService<IInternalTickQueueService>();
         this.Tick += tickQueueService!.OnTickAsync;
