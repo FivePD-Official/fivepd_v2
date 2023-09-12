@@ -79,6 +79,7 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
             return ped;
         }
 
+        // TODO: is this needed?
         ped = FPed.FromNetId(networkId);
         this._peds[networkId] = ped;
 
@@ -163,6 +164,7 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
 
         Debug.WriteLine($"ped net id {fPed.NetworkId} - {fPed.Firstname} {fPed.Lastname}");
 
+        fPed.HasGeneratedData.Value = true;
         this._peds[fPed.NetworkId] = fPed;
     }
 

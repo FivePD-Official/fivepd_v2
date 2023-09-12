@@ -8,24 +8,27 @@ namespace FivePD.Client.Models;
 
 internal sealed class FPed : IFStatefulContainer
 {
-    private readonly Ped _ped;
+    public Ped Ped { get; private set; }
 
     public FPed(Ped ped)
     {
-        this._ped = ped;
+        this.Ped = ped;
 
         this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Stopped, false);
+        this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Ped.HasGeneratedData, false);
     }
 
     public FStateBagObservable<bool> Stopped { get; private set; }
 
+    public FStateBagObservable<bool> HasGeneratedData { get; private set; }
+
     public string GetStateKey()
     {
-        return $"ped:{this._ped.NetworkId}";
+        return $"ped:{this.Ped.NetworkId}";
     }
 
     public StateBag GetStateBag()
     {
-        return this._ped.State;
+        return this.Ped.State;
     }
 }

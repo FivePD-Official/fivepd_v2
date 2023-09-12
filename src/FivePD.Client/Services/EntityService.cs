@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Models;
 using FivePD.Common;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Services;
 
@@ -12,10 +14,12 @@ namespace FivePD.Client.Services;
 internal class EntityService : IEntityService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly IPedService _pedService;
 
-    public EntityService(EventHandlerDictionary eventHandlerDictionary)
+    public EntityService(EventHandlerDictionary eventHandlerDictionary, IPedService pedService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._pedService = pedService;
     }
 
     public void RegisterEvents()
@@ -36,9 +40,27 @@ internal class EntityService : IEntityService, IServiceWithEvents
         }
 
         var closestEntity = entities
-            .Where(x => x.NetworkId != Game.PlayerPed.NetworkId && x.IsInRangeOf(Game.PlayerPed.Position, 15f))
             .OrderBy(x => World.GetDistance(x.Position, Game.PlayerPed.Position))
-            .FirstOrDefault();
-        BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, closestEntity is null ? "-1" : closestEntity.NetworkId);
+            .FirstOrDefault(x =>
+                Cfx.API.NetworkGetEntityIsNetworked(x.Handle) && x.NetworkId != Game.PlayerPed.NetworkId &&
+                x.IsInRangeOf(Game.PlayerPed.Position, 15f));
+
+        if (closestEntity is null)
+        {
+            BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, "-1");
+            return;
+        }
+
+        if (type == "ped")
+        {
+            var fPed = new FPed((Ped)Entity.FromNetworkId(closestEntity.NetworkId));
+            if (!fPed.HasGeneratedData.Value)
+            {
+                this._pedService.GeneratePed(fPed.Ped);
+            }
+        }
+
+
+        BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, closestEntity.NetworkId);
     }
 }

@@ -176,14 +176,17 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
         }
 
         var fPed = new FPed(ped);
+        if (!fPed.HasGeneratedData.Value)
+        {
+            this._pedService.GeneratePed(ped);
+        }
+
         if (fPed.Stopped.Value)
         {
             return;
         }
 
         ped.CreateBlip(FBlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
-
-        this._pedService.GeneratePed(ped);
         BaseScript.TriggerServerEvent(Events.Ped.OnAlerted, ped.NetworkId);
     }
 }

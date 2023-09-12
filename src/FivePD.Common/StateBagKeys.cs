@@ -17,5 +17,7 @@ internal readonly record struct StateBagKeys
     public readonly record struct Ped
     {
         public const string Stopped = "FivePD:Ped:Stopped";
+
+        public const string HasGeneratedData = "FivePD:Ped:HasGeneratedData";
     }
 }
