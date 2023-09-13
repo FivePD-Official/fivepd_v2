@@ -28,10 +28,10 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
     private readonly ILogger _logger;
     private readonly IInternalTickQueueService _tickQueueService;
     private readonly ICalloutDistributionService _calloutDistributionService;
-    
+
     private readonly Stopwatch _nextCalloutTimer = new();
     private int _nextCalloutInMs;
-    
+
     public CalloutGenerationService(
         IInternalAddonMetadataService addonMetadataService,
         IInternalCalloutManagerService calloutManagerService,
@@ -50,11 +50,6 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
         this._calloutDistributionService = calloutDistributionService;
     }
 
-    void IDisposableService.InternalDispose()
-    {
-        this._tickQueueService.OnTick -= this.OnTick;
-    }
-    
     /// <inheritdoc/>
     void IServiceWithEvents.RegisterEvents()
     {
@@ -62,7 +57,20 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
             this._configService.GeneralConfig.Callout.MinIntervalInMs,
             this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Start();
-        this._tickQueueService.OnTick += this.OnTick;
+
+        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
+        {
+            this._tickQueueService.OnTick += this.OnTick;
+        }
+    }
+
+    /// <inheritdoc/>
+    void IDisposableService.InternalDispose()
+    {
+        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
+        {
+            this._tickQueueService.OnTick -= this.OnTick;
+        }
     }
 
     private void OnTick(object sender, EventArgs e)
@@ -92,7 +100,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
         var calloutType = calloutTypes[this._randomService.Random.Next(0, calloutTypes.Count)];
         this.GenerateCalloutOfTypeAsync(calloutType.Type);
     }
-    
+
     [UIEvent(Events.UI.Callout.Dispatch)]
     private void DispatchCalloutUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -105,13 +113,13 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
         }
 
 #pragma warning disable CS4014
-        this.GenerateCalloutOfTypeAsync(calloutType.Type, false);
+        this.GenerateCalloutOfTypeAsync(calloutType.Type, true);
 #pragma warning restore CS4014
 
         networkCallbackDelegate.Invoke(null);
     }
-    
-    private async Task GenerateCalloutOfTypeAsync(Type type, bool invokeCanBeDispatch = true)
+
+    private async Task GenerateCalloutOfTypeAsync(Type type, bool manualTrigger = false)
     {
         var callout = this._addonMetadataService.InstantiateCallout(type);
         if (callout is null)
@@ -171,7 +179,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
             callout.Location = properties.Location;
         }
 
-        if (invokeCanBeDispatch)
+        if (!manualTrigger)
         {
             var canBeDispatched = await callout.CanBeDispatched();
             if (!canBeDispatched)
@@ -184,6 +192,6 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
         this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 
-        ((IInternalCalloutDistributionService)this._calloutDistributionService).DistributeCallout(calloutHolder);
+        ((IInternalCalloutDistributionService)this._calloutDistributionService).DistributeCallout(calloutHolder, manualTrigger);
     }
 }

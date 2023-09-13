@@ -44,5 +44,6 @@ internal interface IInternalCalloutDistributionService
     /// Distributes a callout to units or dispatchers, according to the configuration.
     /// </summary>
     /// <param name="calloutHolder">The callout.</param>
-    public void DistributeCallout(CalloutHolder calloutHolder);
+    /// <param name="manualTrigger">true = callout was triggered manually; false = callout was triggered automatically.</param>
+    public void DistributeCallout(CalloutHolder calloutHolder, bool manualTrigger);
 }

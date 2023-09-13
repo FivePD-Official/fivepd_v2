@@ -67,9 +67,9 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitAssignedToCallout;
 
     /// <inheritdoc/>
-    void IInternalCalloutDistributionService.DistributeCallout(CalloutHolder calloutHolder)
+    void IInternalCalloutDistributionService.DistributeCallout(CalloutHolder calloutHolder, bool manualTrigger)
     {
-        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
+        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto() || manualTrigger)
         {
             var notifiedUnits = this.DispatchCalloutToUnits(calloutHolder);
             if (notifiedUnits.Count > 0)

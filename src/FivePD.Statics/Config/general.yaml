@@ -50,7 +50,7 @@ Peds:
 
 Vehicles:
   Police:
-    EnableSpikeStripInAllVehicles: true
+    EnableSpikeStripInAllVehicles: true # TODO: not implemented yet
 
 ProgressionSystem:
   ExperiencePoints:
@@ -72,9 +72,9 @@ AssistanceServices:
       - X: 0
         Y: -1.5
         Z: 1
-        
+
 Messages:
-  CanSend: all # 'all' = everyone can send messages, 'admins' = only admins can send messages
+  CanSend: all # all = everyone can send messages, admins = only admins can send messages
 
 Features:
   DiscordRichPresence: true
