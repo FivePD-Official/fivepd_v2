@@ -43,33 +43,10 @@
       </div>
     </button>
 
-    <div *ngIf="(messagesPage?.PageCount ?? 1) > 1"
-         class="pagination w-full flex flex-row items-center justify-end pt-4 mt-5">
-      <div class="flex flex-row items-center">
-        <button [disabled]="messagesCollation.Page === 1" (click)="toPreviousPage()" class="arrow"
-                [ngClass]="{'arrow-disabled': messagesCollation.Page === 1}">
-          <div app-icon name="ChevronLeft" className="h-[22px] text-zinc-200"
-               [ngClassName]="{'text-zinc-500': messagesCollation.Page === 1}"></div>
-          <span>{{ 'UI.LABEL.DIRECTION.PREVIOUS' | translate }}</span>
-        </button>
-        <button *ngIf="messagesCollation.Page > 1" (click)="toPage(messagesCollation.Page - 1)">
-          <span>{{ messagesCollation.Page - 1 }}</span>
-        </button>
-        <button class="active">
-          <span>{{ messagesCollation.Page }}</span>
-        </button>
-        <button *ngIf="messagesCollation.Page < (messagesPage ? messagesPage!.PageCount : 1)"
-                (click)="toPage(messagesCollation.Page + 1)">
-          <span>{{ messagesCollation.Page + 1 }}</span></button>
-        <button [disabled]="messagesCollation.Page === (messagesPage ? messagesPage!.PageCount : 1)"
-                (click)="toNextPage()" class="arrow"
-                [ngClass]="{'arrow-disabled': messagesCollation.Page === (messagesPage ? messagesPage.PageCount : 1)}">
-          <span>{{ 'UI.LABEL.DIRECTION.NEXT' | translate }}</span>
-          <div app-icon name="ChevronRight" className="h-[22px] text-zinc-200"
-               [ngClassName]="{'text-zinc-500': messagesCollation.Page === (messagesPage ? messagesPage.PageCount : 1)}"></div>
-        </button>
-      </div>
-    </div>
+    <app-pagination *ngIf="(messagesPage?.PageCount ?? 1) > 1"
+                    [collation]="messagesCollation"
+                    [data]="messagesPage"
+                    (onPageChange)="onPageChange($event)"/>
   </div>
 
   <div *ngIf="selectedMessage"

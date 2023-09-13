@@ -194,34 +194,8 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     this.filter$.next(undefined);
   }
 
-  toPreviousPage() {
-    if (this.collation.Page === 1) {
-      return;
-    }
-
-    this.collation.Page--;
-    this.onCollationChange.emit(this.collation);
-  }
-
-  toNextPage() {
-    if (this.collation.Page === this.data?.PageCount) {
-      return;
-    }
-
-    this.collation.Page++;
-    this.onCollationChange.emit(this.collation);
-  }
-
-  toPage(pageNumber: number) {
-    if (!this.data) {
-      return;
-    }
-
-    if (this.collation.Page === pageNumber || this.data.PageCount < pageNumber) {
-      return;
-    }
-
-    this.collation.Page = pageNumber;
+  onPageChange(page: number): void {
+    this.collation.Page = page;
     this.onCollationChange.emit(this.collation);
   }
 

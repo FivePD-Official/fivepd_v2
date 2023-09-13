@@ -98,4 +98,9 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     });
   }
 
+  onCitizensCollationChange(collation: Collation): void {
+    this.citizensCollation = collation;
+    this.getAll();
+  }
+
 }

@@ -73,30 +73,9 @@
       {{ 'UI.LABEL.NO_RESULTS' | translate }}
     </p>
 
-    <div *ngIf="showPagination" class="pagination flex flex-row items-center justify-end pt-4 mt-5 border-t border-color">
-      <div class="flex flex-row items-center">
-        <button [disabled]="collation.Page === 1" (click)="toPreviousPage()" class="arrow"
-                [ngClass]="{'arrow-disabled': collation.Page === 1}">
-          <div app-icon name="ChevronLeft" className="h-[22px] text-zinc-200"
-               [ngClassName]="{'text-zinc-500': collation.Page === 1}"></div>
-          <span>{{ 'UI.LABEL.DIRECTION.PREVIOUS' | translate }}</span>
-        </button>
-        <button *ngIf="collation.Page > 1" (click)="toPage(collation.Page - 1)">
-          <span>{{ collation.Page - 1 }}</span>
-        </button>
-        <button class="active">
-          <span>{{ collation.Page }}</span>
-        </button>
-        <button *ngIf="collation.Page < (data ? data!.PageCount : 1)" (click)="toPage(collation.Page + 1)">
-          <span>{{ collation.Page + 1 }}</span></button>
-        <button [disabled]="collation.Page === (data ? data!.PageCount : 1)" (click)="toNextPage()" class="arrow"
-                [ngClass]="{'arrow-disabled': collation.Page === (data ? data.PageCount : 1)}">
-          <span>{{ 'UI.LABEL.DIRECTION.NEXT' | translate }}</span>
-          <div app-icon name="ChevronRight" className="h-[22px] text-zinc-200"
-               [ngClassName]="{'text-zinc-500': collation.Page === (data ? data.PageCount : 1)}"></div>
-        </button>
-      </div>
-    </div>
+    <app-pagination [collation]="collation"
+                    [data]="data"
+                    (onPageChange)="onPageChange($event)"/>
 
   </div>
 </div>

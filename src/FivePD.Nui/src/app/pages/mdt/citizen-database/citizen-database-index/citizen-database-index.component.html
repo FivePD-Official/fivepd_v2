@@ -12,5 +12,6 @@
   <app-grid
     [columns]="citizensColumns"
     [data]="citizens"
-    [rowLinkResolver]="citizensRowLinkResolver"/>
+    [rowLinkResolver]="citizensRowLinkResolver"
+    (onCollationChange)="onCitizensCollationChange($event)"/>
 </div>

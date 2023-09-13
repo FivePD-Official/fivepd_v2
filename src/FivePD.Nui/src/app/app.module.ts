@@ -63,6 +63,7 @@ import { IncidentHistoryComponent } from './pages/mdt/incident-history/incident-
 import { WelcomeModalComponent } from './components/modal/welcome-modal/welcome-modal.component';
 import { CitizenDatabaseIdComponent } from './pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component';
 import { MessagesComponent } from './pages/mdt/messages/messages.component';
+import { PaginationComponent } from './components/pagination/pagination.component';
 
 @NgModule({
   declarations: [
@@ -107,6 +108,7 @@ import { MessagesComponent } from './pages/mdt/messages/messages.component';
     WelcomeModalComponent,
     CitizenDatabaseIdComponent,
     MessagesComponent,
+    PaginationComponent,
   ],
   imports: [
     BrowserModule,

@@ -67,34 +67,8 @@ export class MessagesComponent implements OnInit {
     });
   }
 
-  toPreviousPage() {
-    if (this.messagesCollation.Page === 1) {
-      return;
-    }
-
-    this.messagesCollation.Page--;
-    this.getMessages();
-  }
-
-  toNextPage() {
-    if (this.messagesCollation.Page === this.messagesPage?.PageCount) {
-      return;
-    }
-
-    this.messagesCollation.Page++;
-    this.getMessages();
-  }
-
-  toPage(pageNumber: number) {
-    if (!this.messagesPage) {
-      return;
-    }
-
-    if (this.messagesCollation.Page === pageNumber || this.messagesPage?.PageCount < pageNumber) {
-      return;
-    }
-
-    this.messagesCollation.Page = pageNumber;
+  onPageChange(page: number): void {
+    this.messagesCollation.Page = page;
     this.getMessages();
   }
 
