@@ -98,6 +98,11 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<PedLicense> PedLicenses { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the messages.
+    /// </summary>
+    public DbSet<Message> Messages { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -111,29 +116,33 @@ public class DatabaseContext : DbContext
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Department>()
-            .HasMany(department => department.Users)
-            .WithOne(user => user.Department)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Department>(type =>
+        {
+            type.HasMany(department => department.Users)
+                .WithOne(user => user.Department)
+                .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Department>()
-            .HasMany(department => department.Divisions)
-            .WithOne(division => division.Department)
-            .OnDelete(DeleteBehavior.Cascade);
+            type.HasMany(department => department.Divisions)
+                .WithOne(division => division.Department)
+                .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Department>()
-            .HasMany(department => department.Ranks)
-            .WithOne(user => user.Department)
-            .OnDelete(DeleteBehavior.Cascade);
+            type.HasMany(department => department.Ranks)
+                .WithOne(user => user.Department)
+                .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Department>()
-            .HasOne(department => department.DefaultRank);
+            type.HasOne(department => department.DefaultRank);
+        });
 
-        modelBuilder.Entity<User>()
-            .HasOne(user => user.Division);
+        modelBuilder.Entity<User>(type =>
+        {
+            type.HasOne(user => user.Rank);
 
-        modelBuilder.Entity<User>()
-            .HasOne(user => user.Rank);
+            type.HasOne(user => user.Division);
+
+            type.HasMany(user => user.Messages)
+                .WithOne(message => message.User)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
         modelBuilder.Entity<Rank>()
             .OwnsOne(rank => rank.Permission)

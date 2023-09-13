@@ -207,6 +207,33 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
         });
     }
 
+    /// <inheritdoc />
+    public Player FindPlayerOfUser(User user)
+    {
+        return this._playerList.FirstOrDefault(player =>
+        {
+            var identifierLicense = player.Identifiers["license"] ?? string.Empty;
+            var identifierDiscord = player.Identifiers["discord"] ?? string.Empty;
+            var identifierSteam = player.Identifiers["steam"] ?? string.Empty;
+            var identifierXbl = player.Identifiers["xbl"] ?? string.Empty;
+            var identifierLive = player.Identifiers["live"] ?? string.Empty;
+
+            return user.IdentifierLicense == identifierLicense ||
+                   user.IdentifierDiscord == identifierDiscord ||
+                   user.IdentifierSteam == identifierSteam ||
+                   user.IdentifierXbl == identifierXbl ||
+                   user.IdentifierLive == identifierLive;
+        });
+    }
+
+    /// <inheritdoc />
+    public User FindUserOfPlayer(Player player)
+    {
+        return this._databaseContext.Users
+            .WhereAnyIdMatches(player)
+            .FirstOrDefault();
+    }
+
     private void OnPlayerConnected([FromSource] Player player)
     {
         this.CreatePlayerData(player);
@@ -246,7 +273,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
                 },
             });
 
-        var playerDetails = this.GetPlayerDetails(player);
+        var playerDetails = this.FindUserOfPlayer(player);
         if (status == FDutyStatus.OffDuty)
         {
             this._unitService.RemovePlayerFromUnit(fPlayer);
@@ -307,14 +334,6 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             existingUser.FirstLogin = false;
             this._databaseContext.SaveChanges();
         }
-    }
-
-    private User GetPlayerDetails(Player player)
-    {
-        return this._databaseContext.Users
-            .AsNoTracking()
-            .WhereAnyIdMatches(player)
-            .FirstOrDefault();
     }
 
     [UIEvent(Events.UI.Player.GetDetails, true)]
@@ -524,5 +543,15 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             {
                 { "name", user.Name },
             });
+    }
+
+    [UIEvent(Events.User.GetAllSimple)]
+    private void GetAllSimple(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        networkCallbackDelegate.InvokeWithJson(this._databaseContext.Users.Select(x => new SimpleUserDTO
+        {
+            Id = x.Id,
+            Name = x.Name,
+        }));
     }
 }

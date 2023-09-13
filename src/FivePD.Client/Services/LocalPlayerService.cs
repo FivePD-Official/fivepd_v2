@@ -87,6 +87,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDi
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeRole);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeFixedRank);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.User.GetAllSimple);
     }
 
     /// <inheritdoc/>

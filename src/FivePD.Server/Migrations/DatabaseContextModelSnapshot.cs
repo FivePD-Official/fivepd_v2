@@ -214,6 +214,37 @@ namespace FivePD.Server.Migrations
                     b.ToTable("LooseDataValues");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Sender")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.PedHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -401,6 +432,14 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.LooseData.LooseDataEntity", "Entity")
                         .WithMany("Values")
                         .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.Message", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.User", "User")
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -19,4 +19,5 @@
   ArrowsPointingOut = 'ArrowsPointingOut',
   ArrowsPointingIn = 'ArrowsPointingIn',
   Information = 'Information',
+  Envelope = 'Envelope',
 }

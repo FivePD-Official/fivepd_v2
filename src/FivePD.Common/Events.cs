@@ -338,6 +338,22 @@ internal readonly record struct Events
         public const string GetAllSimple = "fivepd:pedHistory:getAllSimple";
     }
 
+    public readonly record struct Message
+    {
+        public const string Get = "fivepd:message:get";
+
+        public const string GetAllPageable = "fivepd:message:getAllPageable";
+
+        public const string Send = "fivepd:message:send";
+
+        public const string Read = "fivepd:message:read";
+    }
+
+    public readonly record struct User
+    {
+        public const string GetAllSimple = "fivepd:user:getAllSimple";
+    }
+ 
     public readonly record struct Cfx
     {
         // void AddAmmoToPed(int ped,uint weaponHash,int ammo);

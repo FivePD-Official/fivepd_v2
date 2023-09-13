@@ -26,6 +26,8 @@ export interface User extends WithId {
   FixedRank: boolean;
 }
 
+export type SimpleUser = Pick<User, 'Id' | 'Name'>;
+
 export interface Department extends WithId {
   Name: string;
   Callsign: string;
@@ -123,3 +125,12 @@ export interface PedLicense extends WithStringId {
 }
 
 export type SimplePedHistory = Pick<PedHistory, 'Id' | 'Firstname' | 'Lastname' | 'Birthdate' | 'Gender'>
+
+export interface Message {
+  Id: number;
+  Subject: string;
+  Content: string;
+  Sender: string;
+  SentAt: string;
+  Read: boolean;
+}

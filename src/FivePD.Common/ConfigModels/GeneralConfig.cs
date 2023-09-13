@@ -41,4 +41,6 @@ public sealed record GeneralConfig : IInternalGeneralConfig
     public PedsConfig Peds { get; init; } = new();
 
     public VehiclesConfig Vehicles { get; init; } = new();
+
+    public MessagesConfig Messages { get; init; } = new();
 }

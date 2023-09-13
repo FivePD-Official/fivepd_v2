@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace FivePD.Server.Models;
 
@@ -112,6 +114,11 @@ public class User
     /// Enable this if you want to keep the rank of the user.
     /// </summary>
     public bool FixedRank { get; set; }
+
+    /// <summary>
+    /// Gets or sets the messages sent to the user.
+    /// </summary>
+    public IList<Message> Messages { get; set; }
 
     /// <summary>
     /// Gets whether the user has the specified role.

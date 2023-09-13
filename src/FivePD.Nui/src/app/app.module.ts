@@ -62,6 +62,7 @@ import { AttributeGridOptions } from "./pages/mdt/settings/_service/attribute-gr
 import { IncidentHistoryComponent } from './pages/mdt/incident-history/incident-history.component';
 import { WelcomeModalComponent } from './components/modal/welcome-modal/welcome-modal.component';
 import { CitizenDatabaseIdComponent } from './pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component';
+import { MessagesComponent } from './pages/mdt/messages/messages.component';
 
 @NgModule({
   declarations: [
@@ -105,6 +106,7 @@ import { CitizenDatabaseIdComponent } from './pages/mdt/citizen-database/citizen
     IncidentHistoryComponent,
     WelcomeModalComponent,
     CitizenDatabaseIdComponent,
+    MessagesComponent,
   ],
   imports: [
     BrowserModule,

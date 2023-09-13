@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { ActionResponse, Collation, Page, PlayerDetailsDTO, User } from '@models';
+import {
+  ActionResponse,
+  Collation,
+  Page,
+  PlayerDetailsDTO,
+  SimplePedHistory,
+  SimplePlayer,
+  SimpleUser,
+  User
+} from '@models';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -25,6 +34,10 @@ export class UserService {
     private readonly store: Store<GlobalState>,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
+  }
+
+  getAllSimple(): Observable<SimpleUser[]> {
+    return this._http.post<SimpleUser[]>('fivepd:user:getAllSimple', {});
   }
 
   dismissWelcomeModal(): Observable<void> {

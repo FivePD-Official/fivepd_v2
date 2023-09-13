@@ -13,7 +13,10 @@
       Enabled: boolean;
       Radius: number;
     };
-  }
+  };
+  Messages: {
+    CanSend: string;
+  };
   Features: {
     DiscordRichPresence: boolean;
     DutyNotification: boolean;
@@ -21,6 +24,7 @@
     DisableWantedLevelAllTime: boolean;
     Backups: boolean;
     ProgressionSystem: boolean;
+    Messages: boolean;
   };
 }
 
@@ -47,5 +51,9 @@ export class GeneralConfig {
 
   dispatchTypeManual(): boolean {
     return this._config.Callout.DispatchType.toUpperCase() === 'MANUAL';
+  }
+
+  canSendMessageAll(): boolean {
+    return this._config.Messages.CanSend.toUpperCase() === 'ALL';
   }
 }

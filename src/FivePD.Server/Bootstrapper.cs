@@ -200,6 +200,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<ICfxService, CfxService>();
         services.AddSingleton<IBackupManagerService, BackupManagerService>();
         services.AddSingleton<IProgressionSystemService, ProgressionSystemService>();
+        services.AddSingleton<IMessageService, MessageService>();
 
         services.AddSingleton<LooseDataService>();
         services.AddSingleton<ILooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
@@ -354,16 +355,19 @@ internal class Bootstrapper : BaseScript
                 throw new DatabaseUsageException("No database context is available for usage");
             }
 
-            Debug.WriteLine("PerformPostBootstrapPhase 7");
+            Debug.WriteLine("PerformPostBootstrapPhase 7 --------");
 
             var migrations = db.Database.GetPendingMigrations().ToList();
+            Debug.WriteLine("PerformPostBootstrapPhase 7 -------- after GetPendingMigrations");
             var databaseCreated = db.Database.EnsureCreated();
+            Debug.WriteLine("PerformPostBootstrapPhase 7 -------- after EnsureCreated");
             if (!db.Database.CanConnect())
             {
+                Debug.WriteLine("PerformPostBootstrapPhase 7 -------- inside CanConnect");
                 throw new DatabaseUsageException("Database connection failed");
             }
 
-            Debug.WriteLine("PerformPostBootstrapPhase 8");
+            Debug.WriteLine("PerformPostBootstrapPhase 8 --------");
 
             switch (databaseCreated)
             {

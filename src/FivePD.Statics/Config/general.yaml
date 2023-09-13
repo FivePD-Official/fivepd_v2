@@ -72,6 +72,9 @@ AssistanceServices:
       - X: 0
         Y: -1.5
         Z: 1
+        
+Messages:
+  CanSend: all # 'all' = everyone can send messages, 'admins' = only admins can send messages
 
 Features:
   DiscordRichPresence: true
@@ -80,6 +83,7 @@ Features:
   DisableWantedLevelAllTime: false
   Backups: true
   ProgressionSystem: false
+  Messages: true
 
 DispatchActions:
   - Title: Request backup

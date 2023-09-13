@@ -15,4 +15,6 @@ public sealed record FeatureFlagsConfig
     public bool Backups { get; init; }
 
     public bool ProgressionSystem { get; init; }
+
+    public bool Messages { get; init; }
 }

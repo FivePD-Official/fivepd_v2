@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { GlobalState } from '@store';
-import { IconType, User } from '@models';
+import { GeneralConfig, IconType, User } from '@models';
 import { Store } from '@ngrx/store';
 import { enableDispatchMode, toggleSidebarCollapse } from '@store/app.actions';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from "@angular/router";
 import { DispatchService } from "@services/dispatch/dispatch.service";
+import { ConfigService } from "@services/config/config.service";
 
 interface Route {
   title: string;
@@ -22,6 +23,7 @@ interface Route {
 })
 export class SidebarComponent {
 
+  config?: GeneralConfig;
   user?: User;
   isSidebarCollapsed: boolean = false;
   routes: Route[] = [
@@ -62,6 +64,12 @@ export class SidebarComponent {
       show: () => true,
     },
     {
+      title: 'UI.LABEL.MESSAGE.PLURAL',
+      path: () => '/mdt/messages',
+      icon: IconType.Envelope,
+      show: () => this.config ? this.config.canSendMessageAll() : true,
+    },
+    {
       title: 'UI.LABEL.MY_DEPARTMENT',
       path: () => `/mdt/departments/${this.user?.DepartmentId}`,
       icon: IconType.Users,
@@ -79,10 +87,15 @@ export class SidebarComponent {
     private readonly _store: Store<GlobalState>,
     private readonly _userService: UserService,
     private readonly _dispatchService: DispatchService,
+    private readonly _configService: ConfigService,
   ) {
     _store.pipe(takeUntilDestroyed()).subscribe(res => {
       this.isSidebarCollapsed = res.app.isSidebarCollapsed;
       this.user = res.user.details.User;
+    });
+
+    this._configService.getGeneralConfig().pipe(takeUntilDestroyed()).subscribe(config => {
+      this.config = config;
     });
   }
 

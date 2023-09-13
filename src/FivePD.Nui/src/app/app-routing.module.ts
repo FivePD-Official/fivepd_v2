@@ -22,6 +22,7 @@ import { IncidentHistoryComponent } from "./pages/mdt/incident-history/incident-
 import {
   CitizenDatabaseIdComponent
 } from "./pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component";
+import { MessagesComponent } from "./pages/mdt/messages/messages.component";
 
 const mdtRoutes: Routes = [
   {
@@ -39,6 +40,10 @@ const mdtRoutes: Routes = [
   {
     path: 'settings',
     component: SettingsComponent
+  },
+  {
+    path: 'messages',
+    component: MessagesComponent,
   },
   {
     path: 'incidents',

@@ -51,10 +51,11 @@ public static class QueryableExtensions
     /// <param name="query">IQueryable on which pagination will be applied.</param>
     /// <param name="pageNumber">The page no. which needs to be fetched.</param>
     /// <param name="filters">Conditional filters.</param>
+    /// <param name="pageSize">The page size.</param>
     /// <returns>A Page object with filtered data for the given page number and page size.</returns>
-    public static Page<T> Paginate<T>(this IQueryable<T> query, int pageNumber, Filters<T> filters)
+    public static Page<T> Paginate<T>(this IQueryable<T> query, int pageNumber, Filters<T> filters, int pageSize = 10)
     {
-        return query.ApplyFilter(filters).Paginate(pageNumber);
+        return query.ApplyFilter(filters).Paginate(pageNumber, pageSize);
     }
 
     /// <summary>
