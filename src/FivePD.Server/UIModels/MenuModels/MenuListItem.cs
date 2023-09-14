@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.UIModels.Interfaces;
@@ -21,28 +23,14 @@ public class MenuListItem : MenuItem, IMenuListItemWithEvents
     }
 
     /// <summary>
-    /// Used for firing the selected item change event.
-    /// </summary>
-    /// <param name="player">The player who invoked this event.</param>
-    /// <param name="index">The currently displayed item's index.</param>
-    public delegate void ListIndexChange(FPlayer player, int index);
-
-    /// <summary>
-    /// Used for firing the item selection event.
-    /// </summary>
-    /// <param name="player">The player who invoked this event.</param>
-    /// <param name="index">The selected item's index.</param>
-    public delegate void ListSelect(FPlayer player, int index);
-
-    /// <summary>
     /// Fires when the selected item in the list changes.
     /// </summary>
-    public event ListIndexChange OnIndexChange;
+    public event Func<FPlayer, int, Task> OnIndexChange;
 
     /// <summary>
     /// Fires when the item has been selected.
     /// </summary>
-    public event ListSelect OnSelect;
+    public event Func<FPlayer, int, Task> OnSelect;
 
     /// <summary>
     /// Gets the items.

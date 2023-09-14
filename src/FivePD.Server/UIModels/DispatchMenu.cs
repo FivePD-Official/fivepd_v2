@@ -32,31 +32,29 @@ public sealed class DispatchMenu : Menu
         this._assistanceService = assistanceServiceManagerService;
         this._configService = configService;
         this._backupManagerService = backupManagerService;
-
-        this.Items = this.CreateItems();
     }
 
     public MenuButtonItem CompleteIncident { get; private set; }
 
     public MenuButtonItem CallAmbulance { get; private set; }
 
-    private List<MenuItem> CreateItems()
+    protected override List<MenuItem> CreateItems()
     {
         var items = new List<MenuItem>();
 
         this.CompleteIncident = new MenuButtonItem("test complete incident", string.Empty);
-        this.CompleteIncident.OnSelect += player => { this._calloutManagerService.CompleteCalloutOfPlayer(player); };
+        this.CompleteIncident.OnSelect += async (player) => { this._calloutManagerService.CompleteCalloutOfPlayer(player); };
         items.Add(this.CompleteIncident);
 
         this.CallAmbulance = new MenuButtonItem("test call ambulance", string.Empty);
-        this.CallAmbulance.OnSelect += player =>
+        this.CallAmbulance.OnSelect += async (player) =>
         {
             this._assistanceService.Call<Ambulance>(player);
         };
         items.Add(this.CallAmbulance);
         
         var t = new MenuButtonItem("test call tow truck", string.Empty);
-        t.OnSelect += player =>
+        t.OnSelect += async (player) =>
         {
             this._assistanceService.Call<TowTruck>(player);
         };
@@ -123,7 +121,7 @@ public sealed class DispatchMenu : Menu
                 }
             }
 
-            item.OnSelect += player =>
+            item.OnSelect += async (player) =>
             {
                 foreach (var action in actions)
                 {

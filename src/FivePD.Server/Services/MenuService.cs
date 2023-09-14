@@ -166,9 +166,11 @@ public class MenuService : IMenuService, IServiceWithEvents
     {
         type ??= typeof(T);
         var parameters = type.GetConstructors()[0].GetParameters();
-        return (T)Activator.CreateInstance(
+        var instance = (T)Activator.CreateInstance(
             type,
             parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
+        instance.CreateAndSetItems();
+        return instance;
     }
 
     [UIEvent(Events.UI.Menu.GetAll, true)]

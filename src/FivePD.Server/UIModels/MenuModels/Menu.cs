@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CitizenFX.Core;
 
 namespace FivePD.Server.UIModels.MenuModels;
 
@@ -28,9 +29,9 @@ public abstract class Menu
     public string Id { get; }
 
     /// <summary>
-    /// Gets or sets the items.
+    /// Gets the items.
     /// </summary>
-    public List<MenuItem> Items { get; protected set; } = new();
+    public List<MenuItem> Items { get; private set; } = new();
 
     /// <summary>
     /// Gets the title of the menu.
@@ -46,4 +47,18 @@ public abstract class Menu
     /// Gets a value indicating whether this menu's Title should be used as a key for localizations.
     /// </summary>
     public bool UseLocalization { get; }
+
+    /// <summary>
+    /// Creates the items.
+    /// </summary>
+    internal void CreateAndSetItems()
+    {
+        this.Items = this.CreateItems();
+    }
+
+    /// <summary>
+    /// Creates the items.
+    /// </summary>
+    /// <returns>The items.</returns>
+    protected abstract List<MenuItem> CreateItems();
 }

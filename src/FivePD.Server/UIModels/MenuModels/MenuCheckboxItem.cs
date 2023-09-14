@@ -1,4 +1,6 @@
-﻿using FivePD.Common.Enums;
+﻿using System;
+using System.Threading.Tasks;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.UIModels.Interfaces;
 
@@ -21,16 +23,9 @@ public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents
     }
 
     /// <summary>
-    /// Used for firing the item selection event.
-    /// </summary>
-    /// <param name="player">The player who invoked this event.</param>
-    /// <param name="checked">The state of the checkbox.</param>
-    public delegate void CheckboxSelect(FPlayer player, bool @checked);
-
-    /// <summary>
     /// Fires when the item has been selected.
     /// </summary>
-    public event CheckboxSelect OnSelect;
+    public event Func<FPlayer, bool, Task> OnSelect;
 
     /// <summary>
     /// Gets a value indicating whether asd.

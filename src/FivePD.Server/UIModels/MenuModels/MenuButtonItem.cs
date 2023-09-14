@@ -1,4 +1,6 @@
-﻿using FivePD.Common.Enums;
+﻿using System;
+using System.Threading.Tasks;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.UIModels.Interfaces;
 
@@ -18,15 +20,9 @@ public class MenuButtonItem : MenuItem, IMenuButtonItemWithEvents
     }
 
     /// <summary>
-    /// Used for firing the item selection event.
-    /// </summary>
-    /// <param name="player">The player who invoked this event.</param>
-    public delegate void ButtonSelect(FPlayer player);
-
-    /// <summary>
     /// Fires when the item has been selected.
     /// </summary>
-    public event ButtonSelect OnSelect;
+    public event Func<FPlayer, Task> OnSelect;
 
     /// <inheritdoc/>
     void IMenuButtonItemWithEvents.RaiseOnSelect(FPlayer player)
