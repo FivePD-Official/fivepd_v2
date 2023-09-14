@@ -3,22 +3,19 @@ using FivePD.Common;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.UIModels;
 
-/// <inheritdoc />
+#pragma warning disable
+
 public sealed class InteractionMenu : Menu
 {
     private readonly INotificationService _notificationService;
     private readonly IEntityService _entityService;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="InteractionMenu"/> class.
-    /// </summary>
-    /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
-    /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
     public InteractionMenu(INotificationService notificationService, IEntityService entityService)
         : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key, true)
     {
@@ -28,19 +25,103 @@ public sealed class InteractionMenu : Menu
         this.Items = this.CreateItems();
     }
 
-    /// <summary>
-    /// Gets the pat down item.
-    /// </summary>
     public MenuButtonItem PatDown { get; private set; }
+
+    public MenuListItem AskForLicense { get; private set; }
 
     private List<MenuItem> CreateItems()
     {
         var items = new List<MenuItem>();
+        
+        this.AskForLicense = new MenuListItem("Ask for license", "", new List<string>()
+        {
+            "Driving",
+            "Fishing",
+            "Hunting",
+            "Ccw",
+        });
+        this.AskForLicense.OnSelect += (player, index) =>
+        {
+            async void RunAsync()
+            {
+                var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+                if (fPed is null)
+                {
+                    return;
+                }
 
-        this.PatDown = new MenuButtonItem("Pat down the ped", "asd");
+                if (!fPed.HasGeneratedData.Value)
+                {
+                    return;
+                }
+
+                PedLicenseType licenseType;
+                string licenseTypeLabel;
+
+                switch (index)
+                {
+                    case 0:
+                    {
+                        licenseType = PedLicenseType.Driving;
+                        licenseTypeLabel = "Driving license";
+                        break;
+                    }
+                    case 1:
+                    {
+                        licenseType = PedLicenseType.Fishing;
+                        licenseTypeLabel = "Fishing license";
+                        break;
+                    }
+                    case 2:
+                    {
+                        licenseType = PedLicenseType.Hunting;
+                        licenseTypeLabel = "Hunting license";
+                        break;
+                    }
+                    case 3:
+                    {
+                        licenseType = PedLicenseType.Ccw;
+                        licenseTypeLabel = "CCW permit";
+                        break;
+                    }
+                    default: return;
+                }
+
+                var license = fPed.GetLicense(licenseType);
+                if (license is null)
+                {
+                    this._notificationService.ShowNotification(player, $"no {licenseTypeLabel}");
+                    return;
+                }
+
+                var text = new GtaStyleText()
+                    .Blue($"[{licenseTypeLabel}]")
+                    .NewLine()
+                    .White($"Issue date: {license.IssueDate:MM-dd-yyyy}")
+                    .NewLine()
+                    .Append($"Expiration date: {license.ExpirationDate:MM-dd-yyyy}")
+                    .NewLine()
+                    .White("Status: ");
+
+                if (license.Valid)
+                {
+                    text.Green("Valid");
+                }
+                else
+                {
+                    text.Yellow("Expired");
+                }
+                
+                this._notificationService.ShowNotification(player, text.Build());
+            }
+            
+            RunAsync();
+        };
+        items.Add(this.AskForLicense);
+
+        this.PatDown = new MenuButtonItem("Pat down the ped", "");
         this.PatDown.OnSelect += player =>
         {
-#pragma warning disable
             async void RunAsync()
             {
                 var playerPed = FPed.FromFPlayer(player);
@@ -89,7 +170,6 @@ public sealed class InteractionMenu : Menu
                 // playerPed.Task.ClearAnimation("random@domestic", "kneeling_base");
                 this._notificationService.ShowNotification(player, itemList.Build());
             }
-#pragma warning restore
 
             RunAsync();
         };

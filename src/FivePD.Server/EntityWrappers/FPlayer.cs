@@ -6,6 +6,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
+using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
@@ -53,6 +54,12 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// </summary>
     /// <returns>User.</returns>
     public User User => ServiceLocator.GetService<IPlayerDataService>().FindUserByLicense(this.GetUnderlyingPlayer());
+
+    /// <summary>
+    /// Gets the player's FPed.
+    /// </summary>
+    /// <returns>User.</returns>
+    public FPed FPed => ServiceLocator.GetService<IPedService>().TryGetPed(this.GetUnderlyingPlayer().Character.NetworkId);
 
     /// <summary>
     /// Gets the player's duty status observable.

@@ -30,6 +30,7 @@ public class FPed : FEntity, IFStatefulContainer
         this.Gender = fPed.Gender;
         this.Items = fPed.Items;
         this.Warrants = fPed.Warrants;
+        this.Licenses = new List<PedLicense>();
 
         this.Create();
     }
@@ -42,7 +43,6 @@ public class FPed : FEntity, IFStatefulContainer
     {
         this.NetworkId = fPedBuilder.NetworkId;
 
-        this.Licenses = fPedBuilder.Licenses;
         this.Birthdate = fPedBuilder.Birthdate;
         this.Firstname = fPedBuilder.Firstname;
         this.Lastname = fPedBuilder.Lastname;

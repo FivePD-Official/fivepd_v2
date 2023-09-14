@@ -85,9 +85,10 @@ Features:
   ProgressionSystem: false
   Messages: true
 
-DispatchActions:
+DispatchActions: # rename to DispatchMenuItems?
   - Title: Request backup
     OnSelect: [ RequestBackup ]
+  # - Divider: true - place a divider between actions like request backup and check license of ped and statuses ?
   - Title: Code 4
     Description: No assist needed
     OnSelect: [ CompleteCurrentCallout ]

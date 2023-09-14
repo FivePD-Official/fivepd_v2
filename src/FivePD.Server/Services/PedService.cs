@@ -79,7 +79,6 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
             return ped;
         }
 
-        // TODO: is this needed?
         ped = FPed.FromNetId(networkId);
         this._peds[networkId] = ped;
 
