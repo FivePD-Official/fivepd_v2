@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using CitizenFX.Core;
+using System.Threading.Tasks;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
+using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Models;
 using FivePD.Server.Models.AssistanceServiceModels;
 using FivePD.Server.UIModels.MenuModels;
 
@@ -20,18 +23,24 @@ public sealed class DispatchMenu : Menu
     private readonly IAssistanceServiceManagerService _assistanceService;
     private readonly IConfigService _configService;
     private readonly IBackupManagerService _backupManagerService;
+    private readonly IEntityService _entityService;
+    private readonly INotificationService _notificationService;
 
     public DispatchMenu(
         ICalloutManagerService calloutManagerService,
         IAssistanceServiceManagerService assistanceServiceManagerService,
         IConfigService configService,
-        IBackupManagerService backupManagerService)
+        IBackupManagerService backupManagerService,
+        IEntityService entityService,
+        INotificationService notificationService)
         : base(Controls.AssistanceMenu.Id, Controls.AssistanceMenu.Title, Controls.AssistanceMenu.Key, true)
     {
         this._calloutManagerService = calloutManagerService;
         this._assistanceService = assistanceServiceManagerService;
         this._configService = configService;
         this._backupManagerService = backupManagerService;
+        this._entityService = entityService;
+        this._notificationService = notificationService;
     }
 
     public MenuButtonItem CompleteIncident { get; private set; }
@@ -47,91 +56,126 @@ public sealed class DispatchMenu : Menu
         items.Add(this.CompleteIncident);
 
         this.CallAmbulance = new MenuButtonItem("test call ambulance", string.Empty);
-        this.CallAmbulance.OnSelect += async (player) =>
-        {
-            this._assistanceService.Call<Ambulance>(player);
-        };
+        this.CallAmbulance.OnSelect += async (player) => { this._assistanceService.Call<Ambulance>(player); };
         items.Add(this.CallAmbulance);
-        
+
         var t = new MenuButtonItem("test call tow truck", string.Empty);
-        t.OnSelect += async (player) =>
-        {
-            this._assistanceService.Call<TowTruck>(player);
-        };
+        t.OnSelect += async (player) => { this._assistanceService.Call<TowTruck>(player); };
         items.Add(t);
 
-        foreach (var status in this._configService.GeneralConfig.DispatchActions)
+        foreach (var item in this._configService.GeneralConfig.DispatchActions)
         {
-            var item = new MenuButtonItem(status.Title, status.Description);
-            var actions = new List<Action<FPlayer>>();
-
-            if (status.OnSelect is not null)
+            if (item.OnSelect is null)
             {
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOnDuty))
-                {
-                    actions.Add(player =>
-                    {
-                        player.DutyStatus.Value = FDutyStatus.OnDuty;
-                    });
-                }
-                
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOffDuty))
-                {
-                    actions.Add(player =>
-                    {
-                        player.DutyStatus.Value = FDutyStatus.OffDuty;
-                    });
-                }
-
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanReceiveCallouts))
-                {
-                    actions.Add(player => player.Unit.Availability.Value = FUnitAvailability.Receiving);
-                }
-
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanNotReceiveCallouts))
-                {
-                    actions.Add(player => player.Unit.Availability.Value = FUnitAvailability.NotReceiving);
-                }
-
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.CompleteCurrentCallout))
-                {
-                    actions.Add(player => this._calloutManagerService.CompleteCalloutOfPlayer(player));
-                }
-                
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.TriggerPanicMode))
-                {
-                    // TODO
-                }
-                
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.RequestBackup))
-                {
-                    actions.Add(player => this._backupManagerService.TriggerBackupRequest(player.Unit));
-                }
-                
-                if (status.OnSelect.Contains(DispatchActionOnSelectKeys.SetStatus))
-                {
-                    actions.Add(player =>
-                    {
-                        var unit = player.Unit;
-                        if (unit is not null)
-                        {
-                            unit.Status.Value = status.Title;
-                        }
-                    });
-                }
+                continue;
             }
 
-            item.OnSelect += async (player) =>
+            var buttonItem = new MenuButtonItem(item.Title, item.Description);
+            var actions = new List<Func<FPlayer, Task>>();
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOnDuty))
+            {
+                actions.Add(async player => { player.DutyStatus.Value = FDutyStatus.OnDuty; });
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOffDuty))
+            {
+                actions.Add(async player => { player.DutyStatus.Value = FDutyStatus.OffDuty; });
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanReceiveCallouts))
+            {
+                actions.Add(async player => player.Unit.Availability.Value = FUnitAvailability.Receiving);
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanNotReceiveCallouts))
+            {
+                actions.Add(async player => player.Unit.Availability.Value = FUnitAvailability.NotReceiving);
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.CompleteCurrentCallout))
+            {
+                actions.Add(async player => this._calloutManagerService.CompleteCalloutOfPlayer(player));
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.TriggerPanicMode))
+            {
+                // TODO
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.RequestBackup))
+            {
+                actions.Add(async player => this._backupManagerService.TriggerBackupRequest(player.Unit));
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetAsStatus))
+            {
+                actions.Add(async player =>
+                {
+                    var unit = player.Unit;
+                    if (unit is not null)
+                    {
+                        unit.Status.Value = item.Title;
+                    }
+                });
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.RequestIDCheck))
+            {
+                actions.Add(async player => this.RequestIdCheck(player));
+            }
+
+            buttonItem.OnSelect += async (player) =>
             {
                 foreach (var action in actions)
                 {
                     action.Invoke(player);
                 }
             };
-
-            items.Add(item);
+            items.Add(buttonItem);
         }
 
         return items;
+    }
+
+    private async Task RequestIdCheck(FPlayer player)
+    {
+        var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+        if (fPed is null)
+        {
+            return;
+        }
+
+        if (!fPed.HasGeneratedData.Value)
+        {
+            return;
+        }
+
+        var license = fPed.GetLicense(PedLicenseType.Driving);
+        if (license is null)
+        {
+            this._notificationService.ShowNotification(player, "no driving license");
+            return;
+        }
+
+        var text = new GtaStyleText()
+            .Append(fPed.Firstname + " " + fPed.Lastname)
+            .NewLine();
+
+        if (fPed.Warrants.Count == 0)
+        {
+            text.Append("No warrants");
+        }
+        else
+        {
+            text.Red($"{fPed.Warrants.Count} warrant(s)");
+        }
+
+        this._notificationService.ShowNotificationWithTexture(
+            player,
+            "CHAR_CALL911",
+            "LABEL.DISPATCH",
+            "ID Check",
+            text.Build());
     }
 }

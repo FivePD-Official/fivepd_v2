@@ -4,6 +4,8 @@ Database:
   DatabaseName: fivepd
   User: root
   Password: root
+  
+# DateFormat: MM-dd-yyyy TODO: not implemented yet
 
 Unit:
   MaxMembers: 0 # 0 = unlimited, 1+ = limited
@@ -86,27 +88,29 @@ Features:
   Messages: true
 
 DispatchActions: # rename to DispatchMenuItems?
+  - Title: Request ID check from dispatch
+    OnSelect: [ REQUEST_ID_CHECK ]
   - Title: Request backup
-    OnSelect: [ RequestBackup ]
-  # - Divider: true - place a divider between actions like request backup and check license of ped and statuses ?
+    OnSelect: [ REQUEST_BACKUP ]
+  # - Divider: true TODO: place a divider between actions like request backup and check license of ped and statuses ???
   - Title: Code 4
     Description: No assist needed
-    OnSelect: [ CompleteCurrentCallout ]
+    OnSelect: [ COMPLETE_CURRENT_CALLOUT ]
   - Title: Code 99
     Description: EMERGENCY
-    OnSelect: [ SetStatus, TriggerPanicMode ]
+    OnSelect: [ SET_AS_STATUS, TRIGGER_PANIC_MODE ]
   - Title: 10-5
     Description: Break
-    OnSelect: [ SetStatus, SetPlayerCanNotReceiveCallouts ]
+    OnSelect: [ SET_AS_STATUS, SET_PLAYER_CAN_NOT_RECEIVE_CALLOUTS ]
   - Title: 10-7
     Description: Out of service
-    OnSelect: [ SetStatus, SetPlayerOffDuty ]
+    OnSelect: [ SET_AS_STATUS, SET_PLAYER_OFF_DUTY ]
   - Title: 10-8
     Description: In service
-    OnSelect: [ SetStatus, SetPlayerOnDuty ]
+    OnSelect: [ SET_AS_STATUS, SET_PLAYER_ON_DUTY ]
   - Title: 10-15
     Description: Suspect in custody
-    OnSelect: [ SetStatus ]
+    OnSelect: [ SET_AS_STATUS ]
   - Title: 10-19
     Description: Returning to station
-    OnSelect: [ SetStatus ]
+    OnSelect: [ SET_AS_STATUS ]

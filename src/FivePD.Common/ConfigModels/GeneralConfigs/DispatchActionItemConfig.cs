@@ -15,19 +15,21 @@ public sealed record DispatchActionItemConfig
 
 internal readonly record struct DispatchActionOnSelectKeys
 {
-    public const string SetStatus = "SetStatus";
+    public const string SetAsStatus = "SET_AS_STATUS";
 
-    public const string SetPlayerOnDuty = "SetPlayerOnDuty";
+    public const string SetPlayerOnDuty = "SET_PLAYER_ON_DUTY";
 
-    public const string SetPlayerOffDuty = "SetPlayerOffDuty";
+    public const string SetPlayerOffDuty = "SET_PLAYER_OFF_DUTY";
 
-    public const string SetPlayerCanReceiveCallouts = "SetPlayerCanReceiveCallouts";
+    public const string SetPlayerCanReceiveCallouts = "SET_PLAYER_CAN_RECEIVE_CALLOUTS";
 
-    public const string SetPlayerCanNotReceiveCallouts = "SetPlayerCanNotReceiveCallouts";
+    public const string SetPlayerCanNotReceiveCallouts = "SET_PLAYER_CAN_NOT_RECEIVE_CALLOUTS";
 
-    public const string CompleteCurrentCallout = "CompleteCurrentCallout";
+    public const string CompleteCurrentCallout = "COMPLETE_CURRENT_CALLOUT";
 
-    public const string TriggerPanicMode = "TriggerPanicMode";
+    public const string TriggerPanicMode = "TRIGGER_PANIC_MODE";
 
-    public const string RequestBackup = "RequestBackup";
+    public const string RequestBackup = "REQUEST_BACKUP";
+
+    public const string RequestIDCheck = "REQUEST_ID_CHECK";
 }
