@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.EntityWrappers;
@@ -77,6 +80,29 @@ public class EntityService : IEntityService
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
         return new Prop(handle);
+    }
+
+    /// <inheritdoc />
+    public FPed GetClosestPedToEntity(Entity entity, float range = 15f)
+    {
+        if (Cfx.API.GetAllPeds() is not List<object> pedIds)
+        {
+            return null;
+        }
+
+        var peds = pedIds
+            .Select(Convert.ToInt32)
+            .Select(x => new Ped(x));
+        var closestPed = peds
+            .OrderBy(x => x.Position.DistanceToSquared2D(entity.Position))
+            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && x.Position.DistanceToSquared2D(entity.Position) <= range);
+        if (closestPed is null)
+        {
+            return null;
+        }
+
+        var fPed = this._pedService.TryGetPed(closestPed.NetworkId);
+        return fPed;
     }
 
     /// <inheritdoc />

@@ -26,7 +26,7 @@ internal class EntityService : IEntityService, IServiceWithEvents
     {
         this._eventHandlerDictionary[Events.Entity.GetClosestEntityToPlayer] += new Action<string, string>(this.GetClosestEntityToPlayer);
     }
-
+    
     private void GetClosestEntityToPlayer(string eventCallbackId, string type)
     {
         IEnumerable<Entity> entities = new List<Entity>();

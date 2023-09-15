@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
@@ -38,7 +39,17 @@ public interface IEntityService
     Task<Prop> SpawnPropAsync(int model, Vector3 location);
 
     /// <summary>
+    /// Gets the closest ped to the specified entity.
+    /// !! Use this if you do not need generated data for the closest ped.
+    /// </summary>
+    /// <param name="entity">The player to use.</param>
+    /// <param name="range">The range to use..</param>
+    /// <returns>The closest entity.</returns>
+    public FPed GetClosestPedToEntity(Entity entity, float range = 15f);
+
+    /// <summary>
     /// Gets the closest entity to a player.
+    /// !! Use this if you need generated data for the closest entity.
     /// </summary>
     /// <param name="player">The player to use.</param>
     /// <typeparam name="T">The type of entity to get.</typeparam>

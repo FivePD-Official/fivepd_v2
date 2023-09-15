@@ -20,7 +20,6 @@ public class Ambulance : AssistanceService
     private FPed _driver;
     private FVehicle _ambulance;
 
-    private Vector3 _spawnLocation = new Vector3(704.09f, -117.47f, 52.83f);
     private Vector3 _target;
 
     public Ambulance(IEntityService entityService, IConfigService configService, IRandomService randomService)
@@ -39,8 +38,8 @@ public class Ambulance : AssistanceService
     {
         var serviceVehicle = this._configService.VehiclesConfig.Ambulance[this._randomService.Random.Next(0, this._configService.VehiclesConfig.Ambulance.Count)];
 
-        this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Paramedic01SMM, this._spawnLocation, 0f);
-        this._ambulance = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this._spawnLocation, 0f);
+        this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Paramedic01SMM, this.SpawnLocation, 0f);
+        this._ambulance = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, 0f);
         
         this._ambulance.Properties.CreateBlip(FBlipSprite.Health, FBlipColor.Red, "Ambulance");
         this._ambulance.Properties.IsSirenActive(true);
@@ -54,7 +53,7 @@ public class Ambulance : AssistanceService
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
-                break;
+                return;
             }
 
             await Task.Delay(100);

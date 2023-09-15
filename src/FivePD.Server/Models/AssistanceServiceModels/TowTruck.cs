@@ -68,7 +68,7 @@ public class TowTruck : AssistanceService
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
-                break;
+                return;
             }
 
             await Task.Delay(100);

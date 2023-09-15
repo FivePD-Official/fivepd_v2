@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers.PedWrapper;
@@ -15,12 +18,14 @@ public sealed class InteractionMenu : Menu
 {
     private readonly INotificationService _notificationService;
     private readonly IEntityService _entityService;
+    private readonly IPedService _pedService;
 
-    public InteractionMenu(INotificationService notificationService, IEntityService entityService)
+    public InteractionMenu(INotificationService notificationService, IEntityService entityService, IPedService pedService)
         : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key, true)
     {
         this._notificationService = notificationService;
         this._entityService = entityService;
+        this._pedService = pedService;
     }
 
     public MenuButtonItem PatDown { get; private set; }
@@ -45,6 +50,12 @@ public sealed class InteractionMenu : Menu
             {
                 return;
             }
+            
+            // TODO: check if ped is dead - not sure about to use .Handle or .NetworkId
+            // if (Cfx.API.GetEntityHealth(fPed.GetUnderlyingPed.Handle) <= 0)
+            // {
+            //     return;
+            // }
 
             if (!fPed.HasGeneratedData.Value)
             {
