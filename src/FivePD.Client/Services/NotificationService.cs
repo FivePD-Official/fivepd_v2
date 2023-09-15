@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
 using FivePD.Common;
@@ -98,12 +99,12 @@ internal class NotificationService : INotificationService, IServiceWithEvents
 
     private string GetLocalizedContent(string content, Dictionary<string, string> contentParams)
     {
-        var localizedContent = this._localizationService.Get(content);
+        var localizedContent = this.Get(content);
         var localizedParams = new Dictionary<string, string>();
         foreach (var param in contentParams)
         {
-            var localizedParam = this._localizationService.Get(param.Value);
-            localizedParams[param.Key] = string.IsNullOrEmpty(localizedParam) ? param.Value : localizedParam;
+            var localizedParam = this.Get(param.Value);
+            localizedParams[param.Key] = param.Value == localizedParam ? param.Value : localizedParam;
         }
 
         return string.IsNullOrEmpty(localizedContent) ? content : localizedContent.ReplaceParams(localizedParams);
@@ -111,7 +112,58 @@ internal class NotificationService : INotificationService, IServiceWithEvents
 
     private string GetLocalizedText(string text)
     {
-        var localizedText = this._localizationService.Get(text);
+        var localizedText = this.Get(text);
         return string.IsNullOrEmpty(localizedText) ? text : localizedText;
+    }
+
+    private string Get(string text)
+    {
+        var result = new StringBuilder();
+
+        var upper = false;
+        var curr = new StringBuilder();
+        foreach (var c in text)
+        {
+            if (char.IsUpper(c) || c == '.' || c == '_')
+            {
+                upper = true;
+                curr.Append(c);
+                continue;
+            }
+
+            if (upper)
+            {
+                upper = false;
+                var localizedKey = this._localizationService.Get(curr.ToString());
+                if (!string.IsNullOrEmpty(localizedKey))
+                {
+                    result.Append(localizedKey);
+                    result.Append(c);
+                    curr.Clear();
+                }
+                else
+                {
+                    result.Append(curr);
+                    result.Append(c);
+                    curr.Clear();
+                }
+
+                continue;
+            }
+
+            result.Append(c);
+        }
+
+        var localizedKey2 = this._localizationService.Get(curr.ToString());
+        if (!string.IsNullOrEmpty(localizedKey2))
+        {
+            result.Append(localizedKey2);
+        }
+        else
+        {
+            result.Append(curr);
+        }
+
+        return result.ToString();
     }
 }

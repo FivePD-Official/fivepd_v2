@@ -5,6 +5,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
+using FivePD.Common.Utilities;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
@@ -260,7 +261,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
             this._playerList.Where(p => p.Handle != player.Handle),
             "CHAR_CALL911",
             "LABEL.DISPATCH",
-            "LABEL.STATUS",
+            new GtaStyleText().Yellow("LABEL.STATUS").Build(),
             "PLAYER_STATUS.CHANGE",
             new Dictionary<string, string>
             {
