@@ -50,14 +50,8 @@ public sealed class InteractionMenu : Menu
             {
                 return;
             }
-            
-            // TODO: check if ped is dead - not sure about to use .Handle or .NetworkId
-            // if (Cfx.API.GetEntityHealth(fPed.GetUnderlyingPed.Handle) <= 0)
-            // {
-            //     return;
-            // }
 
-            if (!fPed.HasGeneratedData.Value)
+            if (fPed.Properties.IsDead || !fPed.HasGeneratedData.Value)
             {
                 return;
             }

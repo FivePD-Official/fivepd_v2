@@ -43,7 +43,7 @@ internal class EntityService : IEntityService, IServiceWithEvents
             .OrderBy(x => World.GetDistance(x.Position, Game.PlayerPed.Position))
             .FirstOrDefault(x =>
                 Cfx.API.NetworkGetEntityIsNetworked(x.Handle) && x.NetworkId != Game.PlayerPed.NetworkId &&
-                x.IsInRangeOf(Game.PlayerPed.Position, 15f));
+                x.IsInRangeOf(Game.PlayerPed.Position, 10f));
 
         if (closestEntity is null)
         {

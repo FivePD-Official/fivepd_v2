@@ -151,7 +151,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         if (this._configService.GeneralConfig.Callout.DynamicDispatch.Enabled)
         {
             filteredUnits = filteredUnits.Where(unit =>
-                unit.Players.Any(player => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared2D(calloutHolder.Callout.Location) <=
+                unit.Players.Any(player => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(calloutHolder.Callout.Location) <=
                                            this._configService.GeneralConfig.Callout.DynamicDispatch.Radius));
         }
 

@@ -103,4 +103,9 @@ public class CfxService : ICfxService
     {
         BaseScript.TriggerClientEvent(Events.Cfx.SetPedIntoVehicle, ped, vehicle, seatIndex);
     }
+    
+    public void ResurrectPed(int ped)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.ResurrectPed, ped);
+    }
 }

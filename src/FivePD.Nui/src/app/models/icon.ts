@@ -20,4 +20,5 @@
   ArrowsPointingIn = 'ArrowsPointingIn',
   Information = 'Information',
   Envelope = 'Envelope',
+  Pencil = 'Pencil',
 }

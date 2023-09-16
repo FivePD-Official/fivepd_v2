@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Server.EntityWrappers;
@@ -39,13 +40,80 @@ public interface IEntityService
     Task<Prop> SpawnPropAsync(int model, Vector3 location);
 
     /// <summary>
+    /// Gets all peds.
+    /// </summary>
+    /// <returns>A list of all peds.</returns>
+    public List<Ped> GetAllPeds();
+
+    /// <summary>
+    /// Gets all peds.
+    /// </summary>
+    /// <returns>A list of all peds.</returns>
+    public List<FPed> GetAllFPeds();
+
+    /// <summary>
     /// Gets the closest ped to the specified entity.
     /// !! Use this if you do not need generated data for the closest ped.
     /// </summary>
-    /// <param name="entity">The player to use.</param>
-    /// <param name="range">The range to use..</param>
-    /// <returns>The closest entity.</returns>
-    public FPed GetClosestPedToEntity(Entity entity, float range = 15f);
+    /// <param name="entity">The entity to use.</param>
+    /// <param name="range">The range to use.</param>
+    /// <returns>The closest ped.</returns>
+    public Ped GetClosestPedToEntity(Entity entity, float range = 15f);
+
+    /// <summary>
+    /// Gets the closest ped to the specified entity.
+    /// !! Use this if you do not need generated data for the closest ped.
+    /// </summary>
+    /// <param name="entity">The entity to use.</param>
+    /// <param name="range">The range to use.</param>
+    /// <returns>The closest ped.</returns>
+    public FPed GetClosestFPedToEntity(Entity entity, float range = 15f);
+
+    /// <summary>
+    /// Gets all peds in range of the specified entity.
+    /// </summary>
+    /// <param name="entity">The entity to use.</param>
+    /// <param name="range">The range to use.</param>
+    /// <returns>The peds.</returns>
+    public List<Ped> GetPedsInRangeOfEntity(Entity entity, float range = 15f);
+
+    /// <summary>
+    /// Gets all vehicles.
+    /// </summary>
+    /// <returns>A list of all vehicles.</returns>
+    public List<Vehicle> GetAllVehicles();
+
+    /// <summary>
+    /// Gets all vehicles.
+    /// </summary>
+    /// <returns>A list of all vehicles.</returns>
+    public List<FVehicle> GetAllFVehicles();
+
+    /// <summary>
+    /// Gets the closest vehicle to the specified entity.
+    /// !! Use this if you do not need generated data for the closest vehicle.
+    /// </summary>
+    /// <param name="entity">The entity to use.</param>
+    /// <param name="range">The range to use.</param>
+    /// <returns>The closest vehicle.</returns>
+    public Vehicle GetClosestVehicleToEntity(Entity entity, float range = 15f);
+
+    /// <summary>
+    /// Gets the closest vehicle to the specified entity.
+    /// !! Use this if you do not need generated data for the closest vehicle.
+    /// </summary>
+    /// <param name="entity">The entity to use.</param>
+    /// <param name="range">The range to use.</param>
+    /// <returns>The closest vehicle.</returns>
+    public FVehicle GetClosestFVehicleToEntity(Entity entity, float range = 15f);
+
+    /// <summary>
+    /// Gets all vehicles in range of the specified entity.
+    /// </summary>
+    /// <param name="entity">The entity to use.</param>
+    /// <param name="range">The range to use.</param>
+    /// <returns>The peds.</returns>
+    public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float range = 15f);
 
     /// <summary>
     /// Gets the closest entity to a player.

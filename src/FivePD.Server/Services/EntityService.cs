@@ -83,26 +83,96 @@ public class EntityService : IEntityService
     }
 
     /// <inheritdoc />
-    public FPed GetClosestPedToEntity(Entity entity, float range = 15f)
+    public List<Ped> GetAllPeds()
     {
         if (Cfx.API.GetAllPeds() is not List<object> pedIds)
         {
-            return null;
+            return new List<Ped>();
         }
 
-        var peds = pedIds
-            .Select(Convert.ToInt32)
-            .Select(x => new Ped(x));
-        var closestPed = peds
-            .OrderBy(x => x.Position.DistanceToSquared2D(entity.Position))
-            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && x.Position.DistanceToSquared2D(entity.Position) <= range);
-        if (closestPed is null)
+        foreach (var id in pedIds)
         {
-            return null;
+            Debug.WriteLine($"{Convert.ToInt32(id)} - {Cfx.API.DoesEntityExist(Convert.ToInt32(id))} - net id: {Cfx.API.NetworkGetNetworkIdFromEntity(Convert.ToInt32(id))}");
         }
 
-        var fPed = this._pedService.TryGetPed(closestPed.NetworkId);
-        return fPed;
+        return pedIds
+            .Select(Convert.ToInt32)
+            .Select(x => new Ped(x))
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public List<FPed> GetAllFPeds()
+    {
+        return this.GetAllPeds()
+            .Select(x => this._pedService.TryGetPed(x.NetworkId))
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public Ped GetClosestPedToEntity(Entity entity, float range = 15f)
+    {
+        return this.GetAllPeds()
+            .OrderBy(x => x.Position.DistanceToSquared(entity.Position))
+            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && x.Position.DistanceToSquared(entity.Position) <= range);
+    }
+
+    /// <inheritdoc />
+    public FPed GetClosestFPedToEntity(Entity entity, float range = 15f)
+    {
+        var ped = this.GetClosestPedToEntity(entity, range);
+        return ped is null ? null : this._pedService.TryGetPed(ped.NetworkId);
+    }
+
+    /// <inheritdoc />
+    public List<Ped> GetPedsInRangeOfEntity(Entity entity, float range = 15f)
+    {
+        return this.GetAllPeds()
+            .Where(x => x.Position.DistanceToSquared(entity.Position) <= range).ToList();
+    }
+
+    /// <inheritdoc />
+    public List<Vehicle> GetAllVehicles()
+    {
+        if (Cfx.API.GetAllVehicles() is not List<object> pedIds)
+        {
+            return new List<Vehicle>();
+        }
+
+        return pedIds
+            .Select(Convert.ToInt32)
+            .Select(x => new Vehicle(x))
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public List<FVehicle> GetAllFVehicles()
+    {
+        return this.GetAllVehicles()
+            .Select(x => this._vehicleService.TryGetVehicle(x.NetworkId))
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public Vehicle GetClosestVehicleToEntity(Entity entity, float range = 15f)
+    {
+        return this.GetAllVehicles()
+            .OrderBy(x => x.Position.DistanceToSquared(entity.Position))
+            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && x.Position.DistanceToSquared(entity.Position) <= range);
+    }
+
+    /// <inheritdoc />
+    public FVehicle GetClosestFVehicleToEntity(Entity entity, float range = 15f)
+    {
+        var vehicle = this.GetClosestVehicleToEntity(entity, range);
+        return vehicle is null ? null : this._vehicleService.TryGetVehicle(vehicle.NetworkId);
+    }
+
+    /// <inheritdoc />
+    public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float range = 15f)
+    {
+        return this.GetAllVehicles()
+            .Where(x => x.Position.DistanceToSquared(entity.Position) <= range).ToList();
     }
 
     /// <inheritdoc />

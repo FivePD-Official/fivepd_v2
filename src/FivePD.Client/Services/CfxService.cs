@@ -151,5 +151,16 @@ public class CfxService : ICfxService, IServiceWithEvents
 
             Cfx.API.SetPedIntoVehicle(entity1.Handle, i1, i2);
         });
+        
+        this._eventHandlerDictionary[Events.Cfx.ResurrectPed] += new Action<int>((ped) =>
+        {
+            var entity = Entity.FromNetworkId(ped);
+            if (entity is null)
+            {
+                return;
+            }
+
+            Cfx.API.ResurrectPed(entity.Handle);
+        });
     }
 }

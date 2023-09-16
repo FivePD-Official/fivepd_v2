@@ -385,5 +385,8 @@ internal readonly record struct Events
 
         // void SetPedIntoVehicle(int ped,int vehicle,int seatIndex);
         public const string SetPedIntoVehicle = "fivepd:cfx:SetPedIntoVehicle";
+        
+        // void ResurrectPed(int ped);
+        public const string ResurrectPed = "fivepd:cfx:ResurrectPed";
     }
 }

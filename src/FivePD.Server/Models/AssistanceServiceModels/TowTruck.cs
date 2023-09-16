@@ -36,7 +36,7 @@ public class TowTruck : AssistanceService
 
     public override async Task Setup()
     {
-        this._targetVehicle = await this._cfxService.GetClosestVehicle(this.RequestedBy.GetUnderlyingPlayer().Character.Position, 20f);
+        this._targetVehicle = this._entityService.GetClosestFVehicleToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
     }
 
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
@@ -64,7 +64,7 @@ public class TowTruck : AssistanceService
             25f,
             (int)FDrivingStyle.Emergency);
 
-        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared2D(this._targetVehicle.GetUnderlyingVehicle.Position) >= 150f)
+        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetVehicle.GetUnderlyingVehicle.Position) >= 150f)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
@@ -115,9 +115,9 @@ public class TowTruck : AssistanceService
     private void OnCompletedOrCancelled()
     {
         this._driver.Task.CruiseWithVehicle(this._towTruck.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
-        Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.NetworkId, 100f);
-        Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.NetworkId, 100f);
-        Cfx.API.SetEntityDistanceCullingRadius(this._targetVehicle.GetUnderlyingVehicle.NetworkId, 100f);
+        Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
+        Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.Handle, 100f);
+        Cfx.API.SetEntityDistanceCullingRadius(this._targetVehicle.GetUnderlyingVehicle.Handle, 100f);
         this._driver.Properties.MarkAsNoLongerNeeded();
         this._towTruck.Properties.MarkAsNoLongerNeeded();
         this._targetVehicle.Properties.MarkAsNoLongerNeeded();

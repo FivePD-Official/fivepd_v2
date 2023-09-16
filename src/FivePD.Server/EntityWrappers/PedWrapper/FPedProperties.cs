@@ -5,6 +5,7 @@ using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.EntityWrappers.PedWrapper;
 
@@ -108,9 +109,9 @@ public sealed class FPedProperties
     }
 
     /// <summary>
-    /// Gets whether the ped is dead or not.
+    /// Gets a value indicating whether the ped is dead.
     /// </summary>
-    public Task<bool> IsDead => this.GetPropertyBoolAsync(FPedPropertiesDTO.Events.IsDead);
+    public bool IsDead => Cfx.API.GetEntityHealth(this._fPed.GetUnderlyingPed.Handle) <= 0;
 
     /// <summary>
     /// Gets whether the ped is in any vehicle or not.

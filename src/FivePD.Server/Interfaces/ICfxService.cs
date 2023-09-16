@@ -57,4 +57,6 @@ public interface ICfxService
         bool fixedRot);
 
     public void SetPedIntoVehicle(int ped, int vehicle, int seatIndex);
+
+    public void ResurrectPed(int ped);
 }
