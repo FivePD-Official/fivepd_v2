@@ -124,11 +124,13 @@ public class MenuService : IMenuService, IServiceWithEvents
 
     private MemberInfo GetMember(Type type, string memberName)
     {
+#pragma warning disable S3011
         return type
-            .GetFields(BindingFlags.Public | BindingFlags.Instance)
+            .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
             .Cast<MemberInfo>()
-            .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
             .FirstOrDefault(x => x.Name == memberName);
+#pragma warning restore S3011
     }
 
     private object GetValueOfProperty(MemberInfo member, object target)
@@ -145,6 +147,7 @@ public class MenuService : IMenuService, IServiceWithEvents
     {
         try
         {
+            Debug.WriteLine($"{member.MemberType}");
             switch (member.MemberType)
             {
                 case MemberTypes.Field:

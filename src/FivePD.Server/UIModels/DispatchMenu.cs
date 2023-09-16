@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
@@ -25,6 +26,7 @@ public sealed class DispatchMenu : Menu
     private readonly IBackupManagerService _backupManagerService;
     private readonly IEntityService _entityService;
     private readonly INotificationService _notificationService;
+    private readonly IMenuService _menuService;
 
     public DispatchMenu(
         ICalloutManagerService calloutManagerService,
@@ -32,7 +34,8 @@ public sealed class DispatchMenu : Menu
         IConfigService configService,
         IBackupManagerService backupManagerService,
         IEntityService entityService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IMenuService menuService)
         : base(Controls.AssistanceMenu.Id, Controls.AssistanceMenu.Title, Controls.AssistanceMenu.Key, true)
     {
         this._calloutManagerService = calloutManagerService;
@@ -41,11 +44,14 @@ public sealed class DispatchMenu : Menu
         this._backupManagerService = backupManagerService;
         this._entityService = entityService;
         this._notificationService = notificationService;
+        this._menuService = menuService;
     }
 
     public MenuButtonItem CompleteIncident { get; private set; }
 
     public MenuButtonItem CallAmbulance { get; private set; }
+
+    private Guid _requestedAmbulanceId = Guid.Empty;
 
     protected override List<MenuItem> CreateItems()
     {
@@ -55,11 +61,24 @@ public sealed class DispatchMenu : Menu
         this.CompleteIncident.OnSelect += async (player) => { this._calloutManagerService.CompleteCalloutOfPlayer(player); };
         items.Add(this.CompleteIncident);
 
-        this.CallAmbulance = new MenuButtonItem("test call ambulance", string.Empty);
-        this.CallAmbulance.OnSelect += async (player) => { this._assistanceService.Call<Ambulance>(player); };
+        this.CallAmbulance = new MenuButtonItem("Call ambulance", string.Empty);
+        this.CallAmbulance.OnSelect += async player =>
+        {
+            if (this._requestedAmbulanceId == Guid.Empty)
+            {
+                this._requestedAmbulanceId = this._assistanceService.Call<Ambulance>(player);
+                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.CallAmbulance, item => item.Title, "Cancel ambulance");
+            }
+            else
+            {
+                this._assistanceService.Cancel(this._requestedAmbulanceId);
+                this._requestedAmbulanceId = Guid.Empty;
+                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.CallAmbulance, item => item.Title, "Call ambulance");
+            }
+        };
         items.Add(this.CallAmbulance);
 
-        var t = new MenuButtonItem("test call tow truck", string.Empty);
+        var t = new MenuButtonItem("call tow truck (can't cancel)", string.Empty);
         t.OnSelect += async (player) => { this._assistanceService.Call<TowTruck>(player); };
         items.Add(t);
 

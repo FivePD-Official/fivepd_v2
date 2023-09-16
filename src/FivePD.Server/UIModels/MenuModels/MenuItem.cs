@@ -30,17 +30,17 @@ public abstract class MenuItem
     /// <summary>
     /// Gets the title.
     /// </summary>
-    public string Title { get; }
+    public string Title { get; private set; }
 
     /// <summary>
     /// Gets the description.
     /// </summary>
-    public string Description { get; }
+    public string Description { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether the item is clickable.
     /// </summary>
-    public bool Enabled { get; }
+    public bool Enabled { get; private set; }
 
     /// <summary>
     /// Gets the type.
