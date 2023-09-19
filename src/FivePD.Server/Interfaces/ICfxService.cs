@@ -59,4 +59,6 @@ public interface ICfxService
     public void SetPedIntoVehicle(int ped, int vehicle, int seatIndex);
 
     public void ResurrectPed(int ped);
+
+    public void SetEnableHandcuffs(int ped, bool toggle);
 }

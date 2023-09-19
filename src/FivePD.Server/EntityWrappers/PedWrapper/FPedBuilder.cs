@@ -140,6 +140,10 @@ public class FPedBuilder : CommonFPedBuilder
     {
         if (options.IncludeAll)
         {
+            if (this.Warrants is null)
+            {
+                this.Warrants = new();
+            }
             this.Warrants.AddRange(options.Warrants);
             return this;
         }
@@ -154,6 +158,11 @@ public class FPedBuilder : CommonFPedBuilder
             .OrderBy(_ => Guid.NewGuid())
             .Take(Random.Next(0, maxWarrants))
             .ToList();
+
+        if (this.Warrants is null)
+        {
+            this.Warrants = new();
+        }
 
         this.Warrants.AddRange(warrants);
 

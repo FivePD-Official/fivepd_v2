@@ -65,6 +65,11 @@ public class FPed : FEntity, IFStatefulContainer
     public FStateBagObservable<bool> HasGeneratedData { get; private set; }
 
     /// <summary>
+    /// Gets the ped's observable with a value indicating if the ped is detained.
+    /// </summary>
+    public FStateBagObservable<bool> Detained { get; private set; }
+
+    /// <summary>
     /// Gets the properties of the <see cref="FPed"/>.
     /// </summary>
     public FPedProperties Properties { get; private set; }
@@ -194,6 +199,7 @@ public class FPed : FEntity, IFStatefulContainer
 
         this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Stopped, false);
         this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Ped.HasGeneratedData, false);
+        this.Detained = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Detained, false);
     }
 #pragma warning restore
 }

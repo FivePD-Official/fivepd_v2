@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Utilities;
@@ -18,19 +17,26 @@ public sealed class InteractionMenu : Menu
 {
     private readonly INotificationService _notificationService;
     private readonly IEntityService _entityService;
-    private readonly IPedService _pedService;
+    private readonly ICfxService _cfxService;
 
-    public InteractionMenu(INotificationService notificationService, IEntityService entityService, IPedService pedService)
+    public InteractionMenu(
+        INotificationService notificationService,
+        IEntityService entityService,
+        ICfxService cfxService)
         : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key, true)
     {
         this._notificationService = notificationService;
         this._entityService = entityService;
-        this._pedService = pedService;
+        this._cfxService = cfxService;
     }
 
-    internal MenuButtonItem PatDown { get; private set; }
+    internal MenuButtonItem SearchPed { get; private set; }
 
     internal MenuListItem AskForLicense { get; private set; }
+
+    internal MenuButtonItem DetainOrRelease { get; private set; }
+
+    internal MenuButtonItem LetGo { get; private set; }
 
     protected override List<MenuItem> CreateItems()
     {
@@ -46,12 +52,7 @@ public sealed class InteractionMenu : Menu
         this.AskForLicense.OnSelect += async (player, index) =>
         {
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
-            if (fPed is null)
-            {
-                return;
-            }
-
-            if (fPed.Properties.IsDead || !fPed.HasGeneratedData.Value)
+            if (fPed is null || fPed.Properties.IsDead || !fPed.HasGeneratedData.Value)
             {
                 return;
             }
@@ -117,18 +118,13 @@ public sealed class InteractionMenu : Menu
         };
         items.Add(this.AskForLicense);
 
-        this.PatDown = new MenuButtonItem("Pat down the ped", "");
-        this.PatDown.OnSelect += async (player) =>
+        this.SearchPed = new MenuButtonItem("Search ped", "");
+        this.SearchPed.OnSelect += async player =>
         {
             var playerPed = FPed.FromFPlayer(player);
 
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
-            if (fPed is null)
-            {
-                return;
-            }
-
-            if (!fPed.HasGeneratedData.Value)
+            if (fPed is null || !fPed.HasGeneratedData.Value || fPed.Properties.IsInVehicle)
             {
                 return;
             }
@@ -166,8 +162,65 @@ public sealed class InteractionMenu : Menu
             // playerPed.Task.ClearAnimation("random@domestic", "kneeling_base");
             this._notificationService.ShowNotification(player, itemList.Build());
         };
+        items.Add(this.SearchPed);
 
-        items.Add(this.PatDown);
+        this.DetainOrRelease = new MenuButtonItem("Detain/Release the ped", "");
+        this.DetainOrRelease.OnSelect += async player =>
+        {
+            var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+            if (fPed is null || fPed.Properties.IsDead || !fPed.Stopped.Value || !fPed.HasGeneratedData.Value || fPed.Properties.IsInVehicle)
+            {
+                return;
+            }
+
+            fPed.Task.AchieveHeading(player.GetUnderlyingPlayer().Character.Heading);
+            await Task.Delay(1000);
+            fPed.Task.StandStill(-1);
+            if (fPed.Detained.Value)
+            {
+                fPed.Detained.Value = false;
+                this._notificationService.ShowNotification(player, "The ped is being released."); // TODO: add a custom tooltip in the UI? the native is hidden by the menu
+                this._cfxService.SetEnableHandcuffs(fPed.GetUnderlyingPed.NetworkId, false);
+            }
+            else
+            {
+                fPed.Detained.Value = true;
+                this._notificationService.ShowNotification(player, "The ped is being detained.");
+                this._cfxService.SetEnableHandcuffs(fPed.GetUnderlyingPed.NetworkId, true);
+            }
+        };
+        items.Add(this.DetainOrRelease);
+
+        this.LetGo = new MenuButtonItem("Let go of the ped", "");
+        this.LetGo.OnSelect += async player =>
+        {
+            var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+            if (fPed is null || fPed.Properties.IsDead || fPed.Detained.Value)
+            {
+                return;
+            }
+            
+            this._notificationService.ShowNotification(player, "The ped has been let go.");
+            
+            fPed.Stopped.Value = false;
+            Cfx.API.SetEntityDistanceCullingRadius(fPed.GetUnderlyingPed.Handle, 500f);
+            fPed.Properties.SetAlwaysKeepTask(false);
+            fPed.Properties.SetBlockPermanentEvents(false);
+            fPed.Task.ClearAllImmediately();
+            fPed.Properties.RemoveBlips();
+            if (fPed.Properties.IsInVehicle)
+            {
+                // TODO: test
+                var vehicleHandle = Cfx.API.GetVehiclePedIsIn(fPed.GetUnderlyingPed.Handle, false);
+                var vehicleNetId = Cfx.API.NetworkGetNetworkIdFromEntity(vehicleHandle);
+                fPed.Task.CruiseWithVehicle(new Vehicle(vehicleNetId), 15f);
+            }
+            else
+            {
+                fPed.Task.WanderAround();
+            }
+        };
+        items.Add(this.LetGo);
 
         return items;
     }

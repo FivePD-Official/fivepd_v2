@@ -108,4 +108,9 @@ public class CfxService : ICfxService
     {
         this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.ResurrectPed, ped);
     }
+    
+    public void SetEnableHandcuffs(int ped, bool toggle)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.SetEnableHandcuffs, ped, toggle);
+    }
 }

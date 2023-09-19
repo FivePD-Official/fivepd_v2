@@ -162,5 +162,16 @@ public class CfxService : ICfxService, IServiceWithEvents
 
             Cfx.API.ResurrectPed(entity.Handle);
         });
+        
+        this._eventHandlerDictionary[Events.Cfx.SetEnableHandcuffs] += new Action<int, bool>((ped, toggle) =>
+        {
+            var entity = Entity.FromNetworkId(ped);
+            if (entity is null)
+            {
+                return;
+            }
+
+            Cfx.API.SetEnableHandcuffs(entity.Handle, toggle);
+        });
     }
 }

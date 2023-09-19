@@ -4,7 +4,16 @@ Database:
   DatabaseName: fivepd
   User: root
   Password: root
-  
+
+Features:
+  DiscordRichPresence: true
+  DutyNotification: true
+  DisableWantedLevel: true
+  DisableWantedLevelAllTime: false
+  Backups: true
+  ProgressionSystem: false
+  Messages: true
+
 # DateFormat: MM-dd-yyyy TODO: not implemented yet
 
 Unit:
@@ -65,7 +74,7 @@ ProgressionSystem:
 
 AssistanceServices:
   SpawnType: auto # auto = automatic spawn locations, manual = should specify SpawnLocations
-  Ambulance: 
+  Ambulance:
     ChanceToRevive: 100 # should be between 0-100. the higher the number, the more likely that a ped will be revived
   SpawnLocations: # optional; only used when SpawnType is set to manual, a random location will be picked for each type
     Ambulance:
@@ -79,15 +88,6 @@ AssistanceServices:
 
 Messages:
   CanSend: all # all = everyone can send messages, admins = only admins can send messages
-
-Features:
-  DiscordRichPresence: true
-  DutyNotification: true
-  DisableWantedLevel: true
-  DisableWantedLevelAllTime: false
-  Backups: true
-  ProgressionSystem: false
-  Messages: true
 
 DispatchActions: # rename to DispatchMenuItems?
   - Title: Request ID check from dispatch

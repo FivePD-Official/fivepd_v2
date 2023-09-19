@@ -388,5 +388,8 @@ internal readonly record struct Events
         
         // void ResurrectPed(int ped);
         public const string ResurrectPed = "fivepd:cfx:ResurrectPed";
+
+        // void SetEnableHandcuffs(int ped, bool toggle);
+        public const string SetEnableHandcuffs = "fivepd:cfx:SetEnableHandcuffs";
     }
 }

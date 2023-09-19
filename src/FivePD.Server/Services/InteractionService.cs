@@ -62,7 +62,7 @@ public class InteractionService : IInteractionService, IServiceWithEvents
         ped.Properties.SetAlwaysKeepTask(true);
         ped.Properties.SetBlockPermanentEvents(true);
 
-        if (await ped.Properties.IsInVehicle)
+        if (ped.Properties.IsInVehicle)
         {
             ped.Task.LeaveVehicle();
         }

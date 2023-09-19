@@ -16,11 +16,14 @@ internal sealed class FPed : IFStatefulContainer
 
         this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Stopped, false);
         this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Ped.HasGeneratedData, false);
+        this.Detained = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Detained, false);
     }
 
     public FStateBagObservable<bool> Stopped { get; private set; }
 
     public FStateBagObservable<bool> HasGeneratedData { get; private set; }
+
+    public FStateBagObservable<bool> Detained { get; private set; }
 
     public string GetStateKey()
     {
