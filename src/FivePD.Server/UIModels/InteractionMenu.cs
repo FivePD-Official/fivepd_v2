@@ -23,7 +23,7 @@ public sealed class InteractionMenu : Menu
         INotificationService notificationService,
         IEntityService entityService,
         ICfxService cfxService)
-        : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key, true)
+        : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key)
     {
         this._notificationService = notificationService;
         this._entityService = entityService;

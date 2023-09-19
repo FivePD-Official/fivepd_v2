@@ -36,7 +36,7 @@ public sealed class DispatchMenu : Menu
         IEntityService entityService,
         INotificationService notificationService,
         IMenuService menuService)
-        : base(Controls.AssistanceMenu.Id, Controls.AssistanceMenu.Title, Controls.AssistanceMenu.Key, true)
+        : base(Controls.AssistanceMenu.Id, Controls.AssistanceMenu.Title, Controls.AssistanceMenu.Key)
     {
         this._calloutManagerService = calloutManagerService;
         this._assistanceService = assistanceServiceManagerService;

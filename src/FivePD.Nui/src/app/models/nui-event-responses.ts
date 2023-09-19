@@ -20,7 +20,6 @@ export interface GetAllMenusResponse extends BaseNuiEvent {
   Menus: {
     Id: string;
     Title: string;
-    UseLocalization: boolean;
     Items: {
       Hashcode: string;
       Title: string;

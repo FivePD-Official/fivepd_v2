@@ -22,8 +22,6 @@ internal sealed record MenuDTO
 
             public List<UIMenuItemResponse> Items { get; init; }
 
-            public bool UseLocalization { get; init; }
-
             public record struct UIMenuItemResponse
             {
                 public string Hashcode { get; init; }

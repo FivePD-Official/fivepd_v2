@@ -212,7 +212,6 @@ public class MenuService : IMenuService, IServiceWithEvents
                 Key = menu.Key,
                 Title = menu.Title,
                 Items = items,
-                UseLocalization = menu.UseLocalization,
             });
         }
 

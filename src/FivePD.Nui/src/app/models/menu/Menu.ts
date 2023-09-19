@@ -4,13 +4,11 @@ export class Menu {
 
   private readonly _id: string;
   private readonly _title: string = '';
-  private readonly _useLocalization: boolean = false;
   private readonly _items: MenuItem[] = [];
 
-  constructor(id: string, title: string, useLocalization: boolean, items: MenuItem[]) {
+  constructor(id: string, title: string, items: MenuItem[]) {
     this._id = id;
     this._title = title;
-    this._useLocalization = useLocalization;
     this._items = items;
   }
 
@@ -20,10 +18,6 @@ export class Menu {
 
   get title(): string {
     return this._title;
-  }
-
-  get useLocalization(): boolean {
-    return this._useLocalization;
   }
 
   get items(): MenuItem[] {

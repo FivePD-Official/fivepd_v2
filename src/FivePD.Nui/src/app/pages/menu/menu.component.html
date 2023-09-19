@@ -1,7 +1,7 @@
 <div class="absolute top-0 left-0 min-w-[300px]" *ngIf="menu">
   <div class="rounded-lg bg-zinc-900 relative w-full overflow-hidden">
     <div class="flex flex-row items-center justify-start px-4 py-5">
-      <p class="font-medium text-zinc-100">{{ menu.useLocalization ? (menu.title | translate) : menu.title }}</p>
+      <p class="font-medium text-zinc-100">{{ menu.title | translate }}</p>
     </div>
     <div class="menu-items relative w-full h-0 transition-none flex flex-col gap-5px items-start px-1 overflow-hidden" [style.height]="menuItems.length >= 5 ? '200px' : (menuItems.length * 40) + 'px'">
       <div id="selector"
@@ -13,7 +13,7 @@
            #item
            class="relative z-20 w-full h-[40px] min-h-[40px] max-h-[40px] flex flex-row items-center justify-between gap-6 px-3"
            [ngClass]="{ 'opacity-50': !item.Enabled }">
-        <p class="text-zinc-400">{{ menu.useLocalization ? (item.Title | translate) : item.Title }}</p>
+        <p class="text-zinc-400">{{ item.Title | translate }}</p>
 
         <div *ngIf="item.type === MenuItemType.Toggle"
              class="w-[20px] h-[20px] border-2 border-zinc-500 rounded-md flex items-center justify-center transition-none"

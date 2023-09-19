@@ -14,13 +14,11 @@ public abstract class Menu
     /// <param name="id">The id of the menu. We recommend using UUID to prevent any conflict.</param>
     /// <param name="title">The title of the menu.</param>
     /// <param name="key">The keybind of this menu.</param>
-    /// <param name="useLocalization">Determines whether the title and description should be localized.</param>
-    protected Menu(string id, string title, string key, bool useLocalization = false)
+    protected Menu(string id, string title, string key)
     {
         this.Id = id;
         this.Title = title;
         this.Key = key;
-        this.UseLocalization = useLocalization;
     }
 
     /// <summary>
@@ -42,11 +40,6 @@ public abstract class Menu
     /// Gets or sets the key.
     /// </summary>
     public string Key { get; set; }
-
-    /// <summary>
-    /// Gets a value indicating whether this menu's Title should be used as a key for localizations.
-    /// </summary>
-    public bool UseLocalization { get; }
 
     /// <summary>
     /// Creates the items.

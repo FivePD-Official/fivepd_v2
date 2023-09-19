@@ -26,7 +26,7 @@ public sealed class DutyMenu : Menu
     private MenuListItem _changeLanguageListItem;
 
     public DutyMenu(IConfigService configService, ILocalizationService localizationService)
-        : base(Controls.DutyMenu.Id, Controls.DutyMenu.Title, Controls.DutyMenu.Key, true)
+        : base(Controls.DutyMenu.Id, Controls.DutyMenu.Title, Controls.DutyMenu.Key)
     {
         this._configService = configService;
         this._localizationService = localizationService;
