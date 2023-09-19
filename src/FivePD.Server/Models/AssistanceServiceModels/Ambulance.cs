@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Models.AssistanceServiceModels;
@@ -78,9 +80,8 @@ public class Ambulance : AssistanceService
 
         await Task.Delay(2000);
 
-        this._pedsToRevive.AddRange(this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, 200f)
+        this._pedsToRevive.AddRange(this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, 250f)
             .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0));
-        Debug.WriteLine($"peds: {this._pedsToRevive.Count}");
 
         if (this._pedsToRevive.Count == 0)
         {
@@ -90,8 +91,8 @@ public class Ambulance : AssistanceService
 
         this._driver.Task.LeaveVehicle();
 
-        var tasks = this._pedsToRevive.Select(this.DoWorkAsync).ToList();
-        var result = await Task.WhenAll(tasks);
+        var tasks = this._pedsToRevive.Select(p => new Func<Task<bool>>(() => this.DoWorkAsync(p))).ToList();
+        var result = (await TaskHelpers.RunSequentiallyAsync(tasks)).ToList();
 
         this._notificationService.ShowNotification(
             this.RequestedBy,
@@ -110,7 +111,7 @@ public class Ambulance : AssistanceService
 
         await Task.Delay(5000); // TODO: wait until driver is close to ped
 
-        var couldRevive = this._randomService.Random.Next(0, 100) <= 50;
+        var couldRevive = this._randomService.GetRandomChance <= this._configService.GeneralConfig.AssistanceServices.Ambulance.ChanceToRevive;
         if (couldRevive)
         {
             this._cfxService.ResurrectPed(ped.NetworkId);

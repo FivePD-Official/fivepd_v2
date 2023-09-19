@@ -144,7 +144,7 @@ public class FPedBuilder : CommonFPedBuilder
             return this;
         }
 
-        if (Random.Next(1, 101) > options.ChanceForAnyWarrant)
+        if (Random.Next(0, 101) > options.ChanceForAnyWarrant)
         {
             return this;
         }

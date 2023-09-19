@@ -65,6 +65,8 @@ ProgressionSystem:
 
 AssistanceServices:
   SpawnType: auto # auto = automatic spawn locations, manual = should specify SpawnLocations
+  Ambulance: 
+    ChanceToRevive: 100 # should be between 0-100. the higher the number, the more likely that a ped will be revived
   SpawnLocations: # optional; only used when SpawnType is set to manual, a random location will be picked for each type
     Ambulance:
       - X: 0

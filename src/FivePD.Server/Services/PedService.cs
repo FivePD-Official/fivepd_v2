@@ -109,7 +109,7 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
 
         FPed fPed = null;
         if (this._configService.GeneralConfig.Peds.ChanceToReusePedHistory != 0 &&
-            this._randomService.Random.Next(1, 101) <= this._configService.GeneralConfig.Peds.ChanceToReusePedHistory)
+            this._randomService.GetRandomChance <= this._configService.GeneralConfig.Peds.ChanceToReusePedHistory)
         {
             var pedHistory = this._databaseContext.PedHistories
                 .OrderBy(_ => Guid.NewGuid())

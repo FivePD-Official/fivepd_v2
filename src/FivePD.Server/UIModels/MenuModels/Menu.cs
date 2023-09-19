@@ -14,8 +14,8 @@ public abstract class Menu
     /// <param name="id">The id of the menu. We recommend using UUID to prevent any conflict.</param>
     /// <param name="title">The title of the menu.</param>
     /// <param name="key">The keybind of this menu.</param>
-    /// <param name="useLocalization">Determines whether this menu's Title should be used as a key for localizations.</param>
-    protected Menu(string id, string title, string key, bool useLocalization)
+    /// <param name="useLocalization">Determines whether the title and description should be localized.</param>
+    protected Menu(string id, string title, string key, bool useLocalization = false)
     {
         this.Id = id;
         this.Title = title;

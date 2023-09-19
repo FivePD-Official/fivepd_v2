@@ -147,7 +147,6 @@ public class MenuService : IMenuService, IServiceWithEvents
     {
         try
         {
-            Debug.WriteLine($"{member.MemberType}");
             switch (member.MemberType)
             {
                 case MemberTypes.Field:

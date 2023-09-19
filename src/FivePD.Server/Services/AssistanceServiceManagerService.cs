@@ -9,6 +9,7 @@ using CitizenFX.Core;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.AssistanceServiceModels;
+using FivePD.Server.UIModels;
 using Serilog;
 
 namespace FivePD.Server.Services;
@@ -22,6 +23,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     private readonly ILogger _logger;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
+    private readonly IMenuService _menuService;
 
     private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _assistanceServices = new();
 
@@ -30,13 +32,15 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
         ITickQueueService tickQueueService,
         ILogger logger,
         IConfigService configService,
-        IRandomService randomService)
+        IRandomService randomService,
+        IMenuService menuService)
     {
         this._serviceProvider = serviceProvider;
         this._tickQueueService = tickQueueService;
         this._logger = logger;
         this._configService = configService;
         this._randomService = randomService;
+        this._menuService = menuService;
     }
 
     public Guid Call<T>(FPlayer requestedBy)
@@ -74,8 +78,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
                 ((IInternalAssistanceService)assistanceService).SpawnLocation = locations[this._randomService.Random.Next(0, locations.Count)];
             }
-            
-            var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, new CancellationTokenSource());
+
+            var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, new CancellationTokenSource(), this._menuService);
             this._assistanceServices.TryAdd(guid, assistanceServiceInvoker);
             this._tickQueueService.EnqueueAsync(assistanceServiceInvoker.InvokeAssistanceServiceMethods);
 
@@ -115,15 +119,17 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     private sealed record AssistanceServiceInvoker
     {
         private readonly AssistanceService _service;
+        private readonly IMenuService _menuService;
 
         private readonly List<Func<Task>> _methodQueue = new();
 
         public CancellationTokenSource CancellationTokenSource { get; private set; }
 
-        public AssistanceServiceInvoker(AssistanceService service, CancellationTokenSource cancellationTokenSource)
+        public AssistanceServiceInvoker(AssistanceService service, CancellationTokenSource cancellationTokenSource, IMenuService menuService)
         {
             this._service = service;
             this.CancellationTokenSource = cancellationTokenSource;
+            this._menuService = menuService;
 
             this._methodQueue.Add(service.Setup);
             this._methodQueue.Add(() => service.OnCalledAsync(cancellationTokenSource));
@@ -136,6 +142,18 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             {
                 if (this.CancellationTokenSource.Token.IsCancellationRequested)
                 {
+                    var type = this._service.GetType();
+                    if (type == typeof(Ambulance))
+                    {
+                        this._menuService.UpdateMenuItem<DispatchMenu>(this._service.RequestedBy, menu => menu.ToggleAmbulance, item => item.Title,
+                            "Call ambulance");
+                    }
+                    else if (type == typeof(TowTruck))
+                    {
+                        this._menuService.UpdateMenuItem<DispatchMenu>(this._service.RequestedBy, menu => menu.ToggleTowTruck, item => item.Title,
+                            "Call tow truck");
+                    }
+
                     this._service.OnCancellationRequestedAsync();
                     return;
                 }

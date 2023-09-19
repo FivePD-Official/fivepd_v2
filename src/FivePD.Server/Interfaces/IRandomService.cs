@@ -12,4 +12,9 @@ public interface IRandomService
     /// Gets a random number generator.
     /// </summary>
     public Random Random { get; }
+
+    /// <summary>
+    /// Gets a random number between 0 and 100. Both inclusive.
+    /// </summary>
+    public int GetRandomChance { get; }
 }

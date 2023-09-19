@@ -28,15 +28,15 @@ public sealed class InteractionMenu : Menu
         this._pedService = pedService;
     }
 
-    public MenuButtonItem PatDown { get; private set; }
+    internal MenuButtonItem PatDown { get; private set; }
 
-    public MenuListItem AskForLicense { get; private set; }
+    internal MenuListItem AskForLicense { get; private set; }
 
     protected override List<MenuItem> CreateItems()
     {
         var items = new List<MenuItem>();
 
-        this.AskForLicense = new MenuListItem("Ask for license", "", new List<string>()
+        this.AskForLicense = new MenuListItem("Ask for license", "", new List<string>
         {
             "Driving",
             "Fishing",

@@ -20,6 +20,8 @@ public sealed record AssistanceServicesConfig
     }
 
     public AssistanceServiceSpawnLocations SpawnLocations { get; init; } = new();
+
+    public AmbulanceConfig Ambulance { get; init; } = new();
 }
 
 public sealed record AssistanceServiceSpawnLocations
@@ -27,4 +29,9 @@ public sealed record AssistanceServiceSpawnLocations
     public List<Vector3> Ambulance { get; init; } = new();
 
     public List<Vector3> TowTruck { get; init; } = new();
+}
+
+public sealed record AmbulanceConfig
+{
+    public int ChanceToRevive { get; init; }
 }

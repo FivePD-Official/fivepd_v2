@@ -47,11 +47,15 @@ public sealed class DispatchMenu : Menu
         this._menuService = menuService;
     }
 
-    public MenuButtonItem CompleteIncident { get; private set; }
+    internal MenuButtonItem CompleteIncident { get; private set; }
 
-    public MenuButtonItem CallAmbulance { get; private set; }
+    internal MenuButtonItem ToggleAmbulance { get; private set; }
+
+    internal MenuButtonItem ToggleTowTruck { get; private set; }
 
     private Guid _requestedAmbulanceId = Guid.Empty;
+
+    private Guid _requestedTowTruckId = Guid.Empty;
 
     protected override List<MenuItem> CreateItems()
     {
@@ -61,26 +65,39 @@ public sealed class DispatchMenu : Menu
         this.CompleteIncident.OnSelect += async (player) => { this._calloutManagerService.CompleteCalloutOfPlayer(player); };
         items.Add(this.CompleteIncident);
 
-        this.CallAmbulance = new MenuButtonItem("Call ambulance", string.Empty);
-        this.CallAmbulance.OnSelect += async player =>
+        this.ToggleAmbulance = new MenuButtonItem("Call ambulance", string.Empty);
+        this.ToggleAmbulance.OnSelect += async player =>
         {
             if (this._requestedAmbulanceId == Guid.Empty)
             {
                 this._requestedAmbulanceId = this._assistanceService.Call<Ambulance>(player);
-                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.CallAmbulance, item => item.Title, "Cancel ambulance");
+                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.ToggleAmbulance, item => item.Title, "Cancel ambulance");
             }
             else
             {
                 this._assistanceService.Cancel(this._requestedAmbulanceId);
                 this._requestedAmbulanceId = Guid.Empty;
-                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.CallAmbulance, item => item.Title, "Call ambulance");
+                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.ToggleAmbulance, item => item.Title, "Call ambulance");
             }
         };
-        items.Add(this.CallAmbulance);
+        items.Add(this.ToggleAmbulance);
 
-        var t = new MenuButtonItem("call tow truck (can't cancel)", string.Empty);
-        t.OnSelect += async (player) => { this._assistanceService.Call<TowTruck>(player); };
-        items.Add(t);
+        this.ToggleTowTruck = new MenuButtonItem("Call tow truck", string.Empty);
+        this.ToggleTowTruck.OnSelect += async (player) =>
+        {
+            if (this._requestedTowTruckId == Guid.Empty)
+            {
+                this._requestedTowTruckId = this._assistanceService.Call<TowTruck>(player);
+                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.ToggleTowTruck, item => item.Title, "Cancel tow truck");
+            }
+            else
+            {
+                this._assistanceService.Cancel(this._requestedTowTruckId);
+                this._requestedTowTruckId = Guid.Empty;
+                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.ToggleTowTruck, item => item.Title, "Call tow truck");
+            }
+        };
+        items.Add(this.ToggleTowTruck);
 
         foreach (var item in this._configService.GeneralConfig.DispatchActions)
         {
