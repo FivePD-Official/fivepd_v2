@@ -14,6 +14,8 @@ import { formatDate } from "@helpers";
 import { FGender } from "@enums";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { Router } from "@angular/router";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
 
 @Component({
   selector: 'app-citizen-database-index',
@@ -75,8 +77,12 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     }),
   ];
 
+  recentlyViewedPeds: PedHistory[] = [];
+
   constructor(private readonly _pedHistoryService: PedHistoryService,
-              private readonly _router: Router) {
+              private readonly _router: Router,
+              public readonly store: Store<GlobalState>) {
+    store.select('app', 'recentlyViewedPeds').subscribe(peds => this.recentlyViewedPeds = peds);
   }
 
   ngOnInit(): void {

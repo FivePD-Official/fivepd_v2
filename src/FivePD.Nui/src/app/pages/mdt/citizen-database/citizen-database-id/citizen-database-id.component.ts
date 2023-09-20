@@ -5,6 +5,9 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PedHistory } from "@models";
 import { tap } from "rxjs";
 import { FGender, PedLicenseType } from "@enums";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
+import { addPedToRecentlyViewed } from "@store/app.actions";
 
 @Component({
   selector: 'app-citizen-database-id',
@@ -17,7 +20,8 @@ export class CitizenDatabaseIdComponent implements OnInit {
   pedHistory?: PedHistory;
 
   constructor(private readonly _activatedRoute: ActivatedRoute,
-              private readonly _pedHistoryService: PedHistoryService) {
+              private readonly _pedHistoryService: PedHistoryService,
+              private readonly _store: Store<GlobalState>) {
     _activatedRoute.params
       .pipe(
         takeUntilDestroyed(),
@@ -34,7 +38,7 @@ export class CitizenDatabaseIdComponent implements OnInit {
   getPedHistory(id: string): void {
     this._pedHistoryService.get(id).subscribe(pedHistory => {
       this.pedHistory = pedHistory;
-      console.log(pedHistory);
+      this._store.dispatch(addPedToRecentlyViewed({payload: pedHistory}));
     });
   }
 

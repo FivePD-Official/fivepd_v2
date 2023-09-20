@@ -1,5 +1,6 @@
 ﻿import { createAction, props } from '@ngrx/store';
 import { CoordinateWithDate } from '@store/app.reducer';
+import { PedHistory } from "@models";
 
 export const toggleSidebarCollapse = createAction('[app] toggle sidebar collapse');
 
@@ -18,3 +19,5 @@ export const disableDispatchMode = createAction('[app] disable dispatch mode');
 export const dispatchModeMapZoom = createAction('[app] dispatch mode map zoom', props<{ payload: number }>());
 
 export const setWindowMaximized = createAction('[app] set window maximized', props<{ payload: boolean }>());
+
+export const addPedToRecentlyViewed = createAction('[app] addPedToRecentlyViewed', props<{ payload: PedHistory }>());
