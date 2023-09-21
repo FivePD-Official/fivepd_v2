@@ -200,6 +200,13 @@ public class DatabaseContext : DbContext
             type.HasMany(pedHistory => pedHistory.Licenses)
                 .WithOne(license => license.PedHistory)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            type.Property(t => t.Drugs)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<Drug>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
     }
 }

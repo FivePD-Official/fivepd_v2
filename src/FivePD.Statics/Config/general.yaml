@@ -31,7 +31,20 @@ Callout:
     Radius: 200 # radius measured from callout position
 
 Peds:
-  ChanceToReusePedHistory: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again
+  ChanceToReuseData: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again
+  Alcohol:
+    ChanceToHave: 100 # 0-100;
+    ChanceForOverLegalLimit: 50 # 0-100;
+    LegalLimit: 0.08 # the legal limit of alcohol in blood
+  Drugs:
+    - Name: Marijuana
+      ChanceToHave: 100 # 0-100;
+    - Name: Cocaine
+      ChanceToHave: 100 # 0-100;
+    - Name: Meth
+      ChanceToHave: 100 # 0-100;
+    - Name: Heroin
+      ChanceToHave: 100 # 0-100;  
   Licenses:
     Driving:
       ChanceToHave: 100 # should be between 0-100. the higher the number, the more likely that a ped has a driving license

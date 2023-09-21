@@ -67,6 +67,11 @@ public class CommonFPed : CommonFEntity
     /// </summary>
     public List<string> Warrants { get; }
 
+    /// <summary>
+    /// Gets the alcohol level of the ped.
+    /// </summary>
+    public double AlcoholLevel { get; }
+
     /// <inheritdoc />
     public override string ToString()
     {

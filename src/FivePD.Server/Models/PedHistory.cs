@@ -49,4 +49,16 @@ public class PedHistory
     /// Gets or sets the licenses.
     /// </summary>
     public IList<PedLicense> Licenses { get; set; }
+
+    /// <summary>
+    /// Gets or sets the alcohol level.
+    /// </summary>
+    public double AlcoholLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the drugs.
+    /// </summary>
+    public List<Drug> Drugs { get; set; }
+
+    // TODO: Arrested, Citations, Tickets, Warnings
 }

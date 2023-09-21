@@ -63,6 +63,11 @@ public class CommonFPedBuilder
     public List<string> Warrants { get; protected set; } = new();
 
     /// <summary>
+    /// Gets or sets the alcohol level of the ped.
+    /// </summary>
+    public double AlcoholLevel { get; protected set; }
+
+    /// <summary>
     /// Sets the gender of the ped.
     /// </summary>
     /// <param name="gender">The gender to set.</param>

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Enums;
-using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper;
@@ -97,6 +95,8 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
         }
     }
 
+#pragma warning disable
+
     private void GeneratePed(string serializedFPedBuilder)
     {
         var commonFPedBuilder = JsonConvert.DeserializeObject<CommonFPedBuilder>(serializedFPedBuilder);
@@ -108,8 +108,8 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
         var fPedBuilder = new FPedBuilder(commonFPedBuilder);
 
         FPed fPed = null;
-        if (this._configService.GeneralConfig.Peds.ChanceToReusePedHistory != 0 &&
-            this._randomService.GetRandomChance <= this._configService.GeneralConfig.Peds.ChanceToReusePedHistory)
+        if (this._configService.GeneralConfig.Peds.ChanceToReuseData != 0 &&
+            this._randomService.GetRandomChance <= this._configService.GeneralConfig.Peds.ChanceToReuseData)
         {
             var pedHistory = this._databaseContext.PedHistories
                 .OrderBy(_ => Guid.NewGuid())
@@ -128,6 +128,8 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
                         IncludeAll = true,
                     })
                     .WithLicenses(pedHistory.Licenses)
+                    .WithAlcoholLevel(pedHistory.AlcoholLevel)
+                    .WithDrugs(pedHistory.Drugs)
                     .Build();
             }
         }
@@ -147,6 +149,8 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
                     ChanceForAnyWarrant = this._configService.GeneralConfig.Peds.Warrants.ChanceToHaveAny,
                 })
                 .WithRandomLicenses(this._configService.GeneralConfig.Peds.Licenses)
+                .WithAlcoholLevel(this._configService.GeneralConfig.Peds.Alcohol)
+                .WithDrugs(this._configService.GeneralConfig.Peds.Drugs)
                 .Build();
             this._databaseContext.PedHistories.Add(new PedHistory
             {
@@ -157,6 +161,8 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
                 Items = fPed.Items,
                 Warrants = fPed.Warrants,
                 Licenses = fPed.Licenses,
+                AlcoholLevel = fPed.AlcoholLevel,
+                Drugs = fPed.Drugs,
             });
             this._databaseContext.SaveChangesAsync();
         }

@@ -27,7 +27,7 @@ public class FPedBuilder : CommonFPedBuilder
 #pragma warning disable SA1313
     public readonly record struct WithWarrantsOptions(List<string> Warrants, bool IncludeAll, int ChanceForAnyWarrant, int MaxWarrants);
 #pragma warning restore SA1313
-    
+
     public FPedBuilder(CommonFPedBuilder fPedBuilder)
         : base(fPedBuilder.NetworkId)
     {
@@ -43,6 +43,11 @@ public class FPedBuilder : CommonFPedBuilder
     /// Gets the licenses of the ped.
     /// </summary>
     public List<PedLicense> Licenses { get; private set; } = new();
+
+    /// <summary>
+    /// Gets the drugs of the ped.
+    /// </summary>
+    public List<Drug> Drugs { get; private set; } = new();
 
     /// <summary>
     /// Sets the firstname of the ped.
@@ -138,12 +143,11 @@ public class FPedBuilder : CommonFPedBuilder
     /// <returns>The <see cref="CommonFPedBuilder"/> instance.</returns>
     public FPedBuilder WithWarrants(WithWarrantsOptions options)
     {
+        this.Warrants ??= new();
+
         if (options.IncludeAll)
         {
-            if (this.Warrants is null)
-            {
-                this.Warrants = new();
-            }
+
             this.Warrants.AddRange(options.Warrants);
             return this;
         }
@@ -158,11 +162,6 @@ public class FPedBuilder : CommonFPedBuilder
             .OrderBy(_ => Guid.NewGuid())
             .Take(Random.Next(0, maxWarrants))
             .ToList();
-
-        if (this.Warrants is null)
-        {
-            this.Warrants = new();
-        }
 
         this.Warrants.AddRange(warrants);
 
@@ -206,6 +205,49 @@ public class FPedBuilder : CommonFPedBuilder
         return this;
     }
 
+    public FPedBuilder WithAlcoholLevel(double alcoholLevel)
+    {
+        this.AlcoholLevel = alcoholLevel;
+        return this;
+    }
+
+    public FPedBuilder WithAlcoholLevel(AlcoholConfig alcoholConfig)
+    {
+        if (Random.Next(0, 101) > alcoholConfig.ChanceToHave)
+        {
+            return this;
+        }
+
+        if (Random.Next(0, 101) <= alcoholConfig.ChanceForOverLegalLimit)
+        {
+            var minValue = alcoholConfig.LegalLimit;
+            const double maxValue = 0.2;
+
+            this.AlcoholLevel = Random.NextDouble() * (maxValue - minValue) + minValue;
+        }
+
+        return this;
+    }
+
+    public FPedBuilder WithDrugs(IEnumerable<Drug> drugs)
+    {
+        this.Drugs ??= new();
+        this.Drugs.AddRange(drugs);
+        return this;
+    }
+    
+    public FPedBuilder WithDrugs(List<DrugConfig> drugsConfig)
+    {
+        this.Drugs ??= new();
+
+        foreach (var drug in drugsConfig.Where(drug => Random.Next(0, 101) <= drug.ChanceToHave))
+        {
+            this.Drugs.Add(new Drug(drug.Name));
+        }
+
+        return this;
+    }
+
     /// <summary>
     /// Adds multiple licenses to the ped.
     /// </summary>
@@ -225,14 +267,14 @@ public class FPedBuilder : CommonFPedBuilder
 
         foreach (var config in asd)
         {
-            if (Random.Next(1, 101) >= config.Value.ChanceToHave)
+            if (Random.Next(0, 101) >= config.Value.ChanceToHave)
             {
                 continue;
             }
 
             var now = DateTime.Now;
             var issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year);
-            var expirationDate = Random.Next(1, 101) < config.Value.ChanceForExpired
+            var expirationDate = Random.Next(0, 101) < config.Value.ChanceForExpired
                 ? issueDate.AddYears(-Random.Next(1, 3))
                 : issueDate.AddYears(Random.Next(1, 11));
 

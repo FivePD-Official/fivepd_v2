@@ -251,8 +251,14 @@ namespace FivePD.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<double>("AlcoholLevel")
+                        .HasColumnType("double");
+
                     b.Property<DateTime>("Birthdate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Drugs")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Firstname")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");

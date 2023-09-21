@@ -7,6 +7,7 @@ using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
+using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 
 namespace FivePD.Server.EntityWrappers.PedWrapper;
@@ -30,7 +31,9 @@ public class FPed : FEntity, IFStatefulContainer
         this.Gender = fPed.Gender;
         this.Items = fPed.Items;
         this.Warrants = fPed.Warrants;
-        this.Licenses = new List<PedLicense>();
+        this.Licenses = new();
+        this.AlcoholLevel = fPed.AlcoholLevel;
+        this.Drugs = new();
 
         this.Create();
     }
@@ -50,6 +53,8 @@ public class FPed : FEntity, IFStatefulContainer
         this.Items = fPedBuilder.Items;
         this.Warrants = fPedBuilder.Warrants;
         this.Licenses = fPedBuilder.Licenses;
+        this.AlcoholLevel = fPedBuilder.AlcoholLevel;
+        this.Drugs = fPedBuilder.Drugs;
 
         this.Create();
     }
@@ -135,6 +140,16 @@ public class FPed : FEntity, IFStatefulContainer
     public List<PedLicense> Licenses { get; }
 
     /// <summary>
+    /// Gets the alcohol level of the ped.
+    /// </summary>
+    public double AlcoholLevel { get; }
+
+    /// <summary>
+    /// Gets the drugs of the ped.
+    /// </summary>
+    public List<Drug> Drugs { get; }
+
+    /// <summary>
     /// Created an <see cref="FPed"/> wrapper from the specified <see cref="FPlayer"/>.
     /// </summary>
     /// <param name="player">The <see cref="FPlayer"/> instance to use.</param>
@@ -189,6 +204,12 @@ public class FPed : FEntity, IFStatefulContainer
     /// <param name="pedLicenseType">The license type to get.</param>
     /// <returns>The license.</returns>
     public PedLicense GetLicense(PedLicenseType pedLicenseType) => this.Licenses.FirstOrDefault(x => x.Type == pedLicenseType);
+
+    /// <summary>
+    /// Gets a value indicating whether the ped's alcohol level is over the legal limit.
+    /// </summary>
+    /// <returns>True if the ped's alcohol level is over the legal limit, false otherwise.</returns>
+    public bool AlcoholOverLegalLimit() => this.AlcoholLevel > ServiceLocator.GetService<IConfigService>().GeneralConfig.Peds.Alcohol.LegalLimit;
 
 #pragma warning disable
     private void Create()
