@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -18,21 +20,28 @@ public sealed class InteractionMenu : Menu
     private readonly INotificationService _notificationService;
     private readonly IEntityService _entityService;
     private readonly ICfxService _cfxService;
+    private readonly IConfigService _configService;
 
     public InteractionMenu(
         INotificationService notificationService,
         IEntityService entityService,
-        ICfxService cfxService)
+        ICfxService cfxService,
+        IConfigService configService)
         : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key)
     {
         this._notificationService = notificationService;
         this._entityService = entityService;
         this._cfxService = cfxService;
+        this._configService = configService;
     }
 
     internal MenuButtonItem SearchPed { get; private set; }
 
     internal MenuListItem AskForLicense { get; private set; }
+
+    internal MenuButtonItem DrugSwabTest { get; private set; }
+
+    internal MenuButtonItem BreathalyzerTest { get; private set; }
 
     internal MenuButtonItem DetainOrRelease { get; private set; }
 
@@ -163,6 +172,59 @@ public sealed class InteractionMenu : Menu
             this._notificationService.ShowNotification(player, itemList.Build());
         };
         items.Add(this.SearchPed);
+
+        this.DrugSwabTest = new MenuButtonItem("Drug swab test", "");
+        this.DrugSwabTest.OnSelect += async player =>
+        {
+            var playerPed = FPed.FromFPlayer(player);
+
+            var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+            if (fPed is null || !fPed.HasGeneratedData.Value)
+            {
+                return;
+            }
+
+            fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
+
+            var text = new GtaStyleText()
+                .Blue("Drug swab test")
+                .NewLine()
+                .White(fPed.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(",", fPed.Drugs.Select(x => x.Name))}");
+            this._notificationService.ShowNotification(player, text.Build());
+        };
+        items.Add(this.DrugSwabTest);
+        
+        this.BreathalyzerTest = new MenuButtonItem("Breathalyzer test", "");
+        this.BreathalyzerTest.OnSelect += async player =>
+        {
+            var playerPed = FPed.FromFPlayer(player);
+
+            var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+            if (fPed is null || !fPed.HasGeneratedData.Value)
+            {
+                return;
+            }
+
+            fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
+
+            var text = new GtaStyleText()
+                .Blue("Breathalyzer test")
+                .NewLine()
+                .White($"Legal limit: {this._configService.GeneralConfig.Peds.Alcohol.LegalLimit}")
+                .NewLine()
+                .White($"Result: ");
+            if (fPed.AlcoholOverLegalLimit())
+            {
+                text.Red(fPed.AlcoholLevel.ToString(CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                text.White(fPed.AlcoholLevel.ToString(CultureInfo.InvariantCulture));
+            }
+
+            this._notificationService.ShowNotification(player, text.Build());
+        };
+        items.Add(this.BreathalyzerTest);
 
         this.DetainOrRelease = new MenuButtonItem("Detain/Release the ped", "");
         this.DetainOrRelease.OnSelect += async player =>
