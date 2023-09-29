@@ -36,4 +36,12 @@ internal sealed record MenuDTO
             }
         }
     }
+
+    internal sealed record AddMenuItem
+    {
+        public string MenuId { get; init; }
+        
+        public GetAllMenu.UIMenuResponse.UIMenuItemResponse Item { get; init; }
+    }
 }
+

@@ -5,7 +5,7 @@ export class MenuListItem extends MenuItem {
 
   private _currentIndex = 0;
 
-  public items: string[] = [];
+  public items: MenuListOption[] = [];
 
   constructor(title: string, description: string, hashcode: string) {
     super(title, description, hashcode, MenuItemType.List);
@@ -16,7 +16,7 @@ export class MenuListItem extends MenuItem {
   }
 
   next(): void {
-    if (this._currentIndex === this.items.length-1) return;
+    if (this._currentIndex === this.items.length - 1) return;
     this._currentIndex++;
     this.postRequest(`fivepd:menu:onListIndexChange:${this.hashcode}`, this.currentIndex);
   }
@@ -31,4 +31,14 @@ export class MenuListItem extends MenuItem {
     this.postRequest(`fivepd:menu:onListSelect:${this.hashcode}`, this.currentIndex);
   }
 
+}
+
+export class MenuListOption {
+  public Title: string;
+  public Enabled = true;
+
+  constructor(title: string, enabled: boolean = true) {
+    this.Title = title;
+    this.Enabled = enabled;
+  }
 }

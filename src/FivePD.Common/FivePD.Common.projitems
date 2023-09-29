@@ -11,12 +11,14 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Builders\CommonFPedBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Builders\CommonFVehicleBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\DrugConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\AlcoholConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\AssistanceServicesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\CalloutConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DatabaseConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\FeatureFlagsConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DispatchActionItemConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DispatchMenuItemConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\LicensesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\MessagesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\PedsConfig.cs" />

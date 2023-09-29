@@ -193,6 +193,12 @@ internal readonly record struct Events
             public const string OnListIndexChange = "fivepd:menu:onListIndexChange";
 
             public const string UpdateMenuItem = "fivepd:menu:update_item";
+
+            public const string UpdateMenuListOption = "fivepd:menu:update_menu_list_option";
+
+            public const string AddMenuItem = "fivepd:menu:add_menu_item";
+
+            public const string RemoveMenuItem = "fivepd:menu:remove_menu_item";
         }
 
         public readonly record struct Unit

@@ -64,6 +64,7 @@ import { WelcomeModalComponent } from './components/modal/welcome-modal/welcome-
 import { CitizenDatabaseIdComponent } from './pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component';
 import { MessagesComponent } from './pages/mdt/messages/messages.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
+import { AsPipe } from './pipes/as.pipe';
 
 @NgModule({
   declarations: [
@@ -109,6 +110,7 @@ import { PaginationComponent } from './components/pagination/pagination.componen
     CitizenDatabaseIdComponent,
     MessagesComponent,
     PaginationComponent,
+    AsPipe,
   ],
   imports: [
     BrowserModule,

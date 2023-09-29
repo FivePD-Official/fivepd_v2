@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { EventService } from '@services/event/event.service';
 import {
-  GetAllMenusResponse,
+  AddMenuItemEvent,
+  GetAllMenusResponse, MenuItemDto,
   Menu,
   MenuButtonItem,
   MenuCheckboxItem,
   MenuItem,
-  MenuListItem,
+  MenuListItem, MenuListOption,
   RadialMenu,
-  RadialMenuObjectsEvent,
-  UpdateMenuItemEvent
+  RadialMenuObjectsEvent, RemoveMenuItemEvent,
+  UpdateMenuItemEvent, UpdateMenuListOptionEvent
 } from '@models';
 import { MenuItemType } from '@enums';
 import { HttpClient } from '@angular/common/http';
@@ -28,6 +29,9 @@ export class MenuService {
   ) {
     // this._event.onEvent<RadialMenuObjectsEvent>(NuiEventType.SendRadialMenuObjects).subscribe(res => this.onRadialMenuObjectsEvent(res));
     this._event.onEvent<UpdateMenuItemEvent>('fivepd:menu:update_item').subscribe(res => this.onUpdateMenuItemEvent(res));
+    this._event.onEvent<UpdateMenuListOptionEvent>('fivepd:menu:update_menu_list_option').subscribe(res => this.onUpdateMenuListOptionEvent(res));
+    this._event.onEvent<AddMenuItemEvent>('fivepd:menu:add_menu_item').subscribe(res => this.onAddMenuItemEvent(res));
+    this._event.onEvent<RemoveMenuItemEvent>('fivepd:menu:remove_menu_item').subscribe(res => this.onRemoveMenuItemEvent(res));
   }
 
   load(): void {
@@ -57,22 +61,7 @@ export class MenuService {
     for (const menu of res.Menus) {
       const menuItems: MenuItem[] = [];
       for (const item of menu.Items) {
-        let _item: MenuItem | undefined;
-        switch (item.Type) {
-          case MenuItemType.Button: {
-            _item = new MenuButtonItem(item.Title, item.Description, item.Hashcode);
-            break;
-          }
-          case MenuItemType.List: {
-            _item = new MenuListItem(item.Title, item.Description, item.Hashcode);
-            (_item as MenuListItem).items = item.Items!;
-            break;
-          }
-          case MenuItemType.Toggle: {
-            _item = new MenuCheckboxItem(item.Title, item.Description, item.Hashcode);
-            break;
-          }
-        }
+        let _item = this.createItem(item);
         if (_item) {
           menuItems.push(_item as MenuItem);
         }
@@ -95,4 +84,70 @@ export class MenuService {
       }
     }
   }
+
+  private onUpdateMenuListOptionEvent(res: UpdateMenuListOptionEvent): void {
+    for (const menu of this._menus) {
+      for (const item of menu.items) {
+        if (item.hashcode === res.Hashcode) {
+          const list = item as MenuListItem;
+          const option = list.items[res.Index]
+          if (Reflect.has(option, res.Property)) {
+            Reflect.set(option, res.Property, res.Value);
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  private onAddMenuItemEvent(res: AddMenuItemEvent): void {
+    const menu = this._menus.find(x => x.id === res.MenuId);
+    if (!menu) {
+      return;
+    }
+
+    const item = this.createItem(res.Item);
+    if (!item) {
+      return;
+    }
+
+    menu.items.push(item);
+  }
+
+  private onRemoveMenuItemEvent(res: RemoveMenuItemEvent): void {
+    const menu = this._menus.find(x => x.id === res.MenuId);
+    if (!menu) {
+      return;
+    }
+
+    const itemIndex = menu.items.findIndex(x => x.hashcode === res.ItemHashcode);
+    if (itemIndex === -1) {
+      return;
+    }
+
+    menu.items.splice(itemIndex, 1);
+    menu.currentItemIndex$.next(0);
+  }
+
+  private createItem(item: MenuItemDto): MenuItem | undefined {
+    let _item: MenuItem | undefined;
+    switch (item.Type) {
+      case MenuItemType.Button: {
+        _item = new MenuButtonItem(item.Title, item.Description, item.Hashcode);
+        break;
+      }
+      case MenuItemType.List: {
+        _item = new MenuListItem(item.Title, item.Description, item.Hashcode);
+        (_item as MenuListItem).items = item.Items!.map(x => new MenuListOption(x.Title, x.Enabled));
+        break;
+      }
+      case MenuItemType.Toggle: {
+        _item = new MenuCheckboxItem(item.Title, item.Description, item.Hashcode);
+        break;
+      }
+    }
+
+    return _item;
+  }
+
 }

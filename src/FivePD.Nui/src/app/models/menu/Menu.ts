@@ -1,15 +1,18 @@
 import { MenuItem } from './MenuItem';
+import { BehaviorSubject } from "rxjs";
 
 export class Menu {
 
   private readonly _id: string;
   private readonly _title: string = '';
-  private readonly _items: MenuItem[] = [];
+  items: MenuItem[] = [];
+
+  readonly currentItemIndex$ = new BehaviorSubject<number>(0);
 
   constructor(id: string, title: string, items: MenuItem[]) {
     this._id = id;
     this._title = title;
-    this._items = items;
+    this.items = items;
   }
 
   get id(): string {
@@ -18,10 +21,6 @@ export class Menu {
 
   get title(): string {
     return this._title;
-  }
-
-  get items(): MenuItem[] {
-    return this._items;
   }
 
 }

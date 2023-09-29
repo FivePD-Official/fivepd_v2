@@ -11,7 +11,7 @@ namespace FivePD.Server.Models.AssistanceServiceModels;
 
 #pragma warning disable
 
-public class TowTruck : AssistanceService
+public class Towing : AssistanceService
 {
     private readonly IEntityService _entityService;
     private readonly IConfigService _configService;
@@ -22,7 +22,7 @@ public class TowTruck : AssistanceService
     private FVehicle _towTruck;
     private FVehicle _targetVehicle;
 
-    public TowTruck(
+    public Towing(
         IEntityService entityService,
         IConfigService configService,
         IRandomService randomService,
@@ -114,6 +114,7 @@ public class TowTruck : AssistanceService
 
     private void OnCompletedOrCancelled()
     {
+        this._towTruck.Properties.RemoveBlips();
         this._driver.Task.CruiseWithVehicle(this._towTruck.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
         Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
         Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.Handle, 100f);

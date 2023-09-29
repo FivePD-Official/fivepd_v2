@@ -58,7 +58,7 @@ public sealed class DutyMenu : Menu
             this.VehicleSpawnerItem = new MenuListItem(
                 "DUTY_MENU.ITEM.SPAWN_VEHICLE.TITLE",
                 "DUTY_MENU.ITEM.SPAWN_VEHICLE.DESCRIPTION",
-                this._configService.VehiclesConfig.Police.Select(vehicle => vehicle.Name).ToList());
+                this._configService.VehiclesConfig.Police.Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
             this.VehicleSpawnerItem.OnSelect += async (player, index) =>
             {
                 // var policeVehicle = this._policeVehicles.ElementAt(index);
@@ -72,7 +72,7 @@ public sealed class DutyMenu : Menu
             this.LoadoutItem = new MenuListItem(
                 "DUTY_MENU.ITEM.GET_LOADOUT.TITLE",
                 "DUTY_MENU.ITEM.GET_LOADOUT.DESCRIPTION",
-                this._configService.LoadoutsConfig.Select(x => x.Title).ToList());
+                this._configService.LoadoutsConfig.Select(x => new MenuListOption(x.Title)).ToList());
             this.LoadoutItem.OnSelect += async (player, index) =>
             {
                 var playerPed = FPed.FromFPlayer(player);
@@ -94,7 +94,7 @@ public sealed class DutyMenu : Menu
         this._changeLanguageListItem = new MenuListItem(
             "DUTY_MENU.ITEM.CHANGE_LANGUAGE.TITLE",
             "DUTY_MENU.ITEM.CHANGE_LANGUAGE.DESCRIPTION",
-            this._localizationService.AvailableLocalizations.Values.ToList());
+            this._localizationService.AvailableLocalizations.Values.Select(x => new MenuListOption(x)).ToList());
         this._changeLanguageListItem.OnSelect += async (player, index) =>
         {
             var locale = this._localizationService.AvailableLocalizations.Keys.ToList()[index];

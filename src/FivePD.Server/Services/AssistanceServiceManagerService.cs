@@ -2,14 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.AssistanceServiceModels;
-using FivePD.Server.UIModels;
 using Serilog;
 
 namespace FivePD.Server.Services;
@@ -23,7 +21,6 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     private readonly ILogger _logger;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
-    private readonly IMenuService _menuService;
 
     private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _assistanceServices = new();
 
@@ -32,18 +29,16 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
         ITickQueueService tickQueueService,
         ILogger logger,
         IConfigService configService,
-        IRandomService randomService,
-        IMenuService menuService)
+        IRandomService randomService)
     {
         this._serviceProvider = serviceProvider;
         this._tickQueueService = tickQueueService;
         this._logger = logger;
         this._configService = configService;
         this._randomService = randomService;
-        this._menuService = menuService;
     }
 
-    public Guid Call<T>(FPlayer requestedBy)
+    public Guid Call<T>(FPlayer requestedBy, Action onCanceled = null)
         where T : AssistanceService
     {
         try
@@ -65,7 +60,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
                 {
                     locations = this._configService.GeneralConfig.AssistanceServices.SpawnLocations.Ambulance;
                 }
-                else if (type == typeof(TowTruck))
+                else if (type == typeof(Towing))
                 {
                     locations = this._configService.GeneralConfig.AssistanceServices.SpawnLocations.TowTruck;
                 }
@@ -79,7 +74,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
                 ((IInternalAssistanceService)assistanceService).SpawnLocation = locations[this._randomService.Random.Next(0, locations.Count)];
             }
 
-            var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, new CancellationTokenSource(), this._menuService);
+            var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, onCanceled, new CancellationTokenSource(), this._logger);
             this._assistanceServices.TryAdd(guid, assistanceServiceInvoker);
             this._tickQueueService.EnqueueAsync(assistanceServiceInvoker.InvokeAssistanceServiceMethods);
 
@@ -93,12 +88,13 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
         return Guid.Empty;
     }
 
-    public void Cancel(Guid guid)
+    public void Cancel(ref Guid guid)
     {
         try
         {
             this._assistanceServices.TryRemove(guid, out var service);
             service?.CancellationTokenSource.Cancel();
+            guid = Guid.Empty;
         }
         catch (Exception e)
         {
@@ -119,17 +115,23 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     private sealed record AssistanceServiceInvoker
     {
         private readonly AssistanceService _service;
-        private readonly IMenuService _menuService;
+        private readonly ILogger _logger;
+        private readonly Action _onCanceled;
 
         private readonly List<Func<Task>> _methodQueue = new();
 
         public CancellationTokenSource CancellationTokenSource { get; private set; }
 
-        public AssistanceServiceInvoker(AssistanceService service, CancellationTokenSource cancellationTokenSource, IMenuService menuService)
+        public AssistanceServiceInvoker(
+            AssistanceService service,
+            Action onCanceled,
+            CancellationTokenSource cancellationTokenSource,
+            ILogger logger)
         {
             this._service = service;
             this.CancellationTokenSource = cancellationTokenSource;
-            this._menuService = menuService;
+            this._logger = logger;
+            this._onCanceled = onCanceled;
 
             this._methodQueue.Add(service.Setup);
             this._methodQueue.Add(() => service.OnCalledAsync(cancellationTokenSource));
@@ -138,27 +140,46 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
         public async Task InvokeAssistanceServiceMethods()
         {
-            foreach (var method in this._methodQueue)
+            try
             {
-                if (this.CancellationTokenSource.Token.IsCancellationRequested)
+                foreach (var method in this._methodQueue)
                 {
-                    var type = this._service.GetType();
-                    if (type == typeof(Ambulance))
+                    if (this.CancellationTokenSource.Token.IsCancellationRequested)
                     {
-                        this._menuService.UpdateMenuItem<DispatchMenu>(this._service.RequestedBy, menu => menu.ToggleAmbulance, item => item.Title,
-                            "Call ambulance");
-                    }
-                    else if (type == typeof(TowTruck))
-                    {
-                        this._menuService.UpdateMenuItem<DispatchMenu>(this._service.RequestedBy, menu => menu.ToggleTowTruck, item => item.Title,
-                            "Call tow truck");
+                        throw new TaskCanceledException();
                     }
 
-                    this._service.OnCancellationRequestedAsync();
-                    return;
+                    try
+                    {
+                        await method();
+                    }
+                    catch (Exception e)
+                    {
+                        this._logger.Error(
+                            "Failed to invoke method \"{Method}\" of assistance service \"{Service}\". Cancelling service. Exception: {Exception}",
+                            method.Method.Name,
+                            this._service.GetType(),
+                            e.Message);
+                        throw new TaskCanceledException();
+                    }
                 }
 
-                await method();
+                throw new TaskCanceledException();
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    this._service.OnCancellationRequestedAsync();
+                    this._onCanceled?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    this._logger.Error(
+                        "Failed to invoke method \"OnCancellationRequestedAsync\" of assistance service \"{Service}\". Exception: {Exception}",
+                        this._service.GetType(),
+                        e.Message);
+                }
             }
         }
     }

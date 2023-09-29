@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { filter, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, filter, Observable, ReplaySubject } from 'rxjs';
 import { BaseNuiEvent } from '@models';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { environment } from '../../../environments/environment';
 export class EventService {
 
   hadFirstEvent = false;
-  private _events$ = new ReplaySubject<BaseNuiEvent>(10);
+  private _events$ = new BehaviorSubject<BaseNuiEvent>({Event: ''});
 
   constructor(
     private _http: HttpClient,

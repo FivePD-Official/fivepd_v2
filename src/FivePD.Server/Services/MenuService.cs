@@ -20,6 +20,8 @@ using Serilog;
 
 namespace FivePD.Server.Services;
 
+#pragma warning disable
+
 /// <inheritdoc cref="FivePD.Server.Interfaces.IMenuService" />
 public class MenuService : IMenuService, IServiceWithEvents
 {
@@ -47,6 +49,7 @@ public class MenuService : IMenuService, IServiceWithEvents
     {
         this.Register<DutyMenu>();
         this.Register<DispatchMenu>();
+        this.Register<AssistanceMenu>();
         this.Register<InteractionMenu>();
 
         this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string>(this.OnButtonSelect);
@@ -84,7 +87,11 @@ public class MenuService : IMenuService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void UpdateMenuItem<TMenu>(FPlayer player, Expression<Func<TMenu, MenuItem>> item, Expression<Func<MenuItem, object>> property, object value)
+    public void UpdateMenuItem<TMenu, TProperty>(
+        FPlayer player,
+        Expression<Func<TMenu, MenuItem>> item,
+        Expression<Func<MenuItem, TProperty>> property,
+        TProperty value)
         where TMenu : Menu
     {
         if (value is null)
@@ -119,6 +126,122 @@ public class MenuService : IMenuService, IServiceWithEvents
             { "Hashcode", propertyObj.GetHashCode().ToString() },
             { "Property", propertyMember.Name },
             { "Value", JToken.FromObject(value) },
+        });
+    }
+
+    /// <inheritdoc />
+    public void UpdateMenuListOption<TMenu, TProperty>(
+        FPlayer player,
+        Expression<Func<TMenu, MenuListItem>> item,
+        int index,
+        Expression<Func<MenuListOption, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu
+    {
+        if (value is null)
+        {
+            return;
+        }
+
+        var menuItemMember = (item.Body as MemberExpression)?.Member;
+        var propertyMember = (property.Body as MemberExpression)?.Member;
+        if (menuItemMember is null || propertyMember is null)
+        {
+            return;
+        }
+
+        var menu = player.GetMenu<Menu>(typeof(TMenu));
+        var actualMenuItemMember = this.GetMember(typeof(TMenu), menuItemMember.Name);
+        if (actualMenuItemMember is null)
+        {
+            return;
+        }
+
+        var listItemValue = this.GetValueOfProperty(actualMenuItemMember, menu) as MenuListItem;
+        if (listItemValue is null)
+        {
+            return;
+        }
+
+        var actualPropertyMember = this.GetMember(typeof(MenuListOption), propertyMember.Name);
+
+        this.SetValueOfProperty(actualPropertyMember, listItemValue.Options[index], value);
+        player.TriggerEvent(Events.UI.Menu.UpdateMenuListOption, new JObject
+        {
+            { "Hashcode", listItemValue.GetHashCode().ToString() },
+            { "Index", index },
+            { "Property", propertyMember.Name },
+            { "Value", JToken.FromObject(value) },
+        });
+    }
+
+    /// <inheritdoc />
+    public string AddMenuItem<TMenu>(
+        FPlayer player,
+        MenuItem item)
+        where TMenu : Menu
+    {
+        if (item is null)
+        {
+            return string.Empty;
+        }
+
+        var menu = player.GetMenu<Menu>(typeof(TMenu));
+        if (menu is null)
+        {
+            return string.Empty;
+        }
+
+        menu.Items.Add(item);
+
+        var listItemItems = new JArray();
+        if (item.Type == MenuItemType.List)
+        {
+            var casted = item as MenuListItem;
+            listItemItems = JArray.FromObject(casted!.Options);
+        }
+
+        var menuItemDto = new MenuDTO.GetAllMenu.UIMenuResponse.UIMenuItemResponse
+        {
+            Hashcode = item.GetHashCode().ToString(),
+            Title = item.Title,
+            Description = item.Description,
+            Type = item.Type,
+            Items = listItemItems,
+        };
+
+        player.TriggerEvent(Events.UI.Menu.AddMenuItem, new JObject
+        {
+            { "MenuId", menu.Id },
+            { "Item", JToken.FromObject(menuItemDto) }
+        });
+
+        return menuItemDto.Hashcode;
+    }
+
+    /// <inheritdoc />
+    public void RemoveMenuItem<TMenu>(
+        FPlayer player,
+        MenuItem item)
+        where TMenu : Menu
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        var menu = player.GetMenu<Menu>(typeof(TMenu));
+        if (menu is null)
+        {
+            return;
+        }
+
+        menu.Items.Remove(item);
+
+        player.TriggerEvent(Events.UI.Menu.RemoveMenuItem, new JObject
+        {
+            { "MenuId", menu.Id },
+            { "ItemHashcode", item.GetHashCode().ToString() },
         });
     }
 
@@ -193,7 +316,7 @@ public class MenuService : IMenuService, IServiceWithEvents
                 if (item.Type == MenuItemType.List)
                 {
                     var casted = item as MenuListItem;
-                    listItemItems = JArray.FromObject(casted!.Items);
+                    listItemItems = JArray.FromObject(casted!.Options);
                 }
 
                 items.Add(new MenuDTO.GetAllMenu.UIMenuResponse.UIMenuItemResponse

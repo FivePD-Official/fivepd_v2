@@ -24,12 +24,49 @@ public interface IMenuService
     /// <param name="item">The property's menu item.</param>
     /// <param name="property">The property.</param>
     /// <param name="value">The new value.</param>
-    /// <typeparam name="T">The type of the menu.</typeparam>
-    /// <example>
-    /// <code>
-    /// this._menuService.UpdateMenuItem&lt;DutyMenu&gt;(player, menu => menu.DutyCheckboxItem, item => item.Title, "New title");
-    /// </code>
-    /// </example>
-    public void UpdateMenuItem<T>(FPlayer player, Expression<Func<T, MenuItem>> item, Expression<Func<MenuItem, object>> property, object value)
-        where T : Menu;
+    /// <typeparam name="TMenu">The type of the menu.</typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    public void UpdateMenuItem<TMenu, TProperty>(
+        FPlayer player,
+        Expression<Func<TMenu, MenuItem>> item,
+        Expression<Func<MenuItem, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu;
+
+    /// <summary>
+    /// Updates a menu list item's option property value.
+    /// </summary>
+    /// <param name="player">A.</param>
+    /// <param name="item">B.</param>
+    /// <param name="index">C.</param>
+    /// <param name="property">D.</param>
+    /// <param name="value">AA.</param>
+    /// <typeparam name="TMenu">ASD.</typeparam>
+    /// <typeparam name="TProperty">TProperty.</typeparam>
+    public void UpdateMenuListOption<TMenu, TProperty>(
+        FPlayer player,
+        Expression<Func<TMenu, MenuListItem>> item,
+        int index,
+        Expression<Func<MenuListOption, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu;
+
+    /// <summary>
+    /// Adds a menu item to the menu of the given <typeparamref name="TMenu"/>.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="item">The item to add.</param>
+    /// <typeparam name="TMenu">The type of the menu.</typeparam>
+    /// <returns>The ID of the item.</returns>
+    public string AddMenuItem<TMenu>(FPlayer player, MenuItem item)
+        where TMenu : Menu;
+
+    /// <summary>
+    /// Removes a menu item from the menu of the given <typeparamref name="TMenu"/>.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="item">The ID of the item to remove.</param>
+    /// <typeparam name="TMenu">The type of the menu.</typeparam>
+    public void RemoveMenuItem<TMenu>(FPlayer player, MenuItem item)
+        where TMenu : Menu;
 }

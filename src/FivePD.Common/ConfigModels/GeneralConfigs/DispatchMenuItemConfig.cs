@@ -4,7 +4,7 @@ namespace FivePD.Common.ConfigModels.GeneralConfigs;
 
 #pragma warning disable
 
-public sealed record DispatchActionItemConfig
+public sealed record DispatchMenuItemConfig
 {
     public string Title { get; init; }
 

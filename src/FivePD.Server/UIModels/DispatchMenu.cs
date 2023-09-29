@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
@@ -11,7 +10,6 @@ using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
-using FivePD.Server.Models.AssistanceServiceModels;
 using FivePD.Server.UIModels.MenuModels;
 
 namespace FivePD.Server.UIModels;
@@ -21,85 +19,37 @@ namespace FivePD.Server.UIModels;
 public sealed class DispatchMenu : Menu
 {
     private readonly ICalloutManagerService _calloutManagerService;
-    private readonly IAssistanceServiceManagerService _assistanceService;
     private readonly IConfigService _configService;
     private readonly IBackupManagerService _backupManagerService;
     private readonly IEntityService _entityService;
     private readonly INotificationService _notificationService;
-    private readonly IMenuService _menuService;
 
     public DispatchMenu(
         ICalloutManagerService calloutManagerService,
-        IAssistanceServiceManagerService assistanceServiceManagerService,
         IConfigService configService,
         IBackupManagerService backupManagerService,
         IEntityService entityService,
-        INotificationService notificationService,
-        IMenuService menuService)
-        : base(Controls.AssistanceMenu.Id, Controls.AssistanceMenu.Title, Controls.AssistanceMenu.Key)
+        INotificationService notificationService)
+        : base(Controls.DispatchMenu.Id, Controls.DispatchMenu.Title, Controls.DispatchMenu.Key)
     {
         this._calloutManagerService = calloutManagerService;
-        this._assistanceService = assistanceServiceManagerService;
         this._configService = configService;
         this._backupManagerService = backupManagerService;
         this._entityService = entityService;
         this._notificationService = notificationService;
-        this._menuService = menuService;
     }
 
     internal MenuButtonItem CompleteIncident { get; private set; }
-
-    internal MenuButtonItem ToggleAmbulance { get; private set; }
-
-    internal MenuButtonItem ToggleTowTruck { get; private set; }
-
-    private Guid _requestedAmbulanceId = Guid.Empty;
-
-    private Guid _requestedTowTruckId = Guid.Empty;
 
     protected override List<MenuItem> CreateItems()
     {
         var items = new List<MenuItem>();
 
         this.CompleteIncident = new MenuButtonItem("test complete incident", string.Empty);
-        this.CompleteIncident.OnSelect += async (player) => { this._calloutManagerService.CompleteCalloutOfPlayer(player); };
+        this.CompleteIncident.OnSelect += async player => { this._calloutManagerService.CompleteCalloutOfPlayer(player); };
         items.Add(this.CompleteIncident);
 
-        this.ToggleAmbulance = new MenuButtonItem("Call ambulance", string.Empty);
-        this.ToggleAmbulance.OnSelect += async player =>
-        {
-            if (this._requestedAmbulanceId == Guid.Empty)
-            {
-                this._requestedAmbulanceId = this._assistanceService.Call<Ambulance>(player);
-                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.ToggleAmbulance, item => item.Title, "Cancel ambulance");
-            }
-            else
-            {
-                this._assistanceService.Cancel(this._requestedAmbulanceId);
-                this._requestedAmbulanceId = Guid.Empty;
-                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.ToggleAmbulance, item => item.Title, "Call ambulance");
-            }
-        };
-        items.Add(this.ToggleAmbulance);
-
-        this.ToggleTowTruck = new MenuButtonItem("Call tow truck", string.Empty);
-        this.ToggleTowTruck.OnSelect += async (player) =>
-        {
-            if (this._requestedTowTruckId == Guid.Empty)
-            {
-                this._requestedTowTruckId = this._assistanceService.Call<TowTruck>(player);
-                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.ToggleTowTruck, item => item.Title, "Cancel tow truck");
-            }
-            else
-            {
-                this._assistanceService.Cancel(this._requestedTowTruckId);
-                this._requestedTowTruckId = Guid.Empty;
-                this._menuService.UpdateMenuItem<DispatchMenu>(player, menu => menu.ToggleTowTruck, item => item.Title, "Call tow truck");
-            }
-        };
-        items.Add(this.ToggleTowTruck);
-
-        foreach (var item in this._configService.GeneralConfig.DispatchActions)
+        foreach (var item in this._configService.GeneralConfig.DispatchMenuItems)
         {
             if (item.OnSelect is null)
             {

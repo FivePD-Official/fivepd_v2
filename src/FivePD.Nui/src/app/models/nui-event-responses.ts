@@ -1,5 +1,7 @@
 ﻿import { User, Vector3 } from "./entities";
 import { FDutyStatus, FIncidentPriority, FUnitAvailability } from "@enums";
+import { MenuListOption } from "./menu/MenuListItem";
+import { MenuItem } from "./menu/MenuItem";
 
 export interface ActionResponse {
   Status: boolean;
@@ -16,17 +18,19 @@ export interface BaseNuiEvent {
   Event: string;
 }
 
+export interface MenuItemDto {
+  Hashcode: string;
+  Title: string;
+  Description: string;
+  Type: number;
+  Items?: MenuListOption[];
+}
+
 export interface GetAllMenusResponse extends BaseNuiEvent {
   Menus: {
     Id: string;
     Title: string;
-    Items: {
-      Hashcode: string;
-      Title: string;
-      Description: string;
-      Type: number;
-      Items?: string[];
-    }[];
+    Items: MenuItemDto[];
   }[];
 }
 
@@ -59,6 +63,20 @@ export interface UpdateMenuItemEvent extends BaseNuiEvent {
   Hashcode: string;
   Property: string;
   Value: any;
+}
+
+export interface UpdateMenuListOptionEvent extends UpdateMenuItemEvent {
+  Index: number;
+}
+
+export interface AddMenuItemEvent {
+  MenuId: string;
+  Item: MenuItemDto;
+}
+
+export interface RemoveMenuItemEvent {
+  MenuId: string;
+  ItemHashcode: string;
 }
 
 export interface SoundEvent extends BaseNuiEvent {

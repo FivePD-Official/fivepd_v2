@@ -51,12 +51,12 @@ public sealed class InteractionMenu : Menu
     {
         var items = new List<MenuItem>();
 
-        this.AskForLicense = new MenuListItem("Ask for license", "", new List<string>
+        this.AskForLicense = new MenuListItem("Ask for license", "", new List<MenuListOption>
         {
-            "Driving",
-            "Fishing",
-            "Hunting",
-            "Ccw",
+            new("Driving"),
+            new("Fishing"),
+            new("Hunting"),
+            new("Ccw"),
         });
         this.AskForLicense.OnSelect += async (player, index) =>
         {
@@ -107,6 +107,8 @@ public sealed class InteractionMenu : Menu
 
             var text = new GtaStyleText()
                 .Blue($"[{licenseTypeLabel}]")
+                .NewLine()
+                .White(fPed.Firstname + " " + fPed.Lastname)
                 .NewLine()
                 .White($"Issue date: {license.IssueDate:MM-dd-yyyy}")
                 .NewLine()
@@ -193,7 +195,7 @@ public sealed class InteractionMenu : Menu
             this._notificationService.ShowNotification(player, text.Build());
         };
         items.Add(this.DrugSwabTest);
-        
+
         this.BreathalyzerTest = new MenuButtonItem("Breathalyzer test", "");
         this.BreathalyzerTest.OnSelect += async player =>
         {
@@ -241,7 +243,8 @@ public sealed class InteractionMenu : Menu
             if (fPed.Detained.Value)
             {
                 fPed.Detained.Value = false;
-                this._notificationService.ShowNotification(player, "The ped is being released."); // TODO: add a custom tooltip in the UI? the native is hidden by the menu
+                this._notificationService.ShowNotification(player,
+                    "The ped is being released."); // TODO: add a custom tooltip in the UI? the native is hidden by the menu
                 this._cfxService.SetEnableHandcuffs(fPed.GetUnderlyingPed.NetworkId, false);
             }
             else
@@ -261,9 +264,9 @@ public sealed class InteractionMenu : Menu
             {
                 return;
             }
-            
+
             this._notificationService.ShowNotification(player, "The ped has been let go.");
-            
+
             fPed.Stopped.Value = false;
             Cfx.API.SetEntityDistanceCullingRadius(fPed.GetUnderlyingPed.Handle, 500f);
             fPed.Properties.SetAlwaysKeepTask(false);

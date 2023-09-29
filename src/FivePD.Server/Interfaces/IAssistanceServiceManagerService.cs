@@ -8,8 +8,8 @@ namespace FivePD.Server.Interfaces;
 
 public interface IAssistanceServiceManagerService
 {
-    public Guid Call<T>(FPlayer requestedBy)
+    public Guid Call<T>(FPlayer requestedBy, Action onCanceled = null)
         where T : AssistanceService;
 
-    public void Cancel(Guid guid);
+    public void Cancel(ref Guid guid);
 }

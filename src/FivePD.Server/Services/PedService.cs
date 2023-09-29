@@ -82,6 +82,9 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
 
         return ped;
     }
+#pragma warning disable
+    // TODO: public void UpdatePedHistory(FPed fPed) -> copy fields of FPed to its PedHistory and save 
+#pragma warning restore
 
     private void CheckPeds()
     {

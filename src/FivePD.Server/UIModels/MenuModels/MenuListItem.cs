@@ -15,11 +15,11 @@ public class MenuListItem : MenuItem, IMenuListItemWithEvents
     /// </summary>
     /// <param name="title">The title of this item.</param>
     /// <param name="description">The description of this item.</param>
-    /// <param name="items">The items of this list.</param>
-    public MenuListItem(string title, string description, List<string> items)
+    /// <param name="options">The items of this list.</param>
+    public MenuListItem(string title, string description, List<MenuListOption> options)
         : base(title, description, MenuItemType.List)
     {
-        this.Items = items;
+        this.Options = options;
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class MenuListItem : MenuItem, IMenuListItemWithEvents
     /// <summary>
     /// Gets the items.
     /// </summary>
-    public List<string> Items { get; }
+    public List<MenuListOption> Options { get; }
 
     /// <summary>
     /// Gets the index.
@@ -54,4 +54,18 @@ public class MenuListItem : MenuItem, IMenuListItemWithEvents
     {
         this.OnSelect?.Invoke(player, index);
     }
+}
+
+#pragma warning disable
+public class MenuListOption
+{
+    public MenuListOption(string title, bool enabled = true)
+    {
+        this.Title = title;
+        this.Enabled = enabled;
+    }
+    
+    public string Title { get; internal set; }
+
+    public bool Enabled { get; internal set; }
 }

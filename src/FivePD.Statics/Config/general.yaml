@@ -102,7 +102,7 @@ AssistanceServices:
 Messages:
   CanSend: all # all = everyone can send messages, admins = only admins can send messages
 
-DispatchActions: # rename to DispatchMenuItems?
+DispatchMenuItems:
   - Title: Request ID check from dispatch
     OnSelect: [ REQUEST_ID_CHECK ]
   - Title: Request backup
