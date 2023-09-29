@@ -14,6 +14,8 @@ module.exports = {
       animation: {
         slideIn: 'slideIn .2s forwards',
         slideOut: 'slideOut .2s forwards',
+        modal: 'modal .2s forwards',
+        fadeIn: 'fadeIn .2s forwards',
       },
       keyframes: {
         slideIn: {
@@ -23,7 +25,25 @@ module.exports = {
         slideOut: {
           '0%': {transform: 'translateX(0)'},
           '100%': {transform: 'translateX(100%)'},
-        }
+        },
+        modal: {
+          '0%': {
+            opacity: 80,
+            transform: 'scale(0.95)',
+          },
+          '100%': {
+            opacity: 100,
+            transform: 'scale(1)',
+          },
+        },
+        fadeIn: {
+          '0%': {
+            opacity: 0,
+          },
+          '100%': {
+            opacity: 100,
+          },
+        },
       }
     },
     screens: {

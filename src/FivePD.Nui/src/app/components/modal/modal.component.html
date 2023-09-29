@@ -1,6 +1,6 @@
-<div class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl">
+<div class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col items-center justify-center animate-fadeIn">
   <div #modalContainer
-       class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg bg-zinc-800"
+       class="px-6 py-4 rounded-lg bg-zinc-800 animate-modal"
        [ngClass]="{
         'w-[30vw]': (modalRef.options.columns || 1) > 1,
         'w-[500px]': (modalRef.options.columns || 1) === 1
