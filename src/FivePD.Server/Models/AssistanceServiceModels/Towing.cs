@@ -38,12 +38,12 @@ public class Towing : AssistanceService
         this._notificationService = notificationService;
     }
 
-    public override async Task Setup()
+    public override async Task SetupAsync()
     {
         this._targetVehicle = this._entityService.GetClosestFVehicleToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
     }
 
-    public override Task<bool> CanRun()
+    public override Task<bool> CanRunAsync()
     {
         if (this._targetVehicle is not null)
         {

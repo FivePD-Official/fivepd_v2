@@ -45,12 +45,12 @@ public class Ambulance : AssistanceService
         this._cfxService = cfxService;
     }
 
-    public override async Task Setup()
+    public override async Task SetupAsync()
     {
         this._target = this.RequestedBy.GetUnderlyingPlayer().Character.Position;
     }
 
-    public override Task<bool> CanRun()
+    public override Task<bool> CanRunAsync()
     {
         return Task.FromResult(true);
     }
