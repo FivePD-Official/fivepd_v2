@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
@@ -17,6 +18,7 @@ public class Towing : AssistanceService
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
     private readonly ICfxService _cfxService;
+    private readonly INotificationService _notificationService;
 
     private FPed _driver;
     private FVehicle _towTruck;
@@ -26,17 +28,30 @@ public class Towing : AssistanceService
         IEntityService entityService,
         IConfigService configService,
         IRandomService randomService,
-        ICfxService cfxService)
+        ICfxService cfxService,
+        INotificationService notificationService)
     {
         this._entityService = entityService;
         this._configService = configService;
         this._randomService = randomService;
         this._cfxService = cfxService;
+        this._notificationService = notificationService;
     }
 
     public override async Task Setup()
     {
         this._targetVehicle = this._entityService.GetClosestFVehicleToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
+    }
+
+    public override Task<bool> CanRun()
+    {
+        if (this._targetVehicle is not null)
+        {
+            return Task.FromResult(true);
+        }
+
+        this._notificationService.ShowNotification(this.RequestedBy, "No vehicle found to tow.");
+        return Task.FromResult(false);
     }
 
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)

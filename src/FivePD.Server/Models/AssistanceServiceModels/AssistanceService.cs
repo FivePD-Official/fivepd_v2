@@ -31,6 +31,8 @@ public abstract class AssistanceService : IInternalAssistanceService
 
     public abstract Task Setup();
 
+    public abstract Task<bool> CanRun();
+
     public abstract Task OnCalledAsync(CancellationTokenSource cancellationTokenSource);
 
     public abstract Task OnCancellationRequestedAsync();

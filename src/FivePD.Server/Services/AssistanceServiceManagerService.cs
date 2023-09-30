@@ -133,53 +133,74 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             this._logger = logger;
             this._onCanceled = onCanceled;
 
-            this._methodQueue.Add(service.Setup);
             this._methodQueue.Add(() => service.OnCalledAsync(cancellationTokenSource));
             this._methodQueue.Add(service.OnCompletedAsync);
         }
 
         public async Task InvokeAssistanceServiceMethods()
         {
+            Func<Task> currentMethod = null;
+            var canRunResult = false;
             try
             {
+                if (this.CancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    throw new TaskCanceledException();
+                }
+
+                await this._service.Setup();
+
+                if (this.CancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    throw new TaskCanceledException();
+                }
+
+                canRunResult = await this._service.CanRun();
+                if (!canRunResult)
+                {
+                    throw new TaskCanceledException();
+                }
+
                 foreach (var method in this._methodQueue)
                 {
+                    currentMethod = method;
                     if (this.CancellationTokenSource.Token.IsCancellationRequested)
                     {
                         throw new TaskCanceledException();
                     }
 
-                    try
-                    {
-                        await method();
-                    }
-                    catch (Exception e)
-                    {
-                        this._logger.Error(
-                            "Failed to invoke method \"{Method}\" of assistance service \"{Service}\". Cancelling service. Exception: {Exception}",
-                            method.Method.Name,
-                            this._service.GetType(),
-                            e.Message);
-                        throw new TaskCanceledException();
-                    }
+                    await method();
                 }
 
                 throw new TaskCanceledException();
             }
-            catch (Exception)
+            catch (TaskCanceledException)
             {
                 try
                 {
-                    this._service.OnCancellationRequestedAsync();
+                    if (canRunResult)
+                    {
+                        this._service.OnCancellationRequestedAsync();
+                    }
+
                     this._onCanceled?.Invoke();
                 }
                 catch (Exception e)
                 {
                     this._logger.Error(
-                        "Failed to invoke method \"OnCancellationRequestedAsync\" of assistance service \"{Service}\". Exception: {Exception}",
+                        "Failed to invoke method \"{Method}\" of assistance service \"{Service}\". Exception: {Exception}",
+                        nameof(this._service.OnCancellationRequestedAsync),
                         this._service.GetType(),
-                        e.Message);
+                        e);
                 }
+            }
+            catch (Exception e)
+            {
+                this._logger.Error(
+                    "Failed to invoke method \"{Method}\" of assistance service \"{Service}\". Cancelling service. Exception: {Exception}",
+                    currentMethod?.Method.Name,
+                    this._service.GetType(),
+                    e);
             }
         }
     }

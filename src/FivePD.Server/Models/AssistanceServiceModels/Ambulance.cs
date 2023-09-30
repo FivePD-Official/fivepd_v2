@@ -50,6 +50,11 @@ public class Ambulance : AssistanceService
         this._target = this.RequestedBy.GetUnderlyingPlayer().Character.Position;
     }
 
+    public override Task<bool> CanRun()
+    {
+        return Task.FromResult(true);
+    }
+
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
     {
         var serviceVehicle =
