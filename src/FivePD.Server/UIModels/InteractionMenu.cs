@@ -181,7 +181,7 @@ public sealed class InteractionMenu : Menu
             var playerPed = FPed.FromFPlayer(player);
 
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
-            if (fPed is null || !fPed.HasGeneratedData.Value)
+            if (fPed is null || !fPed.HasGeneratedData.Value || fPed.Properties.IsDead)
             {
                 return;
             }
@@ -202,7 +202,7 @@ public sealed class InteractionMenu : Menu
             var playerPed = FPed.FromFPlayer(player);
 
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
-            if (fPed is null || !fPed.HasGeneratedData.Value)
+            if (fPed is null || !fPed.HasGeneratedData.Value || fPed.Properties.IsDead)
             {
                 return;
             }
@@ -212,16 +212,16 @@ public sealed class InteractionMenu : Menu
             var text = new GtaStyleText()
                 .Blue("Breathalyzer test")
                 .NewLine()
-                .White($"Legal limit: {this._configService.GeneralConfig.Peds.Alcohol.LegalLimit}")
+                .White($"Legal limit: {this._configService.GeneralConfig.Peds.Alcohol.LegalLimit:0.00}")
                 .NewLine()
-                .White($"Result: ");
+                .White("Result: ");
             if (fPed.AlcoholOverLegalLimit())
             {
-                text.Red(fPed.AlcoholLevel.ToString(CultureInfo.InvariantCulture));
+                text.Red(fPed.AlcoholLevel.ToString("0.00"));
             }
             else
             {
-                text.White(fPed.AlcoholLevel.ToString(CultureInfo.InvariantCulture));
+                text.White(fPed.AlcoholLevel.ToString("0.00"));
             }
 
             this._notificationService.ShowNotification(player, text.Build());
