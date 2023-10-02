@@ -45,12 +45,20 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
     /// <inheritdoc/>
     Callout IInternalAddonMetadataService.InstantiateCallout(Type type)
     {
-        var parameters = type.GetConstructors()[0].GetParameters();
-        var callout = (Callout)Activator.CreateInstance(
-            type,
-            parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
+        try
+        {
+            var parameters = type.GetConstructors()[0].GetParameters();
+            var callout = (Callout)Activator.CreateInstance(
+                type,
+                parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
 
-        return callout;
+            return callout;
+        }
+        catch (Exception e)
+        {
+            this._logger.Error("Failed to instantiate callout {CalloutType}: {Exception}", type.FullName, e);
+            return null;
+        }
     }
 
     /// <inheritdoc />
