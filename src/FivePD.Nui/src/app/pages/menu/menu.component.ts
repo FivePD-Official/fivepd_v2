@@ -12,7 +12,8 @@ import {
 import { MenuItemType } from '@enums';
 import { BaseNuiEvent, Menu, MenuCheckboxItem, MenuItem, MenuListItem } from '@models';
 import { EventService } from '@services/event/event.service';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { takeUntil } from 'rxjs';
+import { injectDestroy } from "../../helpers/destroy-ref";
 
 @Component({
   selector: 'app-menu',
@@ -20,6 +21,8 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   styleUrls: ['./menu.component.sass']
 })
 export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
+
+  destroy$ = injectDestroy();
 
   @Input() menu!: Menu;
 
@@ -34,19 +37,19 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     private _event: EventService,
   ) {
     this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_up')
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuUp());
     this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_down')
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuDown());
     this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_left')
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuLeft());
     this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_right')
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuRight());
     this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_select')
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuSelect());
   }
 
