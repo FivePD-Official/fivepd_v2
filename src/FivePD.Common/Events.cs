@@ -259,6 +259,8 @@ internal readonly record struct Events
     public readonly record struct Interaction
     {
         public const string GetTargetedEntity = "fivepd:interaction:getTargetedEntity";
+        
+        public const string ToggleFollowPlayer = "fivepd:ped:toggleFollowPlayer";
     }
     
     public readonly record struct Entity
@@ -388,6 +390,9 @@ internal readonly record struct Events
 
         // void AttachEntityToEntity(int entity1,int entity2,int boneIndex,float xPos,float yPos,float zPos,float xRot,float yRot,float zRot,bool p9,bool useSoftPinning,bool collision,bool isPed,int rotationOrder,bool fixedRot);
         public const string AttachEntityToEntity = "fivepd:cfx:AttachEntityToEntity";
+        
+        // void DetachEntity(int entity, bool _dynamic, bool collision);
+        public const string DetachEntity = "fivepd:cfx:DetachEntity";
 
         // void SetPedIntoVehicle(int ped,int vehicle,int seatIndex);
         public const string SetPedIntoVehicle = "fivepd:cfx:SetPedIntoVehicle";

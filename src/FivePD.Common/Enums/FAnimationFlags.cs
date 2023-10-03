@@ -1,7 +1,10 @@
-﻿namespace FivePD.Common.Enums;
+﻿using System;
+
+namespace FivePD.Common.Enums;
 
 #pragma warning disable
 
+[Flags]
 public enum FAnimationFlags
 {
     None = 0,

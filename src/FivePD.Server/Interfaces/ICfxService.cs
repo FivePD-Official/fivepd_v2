@@ -56,6 +56,8 @@ public interface ICfxService
         int rotationOrder,
         bool fixedRot);
 
+    public void DetachEntity(int entity, bool _dynamic, bool collision);
+
     public void SetPedIntoVehicle(int ped, int vehicle, int seatIndex);
 
     public void ResurrectPed(int ped);

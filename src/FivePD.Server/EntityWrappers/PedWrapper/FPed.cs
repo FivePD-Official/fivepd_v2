@@ -75,6 +75,11 @@ public class FPed : FEntity, IFStatefulContainer
     public FStateBagObservable<bool> Detained { get; private set; }
 
     /// <summary>
+    /// Gets the ped's observable with a value indicating if the ped is being moved.
+    /// </summary>
+    public FStateBagObservable<FPedMovement> Movement { get; private set; }
+
+    /// <summary>
     /// Gets the properties of the <see cref="FPed"/>.
     /// </summary>
     public FPedProperties Properties { get; private set; }
@@ -221,6 +226,7 @@ public class FPed : FEntity, IFStatefulContainer
         this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Stopped, false);
         this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Ped.HasGeneratedData, false);
         this.Detained = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Detained, false);
+        this.Movement = new FStateBagObservable<FPedMovement>(this, StateBagKeys.Ped.Movement, FPedMovement.None);
     }
 #pragma warning restore
 }

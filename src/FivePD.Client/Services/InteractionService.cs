@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
-using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using Cfx = CitizenFX.Core.Native;
@@ -19,6 +19,9 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
     private readonly IVehicleService _vehicleService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
+    private readonly ITickService _tickService;
+
+    private Ped _currentlyFollowingPed;
 
     /// <summary>
     /// Initializes a new instance of
@@ -28,22 +31,26 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
     /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
+    /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     public InteractionService(
         IPedService pedService,
         IVehicleService vehicleService,
         EventHandlerDictionary eventHandlerDictionary,
-        IControlService controlService)
+        IControlService controlService,
+        ITickService tickService)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._controlService = controlService;
+        this._tickService = tickService;
     }
 
     /// <inheritdoc />
     public void RegisterEvents()
     {
         this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
+        this._eventHandlerDictionary[Events.Interaction.ToggleFollowPlayer] += new Action<int, bool>(this.ToggleFollowPlayer);
         this._controlService.RegisterKeybind(
             Controls.TryAlertEntityAsync.Id,
             Controls.TryAlertEntityAsync.Key,
@@ -193,5 +200,53 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
 
         ped.CreateBlip(FBlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
         BaseScript.TriggerServerEvent(Events.Ped.OnAlerted, ped.NetworkId);
+    }
+
+    private void ToggleFollowPlayer(int networkId, bool follow)
+    {
+        if (this._currentlyFollowingPed is not null && this._currentlyFollowingPed.NetworkId == networkId)
+        {
+            this._currentlyFollowingPed = null;
+            this._tickService.OnTick -= this.FollowAsync;
+            return;
+        }
+
+        if (!Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId))
+        {
+            return;
+        }
+
+        if (Entity.FromNetworkId(networkId) is not Ped ped)
+        {
+            return;
+        }
+
+        this._currentlyFollowingPed = ped;
+
+        if (follow)
+        {
+            this._tickService.OnTick += this.FollowAsync;
+        }
+        else
+        {
+            this._tickService.OnTick -= this.FollowAsync;
+        }
+    }
+
+    private async Task FollowAsync()
+    {
+        if (this._currentlyFollowingPed is not null)
+        {
+            if (this._currentlyFollowingPed.IsInRangeOf(Game.PlayerPed.Position, 3f))
+            {
+                this._currentlyFollowingPed.Task.ChatTo(Game.PlayerPed);
+            }
+            else
+            {
+                this._currentlyFollowingPed.Task.RunTo(Game.PlayerPed.Position);
+            }
+
+            await BaseScript.Delay(200);
+        }
     }
 }

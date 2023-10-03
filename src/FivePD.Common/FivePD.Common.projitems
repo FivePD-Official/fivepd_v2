@@ -56,6 +56,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FLeaveVehicleFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FMarkerType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FPedHash.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FPedMovement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FUnitAvailability.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleDrivingFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleSeat.cs" />

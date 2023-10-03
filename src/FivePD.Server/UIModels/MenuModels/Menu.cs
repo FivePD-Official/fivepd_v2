@@ -30,7 +30,7 @@ public abstract class Menu
     /// <summary>
     /// Gets the items.
     /// </summary>
-    public List<MenuItem> Items { get; private set; } = new();
+    public List<MenuItem> Items { get; private set; } = new(); // TODO: make this readonly for public use
 
     /// <summary>
     /// Gets the title of the menu.

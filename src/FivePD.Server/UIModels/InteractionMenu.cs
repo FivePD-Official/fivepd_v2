@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Enums;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
@@ -21,18 +21,21 @@ public sealed class InteractionMenu : Menu
     private readonly IEntityService _entityService;
     private readonly ICfxService _cfxService;
     private readonly IConfigService _configService;
+    private readonly IInternalInteractionService _interactionService;
 
     public InteractionMenu(
         INotificationService notificationService,
         IEntityService entityService,
         ICfxService cfxService,
-        IConfigService configService)
+        IConfigService configService,
+        IInteractionService interactionService)
         : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key)
     {
         this._notificationService = notificationService;
         this._entityService = entityService;
         this._cfxService = cfxService;
         this._configService = configService;
+        this._interactionService = (IInternalInteractionService)interactionService;
     }
 
     internal MenuButtonItem SearchPed { get; private set; }
@@ -46,6 +49,10 @@ public sealed class InteractionMenu : Menu
     internal MenuButtonItem DetainOrRelease { get; private set; }
 
     internal MenuButtonItem LetGo { get; private set; }
+
+    internal MenuButtonItem StepOutOfVehicle { get; private set; }
+
+    internal MenuListItem Movement { get; private set; }
 
     protected override List<MenuItem> CreateItems()
     {
@@ -228,6 +235,79 @@ public sealed class InteractionMenu : Menu
         };
         items.Add(this.BreathalyzerTest);
 
+        this.Movement = new MenuListItem("Movement", "", new List<MenuListOption>
+        {
+            new("Stand still"),
+            new("Grab"),
+            new("Follow me"),
+        });
+        this.Movement.OnSelect += async (player, index) =>
+        {
+            var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+            if (fPed is null || fPed.Properties.IsDead || fPed.Properties.IsInVehicle)
+            {
+                return;
+            }
+
+            var playerPed = FPed.FromFPlayer(player);
+
+            switch (index)
+            {
+                case 0:
+                {
+                    if (fPed.Movement.Value == FPedMovement.Grab)
+                    {
+                        this._cfxService.DetachEntity(fPed.NetworkId, true, false);
+                        playerPed.Task.ClearAllImmediately();
+                        playerPed.Task.ClearAnimation("doors@", "door_sweep_r_hand_medium");
+                    }
+                    else if (fPed.Movement.Value == FPedMovement.Follow)
+                    {
+                        this._interactionService.TogglePedFollowPlayer(player, fPed.GetUnderlyingPed, false);
+                    }
+
+                    fPed.Movement.Value = FPedMovement.None;
+                    fPed.Task.StandStill(-1);
+                    break;
+                }
+                case 1:
+                {
+                    fPed.Movement.Value = FPedMovement.Grab;
+                    fPed.GetUnderlyingPed.Heading = player.GetUnderlyingPlayer().Character.Heading;
+                    playerPed.Task.PlayAnimation(
+                        "doors@",
+                        "door_sweep_r_hand_medium",
+                        5f,
+                        -1,
+                        FAnimationFlags.StayInEndFrame | FAnimationFlags.UpperBodyOnly | FAnimationFlags.AllowRotation);
+                    this._cfxService.AttachEntityToEntity(
+                        fPed.NetworkId,
+                        player.GetUnderlyingPlayer().Character.NetworkId,
+                        0,
+                        0.2f,
+                        0.4f,
+                        0f,
+                        0f,
+                        0f,
+                        0f,
+                        false,
+                        false,
+                        false,
+                        false,
+                        2,
+                        false);
+                    break;
+                }
+                case 2:
+                {
+                    fPed.Movement.Value = FPedMovement.Follow;
+                    this._interactionService.TogglePedFollowPlayer(player, fPed.GetUnderlyingPed, true);
+                    break;
+                }
+            }
+        };
+        items.Add(this.Movement);
+
         this.DetainOrRelease = new MenuButtonItem("Detain/Release the ped", "");
         this.DetainOrRelease.OnSelect += async player =>
         {
@@ -286,6 +366,19 @@ public sealed class InteractionMenu : Menu
             }
         };
         items.Add(this.LetGo);
+
+        this.StepOutOfVehicle = new MenuButtonItem("Step out of vehicle", "");
+        this.StepOutOfVehicle.OnSelect += async player =>
+        {
+            var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+            if (fPed is null || fPed.Properties.IsDead || !fPed.Properties.IsInVehicle)
+            {
+                return;
+            }
+
+            fPed.Task.LeaveVehicle();
+        };
+        items.Add(this.StepOutOfVehicle);
 
         return items;
     }

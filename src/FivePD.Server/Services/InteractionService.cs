@@ -1,6 +1,7 @@
 ﻿using System;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using Cfx = CitizenFX.Core.Native;
 
@@ -9,7 +10,7 @@ namespace FivePD.Server.Services;
 #pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IInteractionService" />
-public class InteractionService : IInteractionService, IServiceWithEvents
+public class InteractionService : IInteractionService, IInternalInteractionService, IServiceWithEvents
 {
     private readonly IPedService _pedService;
     private readonly IVehicleService _vehicleService;
@@ -64,12 +65,20 @@ public class InteractionService : IInteractionService, IServiceWithEvents
 
         if (ped.Properties.IsInVehicle)
         {
-            ped.Task.LeaveVehicle();
+            // ped.Task.LeaveVehicle();
+        }
+        else
+        {
+            ped.Task.StandStill(-1);
         }
 
-        ped.Task.StandStill(-1);
         ped.Task.TurnTo(player.Character);
 
         Debug.WriteLine($"Alerted ped with net ID of {ped.NetworkId}");
+    }
+
+    void IInternalInteractionService.TogglePedFollowPlayer(FPlayer player, Ped ped, bool follow)
+    {
+        this._eventService.TriggerEventWithoutCallback(ped.Owner, Events.Interaction.ToggleFollowPlayer, ped.NetworkId, follow);
     }
 }

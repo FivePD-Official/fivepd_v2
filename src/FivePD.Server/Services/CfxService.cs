@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 
@@ -99,16 +98,21 @@ public class CfxService : ICfxService
             useSoftPinning, collision, isPed, rotationOrder, fixedRot);
     }
 
+    public void DetachEntity(int entity, bool _dynamic, bool collision)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.DetachEntity, entity, _dynamic, collision);
+    }
+
     public void SetPedIntoVehicle(int ped, int vehicle, int seatIndex)
     {
         BaseScript.TriggerClientEvent(Events.Cfx.SetPedIntoVehicle, ped, vehicle, seatIndex);
     }
-    
+
     public void ResurrectPed(int ped)
     {
         this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.ResurrectPed, ped);
     }
-    
+
     public void SetEnableHandcuffs(int ped, bool toggle)
     {
         this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.SetEnableHandcuffs, ped, toggle);

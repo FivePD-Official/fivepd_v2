@@ -137,6 +137,20 @@ public class CfxService : ICfxService, IServiceWithEvents
 
             Cfx.API.AttachEntityToEntity(entity1.Handle, entity2.Handle, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
         });
+        
+        this._eventHandlerDictionary[Events.Cfx.DetachEntity] += new Action<
+            int,
+            bool,
+            bool>((arg1, arg2, arg3) =>
+        {
+            var entity1 = Entity.FromNetworkId(arg1);
+            if (entity1 is null)
+            {
+                return;
+            }
+
+            Cfx.API.DetachEntity(entity1.Handle, arg2, arg3);
+        });
 
         this._eventHandlerDictionary[Events.Cfx.SetPedIntoVehicle] += new Action<
             int,
