@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using Cfx = CitizenFX.Core.Native;
@@ -12,7 +13,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IInteractionService" />
-internal class InteractionService : IInteractionService, IServiceWithEvents
+internal class InteractionService : IInteractionService, IOnInit
 {
     private const float BaseInteractionDistance = 15f;
     private readonly IPedService _pedService;
@@ -47,7 +48,7 @@ internal class InteractionService : IInteractionService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
         this._eventHandlerDictionary[Events.Interaction.ToggleFollowPlayer] += new Action<int, bool>(this.ToggleFollowPlayer);

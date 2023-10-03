@@ -5,6 +5,7 @@ using CitizenFX.Core;
 using FivePD.Client.DTO;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.ConfigModels;
@@ -17,7 +18,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.ILocalPlayerService" />
-internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDisposableService
+internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILocalizationService _localizationService;
@@ -75,7 +76,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDi
     public string Status { get; private set; } = string.Empty;
 
     /// <inheritdoc/>
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._tickService.OnTick += this.OnTickAsync;
         this._eventHandlerDictionary[Events.Player.UpdateUnitAvailability] += new Action<int>(availability => this.ListenForAvailabilityStatusChanges((FUnitAvailability)availability));
@@ -91,7 +92,7 @@ internal class LocalPlayerService : ILocalPlayerService, IServiceWithEvents, IDi
     }
 
     /// <inheritdoc/>
-    public void InternalDispose()
+    public void OnDestroy()
     {
         this._tickService.OnTick -= this.OnTickAsync;
     }

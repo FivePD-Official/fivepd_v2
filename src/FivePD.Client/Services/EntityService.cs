@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Models;
 using FivePD.Common;
 using Cfx = CitizenFX.Core.Native;
@@ -11,7 +12,7 @@ namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class EntityService : IEntityService, IServiceWithEvents
+internal class EntityService : IEntityService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IPedService _pedService;
@@ -22,7 +23,7 @@ internal class EntityService : IEntityService, IServiceWithEvents
         this._pedService = pedService;
     }
 
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary[Events.Entity.GetClosestEntityToPlayer] += new Action<string, string>(this.GetClosestEntityToPlayer);
     }

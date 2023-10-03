@@ -7,6 +7,7 @@ using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Injection;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Services;
 using FivePD.Common;
 using FivePD.Common.Utilities;
@@ -145,7 +146,7 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<LocalizationService>()
             .As<ILocalizationService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
@@ -159,7 +160,7 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<DevToolsService>()
             .As<IDevToolsService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
@@ -169,25 +170,25 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<TickService>()
             .As<ITickService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<ScreenDecorService>()
             .As<IScreenDecorService>()
-            .As<IDisposableService>()
+            .As<IOnDestroy>()
             .IsSingleton();
 
         services
             .RegisterType<UIManagerService>()
             .As<IUIManagerService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<UIService>()
             .As<IUIService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
@@ -197,14 +198,14 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<ControlService>()
             .As<IControlService>()
-            .As<IServiceWithEvents>()
-            .As<IDisposableService>()
+            .As<IOnInit>()
+            .As<IOnDestroy>()
             .IsSingleton();
 
         services
             .RegisterType<MenuService>()
             .As<IMenuService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         // TODO: I'm not sure about radial menus.
@@ -215,109 +216,109 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<PedService>()
             .As<IPedService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<VehicleService>()
             .As<IVehicleService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<NotificationService>()
             .As<INotificationService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<LocalPlayerService>()
             .As<ILocalPlayerService>()
-            .As<IServiceWithEvents>()
-            .As<IDisposableService>()
+            .As<IOnInit>()
+            .As<IOnDestroy>()
             .IsSingleton();
 
         services
             .RegisterType<InteractionService>()
             .As<IInteractionService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<MarkerService>()
             .As<IMarkerService>()
-            .As<IServiceWithEvents>()
-            .As<IDisposableService>()
+            .As<IOnInit>()
+            .As<IOnDestroy>()
             .IsSingleton();
 
         services
             .RegisterType<ConfirmationService>()
             .As<IConfirmationService>()
-            .As<IServiceWithEvents>()
-            .As<IDisposableService>()
+            .As<IOnInit>()
+            .As<IOnDestroy>()
             .IsSingleton();
 
         services
             .RegisterType<CalloutManagerService>()
             .As<ICalloutManagerService>()
-            .As<IServiceWithEvents>()
-            .As<IDisposableService>()
+            .As<IOnInit>()
+            .As<IOnDestroy>()
             .IsSingleton();
 
         services
             .RegisterType<CfxService>()
             .As<ICfxService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<DispatchService>()
             .As<IDispatchService>()
-            .As<IServiceWithEvents>()
-            .As<IDisposableService>()
+            .As<IOnInit>()
+            .As<IOnDestroy>()
             .IsSingleton();
 
         services
             .RegisterType<DepartmentService>()
             .As<IDepartmentService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<LooseDataService>()
             .As<ILooseDataService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<UnitService>()
             .As<IUnitService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<IncidentHistoryService>()
             .As<IIncidentHistoryService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<EntityService>()
             .As<IEntityService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<MessageService>()
             .As<IMessageService>()
-            .As<IServiceWithEvents>()
+            .As<IOnInit>()
             .IsSingleton();
 
         services
             .RegisterType<QueueService>()
             .As<IQueueService>()
-            .As<IServiceWithEvents>()
-            .As<IDisposableService>()
+            .As<IOnInit>()
+            .As<IOnDestroy>()
             .IsSingleton();
 
         this._serviceProvider = services.Build();
@@ -327,7 +328,7 @@ internal class Bootstrapper : BaseScript
 
     private void PerformInitializationPhase()
     {
-        var serviceWithEvents = this._serviceProvider.ResolveAll<IServiceWithEvents>();
+        var serviceWithEvents = this._serviceProvider.ResolveAll<IOnInit>();
         foreach (var service in serviceWithEvents)
         {
 #if DEBUG
@@ -336,7 +337,7 @@ internal class Bootstrapper : BaseScript
 
             try
             {
-                service.RegisterEvents();
+                service.OnInit();
             }
             catch (Exception e)
             {

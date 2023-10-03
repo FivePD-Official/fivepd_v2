@@ -3,11 +3,12 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 
 namespace FivePD.Client.Services;
 
 /// <inheritdoc />
-internal class TickService : ITickService, IServiceWithEvents
+internal class TickService : ITickService, IOnInit
 {
     private readonly AddTickHandler _addTickHandler;
 
@@ -35,7 +36,7 @@ internal class TickService : ITickService, IServiceWithEvents
     }
 
     /// <inheritdoc/>
-    public void RegisterEvents()
+    public void OnInit()
     {
         this.OnTick += () =>
         {

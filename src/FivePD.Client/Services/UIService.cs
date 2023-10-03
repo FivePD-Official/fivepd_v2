@@ -4,6 +4,7 @@ using CitizenFX.Core;
 using FivePD.Client.Attributes;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Utilities;
 using FivePD.Common;
 using Newtonsoft.Json;
@@ -13,7 +14,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="IUIService" />
-internal class UIService : IUIService, IServiceWithEvents
+internal class UIService : IUIService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
@@ -38,7 +39,7 @@ internal class UIService : IUIService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._controlService.RegisterKeybind(Controls.OpenMDT.Id, Controls.OpenMDT.Key, Controls.OpenMDT.Title, this.OpenMDT);
         this._controlService.RegisterKeybind(Controls.OpenInformation.Id, Controls.OpenInformation.Key, Controls.OpenInformation.Title, this.OpenInformation);

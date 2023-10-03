@@ -1,13 +1,14 @@
 ﻿using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 
 namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class MessageService : IMessageService, IServiceWithEvents
+internal class MessageService : IMessageService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     
@@ -16,7 +17,7 @@ internal class MessageService : IMessageService, IServiceWithEvents
         this._eventHandlerDictionary = eventHandlerDictionary;
     }
 
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Message.Get);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Message.GetAllPageable);

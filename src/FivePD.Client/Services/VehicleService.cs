@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.DTO;
@@ -15,7 +16,7 @@ namespace FivePD.Client.Services;
 #pragma warning disable // TODO remove
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IVehicleService" />
-internal class VehicleService : IVehicleService, IServiceWithEvents
+internal class VehicleService : IVehicleService, IOnInit
 {
     private readonly IPedService _pedService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
@@ -30,7 +31,7 @@ internal class VehicleService : IVehicleService, IServiceWithEvents
         this._eventHandlerDictionary = eventHandlerDictionary;
     }
 
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary[Events.Vehicle.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
         this._eventHandlerDictionary[Events.Vehicle.SetProperty] += new Action<int, string, string>(this.SetPedProperty);

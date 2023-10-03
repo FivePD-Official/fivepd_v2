@@ -4,6 +4,7 @@ using CitizenFX.Core;
 using FivePD.Client.Attributes;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Utilities;
 using FivePD.Common;
 using Newtonsoft.Json;
@@ -14,7 +15,7 @@ namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class UIManagerService : IUIManagerService, IServiceWithEvents
+internal class UIManagerService : IUIManagerService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILoggerService _loggerService;
@@ -35,7 +36,7 @@ internal class UIManagerService : IUIManagerService, IServiceWithEvents
 
     public bool MenuOpen { get; private set; }
 
-    public void RegisterEvents()
+    public void OnInit()
     {
         // Listens for NUI status checks
         this._eventHandlerDictionary.AddUIEvent(

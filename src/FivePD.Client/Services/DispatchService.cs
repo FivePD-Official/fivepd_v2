@@ -6,6 +6,7 @@ using CitizenFX.Core;
 using FivePD.Client.DTO;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.DTO;
@@ -16,7 +17,7 @@ namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class DispatchService : IDispatchService, IServiceWithEvents, IDisposableService
+internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IUIManagerService _uiManagerService;
@@ -40,7 +41,7 @@ internal class DispatchService : IDispatchService, IServiceWithEvents, IDisposab
         this._playerList = playerList;
     }
 
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._localPlayerService.Player.Dispatcher.Subscribe(dispatcher =>
         {
@@ -105,7 +106,7 @@ internal class DispatchService : IDispatchService, IServiceWithEvents, IDisposab
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Dispatch.AssignCalloutToUnits);
     }
 
-    public void InternalDispose()
+    public void OnDestroy()
     {
         this._tickService.DequeueInterval(this._uiPlayerUpdateIntervalId);
     }

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 
 namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class QueueService : IQueueService, IServiceWithEvents, IDisposableService
+internal class QueueService : IQueueService, IOnInit, IOnDestroy
 {
     private readonly ITickService _tickService;
     private readonly Queue<Action> _tasks = new();
@@ -17,12 +18,12 @@ internal class QueueService : IQueueService, IServiceWithEvents, IDisposableServ
         this._tickService = tickService;
     }
 
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._tickService.OnTick += this.OnTick;
     }
     
-    public void InternalDispose()
+    public void OnDestroy()
     {
         this._tickService.OnTick -= this.OnTick;
     }

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common.Enums;
 using FivePD.Common.Utilities;
 using Cfx = CitizenFX.Core.Native;
@@ -7,7 +8,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc />
-internal class ScreenDecorService : IScreenDecorService, IDisposableService
+internal class ScreenDecorService : IScreenDecorService, IOnDestroy
 {
     private readonly ITickService _tickService;
     private readonly ILocalizationService _localizationService;
@@ -68,7 +69,7 @@ internal class ScreenDecorService : IScreenDecorService, IDisposableService
     }
 
     /// <inheritdoc/>
-    public void InternalDispose()
+    public void OnDestroy()
     {
         this._tickService.OnTick -= this.DrawOnScreenAsync;
     }

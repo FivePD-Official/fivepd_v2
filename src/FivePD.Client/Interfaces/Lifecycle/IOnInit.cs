@@ -1,13 +1,13 @@
-﻿namespace FivePD.Client.Interfaces;
+﻿namespace FivePD.Client.Interfaces.Lifecycle;
 
 /// <summary>
 /// Services which require events in order to function properly
 /// should inherit this interface.
 /// </summary>
-internal interface IDisposableService
+internal interface IOnInit
 {
     /// <summary>
     /// Registers all events related to the current class.
     /// </summary>
-    internal void InternalDispose();
+    void OnInit();
 }

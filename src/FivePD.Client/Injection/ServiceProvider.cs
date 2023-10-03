@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 
 namespace FivePD.Client.Injection;
 
@@ -121,10 +122,10 @@ internal class ServiceProvider : IDisposable
     {
         if (disposing)
         {
-            var disposableServices = this.ResolveAll<IDisposableService>();
+            var disposableServices = this.ResolveAll<IOnDestroy>();
             foreach (var disposableService in disposableServices)
             {
-                disposableService.InternalDispose();
+                disposableService.OnDestroy();
             }
 
             this._instances.Clear();

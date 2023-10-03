@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Common.Models;
@@ -12,7 +13,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IMarkerService" />
-internal class MarkerService : IMarkerService, IServiceWithEvents, IDisposableService
+internal class MarkerService : IMarkerService, IOnInit, IOnDestroy
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;
@@ -31,7 +32,7 @@ internal class MarkerService : IMarkerService, IServiceWithEvents, IDisposableSe
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary[Events.Marker.Add] += new Action<string>(this.AddMarker);
         this._eventHandlerDictionary[Events.Marker.Remove] += new Action<string>(this.RemoveMarker);
@@ -39,7 +40,7 @@ internal class MarkerService : IMarkerService, IServiceWithEvents, IDisposableSe
     }
 
     /// <inheritdoc/>
-    public void InternalDispose()
+    public void OnDestroy()
     {
         this._tickService.OnTick -= this.DrawMarkersAsync;
     }

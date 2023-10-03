@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Common.Extensions;
@@ -14,7 +15,7 @@ using CfxUI = CitizenFX.Core.UI;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.INotificationService" />
-internal class NotificationService : INotificationService, IServiceWithEvents
+internal class NotificationService : INotificationService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILocalizationService _localizationService;
@@ -31,7 +32,7 @@ internal class NotificationService : INotificationService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary[Events.Notification.ShowTooltip] += new Action<string>(serializedRequest =>
         {

@@ -7,6 +7,7 @@ using CitizenFX.Core;
 using FivePD.Client.Attributes;
 using FivePD.Client.Injection;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.Utilities;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IControlService" />
-internal class ControlService : IControlService, IServiceWithEvents, IDisposableService
+internal class ControlService : IControlService, IOnInit, IOnDestroy
 {
     private readonly ITickService _tickService;
     private readonly IUIManagerService _uiService;
@@ -38,7 +39,7 @@ internal class ControlService : IControlService, IServiceWithEvents, IDisposable
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    public void OnInit()
     {
         var methodInfos = Assembly
             .GetExecutingAssembly()
@@ -74,7 +75,7 @@ internal class ControlService : IControlService, IServiceWithEvents, IDisposable
     }
 
     /// <inheritdoc/>
-    public void InternalDispose()
+    public void OnDestroy()
     {
         this._tickService.OnTick -= this.WaitForHoldAsync;
     }

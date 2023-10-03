@@ -1,12 +1,13 @@
 ﻿using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IDepartmentService" />
-public class DepartmentService : IDepartmentService, IServiceWithEvents
+public class DepartmentService : IDepartmentService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 
@@ -20,7 +21,7 @@ public class DepartmentService : IDepartmentService, IServiceWithEvents
     }
 
     /// <inheritdoc/>
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Get);

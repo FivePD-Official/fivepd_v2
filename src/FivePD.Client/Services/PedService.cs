@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.Builders;
@@ -16,7 +17,7 @@ namespace FivePD.Client.Services;
 #pragma warning disable // TODO remove
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IPedService" />
-internal class PedService : IPedService, IServiceWithEvents
+internal class PedService : IPedService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IQueueService _queueService;
@@ -33,7 +34,7 @@ internal class PedService : IPedService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    public void OnInit()
     {
         // TODO: move to PedHistory service
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.Get);

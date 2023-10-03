@@ -2,6 +2,7 @@
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using Cfx = CitizenFX.Core.Native;
 
@@ -9,7 +10,7 @@ namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class CfxService : ICfxService, IServiceWithEvents
+internal class CfxService : ICfxService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IQueueService _queueService;
@@ -20,7 +21,7 @@ internal class CfxService : ICfxService, IServiceWithEvents
         this._queueService = queueService;
     }
 
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary[Events.Cfx.AddAmmoToPed] += new Action<int, uint, int>((ped, weaponHash, ammo) =>
         {

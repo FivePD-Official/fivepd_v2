@@ -4,6 +4,7 @@ using System.Dynamic;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.Extensions;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.ILocalizationService" />
-internal class LocalizationService : ILocalizationService, IServiceWithEvents
+internal class LocalizationService : ILocalizationService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 
@@ -39,7 +40,7 @@ internal class LocalizationService : ILocalizationService, IServiceWithEvents
     public object CurrentLocalization { get; private set; }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary.AddUIEvent(
             Events.Localization.GetLocalizationFromNui,

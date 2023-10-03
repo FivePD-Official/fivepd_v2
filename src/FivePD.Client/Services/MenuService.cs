@@ -2,6 +2,7 @@ using System;
 using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Common.Enums;
@@ -12,7 +13,7 @@ using Newtonsoft.Json;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="IMenuService" />
-internal class MenuService : IMenuService, IServiceWithEvents
+internal class MenuService : IMenuService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
@@ -36,7 +37,7 @@ internal class MenuService : IMenuService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    public void RegisterEvents()
+    public void OnInit()
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
         {
