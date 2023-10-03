@@ -5,12 +5,13 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.ILocalizationService" />
-public class LocalizationService : ILocalizationService, IServiceWithEvents
+public class LocalizationService : ILocalizationService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly Dictionary<string, string> _localizationCache = new();
@@ -26,7 +27,7 @@ public class LocalizationService : ILocalizationService, IServiceWithEvents
     public Dictionary<string, string> AvailableLocalizations { get; private set; } = new();
 
     /// <inheritdoc/>
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this.GetLocalizations();
 

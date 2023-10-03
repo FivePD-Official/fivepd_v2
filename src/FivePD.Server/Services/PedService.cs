@@ -11,6 +11,7 @@ using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
@@ -22,7 +23,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IPedService" />
-public class PedService : IPedService, IServiceWithEvents, IDisposableService
+public class PedService : IPedService, IOnInit, IOnDestroy
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
@@ -56,14 +57,14 @@ public class PedService : IPedService, IServiceWithEvents, IDisposableService
     }
 
     /// <inheritdoc/>
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Ped.Generate] += new Action<string>(this.GeneratePed);
         this._checkPedsId = this._tickQueueService.EnqueueInterval(this.CheckPeds, 1000);
     }
 
     /// <inheritdoc/>
-    void IDisposableService.InternalDispose()
+    void IOnDestroy.OnDestroy()
     {
         this._tickQueueService.DequeueInterval(this._checkPedsId);
     }

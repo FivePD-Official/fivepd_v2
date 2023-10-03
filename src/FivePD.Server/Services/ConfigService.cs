@@ -6,13 +6,14 @@ using FivePD.Common.ConfigModels;
 using FivePD.Common.Exceptions;
 using FivePD.Common.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using Newtonsoft.Json;
 using Serilog;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IConfigService" />
-public class ConfigService : IConfigService, IServiceWithEvents
+public class ConfigService : IConfigService, IOnInit
 {
     private readonly IFileHandlerService _fileHandlerService;
     private readonly ILogger _logger;
@@ -56,7 +57,7 @@ public class ConfigService : IConfigService, IServiceWithEvents
     public List<string> Lastnames => this._fileHandlerService.LoadStringList("/Config/last-names.txt");
 
     /// <inheritdoc />
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Config.Get] += new Action<string, NetworkCallbackDelegate>(this.OnGetConfig);
     }

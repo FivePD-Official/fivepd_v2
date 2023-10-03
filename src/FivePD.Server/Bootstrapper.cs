@@ -12,6 +12,7 @@ using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models;
 using FivePD.Server.Services;
@@ -208,7 +209,7 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<ConfigService>();
         services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ConfigService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ConfigService>());
 
         services.AddSingleton<ConcurrentTickQueueService>();
         services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
@@ -216,54 +217,54 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<UIService>();
         services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<UIService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UIService>());
 
         services.AddSingleton<ControlService>();
         services.AddSingleton<IControlService>(provider => provider.GetRequiredService<ControlService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ControlService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ControlService>());
 
         services.AddSingleton<LocalizationService>();
         services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<LocalizationService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocalizationService>());
 
         services.AddSingleton<ArrestReportService>();
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<ArrestReportService>());
-        services.AddSingleton<IDisposableService>(provider => provider.GetRequiredService<ArrestReportService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
 
         services.AddSingleton<IncidentReportService>();
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<IncidentReportService>());
-        services.AddSingleton<IDisposableService>(provider => provider.GetRequiredService<IncidentReportService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<IncidentReportService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<IncidentReportService>());
 
         services.AddSingleton<EventService>();
         services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<EventService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<EventService>());
 
         services.AddSingleton<InteractionService>();
         services.AddSingleton<IInteractionService>(provider => provider.GetRequiredService<InteractionService>());
         services.AddSingleton<IInternalInteractionService>(provider => provider.GetRequiredService<InteractionService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<InteractionService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<InteractionService>());
 
         services.AddSingleton<PedService>();
         services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PedService>());
-        services.AddSingleton<IDisposableService>(provider => provider.GetRequiredService<PedService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedService>());
 
         services.AddSingleton<VehicleService>();
         services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<VehicleService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleService>());
 
         services.AddSingleton<PlayerDataService>();
         services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<PlayerDataService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PlayerDataService>());
 
         services.AddSingleton<MenuService>();
         services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<MenuService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<MenuService>());
 
         services.AddSingleton<CalloutManagerService>();
         services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
         services.AddSingleton<IInternalCalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutManagerService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<CalloutManagerService>());
 
         services.AddSingleton<CalloutStoreService>();
         services.AddSingleton<ICalloutStoreService>(provider => provider.GetRequiredService<CalloutStoreService>());
@@ -275,13 +276,13 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<CalloutGenerationService>();
         services.AddSingleton<ICalloutGenerationService>(provider => provider.GetRequiredService<CalloutGenerationService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<CalloutGenerationService>());
-        services.AddSingleton<IDisposableService>(provider => provider.GetRequiredService<CalloutGenerationService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<CalloutGenerationService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<CalloutGenerationService>());
 
         services.AddSingleton<DispatchService>();
         services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IInternalDispatchService>(provider => provider.GetRequiredService<DispatchService>());
-        services.AddSingleton<IServiceWithEvents>(provider => provider.GetRequiredService<DispatchService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<DispatchService>());
 
         services.AddSingleton<IncidentHistoryService>();
         services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
@@ -406,9 +407,9 @@ internal class Bootstrapper : BaseScript
         Debug.WriteLine("PerformPostBootstrapPhase 11");
 
         // Register all event listeners for services
-        foreach (var service in this._provider.GetServices<IServiceWithEvents>())
+        foreach (var service in this._provider.GetServices<IOnInit>())
         {
-            service.RegisterEvents();
+            service.OnInit();
         }
 
         Debug.WriteLine("PerformPostBootstrapPhase 12");
@@ -513,9 +514,9 @@ internal class Bootstrapper : BaseScript
         ((IInternalLooseDataService)looseData).DisposeAddonRepositories();
 
         // Dispose all internal services with the interface IDisposableService
-        foreach (var service in this._provider.GetServices<IDisposableService>())
+        foreach (var service in this._provider.GetServices<IOnDestroy>())
         {
-            service.InternalDispose();
+            service.OnDestroy();
         }
 
         // Grab an instance of every addon entrypoint and "stop" it

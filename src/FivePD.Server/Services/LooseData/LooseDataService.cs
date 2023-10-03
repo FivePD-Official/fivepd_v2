@@ -10,6 +10,7 @@ using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models.LooseData;
 using FivePD.Server.Models.Requests;
@@ -42,7 +43,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     {
         foreach (var addonRepositoryInstance in this._addonRepositoryInstances)
         {
-            ((IDisposableService)addonRepositoryInstance).InternalDispose();
+            ((IOnDestroy)addonRepositoryInstance).OnDestroy();
         }
     }
 
@@ -52,7 +53,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         where TLooseDataRepository : LooseDataRepository<TLooseDataSet>
     {
         this._addonRepositoryInstances.Add(repository);
-        ((IServiceWithEvents)repository).RegisterEvents();
+        ((IOnInit)repository).OnInit();
     }
 
     /// <inheritdoc />

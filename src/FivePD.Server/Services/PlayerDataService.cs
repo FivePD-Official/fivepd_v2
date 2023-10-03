@@ -12,6 +12,7 @@ using FivePD.Server.EntityWrappers;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Events;
@@ -23,7 +24,7 @@ using Serilog;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IPlayerDataService" />
-public class PlayerDataService : IPlayerDataService, IServiceWithEvents
+public class PlayerDataService : IPlayerDataService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly DatabaseContext _databaseContext;
@@ -68,7 +69,7 @@ public class PlayerDataService : IPlayerDataService, IServiceWithEvents
     public event EventHandler<PlayerDivisionChangeEventArgs> PlayerDivisionChanged;
 
     /// <inheritdoc />
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
 

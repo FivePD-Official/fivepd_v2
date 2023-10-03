@@ -3,6 +3,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Services;
@@ -10,7 +11,7 @@ namespace FivePD.Server.Services;
 #pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IInteractionService" />
-public class InteractionService : IInteractionService, IInternalInteractionService, IServiceWithEvents
+public class InteractionService : IInteractionService, IInternalInteractionService, IOnInit
 {
     private readonly IPedService _pedService;
     private readonly IVehicleService _vehicleService;
@@ -43,7 +44,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
     }
 
     /// <inheritdoc />
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Ped.OnAlerted] += new Action<Player, int>(this.OnAlerted);
     }

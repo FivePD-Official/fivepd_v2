@@ -13,13 +13,14 @@ using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.QueryHelpers;
 
 namespace FivePD.Server.Services.Callouts;
 
 /// <inheritdoc cref="ICalloutManagerService" />
-public class CalloutManagerService : ICalloutManagerService, IInternalCalloutManagerService, IServiceWithEvents
+public class CalloutManagerService : ICalloutManagerService, IInternalCalloutManagerService, IOnInit
 {
     private const int AutoDispatchCalloutTimeoutInMs = 10000;
 
@@ -84,7 +85,7 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     }
 
     /// <inheritdoc />
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Callout.OnPlayerEnteredInActivityZone] += new Action<Player, string>(this.OnPlayerEnteredInActivityZone);
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);

@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IEventService" />
-public class EventService : IEventService, IServiceWithEvents
+public class EventService : IEventService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _players;
@@ -30,7 +31,7 @@ public class EventService : IEventService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Generic.Callback] += new Action<string, string>((eventId, value) =>
         {

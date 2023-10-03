@@ -11,6 +11,7 @@ using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models.Requests;
 using Serilog;
 using Debug = CitizenFX.Core.Debug;
@@ -19,7 +20,7 @@ namespace FivePD.Server.Services.Callouts;
 
 #pragma warning disable
 
-internal class CalloutGenerationService : ICalloutGenerationService, IServiceWithEvents, IDisposableService
+internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IOnDestroy
 {
     private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly IInternalCalloutManagerService _calloutManagerService;
@@ -51,7 +52,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
     }
 
     /// <inheritdoc/>
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._nextCalloutInMs = this._randomService.Random.Next(
             this._configService.GeneralConfig.Callout.MinIntervalInMs,
@@ -65,7 +66,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IServiceWit
     }
 
     /// <inheritdoc/>
-    void IDisposableService.InternalDispose()
+    void IOnDestroy.OnDestroy()
     {
         if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
         {

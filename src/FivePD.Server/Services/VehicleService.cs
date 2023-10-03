@@ -6,12 +6,13 @@ using FivePD.Common.Builders;
 using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IVehicleService" />
-public class VehicleService : IVehicleService, IServiceWithEvents
+public class VehicleService : IVehicleService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
@@ -29,7 +30,7 @@ public class VehicleService : IVehicleService, IServiceWithEvents
     }
 
     /// <inheritdoc/>
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Vehicle.Generate] += new Action<string>(this.GenerateVehicle);
     }

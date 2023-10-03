@@ -6,13 +6,14 @@ using FivePD.Common;
 using FivePD.Common.Utilities;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 
 #pragma warning disable
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IControlService" />
-public class ControlService : IControlService, IServiceWithEvents
+public class ControlService : IControlService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly List<ControlsDTO> _controls = new();
@@ -26,7 +27,7 @@ public class ControlService : IControlService, IServiceWithEvents
     }
         
     /// <inheritdoc />
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Control.GetAll] += new Action<NetworkCallbackDelegate>(this.OnGetAll);
     }

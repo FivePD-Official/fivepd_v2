@@ -11,6 +11,7 @@ using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
@@ -20,7 +21,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
-public class DispatchService : IDispatchService, IInternalDispatchService, IServiceWithEvents
+public class DispatchService : IDispatchService, IInternalDispatchService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _playerList;
@@ -50,7 +51,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IServ
             .ToList();;
     }
 
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Dispatch.EnableForPlayer] += new Action<Player>(this.OnEnableForPlayer);
         this._eventHandlerDictionary[Events.Dispatch.DisableForPlayer] += new Action<Player>(this.OnDisableForPlayer);

@@ -6,12 +6,13 @@ using CitizenFX.Core;
 using FivePD.Server.Attributes;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using Serilog;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IUIService" />
-public class UIService : IUIService, IServiceWithEvents
+public class UIService : IUIService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IServiceProvider _serviceProvider;
@@ -34,7 +35,7 @@ public class UIService : IUIService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this.RegisterEventAttributes();
     }
@@ -55,7 +56,7 @@ public class UIService : IUIService, IServiceWithEvents
             var attribute = methodInfo.GetCustomAttribute<UIEventAttribute>();
             var interfaceType = methodInfo.DeclaringType?
                 .GetInterfaces()
-                .FirstOrDefault(type => type != typeof(IServiceWithEvents) && type != typeof(IDisposableService));
+                .FirstOrDefault(type => type != typeof(IOnInit) && type != typeof(IOnDestroy));
             var obj = this._serviceProvider.GetService(interfaceType);
             if (obj is null)
             {

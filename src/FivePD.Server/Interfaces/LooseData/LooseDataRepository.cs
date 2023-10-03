@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models.LooseData;
 
 namespace FivePD.Server.Interfaces.LooseData;
@@ -8,7 +9,7 @@ namespace FivePD.Server.Interfaces.LooseData;
 /// Responsible for managing loose data set entities.
 /// </summary>
 /// <typeparam name="TS">The type of the set to use.</typeparam>
-public abstract class LooseDataRepository<TS> : IServiceWithEvents, IDisposableService
+public abstract class LooseDataRepository<TS> : IOnInit, IOnDestroy
     where TS : LooseDataSet
 {
     private readonly ILooseDataService _looseDataService;
@@ -40,7 +41,7 @@ public abstract class LooseDataRepository<TS> : IServiceWithEvents, IDisposableS
     public event EventHandler<LooseDataEntity> OnDeleted;
 
     /// <inheritdoc/>
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this._looseDataService.RegisterSetAttributes<TS>(this.RegisterSetAttributes());
         this._disposables.Add(this._looseDataService.OnAdded<TS>(entity => this.OnAdded?.Invoke(this, entity)));
@@ -49,7 +50,7 @@ public abstract class LooseDataRepository<TS> : IServiceWithEvents, IDisposableS
     }
 
     /// <inheritdoc/>
-    void IDisposableService.InternalDispose()
+    void IOnDestroy.OnDestroy()
     {
         foreach (var disposable in this._disposables)
         {

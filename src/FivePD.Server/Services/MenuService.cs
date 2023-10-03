@@ -12,6 +12,7 @@ using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.UIModels;
 using FivePD.Server.UIModels.Interfaces;
 using FivePD.Server.UIModels.MenuModels;
@@ -23,7 +24,7 @@ namespace FivePD.Server.Services;
 #pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IMenuService" />
-public class MenuService : IMenuService, IServiceWithEvents
+public class MenuService : IMenuService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IServiceProvider _serviceProvider;
@@ -45,7 +46,7 @@ public class MenuService : IMenuService, IServiceWithEvents
     }
 
     /// <inheritdoc />
-    void IServiceWithEvents.RegisterEvents()
+    void IOnInit.OnInit()
     {
         this.Register<DutyMenu>();
         this.Register<DispatchMenu>();
