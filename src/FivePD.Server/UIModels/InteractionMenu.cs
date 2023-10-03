@@ -244,7 +244,7 @@ public sealed class InteractionMenu : Menu
         this.Movement.OnSelect += async (player, index) =>
         {
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
-            if (fPed is null || fPed.Properties.IsDead || fPed.Properties.IsInVehicle)
+            if (fPed is null || !fPed.Stopped.Value || fPed.Properties.IsDead || fPed.Properties.IsInVehicle)
             {
                 return;
             }
