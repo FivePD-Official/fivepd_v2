@@ -2,6 +2,6 @@
 
 #pragma warning disable
 
-public interface ICfxService
+internal interface ICfxService
 {
 }

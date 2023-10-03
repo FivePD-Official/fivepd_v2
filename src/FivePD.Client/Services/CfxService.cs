@@ -9,13 +9,15 @@ namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-public class CfxService : ICfxService, IServiceWithEvents
+internal class CfxService : ICfxService, IServiceWithEvents
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly IQueueService _queueService;
 
-    public CfxService(EventHandlerDictionary eventHandlerDictionary)
+    public CfxService(EventHandlerDictionary eventHandlerDictionary, IQueueService queueService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._queueService = queueService;
     }
 
     public void RegisterEvents()
@@ -27,8 +29,8 @@ public class CfxService : ICfxService, IServiceWithEvents
             {
                 return;
             }
-
-            Cfx.API.AddAmmoToPed(entity.Handle, weaponHash, ammo);
+            
+            this._queueService.Queue(() => Cfx.API.AddAmmoToPed(entity.Handle, weaponHash, ammo));
         });
 
         this._eventHandlerDictionary[Events.Cfx.AddAmmoToPedByType] += new Action<int, int, int>((ped, ammoType, ammo) =>
@@ -39,7 +41,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.AddAmmoToPedByType(entity.Handle, ammoType, ammo);
+            this._queueService.Queue(() => Cfx.API.AddAmmoToPedByType(entity.Handle, ammoType, ammo));
         });
 
         this._eventHandlerDictionary[Events.Cfx.AddArmourToPed] += new Action<int, int>((ped, amount) =>
@@ -50,7 +52,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.AddArmourToPed(entity.Handle, amount);
+            this._queueService.Queue(() => Cfx.API.AddArmourToPed(entity.Handle, amount));
         });
 
         this._eventHandlerDictionary[Events.Cfx.AddPedAmmo] += new Action<int, int, int>((ped, ammoType, amount) =>
@@ -61,7 +63,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.AddPedAmmo(entity.Handle, ammoType, amount);
+            this._queueService.Queue(() => Cfx.API.AddPedAmmo(entity.Handle, ammoType, amount));
         });
 
         this._eventHandlerDictionary[Events.Cfx.ApplyDamageToPed] += new Action<int, int, bool>((ped, damageAmount, armorFirst) =>
@@ -72,7 +74,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.ApplyDamageToPed(entity.Handle, damageAmount, armorFirst);
+            this._queueService.Queue(() => Cfx.API.ApplyDamageToPed(entity.Handle, damageAmount, armorFirst));
         });
 
         this._eventHandlerDictionary[Events.Cfx.ApplyForceToEntity] +=
@@ -85,8 +87,8 @@ public class CfxService : ICfxService, IServiceWithEvents
                         return;
                     }
 
-                    Cfx.API.ApplyForceToEntity(entity.Handle, forceType, x, y, z, offX, offY, offZ, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12,
-                        p13);
+                    this._queueService.Queue(() => Cfx.API.ApplyForceToEntity(entity.Handle, forceType, x, y, z, offX, offY, offZ, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12,
+                        p13));
                 });
 
         this._eventHandlerDictionary[Events.Cfx.ApplyForceToEntityCenterOfMass] += new Action<int, int, float, float, float, bool, bool, bool, bool>(
@@ -98,7 +100,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                     return;
                 }
 
-                Cfx.API.ApplyForceToEntityCenterOfMass(entity.Handle, forceType, x, y, z, p5, isDirectionRel, isForceRel, p8);
+                this._queueService.Queue(() => Cfx.API.ApplyForceToEntityCenterOfMass(entity.Handle, forceType, x, y, z, p5, isDirectionRel, isForceRel, p8));
             });
 
         this._eventHandlerDictionary[Events.Cfx.GetClosestVehicle] += new Action<string, Vector3, float>((callbackId, location, radius) =>
@@ -135,7 +137,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.AttachEntityToEntity(entity1.Handle, entity2.Handle, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
+            this._queueService.Queue(() => Cfx.API.AttachEntityToEntity(entity1.Handle, entity2.Handle, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15));
         });
         
         this._eventHandlerDictionary[Events.Cfx.DetachEntity] += new Action<
@@ -149,7 +151,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.DetachEntity(entity1.Handle, arg2, arg3);
+            this._queueService.Queue(() => Cfx.API.DetachEntity(entity1.Handle, arg2, arg3));
         });
 
         this._eventHandlerDictionary[Events.Cfx.SetPedIntoVehicle] += new Action<
@@ -163,7 +165,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.SetPedIntoVehicle(entity1.Handle, i1, i2);
+            this._queueService.Queue(() => Cfx.API.SetPedIntoVehicle(entity1.Handle, i1, i2));
         });
         
         this._eventHandlerDictionary[Events.Cfx.ResurrectPed] += new Action<int>((ped) =>
@@ -174,7 +176,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.ResurrectPed(entity.Handle);
+            this._queueService.Queue(() => Cfx.API.ResurrectPed(entity.Handle));
         });
         
         this._eventHandlerDictionary[Events.Cfx.SetEnableHandcuffs] += new Action<int, bool>((ped, toggle) =>
@@ -185,7 +187,7 @@ public class CfxService : ICfxService, IServiceWithEvents
                 return;
             }
 
-            Cfx.API.SetEnableHandcuffs(entity.Handle, toggle);
+            this._queueService.Queue(() => Cfx.API.SetEnableHandcuffs(entity.Handle, toggle));
         });
     }
 }

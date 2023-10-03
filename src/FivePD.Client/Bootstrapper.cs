@@ -313,6 +313,13 @@ internal class Bootstrapper : BaseScript
             .As<IServiceWithEvents>()
             .IsSingleton();
 
+        services
+            .RegisterType<QueueService>()
+            .As<IQueueService>()
+            .As<IServiceWithEvents>()
+            .As<IDisposableService>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);
