@@ -294,6 +294,9 @@ namespace FivePD.Server.Migrations
                     b.Property<int?>("PedHistoryId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 

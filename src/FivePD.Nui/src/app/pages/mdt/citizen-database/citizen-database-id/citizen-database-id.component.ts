@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PedHistory } from "@models";
+import { PedHistory, PedLicense, PedLicenseStatus } from "@models";
 import { tap } from "rxjs";
 import { FGender, PedLicenseType } from "@enums";
 import { Store } from "@ngrx/store";
@@ -59,5 +59,19 @@ export class CitizenDatabaseIdComponent implements OnInit {
     return array.join(', ');
   }
 
+  getLicenseStatusLabel(license: PedLicense): string {
+    switch (license.Status) {
+      case PedLicenseStatus.Valid:
+        return 'LABEL.VALID';
+      case PedLicenseStatus.Expired:
+        return 'LABEL.EXPIRED';
+      case PedLicenseStatus.Suspended:
+        return 'LABEL.SUSPENDED';
+      case PedLicenseStatus.Revoked:
+        return 'LABEL.REVOKED';
+    }
+  }
+
   protected readonly FGender = FGender;
+  protected readonly PedLicenseStatus = PedLicenseStatus;
 }

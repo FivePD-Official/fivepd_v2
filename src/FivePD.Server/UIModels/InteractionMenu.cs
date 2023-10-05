@@ -123,13 +123,19 @@ public sealed class InteractionMenu : Menu
                 .NewLine()
                 .White("Status: ");
 
-            if (license.Valid)
+            if (license.Status == PedLicenseStatus.Valid)
             {
                 text.Green("Valid");
             }
             else
             {
-                text.Yellow("Expired");
+                text.Yellow(license.Status switch
+                {
+                    PedLicenseStatus.Expired => "Expired",
+                    PedLicenseStatus.Suspended => "Suspended",
+                    PedLicenseStatus.Revoked => "Revoked",
+                    _ => "Unknown",
+                });
             }
 
             this._notificationService.ShowNotification(player, text.Build());

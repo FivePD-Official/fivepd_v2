@@ -274,7 +274,8 @@ public class FPedBuilder : CommonFPedBuilder
 
             var now = DateTime.Now;
             var issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year);
-            var expirationDate = Random.Next(0, 101) < config.Value.ChanceForExpired
+            var expired = Random.Next(0, 101) < config.Value.ChanceForExpired;
+            var expirationDate = expired
                 ? issueDate.AddYears(-Random.Next(1, 3))
                 : issueDate.AddYears(Random.Next(1, 11));
 
@@ -283,6 +284,7 @@ public class FPedBuilder : CommonFPedBuilder
                 Type = config.Key,
                 IssueDate = issueDate,
                 ExpirationDate = expirationDate,
+                Status = expired ? PedLicenseStatus.Expired : PedLicenseStatus.Valid,
             });
         }
 

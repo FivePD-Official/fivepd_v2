@@ -117,11 +117,18 @@ export interface PedHistory extends WithId {
   Licenses: PedLicense[];
 }
 
+export enum PedLicenseStatus {
+  Valid,
+  Expired,
+  Suspended,
+  Revoked,
+}
+
 export interface PedLicense extends WithStringId {
   Type: PedLicenseType;
   IssueDate: string;
   ExpirationDate: string;
-  Valid: boolean;
+  Status: PedLicenseStatus;
 }
 
 export type SimplePedHistory = Pick<PedHistory, 'Id' | 'Firstname' | 'Lastname' | 'Birthdate' | 'Gender'>

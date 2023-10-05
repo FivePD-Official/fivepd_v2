@@ -24,6 +24,11 @@ public class PedLicense
     public PedLicenseType Type { get; set; }
 
     /// <summary>
+    /// Gets or sets the status.
+    /// </summary>
+    public PedLicenseStatus Status { get; set; }
+
+    /// <summary>
     /// Gets or sets the date of issue.
     /// </summary>
     public DateTime IssueDate { get; set; }
@@ -32,9 +37,4 @@ public class PedLicense
     /// Gets or sets the expiration date.
     /// </summary>
     public DateTime ExpirationDate { get; set; }
-
-    /// <summary>
-    /// Gets a value indicating whether the license is valid.
-    /// </summary>
-    public bool Valid => DateTime.Now < this.ExpirationDate;
 }
