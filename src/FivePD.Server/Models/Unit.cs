@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using FivePD.Common.DTO;
@@ -28,26 +29,43 @@ public class Unit : IInternalUnit
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Unit"/> class.
+    /// The DepartmentId will be set to the player's department id.
     /// </summary>
     /// <param name="callsign">The callsign.</param>
     /// <param name="player">A player to add by default.</param>
     public Unit(string callsign, FPlayer player)
     {
-        this.Callsign = callsign;
         this._players.Add(player);
+
+        this.Callsign = callsign;
+        this.DepartmentId = player.Department?.Id ?? 0;
+
         this.Availability.Subscribe(this.ListenForAvailabilityChanges);
         this.Status.Subscribe(this.ListenForStatusChanges);
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Unit"/> class.
+    /// The DepartmentId will be set to the first player's department id.
+    /// Players without a department will be ignored.
+    /// Players with a different department will be ignored.
     /// </summary>
     /// <param name="callsign">The callsign.</param>
     /// <param name="players">The players to add by default.</param>
     public Unit(string callsign, IEnumerable<FPlayer> players)
     {
+        var playersWithDepartment = players
+            .Select(x => new Tuple<FPlayer, Department>(x, x.Department))
+            .Where(x => x.Item2 is not null)
+            .ToList();
+        var firstPlayerDepartment = playersWithDepartment.First().Item2;
+        var playersWithSameDepartment = playersWithDepartment.Where(x => x.Item2?.Id == firstPlayerDepartment?.Id).ToList();
+
+        this._players.AddRange(playersWithSameDepartment.Select(x => x.Item1));
+
         this.Callsign = callsign;
-        this._players.AddRange(players);
+        this.DepartmentId = playersWithSameDepartment.First().Item2?.Id ?? 0;
+
         this.Availability.Subscribe(this.ListenForAvailabilityChanges);
         this.Status.Subscribe(this.ListenForStatusChanges);
     }
@@ -71,6 +89,11 @@ public class Unit : IInternalUnit
     /// Gets the currently attached callout.
     /// </summary>
     public SimpleCallout Callout { get; internal set; }
+
+    /// <summary>
+    /// Gets or sets the department id.
+    /// </summary>
+    public int DepartmentId { get; set; }
 
     /// <summary>
     /// Gets the players in the unit.

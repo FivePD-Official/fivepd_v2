@@ -8,6 +8,7 @@ using FivePD.Common;
 using FivePD.Common.Extensions;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
@@ -174,6 +175,20 @@ public class DepartmentService : IDepartmentService
     public void RemovePlayerFromDepartment(Player player)
     {
         this.RemovePlayerFromDepartment(this._playerDataService.FindUserByLicense(player));
+    }
+
+    /// <inheritdoc />
+    public Department GetPlayerDepartment(FPlayer player)
+    {
+        var user = player.User;
+        if (user is null)
+        {
+            return null;
+        }
+
+        return this._databaseContext.Departments
+            .Include(x => x.Users)
+            .FirstOrDefault(department => department.Users.Any(x => x.Id == user.Id));
     }
 
     [UIEvent(Events.UI.Department.GetAllPageable)]

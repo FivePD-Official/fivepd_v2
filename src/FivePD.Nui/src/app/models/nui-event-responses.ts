@@ -101,6 +101,7 @@ export interface SimplePlayerDTO {
 export interface UnitDTO {
   Callsign: string;
   Players: SimplePlayerDTO[];
+  DepartmentId: number;
 }
 
 export interface PlayerDetailsDTO {

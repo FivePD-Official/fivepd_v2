@@ -131,7 +131,12 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: 'UI.ACTION.JOIN',
-          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalConfig?.joinFreelyToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
+          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty &&
+            (this.generalConfig?.joinFreelyToUnit() ?? false) &&
+            unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) &&
+            unit.Players.length > 0 &&
+            unit.Players[0].NetworkId !== this.user?.NetworkId &&
+            unit.DepartmentId === this.user?.User.DepartmentId,
           onClick: unit => {
             this._unitService.join(unit).subscribe(res => {
               if (res.Status) {
@@ -143,7 +148,12 @@ export class DashboardComponent implements OnInit {
         {
           type: 'button',
           label: 'UI.ACTION.REQUEST_TO_JOIN',
-          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && (this.generalConfig?.joinByRequestToUnit() ?? false) && unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) && unit.Players.length > 0 && unit.Players[0].NetworkId !== this.user?.NetworkId,
+          show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty &&
+            (this.generalConfig?.joinByRequestToUnit() ?? false) &&
+            unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) &&
+            unit.Players.length > 0 &&
+            unit.Players[0].NetworkId !== this.user?.NetworkId &&
+            unit.DepartmentId === this.user?.User.DepartmentId,
           onClick: unit => {
             this._unitService.requestToJoin(unit).subscribe();
           }

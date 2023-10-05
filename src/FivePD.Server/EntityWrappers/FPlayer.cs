@@ -47,6 +47,12 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the player's unit.
     /// </summary>
     /// <returns>A unit.</returns>
+    public Department Department => ServiceLocator.GetService<IDepartmentService>().GetPlayerDepartment(this);
+
+    /// <summary>
+    /// Gets the player's unit.
+    /// </summary>
+    /// <returns>A unit.</returns>
     public Unit Unit => ServiceLocator.GetService<IUnitService>().GetPlayerUnit(this);
 
     /// <summary>

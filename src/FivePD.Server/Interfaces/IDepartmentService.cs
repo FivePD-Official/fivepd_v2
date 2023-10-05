@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Events;
@@ -128,6 +129,13 @@ public interface IDepartmentService
     /// <param name="player">The user to update.</param>
     /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
     public void RemovePlayerFromDepartment(Player player);
+
+    /// <summary>
+    /// Gets the department of the given player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The department of the player.</returns>
+    public Department GetPlayerDepartment(FPlayer player);
 }
 
 /// <summary>
