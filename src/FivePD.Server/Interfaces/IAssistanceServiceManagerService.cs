@@ -21,6 +21,7 @@ public interface IAssistanceServiceManagerService
 
     /// <summary>
     /// Cancels an assistance service.
+    /// The GUID will be set to <see cref="Guid.Empty"/>.
     /// </summary>
     /// <param name="guid">The GUID of the assistance service.</param>
     public void Cancel(ref Guid guid);
