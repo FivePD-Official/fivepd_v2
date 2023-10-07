@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Events;
@@ -35,7 +36,7 @@ public interface IUnitService
     /// Gets the units.
     /// </summary>
     /// <returns>A list of units.</returns>
-    public List<Unit> Units();
+    public ReadOnlyCollection<Unit> Units();
 
     /// <summary>
     /// Creates a unit with the specified callsign and player.

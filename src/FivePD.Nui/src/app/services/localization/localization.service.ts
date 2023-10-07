@@ -39,11 +39,17 @@ export class LocalizationService {
   }
 
   private async set(localization: object): Promise<void> {
-    // TODO FIX await this.sanitizeObject(localization);
-    this._localization = localization;
+    await this.sanitizeObject(localization);
+    if (localization) {
+      this._localization = localization;
+    }
   }
 
   private sanitizeObject(object: any): Promise<void> {
+    if (!object) {
+      return Promise.resolve();
+    }
+
     return new Promise(resolve => {
       Object.keys(object).forEach(key => {
         if (object[key] && typeof object[key] === 'object') {

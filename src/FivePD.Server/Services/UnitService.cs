@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
@@ -62,9 +63,9 @@ public class UnitService : IUnitService
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
 
     /// <inheritdoc />
-    public List<Unit> Units()
+    public ReadOnlyCollection<Unit> Units()
     {
-        return this._units.AsReadOnly().ToList();
+        return this._units.AsReadOnly();
     }
 
     /// <inheritdoc/>

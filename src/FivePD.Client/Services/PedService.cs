@@ -14,7 +14,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Services;
 
-#pragma warning disable // TODO remove
+#pragma warning disable VSTHRD100
+#pragma warning disable S3168
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IPedService" />
 internal class PedService : IPedService, IOnInit
@@ -41,7 +42,7 @@ internal class PedService : IPedService, IOnInit
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAllSimple);
 
-        this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedPropertyAsync);
+        this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
         this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);
         this._eventHandlerDictionary[Events.Ped.InvokeMethod] += new Action<string>(this.InvokeMethod);
@@ -82,9 +83,9 @@ internal class PedService : IPedService, IOnInit
         return fPed;
     }
 
-    private async void GetPedPropertyAsync(string eventCallbackId, int networkId, string property)
+    private async void GetPedProperty(string eventCallbackId, int networkId, string property)
     {
-        var ped = await this.FindPed(networkId);
+        var ped = await this.FindPedAsync(networkId);
         if (ped is null)
         {
             BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, string.Empty);
@@ -178,7 +179,7 @@ internal class PedService : IPedService, IOnInit
 
     private async void SetPedProperty(int networkId, string property, string value)
     {
-        var ped = await this.FindPed(networkId);
+        var ped = await this.FindPedAsync(networkId);
         if (ped is null)
         {
             return;
@@ -438,7 +439,7 @@ internal class PedService : IPedService, IOnInit
     private async void InvokeMethod(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<FPedPropertiesDTO.InvokeMethodRequest>(serializedRequest);
-        var ped = await this.FindPed(request.NetworkId);
+        var ped = await this.FindPedAsync(request.NetworkId);
         if (ped is null)
         {
             return;
@@ -464,7 +465,7 @@ internal class PedService : IPedService, IOnInit
     private async void SetTask(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<FPedTasksDTO.SetPedTaskRequest>(serializedRequest);
-        var ped = await this.FindPed(request.NetworkId);
+        var ped = await this.FindPedAsync(request.NetworkId);
         if (ped is null)
         {
             return;
@@ -633,8 +634,12 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.FollowToOffsetFromEntity:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FollowToOffsetFromEntity>(request.Args);
-                this._queueService.Queue(() => ped.Task.FollowToOffsetFromEntity(Entity.FromNetworkId(args.TargetNetworkId), args.Offset, args.MovementSpeed,
-                    args.Timeout, args.StoppingRange,
+                this._queueService.Queue(() => ped.Task.FollowToOffsetFromEntity(
+                    Entity.FromNetworkId(args.TargetNetworkId),
+                    args.Offset,
+                    args.MovementSpeed,
+                    args.Timeout,
+                    args.StoppingRange,
                     args.PersistFollowing));
                 break;
             }
@@ -732,8 +737,12 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.ParkVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ParkVehicle>(request.Args);
-                this._queueService.Queue(() => ped.Task.ParkVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Position, args.Heading,
-                    args.Radius, args.KeepEngineOn));
+                this._queueService.Queue(() => ped.Task.ParkVehicle(
+                    Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle,
+                    args.Position,
+                    args.Heading,
+                    args.Radius,
+                    args.KeepEngineOn));
                 break;
             }
 
@@ -775,7 +784,12 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.PlayAnimationWithBlendInAndOutSpeed:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.PlayAnimationWithBlendInAndOutSpeed>(request.Args);
-                this._queueService.Queue(() => ped.Task.PlayAnimation(args.AnimDict, args.AnimName, args.BlendInSpeed, args.BlendOutSpeed, args.Duration,
+                this._queueService.Queue(() => ped.Task.PlayAnimation(
+                    args.AnimDict,
+                    args.AnimName,
+                    args.BlendInSpeed,
+                    args.BlendOutSpeed,
+                    args.Duration,
                     (AnimationFlags)args.Flags,
                     args.PlaybackRate));
                 break;
@@ -954,7 +968,7 @@ internal class PedService : IPedService, IOnInit
     private async void WeaponCollection(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<WeaponCollectionDTO.WeaponCollectionRequest>(serializedRequest);
-        var ped = await this.FindPed(request.NetworkId);
+        var ped = await this.FindPedAsync(request.NetworkId);
         if (ped is null)
         {
             return;
@@ -1011,7 +1025,7 @@ internal class PedService : IPedService, IOnInit
     private async void WeaponCollectionWithReturn(string eventCallbackId, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<WeaponCollectionDTO.WeaponCollectionRequest>(serializedRequest);
-        var ped = await this.FindPed(request.NetworkId);
+        var ped = await this.FindPedAsync(request.NetworkId);
         if (ped is null)
         {
             return;
@@ -1055,7 +1069,7 @@ internal class PedService : IPedService, IOnInit
         }
     }
 
-    private async Task<Ped> FindPed(int networkId)
+    private async Task<Ped> FindPedAsync(int networkId)
     {
         // TODO: only wait a few seconds
         while (!Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId))

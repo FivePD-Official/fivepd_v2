@@ -13,7 +13,8 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Services;
 
-#pragma warning disable // TODO remove
+#pragma warning disable VSTHRD100
+#pragma warning disable S3168
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IVehicleService" />
 internal class VehicleService : IVehicleService, IOnInit
@@ -25,12 +26,14 @@ internal class VehicleService : IVehicleService, IOnInit
     /// Initializes a new instance of the <see cref="VehicleService"/> class.
     /// </summary>
     /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     public VehicleService(IPedService pedService, EventHandlerDictionary eventHandlerDictionary)
     {
         this._pedService = pedService;
         this._eventHandlerDictionary = eventHandlerDictionary;
     }
 
+    /// <inheritdoc/>
     public void OnInit()
     {
         this._eventHandlerDictionary[Events.Vehicle.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
@@ -54,12 +57,14 @@ internal class VehicleService : IVehicleService, IOnInit
             .WithColor(vehicle.GetColorName())
             .WithBrand(vehicle.DisplayName);
 
+        Debug.WriteLine("asdasdasa");
+
         BaseScript.TriggerServerEvent(Events.Vehicle.Generate, JsonConvert.SerializeObject(fVehicleBuilder));
     }
-    
+
     private async void GetPedProperty(string eventCallbackId, int networkId, string property)
     {
-        var vehicle = await this.FindVehicle(networkId);
+        var vehicle = await this.FindVehicleAsync(networkId);
         if (vehicle is null)
         {
             BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, string.Empty);
@@ -76,7 +81,7 @@ internal class VehicleService : IVehicleService, IOnInit
 
     private async void SetPedProperty(int networkId, string property, string value)
     {
-        var vehicle = await this.FindVehicle(networkId);
+        var vehicle = await this.FindVehicleAsync(networkId);
         if (vehicle is null)
         {
             return;
@@ -108,7 +113,7 @@ internal class VehicleService : IVehicleService, IOnInit
     private async void InvokeMethod(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<FPedPropertiesDTO.InvokeMethodRequest>(serializedRequest);
-        var vehicle = await this.FindVehicle(request.NetworkId);
+        var vehicle = await this.FindVehicleAsync(request.NetworkId);
         if (vehicle is null)
         {
             return;
@@ -124,7 +129,7 @@ internal class VehicleService : IVehicleService, IOnInit
         }
     }
 
-    private async Task<Vehicle> FindVehicle(int networkId)
+    private async Task<Vehicle> FindVehicleAsync(int networkId)
     {
         while (!Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId))
         {

@@ -79,7 +79,6 @@ internal class FilesystemAddonLocator
 
                     foreach (var assembly in metadata.Assemblies)
                     {
-                        // todo: path validation and security
                         var assemblyPath = Path.Combine(addonDirectory, assembly);
 
                         if (!File.Exists(assemblyPath))
