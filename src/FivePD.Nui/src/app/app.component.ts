@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { HttpClient } from '@angular/common/http';
 import { WindowService } from '@services/window/window.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { setMdtPath } from '@store/app.actions';

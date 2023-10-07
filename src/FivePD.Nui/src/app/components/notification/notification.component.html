@@ -2,16 +2,16 @@
      [ngClass]="{ 'animate-slideOut': exit }">
   <div class="flex flex-row items-center mb-2.5">
     <div *ngIf="notification.type === 'success'"
-         class="relative flex flex-row items-center justify-center mr-2.5 w-[30px] h-[30px]
+         class="relative flex flex-row items-center justify-center mr-2.5 w-[26px] h-[26px]
                 before:absolute before:inset-0 before:w-full before:h-full before:rounded-full before:bg-green-500/20">
-      <div app-icon name="Check" className="h-[17px] text-green-500"></div>
+      <div app-icon name="Check" className="h-[15px] text-green-500"></div>
     </div>
     <div *ngIf="notification.type === 'error'"
-         class="relative flex flex-row items-center justify-center mr-2.5 w-[30px] h-[30px]
+         class="relative flex flex-row items-center justify-center mr-2.5 w-[26px] h-[26px]
                 before:absolute before:inset-0 before:w-full before:h-full before:rounded-full before:bg-red-500/20">
-      <div app-icon name="XMark" className="h-[17px] text-red-500"></div>
+      <div app-icon name="XMark" className="h-[15px] text-red-500"></div>
     </div>
-    <p class="text-lg font-bold text-zinc-200"
+    <p class="font-medium text-zinc-200"
        [ngClass]="{
          'text-green-600': notification.type === 'success',
          'text-red-600': notification.type === 'error'

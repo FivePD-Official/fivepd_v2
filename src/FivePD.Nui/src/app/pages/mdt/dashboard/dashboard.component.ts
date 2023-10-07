@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  BaseNuiEvent,
   Button,
   CalloutDTO,
   ClientCalloutWrapper,
@@ -17,7 +16,7 @@ import {
 import { DepartmentService } from '@services/department/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
-import { filter, first, shareReplay, switchMap } from 'rxjs';
+import { filter, first, switchMap } from 'rxjs';
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
 import { UserRole, UserService } from '@services/user/user.service';
 import { CustomValidators } from '../../../helpers/validators';
@@ -29,7 +28,6 @@ import { ModalService } from '@services/modals/modal/modal.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
-import { EventService } from "@services/event/event.service";
 import { FDutyStatus, FIncidentPriority } from "@enums";
 import { CalloutService } from "@services/callout/callout.service";
 
@@ -221,7 +219,6 @@ export class DashboardComponent implements OnInit {
     private readonly _store: Store<GlobalState>,
     private readonly _unitService: UnitService,
     private readonly _configService: ConfigService,
-    private readonly _eventService: EventService,
     private readonly _calloutService: CalloutService,
   ) {
     _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
