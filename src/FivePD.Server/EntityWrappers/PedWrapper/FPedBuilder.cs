@@ -232,7 +232,7 @@ public class FPedBuilder : CommonFPedBuilder
     public FPedBuilder WithDrugs(IEnumerable<Drug> drugs)
     {
         this.Drugs ??= new();
-        this.Drugs.AddRange(drugs);
+        this.Drugs.AddRange(drugs ?? new List<Drug>());
         return this;
     }
     
@@ -242,7 +242,10 @@ public class FPedBuilder : CommonFPedBuilder
 
         foreach (var drug in drugsConfig.Where(drug => Random.Next(0, 101) <= drug.ChanceToHave))
         {
-            this.Drugs.Add(new Drug(drug.Name));
+            this.Drugs.Add(new Drug
+            {
+                Name = drug.Name,
+            });
         }
 
         return this;

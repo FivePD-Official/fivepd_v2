@@ -102,7 +102,7 @@ public class FPed : FEntity, IFStatefulContainer
     /// <summary>
     /// Gets the owner of the <see cref="FPed"/>.
     /// </summary>
-    public Player Owner => this.GetUnderlyingPed.Owner;
+    public Player Owner => this.GetUnderlyingPed?.Owner;
 
     /// <summary>
     /// Gets the entity's network identifier.
@@ -187,7 +187,7 @@ public class FPed : FEntity, IFStatefulContainer
     /// <inheritdoc />
     public string GetStateKey()
     {
-        return $"ped:{this.GetUnderlyingPed.NetworkId}";
+        return $"ped:{this.GetUnderlyingPed?.NetworkId ?? 0}";
     }
 
     /// <inheritdoc />

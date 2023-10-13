@@ -30,7 +30,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     private readonly IUnitService _unitService;
     private readonly PlayerList _playerList;
     private readonly ICalloutStoreService _calloutStoreService;
-    private readonly IInternalIncidentHistoryService _incidentHistoryService;
+    private readonly IIncidentService _incidentService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
@@ -40,21 +40,21 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="calloutStoreService">The <see cref="ICalloutStoreService"/> to use.</param>
-    /// <param name="incidentHistoryService">The <see cref="IIncidentHistoryService"/> to use.</param>
+    /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
     public CalloutDistributionService(
         IConfigService configService,
         IConfirmationService confirmationService,
         IUnitService unitService,
         PlayerList playerList,
         ICalloutStoreService calloutStoreService,
-        IIncidentHistoryService incidentHistoryService)
+        IIncidentService incidentService)
     {
         this._configService = configService;
         this._confirmationService = confirmationService;
         this._unitService = unitService;
         this._playerList = playerList;
         this._calloutStoreService = calloutStoreService;
-        this._incidentHistoryService = (IInternalIncidentHistoryService)incidentHistoryService;
+        this._incidentService = incidentService;
     }
 
     /// <inheritdoc/>
@@ -103,18 +103,10 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <inheritdoc />
     public bool AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false)
     {
-        this._incidentHistoryService.AddUnitToIncidentHistory(callout, FIncidentType.Callout, unit);
-
-        if (callout.Units.Contains(unit))
+        if (!this._incidentService.AssignUnitToIncident(unit, callout))
         {
             return false;
         }
-
-        ((IInternalIncident)callout).Units.Add(unit);
-
-        unit.Availability.Value = FUnitAvailability.NotReceiving;
-        unit.Callout = new SimpleCallout(callout);
-        ((IInternalUnit)unit).InternalCallout = callout;
 
         if (acceptedByUnit)
         {
@@ -125,19 +117,6 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         {
             callout.OnUnitAssigned(unit);
             this.OnUnitAssignedToCallout?.Invoke(this, new UnitAssignedToCalloutEventArgs(callout, unit));
-        }
-
-        foreach (var player in unit.Players)
-        {
-            player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
-            {
-                Id = callout.Id.ToString(),
-                Title = callout.Title,
-                Description = callout.Description,
-                Location = callout.Location,
-                Priority = callout.Priority,
-                ActivityRadius = callout.ActivityRadius,
-            }));
         }
 
         return true;

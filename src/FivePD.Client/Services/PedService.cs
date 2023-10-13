@@ -43,8 +43,9 @@ internal class PedService : IPedService, IOnInit
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAllSimple);
 
         this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
-        this._eventHandlerDictionary[Events.Ped.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
-        this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(this.SetTask);
+        this._eventHandlerDictionary[Events.Ped.SetProperty] +=
+            new Action<int, string, string>((a, b, c) => this._queueService.Queue(() => this.SetPedProperty(a, b, c)));
+        this._eventHandlerDictionary[Events.Ped.SetTask] += new Action<string>(a => this._queueService.Queue(() => this.SetTask(a)));
         this._eventHandlerDictionary[Events.Ped.InvokeMethod] += new Action<string>(this.InvokeMethod);
         this._eventHandlerDictionary[Events.Ped.WeaponCollection] += new Action<string>(this.WeaponCollection);
         this._eventHandlerDictionary[Events.Ped.WeaponCollectionWithReturn] += new Action<string, string>(this.WeaponCollectionWithReturn);
@@ -77,7 +78,7 @@ internal class PedService : IPedService, IOnInit
         {
             var fPedBuilder = new CommonFPedBuilder(ped.NetworkId)
                 .WithGender((FGender)ped.Gender);
-            BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder));
+            BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder), 0);
         }
 
         return fPed;
@@ -185,6 +186,8 @@ internal class PedService : IPedService, IOnInit
             return;
         }
 
+        Debug.WriteLine($"set property {property}");
+
         switch (property)
         {
             case FPedPropertiesDTO.Events.Accuracy:
@@ -201,7 +204,7 @@ internal class PedService : IPedService, IOnInit
 
             case FPedPropertiesDTO.Events.AlwaysKeepTask:
             {
-                this._queueService.Queue(() => ped.AlwaysKeepTask = bool.Parse(value));
+                ped.AlwaysKeepTask = bool.Parse(value);
                 break;
             }
 
@@ -219,7 +222,7 @@ internal class PedService : IPedService, IOnInit
 
             case FPedPropertiesDTO.Events.BlockPermanentEvents:
             {
-                this._queueService.Queue(() => ped.BlockPermanentEvents = bool.Parse(value));
+                ped.BlockPermanentEvents = bool.Parse(value);
                 break;
             }
 
@@ -465,25 +468,28 @@ internal class PedService : IPedService, IOnInit
     private async void SetTask(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<FPedTasksDTO.SetPedTaskRequest>(serializedRequest);
+        Debug.WriteLine($"before invoking task {request.Task}");
         var ped = await this.FindPedAsync(request.NetworkId);
         if (ped is null)
         {
             return;
         }
 
+        Debug.WriteLine($"after invoking task {request.Task}");
+
         switch (request.Task)
         {
             case FPedTasksDTO.Events.AchieveHeading:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.AchieveHeading>(request.Args);
-                this._queueService.Queue(() => ped.Task.AchieveHeading(args.Heading, args.Timeout));
+                ped.Task.AchieveHeading(args.Heading, args.Timeout);
                 break;
             }
 
             case FPedTasksDTO.Events.AimAt:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.AimAt>(request.Args);
-                this._queueService.Queue(() => ped.Task.AimAt(args.Target, args.Duration));
+                ped.Task.AimAt(args.Target, args.Duration);
                 break;
             }
 
@@ -524,13 +530,13 @@ internal class PedService : IPedService, IOnInit
 
             case FPedTasksDTO.Events.ClearAll:
             {
-                this._queueService.Queue(() => ped.Task.ClearAll());
+                ped.Task.ClearAll();
                 break;
             }
 
             case FPedTasksDTO.Events.ClearAllImmediately:
             {
-                this._queueService.Queue(() => ped.Task.ClearAllImmediately());
+                ped.Task.ClearAllImmediately();
                 break;
             }
 
@@ -549,7 +555,7 @@ internal class PedService : IPedService, IOnInit
 
             case FPedTasksDTO.Events.ClearSecondary:
             {
-                this._queueService.Queue(() => ped.Task.ClearSecondary());
+                ped.Task.ClearSecondary();
                 break;
             }
 
@@ -575,8 +581,8 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.CruiseWithVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.CruiseWithVehicle>(request.Args);
-                this._queueService.Queue(
-                    () => ped.Task.CruiseWithVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Speed, args.DrivingStyle));
+                this._queueService.Queue(() =>
+                    ped.Task.CruiseWithVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Speed, args.DrivingStyle));
                 break;
             }
 
@@ -865,7 +871,7 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.StandStill:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.StandStill>(request.Args);
-                this._queueService.Queue(() => this._queueService.Queue(() => ped.Task.StandStill(args.Duration)));
+                ped.Task.StandStill(args.Duration);
                 break;
             }
 
@@ -885,7 +891,7 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.TurnToEntity:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.TurnToEntity>(request.Args);
-                this._queueService.Queue(() => ped.Task.TurnTo(Entity.FromNetworkId(args.EntityNetworkId), args.Duration));
+                ped.Task.TurnTo(Entity.FromNetworkId(args.EntityNetworkId), args.Duration);
                 break;
             }
 
@@ -1069,11 +1075,23 @@ internal class PedService : IPedService, IOnInit
         }
     }
 
+    #pragma warning disable
+
+    private DateTime _last;
+
     private async Task<Ped> FindPedAsync(int networkId)
     {
-        // TODO: only wait a few seconds
+        Debug.WriteLine($"ped netid: {networkId} - {Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId)}");
+
+        this._last = DateTime.Now;
         while (!Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId))
         {
+            var now = DateTime.Now;
+            if ((now - this._last).TotalSeconds > 5)
+            {
+                return null;
+            }
+
             await BaseScript.Delay(10);
         }
 

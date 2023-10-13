@@ -106,7 +106,7 @@ public class DepartmentService : IDepartmentService
     public void RemoveDepartment(Department department)
     {
         this._databaseContext.Departments.Remove(department);
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
     }
 
     /// <inheritdoc />
@@ -144,7 +144,7 @@ public class DepartmentService : IDepartmentService
         user.DepartmentId = department.Id;
         user.DivisionId = null;
         user.RankId = null;
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
         this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 
@@ -167,7 +167,7 @@ public class DepartmentService : IDepartmentService
         user.DivisionId = null;
         user.RankId = null;
         user.Callsign = string.Empty;
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
         this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 

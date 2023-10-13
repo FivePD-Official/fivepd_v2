@@ -43,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\InformationUpdateDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\MarkerDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\MenuDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\OnVehicleAlertedDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\SimplePlayerDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FAnimationFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FBlipColor.cs" />

@@ -51,6 +51,8 @@ internal readonly record struct Events
         public const string SetProperty = "fivepd:vehicle:setProperty";
 
         public const string InvokeMethod = "fivepd:vehicle:invokeMethod";
+
+        public const string OnAlerted = "fivepd:vehicle:onAlerted";
     }
 
     public readonly record struct Localization
@@ -402,5 +404,11 @@ internal readonly record struct Events
 
         // void SetEnableHandcuffs(int ped, bool toggle);
         public const string SetEnableHandcuffs = "fivepd:cfx:SetEnableHandcuffs";
+
+        // void TaskVehiclePark(int ped, int vehicle, float x, float y, float z, float heading, int mode, float radius, bool keepEngineOn);
+        public const string TaskVehiclePark = "fivepd:cfx:TaskVehiclePark";
+
+        // void TaskVehicleTempAction(int driver, int vehicle, int action, int time);
+        public const string TaskVehicleTempAction = "fivepd:cfx:TaskVehicleTempAction";
     }
 }

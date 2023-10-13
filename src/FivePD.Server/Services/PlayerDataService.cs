@@ -152,7 +152,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         user.RankId = nextRank.Id;
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
         this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
         {
             Rank = nextRank,
@@ -201,7 +201,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         user.RankId = previousRank.Id;
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
         this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
         {
             Rank = previousRank,
@@ -380,7 +380,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         user.DismissedWelcomeMessage = true;
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
         networkCallbackDelegate.Invoke(null);
     }
 

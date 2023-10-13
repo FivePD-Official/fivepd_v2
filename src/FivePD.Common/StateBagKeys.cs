@@ -24,4 +24,11 @@ internal readonly record struct StateBagKeys
 
         public const string Movement = "FivePD:Ped:Movement";
     }
+
+    public readonly record struct Vehicle
+    {
+        public const string Stopped = "FivePD:Vehicle:Stopped";
+
+        public const string HasGeneratedData = "FivePD:Vehicle:HasGeneratedData";
+    }
 }

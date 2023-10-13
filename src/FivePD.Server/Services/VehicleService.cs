@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
-using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -16,7 +15,7 @@ public class VehicleService : IVehicleService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
-    private readonly ConcurrentDictionary<int, CommonFVehicle> _vehicles = new();
+    private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleService"/> class.
@@ -38,8 +37,7 @@ public class VehicleService : IVehicleService, IOnInit
     /// <inheritdoc/>
     public FVehicle TryGetVehicle(int networkId)
     {
-        var commonFVehicle = this._vehicles.TryGetValue(networkId, out var fVehicle) ? fVehicle : null;
-        return new FVehicle(commonFVehicle);
+        return this._vehicles.TryGetValue(networkId, out var fVehicle) ? fVehicle : null;
     }
 
     private void GenerateVehicle(string serializedFVehicleBuilder)
@@ -50,10 +48,10 @@ public class VehicleService : IVehicleService, IOnInit
             return;
         }
 
-        var fVehicle = fVehicleBuilder
+        var commonFVehicle = fVehicleBuilder
             .WithItems(this._configService.Items)
             .Build();
 
-        this._vehicles[fVehicle.NetworkId] = fVehicle;
+        this._vehicles[commonFVehicle.NetworkId] = new FVehicle(commonFVehicle);
     }
 }

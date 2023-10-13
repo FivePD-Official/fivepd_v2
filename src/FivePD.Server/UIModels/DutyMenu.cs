@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
 using FivePD.Common.Enums;
@@ -22,15 +21,17 @@ public sealed class DutyMenu : Menu
     private readonly IConfigService _configService;
     private readonly ILocalizationService _localizationService;
     private readonly DutyMenuConfig _dutyMenuConfig;
+    private readonly IEntityService _entityService;
 
     private MenuListItem _changeLanguageListItem;
 
-    public DutyMenu(IConfigService configService, ILocalizationService localizationService)
+    public DutyMenu(IConfigService configService, ILocalizationService localizationService, IEntityService entityService)
         : base(Controls.DutyMenu.Id, Controls.DutyMenu.Title, Controls.DutyMenu.Key)
     {
         this._configService = configService;
         this._localizationService = localizationService;
         this._dutyMenuConfig = configService.MenuConfig.DutyMenu;
+        this._entityService = entityService;
     }
 
     public MenuCheckboxItem DutyToggleItem { get; private set; }
@@ -61,8 +62,8 @@ public sealed class DutyMenu : Menu
                 this._configService.VehiclesConfig.Police.Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
             this.VehicleSpawnerItem.OnSelect += async (player, index) =>
             {
-                // var policeVehicle = this._policeVehicles.ElementAt(index);
-                // this._entityService.SpawnVehicle((uint)Cfx.API.GetHashKey(policeVehicle.Model), Game.PlayerPed.Position + (Game.PlayerPed.ForwardVector * 5f), Game.PlayerPed.Heading);
+                var policeVehicle = this._configService.VehiclesConfig.Police.ElementAt(index);
+                this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(policeVehicle.Model), player.GetUnderlyingPlayer().Character.Position, player.GetUnderlyingPlayer().Character.Heading);
             };
             items.Add(this.VehicleSpawnerItem);
         }

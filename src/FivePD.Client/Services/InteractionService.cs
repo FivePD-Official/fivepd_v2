@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.Enums;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Services;
@@ -53,10 +55,15 @@ internal class InteractionService : IInteractionService, IOnInit
         this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
         this._eventHandlerDictionary[Events.Interaction.ToggleFollowPlayer] += new Action<int, bool>(this.ToggleFollowPlayer);
         this._controlService.RegisterKeybind(
-            Controls.TryAlertEntityAsync.Id,
-            Controls.TryAlertEntityAsync.Key,
-            Controls.TryAlertEntityAsync.Title,
+            Controls.TryAlertEntity.Id,
+            Controls.TryAlertEntity.Key,
+            Controls.TryAlertEntity.Title,
             this.TryAlertEntity);
+        this._controlService.RegisterKeybind(
+            Controls.TryAlertVehicle.Id,
+            Controls.TryAlertVehicle.Key,
+            Controls.TryAlertVehicle.Title,
+            this.TryAlertVehicle);
     }
 
     /// <inheritdoc/>
@@ -183,24 +190,61 @@ internal class InteractionService : IInteractionService, IOnInit
             return;
         }
 
-        if (ped.IsDead)
+        if (ped.IsDead || ped.IsInVehicle())
         {
             return;
         }
 
         var fPed = this._pedService.GeneratePed(ped);
-        if (fPed is null)
-        {
-            return;
-        }
-
-        if (fPed.Stopped.Value)
+        if (fPed is null || fPed.Stopped.Value)
         {
             return;
         }
 
         ped.CreateBlip(FBlipSprite.Friend, FBlipColor.LightYellow, "Stopped ped");
         BaseScript.TriggerServerEvent(Events.Ped.OnAlerted, ped.NetworkId);
+    }
+
+#pragma warning disable
+
+    private void TryAlertVehicle()
+    {
+        // Handle on foot
+        if (!Game.PlayerPed.IsInVehicle())
+        {
+            var closestVehicle = World.GetAllVehicles()
+                .OrderBy(x => World.GetDistance(x.Position, Game.PlayerPed.Position))
+                .FirstOrDefault(x =>
+                    Cfx.API.NetworkGetEntityIsNetworked(x.Handle) && x.NetworkId != Game.PlayerPed.NetworkId &&
+                    x.IsInRangeOf(Game.PlayerPed.Position, BaseInteractionDistance));
+            if (closestVehicle?.Driver is null)
+            {
+                return;
+            }
+
+            var fVehicle = this._vehicleService.GenerateVehicle(closestVehicle);
+            if (fVehicle is null || fVehicle.Stopped.Value)
+            {
+                return;
+            }
+
+            closestVehicle.CreateBlip(FBlipSprite.PersonalVehicleCar, FBlipColor.LightYellow, "Stopped vehicle");
+
+            BaseScript.TriggerServerEvent(Events.Vehicle.OnAlerted, JsonConvert.SerializeObject(new OnVehicleAlertedDTO
+            {
+                AlertedOnFoot = true,
+                VehicleNetworkId = closestVehicle.NetworkId,
+                OccupantNetworkIds = closestVehicle.Occupants.Where(x => Cfx.API.NetworkGetEntityIsNetworked(x.Handle)).Select(x => x.NetworkId).ToList(),
+                DriverPedNetworkId = closestVehicle.Driver.NetworkId,
+            }));
+            return;
+        }
+
+        // Handle in vehicle
+        if (Game.PlayerPed.CurrentVehicle is not null && Game.PlayerPed.CurrentVehicle.GetPedOnSeat(VehicleSeat.Driver) != Game.PlayerPed)
+        {
+            return;
+        }
     }
 
     private void ToggleFollowPlayer(int networkId, bool follow)

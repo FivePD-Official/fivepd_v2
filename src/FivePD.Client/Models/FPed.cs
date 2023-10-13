@@ -31,11 +31,11 @@ internal sealed class FPed : IFStatefulContainer
 
     public string GetStateKey()
     {
-        return $"ped:{this.Ped.NetworkId}";
+        return $"ped:{this.Ped?.NetworkId ?? 0}";
     }
 
     public StateBag GetStateBag()
     {
-        return this.Ped.State;
+        return this.Ped?.State;
     }
 }

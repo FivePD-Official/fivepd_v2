@@ -30,7 +30,7 @@ internal class CfxService : ICfxService, IOnInit
             {
                 return;
             }
-            
+
             this._queueService.Queue(() => Cfx.API.AddAmmoToPed(entity.Handle, weaponHash, ammo));
         });
 
@@ -88,7 +88,8 @@ internal class CfxService : ICfxService, IOnInit
                         return;
                     }
 
-                    this._queueService.Queue(() => Cfx.API.ApplyForceToEntity(entity.Handle, forceType, x, y, z, offX, offY, offZ, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12,
+                    this._queueService.Queue(() => Cfx.API.ApplyForceToEntity(entity.Handle, forceType, x, y, z, offX, offY, offZ, boneIndex, isDirectionRel,
+                        ignoreUpVec, isForceRel, p12,
                         p13));
                 });
 
@@ -138,9 +139,11 @@ internal class CfxService : ICfxService, IOnInit
                 return;
             }
 
-            this._queueService.Queue(() => Cfx.API.AttachEntityToEntity(entity1.Handle, entity2.Handle, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15));
+            this._queueService.Queue(() =>
+                Cfx.API.AttachEntityToEntity(entity1.Handle, entity2.Handle, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14,
+                    arg15));
         });
-        
+
         this._eventHandlerDictionary[Events.Cfx.DetachEntity] += new Action<
             int,
             bool,
@@ -168,7 +171,7 @@ internal class CfxService : ICfxService, IOnInit
 
             this._queueService.Queue(() => Cfx.API.SetPedIntoVehicle(entity1.Handle, i1, i2));
         });
-        
+
         this._eventHandlerDictionary[Events.Cfx.ResurrectPed] += new Action<int>((ped) =>
         {
             var entity = Entity.FromNetworkId(ped);
@@ -179,7 +182,7 @@ internal class CfxService : ICfxService, IOnInit
 
             this._queueService.Queue(() => Cfx.API.ResurrectPed(entity.Handle));
         });
-        
+
         this._eventHandlerDictionary[Events.Cfx.SetEnableHandcuffs] += new Action<int, bool>((ped, toggle) =>
         {
             var entity = Entity.FromNetworkId(ped);
@@ -190,5 +193,31 @@ internal class CfxService : ICfxService, IOnInit
 
             this._queueService.Queue(() => Cfx.API.SetEnableHandcuffs(entity.Handle, toggle));
         });
+
+        this._eventHandlerDictionary[Events.Cfx.TaskVehiclePark] += new Action<int, int, float, float, float, float, int, float, bool>(
+            (pedNetId, vehicleNetId, x, y, z, heading, mode, radius, keepEngineOn) =>
+            {
+                var ped = Entity.FromNetworkId(pedNetId);
+                var vehicle = Entity.FromNetworkId(vehicleNetId);
+                if (ped is null || vehicle is null)
+                {
+                    return;
+                }
+
+                this._queueService.Queue(() => Cfx.API.TaskVehiclePark(ped.Handle, vehicle.Handle, x, y, z, heading, mode, radius, keepEngineOn));
+            });
+        
+        this._eventHandlerDictionary[Events.Cfx.TaskVehicleTempAction] += new Action<int, int, int, int>(
+            (pedNetId, vehicleNetId, action, time) =>
+            {
+                var ped = Entity.FromNetworkId(pedNetId);
+                var vehicle = Entity.FromNetworkId(vehicleNetId);
+                if (ped is null || vehicle is null)
+                {
+                    return;
+                }
+
+                this._queueService.Queue(() => Cfx.API.TaskVehicleTempAction(ped.Handle, vehicle.Handle, action, time));
+            });
     }
 }

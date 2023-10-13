@@ -1,5 +1,8 @@
-﻿using CitizenFX.Core;
+﻿using System.Collections.Generic;
+using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Builders;
+using FivePD.Common.ConfigModels;
 using FivePD.Common.Models;
 
 namespace FivePD.Server.EntityWrappers.VehicleWrapper;
@@ -7,7 +10,7 @@ namespace FivePD.Server.EntityWrappers.VehicleWrapper;
 /// <summary>
 /// Asd.
 /// </summary>
-public class FVehicle : FEntity
+public class FVehicle : FEntity, IFStatefulContainer
 {
     private readonly CommonFVehicle _fVehicle;
 
@@ -19,7 +22,51 @@ public class FVehicle : FEntity
     {
         this._fVehicle = fVehicle;
         this.Properties = new(this);
+
+        this.NetworkId = fVehicle.NetworkId;
+        this.LicensePlate = fVehicle.LicensePlate;
+        this.Color = fVehicle.Color;
+        this.Brand = fVehicle.Brand;
+        this.Items = fVehicle.Items;
+
+        this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.Stopped, false);
+        this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.HasGeneratedData, false);
     }
+
+    /// <summary>
+    /// Gets the vehicle's network identifier.
+    /// </summary>
+    public int NetworkId { get; }
+
+    /// <summary>
+    /// Gets the vehicle's license plate.
+    /// </summary>
+    public string LicensePlate { get; }
+
+    /// <summary>
+    /// Gets the vehicle's color.
+    /// </summary>
+    public string Color { get; }
+
+    /// <summary>
+    /// Gets the vehicle's brand.
+    /// </summary>
+    public string Brand { get; }
+
+    /// <summary>
+    /// Gets the items of the vehicle.
+    /// </summary>
+    public List<Item> Items { get; }
+
+    /// <summary>
+    /// Gets the vehicle's observable with a value indicating if the vehicle has been stopped.
+    /// </summary>
+    public FStateBagObservable<bool> Stopped { get; private set; }
+
+    /// <summary>
+    /// Gets the vehicle's observable with a value indicating if the vehicle has generated data.
+    /// </summary>
+    public FStateBagObservable<bool> HasGeneratedData { get; private set; }
 
     /// <summary>
     /// Gets the properties of the <see cref="FVehicle"/>.
@@ -39,7 +86,7 @@ public class FVehicle : FEntity
     /// <summary>
     /// Gets the owner of the <see cref="FVehicle"/>.
     /// </summary>
-    public Player Owner => this.GetUnderlyingVehicle.Owner;
+    public Player Owner => this.GetUnderlyingVehicle?.Owner;
 
     /// <summary>
     /// Created an <see cref="FVehicle"/> wrapper from the specified <see cref="Vehicle"/>.
@@ -49,5 +96,17 @@ public class FVehicle : FEntity
     public static FVehicle FromVehicle(Vehicle vehicle)
     {
         return new FVehicle(new CommonFVehicle(new CommonFVehicleBuilder(vehicle.NetworkId)));
+    }
+
+    /// <inheritdoc />
+    public string GetStateKey()
+    {
+        return $"vehicle:{this.GetUnderlyingVehicle?.NetworkId ?? 0}";
+    }
+
+    /// <inheritdoc />
+    public StateBag GetStateBag()
+    {
+        return this.GetUnderlyingVehicle?.State;
     }
 }

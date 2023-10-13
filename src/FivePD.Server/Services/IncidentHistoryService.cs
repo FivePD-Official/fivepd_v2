@@ -63,13 +63,13 @@ internal class IncidentHistoryService : IIncidentHistoryService, IInternalIncide
             });
         }
 
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
     }
 
     private void Create(IncidentHistory incidentHistory)
     {
         this._databaseContext.IncidentHistories.Add(incidentHistory);
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
     }
 
     [UIEvent(Events.IncidentHistory.GetAllPageable)]

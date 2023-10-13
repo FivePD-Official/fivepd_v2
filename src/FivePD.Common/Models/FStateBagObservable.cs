@@ -40,7 +40,7 @@ public class FStateBagObservable<T> : IDisposable
         this._stateBag = ((IFStatefulContainer)container).GetStateBag();
         this._key = key;
 
-        if (this._stateBag[this._key] == null)
+        if (this._stateBag is not null && this._stateBag[this._key] is null)
         {
             this._stateBag[this._key] = defaultValue;
         }

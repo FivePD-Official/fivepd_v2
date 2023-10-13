@@ -143,7 +143,7 @@ public sealed class FPedTasks
             new FPedTasksDTO.CruiseWithVehicle { VehicleNetworkId = vehicle.NetworkId, Speed = speed, DrivingStyle = drivingstyle });
 
     /// <summary>
-    /// Invokes the "ped.Task.StandStill" native.
+    /// Invokes the "ped.Task.DriveTo" native.
     /// </summary>
     /// <param name="vehicle">The vehicle to drive.</param>
     /// <param name="target">The location to drive to.</param>

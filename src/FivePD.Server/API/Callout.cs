@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace FivePD.Server.API;
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods
+#pragma warning disable VSTHRD200
 
 /// <summary>
 /// Represents a callout.

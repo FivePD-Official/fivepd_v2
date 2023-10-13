@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-public sealed record Drug(string Name)
+public class Drug
 {
     public string Name { get; set; }
 }

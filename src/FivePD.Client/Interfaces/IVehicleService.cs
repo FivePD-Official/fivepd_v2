@@ -1,4 +1,5 @@
 ﻿using CitizenFX.Core;
+using FivePD.Client.Models;
 using FivePD.Common.Models;
 
 namespace FivePD.Client.Interfaces;
@@ -12,5 +13,6 @@ internal interface IVehicleService
     /// Generates a vehicle's <see cref="CommonFVehicle"/> object.
     /// </summary>
     /// <param name="vehicle">The vehicle that's data need to be generated and stored on the server.</param>
-    public void GenerateVehicle(Vehicle vehicle);
+    /// <returns>The vehicle.</returns>
+    public FVehicle GenerateVehicle(Vehicle vehicle);
 }

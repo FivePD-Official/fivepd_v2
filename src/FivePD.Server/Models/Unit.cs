@@ -91,6 +91,11 @@ public class Unit : IInternalUnit
     public SimpleCallout Callout { get; internal set; }
 
     /// <summary>
+    /// Gets the currently attached traffic stop.
+    /// </summary>
+    public TrafficStop TrafficStop { get; internal set; }
+
+    /// <summary>
     /// Gets or sets the department id.
     /// </summary>
     public int DepartmentId { get; set; }

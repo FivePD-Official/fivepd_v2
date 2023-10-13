@@ -191,15 +191,16 @@ public sealed class InteractionMenu : Menu
         this.DrugSwabTest = new MenuButtonItem("Drug swab test", "");
         this.DrugSwabTest.OnSelect += async player =>
         {
-            var playerPed = FPed.FromFPlayer(player);
-
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
             if (fPed is null || !fPed.HasGeneratedData.Value || fPed.Properties.IsDead)
             {
                 return;
             }
 
-            fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
+            if (!fPed.Properties.IsInVehicle)
+            {
+                fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
+            }
 
             var text = new GtaStyleText()
                 .Blue("Drug swab test")
@@ -212,15 +213,16 @@ public sealed class InteractionMenu : Menu
         this.BreathalyzerTest = new MenuButtonItem("Breathalyzer test", "");
         this.BreathalyzerTest.OnSelect += async player =>
         {
-            var playerPed = FPed.FromFPlayer(player);
-
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
             if (fPed is null || !fPed.HasGeneratedData.Value || fPed.Properties.IsDead)
             {
                 return;
             }
 
-            fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
+            if (!fPed.Properties.IsInVehicle)
+            {
+                fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
+            }
 
             var text = new GtaStyleText()
                 .Blue("Breathalyzer test")

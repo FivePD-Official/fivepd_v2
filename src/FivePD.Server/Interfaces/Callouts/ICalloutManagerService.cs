@@ -48,4 +48,4 @@ internal interface IInternalCalloutManagerService
     public List<CalloutHolder> ActiveCallouts { get; }
 }
 
-internal sealed record CalloutHolder(Callout Callout, Type Type, Stopwatch Timer);
+internal sealed record CalloutHolder(Callout Callout, CalloutSetupProperties Properties, Type Type, Stopwatch Timer);

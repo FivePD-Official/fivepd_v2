@@ -185,7 +185,7 @@ public class MessageService : IMessageService
         if (message is not null)
         {
             message.Read = true;
-            this._databaseContext.SaveChangesAsync();
+            this._databaseContext.SaveChanges();
         }
 
         networkCallbackDelegate.InvokeWithJson(null);

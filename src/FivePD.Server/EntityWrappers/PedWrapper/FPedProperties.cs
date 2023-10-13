@@ -111,12 +111,12 @@ public sealed class FPedProperties
     /// <summary>
     /// Gets a value indicating whether the ped is dead.
     /// </summary>
-    public bool IsDead => Cfx.API.GetEntityHealth(this._fPed.GetUnderlyingPed.Handle) <= 0;
+    public bool IsDead => Cfx.API.GetEntityHealth(this._fPed.GetUnderlyingPed?.Handle ?? 0) <= 0;
 
     /// <summary>
     /// Gets a value indicating whether the ped is in a vehicle.
     /// </summary>
-    public bool IsInVehicle => Cfx.API.GetVehiclePedIsIn(this._fPed.GetUnderlyingPed.Handle, false) != 0;
+    public bool IsInVehicle => Cfx.API.GetVehiclePedIsIn(this._fPed.GetUnderlyingPed?.Handle ?? 0, false) != 0;
 
     /// <summary>
     /// Gets the InjuryHealthThreshold.

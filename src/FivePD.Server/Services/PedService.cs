@@ -168,10 +168,10 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 AlcoholLevel = fPed.AlcoholLevel,
                 Drugs = fPed.Drugs,
             });
-            this._databaseContext.SaveChangesAsync();
+            this._databaseContext.SaveChanges();
         }
 
-        Debug.WriteLine($"Generated PED data: net id {fPed.NetworkId} - {fPed.Firstname} {fPed.Lastname}");
+        Debug.WriteLine($"Generated data for ped with net ID of {fPed.NetworkId} - Name: {fPed.Firstname} {fPed.Lastname}");
 
         fPed.HasGeneratedData.Value = true;
         this._peds[fPed.NetworkId] = fPed;

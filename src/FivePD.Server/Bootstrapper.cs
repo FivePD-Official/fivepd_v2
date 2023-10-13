@@ -46,6 +46,11 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     public Bootstrapper()
     {
+        AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+        {
+            Debug.WriteLine($"AppDomain.CurrentDomain.UnhandledException: {args.ExceptionObject}");
+        };
+
         LifecycleHandler.OnStopped += (_, _) => this.OnStopped();
 
         // Prepare the server for development if applicable.
@@ -492,7 +497,7 @@ internal class Bootstrapper : BaseScript
                 },
             };
             databaseContext.Departments.Add(department);
-            databaseContext.SaveChangesAsync();
+            databaseContext.SaveChanges();
             log?.Information("Created sample department");
         }
     }

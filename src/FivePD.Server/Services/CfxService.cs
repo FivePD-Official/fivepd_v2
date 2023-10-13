@@ -117,4 +117,15 @@ public class CfxService : ICfxService
     {
         this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.SetEnableHandcuffs, ped, toggle);
     }
+
+    public void TaskVehiclePark(int ped, int vehicle, float x, float y, float z, float heading, int mode, float radius, bool keepEngineOn)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(ped).Owner, Events.Cfx.TaskVehiclePark, ped, vehicle, x, y, z, heading, mode, radius,
+            keepEngineOn);
+    }
+
+    public void TaskVehicleTempAction(int driver, int vehicle, int action, int time)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(driver).Owner, Events.Cfx.TaskVehicleTempAction, driver, vehicle, action, time);
+    }
 }

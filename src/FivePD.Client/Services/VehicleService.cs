@@ -5,6 +5,7 @@ using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
+using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.DTO;
@@ -42,10 +43,14 @@ internal class VehicleService : IVehicleService, IOnInit
     }
 
     /// <inheritdoc />
-    public void GenerateVehicle(Vehicle vehicle)
+    public FVehicle GenerateVehicle(Vehicle vehicle)
     {
-        // TODO: Is the Occupants contains the Driver as well?
-        this._pedService.GeneratePed(vehicle.Driver);
+        var fVehicle = new FVehicle(vehicle);
+        if (fVehicle.HasGeneratedData.Value)
+        {
+            return fVehicle;
+        }
+
         foreach (var ped in vehicle.Occupants)
         {
             this._pedService.GeneratePed(ped);
@@ -57,9 +62,9 @@ internal class VehicleService : IVehicleService, IOnInit
             .WithColor(vehicle.GetColorName())
             .WithBrand(vehicle.DisplayName);
 
-        Debug.WriteLine("asdasdasa");
-
         BaseScript.TriggerServerEvent(Events.Vehicle.Generate, JsonConvert.SerializeObject(fVehicleBuilder));
+
+        return fVehicle;
     }
 
     private async void GetPedProperty(string eventCallbackId, int networkId, string property)

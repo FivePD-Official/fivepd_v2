@@ -37,7 +37,7 @@ public class ProgressionSystemService : IProgressionSystemService
         var user = player.User;
         var previousXp = user.Xp;
         user.Xp += experiencePoints;
-        this._databaseContext.SaveChangesAsync();
+        this._databaseContext.SaveChanges();
 
         if (user.Xp >= previousXp)
         {
