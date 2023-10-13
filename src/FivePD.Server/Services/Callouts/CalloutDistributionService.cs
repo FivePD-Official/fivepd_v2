@@ -147,12 +147,20 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     {
         var filteredUnits = this._unitService.Units()
             .Where(unit => this._calloutStoreService.ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
-            .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving);
+            .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
+            .ToList();
+
+        if (filteredUnits.Select(x => x.Players.Count).Aggregate(0, (acc, count) => acc + count) < calloutHolder.Properties.MinOnDutyOfficers)
+        {
+            return new List<Unit>();
+        }
+
         if (this._configService.GeneralConfig.Callout.DynamicDispatch.Enabled)
         {
             filteredUnits = filteredUnits.Where(unit =>
                 unit.Players.Any(player => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(calloutHolder.Callout.Location) <=
-                                           this._configService.GeneralConfig.Callout.DynamicDispatch.Radius));
+                                           this._configService.GeneralConfig.Callout.DynamicDispatch.Radius))
+                .ToList();
         }
 
         var notifiedUnits = filteredUnits.ToList();

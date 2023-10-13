@@ -189,7 +189,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
             }
         }
 
-        var calloutHolder = new CalloutHolder(callout, type, new Stopwatch());
+        var calloutHolder = new CalloutHolder(callout, properties, type, new Stopwatch());
         this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 

@@ -47,4 +47,9 @@ public readonly record struct CalloutSetupProperties
     /// A random location will be picked from this list.
     /// </summary>
     public IEnumerable<Vector3> Locations { get; init; }
+
+    /// <summary>
+    /// Gets the minimum amount of officers required to generate the callout.
+    /// </summary>
+    public int MinOnDutyOfficers { get; init; }
 }
