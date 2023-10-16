@@ -14,18 +14,18 @@ public class BackupManagerService : IBackupManagerService
 {
     private readonly IConfirmationService _confirmationService;
     private readonly IUnitService _unitService;
-    private readonly IInternalCalloutManagerService _calloutManagerService;
+    private readonly IInternalIncidentService _incidentService;
     private readonly IConfigService _configService;
     
     public BackupManagerService(
         IConfirmationService confirmationService, 
         IUnitService unitService, 
-        ICalloutManagerService calloutManagerService,
+        IIncidentService incidentService,
         IConfigService configService)
     {
         this._confirmationService = confirmationService;
         this._unitService = unitService;
-        this._calloutManagerService = (IInternalCalloutManagerService)calloutManagerService;
+        this._incidentService = (IInternalIncidentService)incidentService;
         this._configService = configService;
     }
 
@@ -41,7 +41,7 @@ public class BackupManagerService : IBackupManagerService
             return;
         }
 
-        var calloutHolder = this._calloutManagerService.ActiveCallouts.FirstOrDefault(holder =>
+        var calloutHolder = this._incidentService.InternalCallouts.FirstOrDefault(holder =>
             holder.Callout.Units.Any(unit => unit.Callsign == requestingUnit.Callsign));
         if (calloutHolder is null)
         {
@@ -50,7 +50,7 @@ public class BackupManagerService : IBackupManagerService
 
         var filteredUnits = this._unitService.Units()
             .Where(unit => unit.Callsign != requestingUnit.Callsign)
-            .Where(unit => this._calloutManagerService.ActiveCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .Where(unit => this._incidentService.InternalCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
             .ToList();
 
         foreach (var unit in filteredUnits)

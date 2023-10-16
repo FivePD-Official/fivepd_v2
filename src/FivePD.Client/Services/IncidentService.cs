@@ -1,0 +1,139 @@
+﻿using System;
+using System.Dynamic;
+using System.Linq;
+using System.Threading.Tasks;
+using CitizenFX.Core;
+using FivePD.Client.DTO;
+using FivePD.Client.Extensions;
+using FivePD.Client.Interfaces;
+using FivePD.Client.Interfaces.Lifecycle;
+using FivePD.Client.Models;
+using FivePD.Common;
+using FivePD.Common.Enums;
+using FivePD.Common.Models;
+using Newtonsoft.Json;
+using Cfx = CitizenFX.Core.Native;
+
+namespace FivePD.Client.Services;
+
+#pragma warning disable
+
+internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
+{
+    private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly ITickService _tickService;
+    private readonly ILocalPlayerService _localPlayerService;
+
+    private ClientIncidentWrapper _currentIncident;
+    private Blip _incidentBlip;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CalloutManagerService"/> class.
+    /// </summary>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
+    /// <param name="localPlayerService">The <see cref="ILocalPlayerService"/> to use.</param>
+    public IncidentService(EventHandlerDictionary eventHandlerDictionary, ITickService tickService, ILocalPlayerService localPlayerService)
+    {
+        this._eventHandlerDictionary = eventHandlerDictionary;
+        this._tickService = tickService;
+        this._localPlayerService = localPlayerService;
+    }
+
+    /// <inheritdoc/>
+    public void OnInit()
+    {
+        this._tickService.OnTick += this.OnTickAsync;
+
+        this._eventHandlerDictionary[Events.Incident.OnCompleted] += new Action(this.OnCompleted);
+        this._eventHandlerDictionary[Events.Incident.OnAssigned] += new Action<string>(this.OnAssigned);
+        this._eventHandlerDictionary.AddUIEvent(
+            Events.UI.Callout.GetActive,
+            new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this._currentIncident)); }));
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Callout.SelfAssign);
+        this._eventHandlerDictionary.AddUIToServerEventOverrideData(
+            Events.Callout.GetAllActiveUI,
+            serverResponse =>
+            {
+                var callouts = JsonConvert.DeserializeObject<Page<CalloutDTO.CalloutToClientDTO>>(serverResponse);
+                var newCallouts = callouts.Items.Select(callout => new CalloutDTO.CalloutToUIDTO
+                    {
+                        Id = callout.Id,
+                        Title = callout.Title,
+                        Description = callout.Description,
+                        Units = callout.Units,
+                        Address = callout.Location.GetStreetName(),
+                    })
+                    .ToList();
+                var newPage = new Page<CalloutDTO.CalloutToUIDTO>
+                {
+                    Items = newCallouts,
+                    CurrentPage = 1,
+                    ItemCount = newCallouts.Count,
+                    PageCount = 1,
+                    PageSize = newCallouts.Count,
+                };
+
+                return JsonConvert.SerializeObject(newPage);
+            });
+    }
+    
+    /// <inheritdoc/>
+    public void OnDestroy()
+    {
+        this._tickService.OnTick -= this.OnTickAsync;
+    }
+
+    private Task OnTickAsync()
+    {
+        if (this._currentIncident is null || this._currentIncident.Incident.Type != FIncidentType.Callout)
+        {
+            return Task.FromResult(0);
+        }
+
+        if (World.GetDistance(this._currentIncident.Incident.Location, Game.PlayerPed.Position) <= this._currentIncident.Incident.ActivityRadius)
+        {
+            this._incidentBlip.ShowRoute = false;
+            BaseScript.TriggerServerEvent(Events.Callout.OnPlayerEnteredInActivityZone, this._currentIncident.Incident.Id);
+        }
+
+        return Task.FromResult(0);
+    }
+    
+    private void OnCompleted()
+    {
+        this._currentIncident = null;
+        this._localPlayerService.UpdateInformationCallout(null);
+        var incidentBlipHandle = this._incidentBlip.Handle;
+        Cfx.API.RemoveBlip(ref incidentBlipHandle);
+        this._incidentBlip = null;
+    }
+    
+    private void OnAssigned(string serializedRequest)
+    {
+        var callout = JsonConvert.DeserializeObject<ClientIncidentDTO>(serializedRequest);
+        this._currentIncident = new ClientIncidentWrapper(callout, callout.Location.GetStreetName());
+        this._localPlayerService.UpdateInformationCallout(this._currentIncident);
+
+        if (this._incidentBlip is not null)
+        {
+            var incidentBlipHandle = this._incidentBlip.Handle;
+            Cfx.API.RemoveBlip(ref incidentBlipHandle);
+        }
+
+        this._incidentBlip = World.CreateBlip(callout.Location, callout.ActivityRadius);
+        var blipColor = callout.Priority switch
+        {
+            FIncidentPriority.Code1 => (BlipColor)FBlipColor.Blue,
+            FIncidentPriority.Code2 => (BlipColor)FBlipColor.Yellow,
+            FIncidentPriority.Code3 => (BlipColor)FBlipColor.Red,
+            _ => (BlipColor)FBlipColor.White,
+        };
+        this._incidentBlip.Name = callout.Title;
+        this._incidentBlip.Alpha = 100;
+        this._incidentBlip.Sprite = BlipSprite.BigCircle;
+        this._incidentBlip.ShowRoute = true;
+        Cfx.API.SetBlipColour(this._incidentBlip.Handle, (int)blipColor);
+    }
+
+}

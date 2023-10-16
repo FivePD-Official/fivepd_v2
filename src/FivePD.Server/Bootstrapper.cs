@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Server.API;
 using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
@@ -14,11 +15,13 @@ using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Interfaces.LooseData;
+using FivePD.Server.Interfaces.TrafficStopInterfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
 using FivePD.Server.Services.LooseData;
+using FivePD.Server.Services.TrafficStopServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -268,12 +271,11 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<CalloutManagerService>();
         services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
-        services.AddSingleton<IInternalCalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<CalloutManagerService>());
 
-        services.AddSingleton<CalloutStoreService>();
-        services.AddSingleton<ICalloutStoreService>(provider => provider.GetRequiredService<CalloutStoreService>());
-        services.AddSingleton<IInternalCalloutStoreService>(provider => provider.GetRequiredService<CalloutStoreService>());
+        services.AddSingleton<IncidentService>();
+        services.AddSingleton<IIncidentService>(provider => provider.GetRequiredService<IncidentService>());
+        services.AddSingleton<IInternalIncidentService>(provider => provider.GetRequiredService<IncidentService>());
 
         services.AddSingleton<CalloutDistributionService>();
         services.AddSingleton<ICalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
@@ -292,6 +294,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IncidentHistoryService>();
         services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
         services.AddSingleton<IInternalIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
+
+        services.AddSingleton<TrafficStopService>();
+        services.AddSingleton<ITrafficStopService>(provider => provider.GetRequiredService<TrafficStopService>());
 
         this._provider = services.BuildServiceProvider();
 

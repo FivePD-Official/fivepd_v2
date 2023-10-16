@@ -8,7 +8,6 @@ using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
-using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
 
@@ -18,21 +17,21 @@ namespace FivePD.Server.UIModels;
 
 public sealed class DispatchMenu : Menu
 {
-    private readonly ICalloutManagerService _calloutManagerService;
+    private readonly IIncidentService _incidentService;
     private readonly IConfigService _configService;
     private readonly IBackupManagerService _backupManagerService;
     private readonly IEntityService _entityService;
     private readonly INotificationService _notificationService;
 
     public DispatchMenu(
-        ICalloutManagerService calloutManagerService,
+        IIncidentService incidentService,
         IConfigService configService,
         IBackupManagerService backupManagerService,
         IEntityService entityService,
         INotificationService notificationService)
         : base(Controls.DispatchMenu.Id, Controls.DispatchMenu.Title, Controls.DispatchMenu.Key)
     {
-        this._calloutManagerService = calloutManagerService;
+        this._incidentService = incidentService;
         this._configService = configService;
         this._backupManagerService = backupManagerService;
         this._entityService = entityService;
@@ -46,7 +45,7 @@ public sealed class DispatchMenu : Menu
         var items = new List<MenuItem>();
 
         this.CompleteIncident = new MenuButtonItem("test complete incident", string.Empty);
-        this.CompleteIncident.OnSelect += async player => { this._calloutManagerService.CompleteCalloutOfPlayer(player); };
+        this.CompleteIncident.OnSelect += async player => { this._incidentService.CompleteIncidentOfPlayer(player); };
         items.Add(this.CompleteIncident);
 
         foreach (var item in this._configService.GeneralConfig.DispatchMenuItems)
@@ -81,7 +80,7 @@ public sealed class DispatchMenu : Menu
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.CompleteCurrentCallout))
             {
-                actions.Add(async player => this._calloutManagerService.CompleteCalloutOfPlayer(player));
+                actions.Add(async player => this._incidentService.CompleteIncidentOfPlayer(player));
             }
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.TriggerPanicMode))

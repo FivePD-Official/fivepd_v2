@@ -23,7 +23,7 @@ namespace FivePD.Server.Services.Callouts;
 internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IOnDestroy
 {
     private readonly IInternalAddonMetadataService _addonMetadataService;
-    private readonly IInternalCalloutManagerService _calloutManagerService;
+    private readonly IInternalIncidentService _incidentService;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
     private readonly ILogger _logger;
@@ -35,7 +35,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
 
     public CalloutGenerationService(
         IInternalAddonMetadataService addonMetadataService,
-        IInternalCalloutManagerService calloutManagerService,
+        IIncidentService incidentService,
         IConfigService configService,
         IRandomService randomService,
         ILogger logger,
@@ -43,7 +43,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
         ICalloutDistributionService calloutDistributionService)
     {
         this._addonMetadataService = addonMetadataService;
-        this._calloutManagerService = calloutManagerService;
+        this._incidentService = (IInternalIncidentService)incidentService;
         this._configService = configService;
         this._randomService = randomService;
         this._logger = logger;
@@ -77,7 +77,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
     private void OnTick(object sender, EventArgs e)
     {
         if (this._configService.GeneralConfig.Callout.MaxActiveCallouts > 0 &&
-            this._calloutManagerService.ActiveCallouts.Count >= this._configService.GeneralConfig.Callout.MaxActiveCallouts)
+            this._incidentService.InternalCallouts.Count >= this._configService.GeneralConfig.Callout.MaxActiveCallouts)
         {
             return;
         }
@@ -153,7 +153,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
             callout.Priority = properties.Priority;
         }
 
-        var activeCalloutsWithSameType = this._calloutManagerService.ActiveCallouts
+        var activeCalloutsWithSameType = this._incidentService.InternalCallouts
             .Where(x => x.Type == type)
             .ToList();
         if (properties.Locations is not null)
@@ -189,8 +189,8 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
             }
         }
 
-        var calloutHolder = new CalloutHolder(callout, properties, type, new Stopwatch());
-        this._calloutManagerService.ActiveCallouts.Add(calloutHolder);
+        var calloutHolder = new InternalCallout(callout, properties, type, new Stopwatch());
+        this._incidentService.InternalCallouts.Add(calloutHolder);
         calloutHolder.Timer.Start();
 
         ((IInternalCalloutDistributionService)this._calloutDistributionService).DistributeCallout(calloutHolder, manualTrigger);

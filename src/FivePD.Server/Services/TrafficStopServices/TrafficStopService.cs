@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Server.API;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.TrafficStopInterfaces;
 using FivePD.Server.Models;
+using Serilog;
 
 namespace FivePD.Server.Services.TrafficStopServices;
 
@@ -13,16 +14,25 @@ namespace FivePD.Server.Services.TrafficStopServices;
 
 public class TrafficStopService : ITrafficStopService
 {
-    private readonly IIncidentService _incidentService;
-    private readonly List<TrafficStop> _trafficStops;
+    private readonly ILogger _logger;
+    private readonly IInternalIncidentService _incidentService;
 
-    public TrafficStopService(IIncidentService incidentService)
+    public TrafficStopService(
+        ILogger logger, 
+        IIncidentService incidentService)
     {
-        this._incidentService = incidentService;
+        this._logger = logger;
+        this._incidentService = (IInternalIncidentService)incidentService;
     }
     
     public TrafficStop GenerateTrafficStop(Unit unit, FVehicle vehicle)
     {
+        if (unit is null || vehicle is null)
+        {
+            this._logger.Warning("TrafficStopService.GenerateTrafficStop: unit or vehicle is null");
+            return null;
+        }
+
         var trafficStop = new TrafficStop
         {
             Id = Guid.NewGuid(),
@@ -34,7 +44,7 @@ public class TrafficStopService : ITrafficStopService
             Vehicle = vehicle,
         };
         
-        this._trafficStops.Add(trafficStop);
+        this._incidentService.InternalTrafficStops.Add(trafficStop);
 
         this.AssignUnitToTrafficStop(unit, trafficStop);
         
@@ -43,11 +53,6 @@ public class TrafficStopService : ITrafficStopService
     
     public bool AssignUnitToTrafficStop(Unit unit, TrafficStop trafficStop)
     {
-        if (!this._incidentService.AssignUnitToIncident(unit, trafficStop))
-        {
-            return false;
-        }
-
-        return true;
+        return this._incidentService.AssignUnitToIncident(unit, trafficStop);
     }
 }

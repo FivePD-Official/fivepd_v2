@@ -21,20 +21,20 @@
       </div>
     </div>
 
-    <div *ngIf="information.CalloutWrapper" class="w-full h-[1px] bg-zinc-700"></div>
+    <div *ngIf="information.IncidentWrapper" class="w-full h-[1px] bg-zinc-700"></div>
 
-    <div *ngIf="information.CalloutWrapper" class="w-full flex flex-col gap-4">
+    <div *ngIf="information.IncidentWrapper" class="w-full flex flex-col gap-4">
       <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
         <div class="flex flex-col">
           <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ACTIVE_CALLOUT.SINGULAR' | translate }}</p>
           <p class="text-zinc-200">
-            {{ information.CalloutWrapper.Callout.Title }}
+            {{ information.IncidentWrapper.Incident.Title }}
           </p>
         </div>
         <div class="flex flex-col">
           <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
           <p class="text-zinc-200">
-            {{ information.CalloutWrapper.Address }}
+            {{ information.IncidentWrapper.Address }}
           </p>
         </div>
       </div>

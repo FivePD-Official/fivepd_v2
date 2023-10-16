@@ -26,7 +26,6 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     private readonly ITickService _tickService;
     private readonly IUIManagerService _uiManagerService;
 
-    private readonly InformationUpdateDTO _information = new();
     private GeneralConfig _generalConfig = new()
     {
         Features = new FeatureFlagsConfig
@@ -75,6 +74,8 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     /// <inheritdoc />
     public string Status { get; private set; } = string.Empty;
 
+    public InformationUpdateDTO Information { get; private set; } = new();
+
     /// <inheritdoc/>
     public void OnInit()
     {
@@ -98,16 +99,16 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     }
 
     /// <inheritdoc/>
-    public void UpdateInformationCallout(ClientCalloutWrapper clientCalloutWrapper)
+    public void UpdateInformationCallout(ClientIncidentWrapper clientIncidentWrapper)
     {
-        this._information.CalloutWrapper = clientCalloutWrapper;
+        this.Information.IncidentWrapper = clientIncidentWrapper;
         this.UpdateInformationInUI();
     }
 
     /// <inheritdoc/>
     public void UpdateInformationInUI()
     {
-        this._uiManagerService.SendMessage(JsonConvert.SerializeObject(this._information));
+        this._uiManagerService.SendMessage(JsonConvert.SerializeObject(this.Information));
     }
 
     private Task OnTickAsync()
@@ -143,7 +144,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
 
     private void ListenForDutyStatusChanges(FDutyStatus dutyStatus)
     {
-        this._information.DutyStatus = dutyStatus;
+        this.Information.DutyStatus = dutyStatus;
         this.UpdateDiscordStatus();
         this.UpdateInformationInUI();
     }
@@ -151,7 +152,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     private void ListenForAvailabilityStatusChanges(FUnitAvailability availability)
     {
         this.Availability = availability;
-        this._information.Availability = availability;
+        this.Information.Availability = availability;
         this.UpdateDiscordStatus();
         this.UpdateInformationInUI();
     }
@@ -159,7 +160,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     private void ListenForStatusChanges(string status)
     {
         this.Status = status;
-        this._information.Status = status;
+        this.Information.Status = status;
         this.UpdateInformationInUI();
     }
 
@@ -184,7 +185,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
         // Cfx.API.SetDiscordRichPresenceAssetSmall(dutyStatus > 0 ? "fpd_status_on_duty" : "fpd_status_off_duty")
 #pragma warning restore
 
-        var status = this._information.DutyStatus switch
+        var status = this.Information.DutyStatus switch
         {
             FDutyStatus.OffDuty => this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.GENERIC"),
             FDutyStatus.OnDuty => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC"),

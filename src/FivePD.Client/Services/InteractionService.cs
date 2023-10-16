@@ -7,6 +7,7 @@ using FivePD.Client.DTO;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
+using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using Newtonsoft.Json;
@@ -23,6 +24,7 @@ internal class InteractionService : IInteractionService, IOnInit
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
     private readonly ITickService _tickService;
+    private readonly ILocalPlayerService _localPlayerService;
 
     private Ped _currentlyFollowingPed;
 
@@ -35,18 +37,21 @@ internal class InteractionService : IInteractionService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
+    /// <param name="localPlayerService">The <see cref="ILocalPlayerService"/> to use.</param>
     public InteractionService(
         IPedService pedService,
         IVehicleService vehicleService,
         EventHandlerDictionary eventHandlerDictionary,
         IControlService controlService,
-        ITickService tickService)
+        ITickService tickService,
+        ILocalPlayerService localPlayerService)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._controlService = controlService;
         this._tickService = tickService;
+        this._localPlayerService = localPlayerService;
     }
 
     /// <inheritdoc />
@@ -179,6 +184,16 @@ internal class InteractionService : IInteractionService, IOnInit
 
     private void TryAlertEntity()
     {
+        if (this._localPlayerService.Player.DutyStatus.Value == FDutyStatus.OffDuty)
+        {
+            return;
+        }
+
+        if (this._localPlayerService.Information?.IncidentWrapper is not null)
+        {
+            return;
+        }
+
         if (Game.PlayerPed.IsInVehicle())
         {
             return;
@@ -209,6 +224,16 @@ internal class InteractionService : IInteractionService, IOnInit
 
     private void TryAlertVehicle()
     {
+        if (this._localPlayerService.Player.DutyStatus.Value == FDutyStatus.OffDuty)
+        {
+            return;
+        }
+
+        if (this._localPlayerService.Information?.IncidentWrapper is not null)
+        {
+            return;
+        }
+
         // Handle on foot
         if (!Game.PlayerPed.IsInVehicle())
         {

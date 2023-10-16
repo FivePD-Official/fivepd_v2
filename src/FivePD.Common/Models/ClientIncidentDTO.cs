@@ -5,9 +5,11 @@ namespace FivePD.Common.Models;
 
 #pragma warning disable
 
-internal sealed record ClientCallout
+internal sealed record ClientIncidentDTO
 {
     public string Id { get; init; }
+    
+    public FIncidentType Type { get; init; }
 
     public string Title { get; init; }
 
@@ -20,4 +22,4 @@ internal sealed record ClientCallout
     public Vector3 Location { get; init; }
 }
 
-internal sealed record ClientCalloutWrapper(ClientCallout Callout, string Address);
+internal sealed record ClientIncidentWrapper(ClientIncidentDTO Incident, string Address);

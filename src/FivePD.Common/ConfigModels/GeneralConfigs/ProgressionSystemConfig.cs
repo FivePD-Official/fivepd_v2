@@ -12,6 +12,8 @@ public sealed record ProgressionSystemConfig
 
         public int CalloutCompleted { get; init; }
 
+        public int TrafficStopCompleted { get; init; }
+
         public int Citation { get; init; }
 
         public int Fine { get; init; }

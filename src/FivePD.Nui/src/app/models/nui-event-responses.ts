@@ -1,5 +1,5 @@
 ﻿import { User, Vector3 } from "./entities";
-import { FDutyStatus, FIncidentPriority, FUnitAvailability } from "@enums";
+import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from "@enums";
 import { MenuListOption } from "./menu/MenuListItem";
 import { MenuItem } from "./menu/MenuItem";
 
@@ -145,9 +145,10 @@ export interface InformationUpdateDTO extends BaseNuiEvent {
   Status: string;
   DutyStatus: FDutyStatus;
   Availability: FUnitAvailability;
-  CalloutWrapper?: {
-    Callout: {
+  IncidentWrapper?: {
+    Incident: {
       Id: string;
+      Type: FIncidentType;
       Title: string;
       Description: string;
       Priority: FIncidentPriority;

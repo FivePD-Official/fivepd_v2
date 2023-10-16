@@ -1,4 +1,5 @@
-﻿using FivePD.Client.Models;
+﻿using FivePD.Client.DTO;
+using FivePD.Client.Models;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 
@@ -25,10 +26,15 @@ internal interface ILocalPlayerService
     public string Status { get; }
 
     /// <summary>
+    /// Gets the player's current information.
+    /// </summary>
+    public InformationUpdateDTO Information { get; }
+
+    /// <summary>
     /// Updated the information callout.
     /// </summary>
-    /// <param name="clientCalloutWrapper">The new callout.</param>
-    public void UpdateInformationCallout(ClientCalloutWrapper clientCalloutWrapper);
+    /// <param name="clientIncidentWrapper">The new callout.</param>
+    public void UpdateInformationCallout(ClientIncidentWrapper clientIncidentWrapper);
 
     /// <summary>
     /// Sends the information to the UI.

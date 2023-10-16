@@ -35,11 +35,11 @@ export class InformationComponent implements OnInit {
   }
 
   get priorityLabel(): string {
-    if (!this.information.CalloutWrapper) {
+    if (!this.information.IncidentWrapper) {
       return '';
     }
 
-    switch (this.information.CalloutWrapper.Callout.Priority) {
+    switch (this.information.IncidentWrapper.Incident.Priority) {
       case FIncidentPriority.Code1:
         return 'LABEL.PRIORITY.CODE1';
       case FIncidentPriority.Code2:

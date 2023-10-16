@@ -41,7 +41,7 @@ internal readonly record struct Events
 
         public const string OnAlerted = "fivepd:ped:onAlerted";
     }
-    
+
     public readonly record struct Vehicle
     {
         public const string Generate = "fivepd:vehicle:generate";
@@ -261,10 +261,10 @@ internal readonly record struct Events
     public readonly record struct Interaction
     {
         public const string GetTargetedEntity = "fivepd:interaction:getTargetedEntity";
-        
+
         public const string ToggleFollowPlayer = "fivepd:ped:toggleFollowPlayer";
     }
-    
+
     public readonly record struct Entity
     {
         public const string GetClosestEntityToPlayer = "fivepd:entity:getClosestEntityToPlayer";
@@ -293,13 +293,16 @@ internal readonly record struct Events
         public const string Remove = "fivepd:marker:remove";
     }
 
+    public readonly record struct Incident
+    {
+        public const string OnAssigned = "fivepd:incident:onAssigned";
+
+        public const string OnCompleted = "fivepd:incident:onCompleted";
+    }
+
     public readonly record struct Callout
     {
-        public const string OnAccepted = "fivepd:callout:onAccepted";
-
         public const string OnPlayerEnteredInActivityZone = "fivepd:callout:onPlayerEnteredInActivityZone";
-
-        public const string OnCompleted = "fivepd:callout:onCompleted";
 
         public const string GetAllActiveUI = "fivepd:callout:getAllActiveUI";
 
@@ -363,7 +366,7 @@ internal readonly record struct Events
     {
         public const string GetAllSimple = "fivepd:user:getAllSimple";
     }
- 
+
     public readonly record struct Cfx
     {
         // void AddAmmoToPed(int ped,uint weaponHash,int ammo);
@@ -392,13 +395,13 @@ internal readonly record struct Events
 
         // void AttachEntityToEntity(int entity1,int entity2,int boneIndex,float xPos,float yPos,float zPos,float xRot,float yRot,float zRot,bool p9,bool useSoftPinning,bool collision,bool isPed,int rotationOrder,bool fixedRot);
         public const string AttachEntityToEntity = "fivepd:cfx:AttachEntityToEntity";
-        
+
         // void DetachEntity(int entity, bool _dynamic, bool collision);
         public const string DetachEntity = "fivepd:cfx:DetachEntity";
 
         // void SetPedIntoVehicle(int ped,int vehicle,int seatIndex);
         public const string SetPedIntoVehicle = "fivepd:cfx:SetPedIntoVehicle";
-        
+
         // void ResurrectPed(int ped);
         public const string ResurrectPed = "fivepd:cfx:ResurrectPed";
 

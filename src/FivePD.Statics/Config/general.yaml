@@ -80,6 +80,7 @@ ProgressionSystem:
   ExperiencePoints:
     Arrest: 100
     CalloutCompleted: 100
+    TrafficStopCompleted: 100
     Citation: 50
     Fine: 50
     Death: -50

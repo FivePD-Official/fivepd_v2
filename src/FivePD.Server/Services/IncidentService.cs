@@ -1,25 +1,68 @@
-﻿using FivePD.Common.Enums;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using FivePD.Common;
+using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using FivePD.Server.API;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace FivePD.Server.Services;
 
 #pragma warning disable
 
-public class IncidentService : IIncidentService
+public class IncidentService : IIncidentService, IInternalIncidentService
 {
+    private readonly ILogger _logger;
     private readonly IInternalIncidentHistoryService _incidentHistoryService;
+    private readonly IProgressionSystemService _progressionSystemService;
+    private readonly IConfigService _configService;
 
-    public IncidentService(IIncidentHistoryService incidentHistoryService)
+    private readonly List<TrafficStop> _trafficStops = new();
+
+    private readonly List<InternalCallout> _callouts = new();
+
+    public ReadOnlyCollection<Callout> ActiveCallouts => this._callouts.Select(x => x.Callout).ToList().AsReadOnly();
+
+    public ReadOnlyCollection<TrafficStop> TrafficStops => this._trafficStops.AsReadOnly();
+
+    List<InternalCallout> IInternalIncidentService.InternalCallouts => this._callouts;
+
+    List<TrafficStop> IInternalIncidentService.InternalTrafficStops => this._trafficStops;
+
+    /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
+    /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
+    public IncidentService(
+        ILogger logger,
+        IProgressionSystemService progressionSystemService,
+        IConfigService configService,
+        IIncidentHistoryService incidentHistoryService)
     {
+        this._logger = logger;
         this._incidentHistoryService = (IInternalIncidentHistoryService)incidentHistoryService;
+        this._progressionSystemService = progressionSystemService;
+        this._configService = configService;
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<Callout> OnCalloutCompleted;
     
-    public bool AssignUnitToIncident(Unit unit, IIncident incident)
+    bool IInternalIncidentService.AssignUnitToIncident(Unit unit, IIncident incident)
     {
+        if (unit is null || incident is null)
+        {
+            this._logger.Warning("IncidentService.AssignUnitToIncident: unit or incident is null");
+            return false;
+        }
+
         var type = incident.GetType();
-        if (type != typeof(Callout) || type != typeof(TrafficStop))
+        if (type != typeof(Callout) && type != typeof(TrafficStop))
         {
             return false;
         }
@@ -28,43 +71,126 @@ public class IncidentService : IIncidentService
         {
             return false;
         }
-
+        
         var incidentType = type == typeof(Callout) ? FIncidentType.Callout : FIncidentType.TrafficStop;
         this._incidentHistoryService.AddUnitToIncidentHistory(incident, incidentType, unit);
 
-        ((IInternalIncident)incident).Units.Add(unit);
-        
-        unit.Availability.Value = FUnitAvailability.NotReceiving;
+        // Remove the unit from the previous incident
+        if (unit.Callout is not null)
+        {
+            ((IInternalIncident)((IInternalUnit)unit).InternalCallout).Units.Remove(unit);
+        }
 
+        if (unit.TrafficStop is not null)
+        {
+            ((IInternalIncident)unit.TrafficStop).Units.Remove(unit);
+        }
+
+        // Add the unit to the new incident
+        ((IInternalIncident)incident).Units.Add(unit);
+        unit.Availability.Value = FUnitAvailability.NotReceiving;
         switch (incidentType)
         {
             case FIncidentType.Callout:
                 unit.TrafficStop = null;
-
+                
                 unit.Callout = new SimpleCallout((Callout)incident);
                 ((IInternalUnit)unit).InternalCallout = (Callout)incident;
+
                 break;
             case FIncidentType.TrafficStop:
+                unit.TrafficStop = (TrafficStop)incident;
+                
                 unit.Callout = null;
                 ((IInternalUnit)unit).InternalCallout = null;
-
-                unit.TrafficStop = (TrafficStop)incident;
+                
                 break;
         }
 
         foreach (var player in unit.Players)
         {
-            // player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnAccepted, JsonConvert.SerializeObject(new ClientCallout
-            // {
-            //     Id = callout.Id.ToString(),
-            //     Title = callout.Title,
-            //     Description = callout.Description,
-            //     Location = callout.Location,
-            //     Priority = callout.Priority,
-            //     ActivityRadius = callout.ActivityRadius,
-            // }));
+            player.GetUnderlyingPlayer().TriggerEvent(Events.Incident.OnAssigned, JsonConvert.SerializeObject(new ClientIncidentDTO
+            {
+                Id = incident.Id.ToString(),
+                Type = incidentType,
+                Title = incident.Title,
+                Description = incident.Description,
+                Location = incident.Location,
+                Priority = incident.Priority,
+                ActivityRadius = incidentType == FIncidentType.Callout ? ((Callout)incident).ActivityRadius : 0f,
+            }));
         }
 
         return true;
+    }
+    
+    public IIncident GetCurrentIncidentOfPlayer(FPlayer player)
+    {
+        var callout = this._callouts.FirstOrDefault(x => x.Callout.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
+        if (callout is not null)
+        {
+            return callout.Callout;
+        }
+        
+        var trafficStop = this._trafficStops.FirstOrDefault(x => x.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
+        return trafficStop;
+    }
+    
+    public void CompleteIncidentOfPlayer(FPlayer player)
+    {
+        this.CompleteIncident(this.GetCurrentIncidentOfPlayer(player));
+    }
+    
+    public void CompleteIncident(IIncident incident)
+    {
+        if (incident is null)
+        {
+            return;
+        }
+
+        var type = incident.GetType();
+        if (type != typeof(Callout) && type != typeof(TrafficStop))
+        {
+            return;
+        }
+        
+        var incidentType = type == typeof(Callout) ? FIncidentType.Callout : FIncidentType.TrafficStop;
+        switch (incidentType)
+        {
+            case FIncidentType.Callout:
+                ((Callout)incident).OnCompleted();
+                this.OnCalloutCompleted?.Invoke(this, (Callout)incident);
+
+                this._callouts.RemoveAll(x => x.Callout.Id == incident.Id);
+                break;
+            case FIncidentType.TrafficStop:
+                break;
+        }
+
+        var xpToAdd = incidentType switch
+        {
+            FIncidentType.Callout => this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.CalloutCompleted,
+            FIncidentType.TrafficStop => this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.TrafficStopCompleted,
+        };
+        foreach (var unit in incident.Units)
+        {
+            unit.Availability.Value = FUnitAvailability.Receiving;
+            switch (incidentType)
+            {
+                case FIncidentType.Callout:
+                    unit.Callout = null;
+                    ((IInternalUnit)unit).InternalCallout = null;
+                    break;
+                case FIncidentType.TrafficStop:
+                    unit.TrafficStop = null;
+                    break;
+            }
+            this._progressionSystemService.AddExperiencePoints(unit, xpToAdd);
+            foreach (var player in unit.Players)
+            {
+                player.GetUnderlyingPlayer().TriggerEvent(Events.Incident.OnCompleted);
+            }
+        }
+
     }
 }

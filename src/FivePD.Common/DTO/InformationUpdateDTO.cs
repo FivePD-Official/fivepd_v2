@@ -15,5 +15,5 @@ internal sealed record InformationUpdateDTO
 
     public FUnitAvailability Availability { get; set; }
 
-    public ClientCalloutWrapper CalloutWrapper { get; set; }
+    public ClientIncidentWrapper IncidentWrapper { get; set; }
 }

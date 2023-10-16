@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Client.DTO;
 using FivePD.Common;
-using FivePD.Common.Enums;
-using FivePD.Server.API;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
@@ -14,22 +11,19 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Lifecycle;
-using FivePD.Server.Models;
 using FivePD.Server.QueryHelpers;
 
 namespace FivePD.Server.Services.Callouts;
 
 /// <inheritdoc cref="ICalloutManagerService" />
-public class CalloutManagerService : ICalloutManagerService, IInternalCalloutManagerService, IOnInit
+public class CalloutManagerService : ICalloutManagerService, IOnInit
 {
     private const int AutoDispatchCalloutTimeoutInMs = 10000;
 
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickQueueService _tickQueueService;
-    private readonly IProgressionSystemService _progressionSystemService;
-    private readonly IConfigService _configService;
     private readonly IInternalDispatchService _dispatchService;
-    private readonly IInternalCalloutStoreService _calloutStoreService;
+    private readonly IInternalIncidentService _incidentService;
     private readonly IAddonMetadataService _addonMetadataService;
 
     private readonly int _maxCalloutTimeout;
@@ -39,49 +33,27 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
-    /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="dispatchService">The <see cref="IDispatchService"/> to use.</param>
-    /// <param name="calloutStoreService">The <see cref="ICalloutStoreService"/> to use.</param>
+    /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickQueueService tickQueueService,
-        IProgressionSystemService progressionSystemService,
         IConfigService configService,
         IDispatchService dispatchService,
-        ICalloutStoreService calloutStoreService,
+        IIncidentService incidentService,
         IAddonMetadataService addonMetadataService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickQueueService = tickQueueService;
-        this._progressionSystemService = progressionSystemService;
-        this._configService = configService;
         this._dispatchService = (IInternalDispatchService)dispatchService;
-        this._calloutStoreService = (IInternalCalloutStoreService)calloutStoreService;
+        this._incidentService = (IInternalIncidentService)incidentService;
         this._addonMetadataService = addonMetadataService;
 
         this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto()
             ? AutoDispatchCalloutTimeoutInMs
-            : this._configService.GeneralConfig.Callout.DispatchTimeoutInMs;
-    }
-
-    /// <inheritdoc/>
-    public event EventHandler<Callout> OnCalloutCompleted;
-
-    /// <inheritdoc/>
-    List<CalloutHolder> IInternalCalloutManagerService.ActiveCallouts => this._calloutStoreService.ActiveCallouts;
-
-    /// <inheritdoc />
-    public List<Callout> ActiveCallouts()
-    {
-        return this._calloutStoreService.ActiveCallouts.Select(x => x.Callout).ToList();
-    }
-
-    /// <inheritdoc />
-    public Callout GetPlayerCallout(FPlayer player)
-    {
-        return this.ActiveCallouts().FirstOrDefault(x => x.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
+            : configService.GeneralConfig.Callout.DispatchTimeoutInMs;
     }
 
     /// <inheritdoc />
@@ -91,25 +63,19 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);
     }
 
-    /// <inheritdoc />
-    public void CompleteCalloutOfPlayer(FPlayer player)
-    {
-        this.CompleteCallout(this.GetPlayerCallout(player));
-    }
-
     private void CheckCallouts()
     {
-        var calloutsToRemove = this._calloutStoreService.ActiveCallouts
+        var calloutsToRemove = this._incidentService.InternalCallouts
             .Where(x => x.Timer.ElapsedMilliseconds >= this._maxCalloutTimeout && x.Callout.Units.Count == 0)
             .ToList();
 
         foreach (var callout in calloutsToRemove)
         {
             this._dispatchService.RemoveCalloutFromDispatchers(callout.Callout);
-            this._calloutStoreService.ActiveCallouts.Remove(callout);
+            this._incidentService.InternalCallouts.Remove(callout);
         }
 
-        foreach (var calloutHolder in this._calloutStoreService.ActiveCallouts)
+        foreach (var calloutHolder in this._incidentService.InternalCallouts)
         {
             if (calloutHolder.Callout.Units.Count > 0)
             {
@@ -118,33 +84,9 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         }
     }
 
-    private void CompleteCallout(Callout callout)
-    {
-        if (callout is null)
-        {
-            return;
-        }
-
-        callout.OnCompleted();
-        this.OnCalloutCompleted?.Invoke(this, callout);
-        foreach (var unit in callout.Units)
-        {
-            unit.Availability.Value = FUnitAvailability.Receiving;
-            unit.Callout = null;
-            ((IInternalUnit)unit).InternalCallout = null;
-            this._progressionSystemService.AddExperiencePoints(unit, this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.CalloutCompleted);
-            foreach (var player in unit.Players)
-            {
-                player.GetUnderlyingPlayer().TriggerEvent(Events.Callout.OnCompleted);
-            }
-        }
-
-        this._calloutStoreService.ActiveCallouts.RemoveAll(x => x.Callout.Id == callout.Id);
-    }
-
     private void OnPlayerEnteredInActivityZone([FromSource] Player player, string calloutId)
     {
-        var callout = this._calloutStoreService.ActiveCallouts.FirstOrDefault(x => x.Callout.Id.ToString() == calloutId);
+        var callout = this._incidentService.InternalCallouts.FirstOrDefault(x => x.Callout.Id.ToString() == calloutId);
         if (callout is null)
         {
             return;
@@ -153,10 +95,11 @@ public class CalloutManagerService : ICalloutManagerService, IInternalCalloutMan
         callout.Callout.OnPlayerEnteredInActivityZone(FPlayer.FromPlayer(player));
     }
 
+    // TODO: move to IncidentService -> Get all incident
     [UIEvent(Events.Callout.GetAllActiveUI)]
     private void GetAllActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var activeCallouts = this._calloutStoreService.ActiveCallouts
+        var activeCallouts = this._incidentService.InternalCallouts
             .Where(x => x.Callout.Units.Count > 0)
             .Select(x => new CalloutDTO.CalloutToClientDTO
             {

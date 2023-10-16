@@ -69,7 +69,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DynamicExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ClientCallout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ClientIncidentDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfirmationProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FObservable.cs" />

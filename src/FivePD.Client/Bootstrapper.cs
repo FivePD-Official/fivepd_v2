@@ -262,6 +262,12 @@ internal class Bootstrapper : BaseScript
             .RegisterType<CalloutManagerService>()
             .As<ICalloutManagerService>()
             .As<IOnInit>()
+            .IsSingleton();
+
+        services
+            .RegisterType<IncidentService>()
+            .As<IIncidentService>()
+            .As<IOnInit>()
             .As<IOnDestroy>()
             .IsSingleton();
 

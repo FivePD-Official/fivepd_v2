@@ -29,8 +29,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     private readonly IConfirmationService _confirmationService;
     private readonly IUnitService _unitService;
     private readonly PlayerList _playerList;
-    private readonly ICalloutStoreService _calloutStoreService;
-    private readonly IIncidentService _incidentService;
+    private readonly IInternalIncidentService _incidentService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
@@ -39,22 +38,19 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
-    /// <param name="calloutStoreService">The <see cref="ICalloutStoreService"/> to use.</param>
     /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
     public CalloutDistributionService(
         IConfigService configService,
         IConfirmationService confirmationService,
         IUnitService unitService,
         PlayerList playerList,
-        ICalloutStoreService calloutStoreService,
         IIncidentService incidentService)
     {
         this._configService = configService;
         this._confirmationService = confirmationService;
         this._unitService = unitService;
         this._playerList = playerList;
-        this._calloutStoreService = calloutStoreService;
-        this._incidentService = incidentService;
+        this._incidentService = (IInternalIncidentService)incidentService;
     }
 
     /// <inheritdoc/>
@@ -67,15 +63,15 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitAssignedToCallout;
 
     /// <inheritdoc/>
-    void IInternalCalloutDistributionService.DistributeCallout(CalloutHolder calloutHolder, bool manualTrigger)
+    void IInternalCalloutDistributionService.DistributeCallout(InternalCallout internalCallout, bool manualTrigger)
     {
         if (this._configService.GeneralConfig.Callout.DispatchTypeAuto() || manualTrigger)
         {
-            var notifiedUnits = this.DispatchCalloutToUnits(calloutHolder);
+            var notifiedUnits = this.DispatchCalloutToUnits(internalCallout);
             if (notifiedUnits.Count > 0)
             {
-                this.OnCalloutDispatched?.Invoke(this, new DispatchedCalloutEventArgs(calloutHolder.Callout, notifiedUnits));
-                calloutHolder.Callout.OnDispatched(notifiedUnits);
+                this.OnCalloutDispatched?.Invoke(this, new DispatchedCalloutEventArgs(internalCallout.Callout, notifiedUnits));
+                internalCallout.Callout.OnDispatched(notifiedUnits);
             }
         }
         else
@@ -90,12 +86,12 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                 }
 
                 sentToAnyPlayer = true;
-                player.TriggerEvent(Events.Dispatch.SendCalloutToDispatcher, JsonConvert.SerializeObject(calloutHolder.Callout.ToCalloutForDispatcherDTO()));
+                player.TriggerEvent(Events.Dispatch.SendCalloutToDispatcher, JsonConvert.SerializeObject(internalCallout.Callout.ToCalloutForDispatcherDTO()));
             }
 
             if (!sentToAnyPlayer)
             {
-                ((IInternalCalloutStoreService)this._calloutStoreService).ActiveCallouts.RemoveAll(x => x.Callout == calloutHolder.Callout);
+                this._incidentService.InternalCallouts.RemoveAll(x => x.Callout == internalCallout.Callout);
             }
         }
     }
@@ -122,14 +118,14 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         return true;
     }
 
-    private List<Unit> DispatchCalloutToUnits(CalloutHolder calloutHolder)
+    private List<Unit> DispatchCalloutToUnits(InternalCallout internalCallout)
     {
         var filteredUnits = this._unitService.Units()
-            .Where(unit => this._calloutStoreService.ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .Where(unit => this._incidentService.ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
             .ToList();
 
-        if (filteredUnits.Select(x => x.Players.Count).Aggregate(0, (acc, count) => acc + count) < calloutHolder.Properties.MinOnDutyOfficers)
+        if (filteredUnits.Select(x => x.Players.Count).Aggregate(0, (acc, count) => acc + count) < internalCallout.Properties.MinOnDutyOfficers)
         {
             return new List<Unit>();
         }
@@ -137,7 +133,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         if (this._configService.GeneralConfig.Callout.DynamicDispatch.Enabled)
         {
             filteredUnits = filteredUnits.Where(unit =>
-                unit.Players.Any(player => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(calloutHolder.Callout.Location) <=
+                unit.Players.Any(player => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(internalCallout.Callout.Location) <=
                                            this._configService.GeneralConfig.Callout.DynamicDispatch.Radius))
                 .ToList();
         }
@@ -156,12 +152,12 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
 
                 unitAccepted = true;
 
-                this.AssignUnitToCallout(unit, calloutHolder.Callout, true);
+                this.AssignUnitToCallout(unit, internalCallout.Callout, true);
             }
 
             var priorityCodeLabel = string.Empty;
             var priorityColorCode = string.Empty;
-            switch (calloutHolder.Callout.Priority)
+            switch (internalCallout.Callout.Priority)
             {
                 case FIncidentPriority.Code1:
                 {
@@ -196,7 +192,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                             Texture = "CHAR_CALL911",
                             Sender = "LABEL.DISPATCH",
                             Subject = "LABEL.CALLOUT",
-                            Content = $"{calloutHolder.Callout.Title}~n~{{{{priority}}}}: {priorityColorCode}{{{{priorityCode}}}}",
+                            Content = $"{internalCallout.Callout.Title}~n~{{{{priority}}}}: {priorityColorCode}{{{{priorityCode}}}}",
                             ContentParams = new Dictionary<string, string>
                             {
                                 ["priority"] = "LABEL.PRIORITY.SINGULAR",
@@ -224,7 +220,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     {
         var request = expandoObject.ConvertTo<StringIdRequest>();
 
-        var callout = this._calloutStoreService.ActiveCallouts.FirstOrDefault(x => x.Id == Guid.Parse(request.Id));
+        var callout = this._incidentService.ActiveCallouts.FirstOrDefault(x => x.Id == Guid.Parse(request.Id));
         if (callout is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();

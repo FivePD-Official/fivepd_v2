@@ -25,20 +25,20 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _playerList;
-    private readonly IInternalCalloutStoreService _calloutStoreService;
+    private readonly IInternalIncidentService _incidentService;
     private readonly ICalloutDistributionService _calloutDistributionService;
     private readonly IUnitService _unitService;
 
     public DispatchService(
         EventHandlerDictionary eventHandlerDictionary,
         PlayerList playerList,
-        ICalloutStoreService calloutStoreService,
+        IIncidentService incidentService,
         ICalloutDistributionService calloutDistributionService,
         IUnitService unitService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerList = playerList;
-        this._calloutStoreService = (IInternalCalloutStoreService)calloutStoreService;
+        this._incidentService = (IInternalIncidentService)incidentService;
         this._calloutDistributionService = calloutDistributionService;
         this._unitService = unitService;
     }
@@ -64,7 +64,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
     [UIEvent(Events.UI.Dispatch.GetIncomingCallouts)]
     private void GetActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        networkCallbackDelegate.InvokeWithJson(this._calloutStoreService.ActiveCallouts
+        networkCallbackDelegate.InvokeWithJson(this._incidentService.InternalCallouts
             .Where(callout => callout.Callout.Units.Count == 0)
             .Select(x => x.Callout.ToCalloutForDispatcherDTO()).ToList());
     }
@@ -80,15 +80,15 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
     private void AssignCalloutToUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AssignCalloutToUnitsRequest>();
-        var calloutHolder = this._calloutStoreService.ActiveCallouts.FirstOrDefault(x => x.Callout.Id == Guid.Parse(request.CalloutId));
-        if (calloutHolder is null)
+        var internalCallout = this._incidentService.InternalCallouts.FirstOrDefault(x => x.Callout.Id == Guid.Parse(request.CalloutId));
+        if (internalCallout is null)
         {
             return;
         }
         
         foreach (var unit in this._unitService.Units().Where(unit => request.UnitCallsigns.Contains(unit.Callsign)))
         {
-            this._calloutDistributionService.AssignUnitToCallout(unit, calloutHolder.Callout);
+            this._calloutDistributionService.AssignUnitToCallout(unit, internalCallout.Callout);
         }
         
         
@@ -115,7 +115,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
     private void OnCalloutDismissed([FromSource] Player player, ExpandoObject expandoObject)
     {
         var request = expandoObject.ConvertTo<StringIdRequest>();
-        this._calloutStoreService.ActiveCallouts.RemoveAll(x => x.Callout.Id == Guid.Parse(request.Id));
+        this._incidentService.InternalCallouts.RemoveAll(x => x.Callout.Id == Guid.Parse(request.Id));
         foreach (var p in this.Dispatchers())
         {
             p.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, request.Id);
