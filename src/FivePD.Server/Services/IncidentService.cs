@@ -126,6 +126,12 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     
     public IIncident GetCurrentIncidentOfPlayer(FPlayer player)
     {
+        if (player is null)
+        {
+            this._logger.Warning("IncidentService.GetCurrentIncidentOfPlayer: player is null");
+            return null;
+        }
+
         var callout = this._callouts.FirstOrDefault(x => x.Callout.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
         if (callout is not null)
         {

@@ -16,6 +16,7 @@ using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace FivePD.Server.Services.Callouts;
 
@@ -25,6 +26,7 @@ namespace FivePD.Server.Services.Callouts;
 /// <inheritdoc cref="ICalloutDistributionService" />
 public class CalloutDistributionService : ICalloutDistributionService, IInternalCalloutDistributionService
 {
+    private readonly ILogger _logger;
     private readonly IConfigService _configService;
     private readonly IConfirmationService _confirmationService;
     private readonly IUnitService _unitService;
@@ -34,18 +36,21 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
     /// </summary>
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
     public CalloutDistributionService(
+        ILogger logger,
         IConfigService configService,
         IConfirmationService confirmationService,
         IUnitService unitService,
         PlayerList playerList,
         IIncidentService incidentService)
     {
+        this._logger = logger;
         this._configService = configService;
         this._confirmationService = confirmationService;
         this._unitService = unitService;
@@ -65,6 +70,12 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <inheritdoc/>
     void IInternalCalloutDistributionService.DistributeCallout(InternalCallout internalCallout, bool manualTrigger)
     {
+        if (internalCallout is null)
+        {
+            this._logger.Warning("CalloutDistributionService.DistributeCallout: internalCallout is null");
+            return;
+        }
+
         if (this._configService.GeneralConfig.Callout.DispatchTypeAuto() || manualTrigger)
         {
             var notifiedUnits = this.DispatchCalloutToUnits(internalCallout);
@@ -99,6 +110,12 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <inheritdoc />
     public bool AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false)
     {
+        if (unit is null || callout is null)
+        {
+            this._logger.Warning("CalloutDistributionService.AssignUnitToCallout: unit or callout is null");
+            return false;
+        }
+
         if (!this._incidentService.AssignUnitToIncident(unit, callout))
         {
             return false;
@@ -120,6 +137,12 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
 
     private List<Unit> DispatchCalloutToUnits(InternalCallout internalCallout)
     {
+        if (internalCallout is null)
+        {
+            this._logger.Warning("CalloutDistributionService.DispatchCalloutToUnits: internalCallout is null");
+            return new List<Unit>();
+        }
+
         var filteredUnits = this._unitService.Units()
             .Where(unit => this._incidentService.ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
