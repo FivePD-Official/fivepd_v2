@@ -164,6 +164,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
                 this._callouts.RemoveAll(x => x.Callout.Id == incident.Id);
                 break;
             case FIncidentType.TrafficStop:
+                this._trafficStops.RemoveAll(x => x.Id == incident.Id);
                 break;
         }
 
