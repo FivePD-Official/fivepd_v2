@@ -15,9 +15,8 @@ using Serilog;
 
 namespace FivePD.Server.Services;
 
-#pragma warning disable
-
-public class IncidentService : IIncidentService, IInternalIncidentService
+/// <inheritdoc />
+public class IncidentService : IInternalIncidentService
 {
     private readonly ILogger _logger;
     private readonly IInternalIncidentHistoryService _incidentHistoryService;
@@ -28,16 +27,13 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
     private readonly List<InternalCallout> _callouts = new();
 
-    public ReadOnlyCollection<Callout> ActiveCallouts => this._callouts.Select(x => x.Callout).ToList().AsReadOnly();
-
-    public ReadOnlyCollection<TrafficStop> TrafficStops => this._trafficStops.AsReadOnly();
-
-    List<InternalCallout> IInternalIncidentService.InternalCallouts => this._callouts;
-
-    List<TrafficStop> IInternalIncidentService.InternalTrafficStops => this._trafficStops;
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IncidentService"/> class.
+    /// </summary>
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
+    /// <param name="incidentHistoryService">The <see cref="IIncidentHistoryService"/> to use.</param>
     public IncidentService(
         ILogger logger,
         IProgressionSystemService progressionSystemService,
@@ -52,7 +48,20 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
     /// <inheritdoc/>
     public event EventHandler<Callout> OnCalloutCompleted;
-    
+
+    /// <inheritdoc />
+    public ReadOnlyCollection<Callout> ActiveCallouts => this._callouts.Select(x => x.Callout).ToList().AsReadOnly();
+
+    /// <inheritdoc />
+    public ReadOnlyCollection<TrafficStop> TrafficStops => this._trafficStops.AsReadOnly();
+
+    /// <inheritdoc/>
+    List<InternalCallout> IInternalIncidentService.InternalCallouts => this._callouts;
+
+    /// <inheritdoc/>
+    List<TrafficStop> IInternalIncidentService.InternalTrafficStops => this._trafficStops;
+
+    /// <inheritdoc/>
     bool IInternalIncidentService.AssignUnitToIncident(Unit unit, IIncident incident)
     {
         if (unit is null || incident is null)
@@ -66,12 +75,12 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         {
             return false;
         }
-        
+
         if (incident.Units.Contains(unit))
         {
             return false;
         }
-        
+
         var incidentType = type == typeof(Callout) ? FIncidentType.Callout : FIncidentType.TrafficStop;
         this._incidentHistoryService.AddUnitToIncidentHistory(incident, incidentType, unit);
 
@@ -88,22 +97,24 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
         // Add the unit to the new incident
         ((IInternalIncident)incident).Units.Add(unit);
-        unit.Availability.Value = FUnitAvailability.NotReceiving;
         switch (incidentType)
         {
             case FIncidentType.Callout:
                 unit.TrafficStop = null;
-                
+
                 unit.Callout = new SimpleCallout((Callout)incident);
                 ((IInternalUnit)unit).InternalCallout = (Callout)incident;
+
+                // Settings this is not needed for traffic stops
+                unit.Availability.Value = FUnitAvailability.NotReceiving;
 
                 break;
             case FIncidentType.TrafficStop:
                 unit.TrafficStop = (TrafficStop)incident;
-                
+
                 unit.Callout = null;
                 ((IInternalUnit)unit).InternalCallout = null;
-                
+
                 break;
         }
 
@@ -123,7 +134,8 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
         return true;
     }
-    
+
+    /// <inheritdoc />
     public IIncident GetCurrentIncidentOfPlayer(FPlayer player)
     {
         if (player is null)
@@ -137,16 +149,18 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         {
             return callout.Callout;
         }
-        
+
         var trafficStop = this._trafficStops.FirstOrDefault(x => x.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
         return trafficStop;
     }
-    
+
+    /// <inheritdoc />
     public void CompleteIncidentOfPlayer(FPlayer player)
     {
         this.CompleteIncident(this.GetCurrentIncidentOfPlayer(player));
     }
-    
+
+    /// <inheritdoc />
     public void CompleteIncident(IIncident incident)
     {
         if (incident is null)
@@ -159,26 +173,23 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         {
             return;
         }
-        
+
         var incidentType = type == typeof(Callout) ? FIncidentType.Callout : FIncidentType.TrafficStop;
+        var xpToAdd = 0;
         switch (incidentType)
         {
             case FIncidentType.Callout:
+                xpToAdd = this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.CalloutCompleted;
                 ((Callout)incident).OnCompleted();
                 this.OnCalloutCompleted?.Invoke(this, (Callout)incident);
-
                 this._callouts.RemoveAll(x => x.Callout.Id == incident.Id);
                 break;
             case FIncidentType.TrafficStop:
+                xpToAdd = this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.TrafficStopCompleted;
                 this._trafficStops.RemoveAll(x => x.Id == incident.Id);
                 break;
         }
 
-        var xpToAdd = incidentType switch
-        {
-            FIncidentType.Callout => this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.CalloutCompleted,
-            FIncidentType.TrafficStop => this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.TrafficStopCompleted,
-        };
         foreach (var unit in incident.Units)
         {
             unit.Availability.Value = FUnitAvailability.Receiving;
@@ -192,12 +203,12 @@ public class IncidentService : IIncidentService, IInternalIncidentService
                     unit.TrafficStop = null;
                     break;
             }
+
             this._progressionSystemService.AddExperiencePoints(unit, xpToAdd);
             foreach (var player in unit.Players)
             {
                 player.GetUnderlyingPlayer().TriggerEvent(Events.Incident.OnCompleted);
             }
         }
-
     }
 }
