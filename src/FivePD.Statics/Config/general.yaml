@@ -78,13 +78,13 @@ Vehicles:
 
 ProgressionSystem:
   ExperiencePoints:
-    Arrest: 100
+    Arrest: 100  # TODO: not implemented yet
     CalloutCompleted: 100
     TrafficStopCompleted: 100
-    Citation: 50
-    Fine: 50
-    Death: -50
-    VehicleImpounded: 50
+    Citation: 50  # TODO: not implemented yet
+    Fine: 50  # TODO: not implemented yet
+    Death: -50  # TODO: not implemented yet
+    VehicleImpounded: 50  # TODO: not implemented yet
 
 AssistanceServices:
   SpawnType: auto # auto = automatic spawn locations, manual = should specify SpawnLocations
