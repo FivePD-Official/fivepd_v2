@@ -107,7 +107,7 @@ DispatchMenuItems:
   - Title: Request ID check from dispatch
     OnSelect: [ REQUEST_ID_CHECK ]
   - Title: Request backup
-    OnSelect: [ REQUEST_BACKUP ]
+    OnSelect: [ REQUEST_BACKUP ] # TODO: REQUEST_BACKUP should be a list of code 1,2,3
   # - Divider: true TODO: place a divider between actions like request backup and check license of ped and statuses ???
   - Title: Code 4
     Description: No assist needed

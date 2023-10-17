@@ -41,18 +41,23 @@ public class BackupManagerService : IBackupManagerService
             return;
         }
 
-        var calloutHolder = this._incidentService.InternalCallouts.FirstOrDefault(holder =>
-            holder.Callout.Units.Any(unit => unit.Callsign == requestingUnit.Callsign));
-        if (calloutHolder is null)
+        IIncident incident = null;
+        if (requestingUnit.Callout is not null)
+        {
+            incident = ((IInternalUnit)requestingUnit).InternalCallout;
+        } else if (requestingUnit.TrafficStop is not null)
+        {
+            incident = requestingUnit.TrafficStop;
+        }
+
+        if (incident is null)
         {
             return;
         }
 
         var filteredUnits = this._unitService.Units()
             .Where(unit => unit.Callsign != requestingUnit.Callsign)
-            .Where(unit => this._incidentService.InternalCallouts.All(holder => holder.Callout.Units.All(u => u.Callsign != unit.Callsign)))
             .ToList();
-
         foreach (var unit in filteredUnits)
         {
             foreach (var p in unit.Players)
@@ -77,7 +82,7 @@ public class BackupManagerService : IBackupManagerService
                         return;
                     }
 
-                    ((IInternalIncident)calloutHolder.Callout).Units.Add(unit);
+                    this._incidentService.AssignUnitToIncident(unit, incident);
                 });
             }
         }

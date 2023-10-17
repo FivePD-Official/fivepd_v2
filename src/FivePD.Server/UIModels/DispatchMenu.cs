@@ -38,15 +38,9 @@ public sealed class DispatchMenu : Menu
         this._notificationService = notificationService;
     }
 
-    internal MenuButtonItem CompleteIncident { get; private set; }
-
     protected override List<MenuItem> CreateItems()
     {
         var items = new List<MenuItem>();
-
-        this.CompleteIncident = new MenuButtonItem("test complete incident", string.Empty);
-        this.CompleteIncident.OnSelect += async player => { this._incidentService.CompleteIncidentOfPlayer(player); };
-        items.Add(this.CompleteIncident);
 
         foreach (var item in this._configService.GeneralConfig.DispatchMenuItems)
         {
