@@ -24,8 +24,9 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
     private readonly ITickService _tickService;
     private readonly ILocalPlayerService _localPlayerService;
 
-    private ClientIncidentWrapper _currentIncident;
+    private ClientIncidentWithAddressDTO _currentIncident;
     private Blip _incidentBlip;
+    private bool _triggeredOnPlayerEnteredInActivityZone;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutManagerService"/> class.
@@ -77,7 +78,7 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
                 return JsonConvert.SerializeObject(newPage);
             });
     }
-    
+
     /// <inheritdoc/>
     public void OnDestroy()
     {
@@ -86,33 +87,35 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
 
     private Task OnTickAsync()
     {
-        if (this._currentIncident is null || this._currentIncident.Incident.Type != FIncidentType.Callout)
+        if (this._currentIncident is null || this._currentIncident.Incident.Type != FIncidentType.Callout || this._triggeredOnPlayerEnteredInActivityZone)
         {
             return Task.FromResult(0);
         }
 
         if (World.GetDistance(this._currentIncident.Incident.Location, Game.PlayerPed.Position) <= this._currentIncident.Incident.ActivityRadius)
         {
+            this._triggeredOnPlayerEnteredInActivityZone = true;
             this._incidentBlip.ShowRoute = false;
             BaseScript.TriggerServerEvent(Events.Callout.OnPlayerEnteredInActivityZone, this._currentIncident.Incident.Id);
         }
 
         return Task.FromResult(0);
     }
-    
+
     private void OnCompleted()
     {
         this._currentIncident = null;
+        this._triggeredOnPlayerEnteredInActivityZone = false;
         this._localPlayerService.UpdateInformationCallout(null);
         var incidentBlipHandle = this._incidentBlip.Handle;
         Cfx.API.RemoveBlip(ref incidentBlipHandle);
         this._incidentBlip = null;
     }
-    
+
     private void OnAssigned(string serializedRequest)
     {
-        var callout = JsonConvert.DeserializeObject<ClientIncidentDTO>(serializedRequest);
-        this._currentIncident = new ClientIncidentWrapper(callout, callout.Location.GetStreetName());
+        var incident = JsonConvert.DeserializeObject<ClientIncidentDTO>(serializedRequest);
+        this._currentIncident = new ClientIncidentWithAddressDTO(incident, incident.Location.GetStreetName());
         this._localPlayerService.UpdateInformationCallout(this._currentIncident);
 
         if (this._incidentBlip is not null)
@@ -121,19 +124,33 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
             Cfx.API.RemoveBlip(ref incidentBlipHandle);
         }
 
-        this._incidentBlip = World.CreateBlip(callout.Location, callout.ActivityRadius);
-        var blipColor = callout.Priority switch
+        switch (incident.Type)
         {
-            FIncidentPriority.Code1 => (BlipColor)FBlipColor.Blue,
-            FIncidentPriority.Code2 => (BlipColor)FBlipColor.Yellow,
-            FIncidentPriority.Code3 => (BlipColor)FBlipColor.Red,
-            _ => (BlipColor)FBlipColor.White,
-        };
-        this._incidentBlip.Name = callout.Title;
-        this._incidentBlip.Alpha = 100;
-        this._incidentBlip.Sprite = BlipSprite.BigCircle;
-        this._incidentBlip.ShowRoute = true;
-        Cfx.API.SetBlipColour(this._incidentBlip.Handle, (int)blipColor);
-    }
+            case FIncidentType.Callout:
+                this._incidentBlip = World.CreateBlip(incident.Location, incident.ActivityRadius);
+                this._incidentBlip.Alpha = 100;
+                this._incidentBlip.Sprite = BlipSprite.BigCircle;
+                break;
+            case FIncidentType.TrafficStop:
+                if (Cfx.API.NetworkDoesEntityExistWithNetworkId(incident.TrafficStopInvolvedVehicle) && Entity.FromNetworkId(incident.TrafficStopInvolvedVehicle) is Vehicle vehicle)
+                {
+                    this._incidentBlip = vehicle.CreateBlip(FBlipSprite.PersonalVehicleCar, FBlipColor.Blue, "Stopped vehicle");
+                }
+                break;
+        }
 
+        if (this._incidentBlip is not null)
+        {
+            this._incidentBlip.Name = incident.Title;
+            this._incidentBlip.ShowRoute = true;
+            var blipColor = incident.Priority switch
+            {
+                FIncidentPriority.Code1 => (BlipColor)FBlipColor.Blue,
+                FIncidentPriority.Code2 => (BlipColor)FBlipColor.Yellow,
+                FIncidentPriority.Code3 => (BlipColor)FBlipColor.Red,
+                _ => (BlipColor)FBlipColor.White,
+            };
+            Cfx.API.SetBlipColour(this._incidentBlip.Handle, (int)blipColor);
+        }
+    }
 }

@@ -20,6 +20,8 @@ internal sealed record ClientIncidentDTO
     public float ActivityRadius { get; init; }
 
     public Vector3 Location { get; init; }
+    
+    public int TrafficStopInvolvedVehicle { get; init; }
 }
 
-internal sealed record ClientIncidentWrapper(ClientIncidentDTO Incident, string Address);
+internal sealed record ClientIncidentWithAddressDTO(ClientIncidentDTO Incident, string Address);

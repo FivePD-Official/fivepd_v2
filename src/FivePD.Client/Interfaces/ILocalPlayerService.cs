@@ -33,8 +33,8 @@ internal interface ILocalPlayerService
     /// <summary>
     /// Updated the information callout.
     /// </summary>
-    /// <param name="clientIncidentWrapper">The new callout.</param>
-    public void UpdateInformationCallout(ClientIncidentWrapper clientIncidentWrapper);
+    /// <param name="clientIncidentWithAddress">The new callout.</param>
+    public void UpdateInformationCallout(ClientIncidentWithAddressDTO clientIncidentWithAddress);
 
     /// <summary>
     /// Sends the information to the UI.

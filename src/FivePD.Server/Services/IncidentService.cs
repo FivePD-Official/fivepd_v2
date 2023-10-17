@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
@@ -22,6 +23,7 @@ public class IncidentService : IInternalIncidentService
     private readonly IInternalIncidentHistoryService _incidentHistoryService;
     private readonly IProgressionSystemService _progressionSystemService;
     private readonly IConfigService _configService;
+    private readonly IVehicleService _vehicleService;
 
     private readonly List<TrafficStop> _trafficStops = new();
 
@@ -34,16 +36,19 @@ public class IncidentService : IInternalIncidentService
     /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="incidentHistoryService">The <see cref="IIncidentHistoryService"/> to use.</param>
+    /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     public IncidentService(
         ILogger logger,
         IProgressionSystemService progressionSystemService,
         IConfigService configService,
-        IIncidentHistoryService incidentHistoryService)
+        IIncidentHistoryService incidentHistoryService,
+        IVehicleService vehicleService)
     {
         this._logger = logger;
         this._incidentHistoryService = (IInternalIncidentHistoryService)incidentHistoryService;
         this._progressionSystemService = progressionSystemService;
         this._configService = configService;
+        this._vehicleService = vehicleService;
     }
 
     /// <inheritdoc/>
@@ -71,7 +76,7 @@ public class IncidentService : IInternalIncidentService
         }
 
         var type = incident.GetType();
-        if (type != typeof(Callout) && type != typeof(TrafficStop))
+        if (!type.IsSubclassOf(typeof(Callout)) && type != typeof(TrafficStop))
         {
             return false;
         }
@@ -81,7 +86,7 @@ public class IncidentService : IInternalIncidentService
             return false;
         }
 
-        var incidentType = type == typeof(Callout) ? FIncidentType.Callout : FIncidentType.TrafficStop;
+        var incidentType = type.IsSubclassOf(typeof(Callout)) ? FIncidentType.Callout : FIncidentType.TrafficStop;
         this._incidentHistoryService.AddUnitToIncidentHistory(incident, incidentType, unit);
 
         // Remove the unit from the previous incident
@@ -129,6 +134,7 @@ public class IncidentService : IInternalIncidentService
                 Location = incident.Location,
                 Priority = incident.Priority,
                 ActivityRadius = incidentType == FIncidentType.Callout ? ((Callout)incident).ActivityRadius : 0f,
+                TrafficStopInvolvedVehicle = incidentType == FIncidentType.Callout ? 0 : ((TrafficStop)incident).Vehicle.NetworkId,
             }));
         }
 
@@ -144,13 +150,13 @@ public class IncidentService : IInternalIncidentService
             return null;
         }
 
-        var callout = this._callouts.FirstOrDefault(x => x.Callout.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
+        var callout = ((IInternalUnit)player.Unit)?.InternalCallout;
         if (callout is not null)
         {
-            return callout.Callout;
+            return callout;
         }
 
-        var trafficStop = this._trafficStops.FirstOrDefault(x => x.Units.Any(unit => unit.Players.Any(p => p.NetId == player.NetId)));
+        var trafficStop = player.Unit?.TrafficStop;
         return trafficStop;
     }
 
@@ -169,12 +175,12 @@ public class IncidentService : IInternalIncidentService
         }
 
         var type = incident.GetType();
-        if (type != typeof(Callout) && type != typeof(TrafficStop))
+        if (!type.IsSubclassOf(typeof(Callout)) && type != typeof(TrafficStop))
         {
             return;
         }
 
-        var incidentType = type == typeof(Callout) ? FIncidentType.Callout : FIncidentType.TrafficStop;
+        var incidentType = type.IsSubclassOf(typeof(Callout)) ? FIncidentType.Callout : FIncidentType.TrafficStop;
         var xpToAdd = 0;
         switch (incidentType)
         {
@@ -187,6 +193,12 @@ public class IncidentService : IInternalIncidentService
             case FIncidentType.TrafficStop:
                 xpToAdd = this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.TrafficStopCompleted;
                 this._trafficStops.RemoveAll(x => x.Id == incident.Id);
+                var fVehicle = this._vehicleService.TryGetVehicle(((TrafficStop)incident).Vehicle.NetworkId);
+                if (fVehicle is not null)
+                {
+                    fVehicle.Stopped.Value = false;
+                }
+
                 break;
         }
 

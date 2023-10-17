@@ -74,6 +74,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     /// <inheritdoc />
     public string Status { get; private set; } = string.Empty;
 
+    /// <inheritdoc />
     public InformationUpdateDTO Information { get; private set; } = new();
 
     /// <inheritdoc/>
@@ -99,9 +100,9 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     }
 
     /// <inheritdoc/>
-    public void UpdateInformationCallout(ClientIncidentWrapper clientIncidentWrapper)
+    public void UpdateInformationCallout(ClientIncidentWithAddressDTO clientIncidentWithAddress)
     {
-        this.Information.IncidentWrapper = clientIncidentWrapper;
+        this.Information.IncidentWrapper = clientIncidentWithAddress;
         this.UpdateInformationInUI();
     }
 

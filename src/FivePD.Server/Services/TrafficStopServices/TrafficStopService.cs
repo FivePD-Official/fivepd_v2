@@ -41,7 +41,7 @@ public class TrafficStopService : ITrafficStopService
         {
             Id = Guid.NewGuid(),
             Title = "Traffic stop",
-            Description = "",
+            Description = string.Empty,
             GeneratedAt = DateTime.Now,
             Location = vehicle.GetUnderlyingVehicle.Position,
             Priority = FIncidentPriority.Code1,

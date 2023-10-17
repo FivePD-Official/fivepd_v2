@@ -13,4 +13,6 @@ internal sealed record OnVehicleAlertedDTO
     public List<int> OccupantNetworkIds { get; init; }
     
     public bool AlertedOnFoot { get; init; }
+    
+    public bool CreateTrafficStopInstance { get; init; }
 }

@@ -103,6 +103,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
             return;
         }
 
+        Cfx.API.SetEntityDistanceCullingRadius(fVehicle.GetUnderlyingVehicle.Handle, 10000f);
         fVehicle.Stopped.Value = true;
 
         foreach (var pedNetworkId in request.OccupantNetworkIds)
@@ -128,8 +129,11 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
         driverPed.Task.ClearAll();
         this._cfxService.TaskVehicleTempAction(driverPed.NetworkId, fVehicle.NetworkId, 24, int.MaxValue);
 
-        var fPlayer = FPlayer.FromPlayer(player);
-        this._trafficStopService.GenerateTrafficStop(fPlayer.Unit, fVehicle);
+        if (request.CreateTrafficStopInstance)
+        {
+            var fPlayer = FPlayer.FromPlayer(player);
+            this._trafficStopService.GenerateTrafficStop(fPlayer.Unit, fVehicle);
+        }
 
         Debug.WriteLine($"Player with net ID of {player.Character.NetworkId} alerted vehicle with net ID of {request.VehicleNetworkId}");
     }

@@ -189,11 +189,6 @@ internal class InteractionService : IInteractionService, IOnInit
             return;
         }
 
-        if (this._localPlayerService.Information?.IncidentWrapper is not null)
-        {
-            return;
-        }
-
         if (Game.PlayerPed.IsInVehicle())
         {
             return;
@@ -229,7 +224,7 @@ internal class InteractionService : IInteractionService, IOnInit
             return;
         }
 
-        if (this._localPlayerService.Information?.IncidentWrapper is not null)
+        if (this._localPlayerService.Information.IncidentWrapper is not null && this._localPlayerService.Information.IncidentWrapper.Incident.Type == FIncidentType.TrafficStop)
         {
             return;
         }
@@ -253,14 +248,13 @@ internal class InteractionService : IInteractionService, IOnInit
                 return;
             }
 
-            closestVehicle.CreateBlip(FBlipSprite.PersonalVehicleCar, FBlipColor.LightYellow, "Stopped vehicle");
-
             BaseScript.TriggerServerEvent(Events.Vehicle.OnAlerted, JsonConvert.SerializeObject(new OnVehicleAlertedDTO
             {
                 AlertedOnFoot = true,
                 VehicleNetworkId = closestVehicle.NetworkId,
                 OccupantNetworkIds = closestVehicle.Occupants.Where(x => Cfx.API.NetworkGetEntityIsNetworked(x.Handle)).Select(x => x.NetworkId).ToList(),
                 DriverPedNetworkId = closestVehicle.Driver.NetworkId,
+                CreateTrafficStopInstance = this._localPlayerService.Information.IncidentWrapper is null,
             }));
             return;
         }
