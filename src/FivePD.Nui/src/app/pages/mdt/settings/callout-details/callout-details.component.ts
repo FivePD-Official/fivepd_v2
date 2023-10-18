@@ -55,9 +55,6 @@ export class CalloutDetailsComponent implements OnInit {
       this.departments = departments;
       this.calloutDetails = calloutDetails;
 
-      console.log(departments)
-      console.log(calloutDetails)
-
       this.selectedDepartments = departments
         .filter(x => calloutDetails.CalloutDetailsDepartments.some(y => y.DepartmentId == x.Id))
         .map(x => ({item: x, selected: false}));
@@ -103,7 +100,6 @@ export class CalloutDetailsComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log(this.form.value)
     this._calloutDetailService.updateRuleset({
       Id: this.calloutDetails!.Id,
       RulesetType: this.rulesetType.value,

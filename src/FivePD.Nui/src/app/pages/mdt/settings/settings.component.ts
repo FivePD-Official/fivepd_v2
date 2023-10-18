@@ -5,16 +5,12 @@ import { first } from 'rxjs';
 import { LocalizationService } from '@services/localization/localization.service';
 import { DefaultSetId } from '@enums';
 import { Store } from '@ngrx/store';
-import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { GlobalState } from '@store';
-import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
-import { ModalService } from '@services/modals/modal/modal.service';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EventService } from "@services/event/event.service";
 import { AttributeGridOptions } from "./_service/attribute-grid-options";
 import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-settings',
@@ -138,16 +134,11 @@ export class SettingsComponent implements OnInit {
   constructor(
     public readonly userService: UserService,
     private readonly _looseData: LooseDataService,
-    private readonly _modalService: ModalService,
-    private readonly _modalFormService: ModalFormService,
-    private readonly _modalConfirmService: ModalConfirmService,
     private readonly _localization: LocalizationService,
     private readonly _store: Store<GlobalState>,
-    private readonly _eventService: EventService,
     private readonly _attributeGridOptions: AttributeGridOptions,
     private readonly _calloutDetailService: CalloutDetailsService,
     private readonly _router: Router,
-    private readonly _a: ActivatedRoute
   ) {
     _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
       this.user = state.user.details.User;
