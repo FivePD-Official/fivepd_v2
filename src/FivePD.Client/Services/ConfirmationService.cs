@@ -20,6 +20,7 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
     private readonly INotificationService _notificationService;
     private readonly ILocalizationService _localizationService;
     private readonly IControlService _controlService;
+    private readonly IUIManagerService _uiManagerService;
 
     private readonly Queue<QueuedConfirmation> _confirmationQueue = new();
     private QueuedConfirmation _currentConfirmation;
@@ -32,18 +33,21 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
     /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
+    /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
     public ConfirmationService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickService tickService,
         INotificationService notificationService,
         ILocalizationService localizationService,
-        IControlService controlService)
+        IControlService controlService,
+        IUIManagerService uiManagerService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickService = tickService;
         this._notificationService = notificationService;
         this._localizationService = localizationService;
         this._controlService = controlService;
+        this._uiManagerService = uiManagerService;
     }
 
     /// <inheritdoc/>
@@ -68,6 +72,13 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
 
     private void OnConfirm()
     {
+        if (this._uiManagerService.WelcomeModalOpen)
+        {
+            this._uiManagerService.ToggleView(Events.UIEvent.WelcomeModal);
+            BaseScript.TriggerServerEvent(Events.Player.DismissedWelcomeModal);
+            return;
+        }
+
         if (this._currentConfirmation is null)
         {
             return;

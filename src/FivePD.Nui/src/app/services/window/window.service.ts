@@ -18,6 +18,7 @@ export class WindowService {
 
   visibleMdt$ = new BehaviorSubject(false);
   showInformation = new BehaviorSubject(false);
+  showWelcomeModal = new BehaviorSubject(false);
   showMenu = new BehaviorSubject(false);
 
   constructor(
@@ -43,6 +44,9 @@ export class WindowService {
     this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:information').subscribe(() => {
       this.onInformationOpen();
     });
+    this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:welcomeModal').subscribe(() => {
+      this.onWelcomeModalOpen();
+    });
     this._event.onEvent<MenuShowEvent>('fivepd:ui:view:menu').subscribe(() => this.onMenuOpen());
     this._event.onEvent<MenuShowEvent>('fivepd:ui:view:radialMenu').subscribe(res => this.onRadialMenuOpen(res));
     this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onTimerBarEvent(res));
@@ -59,7 +63,7 @@ export class WindowService {
   }
 
   close(): void {
-    if (this.showInformation.value || this.showMenu.value) {
+    if (this.showInformation.value || this.showWelcomeModal.value || this.showMenu.value) {
       this.triggerCloseEvent();
       this._router.navigate(['not-mdt']);
     } else {
@@ -85,6 +89,12 @@ export class WindowService {
   private onInformationOpen(): void {
     this.show();
     this.showInformation.next(!this.showInformation.value);
+    this._router.navigate(['not-mdt']);
+  }
+
+  private onWelcomeModalOpen(): void {
+    this.show();
+    this.showWelcomeModal.next(!this.showWelcomeModal.value);
     this._router.navigate(['not-mdt']);
   }
 

@@ -11,9 +11,10 @@ export class WelcomeModalComponent {
   constructor(private readonly _localizationService: LocalizationService) {
   }
 
+
   get description1() {
     return this._localizationService.translate('WELCOME_MODAL.DESCRIPTION_1', {
-      guidesLink: '<span class="text-primary">https://guides.fivepd.com</span>',
+      guidesLink: '<span class="text-primary">guides.fivepd.com</span>',
     }, false);
   }
 

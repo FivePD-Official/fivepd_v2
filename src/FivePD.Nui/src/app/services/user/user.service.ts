@@ -40,10 +40,6 @@ export class UserService {
     return this._http.post<SimpleUser[]>('fivepd:user:getAllSimple', {});
   }
 
-  dismissWelcomeModal(): Observable<void> {
-    return this._http.post<void>('fivepd:player:dismissedWelcomeModal', {});
-  }
-
   userHasRole(...roles: UserRole[]): boolean {
     if (!this.user?.User) {
       return false;

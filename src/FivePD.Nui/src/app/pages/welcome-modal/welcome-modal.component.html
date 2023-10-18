@@ -1,0 +1,18 @@
+<div class="absolute inset-0 w-full h-full z-50 rounded-xl flex flex-col items-center justify-center animate-fadeIn">
+  <div class="p-8 rounded-b-lg bg-zinc-800 animate-modal max-w-3xl border-t-4 border-primary">
+    <div class="mb-4">
+      <div class="flex flex-row items-center justify-between">
+        <p class="text-2xl font-bold text-zinc-100">{{ 'WELCOME_MODAL.TITLE' | translate }}</p>
+      </div>
+    </div>
+    <div>
+      <div>
+        <p class="text-zinc-300 text-lg mb-4" [innerHTML]="description1"></p>
+        <p class="text-zinc-300 text-lg mb-4" [innerHTML]="description2"></p>
+      </div>
+      <div class="w-full flex flex-row items-center justify-start mt-12">
+        <p class="text-zinc-300 text-sm font-medium">Press <kbd class="px-1.5 py-1 font-medium bg-zinc-700 border border-zinc-800 rounded-md">F1</kbd> to dismiss this modal.</p>
+      </div>
+    </div>
+  </div>
+</div>

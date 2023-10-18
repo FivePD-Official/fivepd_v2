@@ -71,7 +71,7 @@ internal class MenuService : IMenuService, IOnInit
         {
             void OnPress()
             {
-                this._uiService.Show(Events.UIEvent.MenuView, menu.Id);
+                this._uiService.ToggleView(Events.UIEvent.MenuView, menu.Id);
             }
 
             this._controlService.RegisterKeybind($"fivepd:openMenu:{menu.Id}", menu.Key, "-", OnPress);

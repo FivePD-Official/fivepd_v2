@@ -8,6 +8,8 @@ internal interface IUIManagerService
 {
     public bool MenuOpen { get; }
 
+    public bool WelcomeModalOpen { get; }
+
     /// <summary>
     /// Send control event to the NUI.
     /// </summary>
@@ -26,7 +28,7 @@ internal interface IUIManagerService
     /// </summary>
     /// <param name="type">Switches to the given type after showing Nui.</param>
     /// <param name="menuId">The currently opened menu's id. If left as # it'll be ignored in the Nui.</param>
-    public void Show(string type, string menuId = "");
+    public void ToggleView(string type, string menuId = "");
     
     /// <summary>
     /// Hides NUI.

@@ -79,13 +79,13 @@ internal class UIService : IUIService, IOnInit
     /// <inheritdoc />
     public void OpenMDT()
     {
-        this._uiManagerService.Show(Events.UIEvent.Mdt);
+        this._uiManagerService.ToggleView(Events.UIEvent.Mdt);
     }
 
     /// <inheritdoc />
     public void OpenInformation()
     {
-        this._uiManagerService.Show(Events.UIEvent.Information, string.Empty);
+        this._uiManagerService.ToggleView(Events.UIEvent.Information, string.Empty);
     }
 
     /// <inheritdoc />
@@ -154,6 +154,6 @@ internal class UIService : IUIService, IOnInit
         // Centers cursor
         Cfx.API.SetCursorLocation(0.5f, 0.5f);
 
-        this._uiManagerService.Show(Events.UIEvent.RadialMenu, menuId);
+        this._uiManagerService.ToggleView(Events.UIEvent.RadialMenu, menuId);
     }
 }

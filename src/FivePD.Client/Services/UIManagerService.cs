@@ -36,6 +36,8 @@ internal class UIManagerService : IUIManagerService, IOnInit
 
     public bool MenuOpen { get; private set; }
 
+    public bool WelcomeModalOpen { get; private set; }
+
     public void OnInit()
     {
         // Listens for NUI status checks
@@ -52,7 +54,19 @@ internal class UIManagerService : IUIManagerService, IOnInit
 
                 this._mdtOpen = false;
                 this._informationOpen = false;
+                this.WelcomeModalOpen = false;
                 this.MenuOpen = false;
+                
+                // Show welcome modal for first login
+                BaseScript.TriggerServerEvent(Events.Player.GetDismissedWelcomeModal, new Action<bool>(dismissedWelcomeModal =>
+                {
+                    if (dismissedWelcomeModal)
+                    {
+                        return;
+                    }
+
+                    this.ToggleView(Events.UIEvent.WelcomeModal);
+                }));
 
                 cb.Invoke(true);
             }));
@@ -71,7 +85,7 @@ internal class UIManagerService : IUIManagerService, IOnInit
     }
 
     /// <inheritdoc />
-    public void Show(string type, string menuId = "")
+    public void ToggleView(string type, string menuId = "")
     {
         if (!this._ready)
         {
@@ -140,6 +154,27 @@ internal class UIManagerService : IUIManagerService, IOnInit
             {
                 this._hasFocus = true;
                 this._informationOpen = true;
+            }
+
+            Cfx.API.SetNuiFocus(false, false);
+            this.SendMessage(new JObject
+            {
+                { "Event", type },
+                { "MenuId", string.Empty },
+            });
+        }
+
+        if (type == Events.UIEvent.WelcomeModal)
+        {
+            if (this.WelcomeModalOpen)
+            {
+                this._hasFocus = false;
+                this.WelcomeModalOpen = false;
+            }
+            else
+            {
+                this._hasFocus = true;
+                this.WelcomeModalOpen = true;
             }
 
             Cfx.API.SetNuiFocus(false, false);

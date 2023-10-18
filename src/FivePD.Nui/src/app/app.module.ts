@@ -60,11 +60,11 @@ import { NotMdtComponent } from './pages/not-mdt/not-mdt.component';
 import { DispatchComponent } from './pages/mdt/dispatch/dispatch.component';
 import { AttributeGridOptions } from "./pages/mdt/settings/_service/attribute-grid-options";
 import { IncidentHistoryComponent } from './pages/mdt/incident-history/incident-history.component';
-import { WelcomeModalComponent } from './components/modal/welcome-modal/welcome-modal.component';
 import { CitizenDatabaseIdComponent } from './pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component';
 import { MessagesComponent } from './pages/mdt/messages/messages.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { AsPipe } from './pipes/as.pipe';
+import { WelcomeModalComponent } from "./pages/welcome-modal/welcome-modal.component";
 
 @NgModule({
   declarations: [

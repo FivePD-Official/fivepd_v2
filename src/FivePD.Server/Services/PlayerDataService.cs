@@ -72,6 +72,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
+        this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, NetworkCallbackDelegate>(this.GetDismissedWelcomeModal);
+        this._eventHandlerDictionary[Events.Player.DismissedWelcomeModal] += new Action<Player>(this.DismissedWelcomeModal);
 
         foreach (var player in this._playerList)
         {
@@ -367,21 +369,33 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         });
     }
 
-    [UIEvent(Events.UI.Player.DismissedWelcomeModal, true)]
-    private void DismissedWelcomeModalUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetDismissedWelcomeModal([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var user = this._databaseContext.Users
+            .AsNoTracking()
+            .WhereAnyIdMatches(player)
+            .FirstOrDefault();
+        if (user is null)
+        {
+            networkCallbackDelegate.InvokeWithJson(false);
+            return;
+        }
+
+        networkCallbackDelegate.Invoke(user.DismissedWelcomeMessage);
+    }
+
+    private void DismissedWelcomeModal([FromSource] Player player)
     {
         var user = this._databaseContext.Users
             .WhereAnyIdMatches(player)
             .FirstOrDefault();
         if (user is null)
         {
-            networkCallbackDelegate.Invoke(null);
             return;
         }
 
         user.DismissedWelcomeMessage = true;
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.Invoke(null);
     }
 
     [UIEvent(Events.UI.Player.ChangeDivision, true)]

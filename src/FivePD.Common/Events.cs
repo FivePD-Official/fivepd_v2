@@ -21,6 +21,10 @@ internal readonly record struct Events
         public const string UpdateUnitAvailability = "fivepd:player:updateUnitAvailability";
 
         public const string UpdateUnitStatus = "fivepd:player:updateUnitStatus";
+
+        public const string GetDismissedWelcomeModal = "fivepd:player:getDismissedWelcomeModal";
+
+        public const string DismissedWelcomeModal = "fivepd:player:dismissedWelcomeModal";
     }
 
     public readonly record struct Ped
@@ -72,6 +76,8 @@ internal readonly record struct Events
 
         public const string Information = "fivepd:ui:view:information";
 
+        public const string WelcomeModal = "fivepd:ui:view:welcomeModal";
+
         public const string MenuView = "fivepd:ui:view:menu";
 
         public const string RadialMenu = "fivepd:ui:view:radialMenu";
@@ -100,8 +106,6 @@ internal readonly record struct Events
         public readonly record struct Player
         {
             public const string GetDetails = "fivepd:player:getDetails";
-
-            public const string DismissedWelcomeModal = "fivepd:player:dismissedWelcomeModal";
 
             public const string ChangeDivision = "fivepd:player:changeDivision";
 

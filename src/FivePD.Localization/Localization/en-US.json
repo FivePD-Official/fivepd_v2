@@ -246,7 +246,7 @@
   "UI.LABEL.XP.SHORT": "XP",
   "UI.LABEL.YES": "Yes",
   "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION": "{{name}} has requested to join your unit. You have {{timeout}} seconds to accept the request.",
-  "WELCOME_MODAL.DESCRIPTION_1": "It looks like it's your first time playing with FivePD. We recommend you to read the user guide at {{guidesLink}} to get started and if you have any questions, feel free to ask them on our Discord server.",
+  "WELCOME_MODAL.DESCRIPTION_1": "It looks like this is your first time playing with FivePD. We recommend you reading the user guide at {{guidesLink}} to get started and if you have any questions, feel free to ask them on our Discord server.",
   "WELCOME_MODAL.DESCRIPTION_2": "Please keep in mind that if you encounter any issues, you should first contact the server owner to see if it's a server-side issue or a FivePD issue. If it's the latter, the server owner should report the issue on our Discord server or at {{fivepdLink}}.",
   "WELCOME_MODAL.SUBMIT": "Continue and don't show again",
   "WELCOME_MODAL.TITLE": "Hey!"
