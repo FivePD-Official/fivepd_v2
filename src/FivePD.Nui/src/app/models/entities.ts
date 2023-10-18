@@ -41,6 +41,10 @@ export interface Department extends WithId {
   DefaultRankId?: number;
 }
 
+export interface SimpleDepartment extends WithId {
+  Name: string;
+}
+
 export interface Division extends WithId {
   Name: string;
 }
@@ -140,4 +144,23 @@ export interface Message {
   Sender: string;
   SentAt: string;
   Read: boolean;
+}
+
+export enum CalloutDetailsRulesetType {
+  Allow,
+  Deny,
+}
+
+export interface CalloutDetails extends WithId {
+  Active: boolean;
+  TypeName: string;
+  AssemblyName: string;
+  RulesetType: CalloutDetailsRulesetType;
+}
+
+export interface CalloutDetailsWithDepartments extends CalloutDetails {
+  CalloutDetailsDepartments: {
+    CalloutDetailsId: number;
+    DepartmentId: number;
+  }[];
 }

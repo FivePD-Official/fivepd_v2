@@ -143,6 +143,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
         const rowItem: FormattedRowItem<any> = {
           value: newValue,
           originalItem,
+          badge: value.badgeResolver ? value.badgeResolver(mappedItem) : undefined,
         };
 
         if (value.actions) {

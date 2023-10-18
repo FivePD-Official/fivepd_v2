@@ -298,6 +298,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<TrafficStopService>();
         services.AddSingleton<ITrafficStopService>(provider => provider.GetRequiredService<TrafficStopService>());
 
+        services.AddSingleton<CalloutDetailService>();
+        services.AddSingleton<ICalloutDetailService>(provider => provider.GetRequiredService<CalloutDetailService>());
+
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);
@@ -319,9 +322,9 @@ internal class Bootstrapper : BaseScript
 
         var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
         var addonDefinitions = addonLocator.GetAddons().ToList();
-        var addonContainerService = this._provider.GetService<IInternalAddonMetadataService>();
-        addonContainerService.LoadAssemblies(addonDefinitions);
-        addonContainerService.FindAndRegisterAddons();
+        var addonMetadataService = this._provider.GetService<IInternalAddonMetadataService>();
+        addonMetadataService.LoadAssemblies(addonDefinitions);
+        addonMetadataService.FindAndRegisterAddons();
     }
 
     /// <summary>
@@ -345,7 +348,7 @@ internal class Bootstrapper : BaseScript
             return;
         }
 
-        Debug.WriteLine("PerformPostBootstrapPhase 4");
+        Debug.WriteLine("PerformPostBootstsrapPhase 4");
 
         // Register shutdown routine listener
         this.EventHandlers["onResourceStop"] += new Action<string>((resource) =>
@@ -455,6 +458,9 @@ internal class Bootstrapper : BaseScript
         {
             return;
         }
+
+        var addonMetadataService = this._provider.GetService<IInternalAddonMetadataService>();
+        addonMetadataService.CreateCalloutDetailsEntities();
 
         if (!databaseContext.Departments.Any())
         {

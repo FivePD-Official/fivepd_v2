@@ -17,6 +17,44 @@ namespace FivePD.Server.Migrations
                 .HasAnnotation("ProductVersion", "3.1.26")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("FivePD.Server.Models.CalloutDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("AssemblyName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("RulesetType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TypeName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CalloutDetails");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
+                {
+                    b.Property<int>("CalloutDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CalloutDetailsId", "DepartmentId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("CalloutDetailsDepartments");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.Department", b =>
                 {
                     b.Property<int>("Id")
@@ -389,6 +427,21 @@ namespace FivePD.Server.Migrations
                     b.HasIndex("RankId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.CalloutDetails", "CalloutDetails")
+                        .WithMany("CalloutDetailsDepartments")
+                        .HasForeignKey("CalloutDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FivePD.Server.Models.Department", "Department")
+                        .WithMany("CalloutDetailsDepartments")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Department", b =>

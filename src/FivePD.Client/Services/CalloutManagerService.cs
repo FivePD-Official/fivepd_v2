@@ -26,5 +26,9 @@ internal class CalloutManagerService : ICalloutManagerService, IOnInit
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Callout.GetAllTypes);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Callout.Dispatch);
+
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.CalloutDetails.GetAllPageable);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.CalloutDetails.Get);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.CalloutDetails.UpdateRuleset);
     }
 }

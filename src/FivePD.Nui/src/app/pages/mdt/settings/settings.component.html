@@ -8,6 +8,11 @@
               [data]="users"
               (onCollationChange)="onUsersCollationChange($event)"/>
 
+    <app-grid [title]="'Callouts' | translate"
+              [columns]="calloutDetailsColumns"
+              [data]="calloutDetails"
+              (onCollationChange)="onCalloutDetailsCollationChange($event)"/>
+
     <app-grid [title]="'UI.LABEL.ARREST_REPORT.ATTRIBUTES' | translate"
               [buttons]="arrestReportAttributesButtons"
               [columns]="arrestReportAttributesColumns"

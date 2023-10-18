@@ -1,0 +1,131 @@
+<app-page-header title="Callout details"/>
+
+<app-container [columns]="1" [rows]="2">
+
+  <div class="flex flex-col gap-4">
+    <p class="common-title">{{ 'UI.LABEL.DETAILS' | translate }}</p>
+    <div class="flex flex-col gap-4 max-w-max">
+      <div class="grid grid-rows-1 grid-cols-2 gap-8">
+        <p class="font-medium text-zinc-400">{{ 'Name' | translate }}</p>
+        <p class="text-zinc-200">{{ calloutDetails?.TypeName }}</p>
+      </div>
+      <div class="grid grid-rows-1 grid-cols-2 gap-8">
+        <p class="text-zinc-400">{{ 'Assembly name' | translate }}</p>
+        <p class="text-zinc-200">{{ calloutDetails?.AssemblyName }}</p>
+      </div>
+      <div class="grid grid-rows-1 grid-cols-2 gap-8">
+        <p class="text-zinc-400">{{ 'Active' | translate }}</p>
+        <p class="text-zinc-200">{{ calloutDetails?.Active ? 'Yes' : 'No' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <form *ngIf="form" [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+    <p class="common-title">Departments</p>
+    <div class="flex flex-col gap-4">
+      <div class="max-w-max grid grid-rows-1 grid-cols-2 gap-8">
+        <p class="text-zinc-400">Ruleset type</p>
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-row gap-2 group relative">
+            <input type="radio" id="allowlist" [formControl]="rulesetType" [value]="CalloutDetailsRulesetType.Allow"
+                   class="absolute w-full h-full inset-0 opacity-0 z-10 cursor-pointer">
+            <div
+              class="relative h-6 w-6 border border-zinc-600 group-hover:border-zinc-400 rounded-full">
+              <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-2 w-2 bg-zinc-300 rounded-full pointer-events-none"
+                [ngClass]="{
+                'opacity-0': rulesetType.value !== CalloutDetailsRulesetType.Allow,
+                'opacity-100': rulesetType.value === CalloutDetailsRulesetType.Allow
+                }">
+              </div>
+            </div>
+            <label class="text-zinc-200" for="allowlist">Allowlist</label>
+          </div>
+          <div class="flex flex-row gap-2 group relative">
+            <input type="radio" id="denylist" [formControl]="rulesetType" [value]="CalloutDetailsRulesetType.Deny"
+                   class="absolute w-full h-full inset-0 opacity-0 z-10 cursor-pointer">
+            <div
+              class="relative h-6 w-6 border border-zinc-600 group-hover:border-zinc-400 rounded-full">
+              <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-2 w-2 bg-zinc-300 rounded-full pointer-events-none"
+                [ngClass]="{
+              'opacity-0': rulesetType.value !== CalloutDetailsRulesetType.Deny,
+              'opacity-100': rulesetType.value === CalloutDetailsRulesetType.Deny
+              }"></div>
+            </div>
+            <label class="text-zinc-200" for="denylist">Denylist</label>
+          </div>
+        </div>
+      </div>
+      <p *ngIf="rulesetType.value === CalloutDetailsRulesetType.Allow" class="text-zinc-400">
+        Only the selected departments will receive this callout.
+      </p>
+      <p *ngIf="rulesetType.value === CalloutDetailsRulesetType.Deny" class="text-zinc-400">
+        All departments will receive this callout except the selected ones.
+      </p>
+    </div>
+    <div class="mt-4 grid grid-rows-1 grid-cols-[4fr_1fr_4fr] items-end">
+      <div>
+        <p class="text-zinc-400">All departments</p>
+        <div class="mt-2 border border-color h-[300px] overflow-x-hidden">
+          <div>
+            <div *ngFor="let department of availableDepartments"
+                 (click)="department.selected = !department.selected"
+                 class="group hover:cursor-pointer min-h-[50px] flex flex-row items-center gap-4 px-4">
+              <div app-icon
+                   name="Check"
+                   className="h-[20px] text-zinc-400 group-hover:text-zinc-100 transition-none"
+                   [ngClassName]="{'opacity-0': !department.selected, 'opacity-100': department.selected}"
+              ></div>
+              <p class="text-zinc-400 group-hover:text-zinc-100 transition-none">
+                {{ department.item.Name }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="h-[300px] flex flex-col items-center justify-center gap-4">
+        <button
+          class="flex flex-row items-center justify-center cursor-pointer rounded-md h-[65px] w-[65px] bg-zinc-700 hover:bg-zinc-600"
+          type="button" (click)="toLeft()">
+          <div app-icon name="ChevronLeft" className="h-[24px] text-white"></div>
+        </button>
+        <button
+          class="flex flex-row items-center justify-center cursor-pointer rounded-md h-[65px] w-[65px] bg-zinc-700 hover:bg-zinc-600"
+          type="button" (click)="toRight()">
+          <div app-icon name="ChevronRight" className="h-[24px] text-white"></div>
+        </button>
+      </div>
+      <div>
+        <p class="text-zinc-400">Enabled/Selected(?) departments</p>
+        <div class="mt-2 border border-color h-[300px] overflow-x-hidden">
+          <div>
+            <div *ngFor="let department of selectedDepartments"
+                 (click)="department.selected = !department.selected"
+                 class="group hover:cursor-pointer min-h-[50px] flex flex-row items-center gap-4 px-4">
+              <div app-icon
+                   name="Check"
+                   className="h-[20px] text-zinc-400 group-hover:text-zinc-100 transition-none"
+                   [ngClassName]="{'opacity-0': !department.selected, 'opacity-100': department.selected}"
+              ></div>
+              <p class="text-zinc-400 group-hover:text-zinc-100 transition-none">
+                {{ department.item.Name }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="w-full flex flex-row items-center justify-end mt-6 gap-4">
+      <!--      <app-button type="button"-->
+      <!--                  variant="secondary"-->
+      <!--                  (onClick)="revert()"-->
+      <!--                  [label]="'UI.ACTION.REVERT' | translate"-->
+      <!--                  [disabled]="form.pristine"/>-->
+      <app-button type="submit"
+                  [label]="'UI.ACTION.SAVE' | translate"
+                  [disabled]="form.invalid || form.pristine"/>
+    </div>
+  </form>
+
+</app-container>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Button, Collation, Column, Page, SetAttribute, User } from '@models';
+import { Button, CalloutDetails, Collation, Column, Page, SetAttribute, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { first } from 'rxjs';
 import { LocalizationService } from '@services/localization/localization.service';
@@ -13,6 +13,8 @@ import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventService } from "@services/event/event.service";
 import { AttributeGridOptions } from "./_service/attribute-grid-options";
+import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: 'app-settings',
@@ -101,6 +103,38 @@ export class SettingsComponent implements OnInit {
     }),
   ];
 
+  calloutDetails?: Page<CalloutDetails>;
+  calloutDetailsCollation: Collation = {
+    Page: 1,
+    Filters: {},
+  };
+  calloutDetailsColumns: Column<CalloutDetails>[] = [
+    new Column({
+      header: 'UI.LABEL.NAME.SINGULAR',
+      accessorKey: 'TypeName',
+    }),
+    new Column({
+      header: 'UI.LABEL.ASSEMBLY.NAME.SINGULAR',
+      accessorKey: 'AssemblyName',
+    }),
+    new Column({
+      header: 'Active',
+      valueResolver: item => item.Active ? 'Yes' : 'No',
+      badgeResolver: item => item.Active ? 'green' : 'red'
+    }),
+    new Column({
+      header: 'Actions',
+      actions: [
+        {
+          type: 'button',
+          label: 'Edit',
+          show: () => this.userService.userHasRole(UserRole.Admin),
+          onClick: item => this._router.navigate(['mdt', 'settings', 'callout-details', item.Id]),
+        },
+      ],
+    })
+  ];
+
   constructor(
     public readonly userService: UserService,
     private readonly _looseData: LooseDataService,
@@ -111,6 +145,9 @@ export class SettingsComponent implements OnInit {
     private readonly _store: Store<GlobalState>,
     private readonly _eventService: EventService,
     private readonly _attributeGridOptions: AttributeGridOptions,
+    private readonly _calloutDetailService: CalloutDetailsService,
+    private readonly _router: Router,
+    private readonly _a: ActivatedRoute
   ) {
     _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
       this.user = state.user.details.User;
@@ -129,6 +166,7 @@ export class SettingsComponent implements OnInit {
     this.getArrestReportAttributes();
     this.getIncidentReportAttributes();
     this.getUsers();
+    this.getCalloutDetails();
   }
 
   getArrestReportAttributes(): void {
@@ -162,5 +200,16 @@ export class SettingsComponent implements OnInit {
   onUsersCollationChange(collation: Collation): void {
     this.usersCollation = collation;
     this.getUsers();
+  }
+
+  getCalloutDetails(): void {
+    this._calloutDetailService.getAll(this.calloutDetailsCollation).subscribe(res => {
+      this.calloutDetails = res;
+    });
+  }
+
+  onCalloutDetailsCollationChange(collation: Collation): void {
+    this.calloutDetailsCollation = collation;
+    this.getCalloutDetails();
   }
 }

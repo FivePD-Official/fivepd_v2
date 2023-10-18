@@ -8,7 +8,11 @@
         @apply tabular-nums
 
     p
-      @apply text-zinc-300 decoration-0
+      @apply decoration-0
+
+    &:not(.table-cell--badge)
+      p
+        @apply text-zinc-300
 
     .table-cell-actions
       @apply flex flex-row items-center gap-2.5

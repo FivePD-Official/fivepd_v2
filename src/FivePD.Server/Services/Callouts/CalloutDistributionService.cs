@@ -9,12 +9,14 @@ using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
+using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -32,6 +34,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     private readonly IUnitService _unitService;
     private readonly PlayerList _playerList;
     private readonly IInternalIncidentService _incidentService;
+    private readonly DatabaseContext _databaseContext;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
@@ -42,13 +45,15 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
+    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     public CalloutDistributionService(
         ILogger logger,
         IConfigService configService,
         IConfirmationService confirmationService,
         IUnitService unitService,
         PlayerList playerList,
-        IIncidentService incidentService)
+        IIncidentService incidentService,
+        DatabaseContext databaseContext)
     {
         this._logger = logger;
         this._configService = configService;
@@ -56,6 +61,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         this._unitService = unitService;
         this._playerList = playerList;
         this._incidentService = (IInternalIncidentService)incidentService;
+        this._databaseContext = databaseContext;
     }
 
     /// <inheritdoc/>
@@ -148,6 +154,21 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
             .ToList();
 
+        var calloutDetails = this._databaseContext.CalloutDetails
+            .Include(x => x.CalloutDetailsDepartments)
+            .FirstOrDefault(x => x.TypeName == internalCallout.Type.Name && x.AssemblyName == internalCallout.Type.Assembly.GetName().Name);
+        if (calloutDetails is not null)
+        {
+            filteredUnits = calloutDetails.RulesetType == CalloutDetailsRulesetType.Allow
+                ? filteredUnits.Where(unit => calloutDetails.CalloutDetailsDepartments.Any(department => department.DepartmentId == unit.DepartmentId)).ToList()
+                : filteredUnits.Where(unit => calloutDetails.CalloutDetailsDepartments.All(department => department.DepartmentId != unit.DepartmentId)).ToList();
+        }
+        else
+        {
+            this._logger.Warning(
+                $"CalloutDistributionService.DispatchCalloutToUnits: calloutDetails is null for {internalCallout.Type.Name} - this should never happen");
+        }
+
         if (filteredUnits.Select(x => x.Players.Count).Aggregate(0, (acc, count) => acc + count) < internalCallout.Properties.MinOnDutyOfficers)
         {
             return new List<Unit>();
@@ -156,8 +177,8 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         if (this._configService.GeneralConfig.Callout.DynamicDispatch.Enabled)
         {
             filteredUnits = filteredUnits.Where(unit =>
-                unit.Players.Any(player => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(internalCallout.Callout.Location) <=
-                                           this._configService.GeneralConfig.Callout.DynamicDispatch.Radius))
+                    unit.Players.Any(player => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(internalCallout.Callout.Location) <=
+                                               this._configService.GeneralConfig.Callout.DynamicDispatch.Radius))
                 .ToList();
         }
 

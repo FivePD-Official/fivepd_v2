@@ -1,5 +1,7 @@
 import { ActionResponse, ButtonVariants } from '@models';
 
+export type BadgeVariants = 'gray' | 'red' | 'green' | 'amber' | 'blue';
+
 export interface ColumnOptions<T> {
   header: string;
   accessorKey?: Extract<keyof T, string>;
@@ -8,6 +10,7 @@ export interface ColumnOptions<T> {
   };
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
+  badgeResolver?: (item: T) => BadgeVariants;
   actions?: TableCellActions<T>[];
   show?: () => boolean;
   disabled?: () => boolean;
@@ -22,6 +25,7 @@ export class Column<T> {
   };
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
+  badgeResolver?: (item: T) => BadgeVariants;
   actions?: TableCellActions<T>[];
   show: () => boolean;
 
@@ -31,6 +35,7 @@ export class Column<T> {
     this.filter = options.filter;
     this.linkResolver = options.linkResolver;
     this.valueResolver = options.valueResolver;
+    this.badgeResolver = options.badgeResolver;
     this.actions = options.actions;
     this.show = options.show ? options.show : () => true;
   }
@@ -39,6 +44,7 @@ export class Column<T> {
 
 export interface FormattedRowItem<T> {
   value: string;
+  badge?: BadgeVariants;
   link?: string;
   originalItem: T;
   actions?: Column<T>['actions'];

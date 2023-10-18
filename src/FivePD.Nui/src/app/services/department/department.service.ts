@@ -1,7 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ActionResponse, Collation, Department, Division, NameTakenResponse, Page, Rank, User } from '@models';
+import {
+  ActionResponse,
+  Collation,
+  Department,
+  Division,
+  NameTakenResponse,
+  Page,
+  Rank,
+  SimpleDepartment,
+  User
+} from '@models';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +32,11 @@ export class DepartmentService {
     });
   }
 
-  getDepartments(departmentsRequest?: Collation): Observable<Page<Department>> {
+  getAll(): Observable<SimpleDepartment[]> {
+    return this._http.post<SimpleDepartment[]>('fivepd:department:getAll', {});
+  }
+
+  getAllPageable(departmentsRequest?: Collation): Observable<Page<Department>> {
     return this._http.post<Page<Department>>('fivepd:department:getAllPageable', departmentsRequest);
   }
 

@@ -39,15 +39,24 @@
          class="table-row"
          [ngClass]="{'cursor-pointer': !!rowLinkResolver}"
          (click)="onRowClick(row)">
-      <div *ngFor="let item of row" class="table-cell">
-        <p *ngIf="item.link && !item.actions && !item.value">-</p>
-        <a *ngIf="item.link && !item.actions && item.value"
-           [routerLink]="item.link"
-           class="group flex flex-row items-center text-zinc-300 hover:text-white">
-          {{ item.value }}
-          <div app-icon name="Link" className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
-        </a>
-        <p *ngIf="!item.link && !item.actions">{{ item.value }}</p>
+      <div *ngFor="let item of row" class="table-cell" [ngClass]="{'table-cell--badge': item.badge !== undefined}">
+        <div [ngClass]="{
+          'px-2 py-0.5 rounded-md font-medium flex flex-col items-center': item.badge !== undefined,
+          'bg-zinc-600/30 text-zinc-400': item.badge === 'gray',
+          'bg-red-600/20 text-red-500': item.badge === 'red',
+          'bg-green-600/20 text-green-500': item.badge === 'green',
+          'bg-amber-600/20 text-amber-500': item.badge === 'amber',
+          'bg-primary/10 text-primary': item.badge === 'blue'
+        }">
+          <p *ngIf="item.link && !item.actions && !item.value">-</p>
+          <a *ngIf="item.link && !item.actions && item.value"
+             [routerLink]="item.link"
+             class="group flex flex-row items-center text-zinc-300 hover:text-white">
+            {{ item.value }}
+            <div app-icon name="Link" className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
+          </a>
+          <p *ngIf="!item.link && !item.actions">{{ item.value }}</p>
+        </div>
         <div *ngIf="!item.link && item.actions" class="table-cell-actions">
           <ng-container *ngFor="let action of item.actions">
             <app-button *ngIf="action.type === 'button' && (action.show ? action.show(item.originalItem) : true)"

@@ -55,6 +55,11 @@ internal interface IInternalAddonMetadataService
     /// Finds and registers addons.
     /// </summary>
     public void FindAndRegisterAddons();
+
+    /// <summary>
+    /// Creates callout details entities.
+    /// </summary>
+    public void CreateCalloutDetailsEntities();
 }
 
 internal sealed record CalloutType(Type Type, string AssemblyName);

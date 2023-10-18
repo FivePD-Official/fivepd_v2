@@ -249,7 +249,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getDepartments(): void {
-    this._departmentService.getDepartments(this.departmentsCollation).subscribe(res => {
+    this._departmentService.getAllPageable(this.departmentsCollation).subscribe(res => {
       this.departments = res;
     });
   }

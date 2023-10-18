@@ -103,6 +103,16 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<Message> Messages { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the callout details.
+    /// </summary>
+    public DbSet<CalloutDetails> CalloutDetails { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing the callout details departments.
+    /// </summary>
+    public DbSet<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -131,6 +141,19 @@ public class DatabaseContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             type.HasOne(department => department.DefaultRank);
+        });
+
+        modelBuilder.Entity<CalloutDetailsDepartment>(type =>
+        {
+            type.HasKey(bc => new { bc.CalloutDetailsId, bc.DepartmentId });
+
+            type.HasOne(bc => bc.CalloutDetails)
+                .WithMany(b => b.CalloutDetailsDepartments)
+                .HasForeignKey(bc => bc.CalloutDetailsId);
+
+            type.HasOne(bc => bc.Department)
+                .WithMany(c => c.CalloutDetailsDepartments)
+                .HasForeignKey(bc => bc.DepartmentId);
         });
 
         modelBuilder.Entity<User>(type =>
@@ -167,7 +190,9 @@ public class DatabaseContext : DbContext
         modelBuilder.Entity<LooseDataEntity>(type =>
         {
             type.HasOne(t => t.Set);
-            type.HasMany(t => t.Values).WithOne(x => x.Entity).OnDelete(DeleteBehavior.Cascade);
+            type.HasMany(t => t.Values)
+                .WithOne(x => x.Entity)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<LooseDataValue>(type =>

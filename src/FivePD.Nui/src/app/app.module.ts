@@ -65,6 +65,7 @@ import { MessagesComponent } from './pages/mdt/messages/messages.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { AsPipe } from './pipes/as.pipe';
 import { WelcomeModalComponent } from "./pages/welcome-modal/welcome-modal.component";
+import { CalloutDetailsComponent } from './pages/mdt/settings/callout-details/callout-details.component';
 
 @NgModule({
   declarations: [
@@ -111,6 +112,7 @@ import { WelcomeModalComponent } from "./pages/welcome-modal/welcome-modal.compo
     MessagesComponent,
     PaginationComponent,
     AsPipe,
+    CalloutDetailsComponent,
   ],
   imports: [
     BrowserModule,

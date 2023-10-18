@@ -23,6 +23,7 @@ public class DepartmentService : IDepartmentService, IOnInit
     /// <inheritdoc/>
     public void OnInit()
     {
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetAll);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Get);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetUsers);

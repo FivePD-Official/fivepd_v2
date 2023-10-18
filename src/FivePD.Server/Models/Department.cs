@@ -60,6 +60,11 @@ public class Department
     public IList<Rank> Ranks { get; set; }
 
     /// <summary>
+    /// Gets or sets the callout details of this department.
+    /// </summary>
+    public IList<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="DepartmentResponse"/>.
     /// </summary>
     /// <returns>The created response object.</returns>

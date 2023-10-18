@@ -122,6 +122,8 @@ internal readonly record struct Events
 
         public readonly record struct Department
         {
+            public const string GetAll = "fivepd:department:getAll";
+
             public const string GetAllPageable = "fivepd:department:getAllPageable";
 
             public const string Get = "fivepd:department:get";
@@ -159,6 +161,15 @@ internal readonly record struct Events
             public const string EditRank = "fivepd:department:editRank";
 
             public const string CreateRank = "fivepd:department:createRank";
+        }
+
+        public readonly record struct CalloutDetails
+        {
+            public const string GetAllPageable = "fivepd:calloutDetails:getAllPageable";
+
+            public const string Get = "fivepd:calloutDetails:get";
+
+            public const string UpdateRuleset = "fivepd:calloutDetails:updateRuleset";
         }
 
         public readonly record struct LooseData

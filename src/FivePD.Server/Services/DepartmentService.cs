@@ -191,6 +191,19 @@ public class DepartmentService : IDepartmentService
             .FirstOrDefault(department => department.Users.Any(x => x.Id == user.Id));
     }
 
+    [UIEvent(Events.UI.Department.GetAll)]
+    private void GetAllUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var departments = this._databaseContext.Departments
+            .AsNoTracking()
+            .Select(x => new SimpleDepartmentDTO
+            {
+                Id = x.Id,
+                Name = x.Name,
+            });
+        networkCallbackDelegate.InvokeWithJson(departments);
+    }
+
     [UIEvent(Events.UI.Department.GetAllPageable)]
     private void GetAllPageableUI(ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
     {

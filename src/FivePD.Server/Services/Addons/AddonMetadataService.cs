@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using FivePD.Server.API;
+using FivePD.Server.Database;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,16 +22,22 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
+    private readonly DatabaseContext _databaseContext;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AddonMetadataService"/> class.
     /// </summary>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="serviceProvider">The <see cref="ServiceProvider"/> to use.</param>
-    public AddonMetadataService(IServiceProvider serviceProvider, ILogger logger)
+    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    public AddonMetadataService(
+        IServiceProvider serviceProvider,
+        ILogger logger,
+        DatabaseContext databaseContext)
     {
         this._serviceProvider = serviceProvider;
         this._logger = logger;
+        this._databaseContext = databaseContext;
     }
 
     /// <inheritdoc />
@@ -88,7 +95,7 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
     }
 
     /// <inheritdoc />
-    public void LoadAssemblies(List<AddonDefinition> definitions)
+    void IInternalAddonMetadataService.LoadAssemblies(List<AddonDefinition> definitions)
     {
         foreach (var addon in definitions)
         {
@@ -106,7 +113,7 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
     }
 
     /// <inheritdoc />
-    public void FindAndRegisterAddons()
+    void IInternalAddonMetadataService.FindAndRegisterAddons()
     {
         foreach (var assembly in this._definitions.Keys)
         {
@@ -140,8 +147,43 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
             var calloutsTypes = assembly
                 .GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Callout)))
-                .Select(type => new CalloutType(type, type.Assembly.GetName().Name));
+                .Select(type => new CalloutType(type, type.Assembly.GetName().Name))
+                .ToList();
             this._calloutTypes.AddRange(calloutsTypes);
         }
+    }
+
+    /// <inheritdoc />
+    void IInternalAddonMetadataService.CreateCalloutDetailsEntities()
+    {
+        if (this._databaseContext is null)
+        {
+            return;
+        }
+
+        // Update callout detail entities for existing callouts
+        var calloutDetailsList = this._databaseContext.CalloutDetails.ToList();
+        foreach (var calloutDetails in calloutDetailsList)
+        {
+            calloutDetails.Active = this._calloutTypes.Any(x => x.Type.Name == calloutDetails.TypeName && x.AssemblyName == calloutDetails.AssemblyName);
+        }
+
+        // Create callout detail entities for new callouts
+        foreach (var type in this._calloutTypes)
+        {
+            var calloutDetails = calloutDetailsList.FirstOrDefault(x => x.TypeName == type.Type.Name && x.AssemblyName == type.AssemblyName);
+            if (calloutDetails is null)
+            {
+                this._databaseContext.CalloutDetails.Add(new CalloutDetails
+                {
+                    TypeName = type.Type.Name,
+                    AssemblyName = type.AssemblyName,
+                    RulesetType = CalloutDetailsRulesetType.Deny,
+                    Active = true,
+                });
+            }
+        }
+
+        this._databaseContext.SaveChanges();
     }
 }

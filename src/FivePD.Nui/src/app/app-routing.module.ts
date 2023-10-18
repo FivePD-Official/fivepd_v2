@@ -23,6 +23,7 @@ import {
   CitizenDatabaseIdComponent
 } from "./pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component";
 import { MessagesComponent } from "./pages/mdt/messages/messages.component";
+import { CalloutDetailsComponent } from "./pages/mdt/settings/callout-details/callout-details.component";
 
 const mdtRoutes: Routes = [
   {
@@ -39,7 +40,21 @@ const mdtRoutes: Routes = [
   },
   {
     path: 'settings',
-    component: SettingsComponent
+    children: [
+      {
+        path: '',
+        component: SettingsComponent,
+      },
+      {
+        path: 'callout-details',
+        children: [
+          {
+            path: ':id',
+            component: CalloutDetailsComponent,
+          },
+        ],
+      },
+    ]
   },
   {
     path: 'messages',
