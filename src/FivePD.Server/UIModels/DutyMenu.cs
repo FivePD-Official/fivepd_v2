@@ -34,8 +34,6 @@ public sealed class DutyMenu : Menu
         this._entityService = entityService;
     }
 
-    public MenuCheckboxItem DutyToggleItem { get; private set; }
-
     public MenuListItem VehicleSpawnerItem { get; private set; }
 
     public MenuListItem LoadoutItem { get; private set; }
@@ -43,16 +41,6 @@ public sealed class DutyMenu : Menu
     protected override List<MenuItem> CreateItems()
     {
         var items = new List<MenuItem>();
-
-        if (this._dutyMenuConfig.DutyToggle.Enabled)
-        {
-            this.DutyToggleItem = new MenuCheckboxItem("DUTY_MENU.ITEM.ON_DUTY.TITLE", "DUTY_MENU.ITEM.ON_DUTY.DESCRIPTION");
-            this.DutyToggleItem.OnSelect += async (player, @checked) =>
-            {
-                player.DutyStatus.Value = @checked ? FDutyStatus.OnDuty : FDutyStatus.OffDuty;
-            };
-            items.Add(this.DutyToggleItem);
-        }
 
         if (this._dutyMenuConfig.SpawnVehicle.Enabled)
         {
