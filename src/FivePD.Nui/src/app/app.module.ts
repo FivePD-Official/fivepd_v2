@@ -66,6 +66,14 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { AsPipe } from './pipes/as.pipe';
 import { WelcomeModalComponent } from "./pages/welcome-modal/welcome-modal.component";
 import { CalloutDetailsComponent } from './pages/mdt/settings/callout-details/callout-details.component';
+import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
+import { IncidentService } from "@services/incident/incident.service";
+import { IncidentHistoryService } from "@services/incident-history/incident-history.service";
+import { CalloutService } from "@services/callout/callout.service";
+import { DevtoolsService } from "@services/devtools/devtools.service";
+import { DispatchService } from "@services/dispatch/dispatch.service";
+import { MessageService } from "@services/message/message.service";
+import { PedHistoryService } from "@services/ped-history/ped-history.service";
 
 @NgModule({
   declarations: [
@@ -137,17 +145,25 @@ import { CalloutDetailsComponent } from './pages/mdt/settings/callout-details/ca
     })
   ],
   providers: [
-    WindowService,
-    EventService,
-    ModalService,
-    MenuService,
-    LocalizationService,
-    NotificationService,
-    DepartmentService,
-    UserService,
-    UnitService,
+    CalloutService,
+    CalloutDetailsService,
     ConfigService,
+    DepartmentService,
+    DevtoolsService,
+    DispatchService,
+    EventService,
+    IncidentService,
+    IncidentHistoryService,
+    LocalizationService,
     LooseDataService,
+    MenuService,
+    MessageService,
+    ModalService,
+    NotificationService,
+    PedHistoryService,
+    UnitService,
+    UserService,
+    WindowService,
     AttributeGridOptions,
     {
       provide: HTTP_INTERCEPTORS,

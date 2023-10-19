@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from "@services/event/event.service";
 import { InformationUpdateDTO } from "@models";
-import { FDutyStatus, FIncidentPriority, FUnitAvailability } from "@enums";
+import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from "@enums";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
+import { setInformation } from "@store/user.actions";
 
 @Component({
   selector: 'app-information',
@@ -17,12 +20,16 @@ export class InformationComponent implements OnInit {
     Availability: FUnitAvailability.NotReceiving,
   };
 
-  constructor(private readonly _eventService: EventService) {
+  constructor(private readonly _eventService: EventService,
+              private readonly _store: Store<GlobalState>) {
+    _store.select('user', 'information').subscribe(information => {
+      this.information = information
+    });
   }
 
   ngOnInit(): void {
     this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
-      this.information = information;
+      this._store.dispatch(setInformation({ payload: information }));
     });
   }
 
@@ -51,4 +58,5 @@ export class InformationComponent implements OnInit {
     return '-';
   }
 
+  protected readonly FIncidentType = FIncidentType;
 }

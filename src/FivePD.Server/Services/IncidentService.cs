@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.API;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
+using FivePD.Server.Models.Requests;
+using FivePD.Server.QueryHelpers;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -222,5 +228,80 @@ public class IncidentService : IInternalIncidentService
                 player.GetUnderlyingPlayer().TriggerEvent(Events.Incident.OnCompleted);
             }
         }
+    }
+
+    [UIEvent(Events.Incident.GetAllActive)]
+    private void GetAllActiveUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var activeCallouts = this._callouts
+            .Where(x => x.Callout.Units.Count > 0)
+            .Select(x => new IncidentDTOs.IncidentToClientDTO
+            {
+                Id = x.Callout.Id.ToString(),
+                Type = FIncidentType.Callout,
+                Title = x.Callout.Title,
+                Description = x.Callout.Description,
+                Location = x.Callout.Location,
+                Units = x.Callout.Units.Select(p => p.Callsign).ToList(),
+            })
+            .ToList();
+        var trafficStops = this._trafficStops
+            .Select(x => new IncidentDTOs.IncidentToClientDTO
+            {
+                Id = x.Id.ToString(),
+                Type = FIncidentType.TrafficStop,
+                Title = x.Title,
+                Description = x.Description,
+                Location = x.Location,
+                Units = x.Units.Select(p => p.Callsign).ToList(),
+            })
+            .ToList();
+
+        var incidents = activeCallouts.Concat(trafficStops).ToList();
+        var page = new Page<IncidentDTOs.IncidentToClientDTO>
+        {
+            Items = incidents,
+            CurrentPage = 1,
+            ItemCount = incidents.Count,
+            PageCount = 1,
+            PageSize = incidents.Count,
+        };
+        networkCallbackDelegate.InvokeWithJson(page);
+    }
+
+    [UIEvent(Events.Incident.SelfAssign, true)]
+    private void SelfAssignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<StringIdRequest>();
+
+        IIncident incident = null;
+        var callout = this._callouts.FirstOrDefault(x => x.Callout.Id == Guid.Parse(request.Id));
+        if (callout is not null)
+        {
+            incident = callout.Callout;
+        }
+        else
+        {
+            var trafficStop = this._trafficStops.FirstOrDefault(x => x.Id == Guid.Parse(request.Id));
+            if (trafficStop is not null)
+            {
+                incident = trafficStop;
+            }
+        }
+
+        if (incident is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        var fPlayer = FPlayer.FromPlayer(player);
+        if (fPlayer.Unit is null)
+        {
+            return;
+        }
+
+        var assignedToCallout = ((IInternalIncidentService)this).AssignUnitToIncident(fPlayer.Unit, incident);
+        networkCallbackDelegate.InvokeWithResponse(assignedToCallout, "UI.LABEL.SUCCESS.SELF_ASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
     }
 }

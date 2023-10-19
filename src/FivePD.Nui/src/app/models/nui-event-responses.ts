@@ -111,8 +111,9 @@ export interface PlayerDetailsDTO {
   UnitCallsign: string;
 }
 
-interface ClientCallout {
+interface ClientIncident {
   Id: string;
+  Type: FIncidentType;
   Title: string;
   Description: string;
   Priority: FIncidentPriority;
@@ -124,13 +125,14 @@ interface ClientCallout {
   };
 }
 
-export interface ClientCalloutWrapper {
-  Callout: ClientCallout;
+export interface IncidentWrapper {
+  Incident: ClientIncident;
   Address: string;
 }
 
-export interface CalloutDTO {
+export interface IncidentDTO {
   Id: string;
+  Type: FIncidentType;
   Title: string;
   Description: string;
   Address: string;

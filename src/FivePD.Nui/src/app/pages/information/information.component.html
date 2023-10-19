@@ -26,7 +26,7 @@
     <div *ngIf="information.IncidentWrapper" class="w-full flex flex-col gap-4">
       <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
         <div class="flex flex-col">
-          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ACTIVE_CALLOUT.SINGULAR' | translate }}</p>
+          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}</p>
           <p class="text-zinc-200">
             {{ information.IncidentWrapper.Incident.Title }}
           </p>
@@ -43,6 +43,12 @@
           <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
           <p class="text-zinc-200">
             {{ priorityLabel | translate }}
+          </p>
+        </div>
+        <div class="flex flex-col">
+          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.TYPE.SINGULAR' | translate }}</p>
+          <p class="text-zinc-200">
+            {{ information.IncidentWrapper.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}
           </p>
         </div>
       </div>

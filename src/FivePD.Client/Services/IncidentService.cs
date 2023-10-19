@@ -49,24 +49,25 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
         this._eventHandlerDictionary[Events.Incident.OnCompleted] += new Action(this.OnCompleted);
         this._eventHandlerDictionary[Events.Incident.OnAssigned] += new Action<string>(this.OnAssigned);
         this._eventHandlerDictionary.AddUIEvent(
-            Events.UI.Callout.GetActive,
+            Events.Incident.GetAssigned,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this._currentIncident)); }));
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.Callout.SelfAssign);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Incident.SelfAssign);
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(
-            Events.Callout.GetAllActiveUI,
+            Events.Incident.GetAllActive,
             serverResponse =>
             {
-                var callouts = JsonConvert.DeserializeObject<Page<CalloutDTO.CalloutToClientDTO>>(serverResponse);
-                var newCallouts = callouts.Items.Select(callout => new CalloutDTO.CalloutToUIDTO
+                var callouts = JsonConvert.DeserializeObject<Page<IncidentDTOs.IncidentToClientDTO>>(serverResponse);
+                var newCallouts = callouts.Items.Select(callout => new IncidentDTOs.IncidentToUIDTO
                     {
                         Id = callout.Id,
+                        Type = callout.Type,
                         Title = callout.Title,
                         Description = callout.Description,
                         Units = callout.Units,
                         Address = callout.Location.GetStreetName(),
                     })
                     .ToList();
-                var newPage = new Page<CalloutDTO.CalloutToUIDTO>
+                var newPage = new Page<IncidentDTOs.IncidentToUIDTO>
                 {
                     Items = newCallouts,
                     CurrentPage = 1,

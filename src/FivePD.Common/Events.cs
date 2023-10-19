@@ -238,8 +238,6 @@ internal readonly record struct Events
 
         public readonly record struct Callout
         {
-            public const string GetActive = "fivepd:ui:callout:getActive";
-
             public const string GetAllTypes = "fivepd:ui:callout:getAllTypes";
 
             public const string Dispatch = "fivepd:ui:callout:dispatch";
@@ -313,15 +311,17 @@ internal readonly record struct Events
         public const string OnAssigned = "fivepd:incident:onAssigned";
 
         public const string OnCompleted = "fivepd:incident:onCompleted";
+
+        public const string GetAllActive = "fivepd:incident:getAllActive";
+
+        public const string SelfAssign = "fivepd:incident:selfAssign";
+
+        public const string GetAssigned = "fivepd:incident:getAssigned";
     }
 
     public readonly record struct Callout
     {
         public const string OnPlayerEnteredInActivityZone = "fivepd:callout:onPlayerEnteredInActivityZone";
-
-        public const string GetAllActiveUI = "fivepd:callout:getAllActiveUI";
-
-        public const string SelfAssign = "fivepd:callout:selfAssign";
     }
 
     public readonly record struct Config

@@ -4,6 +4,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Client.DTO;
 using FivePD.Common;
+using FivePD.Common.Enums;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
@@ -95,40 +96,15 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
         callout.Callout.OnPlayerEnteredInActivityZone(FPlayer.FromPlayer(player));
     }
 
-    // TODO: move to IncidentService -> Get all incident
-    [UIEvent(Events.Callout.GetAllActiveUI)]
-    private void GetAllActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var activeCallouts = this._incidentService.InternalCallouts
-            .Where(x => x.Callout.Units.Count > 0)
-            .Select(x => new CalloutDTO.CalloutToClientDTO
-            {
-                Id = x.Callout.Id.ToString(),
-                Title = x.Callout.Title,
-                Description = x.Callout.Description,
-                Location = x.Callout.Location,
-                Units = x.Callout.Units.Select(p => p.Callsign).ToList(),
-            }).ToList();
-        var page = new Page<CalloutDTO.CalloutToClientDTO>
-        {
-            Items = activeCallouts,
-            CurrentPage = 1,
-            ItemCount = activeCallouts.Count,
-            PageCount = 1,
-            PageSize = activeCallouts.Count,
-        };
-        networkCallbackDelegate.InvokeWithJson(page);
-    }
-
     [UIEvent(Events.UI.Callout.GetAllTypes)]
     private void GetAllCalloutTypesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var types = ((IInternalAddonMetadataService)this._addonMetadataService).CalloutTypes.Select(x => new CalloutDTO.CalloutTypeToUIDTO
+        var types = ((IInternalAddonMetadataService)this._addonMetadataService).CalloutTypes.Select(x => new IncidentDTOs.CalloutTypeToUIDTO
         {
             TypeName = x.Type.Name,
             AssemblyName = x.AssemblyName,
         }).ToList();
-        var page = new Page<CalloutDTO.CalloutTypeToUIDTO>
+        var page = new Page<IncidentDTOs.CalloutTypeToUIDTO>
         {
             Items = types,
             CurrentPage = 1,

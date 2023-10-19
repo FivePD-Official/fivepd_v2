@@ -35,32 +35,36 @@
 
     <div class="grid-item grid-item--details">
       <p class="common-title">
-        {{ 'UI.LABEL.ACTIVE_CALLOUT.SINGULAR' | translate }}
+        {{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}
       </p>
       <div class="grid-item--content">
-        <p *ngIf="!activeCallout" class="no-data">
+        <p *ngIf="!assignedIncident" class="no-data">
           {{ 'UI.LABEL.ACTIVE_CALLOUT.NONE' | translate }}
         </p>
-        <ul *ngIf="activeCallout"
+        <ul *ngIf="assignedIncident"
           class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-1 items-start gap-4">
           <div class="grid grid-rows-[repeat(2,1fr)] grid-cols-1 gap-4">
             <li>
               <p>{{ 'UI.LABEL.TITLE.SINGULAR' | translate }}</p>
-              <p>{{ activeCallout.Callout.Title }}</p>
+              <p>{{ assignedIncident.Incident.Title }}</p>
             </li>
             <li>
               <p>{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
-              <p>{{ activeCallout.Callout.Description }}</p>
+              <p>{{ assignedIncident.Incident.Description }}</p>
             </li>
           </div>
-          <div class="grid grid-rows-1 grid-cols-[repeat(2,1fr)] gap-4">
+          <div class="grid grid-rows-1 grid-cols-[repeat(3,1fr)] gap-4">
             <li>
               <p>{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
-              <p>{{ activeCallout.Address }}</p>
+              <p>{{ assignedIncident.Address }}</p>
             </li>
             <li>
               <p>{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
               <p>{{ priorityLabel | translate }}</p>
+            </li>
+            <li>
+              <p>{{ 'LABEL.TYPE.SINGULAR' | translate }}</p>
+              <p>{{ assignedIncident.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}</p>
             </li>
           </div>
         </ul>
@@ -69,9 +73,9 @@
   </app-container>
 
   <app-grid
-    [title]="'UI.LABEL.ACTIVE_CALLOUT.PLURAL' | translate"
-    [data]="callouts"
-    [columns]="calloutsColumnDef"
+    [title]="'UI.LABEL.ACTIVE_INCIDENT.PLURAL' | translate"
+    [data]="incidents"
+    [columns]="incidentsColumnDef"
     [showPagination]="false"/>
 
   <app-grid

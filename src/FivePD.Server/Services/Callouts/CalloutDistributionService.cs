@@ -258,26 +258,4 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
 
         return notifiedUnits;
     }
-
-    [UIEvent(Events.Callout.SelfAssign, true)]
-    private void SelfAssignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var request = expandoObject.ConvertTo<StringIdRequest>();
-
-        var callout = this._incidentService.ActiveCallouts.FirstOrDefault(x => x.Id == Guid.Parse(request.Id));
-        if (callout is null)
-        {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
-            return;
-        }
-
-        var fPlayer = FPlayer.FromPlayer(player);
-        if (fPlayer.Unit is null)
-        {
-            return;
-        }
-
-        var assignedToCallout = this.AssignUnitToCallout(fPlayer.Unit, callout);
-        networkCallbackDelegate.InvokeWithResponse(assignedToCallout, "UI.LABEL.SUCCESS.SELF_ASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
-    }
 }

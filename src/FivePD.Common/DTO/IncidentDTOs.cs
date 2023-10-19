@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Common.Enums;
 
 namespace FivePD.Client.DTO;
 
 #pragma warning disable
 
-public sealed record CalloutDTO
+public sealed record IncidentDTOs
 {
-    public sealed record CalloutToClientDTO
+    public record struct IncidentToClientDTO
     {
         public string Id { get; init; }
+
+        public FIncidentType Type { get; init; }
 
         public string Title { get; init; }
 
@@ -20,9 +23,11 @@ public sealed record CalloutDTO
         public IEnumerable<string> Units { get; init; }
     }
     
-    public sealed record CalloutToUIDTO
+    public record struct IncidentToUIDTO
     {
         public string Id { get; init; }
+        
+        public FIncidentType Type { get; init; }
 
         public string Title { get; init; }
 
@@ -33,7 +38,7 @@ public sealed record CalloutDTO
         public IEnumerable<string> Units { get; init; }
     }
     
-    public sealed record CalloutTypeToUIDTO
+    public record struct CalloutTypeToUIDTO
     {
         public string TypeName { get; init; }
 

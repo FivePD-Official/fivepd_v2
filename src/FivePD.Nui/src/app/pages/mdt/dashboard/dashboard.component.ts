@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import {
   Button,
-  CalloutDTO,
-  ClientCalloutWrapper,
   Collation,
   Column,
   Department,
   GeneralConfig,
+  IncidentDTO,
+  IncidentWrapper,
   NumberInput,
   Page,
   PlayerDetailsDTO,
@@ -16,7 +16,7 @@ import {
 import { DepartmentService } from '@services/department/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { Validators } from '@angular/forms';
-import { filter, first, switchMap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
 import { UserRole, UserService } from '@services/user/user.service';
 import { CustomValidators } from '../../../helpers/validators';
@@ -28,8 +28,8 @@ import { ModalService } from '@services/modals/modal/modal.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
-import { FDutyStatus, FIncidentPriority } from "@enums";
-import { CalloutService } from "@services/callout/callout.service";
+import { FDutyStatus, FIncidentPriority, FIncidentType } from "@enums";
+import { IncidentService } from "@services/incident/incident.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -40,7 +40,7 @@ export class DashboardComponent implements OnInit {
 
   generalConfig?: GeneralConfig;
   user?: PlayerDetailsDTO;
-  activeCallout?: ClientCalloutWrapper;
+  assignedIncident?: IncidentWrapper;
 
   departments?: Page<Department>;
   departmentsButtons: Button[] = [
@@ -134,7 +134,7 @@ export class DashboardComponent implements OnInit {
             unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) &&
             unit.Players.length > 0 &&
             unit.Players[0].NetworkId !== this.user?.NetworkId &&
-            unit.DepartmentId === this.user?.User.DepartmentId,
+            unit.DepartmentId === this.user?.User?.DepartmentId,
           onClick: unit => {
             this._unitService.join(unit).subscribe(res => {
               if (res.Status) {
@@ -172,35 +172,40 @@ export class DashboardComponent implements OnInit {
     }),
   ];
 
-  callouts?: Page<CalloutDTO>;
-  calloutsColumnDef: Column<CalloutDTO>[] = [
-    new Column<CalloutDTO>({
+  incidents?: Page<IncidentDTO>;
+  incidentsColumnDef: Column<IncidentDTO>[] = [
+    new Column({
       header: 'UI.LABEL.TITLE.SINGULAR',
       accessorKey: 'Title',
     }),
-    new Column<CalloutDTO>({
+    new Column({
       header: 'UI.LABEL.DESCRIPTION.SINGULAR',
       accessorKey: 'Description',
     }),
-    new Column<CalloutDTO>({
+    new Column({
       header: 'UI.LABEL.ADDRESS.SINGULAR',
       accessorKey: 'Address',
     }),
-    new Column<CalloutDTO>({
+    new Column({
       header: 'UI.LABEL.UNIT.PLURAL',
       valueResolver: item => item.Units.join(', '),
     }),
-    new Column<CalloutDTO>({
+    new Column({
+      header: 'LABEL.TYPE.SINGULAR',
+      valueResolver: item => item.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop',
+      badgeResolver: item => item.Type === FIncidentType.Callout ? 'amber' : 'blue',
+    }),
+    new Column({
       header: 'UI.LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
           label: 'Self-assign',
-          show: callout => !!this.user?.UnitCallsign && callout.Units.every(x => x !== this.user?.UnitCallsign),
-          onClick: callout => {
-            this._calloutService.selfAssign(callout).subscribe(res => {
+          show: incident => !!this.user?.UnitCallsign && incident.Units.every(x => x !== this.user?.UnitCallsign),
+          onClick: incident => {
+            this._incidentService.selfAssign(incident).subscribe(res => {
               if (res.Status) {
-                callout.Units.push(this.user!.UnitCallsign!);
+                incident.Units.push(this.user!.UnitCallsign!);
               }
             });
           }
@@ -219,9 +224,9 @@ export class DashboardComponent implements OnInit {
     private readonly _store: Store<GlobalState>,
     private readonly _unitService: UnitService,
     private readonly _configService: ConfigService,
-    private readonly _calloutService: CalloutService,
+    private readonly _incidentService: IncidentService,
   ) {
-    _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
+    _store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details;
     });
   }
@@ -232,11 +237,11 @@ export class DashboardComponent implements OnInit {
   }
 
   get priorityLabel(): string {
-    if (!this.activeCallout) {
+    if (!this.assignedIncident) {
       return '';
     }
 
-    switch (this.activeCallout.Callout.Priority) {
+    switch (this.assignedIncident.Incident.Priority) {
       case FIncidentPriority.Code1:
         return 'LABEL.PRIORITY.CODE1';
       case FIncidentPriority.Code2:
@@ -266,23 +271,23 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private getCallouts(): void {
-    this._calloutService.getAll().subscribe(res => {
-      this.callouts = res;
+  private getIncidents(): void {
+    this._incidentService.getAll().subscribe(res => {
+      this.incidents = res;
     });
   }
 
-  private getActiveCallout(): void {
-    this._calloutService.getActive().subscribe(res => {
-      this.activeCallout = res;
+  private getAssignedIncident(): void {
+    this._incidentService.getAssignedIncident().subscribe(res => {
+      this.assignedIncident = res;
     });
   }
 
   private load(): void {
     this.getDepartments();
     this.getUnits();
-    this.getCallouts();
-    this.getActiveCallout();
+    this.getIncidents();
+    this.getAssignedIncident();
   }
 
   onDepartmentsCollationChange(collation: Collation): void {
@@ -328,4 +333,6 @@ export class DashboardComponent implements OnInit {
         this._modalService.handleResponse(),
       ).subscribe(() => this.getDepartments())
   }
+
+  protected readonly FIncidentType = FIncidentType;
 }
