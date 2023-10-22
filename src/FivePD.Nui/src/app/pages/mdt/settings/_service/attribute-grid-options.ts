@@ -46,6 +46,8 @@ export class AttributeGridOptions {
               return this._localizationService.translate('UI.LABEL.CHECKBOX.SINGULAR');
             case AttributeDataType.Date:
               return this._localizationService.translate('UI.LABEL.DATE.SINGULAR');
+            case AttributeDataType.IntegerList:
+              return this._localizationService.translate('UI.LABEL.WHOLE_NUMBER_LIST.SINGULAR');
             default:
               return '-';
           }

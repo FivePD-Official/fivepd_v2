@@ -8,6 +8,14 @@
               [data]="users"
               (onCollationChange)="onUsersCollationChange($event)"/>
 
+    <app-grid
+      [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
+      [buttons]="departmentsButtons"
+      [data]="departments"
+      [columns]="departmentsColumnDef"
+      (onCollationChange)="onDepartmentsCollationChange($event)"
+      (onCellAction)="getDepartments()"/>
+
     <app-grid [title]="'Callouts' | translate"
               [columns]="calloutDetailsColumns"
               [data]="calloutDetails"

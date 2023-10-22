@@ -120,6 +120,7 @@
   "UI.LABEL.DASH.SINGULAR": "Dash",
   "UI.LABEL.DASHBOARD": "Dashboard",
   "UI.LABEL.DATE.SINGULAR": "Date",
+  "UI.LABEL.WHOLE_NUMBER_LIST.SINGULAR": "Whole number list",
   "UI.LABEL.DEFAULT_RANK.DESCRIPTION": "The rank of new members will be automatically set to the default rank.",
   "UI.LABEL.DEFAULT_RANK.TITLE": "Default rank",
   "UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION": "Are you sure you want to delete {{department}}? You can't undo this action.",

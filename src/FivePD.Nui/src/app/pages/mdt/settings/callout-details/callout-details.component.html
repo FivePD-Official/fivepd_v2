@@ -67,7 +67,7 @@
     <div class="mt-4 grid grid-rows-1 grid-cols-[4fr_1fr_4fr] items-end">
       <div>
         <p class="text-zinc-400">All departments</p>
-        <div class="mt-2 border border-color h-[300px] overflow-x-hidden">
+        <div class="mt-2 border border-color h-[300px] overflow-x-hidden rounded-md">
           <div>
             <div *ngFor="let department of availableDepartments"
                  (click)="department.selected = !department.selected"
@@ -97,8 +97,8 @@
         </button>
       </div>
       <div>
-        <p class="text-zinc-400">Enabled/Selected(?) departments</p>
-        <div class="mt-2 border border-color h-[300px] overflow-x-hidden">
+        <p class="text-zinc-400">Selected departments</p>
+        <div class="mt-2 border border-color h-[300px] overflow-x-hidden rounded-md">
           <div>
             <div *ngFor="let department of selectedDepartments"
                  (click)="department.selected = !department.selected"

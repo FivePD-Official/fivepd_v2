@@ -43,14 +43,6 @@ export class DashboardComponent implements OnInit {
   assignedIncident?: IncidentWrapper;
 
   departments?: Page<Department>;
-  departmentsButtons: Button[] = [
-    {
-      label: 'UI.ACTION.CREATE_DEPARTMENT',
-      show: () => this._userService.userHasRole(UserRole.Admin),
-      disabled: () => false,
-      onClick: () => this.tryCreateDepartment(),
-    }
-  ];
   departmentsCollation: Collation = {
     Page: 1,
     Filters: {},
@@ -59,7 +51,6 @@ export class DashboardComponent implements OnInit {
     new Column<Department>({
       header: 'UI.LABEL.NAME.SINGULAR',
       accessorKey: 'Name',
-      linkResolver: (item) => `/mdt/departments/${item.Id}`,
       filter: {
         label: 'UI.LABEL.SEARCH_BY.NAME',
       }
@@ -76,39 +67,10 @@ export class DashboardComponent implements OnInit {
       accessorKey: 'UserCount',
       valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
-    new Column<Department>({
-      header: 'UI.LABEL.ACTION.PLURAL',
-      show: () => this._userService.userHasRole(UserRole.Admin),
-      actions: [
-        {
-          type: 'button',
-          label: 'UI.ACTION.DELETE',
-          show: () => true,
-          disabled: () => false,
-          onClick: department => {
-            this._modalConfirmService.open({
-              title: 'UI.LABEL.DEPARTMENT.DELETE.TITLE',
-              description: this._localization.translate('UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION', {department: `<b>${department.Name}</b>`}),
-              buttons: {
-                submit: {
-                  variant: 'danger',
-                  label: 'UI.ACTION.DELETE',
-                },
-              },
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(() => this._departmentService.deleteDepartment(department.Id)),
-                this._modalService.handleResponse(),
-              ).subscribe(() => {
-              this.getDepartments();
-              this._userService.refreshData();
-            })
-          }
-        },
-      ]
-    })
   ];
+  departmentsRowLinkResolver(item: Department): string {
+    return `/mdt/departments/${item.Id}`;
+  }
 
   units?: Page<UnitDTO>;
   unitsColumnDef: Column<UnitDTO>[] = [
@@ -293,45 +255,6 @@ export class DashboardComponent implements OnInit {
   onDepartmentsCollationChange(collation: Collation): void {
     this.departmentsCollation = collation;
     this.getDepartments();
-  }
-
-  tryCreateDepartment(): void {
-    this._modalFormService.open({
-      title: 'UI.ACTION.CREATE_DEPARTMENT',
-      fields: () => [
-        new TextInput({
-          key: 'Name',
-          required: true,
-          label: 'UI.LABEL.NAME.SINGULAR',
-          asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value))],
-        }),
-        new TextInput({
-          key: 'Callsign',
-          label: 'UI.LABEL.CALLSIGN.TITLE',
-          helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
-          validators: [CustomValidators.onlyLetters()]
-        }),
-        createDepartmentCallsignFormatInputField(this._localization),
-        new NumberInput({
-          key: 'MaxUsers',
-          required: true,
-          label: 'UI.LABEL.MAX_MEMBERS.TITLE',
-          helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
-          validators: [Validators.min(0)],
-          options: {
-            min: 0,
-          }
-        }),
-      ],
-      buttons: {
-        submit: {variant: 'primary', label: 'UI.ACTION.CREATE'}
-      }
-    }).result
-      .pipe(
-        filter(res => res.success),
-        switchMap(res => this._departmentService.createDepartment(res.value)),
-        this._modalService.handleResponse(),
-      ).subscribe(() => this.getDepartments())
   }
 
   protected readonly FIncidentType = FIncidentType;

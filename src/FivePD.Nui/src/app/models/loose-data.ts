@@ -24,6 +24,7 @@ export enum AttributeDataType {
   Integer,
   Bool,
   Date,
+  IntegerList,
 }
 
 export interface SetAttributeOptions {

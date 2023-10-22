@@ -86,8 +86,8 @@
 
   <app-grid
     [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
-    [buttons]="departmentsButtons"
     [data]="departments"
+    [rowLinkResolver]="departmentsRowLinkResolver"
     [columns]="departmentsColumnDef"
     (onCollationChange)="onDepartmentsCollationChange($event)"
     (onCellAction)="getDepartments()"/>

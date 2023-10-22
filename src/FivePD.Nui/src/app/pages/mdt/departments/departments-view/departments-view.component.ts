@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  BaseNuiEvent,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -11,7 +10,8 @@ import {
   Dropdown,
   DropdownItem,
   FormInputBase,
-  FormSubmitEvent, GeneralConfig,
+  FormSubmitEvent,
+  GeneralConfig,
   NumberInput,
   Page,
   Rank,
@@ -44,6 +44,8 @@ interface FormattedUser extends User {
   DivisionName: string;
 }
 
+type Mode = 'view' | 'edit';
+
 @Component({
   selector: 'app-departments-view',
   templateUrl: './departments-view.component.html',
@@ -57,71 +59,7 @@ export class DepartmentsViewComponent implements OnInit {
   generalConfig?: GeneralConfig;
 
   ranks?: Page<FormattedRank>;
-  ranksButtons: Button[] = [
-    {
-      label: this._localization.translate('UI.ACTION.CREATE_RANK'),
-      show: () => this.userService.userHasRole(UserRole.Admin),
-      disabled: () => false,
-      onClick: () => this._modalFormService.open({
-        title: 'UI.ACTION.CREATE_RANK',
-        fields: () => {
-          const fields: FormInputBase<any>[] = [
-            new TextInput({
-              key: 'Name',
-              label: 'UI.LABEL.NAME.SINGULAR',
-              placeholder: 'UI.LABEL.NAME.SINGULAR',
-              required: true,
-            }),
-          ];
-
-          if (this.generalConfig?.config.Features.ProgressionSystem) {
-            fields.push(new NumberInput({
-              key: 'RequiredXp',
-              label: this._localization.translate('UI.LABEL.REQUIRED_XP'),
-              placeholder: this._localization.translate('UI.LABEL.REQUIRED_XP'),
-              required: true,
-            }))
-          }
-
-          fields.push(new CheckboxGroup({
-            key: 'Permission',
-            label: 'UI.LABEL.PERMISSIONS',
-            checkboxGroup: [
-              new Checkbox({
-                key: 'Kick',
-                label: 'Kick label',
-              }),
-              new Checkbox({
-                key: 'SetRank',
-                label: 'Set rank label',
-              }),
-              new Checkbox({
-                key: 'SetCallsign',
-                label: 'Set callsign label',
-              }),
-            ]
-          }));
-
-          return fields;
-        },
-        buttons: {
-          submit: {
-            variant: 'primary',
-            label: 'UI.ACTION.CREATE',
-          },
-        },
-      }).result
-        .pipe(
-          filter(res => res.success),
-          switchMap(res => this._departmentService.createRank({
-            DepartmentId: this.department!.Id,
-            Name: res.value['Name'],
-            Permission: res.value['Permission']
-          })),
-          this._modalService.handleResponse()
-        ).subscribe(() => this.getRanks(true))
-    }
-  ];
+  ranksButtons: Button[] = [];
   ranksCollation: Collation = {
     Page: 1,
     Filters: {},
@@ -140,102 +78,11 @@ export class DepartmentsViewComponent implements OnInit {
     Page: 1,
     Filters: {},
   };
-  divisionsButtons: Button[] = [
-    {
-      label: this._localization.translate('UI.ACTION.CREATE_DIVISION'),
-      show: () => this.userService.userHasRole(UserRole.Admin),
-      disabled: () => false,
-      onClick: () => {
-        this._modalFormService.open({
-          title: 'UI.ACTION.CREATE_DIVISION',
-          fields: () => [
-            new TextInput({
-              key: 'Name',
-              label: 'UI.LABEL.NAME.SINGULAR',
-              placeholder: 'UI.LABEL.NAME.SINGULAR',
-              required: true,
-            })
-          ],
-          buttons: {
-            submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
-          },
-        }).result
-          .pipe(
-            filter(res => res.success),
-            switchMap(res => this._departmentService.createDivision({
-              DepartmentId: this.department?.Id,
-              Name: res.value['Name']
-            })),
-            this._modalService.handleResponse()
-          ).subscribe(() => this.getDivisions(true))
-      }
-    }
-  ];
-  divisionsColumns: Column<Division>[] = [
-    new Column<Division>({
-      header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-      accessorKey: 'Name',
-      filter: {
-        label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
-      },
-    }),
-    new Column<Division>({
-      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => this.userService.userHasRole(UserRole.Admin),
-      actions: [
-        {
-          type: 'button',
-          label: this._localization.translate('UI.ACTION.EDIT'),
-          onClick: division => {
-            this._modalFormService.open<Division>({
-              title: 'UI.LABEL.DIVISION.EDIT',
-              fields: updatedDivision => [
-                new TextInput({
-                  key: 'Name',
-                  label: 'UI.LABEL.NAME.SINGULAR',
-                  placeholder: 'UI.LABEL.NAME.SINGULAR',
-                  required: true,
-                  value: updatedDivision.Name,
-                })
-              ],
-              valueResolver: new ValueResolver(division, this._departmentService.getDivision(division.Id)),
-              buttons: {
-                submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
-              },
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(res => this._departmentService.editDivision({
-                  DivisionId: division.Id,
-                  Name: res.value['Name'],
-                })),
-                this._modalService.handleResponse()
-              ).subscribe(() => this.getDivisions(true))
-          }
-        },
-        {
-          type: 'button',
-          label: this._localization.translate('UI.ACTION.DELETE'),
-          onClick: division => {
-            this._modalConfirmService.open({
-              title: 'UI.LABEL.DIVISION.DELETE.TITLE',
-              description: this._localization.translate('UI.LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
-              buttons: {
-                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
-              },
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(() => this._departmentService.deleteDivision(division.Id)),
-                this._modalService.handleResponse()
-              ).subscribe(() => this.getDivisions(true))
-          }
-        },
-      ]
-    })
-  ];
+  divisionsButtons: Button[] = [];
+  divisionsColumns: Column<Division>[] = [];
 
   departmentSettingsForm: FormInputBase<any>[] = [];
+  mode: Mode = 'view';
 
   constructor(
     public readonly userService: UserService,
@@ -255,7 +102,11 @@ export class DepartmentsViewComponent implements OnInit {
       this.setIsUserInDepartment();
     });
 
-    _route.params.pipe(takeUntilDestroyed()).subscribe(() => {
+    _route.data.pipe(takeUntilDestroyed()).subscribe(data => {
+      this.mode = data['mode'];
+    });
+
+    _route.params.pipe(takeUntilDestroyed()).subscribe(params => {
       this.getDepartment();
     });
   }
@@ -269,6 +120,9 @@ export class DepartmentsViewComponent implements OnInit {
     this._configService.getGeneralConfig().subscribe(res => {
       this.generalConfig = res;
       this.ranksColumns = this.createRanksColumns();
+      this.ranksButtons = this.createRanksButtons();
+      this.divisionsColumns = this.createDivisionsColumns();
+      this.divisionsButtons = this.createDivisionsButtons();
       this.usersColumns = this.createUsersColumns();
     });
   }
@@ -295,93 +149,274 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     }
 
-    columns.push(new Column<FormattedRank>({
-      header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
-      show: () => this.userService.userHasRole(UserRole.Admin),
-      actions: [
-        {
-          type: 'button',
-          label: this._localization.translate('UI.ACTION.EDIT'),
-          onClick: rank => {
-            this._modalFormService.open<FormattedRank>({
-              title: 'UI.LABEL.RANK.EDIT',
-              fields: updatedRank => {
-                const fields: FormInputBase<any>[] = [
-                  new TextInput({
-                    key: 'Name',
-                    label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-                    placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-                    required: true,
-                    value: updatedRank.Name,
-                  }),
-                ];
-
-                if (this.generalConfig?.config.Features.ProgressionSystem) {
-                  fields.push(new NumberInput({
-                    key: 'RequiredXp',
-                    label: this._localization.translate('UI.LABEL.REQUIRED_XP'),
-                    placeholder: this._localization.translate('UI.LABEL.REQUIRED_XP'),
-                    required: true,
-                    value: updatedRank.RequiredXp,
-                  }))
-                }
-
-                fields.push(new CheckboxGroup({
-                  key: 'Permission',
-                  label: 'UI.LABEL.PERMISSIONS',
-                  checkboxGroup: [
-                    new Checkbox({key: 'Kick', label: 'Kick label', value: updatedRank.Permission.Kick}),
-                    new Checkbox({key: 'SetRank', label: 'Set rank label', value: updatedRank.Permission.SetRank}),
-                    new Checkbox({
-                      key: 'SetCallsign',
-                      label: 'Set callsign label',
-                      value: updatedRank.Permission.SetCallsign
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+      columns.push(new Column<FormattedRank>({
+        header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+        actions: [
+          {
+            type: 'button',
+            label: this._localization.translate('UI.ACTION.EDIT'),
+            onClick: rank => {
+              this._modalFormService.open<FormattedRank>({
+                title: 'UI.LABEL.RANK.EDIT',
+                fields: updatedRank => {
+                  const fields: FormInputBase<any>[] = [
+                    new TextInput({
+                      key: 'Name',
+                      label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+                      placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+                      required: true,
+                      value: updatedRank.Name,
                     }),
-                  ]
-                }));
+                  ];
 
-                return fields;
-              },
-              valueResolver: new ValueResolver(rank, this._departmentService.getRank(rank.Id)),
-              buttons: {
-                submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
-              },
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(res => this._departmentService.editRank({
-                  DepartmentId: this.department?.Id,
-                  RankId: rank.Id,
-                  Name: res.value!['Name'],
-                  Permission: res.value!['Permission'],
-                  RequiredXp: res.value!['RequiredXp'],
-                })),
-                this._modalService.handleResponse()
-              ).subscribe(() => this.getRanks(true))
-          }
-        },
-        {
-          type: 'button',
-          label: this._localization.translate('UI.ACTION.DELETE'),
-          onClick: rank => {
-            this._modalConfirmService.open({
-              title: 'UI.LABEL.RANK.DELETE.TITLE',
-              description: this._localization.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
-              buttons: {
-                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
-              },
-            }).result
-              .pipe(
-                filter(res => res.success),
-                switchMap(() => this._departmentService.deleteRank(rank.Id)),
-                this._modalService.handleResponse()
-              ).subscribe(() => this.getRanks(true))
-          }
-        },
-      ]
-    }))
+                  if (this.generalConfig?.config.Features.ProgressionSystem) {
+                    fields.push(new NumberInput({
+                      key: 'RequiredXp',
+                      label: this._localization.translate('UI.LABEL.REQUIRED_XP'),
+                      placeholder: this._localization.translate('UI.LABEL.REQUIRED_XP'),
+                      required: true,
+                      value: updatedRank.RequiredXp,
+                    }))
+                  }
+
+                  fields.push(new CheckboxGroup({
+                    key: 'Permission',
+                    label: 'UI.LABEL.PERMISSIONS',
+                    checkboxGroup: [
+                      new Checkbox({key: 'Kick', label: 'Kick label', value: updatedRank.Permission.Kick}),
+                      new Checkbox({key: 'SetRank', label: 'Set rank label', value: updatedRank.Permission.SetRank}),
+                      new Checkbox({
+                        key: 'SetCallsign',
+                        label: 'Set callsign label',
+                        value: updatedRank.Permission.SetCallsign
+                      }),
+                    ]
+                  }));
+
+                  return fields;
+                },
+                valueResolver: new ValueResolver(rank, this._departmentService.getRank(rank.Id)),
+                buttons: {
+                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                },
+              }).result
+                .pipe(
+                  filter(res => res.success),
+                  switchMap(res => this._departmentService.editRank({
+                    DepartmentId: this.department?.Id,
+                    RankId: rank.Id,
+                    Name: res.value!['Name'],
+                    Permission: res.value!['Permission'],
+                    RequiredXp: res.value!['RequiredXp'],
+                  })),
+                  this._modalService.handleResponse()
+                ).subscribe(() => this.getRanks(true))
+            }
+          },
+          {
+            type: 'button',
+            label: this._localization.translate('UI.ACTION.DELETE'),
+            onClick: rank => {
+              this._modalConfirmService.open({
+                title: 'UI.LABEL.RANK.DELETE.TITLE',
+                description: this._localization.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
+                buttons: {
+                  submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                },
+              }).result
+                .pipe(
+                  filter(res => res.success),
+                  switchMap(() => this._departmentService.deleteRank(rank.Id)),
+                  this._modalService.handleResponse()
+                ).subscribe(() => this.getRanks(true))
+            }
+          },
+        ]
+      }));
+    }
 
     return columns;
+  }
+
+  private createRanksButtons(): Button[] {
+    const buttons: Button[] = [];
+
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+      buttons.push({
+        label: this._localization.translate('UI.ACTION.CREATE_RANK'),
+        show: () => this.userService.userHasRole(UserRole.Admin),
+        disabled: () => false,
+        onClick: () => this._modalFormService.open({
+          title: 'UI.ACTION.CREATE_RANK',
+          fields: () => {
+            const fields: FormInputBase<any>[] = [
+              new TextInput({
+                key: 'Name',
+                label: 'UI.LABEL.NAME.SINGULAR',
+                placeholder: 'UI.LABEL.NAME.SINGULAR',
+                required: true,
+              }),
+            ];
+
+            if (this.generalConfig?.config.Features.ProgressionSystem) {
+              fields.push(new NumberInput({
+                key: 'RequiredXp',
+                label: this._localization.translate('UI.LABEL.REQUIRED_XP'),
+                placeholder: this._localization.translate('UI.LABEL.REQUIRED_XP'),
+                required: true,
+              }))
+            }
+
+            fields.push(new CheckboxGroup({
+              key: 'Permission',
+              label: 'UI.LABEL.PERMISSIONS',
+              checkboxGroup: [
+                new Checkbox({
+                  key: 'Kick',
+                  label: 'Kick label',
+                }),
+                new Checkbox({
+                  key: 'SetRank',
+                  label: 'Set rank label',
+                }),
+                new Checkbox({
+                  key: 'SetCallsign',
+                  label: 'Set callsign label',
+                }),
+              ]
+            }));
+
+            return fields;
+          },
+          buttons: {
+            submit: {
+              variant: 'primary',
+              label: 'UI.ACTION.CREATE',
+            },
+          },
+        }).result
+          .pipe(
+            filter(res => res.success),
+            switchMap(res => this._departmentService.createRank({
+              DepartmentId: this.department!.Id,
+              Name: res.value['Name'],
+              Permission: res.value['Permission']
+            })),
+            this._modalService.handleResponse()
+          ).subscribe(() => this.getRanks(true))
+      });
+    }
+
+    return buttons;
+  }
+
+  private createDivisionsColumns(): Column<Division>[] {
+    const columns: Column<Division>[] = [
+      new Column<Division>({
+        header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+        accessorKey: 'Name',
+        filter: {
+          label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
+        },
+      }),
+    ];
+
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+      columns.push(new Column<Division>({
+        header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+        actions: [
+          {
+            type: 'button',
+            label: this._localization.translate('UI.ACTION.EDIT'),
+            onClick: division => {
+              this._modalFormService.open<Division>({
+                title: 'UI.LABEL.DIVISION.EDIT',
+                fields: updatedDivision => [
+                  new TextInput({
+                    key: 'Name',
+                    label: 'UI.LABEL.NAME.SINGULAR',
+                    placeholder: 'UI.LABEL.NAME.SINGULAR',
+                    required: true,
+                    value: updatedDivision.Name,
+                  })
+                ],
+                valueResolver: new ValueResolver(division, this._departmentService.getDivision(division.Id)),
+                buttons: {
+                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                },
+              }).result
+                .pipe(
+                  filter(res => res.success),
+                  switchMap(res => this._departmentService.editDivision({
+                    DivisionId: division.Id,
+                    Name: res.value['Name'],
+                  })),
+                  this._modalService.handleResponse()
+                ).subscribe(() => this.getDivisions(true))
+            }
+          },
+          {
+            type: 'button',
+            label: this._localization.translate('UI.ACTION.DELETE'),
+            onClick: division => {
+              this._modalConfirmService.open({
+                title: 'UI.LABEL.DIVISION.DELETE.TITLE',
+                description: this._localization.translate('UI.LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
+                buttons: {
+                  submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                },
+              }).result
+                .pipe(
+                  filter(res => res.success),
+                  switchMap(() => this._departmentService.deleteDivision(division.Id)),
+                  this._modalService.handleResponse()
+                ).subscribe(() => this.getDivisions(true))
+            }
+          },
+        ]
+      }));
+    }
+
+    return columns;
+  }
+
+  private createDivisionsButtons(): Button[] {
+    const buttons: Button[] = [];
+
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+      buttons.push({
+        label: this._localization.translate('UI.ACTION.CREATE_DIVISION'),
+        show: () => true,
+        disabled: () => false,
+        onClick: () => {
+          this._modalFormService.open({
+            title: 'UI.ACTION.CREATE_DIVISION',
+            fields: () => [
+              new TextInput({
+                key: 'Name',
+                label: 'UI.LABEL.NAME.SINGULAR',
+                placeholder: 'UI.LABEL.NAME.SINGULAR',
+                required: true,
+              })
+            ],
+            buttons: {
+              submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+            },
+          }).result
+            .pipe(
+              filter(res => res.success),
+              switchMap(res => this._departmentService.createDivision({
+                DepartmentId: this.department?.Id,
+                Name: res.value['Name']
+              })),
+              this._modalService.handleResponse()
+            ).subscribe(() => this.getDivisions(true))
+        }
+      });
+    }
+
+    return buttons;
   }
 
   private createUsersColumns(): Column<FormattedUser>[] {
@@ -393,19 +428,11 @@ export class DepartmentsViewComponent implements OnInit {
           label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
         },
       }),
-      new Column<FormattedUser>({
+    ];
+
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+      columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
-        accessorKey: 'RankName',
-        show: () => !this.userService.userHasRole(UserRole.Admin),
-      }),
-      new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
-        accessorKey: 'DivisionName',
-        show: () => !this.userService.userHasRole(UserRole.Admin),
-      }),
-      new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
-        show: () => this.userService.userHasRole(UserRole.Admin),
         actions: [
           {
             type: 'select',
@@ -420,10 +447,9 @@ export class DepartmentsViewComponent implements OnInit {
             }
           }
         ]
-      }),
-      new Column<FormattedUser>({
+      }));
+      columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
-        show: () => this.userService.userHasRole(UserRole.Admin),
         actions: [
           {
             type: 'select',
@@ -438,8 +464,17 @@ export class DepartmentsViewComponent implements OnInit {
             }
           },
         ]
-      }),
-    ];
+      }));
+    } else {
+      columns.push(new Column<FormattedUser>({
+        header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
+        accessorKey: 'RankName',
+      }));
+      columns.push(new Column<FormattedUser>({
+        header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
+        accessorKey: 'DivisionName',
+      }));
+    }
 
     if (this.generalConfig?.config.Features.ProgressionSystem) {
       columns.push(new Column<FormattedUser>({
@@ -595,19 +630,19 @@ export class DepartmentsViewComponent implements OnInit {
   }
 
   private rankPermissionResolver(rank: Rank): string {
-    let permissions = '';
+    const permissions: string[] = [];
 
     if (rank.Permission.Kick) {
-      permissions += `${this._localization.translate('UI.ACTION.KICK')}, `;
+      permissions.push(this._localization.translate('UI.ACTION.KICK'));
     }
     if (rank.Permission.SetRank) {
-      permissions += `${this._localization.translate('UI.ACTION.SET_RANK')}, `;
+      permissions.push(this._localization.translate('UI.ACTION.SET_RANK'));
     }
     if (rank.Permission.SetCallsign) {
-      permissions += `${this._localization.translate('UI.ACTION.SET_CALLSIGN')}, `;
+      permissions.push(this._localization.translate('UI.ACTION.SET_CALLSIGN'));
     }
 
-    return permissions.length ? permissions.slice(0, -2) : '-';
+    return permissions.length > 0 ? permissions.join(', ') : '-';
   }
 
   private createDepartmentSettingsForm(): void {

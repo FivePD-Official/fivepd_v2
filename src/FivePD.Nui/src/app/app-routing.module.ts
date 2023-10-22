@@ -46,6 +46,18 @@ const mdtRoutes: Routes = [
         component: SettingsComponent,
       },
       {
+        path: 'departments',
+        children: [
+          {
+            path: ':id',
+            component: DepartmentsViewComponent,
+            data: {
+              mode: 'edit'
+            }
+          }
+        ]
+      },
+      {
         path: 'callout-details',
         children: [
           {
@@ -86,7 +98,10 @@ const mdtRoutes: Routes = [
     children: [
       {
         path: ':id',
-        component: DepartmentsViewComponent
+        component: DepartmentsViewComponent,
+        data: {
+          mode: 'view'
+        }
       }
     ]
   },
