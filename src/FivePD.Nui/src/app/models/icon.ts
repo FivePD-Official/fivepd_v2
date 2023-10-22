@@ -21,4 +21,5 @@
   Information = 'Information',
   Envelope = 'Envelope',
   Pencil = 'Pencil',
+  Library = 'Library',
 }

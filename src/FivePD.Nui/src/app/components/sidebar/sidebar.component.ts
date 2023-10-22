@@ -2,19 +2,22 @@ import { Component } from '@angular/core';
 import { GlobalState } from '@store';
 import { GeneralConfig, IconType, User } from '@models';
 import { Store } from '@ngrx/store';
-import { enableDispatchMode, toggleSidebarCollapse } from '@store/app.actions';
+import { toggleSidebarCollapse } from '@store/app.actions';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from "@angular/router";
 import { DispatchService } from "@services/dispatch/dispatch.service";
 import { ConfigService } from "@services/config/config.service";
 
-interface Route {
+export interface Route {
   title: string;
   path: () => string;
   icon: IconType;
   show: () => boolean;
 }
+
+type RouteOrDivider = Route | { divider: true; };
+
+type Routes = RouteOrDivider[];
 
 @Component({
   selector: 'app-sidebar',
@@ -26,7 +29,7 @@ export class SidebarComponent {
   config?: GeneralConfig;
   user?: User;
   isSidebarCollapsed: boolean = false;
-  routes: Route[] = [
+  routes: Routes = [
     {
       title: 'UI.LABEL.DASHBOARD',
       path: () => '/mdt/dashboard',
@@ -58,12 +61,6 @@ export class SidebarComponent {
       show: () => true,
     },
     {
-      title: 'UI.LABEL.SETTINGS',
-      path: () => '/mdt/settings',
-      icon: IconType.Cog,
-      show: () => true,
-    },
-    {
       title: 'UI.LABEL.MESSAGE.PLURAL',
       path: () => '/mdt/messages',
       icon: IconType.Envelope,
@@ -72,8 +69,17 @@ export class SidebarComponent {
     {
       title: 'UI.LABEL.MY_DEPARTMENT',
       path: () => `/mdt/departments/${this.user?.DepartmentId}`,
-      icon: IconType.Users,
+      icon: IconType.Library,
       show: () => !!this.user?.Department ?? false,
+    },
+    {
+      divider: true,
+    },
+    {
+      title: 'UI.LABEL.SETTINGS',
+      path: () => '/mdt/settings',
+      icon: IconType.Cog,
+      show: () => true,
     },
     {
       title: 'Developer tools',
@@ -97,6 +103,10 @@ export class SidebarComponent {
     this._configService.getGeneralConfig().pipe(takeUntilDestroyed()).subscribe(config => {
       this.config = config;
     });
+  }
+
+  isRoute(route: RouteOrDivider): route is Route {
+    return !('divider' in route);
   }
 
   toggleSidebarCollapse(): void {

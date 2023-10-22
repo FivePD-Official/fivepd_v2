@@ -1,25 +1,31 @@
 <aside class="w-full h-full border-r border-color flex flex-col items-center justify-between p-5 pt-10">
   <div class="w-full">
-    <a *ngFor="let item of routes"
-       class="group decoration-0"
-       [routerLink]="item.path()"
-       routerLinkActive="active"
-       [routerLinkActiveOptions]="{ exact: false }">
-      <div *ngIf="item.show()"
-           class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
-                  before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
-                  before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
-        <div app-icon
-             [name]="item.icon"
-             class="w-[50px] h-full flex flex-center justify-center"
-             className="h-[25px] text-zinc-400 group-[.active]:text-white">
+    <ng-container *ngFor="let item of routes">
+      <a *ngIf="isRoute(item); else divider"
+         class="group decoration-0"
+         [routerLink]="item.path()"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: false }">
+        <div *ngIf="item.show()"
+             class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
+                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
+                    before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
+          <div app-icon
+               [name]="item.icon"
+               class="w-[50px] h-full flex flex-center justify-center"
+               className="h-[25px] text-zinc-400 group-[.active]:text-white">
+          </div>
+          <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
+             [ngClass]="{ 'hidden': isSidebarCollapsed }">
+            {{ item.title | translate }}
+          </p>
         </div>
-        <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
-           [ngClass]="{ 'hidden': isSidebarCollapsed }">
-          {{ item.title | translate }}
-        </p>
-      </div>
-    </a>
+      </a>
+      <ng-template #divider>
+        <div class="h-[1px] w-full my-4 bg-zinc-700">
+        </div>
+      </ng-template>
+    </ng-container>
   </div>
 
   <div class="w-full">
