@@ -103,9 +103,11 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     });
 
     if ('selectedItemResolver' in action) {
+      (dropdown.dropdownOptions as any).type = 'single';
       (dropdown.dropdownOptions as any).selectedItemResolver = (dropdownItemKey: any) => action.selectedItemResolver(item.originalItem, dropdownItemKey);
     }
     if ('selectedItemsResolver' in action) {
+      (dropdown.dropdownOptions as any).type = 'multi';
       (dropdown.dropdownOptions as any).selectedItemsResolver = (dropdownItemKey: any) => action.selectedItemsResolver(item.originalItem, dropdownItemKey);
     }
 
