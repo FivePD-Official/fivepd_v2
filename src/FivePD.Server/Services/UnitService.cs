@@ -133,6 +133,8 @@ public class UnitService : IUnitService
             Unit = unit,
         });
 
+        player.GetUnderlyingPlayer().TriggerEvent(Events.Incident.OnCompleted);
+
         if (unit.Players.Count == 0)
         {
             this._units.Remove(unit);
@@ -160,7 +162,7 @@ public class UnitService : IUnitService
     private void GetAllUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var units = this._units
-            .Select(unit => new UnitDTO(unit.Callsign, unit.Players.Select(p => new SimplePlayerDTO(p.NetId, p.GetUnderlyingPlayer().Name))))
+            .Select(unit => new UnitDTO(unit.Callsign, unit.TrafficStop is not null || unit.Callout is not null, unit.Players.Select(p => new SimplePlayerDTO(p.NetId, p.GetUnderlyingPlayer().Name))))
             .ToList();
         var page = new Page<UnitDTO>
         {

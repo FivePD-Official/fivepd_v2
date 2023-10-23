@@ -102,6 +102,7 @@ export interface UnitDTO {
   Callsign: string;
   Players: SimplePlayerDTO[];
   DepartmentId: number;
+  AssignedToIncident: boolean;
 }
 
 export interface PlayerDetailsDTO {

@@ -96,7 +96,8 @@ export class DashboardComponent implements OnInit {
             unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) &&
             unit.Players.length > 0 &&
             unit.Players[0].NetworkId !== this.user?.NetworkId &&
-            unit.DepartmentId === this.user?.User?.DepartmentId,
+            unit.DepartmentId === this.user?.User?.DepartmentId &&
+            !unit.AssignedToIncident,
           onClick: unit => {
             this._unitService.join(unit).subscribe(res => {
               if (res.Status) {
@@ -113,7 +114,8 @@ export class DashboardComponent implements OnInit {
             unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) &&
             unit.Players.length > 0 &&
             unit.Players[0].NetworkId !== this.user?.NetworkId &&
-            unit.DepartmentId === this.user?.User.DepartmentId,
+            unit.DepartmentId === this.user?.User.DepartmentId &&
+            !unit.AssignedToIncident,
           onClick: unit => {
             this._unitService.requestToJoin(unit).subscribe();
           }
