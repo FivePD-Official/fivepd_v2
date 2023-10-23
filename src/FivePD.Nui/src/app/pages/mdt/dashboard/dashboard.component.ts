@@ -86,7 +86,6 @@ export class DashboardComponent implements OnInit {
     }),
     new Column<UnitDTO>({
       header: 'UI.LABEL.ACTION.PLURAL',
-      show: () => this._userService.userHasRole(UserRole.Admin),
       actions: [
         {
           type: 'button',
