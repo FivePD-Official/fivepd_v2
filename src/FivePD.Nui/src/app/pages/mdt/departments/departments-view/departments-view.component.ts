@@ -13,7 +13,7 @@ import {
   FormSubmitEvent,
   GeneralConfig,
   NumberInput,
-  Page,
+  Page, PlayerDetailsDTO,
   Rank,
   TextInput,
   User
@@ -53,7 +53,7 @@ type Mode = 'view' | 'edit';
 })
 export class DepartmentsViewComponent implements OnInit {
 
-  user?: User;
+  user?: PlayerDetailsDTO;
   department?: Department;
   isUserInDepartment: boolean = false;
   generalConfig?: GeneralConfig;
@@ -98,7 +98,7 @@ export class DepartmentsViewComponent implements OnInit {
     private readonly _configService: ConfigService,
   ) {
     _store.pipe(takeUntilDestroyed()).subscribe(state => {
-      this.user = state.user.details.User;
+      this.user = state.user.details;
       this.setIsUserInDepartment();
     });
 
@@ -500,7 +500,7 @@ export class DepartmentsViewComponent implements OnInit {
   }
 
   setIsUserInDepartment(): void {
-    this.isUserInDepartment = this.user?.DepartmentId === this.department?.Id;
+    this.isUserInDepartment = this.user?.User?.DepartmentId === this.department?.Id;
   }
 
   get ranksDropdown(): DropdownItem[] {

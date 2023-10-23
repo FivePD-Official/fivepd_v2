@@ -2,10 +2,18 @@
   <app-button [label]="'UI.ACTION.JOIN' | translate"
               [show]="!isUserInDepartment"
               variant="secondary"
+              [disabled]="!!user?.UnitCallsign"
+              tippy="You can't join while you are in a unit."
+              [isEnabled]="!!user?.UnitCallsign"
+              placement="left"
               (onClick)="joinDepartment()"/>
   <app-button [label]="'UI.ACTION.LEAVE' | translate"
               [show]="isUserInDepartment"
               variant="secondary"
+              [disabled]="!!user?.UnitCallsign"
+              tippy="You can't leave while you are in a unit."
+              [isEnabled]="!!user?.UnitCallsign"
+              placement="left"
               (onClick)="leaveDepartment()"/>
 </app-page-header>
 
