@@ -83,4 +83,8 @@ export class UserService {
       Roles: roles,
     });
   }
+
+  updateUserDetails(request: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:player:updateDetails', request);
+  }
 }

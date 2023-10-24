@@ -76,10 +76,16 @@ export class SidebarComponent {
       divider: true,
     },
     {
-      title: 'UI.LABEL.SETTINGS',
-      path: () => '/mdt/settings',
-      icon: IconType.Cog,
+      title: 'UI.LABEL.MY_SETTINGS',
+      path: () => '/mdt/settings/user',
+      icon: IconType.User,
       show: () => true,
+    },
+    {
+      title: 'UI.LABEL.SETTINGS',
+      path: () => '/mdt/settings/admin',
+      icon: IconType.Cog,
+      show: () => this._userService.userHasRole(UserRole.Admin),
     },
     {
       title: 'Developer tools',

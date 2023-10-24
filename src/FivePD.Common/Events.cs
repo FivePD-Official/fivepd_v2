@@ -118,6 +118,8 @@ internal readonly record struct Events
             public const string GetAllPageable = "fivepd:player:getAllPageable";
 
             public const string ChangeRole = "fivepd:player:changeRole";
+
+            public const string UpdateDetails = "fivepd:player:updateDetails";
         }
 
         public readonly record struct Department

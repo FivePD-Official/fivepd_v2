@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AppModule } from "../../../../../app.module";
 import {
   Button,
   CalloutDetails,
@@ -10,32 +12,33 @@ import {
   SetAttribute,
   TextInput,
   User
-} from '@models';
-import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, first, switchMap } from 'rxjs';
-import { LocalizationService } from '@services/localization/localization.service';
-import { DefaultSetId } from '@enums';
-import { Store } from '@ngrx/store';
-import { GlobalState } from '@store';
-import { UserRole, UserService } from '@services/user/user.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AttributeGridOptions } from "./_service/attribute-grid-options";
+} from "@models";
+import { DefaultSetId } from "@enums";
+import { filter, first, switchMap } from "rxjs";
+import { UserRole, UserService } from "@services/user/user.service";
+import { LooseDataService } from "@services/loose-data/loose-data.service";
+import { LocalizationService } from "@services/localization/localization.service";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
+import { AttributeGridOptions } from "../../_service/attribute-grid-options";
 import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
 import { Router } from "@angular/router";
-import { CustomValidators } from "../../../helpers/validators";
-import { createDepartmentCallsignFormatInputField } from "../../../helpers/forms/department";
-import { Validators } from "@angular/forms";
+import { DepartmentService } from "@services/department/department.service";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
-import { DepartmentService } from "@services/department/department.service";
 import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { CustomValidators } from "../../../../../helpers/validators";
+import { createDepartmentCallsignFormatInputField } from "../../../../../helpers/forms/department";
+import { Validators } from "@angular/forms";
+import { TranslatePipe } from "../../../../../pipes/translate.pipe";
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.sass']
+  selector: 'app-admin-settings',
+  templateUrl: './admin-settings.component.html',
+  styleUrls: ['./admin-settings.component.sass']
 })
-export class SettingsComponent implements OnInit {
+export class AdminSettingsComponent {
 
   protected readonly UserRole = UserRole;
 

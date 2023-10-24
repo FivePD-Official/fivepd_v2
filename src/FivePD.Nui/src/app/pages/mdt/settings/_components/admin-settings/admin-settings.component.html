@@ -1,0 +1,35 @@
+<app-page-header [title]="'UI.LABEL.SETTINGS' | translate"/>
+
+<app-container [rows]="2" [columns]="1">
+
+  <app-grid [title]="'Users' | translate"
+            [columns]="usersColumns"
+            [data]="users"
+            (onCollationChange)="onUsersCollationChange($event)"/>
+
+  <app-grid
+    [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
+    [buttons]="departmentsButtons"
+    [data]="departments"
+    [columns]="departmentsColumnDef"
+    (onCollationChange)="onDepartmentsCollationChange($event)"
+    (onCellAction)="getDepartments()"/>
+
+  <app-grid [title]="'Callouts' | translate"
+            [columns]="calloutDetailsColumns"
+            [data]="calloutDetails"
+            (onCollationChange)="onCalloutDetailsCollationChange($event)"/>
+
+  <app-grid [title]="'UI.LABEL.ARREST_REPORT.ATTRIBUTES' | translate"
+            [buttons]="arrestReportAttributesButtons"
+            [columns]="arrestReportAttributesColumns"
+            [data]="arrestReportAttributes"
+            (onCollationChange)="onArrestReportAttributesCollationChange($event)"/>
+
+  <app-grid [title]="'UI.LABEL.INCIDENT_REPORT.ATTRIBUTES' | translate"
+            [buttons]="incidentReportAttributesButtons"
+            [columns]="incidentReportAttributesColumns"
+            [data]="incidentReportAttributes"
+            (onCollationChange)="onIncidentReportAttributesCollationChange($event)"/>
+
+</app-container>

@@ -3,6 +3,7 @@
   Identification = 'Identification',
   Truck = 'Truck',
   Cog = 'Cog',
+  User = 'User',
   Users = 'Users',
   Check = 'Check',
   XMark = 'XMark',

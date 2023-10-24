@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MdtComponent } from './pages/mdt/mdt.component';
 import { BlankComponent } from './pages/blank/blank.component';
-import { MenuComponent } from './pages/menu/menu.component';
 import { DashboardComponent } from './pages/mdt/dashboard/dashboard.component';
 import { DepartmentsViewComponent } from './pages/mdt/departments/departments-view/departments-view.component';
 import {
@@ -10,12 +9,10 @@ import {
 } from './pages/mdt/citizen-database/citizen-database-index/citizen-database-index.component';
 import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
-import { SettingsComponent } from './pages/mdt/settings/settings.component';
 import { ReportsComponent } from './pages/mdt/reports/reports.component';
 import { DevtoolsGeneralComponent } from './pages/mdt/devtools/devtools-general/devtools-general.component';
 import { DevtoolsCalloutsComponent } from './pages/mdt/devtools/devtools-callouts/devtools-callouts.component';
 import { DevtoolsViewComponent } from './pages/mdt/devtools/devtools-view/devtools-view.component';
-import { InformationComponent } from "./pages/information/information.component";
 import { NotMdtComponent } from "./pages/not-mdt/not-mdt.component";
 import { DispatchComponent } from "./pages/mdt/dispatch/dispatch.component";
 import { IncidentHistoryComponent } from "./pages/mdt/incident-history/incident-history.component";
@@ -24,6 +21,8 @@ import {
 } from "./pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component";
 import { MessagesComponent } from "./pages/mdt/messages/messages.component";
 import { CalloutDetailsComponent } from "./pages/mdt/settings/callout-details/callout-details.component";
+import { AdminSettingsComponent } from "./pages/mdt/settings/_components/admin-settings/admin-settings.component";
+import { UserSettingsComponent } from "./pages/mdt/settings/_components/user-settings/user-settings.component";
 
 const mdtRoutes: Routes = [
   {
@@ -42,8 +41,12 @@ const mdtRoutes: Routes = [
     path: 'settings',
     children: [
       {
-        path: '',
-        component: SettingsComponent,
+        path: 'user',
+        component: UserSettingsComponent,
+      },
+      {
+        path: 'admin',
+        component: AdminSettingsComponent,
       },
       {
         path: 'departments',

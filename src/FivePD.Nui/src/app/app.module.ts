@@ -38,7 +38,6 @@ import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { DateMaskDirective } from './directives/date-mask.directive';
-import { SettingsComponent } from './pages/mdt/settings/settings.component';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { ReportsComponent } from './pages/mdt/reports/reports.component';
 import { ModalFormComponent } from './components/modal/modal-form/modal-form.component';
@@ -74,6 +73,8 @@ import { DevtoolsService } from "@services/devtools/devtools.service";
 import { DispatchService } from "@services/dispatch/dispatch.service";
 import { MessageService } from "@services/message/message.service";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
+import { UserSettingsComponent } from "./pages/mdt/settings/_components/user-settings/user-settings.component";
+import { AdminSettingsComponent } from "./pages/mdt/settings/_components/admin-settings/admin-settings.component";
 
 @NgModule({
   declarations: [
@@ -102,7 +103,6 @@ import { PedHistoryService } from "@services/ped-history/ped-history.service";
     TimerBarComponent,
     ClickOutsideDirective,
     DateMaskDirective,
-    SettingsComponent,
     ReportsComponent,
     ModalFormComponent,
     ModalEntityViewComponent,
@@ -121,6 +121,8 @@ import { PedHistoryService } from "@services/ped-history/ped-history.service";
     PaginationComponent,
     AsPipe,
     CalloutDetailsComponent,
+    AdminSettingsComponent,
+    UserSettingsComponent,
   ],
   imports: [
     BrowserModule,

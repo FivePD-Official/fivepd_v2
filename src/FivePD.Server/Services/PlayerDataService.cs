@@ -570,4 +570,20 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             Name = x.Name,
         }));
     }
+
+    [UIEvent(Events.UI.Player.UpdateDetails, true)]
+    private void UpdatePlayerDetailsUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<UpdatePlayerDetailsRequest>();
+        var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == request.Id);
+        if (user is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        user.Callsign = request.Callsign;
+        this._databaseContext.SaveChanges();
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CHANGE", "UI.LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
+    }
 }

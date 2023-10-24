@@ -142,6 +142,8 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
       });
     }
 
+    this.originalFormValue = form.value;
+
     return form;
   }
 
