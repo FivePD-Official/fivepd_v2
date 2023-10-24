@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Server.API;
 using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
@@ -51,7 +50,8 @@ internal class Bootstrapper : BaseScript
     {
         AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
         {
-            Debug.WriteLine($"AppDomain.CurrentDomain.UnhandledException: {args.ExceptionObject}");
+            var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
+            log?.Error("AppDomain unhandled exception: {exception}", args.ExceptionObject);
         };
 
         LifecycleHandler.OnStopped += (_, _) => this.OnStopped();
