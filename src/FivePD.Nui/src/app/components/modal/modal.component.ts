@@ -20,11 +20,18 @@ import { ModalInjector } from '@services/modals/modal/modal-injector';
 import { ModalRef } from '@services/modals/modal/modal-ref';
 import { ModalLoader } from '@models';
 import { Subject, takeUntil } from 'rxjs';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
+import { ButtonComponent } from '../button/button.component';
+import { IconComponent } from '../icon/icon.component';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-modal',
   templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.sass']
+  styleUrls: ['./modal.component.sass'],
+  standalone: true,
+  imports: [NgClass, IconComponent, NgIf, ButtonComponent, SafeHtmlPipe, TranslatePipe]
 })
 export class ModalComponent implements OnInit, AfterViewInit, OnDestroy {
 

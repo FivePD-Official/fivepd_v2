@@ -1,17 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from "@services/message/message.service";
-import {
-  Collation,
-  Dropdown,
-  GeneralConfig,
-  Message,
-  Page,
-  SimpleIncidentHistory,
-  SimpleUser,
-  Textarea,
-  TextInput
-} from "@models";
-import { DefaultSetId, FIncidentPriority } from "@enums";
+import { Collation, Dropdown, GeneralConfig, Message, Page, SimpleUser, Textarea, TextInput } from "@models";
+import { FIncidentPriority } from "@enums";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ConfigService } from "@services/config/config.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
@@ -19,11 +9,17 @@ import { UserService } from "@services/user/user.service";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 import { filter, switchMap } from "rxjs";
 import { ModalService } from "@services/modals/modal/modal.service";
+import { PaginationComponent } from '../../../components/pagination/pagination.component';
+import { ButtonComponent } from '../../../components/button/button.component';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.sass']
+  styleUrls: ['./messages.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, NgIf, ButtonComponent, NgFor, NgClass, PaginationComponent, DatePipe]
 })
 export class MessagesComponent implements OnInit {
 

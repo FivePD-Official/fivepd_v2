@@ -1,10 +1,15 @@
 import { Component } from '@angular/core';
-import { Tab } from '../../../../components/tabs/tabs.component';
+import { Tab, TabsComponent } from '../../../../components/tabs/tabs.component';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { RouterOutlet } from '@angular/router';
+import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-devtools-view',
   templateUrl: './devtools-view.component.html',
-  styleUrls: ['./devtools-view.component.sass']
+  styleUrls: ['./devtools-view.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, TabsComponent, RouterOutlet, TranslatePipe]
 })
 export class DevtoolsViewComponent {
 

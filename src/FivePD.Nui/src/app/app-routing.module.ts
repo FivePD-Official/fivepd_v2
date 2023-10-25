@@ -10,19 +10,13 @@ import {
 import { RadialMenuComponent } from './pages/radial-menu/radial-menu.component';
 import { TimerBarComponent } from './pages/timer-bar/timer-bar.component';
 import { ReportsComponent } from './pages/mdt/reports/reports.component';
-import { DevtoolsGeneralComponent } from './pages/mdt/devtools/devtools-general/devtools-general.component';
-import { DevtoolsCalloutsComponent } from './pages/mdt/devtools/devtools-callouts/devtools-callouts.component';
-import { DevtoolsViewComponent } from './pages/mdt/devtools/devtools-view/devtools-view.component';
 import { NotMdtComponent } from "./pages/not-mdt/not-mdt.component";
-import { DispatchComponent } from "./pages/mdt/dispatch/dispatch.component";
 import { IncidentHistoryComponent } from "./pages/mdt/incident-history/incident-history.component";
 import {
   CitizenDatabaseIdComponent
 } from "./pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component";
 import { MessagesComponent } from "./pages/mdt/messages/messages.component";
 import { CalloutDetailsComponent } from "./pages/mdt/settings/callout-details/callout-details.component";
-import { AdminSettingsComponent } from "./pages/mdt/settings/_components/admin-settings/admin-settings.component";
-import { UserSettingsComponent } from "./pages/mdt/settings/_components/user-settings/user-settings.component";
 
 const mdtRoutes: Routes = [
   {
@@ -31,7 +25,7 @@ const mdtRoutes: Routes = [
   },
   {
     path: 'dispatch',
-    component: DispatchComponent
+    loadComponent: () => import('./pages/mdt/dispatch/dispatch.component').then(m => m.DispatchComponent),
   },
   {
     path: 'reports',
@@ -42,11 +36,11 @@ const mdtRoutes: Routes = [
     children: [
       {
         path: 'user',
-        component: UserSettingsComponent,
+        loadComponent: () => import('./pages/mdt/settings/_components/user-settings/user-settings.component').then(m => m.UserSettingsComponent),
       },
       {
         path: 'admin',
-        component: AdminSettingsComponent,
+        loadComponent: () => import('./pages/mdt/settings/_components/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent),
       },
       {
         path: 'departments',
@@ -110,15 +104,15 @@ const mdtRoutes: Routes = [
   },
   {
     path: 'devtools',
-    component: DevtoolsViewComponent,
+    loadComponent: () => import('./pages/mdt/devtools/devtools-view/devtools-view.component').then(m => m.DevtoolsViewComponent),
     children: [
       {
         path: '',
-        component: DevtoolsGeneralComponent,
+        loadComponent: () => import('./pages/mdt/devtools/devtools-general/devtools-general.component').then(m => m.DevtoolsGeneralComponent),
       },
       {
         path: 'callouts',
-        component: DevtoolsCalloutsComponent
+        loadComponent: () => import('./pages/mdt/devtools/devtools-callouts/devtools-callouts.component').then(m => m.DevtoolsCalloutsComponent),
       }
     ]
   },

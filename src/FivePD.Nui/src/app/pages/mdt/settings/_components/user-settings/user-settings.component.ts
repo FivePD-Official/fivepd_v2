@@ -4,12 +4,19 @@ import { UnitService } from "@services/unit/unit.service";
 import { DepartmentService } from "@services/department/department.service";
 import { Department, FormInputBase, FormSubmitEvent, TextInput } from "@models";
 import { CustomValidators } from "../../../../../helpers/validators";
-import { filter, switchMap, tap } from "rxjs";
+import { filter, tap } from "rxjs";
+import { TranslatePipe } from '../../../../../pipes/translate.pipe';
+import { DynamicFormComponent } from '../../../../../components/dynamic-form/dynamic-form.component';
+import { NgIf } from '@angular/common';
+import { ContainerComponent } from '../../../../../components/container/container.component';
+import { PageHeaderComponent } from '../../../../../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-user-settings',
   templateUrl: './user-settings.component.html',
-  styleUrls: ['./user-settings.component.sass']
+  styleUrls: ['./user-settings.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, ContainerComponent, NgIf, DynamicFormComponent, TranslatePipe]
 })
 export class UserSettingsComponent implements OnInit {
 

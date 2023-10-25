@@ -14,7 +14,8 @@ interface MousePosition {
 @Component({
   selector: 'app-radial-menu',
   templateUrl: './radial-menu.component.html',
-  styleUrls: ['./radial-menu.component.sass']
+  styleUrls: ['./radial-menu.component.sass'],
+  standalone: true
 })
 export class RadialMenuComponent implements OnInit, OnDestroy {
 
@@ -25,8 +26,8 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
 
   selectedMenu: RadialMenu | null = null;
   selectedItemIndex: number = -1;
-  currentMousePosition: MousePosition = { X: 0, Y: 0 };
-  lastMousePosition: MousePosition = { X: 0, Y: 0 };
+  currentMousePosition: MousePosition = {X: 0, Y: 0};
+  lastMousePosition: MousePosition = {X: 0, Y: 0};
   lastSelectAngle: number = -1;
 
   constructor(
@@ -34,7 +35,8 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
     private _route: ActivatedRoute,
     private _menu: MenuService,
     private _http: HttpClient,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.findSelectedMenu(this._route.snapshot.params['id']);
@@ -47,10 +49,10 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
     });
 
     this.menuControlEvent$ = this._event.onEvent<RadialMenuControlEvent>('fivepd:radialMenu:control').subscribe(event => {
-      const { X, Y, Control } = event;
+      const {X, Y, Control} = event;
       if (Control === 'up' || Control === 'down') {
         if (X && Y) {
-          this.currentMousePosition = { X: X, Y: Y };
+          this.currentMousePosition = {X: X, Y: Y};
           this.onMouseMove();
         }
       } else if (Control === 'select') {
@@ -70,8 +72,8 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
   resetValues(): void {
     this.lastSelectAngle = -1;
     this.selectedItemIndex = -1;
-    this.currentMousePosition = { X: 0, Y: 0 };
-    this.lastMousePosition = { X: 0, Y: 0 };
+    this.currentMousePosition = {X: 0, Y: 0};
+    this.lastMousePosition = {X: 0, Y: 0};
   }
 
   findSelectedMenu(id: string): void {
@@ -106,7 +108,7 @@ export class RadialMenuComponent implements OnInit, OnDestroy {
     const menu: RadialMenu = this.selectedMenu;
 
     // All of the configuration stuff for canvas (2d context)
-    const ctx: CanvasRenderingContext2D  = this.canvas.nativeElement.getContext('2d')!;
+    const ctx: CanvasRenderingContext2D = this.canvas.nativeElement.getContext('2d')!;
     ctx.resetTransform();
     ctx.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     ctx.textAlign = 'center';

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {
-  ButtonVariants, DropdownHeightVariants,
+  DropdownHeightVariants,
   DropdownItem,
   DropdownMultiOptions,
   DropdownSingleOptions,
@@ -9,6 +9,11 @@ import {
   FormInputBase
 } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
+import { ClickOutsideDirective } from '../../directives/click-outside.directive';
+import { DateMaskDirective } from '../../directives/date-mask.directive';
+import { NgClass, NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
 
 const dropdownSelectedItemVariants: Record<DropdownVariants, string> = {
   'secondary': `border border-zinc-600 hover:border-zinc-400 bg-transparent
@@ -30,7 +35,9 @@ const dropdownHeightVariants: Record<DropdownHeightVariants, string> = {
 @Component({
   selector: 'app-dynamic-form-input',
   templateUrl: './dynamic-form-input.component.html',
-  styleUrls: ['./dynamic-form-input.component.sass']
+  styleUrls: ['./dynamic-form-input.component.sass'],
+  standalone: true,
+  imports: [ReactiveFormsModule, NgIf, NgClass, NgSwitch, NgSwitchCase, DateMaskDirective, ClickOutsideDirective, NgFor, SafeHtmlPipe, TranslatePipe]
 })
 export class DynamicFormInputComponent implements OnInit {
 

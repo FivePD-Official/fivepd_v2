@@ -8,8 +8,8 @@ describe('ModalEntityViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ModalEntityViewComponent ]
-    })
+    imports: [ModalEntityViewComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(ModalEntityViewComponent);

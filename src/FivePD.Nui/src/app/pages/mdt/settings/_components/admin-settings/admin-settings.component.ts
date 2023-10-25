@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AppModule } from "../../../../../app.module";
 import {
   Button,
   CalloutDetails,
@@ -32,11 +30,16 @@ import { CustomValidators } from "../../../../../helpers/validators";
 import { createDepartmentCallsignFormatInputField } from "../../../../../helpers/forms/department";
 import { Validators } from "@angular/forms";
 import { TranslatePipe } from "../../../../../pipes/translate.pipe";
+import { GridComponent } from '../../../../../components/grid/grid.component';
+import { ContainerComponent } from '../../../../../components/container/container.component';
+import { PageHeaderComponent } from '../../../../../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-admin-settings',
   templateUrl: './admin-settings.component.html',
-  styleUrls: ['./admin-settings.component.sass']
+  styleUrls: ['./admin-settings.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe]
 })
 export class AdminSettingsComponent {
 

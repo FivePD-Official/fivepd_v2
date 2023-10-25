@@ -12,19 +12,24 @@ import {
   ViewChildren
 } from '@angular/core';
 import { FormInputBase, FormSubmitEvent } from '@models';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import deepEqual from 'fast-deep-equal/es6';
 import { CustomValidators } from '../../helpers/validators';
 import { DynamicFormInputComponent } from "../dynamic-form-input/dynamic-form-input.component";
 import { ModalRef } from "@services/modals/modal/modal-ref";
 import { Subject, takeUntil } from "rxjs";
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { ButtonComponent } from '../button/button.component';
+import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 
 type RemoveFocusTrap = () => void;
 
 @Component({
   selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
-  styleUrls: ['./dynamic-form.component.sass']
+  styleUrls: ['./dynamic-form.component.sass'],
+  standalone: true,
+  imports: [ReactiveFormsModule, NgClass, NgIf, NgStyle, NgFor, DynamicFormInputComponent, ButtonComponent, TranslatePipe]
 })
 export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 

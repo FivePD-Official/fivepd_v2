@@ -13,7 +13,8 @@ import {
   FormSubmitEvent,
   GeneralConfig,
   NumberInput,
-  Page, PlayerDetailsDTO,
+  Page,
+  PlayerDetailsDTO,
   Rank,
   TextInput,
   User
@@ -34,6 +35,14 @@ import { Store } from '@ngrx/store';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventService } from "@services/event/event.service";
 import { ConfigService } from "@services/config/config.service";
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { GridComponent } from '../../../../components/grid/grid.component';
+import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
+import { ContainerComponent } from '../../../../components/container/container.component';
+import { NgIf } from '@angular/common';
+import { TippyModule } from '@ngneat/helipopper';
+import { ButtonComponent } from '../../../../components/button/button.component';
+import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -49,7 +58,9 @@ type Mode = 'view' | 'edit';
 @Component({
   selector: 'app-departments-view',
   templateUrl: './departments-view.component.html',
-  styleUrls: ['./departments-view.component.sass']
+  styleUrls: ['./departments-view.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, ButtonComponent, TippyModule, NgIf, ContainerComponent, DynamicFormComponent, GridComponent, TranslatePipe]
 })
 export class DepartmentsViewComponent implements OnInit {
 

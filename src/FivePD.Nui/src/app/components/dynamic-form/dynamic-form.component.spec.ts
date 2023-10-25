@@ -8,8 +8,8 @@ describe('DynamicFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DynamicFormComponent ]
-    })
+    imports: [DynamicFormComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(DynamicFormComponent);

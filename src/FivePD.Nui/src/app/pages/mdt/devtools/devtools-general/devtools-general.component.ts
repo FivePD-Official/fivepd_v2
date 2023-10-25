@@ -9,11 +9,16 @@ import { addDevToolsCoordinate, clearDevToolsCoordinates } from '@store/app.acti
 import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { NotificationService } from "@services/notification/notification.service";
+import { GridComponent } from '../../../../components/grid/grid.component';
+import { ButtonComponent } from '../../../../components/button/button.component';
+import { ContainerComponent } from '../../../../components/container/container.component';
 
 @Component({
   selector: 'app-devtools-general',
   templateUrl: './devtools-general.component.html',
-  styleUrls: ['./devtools-general.component.sass']
+  styleUrls: ['./devtools-general.component.sass'],
+  standalone: true,
+  imports: [ContainerComponent, ButtonComponent, GridComponent]
 })
 export class DevtoolsGeneralComponent {
 

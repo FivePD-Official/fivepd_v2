@@ -5,11 +5,15 @@ import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { setInformation } from "@store/user.actions";
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-information',
   templateUrl: './information.component.html',
-  styleUrls: ['./information.component.sass']
+  styleUrls: ['./information.component.sass'],
+  standalone: true,
+  imports: [NgIf, TranslatePipe]
 })
 export class InformationComponent implements OnInit {
 
@@ -29,7 +33,7 @@ export class InformationComponent implements OnInit {
 
   ngOnInit(): void {
     this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
-      this._store.dispatch(setInformation({ payload: information }));
+      this._store.dispatch(setInformation({payload: information}));
     });
   }
 

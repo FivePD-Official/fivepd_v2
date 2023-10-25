@@ -8,8 +8,8 @@ describe('DevtoolsViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DevtoolsGeneralComponent ]
-    })
+    imports: [DevtoolsGeneralComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(DevtoolsGeneralComponent);

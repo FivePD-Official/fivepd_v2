@@ -15,12 +15,22 @@ import {
 } from '@models';
 import { debounceTime, Subject } from 'rxjs';
 import { formatDate } from '@helpers';
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { PaginationComponent } from '../pagination/pagination.component';
+import { IconComponent } from '../icon/icon.component';
+import { DynamicFormInputComponent } from '../dynamic-form-input/dynamic-form-input.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TippyModule } from '@ngneat/helipopper';
+import { ButtonComponent } from '../button/button.component';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-grid',
   templateUrl: './grid.component.html',
-  styleUrls: ['./grid.component.sass']
+  styleUrls: ['./grid.component.sass'],
+  standalone: true,
+  imports: [NgIf, NgFor, ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, DynamicFormInputComponent, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe]
 })
 export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 
@@ -44,7 +54,8 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   @Output() onCellAction = new EventEmitter();
   @Output() onCollationChange = new EventEmitter<Collation>();
 
-  constructor(private readonly _router: Router) { }
+  constructor(private readonly _router: Router) {
+  }
 
   ngOnInit(): void {
     this.filter$.pipe(
@@ -178,7 +189,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    const filterCopy = { ...this.collation.Filters };
+    const filterCopy = {...this.collation.Filters};
     if (filterCopy.hasOwnProperty(accessorKey)) {
       if (typeof value === 'string') {
         if (value) {

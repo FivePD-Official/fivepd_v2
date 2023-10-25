@@ -30,11 +30,18 @@ import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
 import { FDutyStatus, FIncidentPriority, FIncidentType } from "@enums";
 import { IncidentService } from "@services/incident/incident.service";
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { GridComponent } from '../../../components/grid/grid.component';
+import { NgIf } from '@angular/common';
+import { ContainerComponent } from '../../../components/container/container.component';
+import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.sass']
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.sass'],
+    standalone: true,
+    imports: [PageHeaderComponent, ContainerComponent, NgIf, GridComponent, TranslatePipe]
 })
 export class DashboardComponent implements OnInit {
 

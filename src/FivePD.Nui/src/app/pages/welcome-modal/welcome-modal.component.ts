@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
 import { LocalizationService } from "@services/localization/localization.service";
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-welcome-modal',
   templateUrl: './welcome-modal.component.html',
-  styleUrls: ['./welcome-modal.component.sass']
+  styleUrls: ['./welcome-modal.component.sass'],
+  standalone: true,
+  imports: [TranslatePipe]
 })
 export class WelcomeModalComponent {
 

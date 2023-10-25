@@ -8,8 +8,8 @@ describe('RadialMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RadialMenuComponent ]
-    })
+    imports: [RadialMenuComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(RadialMenuComponent);

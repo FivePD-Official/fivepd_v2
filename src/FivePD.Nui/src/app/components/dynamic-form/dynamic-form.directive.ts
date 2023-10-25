@@ -1,10 +1,12 @@
 import { Directive } from '@angular/core';
 
 @Directive({
-  selector: '[appDynamicForm]'
+  selector: '[appDynamicForm]',
+  standalone: true
 })
 export class DynamicFormDirective {
 
-  constructor() { }
+  constructor() {
+  }
 
 }

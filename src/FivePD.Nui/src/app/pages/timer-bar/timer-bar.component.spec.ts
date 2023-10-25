@@ -8,8 +8,8 @@ describe('TimerBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TimerBarComponent ]
-    })
+    imports: [TimerBarComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(TimerBarComponent);

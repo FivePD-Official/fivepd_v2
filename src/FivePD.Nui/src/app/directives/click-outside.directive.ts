@@ -1,7 +1,8 @@
 import { Directive, ElementRef, EventEmitter, HostListener, Output } from '@angular/core';
 
 @Directive({
-  selector: '[clickOutside]'
+  selector: '[clickOutside]',
+  standalone: true
 })
 export class ClickOutsideDirective {
 
@@ -9,7 +10,8 @@ export class ClickOutsideDirective {
 
   constructor(
     private elementRef: ElementRef
-  ) { }
+  ) {
+  }
 
   @HostListener('document:click', ['$event', '$event.target'])
   public onClick(event: MouseEvent, targetElement: HTMLElement): void {

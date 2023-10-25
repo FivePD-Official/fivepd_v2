@@ -2,11 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
 import { TimerBarEvent } from '@models';
 import { Subscription } from 'rxjs';
+import { NgIf, NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-timer-bar',
   templateUrl: './timer-bar.component.html',
-  styleUrls: ['./timer-bar.component.sass']
+  styleUrls: ['./timer-bar.component.sass'],
+  standalone: true,
+  imports: [NgIf, NgStyle]
 })
 export class TimerBarComponent implements OnInit {
 
@@ -19,7 +22,8 @@ export class TimerBarComponent implements OnInit {
 
   constructor(
     private _event: EventService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.event$ = this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onEvent(res));

@@ -8,8 +8,8 @@ describe('DevtoolsCalloutsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DevtoolsCalloutsComponent ]
-    })
+    imports: [DevtoolsCalloutsComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(DevtoolsCalloutsComponent);

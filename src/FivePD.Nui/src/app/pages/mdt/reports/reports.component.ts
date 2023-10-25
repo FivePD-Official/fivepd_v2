@@ -11,7 +11,7 @@ import {
   User
 } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, of, switchMap, tap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 import { LocalizationService } from '@services/localization/localization.service';
 import { DefaultSetId, FGender } from '@enums';
@@ -27,11 +27,16 @@ import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IncidentHistoryService } from '@services/incident-history/incident-history.service';
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { GridComponent } from '../../../components/grid/grid.component';
+import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.sass']
+  styleUrls: ['./reports.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, GridComponent, TranslatePipe]
 })
 export class ReportsComponent implements OnInit {
 

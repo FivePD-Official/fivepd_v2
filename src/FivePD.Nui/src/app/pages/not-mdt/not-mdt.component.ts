@@ -4,11 +4,17 @@ import { Menu, MenuShowEvent } from "@models";
 import { EventService } from "@services/event/event.service";
 import { WindowService } from "@services/window/window.service";
 import { Router } from "@angular/router";
+import { WelcomeModalComponent } from '../welcome-modal/welcome-modal.component';
+import { InformationComponent } from '../information/information.component';
+import { MenuComponent } from '../menu/menu.component';
+import { AsyncPipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-not-mdt',
   templateUrl: './not-mdt.component.html',
-  styleUrls: ['./not-mdt.component.sass']
+  styleUrls: ['./not-mdt.component.sass'],
+  standalone: true,
+  imports: [NgIf, MenuComponent, InformationComponent, WelcomeModalComponent, AsyncPipe]
 })
 export class NotMdtComponent {
 

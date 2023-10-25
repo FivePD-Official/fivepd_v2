@@ -6,11 +6,16 @@ import { Store } from '@ngrx/store';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { setWindowMaximized } from "@store/app.actions";
 import { DispatchService } from "@services/dispatch/dispatch.service";
+import { IconComponent } from '../icon/icon.component';
+import { ButtonComponent } from '../button/button.component';
+import { DatePipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.sass']
+  styleUrls: ['./header.component.sass'],
+  standalone: true,
+  imports: [NgIf, ButtonComponent, IconComponent, DatePipe]
 })
 export class HeaderComponent implements OnInit {
 

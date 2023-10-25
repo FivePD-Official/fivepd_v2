@@ -59,7 +59,9 @@ import { NotMdtComponent } from './pages/not-mdt/not-mdt.component';
 import { DispatchComponent } from './pages/mdt/dispatch/dispatch.component';
 import { AttributeGridOptions } from "./pages/mdt/settings/_service/attribute-grid-options";
 import { IncidentHistoryComponent } from './pages/mdt/incident-history/incident-history.component';
-import { CitizenDatabaseIdComponent } from './pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component';
+import {
+  CitizenDatabaseIdComponent
+} from './pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component';
 import { MessagesComponent } from './pages/mdt/messages/messages.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { AsPipe } from './pipes/as.pipe';
@@ -77,8 +79,28 @@ import { UserSettingsComponent } from "./pages/mdt/settings/_components/user-set
 import { AdminSettingsComponent } from "./pages/mdt/settings/_components/admin-settings/admin-settings.component";
 
 @NgModule({
-  declarations: [
-    AppComponent,
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    ReactiveFormsModule,
+    FormsModule,
+    TippyModule.forRoot({
+      defaultVariation: 'custom',
+      variations: {
+        custom: {
+          ...tooltipVariation,
+          theme: 'custom',
+          arrow: false,
+          animation: false,
+        }
+      }
+    }),
+    StoreModule.forRoot({
+      app: appReducer,
+      user: userReducer,
+    }),
     MdtComponent,
     HeaderComponent,
     BlankComponent,
@@ -122,29 +144,7 @@ import { AdminSettingsComponent } from "./pages/mdt/settings/_components/admin-s
     AsPipe,
     CalloutDetailsComponent,
     AdminSettingsComponent,
-    UserSettingsComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    FormsModule,
-    TippyModule.forRoot({
-      defaultVariation: 'custom',
-      variations: {
-        custom: {
-          ...tooltipVariation,
-          theme: 'custom',
-          arrow: false,
-          animation: false,
-        }
-      }
-    }),
-    StoreModule.forRoot({
-      app: appReducer,
-      user: userReducer,
-    })
+    UserSettingsComponent
   ],
   providers: [
     CalloutService,
@@ -175,4 +175,5 @@ import { AdminSettingsComponent } from "./pages/mdt/settings/_components/admin-s
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

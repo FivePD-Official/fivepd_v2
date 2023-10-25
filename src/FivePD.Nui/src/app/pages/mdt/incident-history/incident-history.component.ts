@@ -4,11 +4,16 @@ import { ModalService } from "@services/modals/modal/modal.service";
 import { IncidentHistoryService } from "@services/incident-history/incident-history.service";
 import { Collation, Column, IncidentHistory, Page } from "@models";
 import { FIncidentType } from "@enums";
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { GridComponent } from '../../../components/grid/grid.component';
+import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-incident-history',
   templateUrl: './incident-history.component.html',
-  styleUrls: ['./incident-history.component.sass']
+  styleUrls: ['./incident-history.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, GridComponent, TranslatePipe]
 })
 export class IncidentHistoryComponent {
 

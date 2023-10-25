@@ -8,8 +8,8 @@ describe('WelcomeModalComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [WelcomeModalComponent]
-    });
+    imports: [WelcomeModalComponent]
+});
     fixture = TestBed.createComponent(WelcomeModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

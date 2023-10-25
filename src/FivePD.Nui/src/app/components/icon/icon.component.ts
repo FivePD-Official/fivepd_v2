@@ -1,10 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IconType } from '@models';
+import { NgClass, NgSwitch, NgSwitchCase } from '@angular/common';
 
 @Component({
   selector: '[app-icon]',
   templateUrl: './icon.component.html',
-  styleUrls: ['./icon.component.sass']
+  styleUrls: ['./icon.component.sass'],
+  standalone: true,
+  imports: [NgSwitch, NgSwitchCase, NgClass]
 })
 export class IconComponent implements OnInit {
 
@@ -13,7 +16,8 @@ export class IconComponent implements OnInit {
   @Input() ngClassName: object = {};
   internalName?: string;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
     if (typeof this.name === 'string') {

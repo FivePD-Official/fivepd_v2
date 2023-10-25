@@ -7,6 +7,10 @@ import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DispatchService } from "@services/dispatch/dispatch.service";
 import { ConfigService } from "@services/config/config.service";
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../icon/icon.component';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 
 export interface Route {
   title: string;
@@ -23,6 +27,16 @@ type Routes = RouteOrDivider[];
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.sass'],
+  standalone: true,
+  imports: [
+    NgFor,
+    NgIf,
+    RouterLinkActive,
+    RouterLink,
+    IconComponent,
+    NgClass,
+    TranslatePipe,
+  ],
 })
 export class SidebarComponent {
 

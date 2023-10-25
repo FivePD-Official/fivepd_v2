@@ -1,26 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  Checkbox,
-  Collation,
-  Column,
-  Dropdown,
-  FormInputBase,
-  FormSubmitEvent,
-  Page,
-  PedHistory,
-  TextInput
-} from '@models';
+import { Collation, Column, Dropdown, FormInputBase, FormSubmitEvent, Page, PedHistory, TextInput } from '@models';
 import { formatDate } from "@helpers";
 import { FGender } from "@enums";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { GridComponent } from '../../../../components/grid/grid.component';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
+import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-citizen-database-index',
   templateUrl: './citizen-database-index.component.html',
-  styleUrls: ['./citizen-database-index.component.sass']
+  styleUrls: ['./citizen-database-index.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, DynamicFormComponent, NgIf, NgFor, RouterLink, GridComponent, DatePipe, TranslatePipe]
 })
 export class CitizenDatabaseIndexComponent implements OnInit {
 

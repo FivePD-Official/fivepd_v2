@@ -3,14 +3,16 @@ import { FormGroup, NgControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Directive({
-  selector: '[appDateMask]'
+  selector: '[appDateMask]',
+  standalone: true
 })
 export class DateMaskDirective implements OnInit, OnDestroy {
 
   @Input() appDateMask?: FormGroup;
   valueChange$?: Subscription;
 
-  constructor(private model: NgControl) { }
+  constructor(private model: NgControl) {
+  }
 
   ngOnInit(): void {
     this.setValue();

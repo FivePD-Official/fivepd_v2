@@ -1,9 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-container',
   templateUrl: './container.component.html',
-  styleUrls: ['./container.component.sass']
+  styleUrls: ['./container.component.sass'],
+  standalone: true,
+  imports: [NgStyle]
 })
 export class ContainerComponent implements OnInit {
 
@@ -13,7 +16,8 @@ export class ContainerComponent implements OnInit {
   gridTemplateColumns: string = '';
   gridTemplateRows: string = '';
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
     this.gridTemplateColumns = `repeat(${this.columns}, 1fr)`;

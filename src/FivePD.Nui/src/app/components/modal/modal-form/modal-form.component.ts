@@ -3,10 +3,13 @@ import { FormInputBase, FormSubmitEvent, ModalFormOptions } from '@models';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
 import { Subject, takeUntil } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-modal-form',
   templateUrl: './modal-form.component.html',
+  standalone: true,
+  imports: [NgIf, DynamicFormComponent],
 })
 export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
 

@@ -8,8 +8,8 @@ describe('NotMdtComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [NotMdtComponent]
-    });
+    imports: [NotMdtComponent]
+});
     fixture = TestBed.createComponent(NotMdtComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -8,8 +8,8 @@ describe('CitizenDatabaseIdComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CitizenDatabaseIdComponent]
-    });
+    imports: [CitizenDatabaseIdComponent]
+});
     fixture = TestBed.createComponent(CitizenDatabaseIdComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

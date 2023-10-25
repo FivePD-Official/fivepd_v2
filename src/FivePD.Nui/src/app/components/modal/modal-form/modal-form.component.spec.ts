@@ -8,8 +8,8 @@ describe('ModalFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ModalFormComponent ]
-    })
+    imports: [ModalFormComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(ModalFormComponent);

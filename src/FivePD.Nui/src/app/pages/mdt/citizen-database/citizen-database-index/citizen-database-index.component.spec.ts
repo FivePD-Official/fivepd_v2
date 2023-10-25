@@ -8,8 +8,8 @@ describe('CitizenDatabaseIndexComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CitizenDatabaseIndexComponent ]
-    })
+    imports: [CitizenDatabaseIndexComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(CitizenDatabaseIndexComponent);

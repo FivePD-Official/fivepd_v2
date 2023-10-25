@@ -14,11 +14,16 @@ import { BaseNuiEvent, Menu, MenuCheckboxItem, MenuItem, MenuListItem } from '@m
 import { EventService } from '@services/event/event.service';
 import { takeUntil } from 'rxjs';
 import { injectDestroy } from "../../helpers/destroy-ref";
+import { AsPipe } from '../../pipes/as.pipe';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.sass']
+  styleUrls: ['./menu.component.sass'],
+  standalone: true,
+  imports: [NgIf, NgFor, NgClass, TranslatePipe, AsPipe]
 })
 export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
