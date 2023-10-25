@@ -1,4 +1,4 @@
-import { ActionResponse, ButtonVariants } from '@models';
+import { ActionResponse, DropdownItem } from '@models';
 
 export type BadgeVariants = 'gray' | 'red' | 'green' | 'amber' | 'blue';
 
@@ -7,6 +7,7 @@ export interface ColumnOptions<T> {
   accessorKey?: Extract<keyof T, string>;
   filter?: {
     label: string;
+    dropdown?: DropdownItem[];
   };
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
@@ -22,6 +23,7 @@ export class Column<T> {
   accessorKey?: Extract<keyof T, string>;
   filter?: {
     label: string;
+    dropdown?: DropdownItem[];
   };
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;

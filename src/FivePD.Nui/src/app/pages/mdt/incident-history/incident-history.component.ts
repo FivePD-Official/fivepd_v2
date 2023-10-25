@@ -39,8 +39,15 @@ export class IncidentHistoryComponent {
     }),
     new Column({
       header: 'UI.LABEL.TYPE.SINGULAR',
-      valueResolver: item => this._localizationService.translate(item.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.PLURAL'),
-      // TODO: filter dropdown
+      accessorKey: 'Type',
+      valueResolver: item => this._localizationService.translate(item.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR'),
+      filter: {
+        label: this._localizationService.translate('UI.LABEL.SEARCH_BY.TYPE'),
+        dropdown: [
+          {key: FIncidentType.Callout, label: this._localizationService.translate('UI.LABEL.CALLOUT.SINGULAR')},
+          {key: FIncidentType.TrafficStop, label: this._localizationService.translate('UI.LABEL.TRAFFIC_STOP.SINGULAR')},
+        ]
+      }
     }),
     // new Column({
     //   header: 'Actions',

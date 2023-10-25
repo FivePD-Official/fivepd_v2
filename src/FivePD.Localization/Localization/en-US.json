@@ -214,6 +214,7 @@
   "UI.LABEL.SEARCH_BY.ID": "Search by id",
   "UI.LABEL.SEARCH_BY.NAME": "Search by name",
   "UI.LABEL.SEARCH_BY.TITLE": "Search by title",
+  "UI.LABEL.SEARCH_BY.TYPE": "Search by type",
   "UI.LABEL.SELECTED": "{{count}} selected",
   "UI.LABEL.SETTINGS": "Settings",
   "UI.LABEL.SHORT_TEXT.SINGULAR": "Short text",

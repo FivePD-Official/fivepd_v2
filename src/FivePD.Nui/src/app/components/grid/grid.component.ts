@@ -92,7 +92,21 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     return this.columns.some(column => column.filter);
   }
 
-  getFilterInput(column: Column<any>): FormInputBase<string> {
+  getFilterInput(column: Column<any>): FormInputBase<any> {
+    if (column.filter?.dropdown) {
+      return new Dropdown({
+        key: column.accessorKey,
+        dropdownOptions: {
+          label: column.filter?.label ?? '',
+          items: column.filter?.dropdown ?? [],
+          size: 'small',
+          height: 'sm',
+          variant: 'secondary',
+        },
+        required: false,
+      });
+    }
+
     return new TextInput({
       key: column.accessorKey,
       placeholder: column.filter?.label ?? '',
@@ -190,8 +204,9 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     }
 
     const filterCopy = {...this.collation.Filters};
+    console.log(filterCopy)
     if (filterCopy.hasOwnProperty(accessorKey)) {
-      if (typeof value === 'string') {
+      if (typeof value === 'string' || typeof value === 'number') {
         if (value) {
           filterCopy[accessorKey] = value;
         } else {
@@ -199,7 +214,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
         }
       }
     } else {
-      if (typeof value === 'string') {
+      if (typeof value === 'string' || typeof value === 'number') {
         filterCopy[accessorKey] = value;
       }
     }

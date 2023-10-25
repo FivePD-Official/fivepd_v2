@@ -80,10 +80,13 @@ internal class IncidentHistoryService : IIncidentHistoryService, IInternalIncide
         var filters = new Filters<IncidentHistory>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Id),
-            department => department.Id.ToLower().Contains(request.Filters.Id.ToLower()));
+            incidentHistory => incidentHistory.Id.ToLower().Contains(request.Filters.Id.ToLower()));
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Title),
-            department => department.Title.ToLower().Contains(request.Filters.Title.ToLower()));
+            incidentHistory => incidentHistory.Title.ToLower().Contains(request.Filters.Title.ToLower()));
+        filters.Add(
+            request.Filters.Type != -1,
+            incidentHistory => incidentHistory.Type == (FIncidentType)request.Filters.Type);
 
         var page = this._databaseContext.IncidentHistories
             .AsNoTracking()

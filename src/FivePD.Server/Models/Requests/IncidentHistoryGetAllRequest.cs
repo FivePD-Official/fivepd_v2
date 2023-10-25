@@ -1,4 +1,6 @@
-﻿#pragma warning disable
+﻿using FivePD.Common.Enums;
+
+#pragma warning disable
 
 namespace FivePD.Server.Models.Requests;
 
@@ -13,5 +15,7 @@ internal record struct IncidentHistoryGetAllRequest()
         public string Id { get; set; }
 
         public string Title { get; set; }
+
+        public int Type { get; set; }
     }
 }
