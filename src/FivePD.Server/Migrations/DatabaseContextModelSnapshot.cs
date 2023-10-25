@@ -528,7 +528,7 @@ namespace FivePD.Server.Migrations
                             b1.Property<bool>("Kick")
                                 .HasColumnType("tinyint(1)");
 
-                            b1.Property<bool>("SetCallsign")
+                            b1.Property<bool>("SetDivision")
                                 .HasColumnType("tinyint(1)");
 
                             b1.Property<bool>("SetRank")

@@ -58,6 +58,6 @@ public class Rank
         /// Gets or sets a value indicating whether the user has the ability
         /// to set the callsign of other players in the department.
         /// </summary>
-        public bool SetCallsign { get; set; }
+        public bool SetDivision { get; set; }
     }
 }

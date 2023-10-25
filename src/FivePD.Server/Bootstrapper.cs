@@ -479,8 +479,8 @@ internal class Bootstrapper : BaseScript
                         Permission = new Rank.Permissions
                         {
                             Kick = false,
-                            SetCallsign = false,
                             SetRank = false,
+                            SetDivision = false,
                         },
                     },
                     new()
@@ -490,8 +490,8 @@ internal class Bootstrapper : BaseScript
                         Permission = new Rank.Permissions
                         {
                             Kick = false,
-                            SetCallsign = false,
                             SetRank = false,
+                            SetDivision = false,
                         },
                     },
                     new()
@@ -501,8 +501,8 @@ internal class Bootstrapper : BaseScript
                         Permission = new Rank.Permissions
                         {
                             Kick = false,
-                            SetCallsign = false,
                             SetRank = false,
+                            SetDivision = false,
                         },
                     },
                 },

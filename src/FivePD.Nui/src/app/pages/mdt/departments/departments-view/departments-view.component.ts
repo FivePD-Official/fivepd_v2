@@ -195,12 +195,12 @@ export class DepartmentsViewComponent implements OnInit {
                     key: 'Permission',
                     label: 'UI.LABEL.PERMISSIONS',
                     checkboxGroup: [
-                      new Checkbox({key: 'Kick', label: 'Kick label', value: updatedRank.Permission.Kick}),
-                      new Checkbox({key: 'SetRank', label: 'Set rank label', value: updatedRank.Permission.SetRank}),
+                      new Checkbox({key: 'Kick', label: 'Kick member', value: updatedRank.Permission.Kick}),
+                      new Checkbox({key: 'SetRank', label: 'Set rank', value: updatedRank.Permission.SetRank}),
                       new Checkbox({
-                        key: 'SetCallsign',
-                        label: 'Set callsign label',
-                        value: updatedRank.Permission.SetCallsign
+                        key: 'SetDivision',
+                        label: 'Set division',
+                        value: updatedRank.Permission.SetDivision
                       }),
                     ]
                   }));
@@ -441,7 +441,7 @@ export class DepartmentsViewComponent implements OnInit {
       }),
     ];
 
-    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
         actions: [
@@ -459,6 +459,14 @@ export class DepartmentsViewComponent implements OnInit {
           }
         ]
       }));
+    } else {
+      columns.push(new Column<FormattedUser>({
+        header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
+        accessorKey: 'RankName',
+      }));
+    }
+
+    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User.Rank?.Permission.SetDivision) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
         actions: [
@@ -477,10 +485,6 @@ export class DepartmentsViewComponent implements OnInit {
         ]
       }));
     } else {
-      columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
-        accessorKey: 'RankName',
-      }));
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
         accessorKey: 'DivisionName',
@@ -556,6 +560,7 @@ export class DepartmentsViewComponent implements OnInit {
         };
       });
       this.ranks = res as Page<FormattedRank>;
+      console.log(this.ranks)
 
       if (remapUsers) {
         this.getDepartment();
@@ -649,8 +654,8 @@ export class DepartmentsViewComponent implements OnInit {
     if (rank.Permission.SetRank) {
       permissions.push(this._localization.translate('UI.ACTION.SET_RANK'));
     }
-    if (rank.Permission.SetCallsign) {
-      permissions.push(this._localization.translate('UI.ACTION.SET_CALLSIGN'));
+    if (rank.Permission.SetDivision) {
+      permissions.push(this._localization.translate('UI.ACTION.SET_DIVISION'));
     }
 
     return permissions.length > 0 ? permissions.join(', ') : '-';

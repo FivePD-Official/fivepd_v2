@@ -55,7 +55,7 @@ export interface Rank extends WithId {
   Permission: {
     Kick: boolean;
     SetRank: boolean;
-    SetCallsign: boolean;
+    SetDivision: boolean;
   };
 }
 
