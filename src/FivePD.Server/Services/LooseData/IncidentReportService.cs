@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FivePD.Server.Interfaces.LooseData;
-using FivePD.Server.Models;
 using FivePD.Server.Models.LooseData;
 
 namespace FivePD.Server.Services.LooseData;

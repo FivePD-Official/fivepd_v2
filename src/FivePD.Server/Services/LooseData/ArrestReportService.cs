@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FivePD.Server.Interfaces.LooseData;
-using FivePD.Server.Models;
 using FivePD.Server.Models.LooseData;
 
 namespace FivePD.Server.Services.LooseData;
@@ -22,7 +21,7 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
     {
         return new List<LooseDataAttribute>
         {
-            new Models.LooseData.Attributes.DepartmentId(),
+            new Models.LooseData.Attributes.DepartmentId(), // TODO: is this needed? if so, why?
             new Models.LooseData.Attributes.UserId(),
             new Models.LooseData.Attributes.SubmitDate(),
             new()

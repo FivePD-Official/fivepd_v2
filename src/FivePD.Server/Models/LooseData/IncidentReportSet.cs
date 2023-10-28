@@ -1,11 +1,11 @@
 ﻿using FivePD.Server.Attributes;
 
-namespace FivePD.Server.Models;
+namespace FivePD.Server.Models.LooseData;
 
 /// <summary>
 /// Represents a set containing the incident reports.
 /// </summary>
 [LooseDataSetId("fivepd_incident_report")]
-public class IncidentReportSet : LooseData.LooseDataSet
+public class IncidentReportSet : LooseDataSet
 {
 }

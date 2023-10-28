@@ -194,6 +194,23 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
         services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
 
+        // Loose data repositories
+        services.AddSingleton<ArrestReportService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
+
+        services.AddSingleton<IncidentReportService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<IncidentReportService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<IncidentReportService>());
+
+        services.AddSingleton<PedTicketService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedTicketService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedTicketService>());
+
+        services.AddSingleton<PedWarningService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedWarningService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedWarningService>());
+
         // Other
         services.AddSingleton<IFileHandlerService, FileHandlerService>();
         services.AddSingleton<ICommandService, CommandService>();
@@ -234,14 +251,6 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<LocalizationService>();
         services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocalizationService>());
-
-        services.AddSingleton<ArrestReportService>();
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
-        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
-
-        services.AddSingleton<IncidentReportService>();
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<IncidentReportService>());
-        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<IncidentReportService>());
 
         services.AddSingleton<EventService>();
         services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
