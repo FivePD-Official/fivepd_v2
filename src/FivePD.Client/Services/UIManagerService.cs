@@ -209,6 +209,7 @@ internal class UIManagerService : IUIManagerService, IOnInit
     {
         this._hasFocus = false;
         this._mdtOpen = false;
+        this.MenuOpen = false;
         Cfx.API.SetNuiFocus(false, false);
     }
 
