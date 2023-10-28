@@ -23,18 +23,11 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
         return new List<LooseDataAttribute>
         {
             new Models.LooseData.Attributes.DepartmentId(),
+            new Models.LooseData.Attributes.UserId(),
+            new Models.LooseData.Attributes.SubmitDate(),
             new()
             {
-                Name = "DateOfSubmit",
-                Label = "Date of submit",
-                DataType = LooseDataType.Date,
-                Required = false,
-                ShowInGrid = true,
-                Readonly = true,
-            },
-            new()
-            {
-                Name = "DateOfArrest",
+                Name = "ArrestDate",
                 Label = "Date of arrest",
                 DataType = LooseDataType.Date,
                 Required = true,

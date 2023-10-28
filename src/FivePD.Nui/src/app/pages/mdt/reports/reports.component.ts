@@ -83,8 +83,9 @@ export class ReportsComponent implements OnInit {
         .pipe(
           filter(res => res.success),
           switchMap(res => this._looseData.addEntity(DefaultSetId.ArrestReport, {
+            UserId: this.user!.Id,
             DepartmentId: this.user!.DepartmentId,
-            DateOfSubmit: new Date(),
+            SubmitDate: new Date(),
             ...res.value!,
           })),
           this._modal.handleResponse()
@@ -139,7 +140,7 @@ export class ReportsComponent implements OnInit {
           filter(res => res.success),
           switchMap(res => this._looseData.addEntity(DefaultSetId.IncidentReport, {
             UserId: this.user!.Id,
-            DateOfSubmit: new Date(),
+            SubmitDate: new Date(),
             ...res.value!,
           })),
           this._modal.handleResponse()

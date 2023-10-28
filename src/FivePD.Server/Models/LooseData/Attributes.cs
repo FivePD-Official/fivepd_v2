@@ -4,6 +4,19 @@
 
 public class Attributes
 {
+    public class SubmitDate : LooseDataAttribute
+    {
+        public SubmitDate()
+        {
+            this.Name = "SubmitDate";
+            this.Label = "Date of submit";
+            this.DataType = LooseDataType.Date;
+            this.Required = false;
+            this.ShowInGrid = true;
+            this.Readonly = true;
+        }
+    }
+
     public class DepartmentId : LooseDataAttribute
     {
         public DepartmentId()
