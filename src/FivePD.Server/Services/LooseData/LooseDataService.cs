@@ -361,14 +361,14 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         if (entity.MappedValues.ContainsKey("DepartmentId"))
         {
-            var value = this._databaseContext.Departments.FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
+            var value = this._databaseContext.Departments.AsNoTracking().FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
             entity.MappedValues["Department"] = value;
         }
 
         if (entity.MappedValues.ContainsKey("DepartmentIds"))
         {
             var ids = (entity.MappedValues["DepartmentIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-            var value = this._databaseContext.Departments.Where(department => ids.Contains(department.Id)).ToList();
+            var value = this._databaseContext.Departments.AsNoTracking().Where(department => ids.Contains(department.Id)).ToList();
             entity.MappedValues["DepartmentIds"] = value;
         }
 
@@ -381,33 +381,33 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         if (entity.MappedValues.ContainsKey("UserIds"))
         {
             var ids = (entity.MappedValues["UserIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-            var value = this._databaseContext.Users.Where(user => ids.Contains(user.Id)).ToList();
+            var value = this._databaseContext.Users.AsNoTracking().Where(user => ids.Contains(user.Id)).ToList();
             entity.MappedValues["Users"] = value;
         }
 
         if (entity.MappedValues.ContainsKey("IncidentHistoryId"))
         {
-            var value = this._databaseContext.IncidentHistories.FirstOrDefault(user => user.Id == entity.MappedValues["IncidentHistoryId"] as string);
+            var value = this._databaseContext.IncidentHistories.AsNoTracking().FirstOrDefault(user => user.Id == entity.MappedValues["IncidentHistoryId"] as string);
             entity.MappedValues["IncidentHistory"] = value;
         }
 
         if (entity.MappedValues.ContainsKey("IncidentHistoryIds"))
         {
             var ids = (entity.MappedValues["IncidentHistoryIds"] as JArray)?.Select(x => x.ToString()).ToList();
-            var value = this._databaseContext.IncidentHistories.Where(incidentHistory => ids.Contains(incidentHistory.Id)).ToList();
+            var value = this._databaseContext.IncidentHistories.AsNoTracking().Where(incidentHistory => ids.Contains(incidentHistory.Id)).ToList();
             entity.MappedValues["IncidentHistories"] = value;
         }
 
         if (entity.MappedValues.ContainsKey("PedHistoryId"))
         {
-            var value = this._databaseContext.PedHistories.FirstOrDefault(pedHistory => pedHistory.Id == (entity.MappedValues["PedHistoryId"] as long? ?? 0));
+            var value = this._databaseContext.PedHistories.AsNoTracking().FirstOrDefault(pedHistory => pedHistory.Id == (entity.MappedValues["PedHistoryId"] as long? ?? 0));
             entity.MappedValues["PedHistory"] = value;
         }
 
         if (entity.MappedValues.ContainsKey("PedHistoryIds"))
         {
             var ids = (entity.MappedValues["PedHistoryIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-            var value = this._databaseContext.PedHistories.Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
+            var value = this._databaseContext.PedHistories.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
             entity.MappedValues["PedHistories"] = value;
         }
 
