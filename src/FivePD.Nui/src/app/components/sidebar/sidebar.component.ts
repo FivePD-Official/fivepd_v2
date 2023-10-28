@@ -99,19 +99,19 @@ export class SidebarComponent {
       title: 'UI.LABEL.SETTINGS',
       path: () => '/mdt/settings/admin',
       icon: IconType.Cog,
-      show: () => this._userService.userHasRole(UserRole.Admin),
+      show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
       title: 'Developer tools',
       path: () => '/mdt/devtools',
       icon: IconType.CodeBracket,
-      show: () => this._userService.userHasRole(UserRole.Admin, UserRole.Developer),
+      show: () => this.userService.userHasRole(UserRole.Admin, UserRole.Developer),
     }
   ];
 
   constructor(
+    public readonly userService: UserService,
     private readonly _store: Store<GlobalState>,
-    private readonly _userService: UserService,
     private readonly _dispatchService: DispatchService,
     private readonly _configService: ConfigService,
   ) {
@@ -137,4 +137,5 @@ export class SidebarComponent {
     this._dispatchService.enable();
   }
 
+  protected readonly UserRole = UserRole;
 }

@@ -1,25 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  Button,
   Collation,
   Column,
   Department,
   GeneralConfig,
   IncidentDTO,
   IncidentWrapper,
-  NumberInput,
   Page,
   PlayerDetailsDTO,
-  TextInput,
   UnitDTO
 } from '@models';
 import { DepartmentService } from '@services/department/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
-import { Validators } from '@angular/forms';
-import { filter, switchMap } from 'rxjs';
-import { createDepartmentCallsignFormatInputField } from '../../../helpers/forms/department';
-import { UserRole, UserService } from '@services/user/user.service';
-import { CustomValidators } from '../../../helpers/validators';
+import { UserService } from '@services/user/user.service';
 import { Store } from '@ngrx/store';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { GlobalState } from '@store';
@@ -37,11 +30,11 @@ import { ContainerComponent } from '../../../components/container/container.comp
 import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 
 @Component({
-    selector: 'app-dashboard',
-    templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.sass'],
-    standalone: true,
-    imports: [PageHeaderComponent, ContainerComponent, NgIf, GridComponent, TranslatePipe]
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.sass'],
+  standalone: true,
+  imports: [PageHeaderComponent, ContainerComponent, NgIf, GridComponent, TranslatePipe]
 })
 export class DashboardComponent implements OnInit {
 
@@ -75,6 +68,7 @@ export class DashboardComponent implements OnInit {
       valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
   ];
+
   departmentsRowLinkResolver(item: Department): string {
     return `/mdt/departments/${item.Id}`;
   }

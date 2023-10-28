@@ -11,6 +11,7 @@ export enum UserRole {
   None = 0,
   Admin = 1,
   Developer = 2,
+  Dispatcher = 4,
 }
 
 @Injectable({

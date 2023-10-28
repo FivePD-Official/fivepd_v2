@@ -112,6 +112,7 @@ export class AdminSettingsComponent {
             return [
               {key: UserRole.Admin, label: this._localization.translate('UI.LABEL.ROLE.ADMIN')},
               {key: UserRole.Developer, label: this._localization.translate('UI.LABEL.ROLE.DEVELOPER')},
+              {key: UserRole.Dispatcher, label: this._localization.translate('UI.LABEL.ROLE.DISPATCHER')},
             ];
           },
           resetWhenSelectedId: UserRole.None,

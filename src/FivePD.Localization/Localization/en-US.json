@@ -208,6 +208,7 @@
   "UI.LABEL.REQUIRED_XP": "Required XP",
   "UI.LABEL.ROLE.ADMIN": "Admin",
   "UI.LABEL.ROLE.DEVELOPER": "Developer",
+  "UI.LABEL.ROLE.DISPATCHER": "Dispatcher",
   "UI.LABEL.ROLE.NO": "No role",
   "UI.LABEL.ROLE.SINGULAR": "Role",
   "UI.LABEL.SEARCH_BY.CALLSIGN": "Search by callsign",
