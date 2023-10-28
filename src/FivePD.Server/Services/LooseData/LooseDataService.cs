@@ -437,6 +437,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     {
         var request = expandoObject.ConvertTo<GetSetRequest>();
         var set = this._databaseContext.LooseDataSets
+            .AsNoTracking()
             .Include(set => set.Attributes)
             .FirstOrDefault(set => set.Id == request.SetId);
 
