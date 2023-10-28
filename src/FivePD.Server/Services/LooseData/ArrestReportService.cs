@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FivePD.Common.Enums;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models;
 using FivePD.Server.Models.LooseData;
@@ -23,15 +22,7 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
     {
         return new List<LooseDataAttribute>
         {
-            new()
-            {
-                Name = "DepartmentId",
-                Label = "Department",
-                DataType = LooseDataType.Integer,
-                Required = false,
-                ShowInGrid = false,
-                Readonly = true,
-            },
+            new Models.LooseData.Attributes.DepartmentId(),
             new()
             {
                 Name = "DateOfSubmit",
@@ -56,15 +47,7 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
                 DataType = LooseDataType.LongString,
                 Required = true,
             },
-            new()
-            {
-                Name = "PedHistoryIds",
-                Label = "PedHistoryIds",
-                DataType = LooseDataType.IntegerList,
-                Required = false,
-                ShowInGrid = false,
-                Readonly = true,
-            },
+            new Models.LooseData.Attributes.PedHistoryIds(),
         };
     }
 }
