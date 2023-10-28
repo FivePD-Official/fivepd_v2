@@ -5,13 +5,13 @@ import { Button, Column, DeleteEntityType, Page } from '@models';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { CoordinateWithDate } from '@store/app.reducer';
-import { addDevToolsCoordinate, clearDevToolsCoordinates } from '@store/app.actions';
 import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { NotificationService } from "@services/notification/notification.service";
 import { GridComponent } from '../../../../components/grid/grid.component';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { ContainerComponent } from '../../../../components/container/container.component';
+import { AppActions } from "@store/app.actions";
 
 @Component({
   selector: 'app-devtools-general',
@@ -56,7 +56,7 @@ export class DevtoolsGeneralComponent {
             filter(res => res.success),
             this._modalService.close(),
           )
-          .subscribe(() => this.store.dispatch(clearDevToolsCoordinates()));
+          .subscribe(() => this.store.dispatch(AppActions.clearDevToolsCoordinates()));
       }
     },
     {
@@ -67,7 +67,7 @@ export class DevtoolsGeneralComponent {
       onClick: () => {
         this.devtools.getCurrentPlayerCoordinate().subscribe(res => {
           const coordinate = {...res, date: new Date()};
-          this.store.dispatch(addDevToolsCoordinate({payload: coordinate}))
+          this.store.dispatch(AppActions.addDevToolsCoordinate({coordinate}))
         });
       }
     },

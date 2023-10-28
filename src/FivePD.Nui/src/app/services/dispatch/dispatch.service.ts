@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { Router } from "@angular/router";
-import { disableDispatchMode, enableDispatchMode } from "@store/app.actions";
 import { HttpClient } from "@angular/common/http";
 import { CalloutRemoveFromDispatcher, DispatcherCalloutDTOClientWrapper } from "../../models/callout";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -11,10 +10,12 @@ import { ConfigService } from "@services/config/config.service";
 import {
   CommonDispatcherUnitDTO,
   DispatcherUnitDTO,
-  OnUnitCreated, OnUnitRemoved,
+  OnUnitCreated,
+  OnUnitRemoved,
   SimplePlayer,
   UpdatePlayersEvent
 } from "@models";
+import { AppActions } from "@store/app.actions";
 
 export type Callout = DispatcherCalloutDTOClientWrapper & {
   timeout: number;
@@ -83,13 +84,13 @@ export class DispatchService {
   }
 
   enable(): void {
-    this._store.dispatch(enableDispatchMode());
+    this._store.dispatch(AppActions.toggleDispatchMode({state: true}));
     this._router.navigate(['mdt', 'dispatch']);
     this._http.post('fivepd:ui:dispatch:enable', {}).subscribe();
   }
 
   disable(): void {
-    this._store.dispatch(disableDispatchMode());
+    this._store.dispatch(AppActions.toggleDispatchMode({state: false}));
     this._router.navigate(['mdt', 'dashboard']);
     this._http.post('fivepd:ui:dispatch:disable', {}).subscribe();
   }

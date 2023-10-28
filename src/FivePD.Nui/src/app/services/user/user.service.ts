@@ -1,20 +1,11 @@
 import { Injectable } from '@angular/core';
-import {
-  ActionResponse,
-  Collation,
-  Page,
-  PlayerDetailsDTO,
-  SimplePedHistory,
-  SimplePlayer,
-  SimpleUser,
-  User
-} from '@models';
+import { ActionResponse, Collation, Page, PlayerDetailsDTO, SimpleUser, User } from '@models';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
-import { setUser } from '@store/user.actions';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { UserActions } from "@store/user.actions";
 
 export enum UserRole {
   None = 0,
@@ -57,7 +48,7 @@ export class UserService {
 
   refreshData(): void {
     this._http.post<PlayerDetailsDTO>('fivepd:player:getDetails', {}).subscribe(user => {
-      this.store.dispatch(setUser({payload: user}));
+      this.store.dispatch(UserActions.setUser({user}));
     });
   }
 

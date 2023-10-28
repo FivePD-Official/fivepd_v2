@@ -4,11 +4,11 @@ import { WindowService } from '@services/window/window.service';
 import { GlobalState } from '@store';
 import { Store } from '@ngrx/store';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { setWindowMaximized } from "@store/app.actions";
 import { DispatchService } from "@services/dispatch/dispatch.service";
 import { IconComponent } from '../icon/icon.component';
 import { ButtonComponent } from '../button/button.component';
 import { DatePipe, NgIf } from '@angular/common';
+import { AppActions } from "@store/app.actions";
 
 @Component({
   selector: 'app-header',
@@ -47,6 +47,6 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleMaximizedWindow(): void {
-    this._store.dispatch(setWindowMaximized({payload: !this.windowMaximized}));
+    this._store.dispatch(AppActions.setWindowMaximized({maximized: !this.windowMaximized}));
   }
 }

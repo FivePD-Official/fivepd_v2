@@ -7,12 +7,12 @@ import { tap } from "rxjs";
 import { FGender, PedLicenseType } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
-import { addPedToRecentlyViewed } from "@store/app.actions";
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { IconComponent } from '../../../../components/icon/icon.component';
 import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import { AppActions } from "@store/app.actions";
 
 @Component({
   selector: 'app-citizen-database-id',
@@ -45,7 +45,7 @@ export class CitizenDatabaseIdComponent implements OnInit {
   getPedHistory(id: string): void {
     this._pedHistoryService.get(id).subscribe(pedHistory => {
       this.pedHistory = pedHistory;
-      this._store.dispatch(addPedToRecentlyViewed({payload: pedHistory}));
+      this._store.dispatch(AppActions.addPedToRecentlyViewed({ped: pedHistory}));
     });
   }
 

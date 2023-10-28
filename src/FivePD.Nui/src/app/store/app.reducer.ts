@@ -1,10 +1,7 @@
 ﻿import { Page, PedHistory } from '@models';
 import { createReducer, on } from '@ngrx/store';
 import {
-  addDevToolsCoordinate,
-  clearDevToolsCoordinates, disableDispatchMode, dispatchModeMapZoom, enableDispatchMode, setWindowMaximized,
-  setMdtPath,
-  toggleSidebarCollapse, addPedToRecentlyViewed
+  AppActions,
 } from '@store/app.actions';
 
 export interface Coordinate {
@@ -55,23 +52,19 @@ const initialState: AppStateModel = {
 
 export const appReducer = createReducer(
   initialState,
-  on(toggleSidebarCollapse, (state) => {
-    return {...state, isSidebarCollapsed: !state.isSidebarCollapsed};
-  }),
-  on(setMdtPath, (state, action) => {
-    return {...state, previousMdtPath: action.payload};
-  }),
-  on(addDevToolsCoordinate, (state, action) => {
+  on(AppActions.toggleSidebarCollapse, (state) => ({...state, isSidebarCollapsed: !state.isSidebarCollapsed})),
+  on(AppActions.setMDTPath, (state, {path}) => ({...state, previousMdtPath: path})),
+  on(AppActions.addDevToolsCoordinate, (state, {coordinate}) => {
     const _state: AppStateModel = {
       ...state,
       devTools: {...state.devTools, coordinates: {...state.devTools.coordinates}}
     };
-    const coordinates = [...state.devTools.coordinates.Items, action.payload];
+    const coordinates = [...state.devTools.coordinates.Items, coordinate];
     _state.devTools.coordinates.Items = coordinates;
     _state.devTools.coordinates.PageSize = coordinates.length;
     return _state;
   }),
-  on(clearDevToolsCoordinates, (state) => {
+  on(AppActions.clearDevToolsCoordinates, (state) => {
     const _state: AppStateModel = {
       ...state,
       devTools: {...state.devTools, coordinates: {...state.devTools.coordinates}}
@@ -80,27 +73,15 @@ export const appReducer = createReducer(
     _state.devTools.coordinates.PageSize = 0;
     return _state;
   }),
-  on(enableDispatchMode, (state) => {
-    return {...state, dispatchMode: true};
-  }),
-  on(disableDispatchMode, (state) => {
-    return {...state, dispatchMode: false};
-  }),
-  on(dispatchModeMapZoom, (state, action) => {
-    return {...state, dispatchModeMapZoom: action.payload};
-  }),
-  on(dispatchModeMapZoom, (state, action) => {
-    return {...state, dispatchModeMapZoom: action.payload};
-  }),
-  on(setWindowMaximized, (state, action) => {
-    return {...state, windowMaximized: action.payload};
-  }),
-  on(addPedToRecentlyViewed, (state, action) => {
-    if (state.recentlyViewedPeds.some(x => x.Id === action.payload.Id)) {
+  on(AppActions.toggleDispatchMode, (state, action) => ({...state, dispatchMode: action.state})),
+  on(AppActions.dispatchModeMapZoom, (state, {zoom}) => ({...state, dispatchModeMapZoom: zoom})),
+  on(AppActions.setWindowMaximized, (state, {maximized}) => ({...state, windowMaximized: maximized})),
+  on(AppActions.addPedToRecentlyViewed, (state, {ped}) => {
+    if (state.recentlyViewedPeds.some(x => x.Id === ped.Id)) {
       return state;
     }
 
-    const recentlyViewedPeds = [action.payload, ...state.recentlyViewedPeds];
+    const recentlyViewedPeds = [ped, ...state.recentlyViewedPeds];
     if (recentlyViewedPeds.length > 5) {
       recentlyViewedPeds.pop();
     }

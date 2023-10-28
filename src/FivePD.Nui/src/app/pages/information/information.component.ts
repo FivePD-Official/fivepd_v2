@@ -4,7 +4,7 @@ import { InformationUpdateDTO } from "@models";
 import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
-import { setInformation } from "@store/user.actions";
+import { UserActions } from "@store/user.actions";
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { NgIf } from '@angular/common';
 
@@ -33,7 +33,7 @@ export class InformationComponent implements OnInit {
 
   ngOnInit(): void {
     this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
-      this._store.dispatch(setInformation({payload: information}));
+      this._store.dispatch(UserActions.setInformation({information}));
     });
   }
 

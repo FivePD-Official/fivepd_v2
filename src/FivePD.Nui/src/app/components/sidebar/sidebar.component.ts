@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { GlobalState } from '@store';
 import { GeneralConfig, IconType, User } from '@models';
 import { Store } from '@ngrx/store';
-import { toggleSidebarCollapse } from '@store/app.actions';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DispatchService } from "@services/dispatch/dispatch.service";
@@ -11,6 +10,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IconComponent } from '../icon/icon.component';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgClass, NgFor, NgIf } from '@angular/common';
+import { AppActions } from "@store/app.actions";
 
 export interface Route {
   title: string;
@@ -130,7 +130,7 @@ export class SidebarComponent {
   }
 
   toggleSidebarCollapse(): void {
-    this._store.dispatch(toggleSidebarCollapse());
+    this._store.dispatch(AppActions.toggleSidebarCollapse());
   }
 
   enableDispatchMode(): void {

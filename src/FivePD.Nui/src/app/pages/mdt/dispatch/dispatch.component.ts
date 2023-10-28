@@ -19,13 +19,13 @@ import { Callout, DispatchService } from "@services/dispatch/dispatch.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
-import { dispatchModeMapZoom } from "@store/app.actions";
 import { DispatcherUnitDTO, Dropdown, SimplePlayer } from "@models";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { DynamicFormInputComponent } from '../../../components/dynamic-form-input/dynamic-form-input.component';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { ContainerComponent } from '../../../components/container/container.component';
+import { AppActions } from "@store/app.actions";
 
 type MarkerIconProperties = {
   readonly size: [number, number];
@@ -250,7 +250,7 @@ export class DispatchComponent implements OnInit {
     });
 
     this.map.on('zoom', e => {
-      this._store.dispatch(dispatchModeMapZoom({payload: e.target['_zoom']}));
+      this._store.dispatch(AppActions.dispatchModeMapZoom({zoom: e.target['_zoom']}));
     });
   }
 

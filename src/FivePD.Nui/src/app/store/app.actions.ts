@@ -1,23 +1,17 @@
-﻿import { createAction, props } from '@ngrx/store';
+﻿import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { CoordinateWithDate } from '@store/app.reducer';
 import { PedHistory } from "@models";
 
-export const toggleSidebarCollapse = createAction('[app] toggle sidebar collapse');
-
-export const setMdtPath = createAction('[app] set mdt path', props<{ payload: string[] }>());
-
-export const addDevToolsCoordinate = createAction('[app] add dev tools coordinates', props<{
-  payload: CoordinateWithDate
-}>());
-
-export const clearDevToolsCoordinates = createAction('[app] clear dev tools coordinates');
-
-export const enableDispatchMode = createAction('[app] enable dispatch mode');
-
-export const disableDispatchMode = createAction('[app] disable dispatch mode');
-
-export const dispatchModeMapZoom = createAction('[app] dispatch mode map zoom', props<{ payload: number }>());
-
-export const setWindowMaximized = createAction('[app] set window maximized', props<{ payload: boolean }>());
-
-export const addPedToRecentlyViewed = createAction('[app] addPedToRecentlyViewed', props<{ payload: PedHistory }>());
+export const AppActions = createActionGroup({
+  source: 'app',
+  events: {
+    'Toggle sidebar collapse': emptyProps(),
+    'Set MDT path': props<{ path: string[] }>(),
+    'Add dev tools coordinate': props<{ coordinate: CoordinateWithDate }>(),
+    'Clear dev tools coordinates': emptyProps(),
+    'Toggle dispatch mode': props<{ state: boolean }>(),
+    'Dispatch mode map zoom': props<{ zoom: number }>(),
+    'Set window maximized': props<{ maximized: boolean }>(),
+    'Add ped to recently viewed': props<{ ped: PedHistory }>(),
+  },
+});

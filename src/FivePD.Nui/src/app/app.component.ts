@@ -6,7 +6,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
-import { setMdtPath } from '@store/app.actions';
+import { AppActions } from '@store/app.actions';
 import { MenuService } from '@services/menu/menu.service';
 import { ConfigService } from "@services/config/config.service";
 import { ModalService } from "@services/modals/modal/modal.service";
@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       filter(event => event.url !== '/' && event.url.startsWith('/mdt'))
     ).subscribe(event => {
-      this._store.dispatch(setMdtPath({payload: event.url.split('/')}));
+      this._store.dispatch(AppActions.setMDTPath({path: event.url.split('/')}));
     });
     window.addEventListener('message', event => this._event.next(event.data));
 
