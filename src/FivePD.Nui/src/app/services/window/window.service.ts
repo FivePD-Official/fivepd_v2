@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { EventService } from '@services/event/event.service';
-import { BaseNuiEvent, MenuShowEvent, TimerBarEvent } from '@models';
+import { BaseNuiEvent, InformationUpdateDTO, MenuShowEvent, TimerBarEvent } from '@models';
 import { Router } from '@angular/router';
 import { UserService } from '@services/user/user.service';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { BehaviorSubject } from "rxjs";
+import { UserActions } from "@store/user.actions";
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +23,11 @@ export class WindowService {
   showMenu = new BehaviorSubject(false);
 
   constructor(
-    private _http: HttpClient,
-    private _event: EventService,
-    private _router: Router,
-    private _userService: UserService,
-    private readonly store: Store<GlobalState>,
+    private readonly _http: HttpClient,
+    private readonly _event: EventService,
+    private readonly _router: Router,
+    private readonly _userService: UserService,
+    private readonly _store: Store<GlobalState>,
   ) {
     this._event.onEvent<TimerBarEvent>('webpackInvalid').subscribe(() => this.close());
     this._event.onEvent<TimerBarEvent>('webpackOk').subscribe(() => this.close());
@@ -44,6 +45,9 @@ export class WindowService {
     this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:information').subscribe(() => {
       this.onInformationOpen();
     });
+    this._event.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
+      this._store.dispatch(UserActions.setInformation({information}));
+    });
     this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:welcomeModal').subscribe(() => {
       this.onWelcomeModalOpen();
     });
@@ -51,7 +55,7 @@ export class WindowService {
     this._event.onEvent<MenuShowEvent>('fivepd:ui:view:radialMenu').subscribe(res => this.onRadialMenuOpen(res));
     this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onTimerBarEvent(res));
 
-    this.store.subscribe(state => {
+    this._store.subscribe(state => {
       this.previousMdtPath = state.app.previousMdtPath;
     });
   }

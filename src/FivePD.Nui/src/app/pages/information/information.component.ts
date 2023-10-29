@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { EventService } from "@services/event/event.service";
 import { InformationUpdateDTO } from "@models";
 import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
-import { UserActions } from "@store/user.actions";
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { NgIf } from '@angular/common';
 
@@ -15,7 +14,7 @@ import { NgIf } from '@angular/common';
   standalone: true,
   imports: [NgIf, TranslatePipe]
 })
-export class InformationComponent implements OnInit {
+export class InformationComponent {
 
   public information: InformationUpdateDTO = {
     Event: '',
@@ -28,12 +27,6 @@ export class InformationComponent implements OnInit {
               private readonly _store: Store<GlobalState>) {
     _store.select('user', 'information').subscribe(information => {
       this.information = information
-    });
-  }
-
-  ngOnInit(): void {
-    this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
-      this._store.dispatch(UserActions.setInformation({information}));
     });
   }
 

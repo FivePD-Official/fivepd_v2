@@ -108,9 +108,13 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
         this._currentIncident = null;
         this._triggeredOnPlayerEnteredInActivityZone = false;
         this._localPlayerService.UpdateInformationCallout(null);
-        var incidentBlipHandle = this._incidentBlip.Handle;
-        Cfx.API.RemoveBlip(ref incidentBlipHandle);
-        this._incidentBlip = null;
+
+        if (this._incidentBlip is not null)
+        {
+            var incidentBlipHandle = this._incidentBlip.Handle;
+            Cfx.API.RemoveBlip(ref incidentBlipHandle);
+            this._incidentBlip = null;
+        }
     }
 
     private void OnAssigned(string serializedRequest)
