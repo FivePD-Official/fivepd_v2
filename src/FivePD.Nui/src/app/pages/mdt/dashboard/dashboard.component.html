@@ -39,7 +39,7 @@
       </p>
       <div class="grid-item--content">
         <p *ngIf="!assignedIncident" class="no-data">
-          {{ 'UI.LABEL.ACTIVE_CALLOUT.NONE' | translate }}
+          {{ 'UI.LABEL.ACTIVE_INCIDENT.NONE' | translate }}
         </p>
         <ul *ngIf="assignedIncident"
           class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-1 items-start gap-4">
@@ -63,7 +63,7 @@
               <p>{{ priorityLabel | translate }}</p>
             </li>
             <li>
-              <p>{{ 'LABEL.TYPE.SINGULAR' | translate }}</p>
+              <p>{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
               <p>{{ assignedIncident.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}</p>
             </li>
           </div>

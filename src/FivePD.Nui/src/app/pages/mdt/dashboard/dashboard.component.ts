@@ -155,7 +155,7 @@ export class DashboardComponent implements OnInit {
       valueResolver: item => item.Units.join(', '),
     }),
     new Column({
-      header: 'LABEL.TYPE.SINGULAR',
+      header: 'UI.LABEL.TYPE.SINGULAR',
       valueResolver: item => item.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop',
       badgeResolver: item => item.Type === FIncidentType.Callout ? 'amber' : 'blue',
     }),
