@@ -1,13 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import {
-  DropdownHeightVariants,
-  DropdownItem,
-  DropdownMultiOptions,
-  DropdownSingleOptions,
-  DropdownVariants,
-  FormInputBase
-} from '@models';
+import { DropdownHeightVariants, DropdownItem, DropdownVariants, FormInputBase } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
@@ -39,7 +32,7 @@ const dropdownHeightVariants: Record<DropdownHeightVariants, string> = {
   standalone: true,
   imports: [ReactiveFormsModule, NgIf, NgClass, NgSwitch, NgSwitchCase, DateMaskDirective, ClickOutsideDirective, NgFor, SafeHtmlPipe, TranslatePipe]
 })
-export class DynamicFormInputComponent implements OnInit {
+export class DynamicFormInputComponent implements OnInit, OnChanges {
 
   @Input() withoutForm: boolean = false;
   @Input() form?: FormGroup;
@@ -73,32 +66,7 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     this.setLabels();
-    if (this.field.dropdownOptions) {
-      const {items, label} = this.field.dropdownOptions;
-      this.dropdownFilteredItems = items;
-      this.dropdownSelectedItem.label = label;
-
-      if (this.field.dropdownOptions.type === 'single' && 'selectedItemResolver' in this.field.dropdownOptions) {
-        const item = items.find(item => (this.field.dropdownOptions as DropdownSingleOptions).selectedItemResolver!(item.key));
-        if (item) {
-          this.setSelectedItem(item, true);
-        }
-      } else if (this.field.dropdownOptions.type === 'multi') {
-        this.multiSelect = true;
-        this.control?.setValue([] as any);
-        if ('selectedItemsResolver' in this.field.dropdownOptions) {
-          const selectedItems = items.filter(item => (this.field.dropdownOptions as DropdownMultiOptions).selectedItemsResolver!(item.key));
-          if (selectedItems) {
-            this.control?.setValue(selectedItems.map(x => x.key));
-            this.dropdownSelectedItems = selectedItems.map(x => ({key: x.key, label: x.label}));
-          }
-        }
-      } else {
-        this.control?.patchValue(-1);
-      }
-
-      this.setMultiSelectLabel();
-    }
+    this.setDropdownOptions(this.field);
 
     this.control?.valueChanges?.subscribe(value => {
       if (this.field.type === 'dropdown') {
@@ -118,6 +86,10 @@ export class DynamicFormInputComponent implements OnInit {
         this.control?.patchValue(-1);
       }
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.setDropdownOptions(changes['field']?.currentValue as any);
   }
 
   get control() {
@@ -140,6 +112,51 @@ export class DynamicFormInputComponent implements OnInit {
     }
 
     return className;
+  }
+
+  setDropdownOptions(field?: FormInputBase<any>): void {
+    if (!field || !field.dropdownOptions) {
+      return;
+    }
+
+    const {items, label} = field.dropdownOptions;
+    this.dropdownFilteredItems = items;
+
+    if (field.dropdownOptions.type === 'single' && 'selectedItemResolver' in field.dropdownOptions) {
+      const selectedItemResolver = field.dropdownOptions.selectedItemResolver;
+      if (selectedItemResolver) {
+        const item = items.find(item => selectedItemResolver(item.key));
+        if (item) {
+          this.setSelectedItem(item, true);
+        } else {
+          this.dropdownSelectedItem.label = label;
+        }
+      } else {
+        this.dropdownSelectedItem.label = label;
+      }
+    } else if (field.dropdownOptions.type === 'multi') {
+      this.multiSelect = true;
+      this.control?.setValue([] as any);
+      if ('selectedItemsResolver' in field.dropdownOptions) {
+        const selectedItemsResolver = field.dropdownOptions.selectedItemsResolver;
+        if (selectedItemsResolver) {
+          const selectedItems = items.filter(item => selectedItemsResolver(item.key));
+          if (selectedItems) {
+            this.control?.setValue(selectedItems.map(x => x.key));
+            this.dropdownSelectedItems = selectedItems.map(x => ({key: x.key, label: x.label}));
+          } else {
+            this.dropdownSelectedItem.label = label;
+          }
+        } else {
+          this.dropdownSelectedItem.label = label;
+        }
+      }
+    } else {
+      this.control?.patchValue(-1);
+      this.dropdownSelectedItem.label = label;
+    }
+
+    this.setMultiSelectLabel();
   }
 
   toggleDropdown(): void {
@@ -190,6 +207,7 @@ export class DynamicFormInputComponent implements OnInit {
     } else {
       this.onChange.emit(selectedItem.key);
     }
+
     this.dropdownSelectedItem = selectedItem;
     this.filterDropdownItems();
 

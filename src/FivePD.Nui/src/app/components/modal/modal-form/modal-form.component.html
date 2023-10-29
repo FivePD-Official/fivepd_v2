@@ -1,5 +1,4 @@
-<app-dynamic-form *ngIf="fields.length"
-                  [formFields]="fields"
+<app-dynamic-form [formFields]="fields"
                   [limitWidth]="false"
                   (onSubmit)="submit($event)"
                   [focusFirstField]="true"

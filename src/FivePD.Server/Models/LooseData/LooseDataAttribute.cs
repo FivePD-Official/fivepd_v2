@@ -49,9 +49,13 @@ public class LooseDataAttribute
     /// </summary>
     public bool Required { get; set; }
 
-    /// TODO: inverse of readonly: hidden? disabled?
     /// <summary>
-    /// Gets or sets a value indicating whether this attribute should be displayed in forms or not.
+    /// Gets or sets a value indicating whether this attribute should be hidden in forms or not.
+    /// </summary>
+    public bool Hidden { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this attribute should be readonly in forms or not.
     /// </summary>
     public bool Readonly { get; set; }
 

@@ -58,7 +58,7 @@ export class CalloutDetailsComponent implements OnInit {
   load(): void {
     zip(
       this._calloutDetailService.get(this._route.snapshot.params['id']),
-      this._departmentService.getAll(),
+      this._departmentService.getAllSimple(),
     ).subscribe(([calloutDetails, departments]) => {
       this.departments = departments;
       this.calloutDetails = calloutDetails;

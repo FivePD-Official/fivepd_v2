@@ -21,9 +21,9 @@ public class IncidentReportService : LooseDataRepository<IncidentReportSet>
     {
         return new List<LooseDataAttribute>
         {
-            new Models.LooseData.Attributes.IncidentHistoryId(),
-            new Models.LooseData.Attributes.UserId(),
-            new Models.LooseData.Attributes.SubmitDate(),
+            new Models.LooseData.Attributes.IncidentHistoryId(false),
+            new Models.LooseData.Attributes.UserId(true),
+            new Models.LooseData.Attributes.SubmitDate(true),
             new()
             {
                 Name = "Description",

@@ -11,7 +11,9 @@ import { inject, Injectable } from "@angular/core";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AttributeGridOptions {
 
   private readonly _userService = inject(UserService);

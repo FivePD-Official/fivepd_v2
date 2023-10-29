@@ -21,9 +21,9 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
     {
         return new List<LooseDataAttribute>
         {
-            new Models.LooseData.Attributes.DepartmentId(), // TODO: is this needed? if so, why?
-            new Models.LooseData.Attributes.UserId(),
-            new Models.LooseData.Attributes.SubmitDate(),
+            new Models.LooseData.Attributes.DepartmentId(true), // TODO: is this needed? if so, why?
+            new Models.LooseData.Attributes.UserId(true),
+            new Models.LooseData.Attributes.SubmitDate(true),
             new()
             {
                 Name = "ArrestDate",
@@ -39,7 +39,7 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
                 DataType = LooseDataType.LongString,
                 Required = true,
             },
-            new Models.LooseData.Attributes.PedHistoryIds(),
+            new Models.LooseData.Attributes.PedHistoryIds(false),
         };
     }
 }

@@ -9,6 +9,7 @@ export interface SetAttribute {
   Order?: number;
   DataType: number;
   Required: boolean;
+  Hidden?: boolean;
   Readonly?: boolean;
   ShowInGrid?: boolean;
   Label?: string;

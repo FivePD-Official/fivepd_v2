@@ -1,32 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  Button,
-  Collation,
-  Column,
-  Dropdown,
-  MappedLooseDataEntity,
-  Page,
-  SimpleIncidentHistory,
-  SimplePedHistory,
-  User
-} from '@models';
+import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { filter, switchMap } from 'rxjs';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 import { LocalizationService } from '@services/localization/localization.service';
-import { DefaultSetId, FGender } from '@enums';
+import { DefaultSetId } from '@enums';
 import { Store } from '@ngrx/store';
 import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { GlobalState } from '@store';
-import { formatDate, mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
+import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { IncidentHistoryService } from '@services/incident-history/incident-history.service';
-import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { GridComponent } from '../../../components/grid/grid.component';
 import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
@@ -58,27 +46,7 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: (simplePedHistories) => {
-          const simplePedHistoriesToShow: SimplePedHistory[] = Array.isArray(simplePedHistories) ? simplePedHistories : [];
-          return [
-            new Dropdown({
-              key: 'PedHistoryIds',
-              label: 'UI.LABEL.ARREST_REPORT.SUSPECTS',
-              required: true,
-              dropdownOptions: {
-                type: 'multi',
-                label: 'UI.LABEL.ARREST_REPORT.SUSPECTS',
-                size: 'normal',
-                variant: 'secondary',
-                items: simplePedHistoriesToShow.map(simplePedHistory => ({
-                  key: simplePedHistory.Id,
-                  label: `${simplePedHistory.Firstname} ${simplePedHistory.Lastname} - ${simplePedHistory.Gender === FGender.Male ? 'Male' : 'Female'} - ${formatDate(new Date(simplePedHistory.Birthdate), 'none')}`,
-                })),
-              }
-            }),
-            ...mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport))];
-        },
-        valueResolver: new ValueResolver({}, this._pedHistoryService.getAllSimple()),
+        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport)),
       }).result
         .pipe(
           filter(res => res.success),
@@ -115,26 +83,7 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: (incidents) => {
-          const incidentsToShow: SimpleIncidentHistory[] = Array.isArray(incidents) ? incidents : [];
-          return [
-            new Dropdown({
-              key: 'IncidentHistoryId',
-              label: 'UI.LABEL.INCIDENT_REPORT.INCIDENT',
-              required: true,
-              dropdownOptions: {
-                label: 'UI.LABEL.INCIDENT_REPORT.INCIDENT',
-                size: 'normal',
-                variant: 'secondary',
-                items: incidentsToShow.map(incident => ({
-                  key: incident.Id,
-                  label: `${incident.Title} (${incident.GeneratedAt})`,
-                })),
-              }
-            }),
-            ...mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.IncidentReport))];
-        },
-        valueResolver: new ValueResolver({}, this._incidentHistoryService.getAllOfUser()),
+        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.IncidentReport)),
       }).result
         .pipe(
           filter(res => res.success),
@@ -156,14 +105,12 @@ export class ReportsComponent implements OnInit {
 
   constructor(
     private readonly store: Store<GlobalState>,
-    private _looseData: LooseDataService,
-    private _localization: LocalizationService,
-    private _modal: ModalService,
+    private readonly _looseData: LooseDataService,
+    private readonly _localization: LocalizationService,
+    private readonly _modal: ModalService,
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
     private readonly _userService: UserService,
-    private readonly _incidentHistoryService: IncidentHistoryService,
-    private readonly _pedHistoryService: PedHistoryService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details.User;

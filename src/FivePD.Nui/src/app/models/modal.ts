@@ -25,7 +25,6 @@ export interface ModalOptions<T = any> {
 export interface ModalFormOptions<T> extends Omit<ModalOptions<T>, 'buttons'> {
   fields?: (entity: T) => FormInputBase<any>[];
   valueResolver?: ValueResolver<T>;
-  // TODO: add some "additionalValueResolver" and pass its returned value to the "fields" as the second param, usage for example in messages component -> getAllSimple user
   buttons: ModalSubmitButton;
 }
 

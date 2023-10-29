@@ -6,21 +6,178 @@
   DropdownOptions,
   FormInputBase,
   FormInputBaseOptions,
-  LooseDataEntity, MappedLooseDataEntity,
+  MappedLooseDataEntity,
   NumberInput,
-  SetAttribute, Textarea,
+  SetAttribute,
+  Textarea,
   TextInput
 } from '@models';
+import { PredefinedAttributes } from "./predefined-attributes";
+
+const predefinedAttributes = [
+  PredefinedAttributes.UserId,
+  PredefinedAttributes.UserIds,
+  PredefinedAttributes.DepartmentId,
+  PredefinedAttributes.DepartmentIds,
+  PredefinedAttributes.IncidentHistoryId,
+  PredefinedAttributes.IncidentHistoryIds,
+  PredefinedAttributes.PedHistoryId,
+  PredefinedAttributes.PedHistoryIds,
+];
 
 export function mapAttributesToFields(attributes: SetAttribute[], entity?: MappedLooseDataEntity, additionalFields: FormInputBase<any>[] = []): FormInputBase<any>[] {
   const fields: FormInputBase<any>[] = [];
-  for (const attr of attributes.filter(a => !a.Readonly)) {
+
+  // Add predefined fields
+  const singleUser = attributes.find(x => x.Name === PredefinedAttributes.UserId);
+  if (singleUser && !singleUser.Hidden) {
+    fields.push(new Dropdown({
+      key: PredefinedAttributes.UserId,
+      label: 'UI.LABEL.USER.SINGULAR',
+      required: true,
+      dropdownOptions: {
+        type: 'single',
+        label: 'UI.LABEL.USER.SINGULAR',
+        size: 'normal',
+        variant: 'secondary',
+        items: [],
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.UserId] : undefined,
+      }
+    }));
+  }
+
+  const multiUser = attributes.find(x => x.Name === PredefinedAttributes.UserIds);
+  if (multiUser && !multiUser.Hidden) {
+    fields.push(new Dropdown({
+      key: PredefinedAttributes.UserIds,
+      label: 'UI.LABEL.USER.PLURAL',
+      required: true,
+      dropdownOptions: {
+        type: 'multi',
+        label: 'UI.LABEL.USER.PLURAL',
+        size: 'normal',
+        variant: 'secondary',
+        items: [],
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.UserIds] : undefined,
+      }
+    }));
+  }
+
+  const singleDepartment = attributes.find(x => x.Name === PredefinedAttributes.DepartmentId);
+  if (singleDepartment && !singleDepartment.Hidden) {
+    fields.push(new Dropdown({
+      key: PredefinedAttributes.DepartmentId,
+      label: 'UI.LABEL.DEPARTMENT.SINGULAR',
+      required: true,
+      dropdownOptions: {
+        type: 'single',
+        label: 'UI.LABEL.DEPARTMENT.SINGULAR',
+        size: 'normal',
+        variant: 'secondary',
+        items: [],
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.DepartmentId] : undefined,
+      }
+    }));
+  }
+
+  const multiDepartment = attributes.find(x => x.Name === PredefinedAttributes.DepartmentIds);
+  if (multiDepartment && !multiDepartment.Hidden) {
+    fields.push(new Dropdown({
+      key: PredefinedAttributes.DepartmentIds,
+      label: 'UI.LABEL.DEPARTMENT.PLURAL',
+      required: true,
+      dropdownOptions: {
+        type: 'multi',
+        label: 'UI.LABEL.DEPARTMENT.PLURAL',
+        size: 'normal',
+        variant: 'secondary',
+        items: [],
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.DepartmentIds] : undefined,
+      }
+    }));
+  }
+
+  const singleIncidentHistory = attributes.find(x => x.Name === PredefinedAttributes.IncidentHistoryId);
+  if (singleIncidentHistory && !singleIncidentHistory.Hidden) {
+    fields.push(new Dropdown({
+      key: PredefinedAttributes.IncidentHistoryId,
+      label: 'UI.LABEL.INCIDENT.SINGULAR',
+      required: true,
+      dropdownOptions: {
+        type: 'single',
+        label: 'UI.LABEL.INCIDENT.SINGULAR',
+        size: 'normal',
+        variant: 'secondary',
+        items: [],
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.IncidentHistoryId] : undefined,
+      }
+    }));
+  }
+
+  const multiIncidentHistory = attributes.find(x => x.Name === PredefinedAttributes.IncidentHistoryIds);
+  if (multiIncidentHistory && !multiIncidentHistory.Hidden) {
+    fields.push(new Dropdown({
+      key: PredefinedAttributes.IncidentHistoryIds,
+      label: 'UI.LABEL.INCIDENT.PLURAL',
+      required: true,
+      dropdownOptions: {
+        type: 'multi',
+        label: 'UI.LABEL.INCIDENT.PLURAL',
+        size: 'normal',
+        variant: 'secondary',
+        items: [],
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.IncidentHistoryIds] : undefined,
+      }
+    }));
+  }
+
+  const singlePedHistory = attributes.find(x => x.Name === PredefinedAttributes.PedHistoryId);
+  if (singlePedHistory && !singlePedHistory.Hidden) {
+    fields.push(new Dropdown({
+      key: PredefinedAttributes.PedHistoryId,
+      label: 'UI.LABEL.CITIZEN.SINGULAR',
+      required: true,
+      dropdownOptions: {
+        type: 'single',
+        label: 'UI.LABEL.CITIZEN.SINGULAR',
+        size: 'normal',
+        variant: 'secondary',
+        items: [],
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.PedHistoryId] : undefined,
+      }
+    }));
+  }
+
+  const multiPedHistory = attributes.find(x => x.Name === PredefinedAttributes.PedHistoryIds);
+  if (multiPedHistory && !multiPedHistory.Hidden) {
+    fields.push(new Dropdown({
+      key: PredefinedAttributes.PedHistoryIds,
+      label: 'UI.LABEL.CITIZEN.PLURAL',
+      required: true,
+      dropdownOptions: {
+        type: 'multi',
+        label: 'UI.LABEL.CITIZEN.PLURAL',
+        size: 'normal',
+        variant: 'secondary',
+        items: [],
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.PedHistoryIds] : undefined,
+      }
+    }));
+  }
+
+  const filteredAttributes = attributes
+    .filter(x => !x.Hidden)
+    .filter(x => !predefinedAttributes.includes(x.Name as PredefinedAttributes));
+
+  // Add other non readonly fields
+  for (const attr of filteredAttributes) {
     const options: FormInputBaseOptions<any> = {
       key: attr.Name,
       label: attr.Label,
       helpLabel: attr.HelpLabel,
       placeholder: attr.Placeholder,
       required: attr.Required,
+      readonly: attr.Readonly,
     };
 
     if (entity) {

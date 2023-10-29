@@ -5,7 +5,7 @@ using FivePD.Server.Models.LooseData;
 namespace FivePD.Server.Services.LooseData;
 
 /// <inheritdoc />
-public class PedWarningService : LooseDataRepository<ArrestReportSet>
+public class PedWarningService : LooseDataRepository<PedWarningSet>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="PedWarningService"/> class.
@@ -21,9 +21,9 @@ public class PedWarningService : LooseDataRepository<ArrestReportSet>
     {
         return new List<LooseDataAttribute>
         {
-            new Models.LooseData.Attributes.UserId(),
-            new Models.LooseData.Attributes.SubmitDate(),
-            new Models.LooseData.Attributes.PedHistoryId(),
+            new Models.LooseData.Attributes.UserId(true),
+            new Models.LooseData.Attributes.SubmitDate(true),
+            new Models.LooseData.Attributes.PedHistoryId(false),
             new()
             {
                 Name = "Offense",

@@ -169,6 +169,9 @@ namespace FivePD.Server.Migrations
                     b.Property<string>("HelpLabel")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<bool>("Hidden")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Label")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 

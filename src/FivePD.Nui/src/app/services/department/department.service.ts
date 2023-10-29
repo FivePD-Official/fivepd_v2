@@ -32,7 +32,7 @@ export class DepartmentService {
     });
   }
 
-  getAll(): Observable<SimpleDepartment[]> {
+  getAllSimple(): Observable<SimpleDepartment[]> {
     return this._http.post<SimpleDepartment[]>('fivepd:department:getAll', {});
   }
 
