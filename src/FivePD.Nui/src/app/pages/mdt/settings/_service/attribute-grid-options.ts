@@ -7,22 +7,19 @@ import { UserRole, UserService } from "@services/user/user.service";
 import { LocalizationService } from "@services/localization/localization.service";
 import { LooseDataService } from "@services/loose-data/loose-data.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
 
 @Injectable()
 export class AttributeGridOptions {
 
-  constructor(
-    private readonly _userService: UserService,
-    private readonly _looseDataService: LooseDataService,
-    private readonly _modalService: ModalService,
-    private readonly _modalFormService: ModalFormService,
-    private readonly _modalConfirmService: ModalConfirmService,
-    private readonly _localizationService: LocalizationService,
-  ) {
-  }
+  private readonly _userService = inject(UserService);
+  private readonly _looseDataService = inject(LooseDataService);
+  private readonly _modalService = inject(ModalService);
+  private readonly _modalFormService = inject(ModalFormService);
+  private readonly _modalConfirmService = inject(ModalConfirmService);
+  private readonly _localizationService = inject(LocalizationService);
 
   createColumnList(set: DefaultSetId, onEdit: () => void, onDelete: () => void): Column<SetAttribute>[] {
     return [
@@ -70,7 +67,6 @@ export class AttributeGridOptions {
           {
             type: 'button',
             label: this._localizationService.translate('UI.ACTION.EDIT'),
-            show: item => item.AddonId === 'admin',
             onClick: attribute => {
               this._modalFormService.open({
                 title: 'UI.LABEL.ATTRIBUTE.EDIT',
@@ -98,7 +94,6 @@ export class AttributeGridOptions {
           {
             type: 'button',
             label: this._localizationService.translate('UI.ACTION.DELETE'),
-            show: item => item.AddonId === 'admin',
             onClick: item => {
               this._modalConfirmService.open({
                 title: 'UI.LABEL.ATTRIBUTE.DELETE.TITLE',
