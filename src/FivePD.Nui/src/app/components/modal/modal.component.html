@@ -5,7 +5,7 @@
         'w-[30vw]': (modalRef.options.columns || 1) > 1,
         'w-[500px]': (modalRef.options.columns || 1) === 1
        }">
-    <div class="mb-4">
+    <div class="mb-6">
       <div class="flex flex-row items-center justify-between">
         <p class="text-2xl font-bold text-zinc-100">{{ modalRef.options.title | translate }}</p>
         <button (click)="close()"
@@ -16,7 +16,7 @@
           </div>
         </button>
       </div>
-      <p *ngIf="modalRef.options.description" class="text-zinc-400 text-lg mt-0.5" [innerHtml]="modalRef.options.description | safeHtml"></p>
+      <p *ngIf="modalRef.options.description" class="text-zinc-400 text-lg mt-1" [innerHtml]="modalRef.options.description | safeHtml"></p>
     </div>
     <div>
       <div #modalContent></div>

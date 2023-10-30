@@ -3,6 +3,7 @@
   <div class="w-full flex flex-row items-center justify-between mb-4">
     <p class="common-title">{{ title }}</p>
     <div *ngIf="buttons" class="flex flex-row items-center justify-between gap-2">
+      <ng-content />
       <app-button
         *ngFor="let button of buttons"
         [variant]="button.variant || 'secondary'"

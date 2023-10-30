@@ -15,12 +15,14 @@ export enum FGender {
   Female,
 }
 
-export enum DefaultSetId {
+export enum CoreSetId {
   ArrestReport = 'fivepd_arrest_report',
   IncidentReport = 'fivepd_incident_report',
+  PedTicket = 'fivepd_ped_ticket',
+  PedWarning = 'fivepd_ped_warning',
 }
 
-export type SetId = DefaultSetId | string;
+export type SetId = CoreSetId | string;
 
 export enum FDutyStatus {
   OffDuty,

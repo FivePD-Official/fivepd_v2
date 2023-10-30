@@ -19,6 +19,7 @@ export type DropdownHeightVariants = 'base' | 'sm';
 
 export interface DropdownBaseOptions {
   label: string;
+  addDefaultItem?: boolean;
   items: DropdownItem[];
   size: 'small' | 'normal';
   height?: DropdownHeightVariants;

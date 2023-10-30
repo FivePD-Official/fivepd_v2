@@ -1,7 +1,6 @@
 ﻿import { AttributeDataType, Button, Column, SetAttribute } from "@models";
 import { createAttributesFormFields } from "../../../../helpers/forms/set-attribute";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
-import { DefaultSetId } from "@enums";
 import { filter, switchMap } from "rxjs";
 import { UserRole, UserService } from "@services/user/user.service";
 import { LocalizationService } from "@services/localization/localization.service";
@@ -23,7 +22,7 @@ export class AttributeGridOptions {
   private readonly _modalConfirmService = inject(ModalConfirmService);
   private readonly _localizationService = inject(LocalizationService);
 
-  createColumnList(set: DefaultSetId, onEdit: () => void, onDelete: () => void): Column<SetAttribute>[] {
+  createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<SetAttribute>[] {
     return [
       {
         header: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
@@ -101,7 +100,7 @@ export class AttributeGridOptions {
             onClick: item => {
               this._modalConfirmService.open({
                 title: 'UI.LABEL.ATTRIBUTE.DELETE.TITLE',
-                description: this._localizationService.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {attribute: item.Name}),
+                description: this._localizationService.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {attribute: item.Name, set}),
                 buttons: {
                   submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
                 },
@@ -118,15 +117,17 @@ export class AttributeGridOptions {
     ];
   }
 
-  createButtons(set: DefaultSetId, onCreate: () => void): Button[] {
+  createButtons(set: string, onCreate: () => void): Button[] {
     return [
       {
-        label: this._localizationService.translate('UI.ACTION.CREATE_ATTRIBUTE'),
+        label: this._localizationService.translate('UI.ACTION.CREATE_ATTRIBUTE.TITLE'),
         show: () => true,
         disabled: () => false,
         onClick: () => {
           this._modalFormService.open({
-            title: 'UI.ACTION.CREATE_ATTRIBUTE',
+            title: 'UI.ACTION.CREATE_ATTRIBUTE.TITLE',
+            description: this._localizationService.translate('UI.ACTION.CREATE_ATTRIBUTE.DESCRIPTION', {set}, false),
+            columns: 2,
             buttons: {
               submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
             },

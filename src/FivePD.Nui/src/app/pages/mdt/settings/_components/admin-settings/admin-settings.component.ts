@@ -5,13 +5,14 @@ import {
   Collation,
   Column,
   Department,
+  Dropdown,
   NumberInput,
   Page,
   SetAttribute,
   TextInput,
   User
 } from "@models";
-import { DefaultSetId } from "@enums";
+import { CoreSetId } from "@enums";
 import { filter, first, switchMap } from "rxjs";
 import { UserRole, UserService } from "@services/user/user.service";
 import { LooseDataService } from "@services/loose-data/loose-data.service";
@@ -33,61 +34,45 @@ import { TranslatePipe } from "../../../../../pipes/translate.pipe";
 import { GridComponent } from '../../../../../components/grid/grid.component';
 import { ContainerComponent } from '../../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../../components/page-header/page-header.component';
+import { DynamicFormInputComponent } from "../../../../../components/dynamic-form-input/dynamic-form-input.component";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-admin-settings',
   templateUrl: './admin-settings.component.html',
   styleUrls: ['./admin-settings.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe]
+  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, DynamicFormInputComponent, NgIf]
 })
 export class AdminSettingsComponent {
 
-  protected readonly UserRole = UserRole;
+  readonly setAttributeDropdown = new Dropdown({
+    key: '#',
+    value: CoreSetId.ArrestReport as any,
+    dropdownOptions: {
+      label: '',
+      addDefaultItem: false,
+      items: [
+        {key: CoreSetId.ArrestReport, label: 'Arrest report'},
+        {key: CoreSetId.IncidentReport, label: 'Incident report'},
+      ],
+      size: 'normal',
+      height: 'base',
+      variant: 'secondary',
+    },
+    required: false,
+  });
+  selectedSet: string = CoreSetId.ArrestReport;
 
   user?: User;
 
-  arrestReportAttributes?: Page<SetAttribute>;
-  arrestReportAttributesCollation: Collation = {
+  attributePage?: Page<SetAttribute>;
+  attributesCollation: Collation = {
     Page: 1,
     Filters: {},
   };
-  arrestReportAttributesColumns: Column<SetAttribute>[] = this._attributeGridOptions.createColumnList(
-    DefaultSetId.ArrestReport,
-    () => this.getArrestReportAttributes(),
-    () => {
-      this.arrestReportAttributesCollation.Page = 1;
-      this.getArrestReportAttributes();
-    }
-  );
-  arrestReportAttributesButtons: Button[] = this._attributeGridOptions.createButtons(
-    DefaultSetId.ArrestReport,
-    () => {
-      this.arrestReportAttributesCollation.Page = 1;
-      this.getArrestReportAttributes();
-    }
-  );
-
-  incidentReportAttributes?: Page<SetAttribute>;
-  incidentReportAttributesCollation: Collation = {
-    Page: 1,
-    Filters: {},
-  };
-  incidentReportAttributesColumns: Column<SetAttribute>[] = this._attributeGridOptions.createColumnList(
-    DefaultSetId.IncidentReport,
-    () => this.getIncidentReportAttributes(),
-    () => {
-      this.incidentReportAttributesCollation.Page = 1;
-      this.getIncidentReportAttributes();
-    }
-  );
-  incidentReportAttributesButtons: Button[] = this._attributeGridOptions.createButtons(
-    DefaultSetId.IncidentReport,
-    () => {
-      this.incidentReportAttributesCollation.Page = 1;
-      this.getIncidentReportAttributes();
-    }
-  );
+  attributesColumns: Column<SetAttribute>[] = [];
+  buttons: Button[] = [];
 
   users?: Page<User>;
   usersCollation: Collation = {
@@ -250,6 +235,33 @@ export class AdminSettingsComponent {
 
   ngOnInit(): void {
     this.getSettings();
+    this.setAttributesGrid();
+  }
+
+  setAttributesGrid(): void {
+    this.attributesCollation.Page = 1;
+    this.getAttributes();
+
+    this.attributesColumns = this._attributeGridOptions.createColumnList(
+      this.selectedSet,
+      () => this.getAttributes(),
+      () => {
+        this.attributesCollation.Page = 1;
+        this.getAttributes();
+      }
+    );
+    this.buttons = this._attributeGridOptions.createButtons(
+      this.selectedSet,
+      () => {
+        this.attributesCollation.Page = 1;
+        this.getAttributes();
+      }
+    );
+  }
+
+  onTableCellActionSelect(selectedItemKey: string): void {
+    this.selectedSet = selectedItemKey;
+    this.setAttributesGrid();
   }
 
   private getSettings(): void {
@@ -257,37 +269,25 @@ export class AdminSettingsComponent {
       return;
     }
 
-    this.getArrestReportAttributes();
-    this.getIncidentReportAttributes();
+    this.getAttributes();
     this.getUsers();
     this.getCalloutDetails();
     this.getDepartments();
   }
 
-  getArrestReportAttributes(): void {
-    this._looseData.getSetAttributesPage(DefaultSetId.ArrestReport, this.arrestReportAttributesCollation).subscribe(res => {
-      this.arrestReportAttributes = res;
+  getAttributes(): void {
+    this._looseData.getSetAttributesPage(this.selectedSet, this.attributesCollation).subscribe(res => {
+      this.attributePage = res;
     });
   }
 
-  onArrestReportAttributesCollationChange(collation: Collation): void {
-    this.arrestReportAttributesCollation = collation;
-    this.getArrestReportAttributes();
-  }
-
-  getIncidentReportAttributes(): void {
-    this._looseData.getSetAttributesPage(DefaultSetId.IncidentReport, this.incidentReportAttributesCollation).subscribe(res => {
-      this.incidentReportAttributes = res;
-    });
-  }
-
-  onIncidentReportAttributesCollationChange(collation: Collation): void {
-    this.incidentReportAttributesCollation = collation;
-    this.getIncidentReportAttributes();
+  onAttributesCollationChange(collation: Collation): void {
+    this.attributesCollation = collation;
+    this.getAttributes();
   }
 
   getUsers(): void {
-    this.userService.getAllPageable(this.arrestReportAttributesCollation).subscribe(res => {
+    this.userService.getAllPageable(this.attributesCollation).subscribe(res => {
       this.users = res;
     });
   }

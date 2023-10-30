@@ -20,16 +20,13 @@
             [data]="calloutDetails"
             (onCollationChange)="onCalloutDetailsCollationChange($event)"/>
 
-  <app-grid [title]="'UI.LABEL.ARREST_REPORT.ATTRIBUTES' | translate"
-            [buttons]="arrestReportAttributesButtons"
-            [columns]="arrestReportAttributesColumns"
-            [data]="arrestReportAttributes"
-            (onCollationChange)="onArrestReportAttributesCollationChange($event)"/>
-
-  <app-grid [title]="'UI.LABEL.INCIDENT_REPORT.ATTRIBUTES' | translate"
-            [buttons]="incidentReportAttributesButtons"
-            [columns]="incidentReportAttributesColumns"
-            [data]="incidentReportAttributes"
-            (onCollationChange)="onIncidentReportAttributesCollationChange($event)"/>
+  <app-grid [title]="'UI.LABEL.ATTRIBUTE.PLURAL' | translate"
+            [buttons]="buttons"
+            [columns]="attributesColumns"
+            [data]="attributePage"
+            (onCollationChange)="onAttributesCollationChange($event)">
+      <app-dynamic-form-input [field]="setAttributeDropdown"
+                              (onChange)="onTableCellActionSelect($event)"/>
+  </app-grid>
 
 </app-container>

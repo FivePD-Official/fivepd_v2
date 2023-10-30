@@ -4,7 +4,7 @@ import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { filter, switchMap } from 'rxjs';
 import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
 import { LocalizationService } from '@services/localization/localization.service';
-import { DefaultSetId } from '@enums';
+import { CoreSetId } from '@enums';
 import { Store } from '@ngrx/store';
 import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
@@ -46,11 +46,11 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.ArrestReport)),
+        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(CoreSetId.ArrestReport)),
       }).result
         .pipe(
           filter(res => res.success),
-          switchMap(res => this._looseData.addEntity(DefaultSetId.ArrestReport, {
+          switchMap(res => this._looseData.addEntity(CoreSetId.ArrestReport, {
             UserId: this.user!.Id,
             DepartmentId: this.user!.DepartmentId,
             SubmitDate: new Date(),
@@ -83,11 +83,11 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(DefaultSetId.IncidentReport)),
+        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(CoreSetId.IncidentReport)),
       }).result
         .pipe(
           filter(res => res.success),
-          switchMap(res => this._looseData.addEntity(DefaultSetId.IncidentReport, {
+          switchMap(res => this._looseData.addEntity(CoreSetId.IncidentReport, {
             UserId: this.user!.Id,
             SubmitDate: new Date(),
             ...res.value!,
@@ -123,7 +123,7 @@ export class ReportsComponent implements OnInit {
   }
 
   getArrestReports(): void {
-    this._looseData.getEntities(DefaultSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
+    this._looseData.getEntities(CoreSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
       this.arrestReports = wrapper.page;
       this.arrestReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
@@ -179,7 +179,7 @@ export class ReportsComponent implements OnInit {
                 ).result
                   .pipe(
                     filter(res => res.success),
-                    switchMap(res => this._looseData.editEntity(DefaultSetId.ArrestReport, entity.Id, {...entity, ...res.value!})),
+                    switchMap(res => this._looseData.editEntity(CoreSetId.ArrestReport, entity.Id, {...entity, ...res.value!})),
                     this._modal.handleResponse(),
                   )
                   .subscribe(() => this.getArrestReports());
@@ -199,7 +199,7 @@ export class ReportsComponent implements OnInit {
                 }).result
                   .pipe(
                     filter(res => res.success),
-                    switchMap(() => this._looseData.deleteEntity(DefaultSetId.ArrestReport, item.Id)),
+                    switchMap(() => this._looseData.deleteEntity(CoreSetId.ArrestReport, item.Id)),
                     this._modal.handleResponse()
                   ).subscribe(() => this.getArrestReports())
               }
@@ -216,7 +216,7 @@ export class ReportsComponent implements OnInit {
   }
 
   getIncidentReports(): void {
-    this._looseData.getEntities(DefaultSetId.IncidentReport, this.incidentReportCollation).subscribe(wrapper => {
+    this._looseData.getEntities(CoreSetId.IncidentReport, this.incidentReportCollation).subscribe(wrapper => {
       this.incidentReports = wrapper.page;
       this.incidentReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
@@ -276,7 +276,7 @@ export class ReportsComponent implements OnInit {
                 ).result
                   .pipe(
                     filter(res => res.success),
-                    switchMap(res => this._looseData.editEntity(DefaultSetId.IncidentReport, entity.Id, {...entity, ...res.value!})),
+                    switchMap(res => this._looseData.editEntity(CoreSetId.IncidentReport, entity.Id, {...entity, ...res.value!})),
                     this._modal.handleResponse(),
                   )
                   .subscribe(() => this.getIncidentReports());
@@ -296,7 +296,7 @@ export class ReportsComponent implements OnInit {
                 }).result
                   .pipe(
                     filter(res => res.success),
-                    switchMap(() => this._looseData.deleteEntity(DefaultSetId.IncidentReport, item.Id)),
+                    switchMap(() => this._looseData.deleteEntity(CoreSetId.IncidentReport, item.Id)),
                     this._modal.handleResponse()
                   ).subscribe(() => this.getIncidentReports())
               }

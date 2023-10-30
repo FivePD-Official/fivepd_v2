@@ -10,15 +10,25 @@ import { NgClass, NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
 import { CustomValidators } from "../../helpers/validators";
 
 const dropdownSelectedItemVariants: Record<DropdownVariants, string> = {
-  'secondary': `border border-zinc-600 hover:read-write:border-zinc-400 bg-transparent
+  'secondary': `border border-zinc-600 bg-transparent
                 before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
                 before:bg-transparent`,
   'tertiary': `border border-zinc-800
                before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
-               before:bg-zinc-800 hover:read-write:before:bg-zinc-700`,
+               before:bg-zinc-800`,
   'tertiary-bg': `border border-zinc-700
                   before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
-                  before:bg-zinc-700 hover:read-write:before:bg-zinc-600`,
+                  before:bg-zinc-700`,
+};
+const dropdownSelectedItemVariantsHover: Record<DropdownVariants, string> = {
+  'secondary': `hover:border-zinc-400`,
+  'tertiary': `hover:before:bg-zinc-700`,
+  'tertiary-bg': `hover:before:bg-zinc-600`,
+};
+const dropdownSelectedItemVariantsHoverReadonly: Record<DropdownVariants, string> = {
+  'secondary': `hover:border-zinc-600`,
+  'tertiary': `hover:before:border-zinc-800`,
+  'tertiary-bg': `hover:before:border-zinc-700`,
 };
 
 const dropdownHeightVariants: Record<DropdownHeightVariants, string> = {
@@ -35,7 +45,6 @@ const dropdownHeightVariants: Record<DropdownHeightVariants, string> = {
 })
 export class DynamicFormInputComponent implements OnInit, OnChanges {
 
-  @Input() withoutForm: boolean = false;
   @Input() form?: FormGroup;
   @Input() field!: FormInputBase<any>;
 
@@ -51,7 +60,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
   dropdownSelectedItem: DropdownItem = {key: -1, label: ''};
   dropdownSelectedItems: DropdownItem[] = [];
   dropdownFilteredItems: DropdownItem[] = [];
-  multiSelectLabel: string = '';
+  dropdownSelectedItemLabel: string = '';
 
   constructor(
     private _localization: LocalizationService,
@@ -63,7 +72,14 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
       this.form = new FormGroup({
         [this.field.key]: this.pseudoFormControl,
       });
-      this.pseudoFormControl.setValue(this.field.value);
+
+      this.control.setValue(this.field.value);
+      if (this.field.dropdownOptions) {
+        const item = this.field.dropdownOptions.items.find(x => x.key === this.field.value);
+        if (item) {
+          this.dropdownSelectedItem = item;
+        }
+      }
     }
 
     this.setLabels();
@@ -83,7 +99,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
     });
 
     if (this.field.type === 'dropdown') {
-      if (this.control.value === undefined) {
+      if (this.control.value === undefined && this.field.value === undefined) {
         this.control?.patchValue(-1);
       }
     }
@@ -134,7 +150,9 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
     }
 
     const className = {
-      [dropdownSelectedItemVariants[this.field.dropdownOptions?.variant]]: true
+      [dropdownSelectedItemVariants[this.field.dropdownOptions?.variant]]: true,
+      [dropdownSelectedItemVariantsHover[this.field.dropdownOptions?.variant]]: !this.field.readonly,
+      [dropdownSelectedItemVariantsHoverReadonly[this.field.dropdownOptions?.variant]]: this.field.readonly,
     };
 
     if (this.field.dropdownOptions?.height) {
@@ -153,6 +171,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
 
     const {items, label} = field.dropdownOptions;
     this.dropdownFilteredItems = items;
+    this.filterDropdownItems();
 
     if (field.dropdownOptions.type === 'single' && 'selectedItemResolver' in field.dropdownOptions) {
       const selectedItemResolver = field.dropdownOptions.selectedItemResolver;
@@ -183,7 +202,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
           this.dropdownSelectedItem.label = label;
         }
       }
-    } else {
+    } else if (this.field.value === undefined) {
       this.control?.patchValue(-1);
       this.dropdownSelectedItem.label = label;
     }
@@ -217,16 +236,16 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
     }
 
     if (this.dropdownSelectedItems.length) {
-      this.multiSelectLabel = this._localization.translate('UI.LABEL.SELECTED', {count: this.dropdownSelectedItems.length.toString()}, false);
+      this.dropdownSelectedItemLabel = this._localization.translate('UI.LABEL.SELECTED', {count: this.dropdownSelectedItems.length.toString()}, false);
       return;
     }
 
     if (this.dropdownSelectedItem) {
-      this.multiSelectLabel = this.dropdownSelectedItem.label;
+      this.dropdownSelectedItemLabel = this.dropdownSelectedItem.label;
       return;
     }
 
-    this.multiSelectLabel = this.field.dropdownOptions.label;
+    this.dropdownSelectedItemLabel = this.field.dropdownOptions.label;
   }
 
   private setSelectedItem(selectedItem: DropdownItem, updateControl: boolean = false): void {
@@ -243,7 +262,8 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
     this.dropdownSelectedItem = selectedItem;
     this.filterDropdownItems();
 
-    if (selectedItem.key !== -1) {
+    const addDefaultItem = this.field.dropdownOptions.addDefaultItem === undefined || this.field.dropdownOptions.addDefaultItem;
+    if (addDefaultItem && selectedItem.key !== -1) {
       this.dropdownFilteredItems.unshift({key: -1, label: this.field.dropdownOptions.label});
     }
 

@@ -50,8 +50,7 @@
                         variant="tertiary-bg"
                         size="sm"
                         (onClick)="jumpToMarker(callout)"/>
-            <app-dynamic-form-input [withoutForm]="true"
-                                    [field]="getAssignCalloutToUnitsField(callout)"
+            <app-dynamic-form-input [field]="getAssignCalloutToUnitsField(callout)"
                                     (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
             <app-button [fullWidth]="true"
                         label="Dismiss"
@@ -107,8 +106,7 @@
                         variant="tertiary-bg"
                         size="sm"
                         (onClick)="jumpToMarker(callout)"/>
-            <app-dynamic-form-input [withoutForm]="true"
-                                    [field]="getAssignCalloutToUnitsField(callout)"
+            <app-dynamic-form-input [field]="getAssignCalloutToUnitsField(callout)"
                                     (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
           </div>
         </div>
