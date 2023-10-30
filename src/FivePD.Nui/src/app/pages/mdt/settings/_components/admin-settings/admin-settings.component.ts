@@ -53,8 +53,10 @@ export class AdminSettingsComponent {
       label: '',
       addDefaultItem: false,
       items: [
-        {key: CoreSetId.ArrestReport, label: 'Arrest report'},
-        {key: CoreSetId.IncidentReport, label: 'Incident report'},
+        {key: CoreSetId.ArrestReport, label: 'Arrest reports'},
+        {key: CoreSetId.IncidentReport, label: 'Incident reports'},
+        {key: CoreSetId.PedTicket, label: 'Ped tickets'},
+        {key: CoreSetId.PedWarning, label: 'Ped warnings'},
       ],
       size: 'normal',
       height: 'base',
