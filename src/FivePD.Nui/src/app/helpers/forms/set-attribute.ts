@@ -1,9 +1,9 @@
-﻿import { AttributeDataType, Checkbox, Dropdown, FormInputBase, SetAttribute, TextInput } from '@models';
+﻿import { AttributeDataType, Checkbox, Dropdown, FormInputBase, LooseDataAttribute, TextInput } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 import { CustomValidators } from "../validators";
 import { coreAttributeNames, CoreAttributes } from "../core-attributes";
 
-export function createAttributesFormFields(localizationService: LocalizationService, value?: SetAttribute): FormInputBase<any>[] {
+export function createAttributesFormFields(localizationService: LocalizationService, value?: LooseDataAttribute): FormInputBase<any>[] {
   const fields = [
     new TextInput({
       key: 'Name',

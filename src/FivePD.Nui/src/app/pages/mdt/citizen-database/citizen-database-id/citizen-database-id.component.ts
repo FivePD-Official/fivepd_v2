@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { LooseDataEntity, PedHistory, PedLicense, PedLicenseStatus } from "@models";
-import { tap, zip } from "rxjs";
+import { AttributeDataType, LooseDataEntity, PedHistory, PedLicense, PedLicenseStatus } from "@models";
+import { map, tap, zip } from "rxjs";
 import { CoreSetId, FGender, PedLicenseType } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
@@ -14,6 +14,7 @@ import { ContainerComponent } from '../../../../components/container/container.c
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
 import { LooseDataService } from "@services/loose-data/loose-data.service";
+import { formatDate } from "@helpers";
 
 @Component({
   selector: 'app-citizen-database-id',
@@ -62,10 +63,38 @@ export class CitizenDatabaseIdComponent implements OnInit {
     zip(
       this._looseDataService.getEntities(CoreSetId.PedTicket, filter),
       this._looseDataService.getEntities(CoreSetId.PedWarning, filter),
-    ).subscribe(([tickets, warnings]) => {
-      this.tickets = tickets;
-      this.warnings = warnings;
-    });
+    ).pipe(
+      map(entityArrays => {
+        return entityArrays.map(entityArray => entityArray.map(entity => {
+          // TODO: map core attributes to their names somehow, should be done on the server
+          // delete entity.MappedValues['UserId'];
+          // delete entity.MappedValues['UserIds'];
+          // delete entity.MappedValues['DepartmentId'];
+          // delete entity.MappedValues['DepartmentIds'];
+          // delete entity.MappedValues['IncidentHistoryId'];
+          // delete entity.MappedValues['IncidentHistoryIds'];
+          delete entity.MappedValues['PedHistoryId'];
+          delete entity.MappedValues['PedHistoryIds'];
+          return entity;
+        }));
+      }),
+      map(entityArrays => {
+        return entityArrays.map(entityArray => entityArray.map(entity => {
+          for (const [key, value] of Object.entries(entity.MappedValues)) {
+            const attribute = entity.Set?.Attributes?.find(attribute => attribute.Name === key);
+            if (attribute && attribute.DataType === AttributeDataType.Date) {
+              entity.MappedValues[key] = formatDate(new Date(value), 'none');
+            }
+          }
+          return entity;
+        }));
+      }),
+    )
+      .subscribe(([tickets, warnings]) => {
+        console.log(tickets)
+        this.tickets = tickets;
+        this.warnings = warnings;
+      });
   }
 
   licenseTypeI18nKey(licenseType: PedLicenseType): string {

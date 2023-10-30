@@ -1,4 +1,4 @@
-import { SetAttribute } from './loose-data';
+import { AttributeDataType, LooseDataAttribute } from './loose-data';
 import { FGender, FIncidentPriority, FIncidentType, PedLicenseType } from "@enums";
 
 export interface WithId {
@@ -70,6 +70,9 @@ export interface Page<T> {
 export interface LooseDataEntity extends WithId {
   SetId: string;
   MappedValues: Record<string, any>;
+  Set?: {
+    Attributes?: LooseDataAttribute[];
+  }
 }
 
 export interface MappedLooseDataEntity extends Omit<LooseDataEntity, 'MappedValues'> {
@@ -78,12 +81,12 @@ export interface MappedLooseDataEntity extends Omit<LooseDataEntity, 'MappedValu
 
 export interface LooseDataEntityWrapper {
   entity: MappedLooseDataEntity;
-  attributes: SetAttribute[];
+  attributes: LooseDataAttribute[];
 }
 
 export interface LooseDataEntityPageWrapper {
   page: Page<MappedLooseDataEntity>;
-  attributes: SetAttribute[];
+  attributes: LooseDataAttribute[];
 }
 
 export interface Vector3 {

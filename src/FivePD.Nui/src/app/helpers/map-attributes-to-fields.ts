@@ -8,13 +8,13 @@
   FormInputBaseOptions,
   MappedLooseDataEntity,
   NumberInput,
-  SetAttribute,
+  LooseDataAttribute,
   Textarea,
   TextInput
 } from '@models';
 import { coreAttributeNames, CoreAttributes } from "./core-attributes";
 
-export function mapAttributesToFields(attributes: SetAttribute[], entity?: MappedLooseDataEntity, additionalFields: FormInputBase<any>[] = []): FormInputBase<any>[] {
+export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?: MappedLooseDataEntity, additionalFields: FormInputBase<any>[] = []): FormInputBase<any>[] {
   const fields: FormInputBase<any>[] = [];
 
   // Add predefined fields

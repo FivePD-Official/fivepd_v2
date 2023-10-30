@@ -1,4 +1,4 @@
-﻿import { AttributeDataType, Button, Column, SetAttribute } from "@models";
+﻿import { AttributeDataType, Button, Column, LooseDataAttribute } from "@models";
 import { createAttributesFormFields } from "../../../../helpers/forms/set-attribute";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 import { filter, switchMap } from "rxjs";
@@ -22,7 +22,7 @@ export class AttributeGridOptions {
   private readonly _modalConfirmService = inject(ModalConfirmService);
   private readonly _localizationService = inject(LocalizationService);
 
-  createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<SetAttribute>[] {
+  createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<LooseDataAttribute>[] {
     return [
       {
         header: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
@@ -75,7 +75,7 @@ export class AttributeGridOptions {
                   submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
                 },
                 fields: updatedAttribute => createAttributesFormFields(this._localizationService, updatedAttribute),
-                valueResolver: new ValueResolver<SetAttribute>(attribute, this._looseDataService.getSetAttribute(set, attribute.Id))
+                valueResolver: new ValueResolver<LooseDataAttribute>(attribute, this._looseDataService.getSetAttribute(set, attribute.Id))
               }).result
                 .pipe(
                   filter(res => res.success),

@@ -7,7 +7,7 @@ import {
   LooseDataEntityWrapper,
   MappedLooseDataEntity,
   PedHistory,
-  SetAttribute,
+  LooseDataAttribute,
   User
 } from '@models';
 import { LooseDataService } from '@services/loose-data/loose-data.service';
@@ -43,7 +43,7 @@ export class ModalEntityViewComponent implements OnInit {
   constructor(
     private modalRef: ModalRef,
     @Inject(ENTITY) private mappedEntity: MappedLooseDataEntity,
-    @Inject(ATTRIBUTES) private attributes: SetAttribute[],
+    @Inject(ATTRIBUTES) private attributes: LooseDataAttribute[],
     private _looseData: LooseDataService,
     private readonly _router: Router,
   ) {
@@ -74,7 +74,6 @@ export class ModalEntityViewComponent implements OnInit {
         tap(() => this.modalRef.stopLoading())
       )
       .subscribe(res => {
-        console.log(res)
         this.mapEntityValues(res);
       });
   }

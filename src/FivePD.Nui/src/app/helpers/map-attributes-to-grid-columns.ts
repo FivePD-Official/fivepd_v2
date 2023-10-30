@@ -1,11 +1,11 @@
-﻿import { Column, MappedLooseDataEntity, SetAttribute } from '@models';
+﻿import { Column, MappedLooseDataEntity, LooseDataAttribute } from '@models';
 
 export interface InsertableItem<T> {
   index: number;
   item: T;
 }
 
-export function mapAttributesToGridColumns(attributes: SetAttribute[], itemsToInsert: InsertableItem<Column<MappedLooseDataEntity>>[] = []): Column<MappedLooseDataEntity>[] {
+export function mapAttributesToGridColumns(attributes: LooseDataAttribute[], itemsToInsert: InsertableItem<Column<MappedLooseDataEntity>>[] = []): Column<MappedLooseDataEntity>[] {
   const attributesWithoutOrder = [];
   const attributesWithOrder = [];
   for (const attr of attributes.filter(attr => attr.ShowInGrid)) {

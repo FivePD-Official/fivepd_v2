@@ -1,13 +1,13 @@
 ﻿export interface Set {
   Id: string;
-  Attributes: SetAttribute[];
+  Attributes: LooseDataAttribute[];
 }
 
-export interface SetAttribute {
+export interface LooseDataAttribute {
   Id: number;
   Name: string;
   Order?: number;
-  DataType: number;
+  DataType: AttributeDataType;
   Required: boolean;
   Hidden?: boolean;
   Readonly?: boolean;
@@ -32,5 +32,5 @@ export interface SetAttributeOptions {
   Items: Record<number, string>;
 }
 
-export interface AddSetAttribute extends Omit<SetAttribute, 'Id' | 'AddonId'> {}
-export interface EditSetAttribute extends Omit<SetAttribute, 'AddonId' | 'DataType'> {}
+export interface AddSetAttribute extends Omit<LooseDataAttribute, 'Id' | 'AddonId'> {}
+export interface EditSetAttribute extends Omit<LooseDataAttribute, 'AddonId' | 'DataType'> {}

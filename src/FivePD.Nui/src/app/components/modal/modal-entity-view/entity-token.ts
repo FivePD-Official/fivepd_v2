@@ -1,5 +1,5 @@
 ﻿import { InjectionToken } from '@angular/core';
-import { MappedLooseDataEntity, SetAttribute } from '@models';
+import { MappedLooseDataEntity, LooseDataAttribute } from '@models';
 
 export const ENTITY = new InjectionToken<MappedLooseDataEntity>('Entity');
-export const ATTRIBUTES = new InjectionToken<SetAttribute[]>('Attributes');
+export const ATTRIBUTES = new InjectionToken<LooseDataAttribute[]>('Attributes');

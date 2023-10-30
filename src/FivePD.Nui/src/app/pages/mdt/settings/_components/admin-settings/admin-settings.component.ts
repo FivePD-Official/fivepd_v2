@@ -8,7 +8,7 @@ import {
   Dropdown,
   NumberInput,
   Page,
-  SetAttribute,
+  LooseDataAttribute,
   TextInput,
   User
 } from "@models";
@@ -68,12 +68,12 @@ export class AdminSettingsComponent {
 
   user?: User;
 
-  attributePage?: Page<SetAttribute>;
+  attributePage?: Page<LooseDataAttribute>;
   attributesCollation: Collation = {
     Page: 1,
     Filters: {},
   };
-  attributesColumns: Column<SetAttribute>[] = [];
+  attributesColumns: Column<LooseDataAttribute>[] = [];
   buttons: Button[] = [];
 
   users?: Page<User>;

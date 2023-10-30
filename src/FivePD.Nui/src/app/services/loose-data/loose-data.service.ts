@@ -11,7 +11,7 @@ import {
   LooseDataEntityWrapper,
   MappedLooseDataEntity,
   Page,
-  SetAttribute
+  LooseDataAttribute
 } from '@models';
 import { map, Observable, switchMap, tap } from 'rxjs';
 import { SetId } from '@enums';
@@ -21,23 +21,23 @@ import { SetId } from '@enums';
 })
 export class LooseDataService {
 
-  private _sets: Record<string, SetAttribute[]> = {};
+  private _sets: Record<string, LooseDataAttribute[]> = {};
 
   constructor(
     private _http: HttpClient,
   ) {
   }
 
-  getSetAttribute(setId: SetId, attributeId: number): Observable<SetAttribute> {
+  getSetAttribute(setId: SetId, attributeId: number): Observable<LooseDataAttribute> {
     return this.updateSetAttribute(setId, attributeId);
   }
 
-  getSetAttributes(setId: SetId): SetAttribute[] {
+  getSetAttributes(setId: SetId): LooseDataAttribute[] {
     return this._sets[setId];
   }
 
-  getSetAttributesPage(setId: SetId, collation: Collation): Observable<Page<SetAttribute>> {
-    return this._http.post<Page<SetAttribute>>('fivepd:looseData:getSetAttributesPageable', {
+  getSetAttributesPage(setId: SetId, collation: Collation): Observable<Page<LooseDataAttribute>> {
+    return this._http.post<Page<LooseDataAttribute>>('fivepd:looseData:getSetAttributesPageable', {
       SetId: setId,
       ...collation
     });
@@ -127,8 +127,8 @@ export class LooseDataService {
     });
   }
 
-  private updateSetAttribute(setId: SetId, attributeId: number): Observable<SetAttribute> {
-    return this._http.post<SetAttribute>('fivepd:looseData:getSetAttribute', {
+  private updateSetAttribute(setId: SetId, attributeId: number): Observable<LooseDataAttribute> {
+    return this._http.post<LooseDataAttribute>('fivepd:looseData:getSetAttribute', {
       Id: attributeId,
     }).pipe(
       tap(attribute => {
@@ -142,8 +142,8 @@ export class LooseDataService {
     );
   }
 
-  private updateSetAttributes(setId: SetId): Observable<SetAttribute[]> {
-    return this._http.post<SetAttribute[]>('fivepd:looseData:getSetAttributes', {
+  private updateSetAttributes(setId: SetId): Observable<LooseDataAttribute[]> {
+    return this._http.post<LooseDataAttribute[]>('fivepd:looseData:getSetAttributes', {
       SetId: setId,
     }).pipe(
       tap(attributes => this._sets[setId] = attributes)

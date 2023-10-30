@@ -18,7 +18,6 @@ using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services.LooseData;
 
@@ -716,7 +715,6 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         var entities = this.GetEntities(setType, false, false, request.Filter);
         foreach (var entity in entities)
         {
-            entity.Set = null;
             entity.Values = null;
         }
 
