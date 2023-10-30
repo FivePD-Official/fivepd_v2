@@ -41,6 +41,8 @@ internal class PedService : IPedService, IOnInit
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.Get);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetAllSimple);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetTickets);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.PedHistory.GetWarnings);
 
         this._eventHandlerDictionary[Events.Ped.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
         this._eventHandlerDictionary[Events.Ped.SetProperty] +=

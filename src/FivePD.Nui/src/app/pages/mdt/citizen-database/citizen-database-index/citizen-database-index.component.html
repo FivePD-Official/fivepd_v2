@@ -14,7 +14,7 @@
       <div *ngFor="let ped of recentlyViewedPeds"
            [routerLink]="'/mdt/citizen-database/' + ped.Id"
            class="bg-zinc-800 rounded-md p-2 hover:cursor-pointer hover:bg-zinc-700">
-        <p class="text-zinc-300 font-medium">{{ ped.Firstname }} {{ ped.Lastname }}</p>
+        <p class="text-zinc-300 font-medium">{{ ped.Firstname }} {{ ped.Lastname }} <span class="text-sm text-zinc-400">({{ ped.Gender === FGender.Male ? 'Male' : 'Female' }})</span></p>
         <p class="text-zinc-400 text-sm">{{ ped.Birthdate | date: 'mediumDate' }}</p>
       </div>
     </div>

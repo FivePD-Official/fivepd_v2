@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { Collation, Page, PedHistory, SimplePedHistory } from "@models";
+import { Collation, LooseDataEntity, Page, PedHistory, SimplePedHistory } from "@models";
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +30,27 @@ export class PedHistoryService {
 
   getAllSimple(): Observable<SimplePedHistory[]> {
     return this._http.post<SimplePedHistory[]>('fivepd:pedHistory:getAllSimple', {});
+  }
+
+  // TODO: refactor these 2 methods, move to LooseDataService
+  getTickets(id: string | number): Observable<LooseDataEntity[]> {
+    if (typeof id === 'string') {
+      id = parseInt(id);
+    }
+
+    return this._http.post<LooseDataEntity[]>('fivepd:pedHistory:getTickets', {
+      Id: id,
+    });
+  }
+
+  getWarnings(id: string | number): Observable<LooseDataEntity[]> {
+    if (typeof id === 'string') {
+      id = parseInt(id);
+    }
+
+    return this._http.post<LooseDataEntity[]>('fivepd:pedHistory:getWarnings', {
+      Id: id,
+    });
   }
 
 }

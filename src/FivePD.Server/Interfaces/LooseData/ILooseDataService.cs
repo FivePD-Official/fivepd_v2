@@ -111,8 +111,11 @@ public interface ILooseDataService
     /// Finds and maps all entities of the given set.
     /// </summary>
     /// <typeparam name="TS">The type of the set which entities are needed.</typeparam>
+    /// <param name="withTracking">The id sof the withTracking.</param>
+    /// <param name="queryCoreAttributeValue">The id sof the entity.</param>
+    /// <param name="filter">The id of sthe entity.</param>
     /// <returns>All entities of the set.</returns>
-    public List<LooseDataEntity> GetEntities<TS>()
+    public List<LooseDataEntity> GetEntities<TS>(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
         where TS : LooseDataSet;
 }
 

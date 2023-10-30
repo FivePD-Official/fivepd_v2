@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
@@ -12,8 +13,10 @@ using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
+using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
+using FivePD.Server.Models.LooseData;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +33,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private readonly DatabaseContext _databaseContext;
     private readonly IRandomService _randomService;
     private readonly ITickQueueService _tickQueueService;
+    private readonly ILooseDataService _looseDataService;
 
     private readonly ConcurrentDictionary<int, FPed> _peds = new();
     private Guid _checkPedsId;
@@ -42,18 +46,21 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
+    /// <param name="looseDataService">The <see cref="ILooseDataService" /> to use.</param>
     public PedService(
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
         DatabaseContext databaseContext,
         IRandomService randomService,
-        ITickQueueService tickQueueService)
+        ITickQueueService tickQueueService,
+        ILooseDataService looseDataService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._databaseContext = databaseContext;
         this._randomService = randomService;
         this._tickQueueService = tickQueueService;
+        this._looseDataService = looseDataService;
     }
 
     /// <inheritdoc/>
@@ -227,5 +234,42 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             .ToList();
 
         networkCallbackDelegate.InvokeWithJson(simplePedHistories);
+    }
+    
+    
+    [UIEvent(Events.PedHistory.GetTickets)]
+    private void GetTicketsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<IdRequest>();
+        var entities = this._looseDataService.GetEntities<PedTicketSet>(false, false, new Dictionary<string, object>
+        {
+            ["PedHistoryId"] = request.Id,
+        });
+
+        foreach (var entity in entities)
+        {
+            entity.Set = null;
+            entity.Values = null;
+        }
+        
+        networkCallbackDelegate.InvokeWithJson(entities);
+    }
+    
+    [UIEvent(Events.PedHistory.GetWarnings)]
+    private void GetWarningsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<IdRequest>();
+        var entities = this._looseDataService.GetEntities<PedWarningSet>(false, false, new Dictionary<string, object>
+        {
+            ["PedHistoryId"] = request.Id,
+        });
+
+        foreach (var entity in entities)
+        {
+            entity.Set = null;
+            entity.Values = null;
+        }
+        
+        networkCallbackDelegate.InvokeWithJson(entities);
     }
 }

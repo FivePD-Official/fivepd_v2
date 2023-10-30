@@ -93,16 +93,19 @@ public abstract class LooseDataRepository<TS> : IOnInit, IOnDestroy
     /// <returns>The entity.</returns>
     public LooseDataEntity Get(string id)
     {
-        return this._looseDataService.GetEntity(id);
+        return this._looseDataService.GetEntity(id); // TODO: withTracking, queryCoreAttributeValue, filter
     }
 
     /// <summary>
     /// Gets all entities.
     /// </summary>
+    /// <param name="withTracking">The id sof the withTracking.</param>
+    /// <param name="queryCoreAttributeValue">The id sof the entity.</param>
+    /// <param name="filter">The id of sthe entity.</param>
     /// <returns>The entities.</returns>
-    public List<LooseDataEntity> GetAll()
+    public List<LooseDataEntity> GetAll(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
     {
-        return this._looseDataService.GetEntities<TS>();
+        return this._looseDataService.GetEntities<TS>(withTracking, queryCoreAttributeValue, filter);
     }
 
     /// <summary>

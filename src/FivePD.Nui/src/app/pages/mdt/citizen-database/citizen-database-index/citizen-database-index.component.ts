@@ -106,4 +106,5 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     this.getAll();
   }
 
+  protected readonly FGender = FGender;
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PedHistory, PedLicense, PedLicenseStatus } from "@models";
+import { LooseDataEntity, PedHistory, PedLicense, PedLicenseStatus } from "@models";
 import { tap } from "rxjs";
 import { FGender, PedLicenseType } from "@enums";
 import { Store } from "@ngrx/store";
@@ -23,8 +23,14 @@ import { AppActions } from "@store/app.actions";
 })
 export class CitizenDatabaseIdComponent implements OnInit {
 
+  protected readonly FGender = FGender;
+  protected readonly PedLicenseStatus = PedLicenseStatus;
+  protected readonly ObjectEntries = Object.entries;
+
   params!: Params;
   pedHistory?: PedHistory;
+  tickets: LooseDataEntity[] = [];
+  warnings: LooseDataEntity[] = [];
 
   constructor(private readonly _activatedRoute: ActivatedRoute,
               private readonly _pedHistoryService: PedHistoryService,
@@ -42,10 +48,16 @@ export class CitizenDatabaseIdComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  getPedHistory(id: string): void {
+  getPedHistory(id: number): void {
     this._pedHistoryService.get(id).subscribe(pedHistory => {
       this.pedHistory = pedHistory;
       this._store.dispatch(AppActions.addPedToRecentlyViewed({ped: pedHistory}));
+    });
+    this._pedHistoryService.getTickets(id).subscribe(tickets => {
+      this.tickets = tickets;
+    });
+    this._pedHistoryService.getWarnings(id).subscribe(warnings => {
+      this.warnings = warnings;
     });
   }
 
@@ -78,7 +90,4 @@ export class CitizenDatabaseIdComponent implements OnInit {
         return 'LABEL.REVOKED';
     }
   }
-
-  protected readonly FGender = FGender;
-  protected readonly PedLicenseStatus = PedLicenseStatus;
 }

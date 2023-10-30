@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
@@ -270,10 +271,10 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     }
 
     /// <inheritdoc />
-    public List<LooseDataEntity> GetEntities<TS>()
+    public List<LooseDataEntity> GetEntities<TS>(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
         where TS : LooseDataSet
     {
-        return this.GetEntitiesWithOptionalType<TS>(null);
+        return this.GetEntitiesWithOptionalType<TS>(null, withTracking, queryCoreAttributeValue, filter);
     }
 
     /// <inheritdoc />
@@ -306,7 +307,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         return mappedEntity;
     }
 
-    private List<LooseDataEntity> GetEntitiesWithOptionalType<TS>(Type setType)
+    private List<LooseDataEntity> GetEntitiesWithOptionalType<TS>(Type setType, bool withTracking, bool queryCoreAttributeValues, IReadOnlyDictionary<string, object> filter = null)
         where TS : LooseDataSet
     {
         var setIdAttr = (setType ?? typeof(TS)).GetCustomAttribute<LooseDataSetIdAttribute>();
@@ -315,14 +316,54 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return new List<LooseDataEntity>();
         }
 
-        var entities = this._databaseContext.LooseDataEntities
+        var query = withTracking ? this._databaseContext.LooseDataEntities : this._databaseContext.LooseDataEntities.AsNoTracking();
+        var entities = query
             .Include(entity => entity.Values)
+            .ThenInclude(looseDataValue => looseDataValue.Attribute)
             .Include(entity => entity.Set)
             .ThenInclude(set => set.Attributes)
             .Where(entity => entity.Set.Id == setIdAttr.Id)
             .ToList();
 
-        return entities.Select(this.MapEntity).ToList();
+        if (filter is null)
+        {
+            return entities.Select(x => this.MapEntity(x, queryCoreAttributeValues)).ToList();
+        }
+
+        var itemsToRemove = new List<LooseDataEntity>();
+        foreach (var entity in entities)
+        {
+            foreach (var value in entity.Values)
+            {
+                if (!filter.TryGetValue(value.Attribute.Name, out var filterValue))
+                {
+                    continue;
+                }
+
+                var attributeValue = JsonConvert.DeserializeObject(value.Value);
+                if (attributeValue is IConvertible testValueConvertible && filterValue is IConvertible)
+                {
+                    attributeValue = testValueConvertible.ToType(
+                        filterValue.GetType(),
+                        CultureInfo.InvariantCulture);
+                    if (!Equals(attributeValue, filterValue))
+                    {
+                        itemsToRemove.Add(entity);
+                    }
+                }
+                else if (attributeValue != filterValue)
+                {
+                    itemsToRemove.Add(entity);
+                }
+            }
+        }
+
+        foreach (var itemToRemove in itemsToRemove)
+        {
+            entities.Remove(itemToRemove);
+        }
+
+        return entities.Select(x => this.MapEntity(x, queryCoreAttributeValues)).ToList();
     }
 
     private Page<LooseDataEntity> GetEntitiesPage(Type setType, int pageNumber, Filters<LooseDataEntity> filters)
@@ -336,15 +377,15 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         var page = this._databaseContext.LooseDataEntities
             .Include(entity => entity.Values)
             .Include(entity => entity.Set)
-            .ThenInclude(set => set.Attributes)
+            .ThenInclude(set => set.Attributes) // TODO: why is this include needed?
             .Where(entity => entity.Set.Id == setIdAttr.Id)
             .Paginate(pageNumber, filters);
 
-        page.Items = page.Items.Select(this.MapEntity).ToList();
+        page.Items = page.Items.Select(x => this.MapEntity(x)).ToList();
         return page;
     }
 
-    private LooseDataEntity MapEntity(LooseDataEntity entity)
+    private LooseDataEntity MapEntity(LooseDataEntity entity, bool queryCoreAttributeValues = true)
     {
         if (entity.Set?.Attributes is null || entity.Values is null)
         {
@@ -359,56 +400,61 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             entity.MappedValues[value.Attribute.Name] = deserializedValue;
         }
 
-        if (entity.MappedValues.ContainsKey("DepartmentId"))
+        if (queryCoreAttributeValues)
         {
-            var value = this._databaseContext.Departments.AsNoTracking().FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
-            entity.MappedValues["Department"] = value;
-        }
+            if (entity.MappedValues.ContainsKey("DepartmentId"))
+            {
+                var value = this._databaseContext.Departments.AsNoTracking().FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
+                entity.MappedValues["Department"] = value;
+            }
 
-        if (entity.MappedValues.ContainsKey("DepartmentIds"))
-        {
-            var ids = (entity.MappedValues["DepartmentIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-            var value = this._databaseContext.Departments.AsNoTracking().Where(department => ids.Contains(department.Id)).ToList();
-            entity.MappedValues["DepartmentIds"] = value;
-        }
+            if (entity.MappedValues.ContainsKey("DepartmentIds"))
+            {
+                var ids = (entity.MappedValues["DepartmentIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+                var value = this._databaseContext.Departments.AsNoTracking().Where(department => ids.Contains(department.Id)).ToList();
+                entity.MappedValues["DepartmentIds"] = value;
+            }
 
-        if (entity.MappedValues.ContainsKey("UserId"))
-        {
-            var value = this._databaseContext.Users.FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
-            entity.MappedValues["User"] = value;
-        }
+            if (entity.MappedValues.ContainsKey("UserId"))
+            {
+                var value = this._databaseContext.Users.FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
+                entity.MappedValues["User"] = value;
+            }
 
-        if (entity.MappedValues.ContainsKey("UserIds"))
-        {
-            var ids = (entity.MappedValues["UserIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-            var value = this._databaseContext.Users.AsNoTracking().Where(user => ids.Contains(user.Id)).ToList();
-            entity.MappedValues["Users"] = value;
-        }
+            if (entity.MappedValues.ContainsKey("UserIds"))
+            {
+                var ids = (entity.MappedValues["UserIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+                var value = this._databaseContext.Users.AsNoTracking().Where(user => ids.Contains(user.Id)).ToList();
+                entity.MappedValues["Users"] = value;
+            }
 
-        if (entity.MappedValues.ContainsKey("IncidentHistoryId"))
-        {
-            var value = this._databaseContext.IncidentHistories.AsNoTracking().FirstOrDefault(user => user.Id == entity.MappedValues["IncidentHistoryId"] as string);
-            entity.MappedValues["IncidentHistory"] = value;
-        }
+            if (entity.MappedValues.ContainsKey("IncidentHistoryId"))
+            {
+                var value = this._databaseContext.IncidentHistories.AsNoTracking()
+                    .FirstOrDefault(user => user.Id == entity.MappedValues["IncidentHistoryId"] as string);
+                entity.MappedValues["IncidentHistory"] = value;
+            }
 
-        if (entity.MappedValues.ContainsKey("IncidentHistoryIds"))
-        {
-            var ids = (entity.MappedValues["IncidentHistoryIds"] as JArray)?.Select(x => x.ToString()).ToList();
-            var value = this._databaseContext.IncidentHistories.AsNoTracking().Where(incidentHistory => ids.Contains(incidentHistory.Id)).ToList();
-            entity.MappedValues["IncidentHistories"] = value;
-        }
+            if (entity.MappedValues.ContainsKey("IncidentHistoryIds"))
+            {
+                var ids = (entity.MappedValues["IncidentHistoryIds"] as JArray)?.Select(x => x.ToString()).ToList();
+                var value = this._databaseContext.IncidentHistories.AsNoTracking().Where(incidentHistory => ids.Contains(incidentHistory.Id)).ToList();
+                entity.MappedValues["IncidentHistories"] = value;
+            }
 
-        if (entity.MappedValues.ContainsKey("PedHistoryId"))
-        {
-            var value = this._databaseContext.PedHistories.AsNoTracking().FirstOrDefault(pedHistory => pedHistory.Id == (entity.MappedValues["PedHistoryId"] as long? ?? 0));
-            entity.MappedValues["PedHistory"] = value;
-        }
+            if (entity.MappedValues.ContainsKey("PedHistoryId"))
+            {
+                var value = this._databaseContext.PedHistories.AsNoTracking()
+                    .FirstOrDefault(pedHistory => pedHistory.Id == (entity.MappedValues["PedHistoryId"] as long? ?? 0));
+                entity.MappedValues["PedHistory"] = value;
+            }
 
-        if (entity.MappedValues.ContainsKey("PedHistoryIds"))
-        {
-            var ids = (entity.MappedValues["PedHistoryIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-            var value = this._databaseContext.PedHistories.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
-            entity.MappedValues["PedHistories"] = value;
+            if (entity.MappedValues.ContainsKey("PedHistoryIds"))
+            {
+                var ids = (entity.MappedValues["PedHistoryIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+                var value = this._databaseContext.PedHistories.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
+                entity.MappedValues["PedHistories"] = value;
+            }
         }
 
         return entity;
