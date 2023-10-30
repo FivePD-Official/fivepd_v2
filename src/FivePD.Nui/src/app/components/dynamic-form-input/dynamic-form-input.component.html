@@ -48,7 +48,7 @@
           'dropdown--small': field.dropdownOptions?.size === 'small',
           'dropdown--readonly': field.readonly
          }">
-      <input [formControlName]="field.key" [attr.id]="field.key" type="number"/>
+      <input [formControlName]="field.key" [attr.id]="field.key" type="number" class="hidden"/>
       <div class="dropdown-selected-item"
            [ngClass]="dropdownSelectedItemClassName"
            (click)="toggleDropdown()">
@@ -62,15 +62,17 @@
         </svg>
       </div>
       <div class="dropdown-items">
-        <button *ngFor="let item of dropdownFilteredItems" type="button" class="item" (click)="onDropdownSelect(item)">
-          <svg *ngIf="multiSelect" xmlns="http://www.w3.org/2000/svg"
-               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-               class="h-6 w-6 text-zinc-300 pr-2"
-               [ngClass]="{'opacity-0': !isItemSelected(item)}">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
-          </svg>
-          <p>{{ item.label }}</p>
-        </button>
+        <div class="dropdown-items--inner">
+          <button *ngFor="let item of dropdownFilteredItems" type="button" class="item" (click)="onDropdownSelect(item)">
+            <svg *ngIf="multiSelect" xmlns="http://www.w3.org/2000/svg"
+                 fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                 class="h-6 w-6 text-zinc-300 pr-2"
+                 [ngClass]="{'opacity-0': !isItemSelected(item)}">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+            </svg>
+            <p class="text-left">{{ item.label }}</p>
+          </button>
+        </div>
       </div>
     </div>
 

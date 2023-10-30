@@ -54,7 +54,7 @@
       @apply text-zinc-300 cursor-pointer mb-0
 
 .dropdown
-  @apply relative
+  @apply relative min-w-[200px]
   &.dropdown--small
     .dropdown-selected-item
       p
@@ -65,9 +65,6 @@
       &:hover
         @apply bg-transparent
 
-  input
-    @apply hidden
-
   .dropdown-selected-item
     @apply relative rounded-md px-3 flex flex-row items-center justify-between cursor-pointer
 
@@ -75,10 +72,15 @@
       @apply h-[20px] ml-3 text-zinc-300
 
   .dropdown-items
-    @apply relative hidden flex-col items-center w-full drop-shadow z-50
+    @apply relative hidden flex-col items-center w-full drop-shadow-md z-50 max-h-[200px] overflow-x-hidden bg-zinc-700 rounded-bl-md rounded-br-md py-2
+    ::-webkit-scrollbar-thumb
+      @apply bg-zinc-800
+
+    .dropdown-items--inner
+      @apply w-full h-full overflow-y-auto
 
     .item
-      @apply w-full h-[35px] px-3 flex flex-row items-center justify-start bg-zinc-700 hover:bg-zinc-600 border-none outline-none cursor-pointer last-of-type:rounded-bl-md last-of-type:rounded-br-md
+      @apply w-full min-h-[35px] px-3 py-0.5 flex flex-row items-center justify-start hover:bg-zinc-600 border-none outline-none cursor-pointer
       p
         @apply text-zinc-300
 
