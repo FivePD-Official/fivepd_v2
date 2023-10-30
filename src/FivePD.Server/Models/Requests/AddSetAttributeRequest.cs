@@ -8,5 +8,7 @@ internal record struct AddSetAttributeRequest
 {
     public string SetId { get; set; }
 
+    public string AttributeType { get; set; }
+
     public LooseDataAttribute Attribute { get; set; }
 }

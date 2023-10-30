@@ -43,9 +43,10 @@ export class LooseDataService {
     });
   }
 
-  addSetAttribute(setId: SetId, attribute: AddSetAttribute): Observable<ActionResponse> {
+  addSetAttribute(setId: SetId, attributeType: string, attribute: AddSetAttribute): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:looseData:addSetAttribute', {
       SetId: setId,
+      AttributeType: attributeType,
       Attribute: attribute
     });
   }

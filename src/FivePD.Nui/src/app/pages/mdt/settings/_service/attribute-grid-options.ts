@@ -86,6 +86,8 @@ export class AttributeGridOptions {
                     Label: res.value['Label'],
                     HelpLabel: res.value['HelpLabel'],
                     Placeholder: res.value['Placeholder'],
+                    Hidden: res.value['Hidden'],
+                    Readonly: res.value['Readonly'],
                     Required: res.value['Required'],
                     ShowInGrid: res.value['ShowInGrid'],
                   })),
@@ -132,15 +134,20 @@ export class AttributeGridOptions {
           }).result
             .pipe(
               filter(res => res.success),
-              switchMap(res => this._looseDataService.addSetAttribute(set, {
-                Name: res.value['Name'],
-                DataType: res.value['DataType'],
-                Label: res.value['Label'],
-                HelpLabel: res.value['HelpLabel'],
-                Placeholder: res.value['Placeholder'],
-                Required: res.value['Required'],
-                ShowInGrid: res.value['ShowInGrid'],
-              })),
+              switchMap(res => this._looseDataService.addSetAttribute(
+                set,
+                res.value['AttributeType'] === -1 ? '' : res.value['AttributeType'],
+                {
+                  Name: res.value['Name'],
+                  DataType: res.value['DataType'],
+                  Label: res.value['Label'],
+                  HelpLabel: res.value['HelpLabel'],
+                  Placeholder: res.value['Placeholder'],
+                  Hidden: res.value['Hidden'],
+                  Readonly: res.value['Readonly'],
+                  Required: res.value['Required'],
+                  ShowInGrid: res.value['ShowInGrid'],
+                })),
               this._modalService.handleResponse()
             ).subscribe(() => onCreate())
         }

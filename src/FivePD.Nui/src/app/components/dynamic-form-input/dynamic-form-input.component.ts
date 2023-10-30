@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DropdownHeightVariants, DropdownItem, DropdownVariants, FormInputBase } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -7,17 +7,18 @@ import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { DateMaskDirective } from '../../directives/date-mask.directive';
 import { NgClass, NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
+import { CustomValidators } from "../../helpers/validators";
 
 const dropdownSelectedItemVariants: Record<DropdownVariants, string> = {
-  'secondary': `border border-zinc-600 hover:border-zinc-400 bg-transparent
+  'secondary': `border border-zinc-600 hover:read-write:border-zinc-400 bg-transparent
                 before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
                 before:bg-transparent`,
   'tertiary': `border border-zinc-800
                before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
-               before:bg-zinc-800 hover:before:bg-zinc-700`,
+               before:bg-zinc-800 hover:read-write:before:bg-zinc-700`,
   'tertiary-bg': `border border-zinc-700
                   before:absolute before:inset-0 before:w-full before:h-full before:rounded-md
-                  before:bg-zinc-700 hover:before:bg-zinc-600`,
+                  before:bg-zinc-700 hover:read-write:before:bg-zinc-600`,
 };
 
 const dropdownHeightVariants: Record<DropdownHeightVariants, string> = {
@@ -90,6 +91,37 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.setDropdownOptions(changes['field']?.currentValue as any);
+  }
+
+  get show() {
+    const show = this.field.show(this.form!);
+    if (show) {
+      if (this.field.type === 'dropdown') {
+        if (this.field.required && !this.control.hasValidator(CustomValidators.dropdownRequired)) {
+          this.control.addValidators(CustomValidators.dropdownRequired);
+          this.control.updateValueAndValidity();
+        }
+      } else {
+        if (this.field.required && !this.control.hasValidator(Validators.required)) {
+          this.control.addValidators(Validators.required);
+          this.control.updateValueAndValidity();
+        }
+      }
+    } else {
+      if (this.field.type === 'dropdown') {
+        if (this.field.required && this.control.hasValidator(CustomValidators.dropdownRequired)) {
+          this.control.removeValidators(CustomValidators.dropdownRequired);
+          this.control.updateValueAndValidity();
+        }
+      } else {
+        if (this.field.required && this.control.hasValidator(Validators.required)) {
+          this.control.removeValidators(Validators.required);
+          this.control.updateValueAndValidity();
+        }
+      }
+    }
+
+    return show;
   }
 
   get control() {

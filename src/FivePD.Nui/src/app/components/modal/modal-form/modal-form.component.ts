@@ -5,7 +5,7 @@ import { forkJoin, map, Observable, of, Subject, switchMap, takeUntil, tap, zip 
 import { ModalRef } from '@services/modals/modal/modal-ref';
 import { NgIf } from '@angular/common';
 import { IncidentHistoryService } from "@services/incident-history/incident-history.service";
-import { PredefinedAttributes } from "../../../helpers/predefined-attributes";
+import { CoreAttributes } from "../../../helpers/core-attributes";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { FGender } from "@enums";
 import { formatDate } from "@helpers";
@@ -92,8 +92,8 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     const observables: Observable<any>[] = [];
 
     const [singleUser, multiUser] = [
-      this.fields.find(x => x.key === PredefinedAttributes.UserId),
-      this.fields.find(x => x.key === PredefinedAttributes.UserIds),
+      this.fields.find(x => x.key === CoreAttributes.UserId),
+      this.fields.find(x => x.key === CoreAttributes.UserIds),
     ];
     if (singleUser || multiUser) {
       observables.push(this._userService.getAllSimple().pipe(tap(res => {
@@ -112,8 +112,8 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const [singleDepartment, multiDepartment] = [
-      this.fields.find(x => x.key === PredefinedAttributes.DepartmentId),
-      this.fields.find(x => x.key === PredefinedAttributes.DepartmentIds),
+      this.fields.find(x => x.key === CoreAttributes.DepartmentId),
+      this.fields.find(x => x.key === CoreAttributes.DepartmentIds),
     ];
     if (singleDepartment || multiDepartment) {
       observables.push(this._departmentService.getAllSimple().pipe(tap(res => {
@@ -132,8 +132,8 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const [singleIncidentHistory, multiIncidentHistory] = [
-      fields.find(x => x.key === PredefinedAttributes.IncidentHistoryId),
-      fields.find(x => x.key === PredefinedAttributes.IncidentHistoryIds),
+      fields.find(x => x.key === CoreAttributes.IncidentHistoryId),
+      fields.find(x => x.key === CoreAttributes.IncidentHistoryIds),
     ];
     if (singleIncidentHistory || multiIncidentHistory) {
       observables.push(this._incidentHistoryService.getAllOfUser().pipe(tap(res => {
@@ -152,8 +152,8 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const [singlePedHistory, multiPedHistory] = [
-      this.fields.find(x => x.key === PredefinedAttributes.PedHistoryId),
-      this.fields.find(x => x.key === PredefinedAttributes.PedHistoryIds),
+      this.fields.find(x => x.key === CoreAttributes.PedHistoryId),
+      this.fields.find(x => x.key === CoreAttributes.PedHistoryIds),
     ];
     if (singlePedHistory || multiPedHistory) {
       observables.push(this._pedHistoryService.getAllSimple().pipe(tap(res => {

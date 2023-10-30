@@ -1,4 +1,4 @@
-<div [formGroup]="form!" class="input-box w-full">
+<div [formGroup]="form!" *ngIf="show" class="input-box w-full">
   <label *ngIf="field.label && field.type !== 'checkbox'"
          class="input-label"
          [attr.for]="field.key"
@@ -117,6 +117,7 @@
     <p *ngIf="control.errors['nameTaken']">{{ 'UI.ERROR.FIELD.NAME_TAKEN' | translate }}</p>
     <p *ngIf="control.errors['pattern']">{{ 'UI.ERROR.FIELD.FORMAT' | translate }}</p>
     <p *ngIf="control.errors['invalidDate']">{{ 'UI.ERROR.FIELD.INVALID_DATE' | translate }}</p>
+    <p *ngIf="control.errors['notCoreAttributeName']">{{ 'UI.ERROR.FIELD.NO_CORE_ATTRIBUTE_NAME' | translate }}</p>
   </div>
 
 </div>

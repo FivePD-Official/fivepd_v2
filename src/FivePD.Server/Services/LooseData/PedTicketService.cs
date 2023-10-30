@@ -21,9 +21,9 @@ public class PedTicketService : LooseDataRepository<PedTicketSet>
     {
         return new List<LooseDataAttribute>
         {
-            new Models.LooseData.Attributes.UserId(true),
-            new Models.LooseData.Attributes.SubmitDate(true),
-            new Models.LooseData.Attributes.PedHistoryId(false),
+            new CoreAttributes.UserId(new CoreAttributes.Options { Hidden = true }),
+            new CoreAttributes.SubmitDate(new CoreAttributes.Options { Hidden = true }),
+            new CoreAttributes.PedHistoryId(new CoreAttributes.Options { Required = true }),
             new()
             {
                 Name = "Offense",

@@ -1,4 +1,4 @@
-﻿import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
+﻿import { AsyncValidatorFn, FormGroup, ValidatorFn } from '@angular/forms';
 import { Paths } from './_dev/nested-object-keys';
 import { ActionResponse } from './nui-event-responses';
 import { ButtonVariants } from "./button";
@@ -51,6 +51,7 @@ interface FormInputBaseModel<T> {
   validators: ValidatorFn[];
   asyncValidators: AsyncValidatorFn[];
   checkboxGroup: Checkbox[];
+  show?: (form: FormGroup) => boolean;
 }
 
 export type FormInputBaseOptions<T> = {
@@ -72,6 +73,7 @@ export abstract class FormInputBase<T> {
   validators: FormInputBaseModel<T>['validators'];
   asyncValidators: FormInputBaseModel<T>['asyncValidators'];
   checkboxGroup: Checkbox[];
+  show: (form: FormGroup) => boolean;
 
   protected constructor(
     type: FormInputBaseModel<T>['type'],
@@ -90,6 +92,7 @@ export abstract class FormInputBase<T> {
     this.validators = options.validators || [];
     this.asyncValidators = options.asyncValidators || [];
     this.checkboxGroup = options.checkboxGroup || [];
+    this.show = options.show || (() => true);
 
     if (this.dropdownOptions) {
       if ('selectedItemResolver' in this.dropdownOptions) {

@@ -1,8 +1,10 @@
-﻿import { AsyncValidatorFn, ValidatorFn, Validators } from '@angular/forms';
+﻿import { AbstractControl, AsyncValidatorFn, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, first, map, Observable, switchMap } from 'rxjs';
 import { NameTakenResponse } from '@models';
 
 export class CustomValidators {
+
+  private static readonly coreAttributeNameRegex = /^(?!.*(UserId|UserIds|DepartmentId|DepartmentIds|PedHistoryId|PedHistoryIds|IncidentHistoryId|IncidentHistoryIds)).*$/;
 
   static onlyLetters(): ValidatorFn {
     return Validators.pattern('^[a-zA-Z]+$');
@@ -37,6 +39,17 @@ export class CustomValidators {
         first(),
       );
     }
+  }
+
+  static notCoreAttributeName(): ValidatorFn {
+    return c => {
+      const valid = CustomValidators.coreAttributeNameRegex.test(c.value);
+      return valid ? null : {notCoreAttributeName: true};
+    };
+  }
+
+  static dropdownRequired(control: AbstractControl): ValidationErrors | null {
+    return control.value === -1 ? {required: true} : null;
   }
 
 }

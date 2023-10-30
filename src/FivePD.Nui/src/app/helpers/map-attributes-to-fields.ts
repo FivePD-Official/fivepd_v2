@@ -12,162 +12,151 @@
   Textarea,
   TextInput
 } from '@models';
-import { PredefinedAttributes } from "./predefined-attributes";
-
-const predefinedAttributes = [
-  PredefinedAttributes.UserId,
-  PredefinedAttributes.UserIds,
-  PredefinedAttributes.DepartmentId,
-  PredefinedAttributes.DepartmentIds,
-  PredefinedAttributes.IncidentHistoryId,
-  PredefinedAttributes.IncidentHistoryIds,
-  PredefinedAttributes.PedHistoryId,
-  PredefinedAttributes.PedHistoryIds,
-];
+import { coreAttributeNames, CoreAttributes } from "./core-attributes";
 
 export function mapAttributesToFields(attributes: SetAttribute[], entity?: MappedLooseDataEntity, additionalFields: FormInputBase<any>[] = []): FormInputBase<any>[] {
   const fields: FormInputBase<any>[] = [];
 
   // Add predefined fields
-  const singleUser = attributes.find(x => x.Name === PredefinedAttributes.UserId);
+  const singleUser = attributes.find(x => x.Name === CoreAttributes.UserId);
   if (singleUser && !singleUser.Hidden) {
     fields.push(new Dropdown({
-      key: PredefinedAttributes.UserId,
+      key: CoreAttributes.UserId,
       label: 'UI.LABEL.USER.SINGULAR',
-      required: true,
+      required: singleUser.Required,
       dropdownOptions: {
         type: 'single',
         label: 'UI.LABEL.USER.SINGULAR',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.UserId] : undefined,
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.UserId] : undefined,
       }
     }));
   }
 
-  const multiUser = attributes.find(x => x.Name === PredefinedAttributes.UserIds);
+  const multiUser = attributes.find(x => x.Name === CoreAttributes.UserIds);
   if (multiUser && !multiUser.Hidden) {
     fields.push(new Dropdown({
-      key: PredefinedAttributes.UserIds,
+      key: CoreAttributes.UserIds,
       label: 'UI.LABEL.USER.PLURAL',
-      required: true,
+      required: multiUser.Required,
       dropdownOptions: {
         type: 'multi',
         label: 'UI.LABEL.USER.PLURAL',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.UserIds] : undefined,
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.UserIds] : undefined,
       }
     }));
   }
 
-  const singleDepartment = attributes.find(x => x.Name === PredefinedAttributes.DepartmentId);
+  const singleDepartment = attributes.find(x => x.Name === CoreAttributes.DepartmentId);
   if (singleDepartment && !singleDepartment.Hidden) {
     fields.push(new Dropdown({
-      key: PredefinedAttributes.DepartmentId,
+      key: CoreAttributes.DepartmentId,
       label: 'UI.LABEL.DEPARTMENT.SINGULAR',
-      required: true,
+      required: singleDepartment.Required,
       dropdownOptions: {
         type: 'single',
         label: 'UI.LABEL.DEPARTMENT.SINGULAR',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.DepartmentId] : undefined,
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.DepartmentId] : undefined,
       }
     }));
   }
 
-  const multiDepartment = attributes.find(x => x.Name === PredefinedAttributes.DepartmentIds);
+  const multiDepartment = attributes.find(x => x.Name === CoreAttributes.DepartmentIds);
   if (multiDepartment && !multiDepartment.Hidden) {
     fields.push(new Dropdown({
-      key: PredefinedAttributes.DepartmentIds,
+      key: CoreAttributes.DepartmentIds,
       label: 'UI.LABEL.DEPARTMENT.PLURAL',
-      required: true,
+      required: multiDepartment.Required,
       dropdownOptions: {
         type: 'multi',
         label: 'UI.LABEL.DEPARTMENT.PLURAL',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.DepartmentIds] : undefined,
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.DepartmentIds] : undefined,
       }
     }));
   }
 
-  const singleIncidentHistory = attributes.find(x => x.Name === PredefinedAttributes.IncidentHistoryId);
+  const singleIncidentHistory = attributes.find(x => x.Name === CoreAttributes.IncidentHistoryId);
   if (singleIncidentHistory && !singleIncidentHistory.Hidden) {
     fields.push(new Dropdown({
-      key: PredefinedAttributes.IncidentHistoryId,
+      key: CoreAttributes.IncidentHistoryId,
       label: 'UI.LABEL.INCIDENT.SINGULAR',
-      required: true,
+      required: singleIncidentHistory.Required,
       dropdownOptions: {
         type: 'single',
         label: 'UI.LABEL.INCIDENT.SINGULAR',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.IncidentHistoryId] : undefined,
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.IncidentHistoryId] : undefined,
       }
     }));
   }
 
-  const multiIncidentHistory = attributes.find(x => x.Name === PredefinedAttributes.IncidentHistoryIds);
+  const multiIncidentHistory = attributes.find(x => x.Name === CoreAttributes.IncidentHistoryIds);
   if (multiIncidentHistory && !multiIncidentHistory.Hidden) {
     fields.push(new Dropdown({
-      key: PredefinedAttributes.IncidentHistoryIds,
+      key: CoreAttributes.IncidentHistoryIds,
       label: 'UI.LABEL.INCIDENT.PLURAL',
-      required: true,
+      required: multiIncidentHistory.Required,
       dropdownOptions: {
         type: 'multi',
         label: 'UI.LABEL.INCIDENT.PLURAL',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.IncidentHistoryIds] : undefined,
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.IncidentHistoryIds] : undefined,
       }
     }));
   }
 
-  const singlePedHistory = attributes.find(x => x.Name === PredefinedAttributes.PedHistoryId);
+  const singlePedHistory = attributes.find(x => x.Name === CoreAttributes.PedHistoryId);
   if (singlePedHistory && !singlePedHistory.Hidden) {
     fields.push(new Dropdown({
-      key: PredefinedAttributes.PedHistoryId,
+      key: CoreAttributes.PedHistoryId,
       label: 'UI.LABEL.CITIZEN.SINGULAR',
-      required: true,
+      required: singlePedHistory.Required,
       dropdownOptions: {
         type: 'single',
         label: 'UI.LABEL.CITIZEN.SINGULAR',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.PedHistoryId] : undefined,
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.PedHistoryId] : undefined,
       }
     }));
   }
 
-  const multiPedHistory = attributes.find(x => x.Name === PredefinedAttributes.PedHistoryIds);
+  const multiPedHistory = attributes.find(x => x.Name === CoreAttributes.PedHistoryIds);
   if (multiPedHistory && !multiPedHistory.Hidden) {
     fields.push(new Dropdown({
-      key: PredefinedAttributes.PedHistoryIds,
+      key: CoreAttributes.PedHistoryIds,
       label: 'UI.LABEL.CITIZEN.PLURAL',
-      required: true,
+      required: multiPedHistory.Required,
       dropdownOptions: {
         type: 'multi',
         label: 'UI.LABEL.CITIZEN.PLURAL',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[PredefinedAttributes.PedHistoryIds] : undefined,
+        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.PedHistoryIds] : undefined,
       }
     }));
   }
 
   const filteredAttributes = attributes
     .filter(x => !x.Hidden)
-    .filter(x => !predefinedAttributes.includes(x.Name as PredefinedAttributes));
+    .filter(x => !coreAttributeNames.includes(x.Name as CoreAttributes));
 
   // Add other non readonly fields
   for (const attr of filteredAttributes) {

@@ -108,7 +108,7 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
 
         if (field.required) {
           if (field.type === 'dropdown') {
-            validators.push((control) => control.value === -1 ? {required: true} : null);
+            validators.push(CustomValidators.dropdownRequired);
           } else {
             validators.push(Validators.required);
           }

@@ -483,6 +483,27 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
+        if (!string.IsNullOrEmpty(request.AttributeType))
+        {
+            LooseDataAttribute coreAttribute = request.AttributeType switch
+            {
+                "UserId" => new CoreAttributes.UserId(),
+                "UserIds" => new CoreAttributes.UserIds(),
+                "DepartmentId" => new CoreAttributes.DepartmentId(),
+                "DepartmentIds" => new CoreAttributes.DepartmentIds(),
+                "IncidentHistoryId" => new CoreAttributes.IncidentHistoryId(),
+                "IncidentHistoryIds" => new CoreAttributes.IncidentHistoryIds(),
+                "PedHistoryId" => new CoreAttributes.PedHistoryId(),
+                "PedHistoryIds" => new CoreAttributes.PedHistoryIds(),
+                _ => null,
+            };
+            if (coreAttribute is not null)
+            {
+                request.Attribute.Name = coreAttribute.Name;
+                request.Attribute.DataType = coreAttribute.DataType;
+            }
+        }
+
         if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
         {
             networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.CREATE.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
@@ -491,6 +512,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         request.Attribute.AddonId = LooseDataAttribute.AddedByAdminAddonId;
         request.Attribute.Set = set;
+
         var addedAttributeEntry = this._databaseContext.LooseDataAttributes.Add(request.Attribute);
         this._databaseContext.SaveChanges();
 
