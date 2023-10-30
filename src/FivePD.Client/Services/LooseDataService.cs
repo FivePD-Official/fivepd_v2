@@ -24,6 +24,7 @@ public class LooseDataService : ILooseDataService, IOnInit
     public void OnInit()
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.LooseData.GetEntity);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.LooseData.GetEntitiesPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.LooseData.GetEntities);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.LooseData.AddEntity);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.LooseData.EditEntity);

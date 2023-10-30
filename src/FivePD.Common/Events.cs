@@ -190,6 +190,8 @@ internal readonly record struct Events
 
             public const string GetEntity = "fivepd:looseData:getEntity";
 
+            public const string GetEntitiesPageable = "fivepd:looseData:getEntitiesPageable";
+
             public const string GetEntities = "fivepd:looseData:getEntities";
 
             public const string AddEntity = "fivepd:looseData:addEntity";
@@ -366,10 +368,6 @@ internal readonly record struct Events
         public const string GetAllPageable = "fivepd:pedHistory:getAllPageable";
 
         public const string GetAllSimple = "fivepd:pedHistory:getAllSimple";
-
-        public const string GetTickets = "fivepd:pedHistory:getTickets";
-
-        public const string GetWarnings = "fivepd:pedHistory:getWarnings";
     }
 
     public readonly record struct Message

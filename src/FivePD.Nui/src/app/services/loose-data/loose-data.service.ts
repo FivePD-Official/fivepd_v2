@@ -81,9 +81,9 @@ export class LooseDataService {
     );
   }
 
-  getEntities(setId: SetId, collation: Collation): Observable<LooseDataEntityPageWrapper> {
+  getEntitiesPageable(setId: SetId, collation: Collation): Observable<LooseDataEntityPageWrapper> {
     return this.updateSetAttributes(setId).pipe(
-      switchMap(() => this._http.post<Page<LooseDataEntity>>('fivepd:looseData:getEntities', {
+      switchMap(() => this._http.post<Page<LooseDataEntity>>('fivepd:looseData:getEntitiesPageable', {
         SetId: setId,
         ...collation,
       }).pipe(
@@ -96,6 +96,13 @@ export class LooseDataService {
         }),
       )),
     );
+  }
+
+  getEntities(setId: SetId, filter: Record<string, any>): Observable<LooseDataEntity[]> {
+    return this._http.post<LooseDataEntity[]>('fivepd:looseData:getEntities', {
+      SetId: setId,
+      Filter: filter,
+    });
   }
 
   addEntity(setId: SetId, entity: object): Observable<ActionResponse> {

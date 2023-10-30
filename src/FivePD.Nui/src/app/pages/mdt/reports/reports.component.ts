@@ -123,7 +123,7 @@ export class ReportsComponent implements OnInit {
   }
 
   getArrestReports(): void {
-    this._looseData.getEntities(CoreSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
+    this._looseData.getEntitiesPageable(CoreSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
       this.arrestReports = wrapper.page;
       this.arrestReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
@@ -216,7 +216,7 @@ export class ReportsComponent implements OnInit {
   }
 
   getIncidentReports(): void {
-    this._looseData.getEntities(CoreSetId.IncidentReport, this.incidentReportCollation).subscribe(wrapper => {
+    this._looseData.getEntitiesPageable(CoreSetId.IncidentReport, this.incidentReportCollation).subscribe(wrapper => {
       this.incidentReports = wrapper.page;
       this.incidentReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {

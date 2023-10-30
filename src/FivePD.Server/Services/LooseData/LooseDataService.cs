@@ -18,6 +18,7 @@ using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server.Services.LooseData;
 
@@ -275,6 +276,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         where TS : LooseDataSet
     {
         return this.GetEntitiesWithOptionalType<TS>(null, withTracking, queryCoreAttributeValue, filter);
+    }
+
+    /// <inheritdoc />
+    public List<LooseDataEntity> GetEntities(Type setType, bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
+    {
+        return this.GetEntitiesWithOptionalType<LooseDataSet>(setType, withTracking, queryCoreAttributeValue, filter);
     }
 
     /// <inheritdoc />
@@ -679,10 +686,10 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithJson(entity);
     }
 
-    [UIEvent(Events.UI.LooseData.GetEntities)]
-    private void GetEntitiesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.LooseData.GetEntitiesPageable)]
+    private void GetEntitiesPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var request = expandoObject.ConvertTo<GetSetEntitiesRequest>();
+        var request = expandoObject.ConvertTo<GetSetEntitiesPageableRequest>();
         var setType = this.FindSetTypeById(request.SetId);
         if (setType is null)
         {
@@ -693,6 +700,27 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         var filters = new Filters<LooseDataEntity>();
         var entities = this.GetEntitiesPage(setType, request.Page, filters);
         networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entities));
+    }
+
+    [UIEvent(Events.UI.LooseData.GetEntities)]
+    private void GetEntitiesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<GetSetEntitiesRequest>();
+        var setType = this.FindSetTypeById(request.SetId);
+        if (setType is null)
+        {
+            networkCallbackDelegate.Invoke(null);
+            return;
+        }
+
+        var entities = this.GetEntities(setType, false, false, request.Filter);
+        foreach (var entity in entities)
+        {
+            entity.Set = null;
+            entity.Values = null;
+        }
+
+        networkCallbackDelegate.InvokeWithJson(entities);
     }
 
     [UIEvent(Events.UI.LooseData.AddEntity)]

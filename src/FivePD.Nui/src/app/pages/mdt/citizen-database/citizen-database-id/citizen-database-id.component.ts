@@ -3,8 +3,8 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { LooseDataEntity, PedHistory, PedLicense, PedLicenseStatus } from "@models";
-import { tap } from "rxjs";
-import { FGender, PedLicenseType } from "@enums";
+import { tap, zip } from "rxjs";
+import { CoreSetId, FGender, PedLicenseType } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
@@ -13,6 +13,7 @@ import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
+import { LooseDataService } from "@services/loose-data/loose-data.service";
 
 @Component({
   selector: 'app-citizen-database-id',
@@ -34,7 +35,8 @@ export class CitizenDatabaseIdComponent implements OnInit {
 
   constructor(private readonly _activatedRoute: ActivatedRoute,
               private readonly _pedHistoryService: PedHistoryService,
-              private readonly _store: Store<GlobalState>) {
+              private readonly _store: Store<GlobalState>,
+              private readonly _looseDataService: LooseDataService) {
     _activatedRoute.params
       .pipe(
         takeUntilDestroyed(),
@@ -48,15 +50,20 @@ export class CitizenDatabaseIdComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  getPedHistory(id: number): void {
+  getPedHistory(id: string): void {
     this._pedHistoryService.get(id).subscribe(pedHistory => {
       this.pedHistory = pedHistory;
       this._store.dispatch(AppActions.addPedToRecentlyViewed({ped: pedHistory}));
     });
-    this._pedHistoryService.getTickets(id).subscribe(tickets => {
+
+    const filter = {
+      PedHistoryId: parseInt(id),
+    };
+    zip(
+      this._looseDataService.getEntities(CoreSetId.PedTicket, filter),
+      this._looseDataService.getEntities(CoreSetId.PedWarning, filter),
+    ).subscribe(([tickets, warnings]) => {
       this.tickets = tickets;
-    });
-    this._pedHistoryService.getWarnings(id).subscribe(warnings => {
       this.warnings = warnings;
     });
   }

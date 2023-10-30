@@ -235,41 +235,4 @@ public class PedService : IPedService, IOnInit, IOnDestroy
 
         networkCallbackDelegate.InvokeWithJson(simplePedHistories);
     }
-    
-    
-    [UIEvent(Events.PedHistory.GetTickets)]
-    private void GetTicketsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var request = expandoObject.ConvertTo<IdRequest>();
-        var entities = this._looseDataService.GetEntities<PedTicketSet>(false, false, new Dictionary<string, object>
-        {
-            ["PedHistoryId"] = request.Id,
-        });
-
-        foreach (var entity in entities)
-        {
-            entity.Set = null;
-            entity.Values = null;
-        }
-        
-        networkCallbackDelegate.InvokeWithJson(entities);
-    }
-    
-    [UIEvent(Events.PedHistory.GetWarnings)]
-    private void GetWarningsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var request = expandoObject.ConvertTo<IdRequest>();
-        var entities = this._looseDataService.GetEntities<PedWarningSet>(false, false, new Dictionary<string, object>
-        {
-            ["PedHistoryId"] = request.Id,
-        });
-
-        foreach (var entity in entities)
-        {
-            entity.Set = null;
-            entity.Values = null;
-        }
-        
-        networkCallbackDelegate.InvokeWithJson(entities);
-    }
 }
