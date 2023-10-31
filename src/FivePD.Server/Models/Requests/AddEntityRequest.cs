@@ -1,4 +1,4 @@
-﻿using System.Dynamic;
+﻿using System.Collections.Generic;
 
 #pragma warning disable
 
@@ -10,5 +10,5 @@ internal record struct AddEntityRequest
 
     public string EntityId { get; set; }
 
-    public ExpandoObject Entity { get; set; }
+    public Dictionary<string, object> Entity { get; set; }
 }

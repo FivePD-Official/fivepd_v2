@@ -617,11 +617,17 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         }
 
         var attributeOldName = attribute.Name;
-        attribute.Name = request.Attribute.Name;
+        if (!string.IsNullOrEmpty(request.Attribute.Name))
+        {
+            attribute.Name = request.Attribute.Name;
+        }
+
         attribute.Label = request.Attribute.Label;
         attribute.HelpLabel = request.Attribute.HelpLabel;
         attribute.Placeholder = request.Attribute.Placeholder;
         attribute.Required = request.Attribute.Required;
+        attribute.Readonly = request.Attribute.Readonly;
+        attribute.Hidden = request.Attribute.Hidden;
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ATTRIBUTE.SUCCESS.EDIT", new Dictionary<string, string>
         {
@@ -732,7 +738,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var addedEntity = this.InternalAddEntity(request.SetId, new LooseDataEntity(), new Dictionary<string, object>(request.Entity));
+        var addedEntity = this.InternalAddEntity(request.SetId, new LooseDataEntity(), request.Entity);
         if (addedEntity is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -753,7 +759,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        this.InternalUpdateEntity(request.SetId, request.EntityId, new Dictionary<string, object>(request.Entity));
+        this.InternalUpdateEntity(request.SetId, request.EntityId, request.Entity);
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
     }
 
