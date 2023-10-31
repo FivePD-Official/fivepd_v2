@@ -98,13 +98,11 @@ export class ModalEntityViewComponent implements OnInit {
       };
 
       // Replace dedicated field IDs with their Name
-      if (name === 'Department' && entityWrapper.entity['Department']) {
-        entityValue.name = 'Department';
+      if (attr.Name === 'DepartmentId' && entityWrapper.entity['Department']) {
         entityValue.value = entityWrapper.entity['Department']['Name'] ?? '-';
       }
 
-      if (name === 'DepartmentIds' && entityWrapper.entity['Departments']) {
-        entityValue.name = 'Departments';
+      if (attr.Name === 'DepartmentIds' && entityWrapper.entity['Departments']) {
         entityValue.value = entityWrapper.entity['DepartmentIds'].map((id: number) => {
           const department = (entityWrapper.entity['Departments'] as Department[]).find(x => x.Id === id);
           return {
@@ -114,13 +112,11 @@ export class ModalEntityViewComponent implements OnInit {
         });
       }
 
-      if (name === 'User' && entityWrapper.entity['User']) {
-        entityValue.name = 'User';
+      if (attr.Name === 'UserId' && entityWrapper.entity['User']) {
         entityValue.value = entityWrapper.entity['User']['Name'] ?? '-';
       }
 
-      if (name === 'UserIds' && entityWrapper.entity['Users']) {
-        entityValue.name = 'Users';
+      if (attr.Name === 'UserIds' && entityWrapper.entity['Users']) {
         entityValue.value = entityWrapper.entity['UserIds'].map((id: number) => {
           const user = (entityWrapper.entity['Users'] as User[]).find(x => x.Id === id);
           return {
@@ -130,13 +126,11 @@ export class ModalEntityViewComponent implements OnInit {
         });
       }
 
-      if (name === 'IncidentHistory' && entityWrapper.entity['IncidentHistory']) {
-        entityValue.name = 'Incident';
+      if (attr.Name === 'IncidentHistoryId' && entityWrapper.entity['IncidentHistory']) {
         entityValue.value = entityWrapper.entity['IncidentHistory']['Title'] ?? '-';
       }
 
-      if (name === 'IncidentHistoryIds' && entityWrapper.entity['IncidentHistories']) {
-        entityValue.name = 'Incidents';
+      if (attr.Name === 'IncidentHistoryIds' && entityWrapper.entity['IncidentHistories']) {
         entityValue.value = entityWrapper.entity['IncidentHistoryIds'].map((id: string) => {
           const incidentHistory = (entityWrapper.entity['IncidentHistories'] as IncidentHistory[]).find(x => x.Id === id);
           return {
@@ -146,13 +140,11 @@ export class ModalEntityViewComponent implements OnInit {
         });
       }
 
-      if (name === 'PedHistory' && entityWrapper.entity['PedHistory']) {
-        entityValue.name = 'Citizen'; // TODO: Rename?
+      if (attr.Name === 'PedHistoryId' && entityWrapper.entity['PedHistory']) {
         entityValue.value = entityWrapper.entity['PedHistory']['Title'] ?? '-';
       }
 
-      if (name === 'PedHistoryIds' && entityWrapper.entity['PedHistories']) {
-        entityValue.name = 'Citizens'; // TODO: Rename?
+      if (attr.Name === 'PedHistoryIds' && entityWrapper.entity['PedHistories']) {
         entityValue.value = entityWrapper.entity['PedHistoryIds'].map((id: number) => {
           const pedHistory = (entityWrapper.entity['PedHistories'] as PedHistory[]).find(x => x.Id === id);
           return {

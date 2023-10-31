@@ -92,8 +92,8 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     const observables: Observable<any>[] = [];
 
     const [singleUser, multiUser] = [
-      this.fields.find(x => x.key === CoreAttributes.UserId),
-      this.fields.find(x => x.key === CoreAttributes.UserIds),
+      fields.find(x => x.key === CoreAttributes.UserId),
+      fields.find(x => x.key === CoreAttributes.UserIds),
     ];
     if (singleUser || multiUser) {
       observables.push(this._userService.getAllSimple().pipe(tap(res => {
@@ -112,8 +112,8 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const [singleDepartment, multiDepartment] = [
-      this.fields.find(x => x.key === CoreAttributes.DepartmentId),
-      this.fields.find(x => x.key === CoreAttributes.DepartmentIds),
+      fields.find(x => x.key === CoreAttributes.DepartmentId),
+      fields.find(x => x.key === CoreAttributes.DepartmentIds),
     ];
     if (singleDepartment || multiDepartment) {
       observables.push(this._departmentService.getAllSimple().pipe(tap(res => {
@@ -152,8 +152,8 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const [singlePedHistory, multiPedHistory] = [
-      this.fields.find(x => x.key === CoreAttributes.PedHistoryId),
-      this.fields.find(x => x.key === CoreAttributes.PedHistoryIds),
+      fields.find(x => x.key === CoreAttributes.PedHistoryId),
+      fields.find(x => x.key === CoreAttributes.PedHistoryIds),
     ];
     if (singlePedHistory || multiPedHistory) {
       observables.push(this._pedHistoryService.getAllSimple().pipe(tap(res => {

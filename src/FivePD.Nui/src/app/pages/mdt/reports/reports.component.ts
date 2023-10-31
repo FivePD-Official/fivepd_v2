@@ -51,9 +51,6 @@ export class ReportsComponent implements OnInit {
         .pipe(
           filter(res => res.success),
           switchMap(res => this._looseData.addEntity(CoreSetId.ArrestReport, {
-            UserId: this.user!.Id,
-            DepartmentId: this.user!.DepartmentId,
-            SubmitDate: new Date(),
             ...res.value!,
           })),
           this._modal.handleResponse()
@@ -88,8 +85,6 @@ export class ReportsComponent implements OnInit {
         .pipe(
           filter(res => res.success),
           switchMap(res => this._looseData.addEntity(CoreSetId.IncidentReport, {
-            UserId: this.user!.Id,
-            SubmitDate: new Date(),
             ...res.value!,
           })),
           this._modal.handleResponse()
@@ -133,15 +128,6 @@ export class ReportsComponent implements OnInit {
             valueResolver: item => item.Id.toString(),
           }),
         },
-        {
-          index: 1,
-          item: new Column<MappedLooseDataEntity>({
-            header: 'Department',
-            valueResolver: item => item['Department'] ? item['Department']['Name'] : undefined,
-            linkResolver: item => item['Department'] ? `/mdt/departments/${item['Department']['Id']}` : '#',
-            show: () => true,
-          })
-        }
       ]);
       this.arrestReportColumns.push(
         {
@@ -153,6 +139,7 @@ export class ReportsComponent implements OnInit {
               label: this._localization.translate('UI.ACTION.VIEW'),
               show: () => true,
               onClick: entity => {
+                console.log(entity)
                 this._modal.open(ModalEntityViewComponent, {
                   title: 'UI.LABEL.ARREST_REPORT.SINGULAR',
                   columns: 2,
@@ -226,21 +213,13 @@ export class ReportsComponent implements OnInit {
             valueResolver: item => item.Id.toString(),
           }),
         },
-        {
-          index: 1,
-          item: new Column<MappedLooseDataEntity>({
-            header: 'Incident',
-            valueResolver: item => item['IncidentHistoryId'].toString(),
-            linkResolver: item => `/mdt/incidents/${item['IncidentHistoryId']}`,
-          }),
-        },
-        {
-          index: 2,
-          item: new Column<MappedLooseDataEntity>({
-            header: 'Submitted by',
-            valueResolver: item => item['User'] ? item['User']['Name'] : '',
-          }),
-        },
+        // {
+        //   index: 2,
+        //   item: new Column<MappedLooseDataEntity>({
+        //     header: 'Submitted by',
+        //     valueResolver: item => item['User'] ? item['User']['Name'] : '',
+        //   }),
+        // },
       ]);
       this.incidentReportColumns.push(
         {

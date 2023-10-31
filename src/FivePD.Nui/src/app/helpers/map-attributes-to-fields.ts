@@ -6,9 +6,9 @@
   DropdownOptions,
   FormInputBase,
   FormInputBaseOptions,
+  LooseDataAttribute,
   MappedLooseDataEntity,
   NumberInput,
-  LooseDataAttribute,
   Textarea,
   TextInput
 } from '@models';
@@ -22,11 +22,14 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
   if (singleUser && !singleUser.Hidden) {
     fields.push(new Dropdown({
       key: CoreAttributes.UserId,
-      label: 'UI.LABEL.USER.SINGULAR',
+      label: singleUser.Label,
+      helpLabel: singleUser.HelpLabel,
+      readonly: singleUser.Readonly,
+      placeholder: singleUser.Placeholder,
       required: singleUser.Required,
       dropdownOptions: {
         type: 'single',
-        label: 'UI.LABEL.USER.SINGULAR',
+        label: singleUser.Label ?? '-',
         size: 'normal',
         variant: 'secondary',
         items: [],
@@ -39,15 +42,18 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
   if (multiUser && !multiUser.Hidden) {
     fields.push(new Dropdown({
       key: CoreAttributes.UserIds,
-      label: 'UI.LABEL.USER.PLURAL',
+      label: multiUser.Label,
+      helpLabel: multiUser.HelpLabel,
+      readonly: multiUser.Readonly,
+      placeholder: multiUser.Placeholder,
       required: multiUser.Required,
       dropdownOptions: {
         type: 'multi',
-        label: 'UI.LABEL.USER.PLURAL',
+        label: multiUser.Label ?? '-',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.UserIds] : undefined,
+        selectedItemsResolver: entity ? selectedKey => (entity[CoreAttributes.UserIds] as any[]).includes(selectedKey) : undefined,
       }
     }));
   }
@@ -56,11 +62,14 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
   if (singleDepartment && !singleDepartment.Hidden) {
     fields.push(new Dropdown({
       key: CoreAttributes.DepartmentId,
-      label: 'UI.LABEL.DEPARTMENT.SINGULAR',
+      label: singleDepartment.Label,
+      helpLabel: singleDepartment.HelpLabel,
+      readonly: singleDepartment.Readonly,
+      placeholder: singleDepartment.Placeholder,
       required: singleDepartment.Required,
       dropdownOptions: {
         type: 'single',
-        label: 'UI.LABEL.DEPARTMENT.SINGULAR',
+        label: singleDepartment.Label ?? '-',
         size: 'normal',
         variant: 'secondary',
         items: [],
@@ -73,15 +82,18 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
   if (multiDepartment && !multiDepartment.Hidden) {
     fields.push(new Dropdown({
       key: CoreAttributes.DepartmentIds,
-      label: 'UI.LABEL.DEPARTMENT.PLURAL',
+      label: multiDepartment.Label,
+      helpLabel: multiDepartment.HelpLabel,
+      readonly: multiDepartment.Readonly,
+      placeholder: multiDepartment.Placeholder,
       required: multiDepartment.Required,
       dropdownOptions: {
         type: 'multi',
-        label: 'UI.LABEL.DEPARTMENT.PLURAL',
+        label: multiDepartment.Label ?? '-',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.DepartmentIds] : undefined,
+        selectedItemsResolver: entity ? selectedKey => (entity[CoreAttributes.DepartmentIds as any]).includes(selectedKey) : undefined,
       }
     }));
   }
@@ -90,11 +102,14 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
   if (singleIncidentHistory && !singleIncidentHistory.Hidden) {
     fields.push(new Dropdown({
       key: CoreAttributes.IncidentHistoryId,
-      label: 'UI.LABEL.INCIDENT.SINGULAR',
+      label: singleIncidentHistory.Label,
+      helpLabel: singleIncidentHistory.HelpLabel,
+      readonly: singleIncidentHistory.Readonly,
+      placeholder: singleIncidentHistory.Placeholder,
       required: singleIncidentHistory.Required,
       dropdownOptions: {
         type: 'single',
-        label: 'UI.LABEL.INCIDENT.SINGULAR',
+        label: singleIncidentHistory.Label ?? '-',
         size: 'normal',
         variant: 'secondary',
         items: [],
@@ -107,15 +122,18 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
   if (multiIncidentHistory && !multiIncidentHistory.Hidden) {
     fields.push(new Dropdown({
       key: CoreAttributes.IncidentHistoryIds,
-      label: 'UI.LABEL.INCIDENT.PLURAL',
+      label: multiIncidentHistory.Label,
+      helpLabel: multiIncidentHistory.HelpLabel,
+      readonly: multiIncidentHistory.Readonly,
+      placeholder: multiIncidentHistory.Placeholder,
       required: multiIncidentHistory.Required,
       dropdownOptions: {
         type: 'multi',
-        label: 'UI.LABEL.INCIDENT.PLURAL',
+        label: multiIncidentHistory.Label ?? '-',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.IncidentHistoryIds] : undefined,
+        selectedItemsResolver: entity ? selectedKey => (entity[CoreAttributes.IncidentHistoryIds as any]).includes(selectedKey) : undefined,
       }
     }));
   }
@@ -124,11 +142,14 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
   if (singlePedHistory && !singlePedHistory.Hidden) {
     fields.push(new Dropdown({
       key: CoreAttributes.PedHistoryId,
-      label: 'UI.LABEL.CITIZEN.SINGULAR',
+      label: singlePedHistory.Label,
+      helpLabel: singlePedHistory.HelpLabel,
+      readonly: singlePedHistory.Readonly,
+      placeholder: singlePedHistory.Placeholder,
       required: singlePedHistory.Required,
       dropdownOptions: {
         type: 'single',
-        label: 'UI.LABEL.CITIZEN.SINGULAR',
+        label: singlePedHistory.Label ?? '-',
         size: 'normal',
         variant: 'secondary',
         items: [],
@@ -141,15 +162,18 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
   if (multiPedHistory && !multiPedHistory.Hidden) {
     fields.push(new Dropdown({
       key: CoreAttributes.PedHistoryIds,
-      label: 'UI.LABEL.CITIZEN.PLURAL',
+      label: multiPedHistory.Label,
+      helpLabel: multiPedHistory.HelpLabel,
+      readonly: multiPedHistory.Readonly,
+      placeholder: multiPedHistory.Placeholder,
       required: multiPedHistory.Required,
       dropdownOptions: {
         type: 'multi',
-        label: 'UI.LABEL.CITIZEN.PLURAL',
+        label: multiPedHistory.Label ?? '-',
         size: 'normal',
         variant: 'secondary',
         items: [],
-        selectedItemResolver: entity ? selectedKey => selectedKey === entity[CoreAttributes.PedHistoryIds] : undefined,
+        selectedItemsResolver: entity ? selectedKey => (entity[CoreAttributes.PedHistoryIds as any]).includes(selectedKey) : undefined,
       }
     }));
   }

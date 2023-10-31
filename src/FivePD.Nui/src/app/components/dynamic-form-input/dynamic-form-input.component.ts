@@ -1,5 +1,12 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
 import { DropdownHeightVariants, DropdownItem, DropdownVariants, FormInputBase } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -102,6 +109,9 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
       if (this.control.value === undefined && this.field.value === undefined) {
         this.control?.patchValue(-1);
       }
+      if (Array.isArray(this.control.value) && !this.control.value.length) {
+        this.control?.patchValue([]);
+      }
     }
   }
 
@@ -111,29 +121,27 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
 
   get show() {
     const show = this.field.show(this.form!);
-    if (show) {
-      if (this.field.type === 'dropdown') {
-        if (this.field.required && !this.control.hasValidator(CustomValidators.dropdownRequired)) {
-          this.control.addValidators(CustomValidators.dropdownRequired);
-          this.control.updateValueAndValidity();
-        }
+
+    let validator: (control: AbstractControl) => ValidationErrors | null;
+    if (this.field.type === 'dropdown') {
+      if (this.field.dropdownOptions?.type === 'single') {
+        validator = CustomValidators.dropdownSingleRequired;
       } else {
-        if (this.field.required && !this.control.hasValidator(Validators.required)) {
-          this.control.addValidators(Validators.required);
-          this.control.updateValueAndValidity();
-        }
+        validator = CustomValidators.dropdownMultiRequired;
       }
     } else {
-      if (this.field.type === 'dropdown') {
-        if (this.field.required && this.control.hasValidator(CustomValidators.dropdownRequired)) {
-          this.control.removeValidators(CustomValidators.dropdownRequired);
-          this.control.updateValueAndValidity();
-        }
-      } else {
-        if (this.field.required && this.control.hasValidator(Validators.required)) {
-          this.control.removeValidators(Validators.required);
-          this.control.updateValueAndValidity();
-        }
+      validator = Validators.required;
+    }
+
+    if (show && this.field.required && validator) {
+      if (!this.control.hasValidator(validator)) {
+        this.control.addValidators(validator);
+        this.control.updateValueAndValidity();
+      }
+    } else {
+      if (this.control.hasValidator(validator)) {
+        this.control.removeValidators(validator);
+        this.control.updateValueAndValidity();
       }
     }
 
@@ -192,7 +200,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
         const selectedItemsResolver = field.dropdownOptions.selectedItemsResolver;
         if (selectedItemsResolver) {
           const selectedItems = items.filter(item => selectedItemsResolver(item.key));
-          if (selectedItems) {
+          if (selectedItems.length) {
             this.control?.setValue(selectedItems.map(x => x.key));
             this.dropdownSelectedItems = selectedItems.map(x => ({key: x.key, label: x.label}));
           } else {

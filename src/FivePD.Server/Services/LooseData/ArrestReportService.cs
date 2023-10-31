@@ -21,7 +21,6 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
     {
         return new List<LooseDataAttribute>
         {
-            new CoreAttributes.DepartmentId(new CoreAttributes.Options { Hidden = true }), // TODO: is this needed? if so, why?
             new CoreAttributes.UserId(new CoreAttributes.Options { Hidden = true }),
             new CoreAttributes.SubmitDate(new CoreAttributes.Options { Hidden = true }),
             new CoreAttributes.PedHistoryIds(new CoreAttributes.Options { Hidden = true, Required = true }),

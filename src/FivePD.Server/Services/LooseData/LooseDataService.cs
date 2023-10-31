@@ -10,6 +10,7 @@ using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Extensions;
+using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Models.LooseData;
@@ -18,6 +19,9 @@ using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Debug = CitizenFX.Core.Debug;
+
+#pragma warning disable
 
 namespace FivePD.Server.Services.LooseData;
 
@@ -25,6 +29,8 @@ namespace FivePD.Server.Services.LooseData;
 public class LooseDataService : ILooseDataService, IInternalLooseDataService
 {
     private readonly DatabaseContext _databaseContext;
+    private readonly IPlayerDataService _playerDataService;
+
     private readonly List<LooseDataEntityObservable> _observables = new();
     private readonly Dictionary<Type, string> _activeSetTypes = new();
     private readonly List<object> _addonRepositoryInstances = new();
@@ -33,9 +39,11 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     /// Initializes a new instance of the <see cref="LooseDataService"/> class.
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
-    public LooseDataService(DatabaseContext databaseContext)
+    /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
+    public LooseDataService(DatabaseContext databaseContext, IPlayerDataService playerDataService)
     {
         this._databaseContext = databaseContext;
+        this._playerDataService = playerDataService;
     }
 
     /// <inheritdoc/>
@@ -249,7 +257,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return null;
         }
 
-        return this.InternalAddEntity(setIdAttr.Id, entityToAdd, entityToAdd.MappedValues);
+        return this.InternalAddEntity(null, setIdAttr.Id, entityToAdd, entityToAdd.MappedValues);
     }
 
     /// <inheritdoc />
@@ -423,7 +431,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
             if (entity.MappedValues.ContainsKey("UserId"))
             {
-                var value = this._databaseContext.Users.FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
+                var value = this._databaseContext.Users.AsNoTracking().FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
                 entity.MappedValues["User"] = value;
             }
 
@@ -461,6 +469,11 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
                 var value = this._databaseContext.PedHistories.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
                 entity.MappedValues["PedHistories"] = value;
             }
+        }
+        
+        foreach (var kv in entity.MappedValues)
+        {
+            Debug.WriteLine($"MappedValue: {kv.Key} - {kv.Value}");
         }
 
         return entity;
@@ -628,6 +641,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         attribute.Required = request.Attribute.Required;
         attribute.Readonly = request.Attribute.Readonly;
         attribute.Hidden = request.Attribute.Hidden;
+        attribute.ShowInGrid = request.Attribute.ShowInGrid;
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ATTRIBUTE.SUCCESS.EDIT", new Dictionary<string, string>
         {
@@ -727,8 +741,8 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithJson(entities);
     }
 
-    [UIEvent(Events.UI.LooseData.AddEntity)]
-    private void AddEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.LooseData.AddEntity, true)]
+    private void AddEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AddEntityRequest>();
         var setType = this.FindSetTypeById(request.SetId);
@@ -738,7 +752,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var addedEntity = this.InternalAddEntity(request.SetId, new LooseDataEntity(), request.Entity);
+        var addedEntity = this.InternalAddEntity(player, request.SetId, new LooseDataEntity(), request.Entity);
         if (addedEntity is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -788,7 +802,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
-    private LooseDataEntity InternalAddEntity(string setId, LooseDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)
+    private LooseDataEntity InternalAddEntity(Player player, string setId, LooseDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)
     {
         var set = this._databaseContext.LooseDataSets
             .Include(s => s.Attributes)
@@ -801,7 +815,13 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         var attributeValueMap = new Dictionary<LooseDataAttribute, object>();
         foreach (var attr in set.Attributes)
         {
-            attributeValueMap[attr] = null;
+            object value = null;
+            if (attr.DataType == LooseDataType.Date)
+            {
+                value = DateTime.Now;
+            }
+
+            attributeValueMap[attr] = value;
         }
 
         foreach (var value in valuesToAdd)
@@ -815,6 +835,16 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             attributeValueMap[attribute] = value.Value;
         }
 
+        if (player is not null)
+        {
+            var userId = attributeValueMap.Keys.FirstOrDefault(x => x.Name == "UserId");
+            if (userId is not null)
+            {
+                var user = this._playerDataService.FindUserOfPlayer(player);
+                attributeValueMap[userId] = user?.Id ?? 0;
+            }
+        }
+        
         var values = attributeValueMap.Select(item => new LooseDataValue
             {
                 Attribute = item.Key,
@@ -822,7 +852,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
                 Value = JsonConvert.SerializeObject(item.Value),
             })
             .ToList();
-
+        
         entityToAdd.Set = set;
         this._databaseContext.LooseDataValues.AddRange(values);
         var entityEntry = this._databaseContext.LooseDataEntities.Add(entityToAdd);

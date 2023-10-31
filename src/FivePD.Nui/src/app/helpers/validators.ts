@@ -48,8 +48,11 @@ export class CustomValidators {
     };
   }
 
-  static dropdownRequired(control: AbstractControl): ValidationErrors | null {
+  static dropdownSingleRequired(control: AbstractControl): ValidationErrors | null {
     return control.value === -1 ? {required: true} : null;
   }
 
+  static dropdownMultiRequired(control: AbstractControl): ValidationErrors | null {
+    return !Array.isArray(control.value) ? null : control.value?.length === 0 ? {required: true} : null;
+  }
 }
