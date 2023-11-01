@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Collation, Column, Dropdown, FormInputBase, FormSubmitEvent, Page, PedHistory, TextInput } from '@models';
 import { formatDate } from "@helpers";
-import { FGender } from "@enums";
+import { CoreSetId, FGender } from "@enums";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { Router, RouterLink } from "@angular/router";
 import { Store } from "@ngrx/store";
@@ -11,6 +11,8 @@ import { GridComponent } from '../../../../components/grid/grid.component';
 import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import { LooseDataService } from "@services/loose-data/loose-data.service";
+import { zip } from "rxjs";
 
 @Component({
   selector: 'app-citizen-database-index',
@@ -78,12 +80,17 @@ export class CitizenDatabaseIndexComponent implements OnInit {
 
   constructor(private readonly _pedHistoryService: PedHistoryService,
               private readonly _router: Router,
-              public readonly store: Store<GlobalState>) {
+              public readonly store: Store<GlobalState>,
+              private readonly _looseDataService: LooseDataService) {
     store.select('app', 'recentlyViewedPeds').subscribe(peds => this.recentlyViewedPeds = peds);
   }
 
   ngOnInit(): void {
     this.getAll();
+    zip(
+      this._looseDataService.updateSetAttributes(CoreSetId.PedTicket),
+      this._looseDataService.updateSetAttributes(CoreSetId.PedWarning),
+    ).subscribe(() => {});
   }
 
   citizensRowLinkResolver(item: PedHistory): string {

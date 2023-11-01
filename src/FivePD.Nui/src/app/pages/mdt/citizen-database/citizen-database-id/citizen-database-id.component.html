@@ -81,14 +81,19 @@
   <app-container [rows]="1" [columns]="2">
 
     <div class="flex flex-col gap-4">
-      <p class="common-title">
-        {{ 'LABEL.TICKET.PLURAL' | translate }}
-      </p>
+      <div class="w-full flex flex-row items-center justify-between">
+        <p class="common-title">
+          {{ 'LABEL.TICKET.PLURAL' | translate }}
+        </p>
+        <app-button [label]="'UI.ACTION.CREATE' | translate"
+                    (onClick)="tryCreateLooseDataEntity(CoreSetId.PedTicket)"
+                    variant="secondary"/>
+      </div>
       <div class="flex flex-col gap-4">
         <div *ngFor="let ticket of tickets" class="bg-zinc-800 rounded-md p-4 flex flex-col gap-2">
-          <div *ngFor="let item of ObjectEntries(ticket.MappedValues)" class="grid grid-rows-1 grid-cols-2 gap-4">
-            <p class="text-zinc-400 font-medium">{{ item[0] }}</p>
-            <p class="text-zinc-400">{{ item[1] }}</p>
+          <div *ngFor="let item of ticket" class="grid grid-rows-1 grid-cols-2 gap-4">
+            <p class="text-zinc-400 font-medium">{{ item.name }}</p>
+            <p class="text-zinc-400">{{ item.value }}</p>
           </div>
         </div>
       </div>
@@ -99,14 +104,19 @@
     </div>
 
     <div class="flex flex-col gap-4">
-      <p class="common-title">
-        {{ 'LABEL.WARNING.PLURAL' | translate }}
-      </p>
+      <div class="w-full flex flex-row items-center justify-between">
+        <p class="common-title">
+          {{ 'LABEL.WARNING.PLURAL' | translate }}
+        </p>
+        <app-button [label]="'UI.ACTION.CREATE' | translate"
+                    (onClick)="tryCreateLooseDataEntity(CoreSetId.PedWarning)"
+                    variant="secondary"/>
+      </div>
       <div class="flex flex-col gap-4">
         <div *ngFor="let warning of warnings" class="bg-zinc-800 rounded-md p-4 flex flex-col gap-2">
-          <div *ngFor="let item of ObjectEntries(warning.MappedValues)" class="grid grid-rows-1 grid-cols-2 gap-4">
-            <p class="text-zinc-400 font-medium">{{ item[0] }}</p>
-            <p class="text-zinc-400">{{ item[1] }}</p>
+          <div *ngFor="let item of warning" class="grid grid-rows-1 grid-cols-2 gap-4">
+            <p class="text-zinc-400 font-medium">{{ item.name }}</p>
+            <p class="text-zinc-400">{{ item.value }}</p>
           </div>
         </div>
       </div>
