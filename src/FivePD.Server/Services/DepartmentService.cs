@@ -223,7 +223,7 @@ public class DepartmentService : IDepartmentService
             .Paginate(departmentsRequest.Page, filters);
         page.Items = page.Items.Select(item => new DepartmentResponse(item)).ToList();
 
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 
     [UIEvent(Events.UI.Department.Get)]
@@ -235,7 +235,7 @@ public class DepartmentService : IDepartmentService
             .Include(dept => dept.Divisions)
             .Include(dept => dept.Ranks)
             .FirstOrDefault(dept => dept.Id == request.Id);
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(department));
+        networkCallbackDelegate.InvokeWithJson(department);
     }
 
     [UIEvent(Events.UI.Department.GetUsers)]
@@ -250,7 +250,7 @@ public class DepartmentService : IDepartmentService
             department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
 
         var page = this._databaseContext.Users.AsNoTracking().Paginate(departmentUsersRequest.Page, filters);
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 
     [UIEvent(Events.UI.Department.GetRank)]
@@ -260,7 +260,7 @@ public class DepartmentService : IDepartmentService
         var rank = this._databaseContext.Ranks
             .AsNoTracking()
             .FirstOrDefault(rank => rank.Id == request.Id);
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(rank));
+        networkCallbackDelegate.InvokeWithJson(rank);
     }
 
     [UIEvent(Events.UI.Department.GetRanks)]
@@ -275,7 +275,7 @@ public class DepartmentService : IDepartmentService
             department => department.Name.ToLower().Contains(departmentRanksRequest.Filters.Name.ToLower()));
 
         var page = this._databaseContext.Ranks.AsNoTracking().Paginate(departmentRanksRequest.Page, filters);
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 
     [UIEvent(Events.UI.Department.GetDivision)]
@@ -286,7 +286,7 @@ public class DepartmentService : IDepartmentService
         var division = this._databaseContext.Divisions
             .AsNoTracking()
             .FirstOrDefault(division => division.Id == request.Id);
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(division));
+        networkCallbackDelegate.InvokeWithJson(division);
     }
 
     [UIEvent(Events.UI.Department.GetDivisions)]
@@ -304,7 +304,7 @@ public class DepartmentService : IDepartmentService
         var page = this._databaseContext.Divisions
             .AsNoTracking()
             .Paginate(departmentDivisionsRequest.Page, filters);
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 
     [UIEvent(Events.UI.Department.Create)]
@@ -630,7 +630,7 @@ public class DepartmentService : IDepartmentService
             departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
         }
 
-        networkCallbackDelegate.Invoke(new NameTakenResponse(departmentExists != null).ToString());
+        networkCallbackDelegate.InvokeWithJson(new NameTakenResponse(departmentExists != null));
     }
 
     [UIEvent(Events.UI.Department.Delete)]

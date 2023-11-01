@@ -9,7 +9,6 @@ using FivePD.Common.Utilities;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
-using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -377,7 +376,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             .FirstOrDefault();
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithJson(false);
+            networkCallbackDelegate.Invoke(false);
             return;
         }
 
@@ -405,12 +404,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
         if (user is null)
         {
-            networkCallbackDelegate.Invoke(new ActionResponse
-            {
-                Status = false,
-                Title = "UI.ERROR.UNEXPECTED",
-                Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
-            }.ToString());
+            networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
 
@@ -422,15 +416,10 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
         else
         {
-            division = this._databaseContext.Divisions.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
+            division = this._databaseContext.Divisions.FirstOrDefault(x => x.Id == playerChangeRequest.IdToChange);
             if (division is null)
             {
-                networkCallbackDelegate.Invoke(new ActionResponse
-                {
-                    Status = false,
-                    Title = "UI.ERROR.UNEXPECTED",
-                    Description = "UI.ERROR.DATABASE_ACCESS.TITLE",
-                }.ToString());
+                networkCallbackDelegate.InvokeWithUnexpectedError();
                 return;
             }
 
@@ -443,16 +432,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             Division = division,
             Player = FPlayer.FromPlayer(player),
         });
-        networkCallbackDelegate.Invoke(new ActionResponse
-        {
-            Status = true,
-            Title = "UI.LABEL.SUCCESS.CHANGE",
-            Description = "UI.LABEL.DIVISION.SUCCESS.CHANGE",
-            Params = new Dictionary<string, string>
+        networkCallbackDelegate.InvokeWithResponse(
+            true,
+            "UI.LABEL.SUCCESS.CHANGE",
+            "UI.LABEL.DIVISION.SUCCESS.CHANGE",
+            new Dictionary<string, string>
             {
                 { "player", user.Name },
-            },
-        }.ToString());
+            });
     }
 
     [UIEvent(Events.UI.Player.ChangeRank, true)]
@@ -490,16 +477,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             Rank = rank,
             Player = FPlayer.FromPlayer(player),
         });
-        networkCallbackDelegate.Invoke(new ActionResponse
-        {
-            Status = true,
-            Title = "UI.LABEL.SUCCESS.CHANGE",
-            Description = "UI.LABEL.RANK.SUCCESS.CHANGE",
-            Params = new Dictionary<string, string>
+        networkCallbackDelegate.InvokeWithResponse(
+            true,
+            "UI.LABEL.SUCCESS.CHANGE",
+            "UI.LABEL.RANK.SUCCESS.CHANGE",
+            new Dictionary<string, string>
             {
                 { "player", user.Name },
-            },
-        }.ToString());
+            });
     }
 
     [UIEvent(Events.UI.Player.ChangeFixedRank)]
@@ -515,16 +500,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
         user.FixedRank = request.FixedRank;
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.Invoke(new ActionResponse
-        {
-            Status = true,
-            Title = "UI.LABEL.SUCCESS.CHANGE",
-            Description = request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
-            Params = new Dictionary<string, string>
+        networkCallbackDelegate.InvokeWithResponse(
+            true,
+            "UI.LABEL.SUCCESS.CHANGE",
+            request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
+            new Dictionary<string, string>
             {
                 { "name", user.Name },
-            },
-        }.ToString());
+            });
     }
 
     [UIEvent(Events.UI.Player.GetAllPageable)]
@@ -535,7 +518,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             .AsNoTracking()
             .Paginate(request.Page, new Filters<User>());
 
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 
     [UIEvent(Events.UI.Player.ChangeRole)]

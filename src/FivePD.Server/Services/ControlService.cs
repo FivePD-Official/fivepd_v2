@@ -80,6 +80,6 @@ public class ControlService : IControlService, IOnInit
 
     private void OnGetAll(NetworkCallbackDelegate networkCallbackDelegate)
     {
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(this._controls.Select(x => x.ToClientDTO())));
+        networkCallbackDelegate.InvokeWithJson(this._controls.Select(x => x.ToClientDTO()));
     }
 }

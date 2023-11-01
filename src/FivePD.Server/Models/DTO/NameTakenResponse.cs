@@ -4,10 +4,4 @@
 
 namespace FivePD.Server.Models.DTO;
 
-internal readonly record struct NameTakenResponse(bool Taken)
-{
-    public override string ToString()
-    {
-        return JsonConvert.SerializeObject(this);
-    }
-}
+internal readonly record struct NameTakenResponse(bool Taken);

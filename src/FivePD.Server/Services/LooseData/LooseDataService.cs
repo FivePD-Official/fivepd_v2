@@ -19,9 +19,6 @@ using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Debug = CitizenFX.Core.Debug;
-
-#pragma warning disable
 
 namespace FivePD.Server.Services.LooseData;
 
@@ -321,7 +318,11 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         return mappedEntity;
     }
 
-    private List<LooseDataEntity> GetEntitiesWithOptionalType<TS>(Type setType, bool withTracking, bool queryCoreAttributeValues, IReadOnlyDictionary<string, object> filter = null)
+    private List<LooseDataEntity> GetEntitiesWithOptionalType<TS>(
+        Type setType,
+        bool withTracking,
+        bool queryCoreAttributeValues,
+        IReadOnlyDictionary<string, object> filter = null)
         where TS : LooseDataSet
     {
         var setIdAttr = (setType ?? typeof(TS)).GetCustomAttribute<LooseDataSetIdAttribute>();
@@ -418,7 +419,8 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         {
             if (entity.MappedValues.ContainsKey("DepartmentId"))
             {
-                var value = this._databaseContext.Departments.AsNoTracking().FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
+                var value = this._databaseContext.Departments.AsNoTracking()
+                    .FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
                 entity.MappedValues["Department"] = value;
             }
 
@@ -469,11 +471,6 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
                 var value = this._databaseContext.PedHistories.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
                 entity.MappedValues["PedHistories"] = value;
             }
-        }
-        
-        foreach (var kv in entity.MappedValues)
-        {
-            Debug.WriteLine($"MappedValue: {kv.Key} - {kv.Value}");
         }
 
         return entity;
@@ -530,7 +527,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             .Where(attr => attr.Set.Id == request.SetId)
             .Paginate(request.Page, new Filters<LooseDataAttribute>());
 
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(page));
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 
     [UIEvent(Events.UI.LooseData.AddSetAttribute)]
@@ -718,7 +715,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         var filters = new Filters<LooseDataEntity>();
         var entities = this.GetEntitiesPage(setType, request.Page, filters);
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(entities));
+        networkCallbackDelegate.InvokeWithJson(entities);
     }
 
     [UIEvent(Events.UI.LooseData.GetEntities)]
@@ -732,7 +729,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var entities = this.GetEntities(setType, false, false, request.Filter);
+        var entities = this.GetEntities(setType, false, true, request.Filter);
         foreach (var entity in entities)
         {
             entity.Values = null;
@@ -844,7 +841,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
                 attributeValueMap[userId] = user?.Id ?? 0;
             }
         }
-        
+
         var values = attributeValueMap.Select(item => new LooseDataValue
             {
                 Attribute = item.Key,
@@ -852,7 +849,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
                 Value = JsonConvert.SerializeObject(item.Value),
             })
             .ToList();
-        
+
         entityToAdd.Set = set;
         this._databaseContext.LooseDataValues.AddRange(values);
         var entityEntry = this._databaseContext.LooseDataEntities.Add(entityToAdd);
