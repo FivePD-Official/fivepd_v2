@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FivePD.Server.Attributes;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Models.DTO;
@@ -6,6 +7,7 @@ namespace FivePD.Server.Models.DTO;
 /// <summary>
 /// Used for actions initiated in the NUI.
 /// </summary>
+[Obfuscate]
 internal record struct ActionResponse()
 {
     /// <summary>

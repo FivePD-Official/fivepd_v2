@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FivePD.Server.Attributes;
 using FivePD.Server.Models;
 using FivePD.Server.Services;
 using Serilog;
@@ -12,6 +13,7 @@ namespace FivePD.Server;
 /// <summary>
 /// Responsible for locating addon definitions. Loading of addons should be.
 /// </summary>
+[Obfuscate]
 internal class FilesystemAddonLocator
 {
     private const string MetadataFileName = "metadata";

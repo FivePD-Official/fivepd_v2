@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class DepartmentService : IDepartmentService
 {
     private readonly DatabaseContext _databaseContext;

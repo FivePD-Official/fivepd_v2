@@ -23,6 +23,7 @@ using Serilog;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IPlayerDataService" />
+[Obfuscate]
 public class PlayerDataService : IPlayerDataService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

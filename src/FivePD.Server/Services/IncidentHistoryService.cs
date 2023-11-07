@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IIncidentHistoryService" />
+[Obfuscate]
 internal class IncidentHistoryService : IIncidentHistoryService, IInternalIncidentHistoryService
 {
     private readonly DatabaseContext _databaseContext;

@@ -3,6 +3,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.DTO;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
@@ -10,6 +11,7 @@ using Newtonsoft.Json;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class NotificationService : INotificationService
 {
     /// <inheritdoc />

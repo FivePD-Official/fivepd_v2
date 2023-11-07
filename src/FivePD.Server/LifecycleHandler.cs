@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using FivePD.Server.Attributes;
 using MySql.Data.MySqlClient;
 using Serilog;
 
@@ -7,6 +8,7 @@ namespace FivePD.Server;
 
 #pragma warning disable
 
+[Obfuscate]
 internal static class LifecycleHandler
 {
     private static ILogger logger;

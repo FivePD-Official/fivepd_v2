@@ -1,10 +1,12 @@
 ﻿using System;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces.Addons;
 using Serilog;
 
 namespace FivePD.Server.Services.Addons;
 
 /// <inheritdoc />
+[Obfuscate]
 public class AddonLoggerService : IAddonLoggerService
 {
     private readonly ILogger _logger;

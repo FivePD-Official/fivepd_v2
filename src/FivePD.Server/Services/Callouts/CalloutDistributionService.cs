@@ -26,6 +26,7 @@ namespace FivePD.Server.Services.Callouts;
 #pragma warning disable S3241
 
 /// <inheritdoc cref="ICalloutDistributionService" />
+[Obfuscate]
 public class CalloutDistributionService : ICalloutDistributionService, IInternalCalloutDistributionService
 {
     private readonly ILogger _logger;

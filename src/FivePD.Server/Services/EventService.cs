@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IEventService" />
+[Obfuscate]
 public class EventService : IEventService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

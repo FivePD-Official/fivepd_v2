@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -11,6 +12,7 @@ using Newtonsoft.Json;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IVehicleService" />
+[Obfuscate]
 public class VehicleService : IVehicleService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

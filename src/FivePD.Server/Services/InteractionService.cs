@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.DTO;
 using FivePD.Common;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -16,6 +17,7 @@ namespace FivePD.Server.Services;
 #pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IInteractionService" />
+[Obfuscate]
 public class InteractionService : IInteractionService, IInternalInteractionService, IOnInit
 {
     private readonly IPedService _pedService;

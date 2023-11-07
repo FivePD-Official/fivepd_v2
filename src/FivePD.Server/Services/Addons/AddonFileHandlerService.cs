@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces.Addons;
 using Newtonsoft.Json;
 using Serilog;
@@ -8,6 +9,7 @@ using YamlDotNet.Serialization;
 namespace FivePD.Server.Services.Addons;
 
 /// <inheritdoc />
+[Obfuscate]
 public class AddonFileHandlerService : IAddonFileHandlerService
 {
     private readonly IInternalAddonMetadataService _addonMetadataService;

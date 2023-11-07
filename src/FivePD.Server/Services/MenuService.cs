@@ -24,6 +24,7 @@ namespace FivePD.Server.Services;
 #pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IMenuService" />
+[Obfuscate]
 public class MenuService : IMenuService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

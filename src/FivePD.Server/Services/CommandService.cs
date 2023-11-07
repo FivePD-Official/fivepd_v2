@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.CommandModels;
 using Cfx = CitizenFX.Core.Native;
@@ -8,6 +9,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class CommandService : ICommandService
 {
     private readonly List<Command> _commands = new();

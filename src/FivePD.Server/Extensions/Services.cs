@@ -1,4 +1,5 @@
 ﻿using System;
+using FivePD.Server.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -7,6 +8,7 @@ namespace FivePD.Server.Extensions;
 /// <summary>
 /// Holds extension methods for <see cref="IServiceCollection"/>.
 /// </summary>
+[Obfuscate]
 internal static class Services
 {
     /// <summary>

@@ -17,6 +17,7 @@ using FivePD.Server.QueryHelpers;
 namespace FivePD.Server.Services.Callouts;
 
 /// <inheritdoc cref="ICalloutManagerService" />
+[Obfuscate]
 public class CalloutManagerService : ICalloutManagerService, IOnInit
 {
     private const int AutoDispatchCalloutTimeoutInMs = 10000;

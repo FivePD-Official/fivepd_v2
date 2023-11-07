@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-public record struct UnitCallsignRequest
+internal record struct UnitCallsignRequest
 {
     public string Callsign { get; init; }
 }

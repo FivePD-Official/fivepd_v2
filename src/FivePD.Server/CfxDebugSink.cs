@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CitizenFX.Core;
+using FivePD.Server.Attributes;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Display;
@@ -10,6 +11,7 @@ namespace FivePD.Server;
 /// <summary>
 /// Custom <see cref="CitizenFX.Core.Debug.Write(string)"/> wrapper.
 /// </summary>
+[Obfuscate]
 internal class CfxDebugSink : ILogEventSink
 {
     private readonly MessageTemplateTextFormatter _formatter;

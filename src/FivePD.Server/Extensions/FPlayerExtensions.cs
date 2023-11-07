@@ -1,4 +1,5 @@
-﻿using FivePD.Server.EntityWrappers;
+﻿using FivePD.Server.Attributes;
+using FivePD.Server.EntityWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -7,6 +8,7 @@ namespace FivePD.Server.Extensions;
 /// <summary>
 /// Contains extension methods for the <see cref="FPlayer"/>.
 /// </summary>
+[Obfuscate]
 internal static class FPlayerExtensions
 {
     /// <summary>

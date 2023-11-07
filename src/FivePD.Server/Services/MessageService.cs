@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class MessageService : IMessageService
 {
     private readonly DatabaseContext _databaseContext;

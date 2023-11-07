@@ -20,6 +20,7 @@ namespace FivePD.Server.Services.Callouts;
 
 #pragma warning disable
 
+[Obfuscate]
 internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IOnDestroy
 {
     private readonly IInternalAddonMetadataService _addonMetadataService;

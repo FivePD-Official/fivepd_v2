@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Server.Attributes;
 using FivePD.Server.Models.DTO;
 
 namespace FivePD.Server.Extensions;
@@ -7,6 +8,7 @@ namespace FivePD.Server.Extensions;
 /// <summary>
 /// Holds extension methods for <see cref="NetworkCallbackDelegate"/>.
 /// </summary>
+[Obfuscate]
 internal static class NetworkCallbackDelegateExtensions
 {
     /// <summary>

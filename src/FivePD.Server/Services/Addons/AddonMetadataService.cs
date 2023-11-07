@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using FivePD.Server.API;
+using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Models;
@@ -14,6 +15,7 @@ using Serilog;
 namespace FivePD.Server.Services.Addons;
 
 /// <inheritdoc cref="IAddonMetadataService" />
+[Obfuscate]
 public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadataService
 {
     private readonly Dictionary<Assembly, AddonDefinition> _definitions = new();

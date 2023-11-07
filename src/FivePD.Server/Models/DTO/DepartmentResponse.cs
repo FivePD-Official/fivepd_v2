@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FivePD.Server.Attributes;
 
 namespace FivePD.Server.Models.DTO;
 
 /// <inheritdoc />
+[Obfuscate]
 internal class DepartmentResponse : Department
 {
     /// <summary>

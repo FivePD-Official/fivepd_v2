@@ -23,6 +23,7 @@ using Newtonsoft.Json.Linq;
 namespace FivePD.Server.Services.LooseData;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.LooseData.ILooseDataService" />
+[Obfuscate]
 public class LooseDataService : ILooseDataService, IInternalLooseDataService
 {
     private readonly DatabaseContext _databaseContext;

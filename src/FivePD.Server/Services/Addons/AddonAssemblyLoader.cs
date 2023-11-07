@@ -1,12 +1,14 @@
 ﻿using System.Linq;
 using System.Reflection;
 using FivePD.Server.API;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces.Addons;
 using Serilog;
 
 namespace FivePD.Server.Services.Addons;
 
 /// <inheritdoc />
+[Obfuscate]
 internal class AddonAssemblyLoader : IAddonAssemblyLoader
 {
     private readonly ILogger _logger;

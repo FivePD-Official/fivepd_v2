@@ -21,6 +21,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
+[Obfuscate]
 public class DispatchService : IDispatchService, IInternalDispatchService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

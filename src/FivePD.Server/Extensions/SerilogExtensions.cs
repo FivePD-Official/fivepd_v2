@@ -1,4 +1,5 @@
 ﻿using System;
+using FivePD.Server.Attributes;
 using Serilog;
 using Serilog.Configuration;
 
@@ -7,6 +8,7 @@ namespace FivePD.Server.Extensions;
 /// <summary>
 /// Holds extension methods for <see cref="Serilog"/> classes.
 /// </summary>
+[Obfuscate]
 internal static class SerilogExtensions
 {
     /// <summary>

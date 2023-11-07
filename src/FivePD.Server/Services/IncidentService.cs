@@ -23,6 +23,7 @@ using Serilog;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class IncidentService : IInternalIncidentService
 {
     private readonly ILogger _logger;

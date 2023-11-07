@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
@@ -34,6 +35,7 @@ namespace FivePD.Server;
 /// creation and management of all tasks on the server.
 /// </summary>
 // ReSharper disable once UnusedType.Global
+[Obfuscate]
 internal class Bootstrapper : BaseScript
 {
     private readonly Dictionary<Action, bool> _phases = new();

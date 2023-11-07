@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using FivePD.Common.Exceptions;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
@@ -11,6 +12,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class FileHandlerService : IFileHandlerService
 {
     private readonly ConcurrentDictionary<string, object> _cache = new();

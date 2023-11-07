@@ -1,6 +1,7 @@
 ﻿using System;
 using FivePD.Common.Enums;
 using FivePD.Server.API;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.TrafficStopInterfaces;
@@ -10,6 +11,7 @@ using Serilog;
 namespace FivePD.Server.Services.TrafficStopServices;
 
 /// <inheritdoc />
+[Obfuscate]
 public class TrafficStopService : ITrafficStopService
 {
     private readonly ILogger _logger;

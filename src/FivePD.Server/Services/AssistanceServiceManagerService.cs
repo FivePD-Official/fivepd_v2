@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.AssistanceServiceModels;
@@ -13,6 +14,7 @@ using Serilog;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 {
     private readonly IServiceProvider _serviceProvider;

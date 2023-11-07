@@ -4,12 +4,14 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Common.Models;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class MarkerService : IMarkerService
 {
     private readonly PlayerList _playerList;

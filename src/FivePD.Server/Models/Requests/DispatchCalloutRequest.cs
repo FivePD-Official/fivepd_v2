@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-public class DispatchCalloutRequest
+internal class DispatchCalloutRequest
 {
     public string TypeName { get; set; }
 }

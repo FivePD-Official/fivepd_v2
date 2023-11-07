@@ -12,6 +12,7 @@ using Serilog;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IUIService" />
+[Obfuscate]
 public class UIService : IUIService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

@@ -21,6 +21,7 @@ using FivePD.Server.QueryHelpers;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class UnitService : IUnitService
 {
     private readonly INotificationService _notificationService;

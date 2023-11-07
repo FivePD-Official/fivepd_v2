@@ -10,6 +10,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class DevToolsService : IDevToolsService
 {
     [UIEvent(Events.DevTools.DeleteEntities)]

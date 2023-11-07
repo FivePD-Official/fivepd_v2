@@ -1,4 +1,5 @@
-﻿using FivePD.Server.Database;
+﻿using FivePD.Server.Attributes;
+using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
@@ -6,6 +7,7 @@ using FivePD.Server.Models;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class ProgressionSystemService : IProgressionSystemService
 {
     private readonly DatabaseContext _databaseContext;

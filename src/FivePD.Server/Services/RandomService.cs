@@ -1,9 +1,11 @@
 ﻿using System;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class RandomService : IRandomService
 {
     /// <inheritdoc />

@@ -4,6 +4,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Utilities;
+using FivePD.Server.Attributes;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -13,6 +14,7 @@ using FivePD.Server.Interfaces.Lifecycle;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IControlService" />
+[Obfuscate]
 public class ControlService : IControlService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

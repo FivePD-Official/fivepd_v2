@@ -1,10 +1,12 @@
 ﻿using System;
 using FivePD.Common.Enums;
+using FivePD.Server.Attributes;
 
 namespace FivePD.Server.Models.DTO;
 
 #pragma warning disable
 
+[Obfuscate]
 internal record struct SimplePedHistoryDTO
 {
     public int Id { get; init; }

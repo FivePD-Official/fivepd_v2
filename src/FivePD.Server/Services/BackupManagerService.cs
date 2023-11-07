@@ -2,6 +2,7 @@
 using System.Linq;
 using FivePD.Common.Models;
 using FivePD.Server.API;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
@@ -10,6 +11,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
+[Obfuscate]
 public class BackupManagerService : IBackupManagerService
 {
     private readonly IConfirmationService _confirmationService;

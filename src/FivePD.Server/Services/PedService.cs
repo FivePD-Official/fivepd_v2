@@ -26,6 +26,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IPedService" />
+[Obfuscate]
 public class PedService : IPedService, IOnInit, IOnDestroy
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

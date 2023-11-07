@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using FivePD.Server.Attributes;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Extensions;
@@ -6,6 +7,7 @@ namespace FivePD.Server.Extensions;
 /// <summary>
 /// Custom wrapper for the <see cref="JsonConvert"/> class.
 /// </summary>
+[Obfuscate]
 internal static class Converter
 {
     /// <summary>
