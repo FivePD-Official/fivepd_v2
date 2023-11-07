@@ -1,7 +1,7 @@
 ﻿using System;
 using CitizenFX.Core;
-using FivePD.Client.DTO;
 using FivePD.Common;
+using FivePD.Common.DTO;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;

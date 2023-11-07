@@ -9,7 +9,7 @@ using FivePD.Client.Injection;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
-using FivePD.Common.Utilities;
+using FivePD.Common.DTO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;

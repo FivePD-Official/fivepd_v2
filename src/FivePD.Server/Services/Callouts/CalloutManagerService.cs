@@ -2,9 +2,8 @@
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
-using FivePD.Client.DTO;
 using FivePD.Common;
-using FivePD.Common.Enums;
+using FivePD.Common.DTO;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;

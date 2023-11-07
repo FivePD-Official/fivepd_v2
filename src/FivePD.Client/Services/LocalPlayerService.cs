@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Client.DTO;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
@@ -10,6 +9,7 @@ using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.ConfigModels.GeneralConfigs;
+using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using Newtonsoft.Json;

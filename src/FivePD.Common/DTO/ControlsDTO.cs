@@ -3,7 +3,7 @@ using CitizenFX.Core;
 
 #pragma warning disable
 
-namespace FivePD.Common.Utilities;
+namespace FivePD.Common.DTO;
 
 internal sealed record ControlsDTO
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FivePD.Client.DTO;
+namespace FivePD.Common.DTO;
 
 #pragma warning disable
 

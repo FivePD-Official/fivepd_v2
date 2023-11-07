@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Utilities;
+using FivePD.Common.DTO;
 using FivePD.Server.Attributes;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;

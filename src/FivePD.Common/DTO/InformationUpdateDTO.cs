@@ -1,7 +1,7 @@
 ﻿using FivePD.Common.Enums;
 using FivePD.Common.Models;
 
-namespace FivePD.Client.DTO;
+namespace FivePD.Common.DTO;
 
 #pragma warning disable
 

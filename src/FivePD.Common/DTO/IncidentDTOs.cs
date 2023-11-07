@@ -2,7 +2,7 @@
 using CitizenFX.Core;
 using FivePD.Common.Enums;
 
-namespace FivePD.Client.DTO;
+namespace FivePD.Common.DTO;
 
 #pragma warning disable
 

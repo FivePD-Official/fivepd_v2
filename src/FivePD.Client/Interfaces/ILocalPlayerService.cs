@@ -1,5 +1,5 @@
-﻿using FivePD.Client.DTO;
-using FivePD.Client.Models;
+﻿using FivePD.Client.Models;
+using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 
