@@ -357,6 +357,18 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
                 }
 
                 var attributeValue = JsonConvert.DeserializeObject(value.Value);
+                if (attributeValue?.GetType() == typeof(JArray) && filterValue.GetType() == typeof(JArray))
+                {
+                    var attributeValueArray = (JArray)attributeValue;
+                    var filterValueArray = (JArray)filterValue;
+                    if (!attributeValueArray.Any(x => filterValueArray.Any(y => y.ToString() == x.ToString())))
+                    {
+                        itemsToRemove.Add(entity);
+                    }
+
+                    continue;
+                }
+
                 if (attributeValue is IConvertible testValueConvertible && filterValue is IConvertible)
                 {
                     attributeValue = testValueConvertible.ToType(
