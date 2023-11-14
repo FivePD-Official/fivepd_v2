@@ -1,16 +1,19 @@
 <div class="relative bg-zinc-700 drop-shadow-lg p-4 rounded-lg mb-4 w-[350px] animate-slideIn"
      [ngClass]="{ 'animate-slideOut': exit }">
   <div class="flex flex-row items-center mb-2.5">
-    <div *ngIf="notification.type === 'success'"
-         class="relative flex flex-row items-center justify-center mr-2.5 w-[26px] h-[26px]
+    @if (notification.type === 'success') {
+      <div
+        class="relative flex flex-row items-center justify-center mr-2.5 w-[26px] h-[26px]
                 before:absolute before:inset-0 before:w-full before:h-full before:rounded-full before:bg-green-500/20">
-      <div app-icon name="Check" className="h-[15px] text-green-500"></div>
-    </div>
-    <div *ngIf="notification.type === 'error'"
-         class="relative flex flex-row items-center justify-center mr-2.5 w-[26px] h-[26px]
+        <div app-icon name="Check" className="h-[15px] text-green-500"></div>
+      </div>
+    }
+    @if (notification.type === 'error') {
+      <div class="relative flex flex-row items-center justify-center mr-2.5 w-[26px] h-[26px]
                 before:absolute before:inset-0 before:w-full before:h-full before:rounded-full before:bg-red-500/20">
-      <div app-icon name="XMark" className="h-[15px] text-red-500"></div>
-    </div>
+        <div app-icon name="XMark" className="h-[15px] text-red-500"></div>
+      </div>
+    }
     <p class="font-medium text-zinc-200"
        [ngClass]="{
          'text-green-600': notification.type === 'success',

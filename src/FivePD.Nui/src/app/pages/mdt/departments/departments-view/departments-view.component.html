@@ -17,59 +17,60 @@
               (onClick)="leaveDepartment()"/>
 </app-page-header>
 
-<ng-container *ngIf="mode === 'edit' && userService.userHasRole(UserRole.Admin); else notAdmin">
-  <app-container *ngIf="department" [columns]="1" [rows]="2">
-    <app-container [columns]="2">
-      <app-dynamic-form
-        *ngIf="departmentSettingsForm"
-        [title]="'UI.LABEL.DEPARTMENT.SETTINGS' | translate"
-        [formFields]="departmentSettingsForm"
-        [columns]="2"
-        [limitWidth]="false"
-        buttonAlignment="right"
-        [disableSubmitWithOriginalValue]="true"
-        (onSubmit)="onDepartmentSettingsSubmit($event)"
-        [showSubmitButton]="true"/>
-      <app-grid
-        [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
-        [buttons]="divisionsButtons"
-        [data]="divisions"
-        [columns]="divisionsColumns"
-        (onCollationChange)="onDivisionsCollationChange($event)"
-        (onCellAction)="getDivisions()"/>
+@if (mode === 'edit' && userService.userHasRole(UserRole.Admin)) {
+
+  @if (department) {
+    <app-container [columns]="1" [rows]="2">
+      <app-container [columns]="2">
+        @if (departmentSettingsForm) {
+          <app-dynamic-form [title]="'UI.LABEL.DEPARTMENT.SETTINGS' | translate"
+                            [formFields]="departmentSettingsForm"
+                            [columns]="2"
+                            [limitWidth]="false"
+                            buttonAlignment="right"
+                            [disableSubmitWithOriginalValue]="true"
+                            (onSubmit)="onDepartmentSettingsSubmit($event)"
+                            [showSubmitButton]="true"/>
+        }
+        <app-grid [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
+                  [buttons]="divisionsButtons"
+                  [data]="divisions"
+                  [columns]="divisionsColumns"
+                  (onCollationChange)="onDivisionsCollationChange($event)"
+                  (onCellAction)="getDivisions()"/>
+      </app-container>
+      <app-grid [title]="'UI.LABEL.RANK.PLURAL' | translate"
+                [buttons]="ranksButtons"
+                [data]="ranks"
+                [columns]="ranksColumns"
+                (onCollationChange)="onRanksCollationChange($event)"
+                (onCellAction)="getRanks()"/>
     </app-container>
-    <app-grid
-      [title]="'UI.LABEL.RANK.PLURAL' | translate"
-      [buttons]="ranksButtons"
-      [data]="ranks"
-      [columns]="ranksColumns"
-      (onCollationChange)="onRanksCollationChange($event)"
-      (onCellAction)="getRanks()"/>
-  </app-container>
-</ng-container>
+  }
 
-<ng-template #notAdmin>
-  <app-container *ngIf="department" [columns]="2">
-    <app-grid
-      [title]="'UI.LABEL.RANK.PLURAL' | translate"
-      [buttons]="ranksButtons"
-      [data]="ranks"
-      [columns]="ranksColumns"
-      (onCollationChange)="onRanksCollationChange($event)"
-      (onCellAction)="getRanks()"/>
-    <app-grid
-      [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
-      [buttons]="divisionsButtons"
-      [data]="divisions"
-      [columns]="divisionsColumns"
-      (onCollationChange)="onDivisionsCollationChange($event)"
-      (onCellAction)="getDivisions()"/>
-  </app-container>
-</ng-template>
+} @else {
 
-<app-grid
-  [title]="'UI.LABEL.MEMBER.PLURAL' | translate"
-  [data]="users"
-  [columns]="usersColumns"
-  (onCollationChange)="onUsersCollationChange($event)"
-  (onCellAction)="getUsers()"/>
+  @if (department) {
+    <app-container [columns]="2">
+      <app-grid [title]="'UI.LABEL.RANK.PLURAL' | translate"
+                [buttons]="ranksButtons"
+                [data]="ranks"
+                [columns]="ranksColumns"
+                (onCollationChange)="onRanksCollationChange($event)"
+                (onCellAction)="getRanks()"/>
+      <app-grid [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
+                [buttons]="divisionsButtons"
+                [data]="divisions"
+                [columns]="divisionsColumns"
+                (onCollationChange)="onDivisionsCollationChange($event)"
+                (onCellAction)="getDivisions()"/>
+    </app-container>
+  }
+
+}
+
+<app-grid [title]="'UI.LABEL.MEMBER.PLURAL' | translate"
+          [data]="users"
+          [columns]="usersColumns"
+          (onCollationChange)="onUsersCollationChange($event)"
+          (onCellAction)="getUsers()"/>

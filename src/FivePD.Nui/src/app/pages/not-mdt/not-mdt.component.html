@@ -1,3 +1,9 @@
-<app-menu *ngIf="menu" [menu]="menu"/>
-<app-information *ngIf="windowService.showInformation | async"/>
-<app-welcome-modal *ngIf="windowService.showWelcomeModal | async"/>
+@if (menu) {
+  <app-menu [menu]="menu"/>
+}
+@if (windowService.showInformation | async) {
+  <app-information/>
+}
+@if (windowService.showWelcomeModal | async) {
+  <app-welcome-modal/>
+}

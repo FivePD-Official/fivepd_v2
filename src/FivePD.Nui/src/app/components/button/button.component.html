@@ -1,9 +1,8 @@
-<button
-  *ngIf="show"
-  [ngClass]="className"
-  [attr.type]="type"
-  [disabled]="disabled"
-  (click)="internalOnClick()"
->
-  <span class="z-10">{{ label }}</span>
-</button>
+@if (show) {
+  <button [ngClass]="className"
+          [attr.type]="type"
+          [disabled]="disabled"
+          (click)="internalOnClick()">
+    <span class="z-10">{{ label }}</span>
+  </button>
+}

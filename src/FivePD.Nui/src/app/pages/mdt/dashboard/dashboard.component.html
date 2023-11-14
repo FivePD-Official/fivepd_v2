@@ -25,10 +25,12 @@
             <p>{{ 'UI.LABEL.CALLSIGN.TITLE' | translate }}</p>
             <p>{{ user?.User?.Callsign ?? '-' }}</p>
           </li>
-          <li *ngIf="generalConfig?.config?.Features?.ProgressionSystem">
-            <p>{{ 'UI.LABEL.XP.SHORT' | translate }}</p>
-            <p>{{ user?.User?.Xp ?? '-' }}</p>
-          </li>
+          @if (generalConfig?.config?.Features?.ProgressionSystem) {
+            <li>
+              <p>{{ 'UI.LABEL.XP.SHORT' | translate }}</p>
+              <p>{{ user?.User?.Xp ?? '-' }}</p>
+            </li>
+          }
         </ul>
       </div>
     </div>
@@ -38,58 +40,57 @@
         {{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}
       </p>
       <div class="grid-item--content">
-        <p *ngIf="!assignedIncident" class="no-data">
-          {{ 'UI.LABEL.ACTIVE_INCIDENT.NONE' | translate }}
-        </p>
-        <ul *ngIf="assignedIncident"
-          class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-1 items-start gap-4">
-          <div class="grid grid-rows-[repeat(2,1fr)] grid-cols-1 gap-4">
-            <li>
-              <p>{{ 'UI.LABEL.TITLE.SINGULAR' | translate }}</p>
-              <p>{{ assignedIncident.Incident.Title }}</p>
-            </li>
-            <li>
-              <p>{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
-              <p>{{ assignedIncident.Incident.Description }}</p>
-            </li>
-          </div>
-          <div class="grid grid-rows-1 grid-cols-[repeat(3,1fr)] gap-4">
-            <li>
-              <p>{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
-              <p>{{ assignedIncident.Address }}</p>
-            </li>
-            <li>
-              <p>{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
-              <p>{{ priorityLabel | translate }}</p>
-            </li>
-            <li>
-              <p>{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
-              <p>{{ assignedIncident.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}</p>
-            </li>
-          </div>
-        </ul>
+        @if (!assignedIncident) {
+          <p class="no-data">
+            {{ 'UI.LABEL.ACTIVE_INCIDENT.NONE' | translate }}
+          </p>
+        } @else {
+          <ul class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-1 items-start gap-4">
+            <div class="grid grid-rows-[repeat(2,1fr)] grid-cols-1 gap-4">
+              <li>
+                <p>{{ 'UI.LABEL.TITLE.SINGULAR' | translate }}</p>
+                <p>{{ assignedIncident!.Incident.Title }}</p>
+              </li>
+              <li>
+                <p>{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
+                <p>{{ assignedIncident!.Incident.Description }}</p>
+              </li>
+            </div>
+            <div class="grid grid-rows-1 grid-cols-[repeat(3,1fr)] gap-4">
+              <li>
+                <p>{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+                <p>{{ assignedIncident!.Address }}</p>
+              </li>
+              <li>
+                <p>{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
+                <p>{{ priorityLabel | translate }}</p>
+              </li>
+              <li>
+                <p>{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
+                <p>{{ assignedIncident!.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}</p>
+              </li>
+            </div>
+          </ul>
+        }
       </div>
     </div>
   </app-container>
 
-  <app-grid
-    [title]="'UI.LABEL.ACTIVE_INCIDENT.PLURAL' | translate"
-    [data]="incidents"
-    [columns]="incidentsColumnDef"
-    [showPagination]="false"/>
+  <app-grid [title]="'UI.LABEL.ACTIVE_INCIDENT.PLURAL' | translate"
+            [data]="incidents"
+            [columns]="incidentsColumnDef"
+            [showPagination]="false"/>
 
-  <app-grid
-    [title]="'UI.LABEL.UNIT.PLURAL' | translate"
-    [data]="units"
-    [columns]="unitsColumnDef"
-    [showPagination]="false"/>
+  <app-grid [title]="'UI.LABEL.UNIT.PLURAL' | translate"
+            [data]="units"
+            [columns]="unitsColumnDef"
+            [showPagination]="false"/>
 
-  <app-grid
-    [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
-    [data]="departments"
-    [rowLinkResolver]="departmentsRowLinkResolver"
-    [columns]="departmentsColumnDef"
-    (onCollationChange)="onDepartmentsCollationChange($event)"
-    (onCellAction)="getDepartments()"/>
+  <app-grid [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
+            [data]="departments"
+            [rowLinkResolver]="departmentsRowLinkResolver"
+            [columns]="departmentsColumnDef"
+            (onCollationChange)="onDepartmentsCollationChange($event)"
+            (onCellAction)="getDepartments()"/>
 
 </app-container>

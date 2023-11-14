@@ -3,15 +3,16 @@
   <app-container [columns]="1" [rows]="3">
     <div class="w-full flex flex-col">
       <p class="common-title">Incoming callouts</p>
-      <p *ngIf="!incomingCallouts.length"
-         class="mt-4 font-medium text-zinc-400">
-        There are no incoming callouts at the moment.
-      </p>
+      @if (!incomingCallouts.length) {
+        <p class="mt-4 font-medium text-zinc-400">
+          There are no incoming callouts at the moment.
+        </p>
+      }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        <div *ngFor="let callout of incomingCallouts"
-             class="rounded-lg bg-zinc-800 p-4 flex flex-col gap-2">
-          <div class="w-full flex flex-row items-center justify-between">
-            <div class="flex flex-row items-center gap-4">
+        @for (callout of incomingCallouts;track callout) {
+          <div class="rounded-lg bg-zinc-800 p-4 flex flex-col gap-2">
+            <div class="w-full flex flex-row items-center justify-between">
+              <div class="flex flex-row items-center gap-4">
               <span class="relative flex h-3 w-3">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                       [ngClass]="{
@@ -28,51 +29,53 @@
                       }">
                 </span>
               </span>
-              <p class="text-sm font-bold"
-                [ngClass]="{
+                <p class="text-sm font-bold"
+                   [ngClass]="{
                   'text-red-500': callout.Callout.Priority === FIncidentPriority.Code3,
                   'text-yellow-500': callout.Callout.Priority === FIncidentPriority.Code2,
                   'text-primary': callout.Callout.Priority === FIncidentPriority.Code1
                 }">
-                {{ getPriorityLabel(callout) | translate }}
-              </p>
+                  {{ getPriorityLabel(callout) | translate }}
+                </p>
+              </div>
+              <p class="text-sm font-medium text-zinc-400">Auto-dismiss in: {{ callout.timeout }}s</p>
             </div>
-            <p class="text-sm font-medium text-zinc-400">Auto-dismiss in: {{ callout.timeout }}s</p>
+            <div>
+              <p class="text-lg font-medium text-zinc-100">{{ callout.Callout.Title }}</p>
+              <p class="mt-1 text-zinc-400">{{ callout.Callout.Description }}</p>
+              <p class="mt-4 text-sm text-zinc-400">{{ callout.Address }}</p>
+            </div>
+            <div class="w-full grid grid-cols-[2fr_2fr_1fr] grid-rows-1 gap-2">
+              <app-button [fullWidth]="true"
+                          label="Jump to marker"
+                          variant="tertiary-bg"
+                          size="sm"
+                          (onClick)="jumpToMarker(callout)"/>
+              <app-dynamic-form-input [field]="getAssignCalloutToUnitsField(callout)"
+                                      (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
+              <app-button [fullWidth]="true"
+                          label="Dismiss"
+                          variant="secondary"
+                          size="sm"
+                          (onClick)="dismissCallout(callout)"/>
+            </div>
           </div>
-          <div>
-            <p class="text-lg font-medium text-zinc-100">{{ callout.Callout.Title }}</p>
-            <p class="mt-1 text-zinc-400">{{ callout.Callout.Description }}</p>
-            <p class="mt-4 text-sm text-zinc-400">{{ callout.Address }}</p>
-          </div>
-          <div class="w-full grid grid-cols-[2fr_2fr_1fr] grid-rows-1 gap-2">
-            <app-button [fullWidth]="true"
-                        label="Jump to marker"
-                        variant="tertiary-bg"
-                        size="sm"
-                        (onClick)="jumpToMarker(callout)"/>
-            <app-dynamic-form-input [field]="getAssignCalloutToUnitsField(callout)"
-                                    (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
-            <app-button [fullWidth]="true"
-                        label="Dismiss"
-                        variant="secondary"
-                        size="sm"
-                        (onClick)="dismissCallout(callout)"/>
-          </div>
-        </div>
+        }
       </div>
     </div>
 
     <div class="w-full flex flex-col">
       <p class="common-title">Active callouts</p>
-      <p *ngIf="!activeCallouts.length"
-         class="mt-4 font-medium text-zinc-400">
-        There are no active callouts at the moment.
-      </p>
+      @if (!activeCallouts.length) {
+        <p class="mt-4 font-medium text-zinc-400">
+          There are no active callouts at the moment.
+        </p>
+      }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        <div *ngFor="let callout of activeCallouts"
-             class="rounded-lg bg-zinc-800 p-4 flex flex-col gap-2">
-          <div class="w-full flex flex-row items-center justify-between">
-            <div class="flex flex-row items-center gap-4">
+        @for (callout of activeCallouts;track callout) {
+          <div class="rounded-lg bg-zinc-800 p-4 flex flex-col gap-2">
+            <div class="w-full flex flex-row items-center justify-between">
+              <div class="flex flex-row items-center gap-4">
               <span class="relative flex h-3 w-3">
                 <span class="relative inline-flex rounded-full h-3 w-3"
                       [ngClass]="{
@@ -82,58 +85,64 @@
                       }">
                 </span>
               </span>
-              <p class="text-sm font-bold"
-                 [ngClass]="{
+                <p class="text-sm font-bold"
+                   [ngClass]="{
                   'text-red-500': callout.Callout.Priority === FIncidentPriority.Code3,
                   'text-yellow-500': callout.Callout.Priority === FIncidentPriority.Code2,
                   'text-primary': callout.Callout.Priority === FIncidentPriority.Code1
                 }">
-                {{ getPriorityLabel(callout) | translate }}
-              </p>
+                  {{ getPriorityLabel(callout) | translate }}
+                </p>
+              </div>
+            </div>
+            <div>
+              <p class="text-lg font-medium text-zinc-100">{{ callout.Callout.Title }}</p>
+              <p class="mt-1 text-zinc-400">{{ callout.Callout.Description }}</p>
+              <p class="mt-4 text-sm text-zinc-400">{{ callout.Address }}</p>
+            </div>
+            <div class="w-full flex flex-row items-center">
+              <p class="text-zinc-300"><span
+                class="font-bold text-zinc-100">Assigned units:</span> {{ join(callout.units) }}</p>
+            </div>
+            <div class="w-full grid grid-cols-2 grid-rows-1 gap-2">
+              <app-button [fullWidth]="true"
+                          label="Jump to marker"
+                          variant="tertiary-bg"
+                          size="sm"
+                          (onClick)="jumpToMarker(callout)"/>
+              <app-dynamic-form-input [field]="getAssignCalloutToUnitsField(callout)"
+                                      (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
             </div>
           </div>
-          <div>
-            <p class="text-lg font-medium text-zinc-100">{{ callout.Callout.Title }}</p>
-            <p class="mt-1 text-zinc-400">{{ callout.Callout.Description }}</p>
-            <p class="mt-4 text-sm text-zinc-400">{{ callout.Address }}</p>
-          </div>
-          <div class="w-full flex flex-row items-center">
-            <p class="text-zinc-300"><span class="font-bold text-zinc-100">Assigned units:</span> {{ join(callout.units) }}</p>
-          </div>
-          <div class="w-full grid grid-cols-2 grid-rows-1 gap-2">
-            <app-button [fullWidth]="true"
-                        label="Jump to marker"
-                        variant="tertiary-bg"
-                        size="sm"
-                        (onClick)="jumpToMarker(callout)"/>
-            <app-dynamic-form-input [field]="getAssignCalloutToUnitsField(callout)"
-                                    (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
-          </div>
-        </div>
+        }
       </div>
     </div>
 
     <div class="w-full flex flex-col">
       <p class="common-title">Units</p>
-      <p *ngIf="!units.length" class="mt-4 font-medium text-zinc-400">
-        There are no units available at the moment.
-      </p>
+      @if (!units.length) {
+        <p class="mt-4 font-medium text-zinc-400">
+          There are no units available at the moment.
+        </p>
+      }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        <div *ngFor="let unit of units"
-             class="rounded-lg bg-zinc-800 hover:bg-zinc-700 p-4 mb-4 flex flex-col gap-2">
-          <p class="text-lg font-bold text-zinc-100">{{ unit.Callsign }}</p>
-          <div class="w-full grid grid-cols-2 grid-rows-1">
-            <div class="flex flex-col">
-              <p class="text-sm text-zinc-400">Status</p>
-              <p class="font-medium text-zinc-200">{{ unit.Status || '-' }}</p>
-            </div>
-            <div class="flex flex-col">
-              <p class="text-sm text-zinc-400">Availability</p>
-              <p
-                class="font-medium text-zinc-200">{{ unit.Availability === FUnitAvailability.Receiving ? 'Receiving' : 'Not receiving' }}</p>
+        @for (unit of units;track unit) {
+          <div
+            class="rounded-lg bg-zinc-800 hover:bg-zinc-700 p-4 mb-4 flex flex-col gap-2">
+            <p class="text-lg font-bold text-zinc-100">{{ unit.Callsign }}</p>
+            <div class="w-full grid grid-cols-2 grid-rows-1">
+              <div class="flex flex-col">
+                <p class="text-sm text-zinc-400">Status</p>
+                <p class="font-medium text-zinc-200">{{ unit.Status || '-' }}</p>
+              </div>
+              <div class="flex flex-col">
+                <p class="text-sm text-zinc-400">Availability</p>
+                <p
+                  class="font-medium text-zinc-200">{{ unit.Availability === FUnitAvailability.Receiving ? 'Receiving' : 'Not receiving' }}</p>
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
     </div>
 

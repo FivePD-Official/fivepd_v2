@@ -5,10 +5,10 @@
         {{ dateNow | date: 'medium' }}
       </p>
     </div>
-    <ng-container *ngIf="dispatchMode">
+    @if (dispatchMode) {
       <div class="h-full w-[1px] bg-zinc-700"></div>
       <app-button (onClick)="disableDispatchMode()" variant="tertiary" label="Exit dispatch mode"/>
-    </ng-container>
+    }
   </div>
   <div class="flex flex-row items-center h-full">
     <p class="text-zinc-200 px-8">
@@ -16,17 +16,18 @@
     </p>
     <button class="group w-[80px] h-full flex flex-col items-center justify-center border-l border-color cursor-pointer"
             (click)="toggleMaximizedWindow()">
-      <div *ngIf="!windowMaximized"
-           app-icon
-           name="ArrowsPointingOut"
-           className="h-[30px] text-zinc-500 group-hover:text-white">
-      </div>
-      <div *ngIf="windowMaximized"
-           app-icon
-           name="ArrowsPointingIn"
-           className="h-[30px] text-zinc-500 group-hover:text-white">
-
-      </div>
+      @if (!windowMaximized) {
+        <div app-icon
+             name="ArrowsPointingOut"
+             className="h-[30px] text-zinc-500 group-hover:text-white">
+        </div>
+      }
+      @if (windowMaximized) {
+        <div app-icon
+             name="ArrowsPointingIn"
+             className="h-[30px] text-zinc-500 group-hover:text-white">
+        </div>
+      }
     </button>
     <button class="group w-[80px] h-full flex flex-col items-center justify-center border-l border-color cursor-pointer"
             (click)="window.closeMDT()">

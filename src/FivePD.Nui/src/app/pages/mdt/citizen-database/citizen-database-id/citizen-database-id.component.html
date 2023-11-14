@@ -1,19 +1,21 @@
 <app-page-header [title]="pedHistory ? pedHistory.Firstname + ' ' + pedHistory.Lastname : 'Citizen'"/>
 
 <app-container [rows]="2">
-  <app-container *ngIf="pedHistory?.Warrants?.length">
-    <div>
-      <div class="flex flex-row items-center gap-2">
-        <div app-icon name="Warning" className="h-[26px] text-red-500"></div>
-        <p class="text-xl font-bold text-red-500">
-          {{ 'LABEL.WARRANT.PLURAL' | translate }}
-        </p>
+  @if (pedHistory?.Warrants?.length) {
+    <app-container>
+      <div>
+        <div class="flex flex-row items-center gap-2">
+          <div app-icon name="Warning" className="h-[26px] text-red-500"></div>
+          <p class="text-xl font-bold text-red-500">
+            {{ 'LABEL.WARRANT.PLURAL' | translate }}
+          </p>
+        </div>
+        <div class="mt-2">
+          <p class="text-lg text-zinc-300">{{ join(pedHistory?.Warrants) }}</p>
+        </div>
       </div>
-      <div class="mt-2">
-        <p class="text-lg text-zinc-300">{{ join(pedHistory?.Warrants) }}</p>
-      </div>
-    </div>
-  </app-container>
+    </app-container>
+  }
 
   <app-container [rows]="1" [columns]="2">
     <div class="grid-item grid-item--details">
@@ -48,31 +50,36 @@
         {{ 'LABEL.LICENSE.PLURAL' | translate }}
       </p>
       <div class="mt-4 w-full flex flex-row justify-start">
-        <p *ngIf="!pedHistory?.Licenses?.length" class="relative text-lg font-medium text-zinc-400 text-center">
-          {{ 'LABEL.LICENSE.NONE' | translate }}
-        </p>
+        @if (!pedHistory?.Licenses?.length) {
+          <p class="relative text-lg font-medium text-zinc-400 text-center">
+            {{ 'LABEL.LICENSE.NONE' | translate }}
+          </p>
+        }
       </div>
       <div class="w-full grid grid-cols-2 grid-flow-row gap-4">
-        <div *ngFor="let license of pedHistory?.Licenses"
-             class="relative flex flex-col w-full rounded-lg bg-zinc-800 p-4">
-          <div class="w-full flex flex-row items-center justify-between mb-2.5">
-            <p class="text-zinc-200 text-lg font-bold">{{ licenseTypeI18nKey(license.Type) }}</p>
-            <div *ngIf="license.Status !== PedLicenseStatus.Valid" class="flex flex-row items-center gap-2">
-              <div app-icon name="Information" className="h-[22px] text-yellow-500"></div>
-              <p class="font-medium text-yellow-500">{{ getLicenseStatusLabel(license) | translate }}</p>
+        @for (license of pedHistory?.Licenses;track license) {
+          <div class="relative flex flex-col w-full rounded-lg bg-zinc-800 p-4">
+            <div class="w-full flex flex-row items-center justify-between mb-2.5">
+              <p class="text-zinc-200 text-lg font-bold">{{ licenseTypeI18nKey(license.Type) }}</p>
+              @if (license.Status !== PedLicenseStatus.Valid) {
+                <div class="flex flex-row items-center gap-2">
+                  <div app-icon name="Information" className="h-[22px] text-yellow-500"></div>
+                  <p class="font-medium text-yellow-500">{{ getLicenseStatusLabel(license) | translate }}</p>
+                </div>
+              }
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="w-full flex flex-row items-center justify-between">
+                <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.ISSUE' | translate }}</p>
+                <p class="text-zinc-400">{{ license.IssueDate | date: 'mediumDate' }}</p>
+              </div>
+              <div class="w-full flex flex-row items-center justify-between">
+                <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.EXPIRATION' | translate }}</p>
+                <p class="text-zinc-400">{{ license.ExpirationDate | date: 'mediumDate' }}</p>
+              </div>
             </div>
           </div>
-          <div class="flex flex-col gap-1">
-            <div class="w-full flex flex-row items-center justify-between">
-              <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.ISSUE' | translate }}</p>
-              <p class="text-zinc-400">{{ license.IssueDate | date: 'mediumDate' }}</p>
-            </div>
-            <div class="w-full flex flex-row items-center justify-between">
-              <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.EXPIRATION' | translate }}</p>
-              <p class="text-zinc-400">{{ license.ExpirationDate | date: 'mediumDate' }}</p>
-            </div>
-          </div>
-        </div>
+        }
       </div>
     </div>
 

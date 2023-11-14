@@ -1,4 +1,5 @@
-<div class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col items-center justify-center animate-fadeIn">
+<div
+  class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col items-center justify-center animate-fadeIn">
   <div #modalContainer
        class="px-6 py-4 rounded-lg bg-zinc-800 animate-modal"
        [ngClass]="{
@@ -16,32 +17,36 @@
           </div>
         </button>
       </div>
-      <p *ngIf="modalRef.options.description" class="text-zinc-400 text-lg mt-1" [innerHtml]="modalRef.options.description | safeHtml"></p>
+      @if (modalRef.options.description) {
+        <p class="text-zinc-400 text-lg mt-1" [innerHtml]="modalRef.options.description! | safeHtml"></p>
+      }
     </div>
     <div>
       <div #modalContent></div>
       <div class="w-full flex flex-row items-center justify-between mt-7">
-        <div *ngIf="loader; else noLoader"
-        class="flex flex-row items-center gap-3">
-          <div class="w-[20px] h-[20px] rounded-full border-2 border-zinc-600 border-b-zinc-200 animate-spin"></div>
-          <p class="text-zinc-300">{{ loader.label }}</p>
-        </div>
-        <ng-template #noLoader>
+        @if (loader) {
+          <div
+            class="flex flex-row items-center gap-3">
+            <div class="w-[20px] h-[20px] rounded-full border-2 border-zinc-600 border-b-zinc-200 animate-spin"></div>
+            <p class="text-zinc-300">{{ loader!.label }}</p>
+          </div>
+        } @else {
           <div></div>
-        </ng-template>
+        }
+
         <div class="flex flex-row items-center justify-end gap-2.5">
-          <app-button
-            *ngIf="modalRef.options.buttons?.cancel"
-            type="button"
-            [variant]="modalRef.options.buttons!.cancel.variant"
-            [label]="modalRef.options.buttons!.cancel.label | translate"
-            (onClick)="close()"/>
-          <app-button
-            *ngIf="modalRef.options.buttons?.submit"
-            [variant]="modalRef.options.buttons!.submit.variant"
-            [label]="modalRef.options.buttons!.submit.label | translate"
-            [disabled]="!!loader"
-            (onClick)="submit()"/>
+          @if (modalRef.options.buttons?.cancel) {
+            <app-button type="button"
+                        [variant]="modalRef.options.buttons!.cancel.variant"
+                        [label]="modalRef.options.buttons!.cancel.label | translate"
+                        (onClick)="close()"/>
+          }
+          @if (modalRef.options.buttons?.submit) {
+            <app-button [variant]="modalRef.options.buttons!.submit.variant"
+                        [label]="modalRef.options.buttons!.submit.label | translate"
+                        [disabled]="!!loader"
+                        (onClick)="submit()"/>
+          }
         </div>
       </div>
     </div>

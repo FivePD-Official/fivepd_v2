@@ -2,86 +2,107 @@
 <div class="mb-10">
   <div class="w-full flex flex-row items-center justify-between mb-4">
     <p class="common-title">{{ title }}</p>
-    <div *ngIf="buttons" class="flex flex-row items-center justify-between gap-2">
-      <ng-content />
-      <app-button
-        *ngFor="let button of buttons"
-        [variant]="button.variant || 'secondary'"
-        [link]="button.link"
-        [label]="button.label | translate"
-        [show]="button.show()"
-        [disabled]="button.disabled()"
-        [tippy]="button.tooltip?.text ?? ''"
-        [isEnabled]="button.tooltip?.enabled ? button.tooltip!.enabled() : false"
-        [placement]="button.tooltip?.placement ?? 'top'"
-        (onClick)="headerButtonOnClick(button)"/>
-    </div>
+    @if (buttons) {
+      <div class="flex flex-row items-center justify-between gap-2">
+        <ng-content/>
+        @for (button of buttons;track button) {
+          <app-button [variant]="button.variant || 'secondary'"
+                      [link]="button.link"
+                      [label]="button.label | translate"
+                      [show]="button.show()"
+                      [disabled]="button.disabled()"
+                      [tippy]="button.tooltip?.text ?? ''"
+                      [isEnabled]="button.tooltip?.enabled ? button.tooltip!.enabled() : false"
+                      [placement]="button.tooltip?.placement ?? 'top'"
+                      (onClick)="headerButtonOnClick(button)"/>
+        }
+      </div>
+    }
   </div>
 
   <div class="bg-zinc-800 rounded-lg py-5 px-2.5">
     <div class="table-row table-header">
-      <div *ngFor="let column of formattedColumns"
-           class="table-cell">
-        <p>{{ column.header | translate }}</p>
-      </div>
+      @for (column of formattedColumns;track column) {
+        <div class="table-cell">
+          <p>{{ column.header | translate }}</p>
+        </div>
+      }
     </div>
 
-    <form *ngIf="isAnyColumnFilterable" class="table-row table-filter">
-      <div *ngFor="let column of formattedColumns"
-           class="table-cell">
-        <app-dynamic-form-input
-          *ngIf="column.filter"
-          [field]="getFilterInput(column)"
-          (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
-      </div>
-    </form>
+    @if (isAnyColumnFilterable) {
+      <form class="table-row table-filter">
+        @for (column of formattedColumns;track column) {
+          <div
+            class="table-cell">
+            @if (column.filter) {
+              <app-dynamic-form-input [field]="getFilterInput(column)"
+                                      (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
+            }
+          </div>
+        }
+      </form>
+    }
 
-    <div *ngFor="let row of formattedRows"
-         class="table-row"
-         [ngClass]="{'cursor-pointer': !!rowLinkResolver}"
-         (click)="onRowClick(row)">
-      <div *ngFor="let item of row" class="table-cell" [ngClass]="{'table-cell--badge': item.badge !== undefined}">
-        <div [ngClass]="{
-          'px-2 py-0.5 rounded-md font-medium flex flex-col items-center': item.badge !== undefined,
-          'bg-zinc-600/30 text-zinc-400': item.badge === 'gray',
-          'bg-red-600/20 text-red-500': item.badge === 'red',
-          'bg-green-600/20 text-green-500': item.badge === 'green',
-          'bg-amber-600/20 text-amber-500': item.badge === 'amber',
-          'bg-primary/10 text-primary': item.badge === 'blue'
-        }">
-          <p *ngIf="item.link && !item.actions && !item.value">-</p>
-          <a *ngIf="item.link && !item.actions && item.value"
-             [routerLink]="item.link"
-             class="group flex flex-row items-center text-zinc-300 hover:text-white">
-            {{ item.value }}
-            <div app-icon name="Link" className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
-          </a>
-          <p *ngIf="!item.link && !item.actions">{{ item.value }}</p>
-        </div>
-        <div *ngIf="!item.link && item.actions" class="table-cell-actions">
-          <ng-container *ngFor="let action of item.actions">
-            <app-button *ngIf="action.type === 'button' && (action.show ? action.show(item.originalItem) : true)"
-                        variant="tertiary-bg"
-                        size="sm"
-                        [label]="action.label  | translate"
-                        (onClick)="tableCellActionButtonClick(action, item)"/>
-            <app-dynamic-form-input
-              *ngIf="action.type === 'select' && (action.show ? action.show(item.originalItem) : true)"
-              [field]="getSelectField(action, item)"
-              (onChange)="onTableCellActionSelect(action, item, $event)"/>
-            <app-dynamic-form-input
-              *ngIf="action.type === 'checkbox' && (action.show ? action.show(item.originalItem) : true)"
-              [field]="getCheckboxField(action, item)"
-              (onChange)="onTableCellActionCheckbox(action, item, $event)"/>
-          </ng-container>
-        </div>
+    @for (row of formattedRows;track row) {
+      <div class="table-row"
+           [ngClass]="{'cursor-pointer': !!rowLinkResolver}"
+           (click)="onRowClick(row)">
+        @for (item of row;track item) {
+          <div class="table-cell" [ngClass]="{'table-cell--badge': item.badge !== undefined}">
+            <div [ngClass]="{
+              'px-2 py-0.5 rounded-md font-medium flex flex-col items-center': item.badge !== undefined,
+              'bg-zinc-600/30 text-zinc-400': item.badge === 'gray',
+              'bg-red-600/20 text-red-500': item.badge === 'red',
+              'bg-green-600/20 text-green-500': item.badge === 'green',
+              'bg-amber-600/20 text-amber-500': item.badge === 'amber',
+              'bg-primary/10 text-primary': item.badge === 'blue'
+            }">
+              @if (item.link && !item.actions && !item.value) {
+                <p>-</p>
+              }
+              @if (item.link && !item.actions && item.value) {
+                <a
+                  [routerLink]="item.link"
+                  class="group flex flex-row items-center text-zinc-300 hover:text-white">
+                  {{ item.value }}
+                  <div app-icon name="Link" className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
+                </a>
+              }
+              @if (!item.link && !item.actions) {
+                <p>{{ item.value }}</p>
+              }
+            </div>
+            @if (!item.link && item.actions) {
+              <div class="table-cell-actions">
+                @for (action of item.actions;track action) {
+                  @if (action.type === 'button' && (action.show ? action.show(item.originalItem) : true)) {
+                    <app-button variant="tertiary-bg"
+                                size="sm"
+                                [label]="action.label  | translate"
+                                (onClick)="tableCellActionButtonClick(action, item)"/>
+                  }
+                  @if (action.type === 'select' && (action.show ? action.show(item.originalItem) : true)) {
+                    <app-dynamic-form-input [field]="getSelectField(action, item)"
+                                            (onChange)="onTableCellActionSelect(action, item, $event)"/>
+                  }
+                  @if (action.type === 'checkbox' && (action.show ? action.show(item.originalItem) : true)) {
+                    <app-dynamic-form-input [field]="getCheckboxField(action, item)"
+                                            (onChange)="onTableCellActionCheckbox(action, item, $event)"/>
+                  }
+                }
+              </div>
+            }
+          </div>
+        }
       </div>
-    </div>
+    }
 
-    <p *ngIf="!formattedRows?.length"
-       class="text-zinc-400 block pt-2.5 pl-2.5">
-      {{ 'UI.LABEL.NO_RESULTS' | translate }}
-    </p>
+    @if (!formattedRows?.length) {
+      <p
+        class="text-zinc-400 block pt-2.5 pl-2.5">
+        {{ 'UI.LABEL.NO_RESULTS' | translate }}
+      </p>
+    }
 
     <app-pagination [collation]="collation"
                     [data]="data"

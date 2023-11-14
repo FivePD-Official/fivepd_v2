@@ -1,64 +1,74 @@
 <app-page-header title="Messages">
-  <app-button *ngIf="config?.canSendMessageAll()"
-              label="Send message"
-              (onClick)="trySendMessage()"/>
+  @if (config?.canSendMessageAll()) {
+    <app-button label="Send message"
+                (onClick)="trySendMessage()"/>
+  }
 </app-page-header>
 
 <div class="w-full flex flex-col items-center">
-  <div *ngIf="!messagesPage?.Items?.length" class="mt-10">
-    <p class="text-zinc-400 block text-xl">You have no messages.</p>
-  </div>
+  @if (!messagesPage?.Items?.length) {
+    <div class="mt-10">
+      <p class="text-zinc-400 block text-xl">You have no messages.</p>
+    </div>
+  }
 </div>
 
-<div *ngIf="messagesPage?.Items?.length"
-     class="w-full grid grid-rows-1 grid-cols-[3fr_7fr] gap-8">
+@if (messagesPage?.Items?.length) {
+  <div class="w-full grid grid-rows-1 grid-cols-[3fr_7fr] gap-8">
 
-  <div class="flex flex-col">
-    <button *ngFor="let message of messagesPage?.Items; let i = index"
-            class="p-4 flex flex-col items-start justify-start border-t border-l border-r border-color"
-            [ngClass]="{
+    <div class="flex flex-col">
+      @for (message of messagesPage?.Items;track message;let i = $index) {
+        <button
+          class="p-4 flex flex-col items-start justify-start border-t border-l border-r border-color"
+          [ngClass]="{
               'hover:bg-zinc-800':  message.Id !== selectedMessage?.Id,
               'bg-zinc-800':  message.Id === selectedMessage?.Id,
               'rounded-tl-md rounded-tr-md': i === 0,
               'rounded-bl-md rounded-br-md border-b-[1px]': i === (messagesPage?.Items?.length ?? 1) - 1
             }"
-            type="button"
-            (click)="onMessageClick(message)">
-      <div class="flex flex-row items-center gap-2">
-        <span *ngIf="!message.Read" class="relative flex h-3 w-3">
-          <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-        </span>
-        <p class="text-zinc-200 text-lg font-bold">{{ message.Subject }}</p>
-      </div>
-      <div class="w-full flex flex-row items-center justify-between">
-        <p class="text-zinc-400 text-left">
-          Sent by <span class="font-bold">{{ message.Sender }}</span>
-        </p>
-        <p class="text-zinc-400 text-right">
-          {{ message.SentAt | date: 'medium' }}
-        </p>
-      </div>
-      <div class="mt-4">
-        <p class="line-clamp-1 text-zinc-400 text-left">{{ message.Content }}</p>
-      </div>
-    </button>
+          type="button"
+          (click)="onMessageClick(message)">
+          <div class="flex flex-row items-center gap-2">
+            @if (!message.Read) {
+              <span class="relative flex h-3 w-3">
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+              </span>
+            }
+            <p class="text-zinc-200 text-lg font-bold">{{ message.Subject }}</p>
+          </div>
+          <div class="w-full flex flex-row items-center justify-between">
+            <p class="text-zinc-400 text-left">
+              Sent by <span class="font-bold">{{ message.Sender }}</span>
+            </p>
+            <p class="text-zinc-400 text-right">
+              {{ message.SentAt | date: 'medium' }}
+            </p>
+          </div>
+          <div class="mt-4">
+            <p class="line-clamp-1 text-zinc-400 text-left">{{ message.Content }}</p>
+          </div>
+        </button>
+      }
 
-    <app-pagination *ngIf="(messagesPage?.PageCount ?? 1) > 1"
-                    [collation]="messagesCollation"
-                    [data]="messagesPage"
-                    (onPageChange)="onPageChange($event)"/>
-  </div>
-
-  <div *ngIf="selectedMessage"
-       class="flex flex-col items-start justify-start">
-    <h1 class="text-zinc-200 font-bold text-2xl">{{ selectedMessage.Subject }}</h1>
-    <p class="text-zinc-400 mt-2">
-      Sent by <span class="font-bold">{{ selectedMessage.Sender }}</span> at <span
-      class="font-bold">{{ selectedMessage.SentAt | date: 'medium' }}</span>
-    </p>
-    <div class="mt-6">
-      <p class="text-zinc-400">{{ selectedMessage.Content }}</p>
+      @if ((messagesPage?.PageCount ?? 1) > 1) {
+        <app-pagination [collation]="messagesCollation"
+                        [data]="messagesPage"
+                        (onPageChange)="onPageChange($event)"/>
+      }
     </div>
-  </div>
 
-</div>
+    @if (selectedMessage) {
+      <div class="flex flex-col items-start justify-start">
+        <h1 class="text-zinc-200 font-bold text-2xl">{{ selectedMessage!.Subject }}</h1>
+        <p class="text-zinc-400 mt-2">
+          Sent by <span class="font-bold">{{ selectedMessage!.Sender }}</span> at <span
+          class="font-bold">{{ selectedMessage!.SentAt | date: 'medium' }}</span>
+        </p>
+        <div class="mt-6">
+          <p class="text-zinc-400">{{ selectedMessage!.Content }}</p>
+        </div>
+      </div>
+    }
+
+  </div>
+}

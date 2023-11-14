@@ -1,23 +1,27 @@
 <app-page-header [title]="'UI.LABEL.CITIZEN_DATABASE' | translate"/>
 <div class="grid grid-rows-1 grid-cols-[300px_1fr] gap-10 z-0">
   <div class="flex flex-col gap-10">
-    <app-dynamic-form
-      title="Search"
-      subtitle="All fields are optional. If empty, every citizen will be displayed."
-      submitButtonLabel="Search"
-      buttonAlignment="full"
-      [formFields]="formFields"
-      (onSubmit)="onSearchSubmit($event)"
-      [showSubmitButton]="true"/>
-    <div *ngIf="recentlyViewedPeds.length" class="flex flex-col gap-2">
-      <p class="text-sm font-medium text-zinc-400 uppercase">recently viewed</p>
-      <div *ngFor="let ped of recentlyViewedPeds"
-           [routerLink]="'/mdt/citizen-database/' + ped.Id"
-           class="bg-zinc-800 rounded-md p-2 hover:cursor-pointer hover:bg-zinc-700">
-        <p class="text-zinc-300 font-medium">{{ ped.Firstname }} {{ ped.Lastname }} <span class="text-sm text-zinc-400">({{ ped.Gender === FGender.Male ? 'Male' : 'Female' }})</span></p>
-        <p class="text-zinc-400 text-sm">{{ ped.Birthdate | date: 'mediumDate' }}</p>
+    <app-dynamic-form title="Search"
+                      subtitle="All fields are optional. If empty, every citizen will be displayed."
+                      submitButtonLabel="Search"
+                      buttonAlignment="full"
+                      [formFields]="formFields"
+                      (onSubmit)="onSearchSubmit($event)"
+                      [showSubmitButton]="true"/>
+    @if (recentlyViewedPeds.length) {
+      <div class="flex flex-col gap-2">
+        <p class="text-sm font-medium text-zinc-400 uppercase">recently viewed</p>
+        @for (ped of recentlyViewedPeds;track ped) {
+          <div
+            [routerLink]="'/mdt/citizen-database/' + ped.Id"
+            class="bg-zinc-800 rounded-md p-2 hover:cursor-pointer hover:bg-zinc-700">
+            <p class="text-zinc-300 font-medium">{{ ped.Firstname }} {{ ped.Lastname }} <span
+              class="text-sm text-zinc-400">({{ ped.Gender === FGender.Male ? 'Male' : 'Female' }})</span></p>
+            <p class="text-zinc-400 text-sm">{{ ped.Birthdate | date: 'mediumDate' }}</p>
+          </div>
+        }
       </div>
-    </div>
+    }
   </div>
 
   <app-grid

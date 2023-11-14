@@ -1,47 +1,48 @@
 <aside class="w-full h-full border-r border-color flex flex-col items-center justify-between p-5 pt-10">
   <div class="w-full">
-    <ng-container *ngFor="let item of routes">
-      <a *ngIf="isRoute(item); else divider"
-         class="group decoration-0"
-         [routerLink]="item.path()"
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{ exact: false }">
-        <div *ngIf="item.show()"
-             class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
+    @for (item of routes;track item) {
+      @if (isRoute(item)) {
+        <a class="group decoration-0"
+           [routerLink]="item.path()"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: false }">
+          @if (item.show()) {
+            <div class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
                     before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
                     before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
-          <div app-icon
-               [name]="item.icon"
-               class="w-[50px] h-full flex flex-center justify-center"
-               className="h-[25px] text-zinc-400 group-[.active]:text-white">
-          </div>
-          <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
-             [ngClass]="{ 'hidden': isSidebarCollapsed }">
-            {{ item.title | translate }}
-          </p>
-        </div>
-      </a>
-      <ng-template #divider>
-        <div class="h-[1px] w-full my-4 bg-zinc-700">
-        </div>
-      </ng-template>
-    </ng-container>
+              <div app-icon
+                   [name]="item.icon"
+                   class="w-[50px] h-full flex flex-center justify-center"
+                   className="h-[25px] text-zinc-400 group-[.active]:text-white">
+              </div>
+              <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
+                 [ngClass]="{ 'hidden': isSidebarCollapsed }">
+                {{ item.title | translate }}
+              </p>
+            </div>
+          }
+        </a>
+      } @else {
+        <div class="h-[1px] w-full my-4 bg-zinc-700"></div>
+      }
+    }
   </div>
 
   <div class="w-full">
-    <button *ngIf="config?.dispatchTypeManual() && userService.userHasRole(UserRole.Dispatcher)"
-            class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3
+    @if (config?.dispatchTypeManual() && userService.userHasRole(UserRole.Dispatcher)) {
+      <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3
                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
                    before:bg-zinc-800 hover:before:bg-zinc-700"
-            (click)="enableDispatchMode()">
-      <div app-icon
-           className="relative h-[24px] text-zinc-400 mr-2"
-           name="PhoneArrowDown">
-      </div>
-      <span class="relative text-lg text-zinc-400" [ngClass]="{ 'hidden': isSidebarCollapsed }">
+              (click)="enableDispatchMode()">
+        <div app-icon
+             className="relative h-[24px] text-zinc-400 mr-2"
+             name="PhoneArrowDown">
+        </div>
+        <span class="relative text-lg text-zinc-400" [ngClass]="{ 'hidden': isSidebarCollapsed }">
         Dispatch mode
       </span>
-    </button>
+      </button>
+    }
     <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3
                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
                    before:bg-zinc-800 hover:before:bg-zinc-700"

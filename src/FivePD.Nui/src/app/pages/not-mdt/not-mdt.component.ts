@@ -18,7 +18,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
 })
 export class NotMdtComponent {
 
-  menu?: Menu;
+  menu!: Menu;
 
   constructor(private readonly _menuService: MenuService,
               private readonly _eventService: EventService,

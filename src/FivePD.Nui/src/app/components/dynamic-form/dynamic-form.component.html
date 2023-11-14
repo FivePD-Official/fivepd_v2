@@ -2,32 +2,45 @@
       [ngClass]="{ 'max-w-none': !limitWidth }"
       [formGroup]="form"
       (ngSubmit)="internalOnSubmit()">
-  <div class="mb-6" *ngIf="title || subtitle">
-    <p *ngIf="title" class="text-xl font-bold text-zinc-200 mb-1.5">{{ title }}</p>
-    <p *ngIf="subtitle" class="text-zinc-400">{{ subtitle }}</p>
-  </div>
-  <div class="grid gap-7 w-full" *ngIf="form && formFieldColumns.length" [ngStyle]="{ grid: columnsGridStyle }">
-    <div *ngFor="let col of formFieldColumns">
-      <app-dynamic-form-input *ngFor="let field of col"
-                              [field]="field"
-                              [form]="form"
-                              class="w-full block [&:not(:last-of-type)]:mb-5"/>
+  @if (title || subtitle) {
+    <div class="mb-6">
+      @if (title) {
+        <p class="text-xl font-bold text-zinc-200 mb-1.5">{{ title }}</p>
+      }
+      @if (subtitle) {
+        <p class="text-zinc-400">{{ subtitle }}</p>
+      }
     </div>
-  </div>
-  <div *ngIf="showSubmitButton"
-       class="w-full flex flex-row items-center justify-end mt-6 gap-4"
-       [ngClass]="{
-        'justify-start': buttonAlignment === 'left' || buttonAlignment === 'full',
-        'justify-end': buttonAlignment === 'right'
-       }">
-    <app-button *ngIf="disableSubmitWithOriginalValue"
-                type="button"
-                variant="secondary"
-                (onClick)="revert()"
-                [label]="'UI.ACTION.REVERT' | translate"
-                [disabled]="disableSubmitWithOriginalValue && form.pristine"/>
-    <app-button type="submit"
-                [label]="submitButtonLabel || ('UI.ACTION.SAVE' | translate)"
-                [disabled]="form.invalid || (disableSubmitWithOriginalValue && form.pristine)"/>
-  </div>
+  }
+  @if (form && formFieldColumns.length) {
+    <div class="grid gap-7 w-full" [ngStyle]="{ grid: columnsGridStyle }">
+      @for (col of formFieldColumns;track col) {
+        <div>
+          @for (field of col;track field) {
+            <app-dynamic-form-input [field]="field"
+                                    [form]="form"
+                                    class="w-full block [&:not(:last-of-type)]:mb-5"/>
+          }
+        </div>
+      }
+    </div>
+  }
+  @if (showSubmitButton) {
+    <div class="w-full flex flex-row items-center justify-end mt-6 gap-4"
+         [ngClass]="{
+      'justify-start': buttonAlignment === 'left' || buttonAlignment === 'full',
+      'justify-end': buttonAlignment === 'right'
+    }">
+      @if (disableSubmitWithOriginalValue) {
+        <app-button type="button"
+                    variant="secondary"
+                    (onClick)="revert()"
+                    [label]="'UI.ACTION.REVERT' | translate"
+                    [disabled]="disableSubmitWithOriginalValue && form.pristine"/>
+      }
+      <app-button type="submit"
+                  [label]="submitButtonLabel || ('UI.ACTION.SAVE' | translate)"
+                  [disabled]="form.invalid || (disableSubmitWithOriginalValue && form.pristine)"/>
+    </div>
+  }
 </form>

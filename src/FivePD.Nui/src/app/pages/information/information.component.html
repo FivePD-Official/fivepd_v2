@@ -10,7 +10,7 @@
         </p>
       </div>
       <div class="flex flex-col">
-        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.AVAILABILITY.SINGULAR' | translate}}</p>
+        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.AVAILABILITY.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">
           {{ (information.Availability === FPlayerAvailability.Receiving ? 'PLAYER_AVAILABILITY.RECEIVING' : 'PLAYER_AVAILABILITY.NOT_RECEIVING') | translate }}
         </p>
@@ -21,38 +21,42 @@
       </div>
     </div>
 
-    <div *ngIf="information.IncidentWrapper" class="w-full h-[1px] bg-zinc-700"></div>
+    @if (information.IncidentWrapper) {
+      <div class="w-full h-[1px] bg-zinc-700"></div>
+    }
 
-    <div *ngIf="information.IncidentWrapper" class="w-full flex flex-col gap-4">
-      <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
-        <div class="flex flex-col">
-          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}</p>
-          <p class="text-zinc-200">
-            {{ information.IncidentWrapper.Incident.Title }}
-          </p>
+    @if (information.IncidentWrapper) {
+      <div class="w-full flex flex-col gap-4">
+        <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
+          <div class="flex flex-col">
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}</p>
+            <p class="text-zinc-200">
+              {{ information.IncidentWrapper!.Incident.Title }}
+            </p>
+          </div>
+          <div class="flex flex-col">
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+            <p class="text-zinc-200">
+              {{ information.IncidentWrapper!.Address }}
+            </p>
+          </div>
         </div>
-        <div class="flex flex-col">
-          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
-          <p class="text-zinc-200">
-            {{ information.IncidentWrapper.Address }}
-          </p>
+        <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
+          <div class="flex flex-col">
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
+            <p class="text-zinc-200">
+              {{ priorityLabel | translate }}
+            </p>
+          </div>
+          <div class="flex flex-col">
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
+            <p class="text-zinc-200">
+              {{ information.IncidentWrapper!.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}
+            </p>
+          </div>
         </div>
       </div>
-      <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
-        <div class="flex flex-col">
-          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
-          <p class="text-zinc-200">
-            {{ priorityLabel | translate }}
-          </p>
-        </div>
-        <div class="flex flex-col">
-          <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
-          <p class="text-zinc-200">
-            {{ information.IncidentWrapper.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}
-          </p>
-        </div>
-      </div>
-    </div>
+    }
 
   </div>
 

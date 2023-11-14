@@ -4,15 +4,16 @@
 
   <div class="flex flex-col gap-4">
     <p class="common-title">Details</p>
-    <app-dynamic-form *ngIf="department"
-                      [formFields]="userDetailsFields"
-                      (onSubmit)="onUserDetailsSubmit($event)"
-                      [disableSubmitWithOriginalValue]="true"
-                      [showSubmitButton]="true"/>
+    @if (department) {
+      <app-dynamic-form [formFields]="userDetailsFields"
+                        (onSubmit)="onUserDetailsSubmit($event)"
+                        [disableSubmitWithOriginalValue]="true"
+                        [showSubmitButton]="true"/>
+    }
   </div>
 
-<!--  <div class="flex flex-col gap-4">-->
-<!--    <p class="common-title">Unit details</p>-->
-<!--  </div>-->
+  <!--  <div class="flex flex-col gap-4">-->
+  <!--    <p class="common-title">Unit details</p>-->
+  <!--  </div>-->
 
 </app-container>

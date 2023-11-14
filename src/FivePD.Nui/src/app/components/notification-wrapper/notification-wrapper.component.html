@@ -1,6 +1,6 @@
 <div class="absolute bottom-5 right-10 z-[100] pointer-events-none">
-  <app-notification
-    *ngFor="let notification of notifications"
-    [notification]="$any(notification)"
-    [exit]="notification.exit"/>
+  @for (notification of notifications;track notification) {
+    <app-notification [notification]="$any(notification)"
+                      [exit]="notification.exit"/>
+  }
 </div>
