@@ -1,4 +1,4 @@
-﻿import { AttributeDataType, Button, Column, LooseDataAttribute } from "@models";
+﻿import { AttributeDataType, BadgeVariants, Button, Column, LooseDataAttribute } from "@models";
 import { createAttributesFormFields } from "../../../../helpers/forms/set-attribute";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 import { filter, switchMap } from "rxjs";
@@ -21,6 +21,9 @@ export class AttributeGridOptions {
   private readonly _modalFormService = inject(ModalFormService);
   private readonly _modalConfirmService = inject(ModalConfirmService);
   private readonly _localizationService = inject(LocalizationService);
+
+  valueResolver = (item: LooseDataAttribute, key: keyof LooseDataAttribute): string => this._localizationService.translate(item[key] ? 'UI.LABEL.YES' : 'UI.LABEL.NO');
+  badgeResolver = (item: LooseDataAttribute, key: keyof LooseDataAttribute): BadgeVariants => item[key] ? 'green' : 'gray';
 
   createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<LooseDataAttribute>[] {
     return [
@@ -52,9 +55,28 @@ export class AttributeGridOptions {
         },
       },
       {
+        header: this._localizationService.translate('UI.LABEL.HIDDEN.TITLE'),
+        show: () => true,
+        valueResolver: item => this.valueResolver(item, 'Hidden'),
+        badgeResolver: item => this.badgeResolver(item, 'Hidden'),
+      },
+      {
+        header: this._localizationService.translate('UI.LABEL.READONLY.TITLE'),
+        show: () => true,
+        valueResolver: item => this.valueResolver(item, 'Readonly'),
+        badgeResolver: item => this.badgeResolver(item, 'Readonly'),
+      },
+      {
         header: this._localizationService.translate('UI.LABEL.REQUIRED'),
         show: () => true,
-        valueResolver: item => this._localizationService.translate(item.Required ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
+        valueResolver: item => this.valueResolver(item, 'Required'),
+        badgeResolver: item => this.badgeResolver(item, 'Required'),
+      },
+      {
+        header: this._localizationService.translate('UI.LABEL.SHOW_IN_GRID.TITLE'),
+        show: () => true,
+        valueResolver: item => this.valueResolver(item, 'ShowInGrid'),
+        badgeResolver: item => this.badgeResolver(item, 'ShowInGrid'),
       },
       {
         header: this._localizationService.translate('UI.LABEL.ADDED_BY'),
@@ -100,7 +122,10 @@ export class AttributeGridOptions {
             onClick: item => {
               this._modalConfirmService.open({
                 title: 'UI.LABEL.ATTRIBUTE.DELETE.TITLE',
-                description: this._localizationService.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {attribute: item.Name, set}),
+                description: this._localizationService.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {
+                  attribute: item.Name,
+                  set
+                }),
                 buttons: {
                   submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
                 },
