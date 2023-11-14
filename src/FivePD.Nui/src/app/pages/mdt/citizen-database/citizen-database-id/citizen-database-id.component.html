@@ -78,57 +78,22 @@
 
   </app-container>
 
-  <app-container [rows]="1" [columns]="2">
+  <app-container [rows]="2" [columns]="2">
 
-    <div class="flex flex-col gap-4">
-      <div class="w-full flex flex-row items-center justify-between">
-        <p class="common-title">
-          {{ 'LABEL.TICKET.PLURAL' | translate }}
-        </p>
-        <app-button [label]="'UI.ACTION.CREATE' | translate"
-                    (onClick)="tryCreateLooseDataEntity(CoreSetId.PedTicket)"
-                    variant="secondary"/>
-      </div>
-      <div class="flex flex-col gap-4">
-        <div *ngFor="let ticket of tickets" class="bg-zinc-800 rounded-md p-4 flex flex-col gap-2">
-          <div *ngFor="let item of ticket" class="grid grid-rows-1 grid-cols-2 gap-4">
-            <p class="text-zinc-400 font-medium">{{ item.name }}</p>
-            <p class="text-zinc-400">{{ item.value }}</p>
-          </div>
-        </div>
-      </div>
-      <p *ngIf="!tickets?.length"
-         class="text-zinc-400 block">
-        {{ 'UI.LABEL.NO_RESULTS' | translate }}
-      </p>
-    </div>
+    <entity-view title="LABEL.TICKET.PLURAL"
+                 [entities]="tickets"
+                 [showCreateButton]="true"
+                 (createButtonClick)="tryCreateLooseDataEntity(CoreSetId.PedTicket)"/>
 
-    <div class="flex flex-col gap-4">
-      <div class="w-full flex flex-row items-center justify-between">
-        <p class="common-title">
-          {{ 'LABEL.WARNING.PLURAL' | translate }}
-        </p>
-        <app-button [label]="'UI.ACTION.CREATE' | translate"
-                    (onClick)="tryCreateLooseDataEntity(CoreSetId.PedWarning)"
-                    variant="secondary"/>
-      </div>
-      <div class="flex flex-col gap-4">
-        <div *ngFor="let warning of warnings" class="bg-zinc-800 rounded-md p-4 flex flex-col gap-2">
-          <div *ngFor="let item of warning" class="grid grid-rows-1 grid-cols-2 gap-4">
-            <p class="text-zinc-400 font-medium">{{ item.name }}</p>
-            <p class="text-zinc-400">{{ item.value }}</p>
-          </div>
-        </div>
-      </div>
-      <p *ngIf="!warnings?.length"
-         class="text-zinc-400 block">
-        {{ 'UI.LABEL.NO_RESULTS' | translate }}
-      </p>
-    </div>
+    <entity-view title="LABEL.WARNING.PLURAL"
+                 [entities]="warnings"
+                 [showCreateButton]="true"
+                 (createButtonClick)="tryCreateLooseDataEntity(CoreSetId.PedWarning)"/>
+
+    <entity-view title="UI.LABEL.ARREST_REPORT.PLURAL"
+                 [entities]="arrestReports"
+                 [showCreateButton]="false"/>
 
   </app-container>
 
 </app-container>
-
-
-<!--TODO: link arrest report to ped(s)-->

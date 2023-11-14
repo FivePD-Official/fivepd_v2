@@ -90,6 +90,8 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     zip(
       this._looseDataService.updateSetAttributes(CoreSetId.PedTicket),
       this._looseDataService.updateSetAttributes(CoreSetId.PedWarning),
+      this._looseDataService.updateSetAttributes(CoreSetId.ArrestReport),
+      this._looseDataService.updateSetAttributes(CoreSetId.IncidentReport),
     ).subscribe(() => {});
   }
 
