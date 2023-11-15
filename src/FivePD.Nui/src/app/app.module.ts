@@ -75,8 +75,8 @@ import { DevtoolsService } from "@services/devtools/devtools.service";
 import { DispatchService } from "@services/dispatch/dispatch.service";
 import { MessageService } from "@services/message/message.service";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
-import { UserSettingsComponent } from "./pages/mdt/settings/_components/user-settings/user-settings.component";
-import { AdminSettingsComponent } from "./pages/mdt/settings/_components/admin-settings/admin-settings.component";
+import { UserSettingsComponent } from "./pages/mdt/settings/user-settings/user-settings.component";
+import { AdminSettingsComponent } from "./pages/mdt/settings/admin-settings/admin-settings.component";
 
 @NgModule({
   declarations: [AppComponent],

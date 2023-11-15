@@ -441,7 +441,7 @@ export class DepartmentsViewComponent implements OnInit {
       }),
     ];
 
-    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User.Rank?.Permission.SetRank) {
+    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
         actions: [
@@ -560,7 +560,6 @@ export class DepartmentsViewComponent implements OnInit {
         };
       });
       this.ranks = res as Page<FormattedRank>;
-      console.log(this.ranks)
 
       if (remapUsers) {
         this.getDepartment();

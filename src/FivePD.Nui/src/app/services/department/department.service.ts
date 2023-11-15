@@ -9,7 +9,7 @@ import {
   NameTakenResponse,
   Page,
   Rank,
-  SimpleDepartment,
+  SimpleDepartment, SimpleDepartmentWithArea,
   User
 } from '@models';
 
@@ -133,5 +133,13 @@ export class DepartmentService {
       DepartmentId: departmentId,
       ...collation
     });
+  }
+
+  getAllSimpleWithArea(): Observable<SimpleDepartmentWithArea[]> {
+    return this._http.post<SimpleDepartmentWithArea[]>('fivepd:department:getAllSimpleWithArea', {});
+  }
+
+  updateAreas(request: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:department:updateAreas', request);
   }
 }

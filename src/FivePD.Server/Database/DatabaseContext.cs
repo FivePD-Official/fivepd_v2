@@ -49,6 +49,11 @@ public class DatabaseContext : DbContext
     public DbSet<Department> Departments { get; set; }
 
     /// <summary>
+    /// Gets or sets departments area coordinates table.
+    /// </summary>
+    public DbSet<DepartmentAreaCoordinate> DepartmentAreaCoordinates { get; set; }
+
+    /// <summary>
     /// Gets or sets divisions table.
     /// </summary>
     public DbSet<Division> Divisions { get; set; }

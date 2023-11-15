@@ -83,6 +83,28 @@ namespace FivePD.Server.Migrations
                     b.ToTable("Departments");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.DepartmentAreaCoordinate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("X")
+                        .HasColumnType("float");
+
+                    b.Property<float>("Y")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("DepartmentAreaCoordinates");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.Division", b =>
                 {
                     b.Property<int>("Id")
@@ -452,6 +474,13 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.Rank", "DefaultRank")
                         .WithMany()
                         .HasForeignKey("DefaultRankId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.DepartmentAreaCoordinate", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.Department", "Department")
+                        .WithMany("AreaCoordinates")
+                        .HasForeignKey("DepartmentId");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Division", b =>

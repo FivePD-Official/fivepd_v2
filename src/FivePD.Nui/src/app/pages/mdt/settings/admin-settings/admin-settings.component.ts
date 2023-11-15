@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   Button,
   CalloutDetails,
@@ -6,9 +6,9 @@ import {
   Column,
   Department,
   Dropdown,
+  LooseDataAttribute,
   NumberInput,
   Page,
-  LooseDataAttribute,
   TextInput,
   User
 } from "@models";
@@ -19,7 +19,7 @@ import { LooseDataService } from "@services/loose-data/loose-data.service";
 import { LocalizationService } from "@services/localization/localization.service";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
-import { AttributeGridOptions } from "../../_service/attribute-grid-options";
+import { AttributeGridOptions } from "../_service/attribute-grid-options";
 import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
 import { Router } from "@angular/router";
 import { DepartmentService } from "@services/department/department.service";
@@ -27,24 +27,23 @@ import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CustomValidators } from "../../../../../helpers/validators";
-import { createDepartmentCallsignFormatInputField } from "../../../../../helpers/forms/department";
+import { CustomValidators } from "../../../../helpers/validators";
+import { createDepartmentCallsignFormatInputField } from "../../../../helpers/forms/department";
 import { Validators } from "@angular/forms";
-import { TranslatePipe } from "../../../../../pipes/translate.pipe";
-import { GridComponent } from '../../../../../components/grid/grid.component';
-import { ContainerComponent } from '../../../../../components/container/container.component';
-import { PageHeaderComponent } from '../../../../../components/page-header/page-header.component';
-import { DynamicFormInputComponent } from "../../../../../components/dynamic-form-input/dynamic-form-input.component";
+import { TranslatePipe } from "../../../../pipes/translate.pipe";
+import { GridComponent } from '../../../../components/grid/grid.component';
+import { ContainerComponent } from '../../../../components/container/container.component';
+import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import { DynamicFormInputComponent } from "../../../../components/dynamic-form-input/dynamic-form-input.component";
 import { NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-admin-settings',
   templateUrl: './admin-settings.component.html',
-  styleUrls: ['./admin-settings.component.sass'],
   standalone: true,
   imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, DynamicFormInputComponent, NgIf]
 })
-export class AdminSettingsComponent {
+export class AdminSettingsComponent implements OnInit {
 
   readonly setAttributeDropdown = new Dropdown({
     key: '#',
@@ -114,8 +113,14 @@ export class AdminSettingsComponent {
   departments?: Page<Department>;
   departmentsButtons: Button[] = [
     {
+      label: 'Manage areas',
+      show: () => true,
+      disabled: () => false,
+      onClick: () => this._router.navigate(['mdt', 'settings', 'departments', 'area-selection']),
+    },
+    {
       label: 'UI.ACTION.CREATE_DEPARTMENT',
-      show: () => this.userService.userHasRole(UserRole.Admin),
+      show: () => true,
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
     }

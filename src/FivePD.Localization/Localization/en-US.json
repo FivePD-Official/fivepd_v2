@@ -143,6 +143,7 @@
   "UI.LABEL.DATE.SINGULAR": "Date",
   "UI.LABEL.DEFAULT_RANK.DESCRIPTION": "The rank of new members will be automatically set to the default rank.",
   "UI.LABEL.DEFAULT_RANK.TITLE": "Default rank",
+  "UI.LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT": "You've successfully edited the department areas.",
   "UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION": "Are you sure you want to delete {{department}}? You can't undo this action.",
   "UI.LABEL.DEPARTMENT.DELETE.TITLE": "Delete department",
   "UI.LABEL.DEPARTMENT.PLURAL": "Departments",

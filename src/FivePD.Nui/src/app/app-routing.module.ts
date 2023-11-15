@@ -36,22 +36,26 @@ const mdtRoutes: Routes = [
     children: [
       {
         path: 'user',
-        loadComponent: () => import('./pages/mdt/settings/_components/user-settings/user-settings.component').then(m => m.UserSettingsComponent),
+        loadComponent: () => import('./pages/mdt/settings/user-settings/user-settings.component').then(m => m.UserSettingsComponent),
       },
       {
         path: 'admin',
-        loadComponent: () => import('./pages/mdt/settings/_components/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent),
+        loadComponent: () => import('./pages/mdt/settings/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent),
       },
       {
         path: 'departments',
         children: [
           {
+            path: 'area-selection',
+            loadComponent: () => import('./pages/mdt/settings/admin-settings/_components/department-settings-area/department-area-management.component').then(m => m.DepartmentAreaManagementComponent),
+          },
+          {
             path: ':id',
             component: DepartmentsViewComponent,
             data: {
               mode: 'edit'
-            }
-          }
+            },
+          },
         ]
       },
       {

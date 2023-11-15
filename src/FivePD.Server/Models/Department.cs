@@ -65,6 +65,11 @@ public class Department
     public IList<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
 
     /// <summary>
+    /// Gets or sets the area coordinates of this department.
+    /// </summary>
+    public IList<DepartmentAreaCoordinate> AreaCoordinates { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="DepartmentResponse"/>.
     /// </summary>
     /// <returns>The created response object.</returns>

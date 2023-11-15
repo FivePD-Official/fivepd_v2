@@ -43,5 +43,7 @@ public class DepartmentService : IDepartmentService, IOnInit
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Delete);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Create);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.CheckIfDepartmentNameTaken);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.GetAllSimpleWithArea);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.UpdateAreas);
     }
 }

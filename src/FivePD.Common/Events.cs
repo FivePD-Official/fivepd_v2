@@ -163,6 +163,10 @@ internal readonly record struct Events
             public const string EditRank = "fivepd:department:editRank";
 
             public const string CreateRank = "fivepd:department:createRank";
+
+            public const string GetAllSimpleWithArea = "fivepd:department:getAllSimpleWithArea";
+
+            public const string UpdateAreas = "fivepd:department:updateAreas";
         }
 
         public readonly record struct CalloutDetails

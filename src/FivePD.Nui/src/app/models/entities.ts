@@ -1,4 +1,4 @@
-import { AttributeDataType, LooseDataAttribute } from './loose-data';
+import { LooseDataAttribute } from './loose-data';
 import { FGender, FIncidentPriority, FIncidentType, PedLicenseType } from "@enums";
 
 export interface WithId {
@@ -28,6 +28,11 @@ export interface User extends WithId {
 
 export type SimpleUser = Pick<User, 'Id' | 'Name'>;
 
+export interface DepartmentAreaCoordinate extends WithId {
+  X: number;
+  Y: number;
+}
+
 export interface Department extends WithId {
   Name: string;
   Callsign: string;
@@ -43,6 +48,11 @@ export interface Department extends WithId {
 
 export interface SimpleDepartment extends WithId {
   Name: string;
+}
+
+export interface SimpleDepartmentWithArea extends SimpleDepartment {
+  Callsign: string;
+  Coordinates: DepartmentAreaCoordinate[];
 }
 
 export interface Division extends WithId {

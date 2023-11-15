@@ -737,4 +737,73 @@ public class DepartmentService : IDepartmentService
                 { "department", playerDepartment!.Name },
             });
     }
+
+    [UIEvent(Events.UI.Department.GetAllSimpleWithArea)]
+    private void GetAllSimpleWithAreaCoordinatesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var departments = this._databaseContext.Departments
+            .Include(x => x.AreaCoordinates)
+            .Select(department => new SimpleDepartmentWithAreaDTO
+            {
+                Id = department.Id,
+                Name = department.Name,
+                Callsign = department.Callsign,
+                Coordinates = department.AreaCoordinates.ToList(),
+            })
+            .ToList();
+        networkCallbackDelegate.InvokeWithJson(departments);
+    }
+
+    [UIEvent(Events.UI.Department.UpdateAreas)]
+    private void UpdateAreasUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<UpdateDepartmentAreasRequest>();
+        foreach (var area in request.Areas)
+        {
+            var department = this._databaseContext.Departments
+                .Include(x => x.AreaCoordinates)
+                .FirstOrDefault(x => x.Id == area.DepartmentId);
+            if (department is null)
+            {
+                networkCallbackDelegate.InvokeWithUnexpectedError();
+                return;
+            }
+
+            var coordinatesToRemove = department.AreaCoordinates
+                .Where(areaCoordinate => area.Coordinates.All(x => x.Id != areaCoordinate.Id))
+                .ToList();
+            foreach (var coordinateToRemove in coordinatesToRemove)
+            {
+                this._databaseContext.DepartmentAreaCoordinates.Remove(coordinateToRemove);
+            }
+
+            foreach (var coordinate in area.Coordinates)
+            {
+                if (coordinate.Id == -1)
+                {
+                    department.AreaCoordinates.Add(new DepartmentAreaCoordinate
+                    {
+                        Department = department,
+                        X = coordinate.X,
+                        Y = coordinate.Y,
+                    });
+                }
+                else
+                {
+                    var areaCoordinate = department.AreaCoordinates.FirstOrDefault(x => x.Id == coordinate.Id);
+                    if (areaCoordinate is null)
+                    {
+                        continue;
+                    }
+
+                    areaCoordinate.X = coordinate.X;
+                    areaCoordinate.Y = coordinate.Y;
+                }
+            }
+        }
+
+        this._databaseContext.SaveChanges();
+
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT");
+    }
 }

@@ -1,0 +1,60 @@
+<app-page-header [title]="'Department area management' | translate"/>
+
+<div class="relative w-full grid grid-rows-1 grid-cols-2 gap-6">
+
+  <div class="flex flex-col gap-10">
+
+    <div class="flex flex-col gap-4">
+      <p class="text-zinc-400">
+        In order to add an area to a department, press the <span class="italic">Edit</span> button in its row,
+        then select the <span class="italic">Add area coordinates</span> button, and click on the map to add a coordinate.
+      </p>
+      <p class="text-zinc-400">
+        Right click on a coordinate marker to remove it.
+      </p>
+      <p class="text-zinc-400">
+        You can also drag the coordinate markers to change their position, when the <span class="italic">Edit</span> mode is enabled.
+        Note that you cannot drag them while adding a new coordinate.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-row items-center justify-end gap-2">
+        <p class="text-zinc-400">Add area coordinates</p>
+        <app-button variant="tertiary"
+                    [label]="canAddPolygonCoordinate ? 'Cancel' : 'Add'"
+                    [disabled]="!currentlyEditingDepartment"
+                    (onClick)="toggleCoordinateAdd()"/>
+      </div>
+      <div class="flex flex-col gap-2 border border-color rounded-md">
+        @for (item of departments;track item.Id) {
+          <div class="flex flex-row items-center justify-between border-b border-color last:border-0 px-6 py-2">
+            <p class="text-zinc-400"
+               [ngClass]="{'text-zinc-200': currentlyEditingDepartment?.Id === item.Id}">
+              {{ item.Name }} ({{ item.Callsign }})
+            </p>
+            <app-button variant="tertiary"
+                        size="sm"
+                        [label]="currentlyEditingDepartment?.Id === item.Id ? 'Cancel edit' : 'Edit'"
+                        (onClick)="toggleEdit(item)"/>
+          </div>
+        } @empty {
+          <p class="text-zinc-400 block">
+            {{ 'UI.LABEL.NO_RESULTS' | translate }}
+          </p>
+        }
+      </div>
+      <div class="flex flex-row items-center justify-end">
+        <app-button variant="primary"
+                    [label]="'UI.ACTION.SAVE' | translate"
+                    [disabled]="!modified"
+                    (onClick)="onSave()"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative inset-0 w-full h-[1000px]">
+    <div id="map" class="w-full h-full bg-zinc-900"></div>
+  </div>
+</div>
+
