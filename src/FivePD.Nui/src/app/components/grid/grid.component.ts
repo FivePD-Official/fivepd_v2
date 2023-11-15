@@ -102,6 +102,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
           size: 'small',
           height: 'sm',
           variant: 'secondary',
+          type: 'single',
         },
         required: false,
       });
@@ -204,7 +205,6 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     }
 
     const filterCopy = {...this.collation.Filters};
-    console.log(filterCopy)
     if (filterCopy.hasOwnProperty(accessorKey)) {
       if (typeof value === 'string' || typeof value === 'number') {
         if (value) {

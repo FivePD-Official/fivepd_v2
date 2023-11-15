@@ -74,7 +74,7 @@ export class AdminSettingsComponent {
     Filters: {},
   };
   attributesColumns: Column<LooseDataAttribute>[] = [];
-  buttons: Button[] = [];
+  attributesButtons: Button[] = [];
 
   users?: Page<User>;
   usersCollation: Collation = {
@@ -252,7 +252,7 @@ export class AdminSettingsComponent {
         this.getAttributes();
       }
     );
-    this.buttons = this._attributeGridOptions.createButtons(
+    this.attributesButtons = this._attributeGridOptions.createButtons(
       this.selectedSet,
       () => {
         this.attributesCollation.Page = 1;

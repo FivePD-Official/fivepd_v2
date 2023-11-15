@@ -96,7 +96,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
       if (this.field.type === 'dropdown') {
         const selectItem = this.dropdownFilteredItems.find(item => item.key === value);
         if (selectItem) {
-          this.onDropdownSelect(selectItem, false);
+          // this.onDropdownSelect(selectItem, false);
         }
       }
 
@@ -116,7 +116,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.setDropdownOptions(changes['field']?.currentValue as any);
+    // this.setDropdownOptions(changes['field']?.currentValue as any); // TODO: why was this needed? it fucks up everything
   }
 
   get show() {
