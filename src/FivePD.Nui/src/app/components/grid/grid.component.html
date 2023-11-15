@@ -95,11 +95,8 @@
           </div>
         }
       </div>
-    }
-
-    @if (!formattedRows?.length) {
-      <p
-        class="text-zinc-400 block pt-2.5 pl-2.5">
+    } @empty {
+      <p class="text-zinc-400 block pt-2.5 pl-2.5">
         {{ 'UI.LABEL.NO_RESULTS' | translate }}
       </p>
     }
