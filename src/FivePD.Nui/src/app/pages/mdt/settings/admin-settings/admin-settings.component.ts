@@ -5,7 +5,7 @@ import {
   Collation,
   Column,
   Department,
-  Dropdown,
+  Dropdown, GeneralConfig,
   LooseDataAttribute,
   NumberInput,
   Page,
@@ -36,6 +36,7 @@ import { ContainerComponent } from '../../../../components/container/container.c
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { DynamicFormInputComponent } from "../../../../components/dynamic-form-input/dynamic-form-input.component";
 import { NgIf } from "@angular/common";
+import { ConfigService } from "@services/config/config.service";
 
 @Component({
   selector: 'app-admin-settings',
@@ -44,6 +45,8 @@ import { NgIf } from "@angular/common";
   imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, DynamicFormInputComponent, NgIf]
 })
 export class AdminSettingsComponent implements OnInit {
+
+  generalConfig?: GeneralConfig;
 
   readonly setAttributeDropdown = new Dropdown({
     key: '#',
@@ -115,8 +118,13 @@ export class AdminSettingsComponent implements OnInit {
     {
       label: 'Manage areas',
       show: () => true,
-      disabled: () => false,
-      onClick: () => this._router.navigate(['mdt', 'settings', 'departments', 'area-selection']),
+      disabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch ?? true,
+      tooltip: {
+        enabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch ?? true,
+        text: 'To manage areas enable the "AreaBasedDispatch" option in the General config.',
+        placement: 'left',
+      },
+      onClick: () => this._router.navigate(['mdt', 'settings', 'departments', 'area-management']),
     },
     {
       label: 'UI.ACTION.CREATE_DEPARTMENT',
@@ -234,6 +242,7 @@ export class AdminSettingsComponent implements OnInit {
     private readonly _modalService: ModalService,
     private readonly _modalFormService: ModalFormService,
     private readonly _modalConfirmService: ModalConfirmService,
+    private readonly _configService: ConfigService,
   ) {
     _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
       this.user = state.user.details.User;
@@ -241,9 +250,17 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getGeneralConfig();
     this.getSettings();
     this.setAttributesGrid();
   }
+
+  private getGeneralConfig(): void {
+    this._configService.getGeneralConfig().subscribe(res => {
+      this.generalConfig = res;
+    });
+  }
+
 
   setAttributesGrid(): void {
     this.attributesCollation.Page = 1;

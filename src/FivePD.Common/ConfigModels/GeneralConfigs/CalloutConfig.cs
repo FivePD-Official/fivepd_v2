@@ -21,6 +21,8 @@ public sealed record CalloutConfig
     public int MaxIntervalInMs { get; init; }
 
     public int MaxActiveCallouts { get; init; }
+
+    public bool AreaBasedDispatch { get; init; }
     
     public DynamicDispatchConfig DynamicDispatch { get; init; } = new();
 

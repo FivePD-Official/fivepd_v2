@@ -9,6 +9,7 @@
     MaxIntervalInMs: number;
     MaxActiveCallouts: number;
     DispatchTimeoutInMs: number;
+    AreaBasedDispatch: boolean;
     DynamicDispatch: {
       Enabled: boolean;
       Radius: number;

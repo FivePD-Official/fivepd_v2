@@ -142,6 +142,24 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         return true;
     }
 
+    // TODO: move to a better place
+    private bool IsPointInsidePolygon(IReadOnlyList<Vector3> points, Vector3 point)
+    {
+        var count = 0;
+        var n = points.Count;
+
+        for (int i = 0, j = n - 1; i < n; j = i++)
+        {
+            if (points[i].Y > point.Y != points[j].Y > point.Y &&
+                point.X < ((points[j].X - points[i].X) * (point.Y - points[i].Y) / (points[j].Y - points[i].Y)) + points[i].X)
+            {
+                count++;
+            }
+        }
+
+        return count % 2 == 1;
+    }
+
     private List<Unit> DispatchCalloutToUnits(InternalCallout internalCallout)
     {
         if (internalCallout is null)
@@ -162,7 +180,8 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         {
             filteredUnits = calloutDetails.RulesetType == CalloutDetailsRulesetType.Allow
                 ? filteredUnits.Where(unit => calloutDetails.CalloutDetailsDepartments.Any(department => department.DepartmentId == unit.DepartmentId)).ToList()
-                : filteredUnits.Where(unit => calloutDetails.CalloutDetailsDepartments.All(department => department.DepartmentId != unit.DepartmentId)).ToList();
+                : filteredUnits.Where(unit => calloutDetails.CalloutDetailsDepartments.All(department => department.DepartmentId != unit.DepartmentId))
+                    .ToList();
         }
         else
         {
@@ -173,6 +192,26 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         if (filteredUnits.Select(x => x.Players.Count).Aggregate(0, (acc, count) => acc + count) < internalCallout.Properties.MinOnDutyOfficers)
         {
             return new List<Unit>();
+        }
+
+        if (this._configService.GeneralConfig.Callout.AreaBasedDispatch)
+        {
+            var valueTuples = filteredUnits.Select(unit => (unit, unit.Players[0].Department)).ToList();
+            foreach (var (_, department) in valueTuples)
+            {
+                this._databaseContext
+                    .Entry(department)
+                    .Reference(x => x.AreaCoordinates)
+                    .Load();
+            }
+
+            filteredUnits = valueTuples
+                .Where(x => x.Department.AreaCoordinates.Count >= 3)
+                .Where(x => this.IsPointInsidePolygon(
+                    x.Department.AreaCoordinates.Select(c => new Vector3(c.X, c.Y, 0f)).ToList(),
+                    internalCallout.Callout.Location))
+                .Select(x => x.unit)
+                .ToList();
         }
 
         if (this._configService.GeneralConfig.Callout.DynamicDispatch.Enabled)
