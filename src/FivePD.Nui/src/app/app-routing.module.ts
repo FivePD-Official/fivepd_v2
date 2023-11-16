@@ -46,7 +46,7 @@ const mdtRoutes: Routes = [
         path: 'departments',
         children: [
           {
-            path: 'area-selection',
+            path: 'area-management',
             loadComponent: () => import('./pages/mdt/settings/admin-settings/_components/department-settings-area/department-area-management.component').then(m => m.DepartmentAreaManagementComponent),
           },
           {

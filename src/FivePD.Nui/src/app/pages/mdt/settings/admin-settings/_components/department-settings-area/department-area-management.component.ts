@@ -24,6 +24,7 @@ import { ButtonComponent } from "../../../../../../components/button/button.comp
 import { NgClass } from "@angular/common";
 import { Area, GRAY, RED } from "./_models/area";
 import { customIcon } from "@services/map";
+import { IconComponent } from "../../../../../../components/icon/icon.component";
 
 // TODO: lng = X, lat = Y
 
@@ -35,7 +36,7 @@ type MarkerAttribution = {
 @Component({
   selector: 'app-department-area-management',
   standalone: true,
-  imports: [PageHeaderComponent, TranslatePipe, ContainerComponent, ButtonComponent, NgClass],
+  imports: [PageHeaderComponent, TranslatePipe, ContainerComponent, ButtonComponent, NgClass, IconComponent],
   templateUrl: './department-area-management.component.html',
 })
 export class DepartmentAreaManagementComponent implements OnInit {
@@ -89,6 +90,15 @@ export class DepartmentAreaManagementComponent implements OnInit {
     });
     this.initializeMap();
     this.getDepartments();
+  }
+
+  departmentHasEnoughAreaCoordinates(department: SimpleDepartmentWithArea): boolean {
+    const area = this.areas[department.Id];
+    if (!area) {
+      return false;
+    }
+
+    return area.coordinates.size >= 3;
   }
 
   toggleEdit(department?: SimpleDepartmentWithArea): void {
@@ -170,8 +180,6 @@ export class DepartmentAreaManagementComponent implements OnInit {
         DepartmentId: departmentId,
         Coordinates: Array.from(area.coordinates.entries()).map(([id, latLng]) => ({
           Id: typeof id === 'string' ? -1 : id,
-          asd: id,
-          typeof: typeof id,
           X: latLng.lng,
           Y: latLng.lat,
         })),
