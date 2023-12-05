@@ -1,15 +1,23 @@
 ## Developing
 1. Insert the latest recommended build of FXServer into the `FXServer` directory
-1. Build and run the `FivePD.Localization` project with the `-s` flag
 1. Select the Debug solution configuration
 1. Start the **"Run FXServer"** run configuration
-1. Run the **"Start NUI development server"** configuration and make sure to change the `ui_page` value to `http://localhost:3000` in your `fxmanifest.lua`
+1. Run the **"Start NUI development server"** configuration and make sure the value of `ui_page` is `http://localhost:4200` in your `fxmanifest.lua`
+
+Building the solution will automatically copy all files recursively from the `FivePD.Statics` folder to the resource folder and restart the resource.
+
+## Updating localizations
+1. Edit the `FivePD.Localization/Localization/en-US.json` file
+1. Run the `FivePD.Localization` configuration
+
+It'll output the files to `FivePD.Statics/Localizations`.  
+In case you need the new localization file to be loaded just build the solution.  
 
 ## Running Migrations
 Use the command below in the root folder. Migrations require a startup project to run properly.
 
 ```
-dotnet ef migrations add <MigrationName> --project .\FivePD.Gamemode.Server\FivePD.Gamemode.Server.csproj --startup-project .\FivePD.StartupProject\FivePD.StartupProject.csproj
+dotnet ef migrations add <MigrationName> --project .\FivePD.Server\FivePD.Server.csproj --startup-project .\FivePD.StartupProject\FivePD.StartupProject.csproj
 ```
 
 ## Localization
@@ -18,10 +26,10 @@ Make sure that all keys end with one of the following words, so we can extend th
 SINGULAR, PLURAL, TITLE, DESCRIPTION, HELP_LABEL
 ```
 
-## Production
+## Production - TODO
 1. Select the Release solution configuration
 1. Build the solution. Will output to `build-public`
-1. Build and run `FivePD.Localization` project with the `-f -o` flags to generate the optimized localization file. Will output to `FivePD.Localization/Localization/Optimized/localization.json`
+1. ~~Build and run `FivePD.Localization` project with the `-f -o` flags to generate the optimized localization file. Will output to `FivePD.Localization/Localization/Optimized/localization.json`~~
 1. Run `npm run build` in the `FivePD.Nui` project. Will output to `FivePD.Nui/dist`
 1. In the `fxmanifest.lua` change the `ui_page` value to `Libraries/FivePD.Nui/index.html`
 1. Obfuscate!
