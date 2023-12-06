@@ -455,7 +455,7 @@ export class DepartmentsViewComponent implements OnInit {
             let updatedCallsign = '';
             this._modalFormService.open<FormattedUser>({
                 title: "",
-                fields: updatedUser => {  
+                fields: updatedUser => {
                   const fields: FormInputBase<any>[] = [
                     new TextInput({
                       key: 'Callsign',
