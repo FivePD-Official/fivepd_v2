@@ -484,6 +484,11 @@ export class DepartmentsViewComponent implements OnInit {
           }
         }
       }))
+    } else {
+      columns.push(new Column<FormattedUser>({
+        header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+        accessorKey: 'Callsign',
+      }))
     }
 
 
