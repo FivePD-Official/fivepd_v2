@@ -209,7 +209,6 @@ public class DepartmentService : IDepartmentService
     private void GetAllPageableUI(ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var departmentsRequest = departmentsRequestString.ConvertTo<DepartmentsRequest>();
-
         var filters = new Filters<Department>();
         filters.Add(
             !string.IsNullOrEmpty(departmentsRequest.Filters.Name),
@@ -217,11 +216,11 @@ public class DepartmentService : IDepartmentService
         filters.Add(
             !string.IsNullOrEmpty(departmentsRequest.Filters.Callsign),
             department => department.Callsign.ToLower().Contains(departmentsRequest.Filters.Callsign.ToLower()));
-
         var page = this._databaseContext.Departments
             .AsNoTracking()
             .Include(department => department.Users)
             .Paginate(departmentsRequest.Page, filters);
+
         page.Items = page.Items.Select(item => new DepartmentResponse(item)).ToList();
 
         networkCallbackDelegate.InvokeWithJson(page);

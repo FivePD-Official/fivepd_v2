@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
   Button,
   Checkbox,
@@ -11,7 +11,7 @@ import {
   DropdownItem,
   FormInputBase,
   FormSubmitEvent,
-  GeneralConfig,
+  GeneralConfig, IconType,
   NumberInput,
   Page,
   PlayerDetailsDTO,
@@ -19,36 +19,41 @@ import {
   TextInput,
   User
 } from '@models';
-import { DepartmentService } from '@services/department/department.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LocalizationService } from '@services/localization/localization.service';
-import { filter, switchMap } from 'rxjs';
-import { GlobalState } from '@store';
-import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
-import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
-import { UserRole, UserService } from '@services/user/user.service';
-import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
-import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
-import { CustomValidators } from '../../../../helpers/validators';
-import { ModalService } from '@services/modals/modal/modal.service';
-import { Store } from '@ngrx/store';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EventService } from "@services/event/event.service";
-import { ConfigService } from "@services/config/config.service";
-import { TranslatePipe } from '../../../../pipes/translate.pipe';
-import { GridComponent } from '../../../../components/grid/grid.component';
-import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
-import { ContainerComponent } from '../../../../components/container/container.component';
-import { NgIf } from '@angular/common';
-import { TippyModule } from '@ngneat/helipopper';
-import { ButtonComponent } from '../../../../components/button/button.component';
-import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import {DepartmentService} from '@services/department/department.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {LocalizationService} from '@services/localization/localization.service';
+import {filter, switchMap} from 'rxjs';
+import {GlobalState} from '@store';
+import {createDepartmentCallsignFormatInputField} from '../../../../helpers/forms/department';
+import {ModalConfirmService} from '@services/modals/modal-confirm/modal-confirm.service';
+import {UserRole, UserService} from '@services/user/user.service';
+import {ValueResolver} from '@services/modals/modal-form/modal-form-value-resolver';
+import {ModalFormService} from '@services/modals/modal-form/modal-form.service';
+import {CustomValidators} from '../../../../helpers/validators';
+import {ModalService} from '@services/modals/modal/modal.service';
+import {Store} from '@ngrx/store';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {EventService} from "@services/event/event.service";
+import {ConfigService} from "@services/config/config.service";
+import {TranslatePipe} from '../../../../pipes/translate.pipe';
+import {GridComponent} from '../../../../components/grid/grid.component';
+import {DynamicFormComponent} from '../../../../components/dynamic-form/dynamic-form.component';
+import {ContainerComponent} from '../../../../components/container/container.component';
+import {NgIf} from '@angular/common';
+import {TippyModule} from '@ngneat/helipopper';
+import {ButtonComponent} from '../../../../components/button/button.component';
+import {PageHeaderComponent} from '../../../../components/page-header/page-header.component';
+import {ModalEntityViewComponent} from "../../../../components/modal/modal-entity-view/modal-entity-view.component";
+import {ATTRIBUTES, ENTITY} from "../../../../components/modal/modal-entity-view/entity-token";
+import {mapAttributesToFields} from "@helpers";
+import {CoreSetId} from "@enums";
 
 interface FormattedRank extends Rank {
   Permissions: string;
 }
 
 interface FormattedUser extends User {
+  Callsign: string;
   RankName: string;
   DivisionName: string;
 }
@@ -440,6 +445,52 @@ export class DepartmentsViewComponent implements OnInit {
         },
       }),
     ];
+    if (this.userService.userHasRole(UserRole.Admin)) {
+      columns.push(new Column<FormattedUser>({
+        header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+        accessorKey: 'Callsign',
+        cellAction: {
+          icon: IconType.Pencil,
+          onClick: item => {
+            let updatedCallsign = '';
+            this._modalFormService.open<FormattedUser>({
+                title: "",
+                fields: updatedUser => {
+                  const fields: FormInputBase<any>[] = [
+                    new TextInput({
+                      key: 'Callsign',
+                      label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+                      placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+                      required: true,
+                      value: item.Callsign,
+                    }),
+                  ];
+                  return fields;
+                },
+                buttons: {
+                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                },
+              }
+            ).result.pipe(
+              filter((res) => res.success),
+              switchMap((res) => this.userService.updateUserDetails({Id: item.Id, Callsign: res.value['Callsign']})),
+              this._modalService.handleResponse(),
+            ).subscribe(res => {
+              if (res.Status) {
+                item.Callsign = updatedCallsign;
+              }
+              this.getDivisions(true);
+            })
+          }
+        }
+      }))
+    } else {
+      columns.push(new Column<FormattedUser>({
+        header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+        accessorKey: 'Callsign',
+      }))
+    }
+
 
     if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
@@ -537,7 +588,9 @@ export class DepartmentsViewComponent implements OnInit {
   }
 
   getDepartment(): void {
-    this._departmentService.getDepartment(this._route.snapshot.params['id']).subscribe(res => {
+    const Id = this._route.snapshot.params['id'];
+    if (Id === null || Id === undefined) return;
+    this._departmentService.getDepartment(Id).subscribe(res => {
       this.department = res;
       this.getRanks();
       this.getDivisions();
@@ -590,6 +643,7 @@ export class DepartmentsViewComponent implements OnInit {
       res.Items = res.Items.map(user => {
         return {
           ...user,
+          Callsign: user.Callsign,
           RankName: this.department?.Ranks?.find(rank => rank.Id === user.RankId)?.Name ?? '-',
           DivisionName: this.department?.Divisions?.find(division => division.Id === user.DivisionId)?.Name ?? '-',
         };
