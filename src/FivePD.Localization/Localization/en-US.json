@@ -132,6 +132,7 @@
   "UI.LABEL.CALLSIGN.FORMAT.TITLE": "Callsign format",
   "UI.LABEL.CALLSIGN.HELP_LABEL": "If left empty it'll be auto-generated from the name. Can only consists of alphabetical characters.",
   "UI.LABEL.CALLSIGN.TITLE": "Callsign",
+  "UI.LABEL.CALLSIGN.EDIT": "Edit callsign",
   "UI.LABEL.CAPACITY.SINGULAR": "Capacity",
   "UI.LABEL.CHECKBOX.SINGULAR": "Checkbox",
   "UI.LABEL.CITIZEN_DATABASE": "Citizen database",

@@ -43,12 +43,17 @@ import { NgIf } from '@angular/common';
 import { TippyModule } from '@ngneat/helipopper';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import {ModalEntityViewComponent} from "../../../../components/modal/modal-entity-view/modal-entity-view.component";
+import {ATTRIBUTES, ENTITY} from "../../../../components/modal/modal-entity-view/entity-token";
+import {mapAttributesToFields} from "@helpers";
+import {CoreSetId} from "@enums";
 
 interface FormattedRank extends Rank {
   Permissions: string;
 }
 
 interface FormattedUser extends User {
+  Callsign: string;
   RankName: string;
   DivisionName: string;
 }
@@ -439,6 +444,10 @@ export class DepartmentsViewComponent implements OnInit {
           label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
         },
       }),
+      new Column<FormattedUser>({
+        header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+        accessorKey: 'Callsign',
+      }),
     ];
 
     if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.SetRank) {
@@ -537,6 +546,7 @@ export class DepartmentsViewComponent implements OnInit {
   }
 
   getDepartment(): void {
+    if (this._route.snapshot.params['id'] === null || this._route.snapshot.params['id'] === undefined) return;
     this._departmentService.getDepartment(this._route.snapshot.params['id']).subscribe(res => {
       this.department = res;
       this.getRanks();
@@ -590,6 +600,7 @@ export class DepartmentsViewComponent implements OnInit {
       res.Items = res.Items.map(user => {
         return {
           ...user,
+          Callsign: user.Callsign,
           RankName: this.department?.Ranks?.find(rank => rank.Id === user.RankId)?.Name ?? '-',
           DivisionName: this.department?.Divisions?.find(division => division.Id === user.DivisionId)?.Name ?? '-',
         };

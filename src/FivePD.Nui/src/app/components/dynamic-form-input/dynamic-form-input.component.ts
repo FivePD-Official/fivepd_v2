@@ -96,7 +96,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
       if (this.field.type === 'dropdown') {
         const selectItem = this.dropdownFilteredItems.find(item => item.key === value);
         if (selectItem) {
-          // this.onDropdownSelect(selectItem, false);
+          //this.onDropdownSelect(selectItem, false);
         }
       }
 

@@ -1,9 +1,9 @@
 Database:
   Address: 127.0.0.1
   Port: 3306
-  DatabaseName: fivepd
-  User: root
-  Password: root
+  DatabaseName: fivepd2
+  User: dev
+  Password: fivepd2023
 
 Features:
   DiscordRichPresence: true

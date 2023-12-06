@@ -119,6 +119,7 @@ export class LooseDataService {
   }
 
   addEntity(setId: SetId, entity: object): Observable<ActionResponse> {
+    console.log("Doing")
     return this._http.post<ActionResponse>('fivepd:looseData:addEntity', {
       SetId: setId,
       Entity: entity,
