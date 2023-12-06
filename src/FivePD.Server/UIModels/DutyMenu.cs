@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
@@ -50,8 +51,11 @@ public sealed class DutyMenu : Menu
                 this._configService.VehiclesConfig.Police.Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
             this.VehicleSpawnerItem.OnSelect += async (player, index) =>
             {
+                var lastVehicle = Cfx.API.GetVehiclePedIsIn(player.GetUnderlyingPlayer().Character.Handle, false);
+                if (lastVehicle != 0) { Cfx.API.DeleteEntity(lastVehicle); }
                 var policeVehicle = this._configService.VehiclesConfig.Police.ElementAt(index);
-                this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(policeVehicle.Model), player.GetUnderlyingPlayer().Character.Position, player.GetUnderlyingPlayer().Character.Heading);
+                var spawnedVehicle = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(policeVehicle.Model), player.GetUnderlyingPlayer().Character.Position, player.GetUnderlyingPlayer().Character.Heading);
+                Cfx.API.SetPedIntoVehicle(player.GetUnderlyingPlayer().Character.Handle, Cfx.API.NetworkGetEntityFromNetworkId(spawnedVehicle.NetworkId), -1);
             };
             items.Add(this.VehicleSpawnerItem);
         }
