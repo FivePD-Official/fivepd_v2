@@ -73,6 +73,12 @@ export class DepartmentService {
       Id: id,
     });
   }
+  kickPlayerFromUI(id: number): Observable<ActionResponse> {
+    console.log("Kicking player [NUI]")
+    return this._http.post<ActionResponse>('fivepd:department:removeUser',{
+      Id: id,
+    });
+  }
 
   createRank(rank: object): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:createRank', rank);

@@ -11,7 +11,8 @@ import {
   DropdownItem,
   FormInputBase,
   FormSubmitEvent,
-  GeneralConfig, IconType,
+  GeneralConfig,
+  IconType,
   NumberInput,
   Page,
   PlayerDetailsDTO,
@@ -43,10 +44,6 @@ import {NgIf} from '@angular/common';
 import {TippyModule} from '@ngneat/helipopper';
 import {ButtonComponent} from '../../../../components/button/button.component';
 import {PageHeaderComponent} from '../../../../components/page-header/page-header.component';
-import {ModalEntityViewComponent} from "../../../../components/modal/modal-entity-view/modal-entity-view.component";
-import {ATTRIBUTES, ENTITY} from "../../../../components/modal/modal-entity-view/entity-token";
-import {mapAttributesToFields} from "@helpers";
-import {CoreSetId} from "@enums";
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -443,8 +440,9 @@ export class DepartmentsViewComponent implements OnInit {
         filter: {
           label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
         },
-      }),
+      })
     ];
+
     if (this.userService.userHasRole(UserRole.Admin)) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
@@ -560,6 +558,41 @@ export class DepartmentsViewComponent implements OnInit {
           }
         ]
       }));
+    }
+
+    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.Kick) {
+      columns.push(new Column<FormattedUser>({
+        header: 'Actions',
+        actions: [
+          {
+            type: 'button',
+            label: "Kick",
+            onClick: user => {
+              this._modalConfirmService.open({
+                title: 'UI.ACTION.KICK',
+                description: this._localization.translate('UI.ACTION.KICK.CONFIRMATION'),
+                buttons: {
+                  submit: {variant: 'danger', label: 'UI.ACTION.KICK'},
+                },
+              }).result
+                .pipe(
+                  filter(res => res.success),
+                  switchMap(() => this.userService.updateUserDetails({Id: user.Id})),
+                  this._modalService.handleResponse()
+                ).subscribe((res) => {
+                if (res.Status) {
+                  if (user.Id === this.user?.User?.Id) {
+                    return;
+                  } else {
+                    this._departmentService.kickPlayerFromUI(user.Id).subscribe(v => this.userService.refreshData());
+                  }
+
+                }
+              })
+            }
+          },
+        ]
+      }))
     }
 
     return columns;

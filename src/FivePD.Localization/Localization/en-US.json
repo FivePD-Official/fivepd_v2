@@ -59,6 +59,7 @@
   "UI.ACTION.EDIT": "Edit",
   "UI.ACTION.JOIN": "Join",
   "UI.ACTION.KICK": "Kick",
+  "UI.ACTION.KICK.CONFIRMATION": "Are you sure you want to kick this member from the department?",
   "UI.ACTION.LEAVE": "Leave",
   "UI.ACTION.RENAME": "Rename",
   "UI.ACTION.REQUEST_TO_JOIN": "Request to join",

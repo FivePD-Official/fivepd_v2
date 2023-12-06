@@ -725,7 +725,7 @@ public class DepartmentService : IDepartmentService
     private void PlayerLeaveDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var playerDepartment = this._playerDataService.FindUserByLicense(player).Department;
-
+        Debug.WriteLine("Player voluntarily left department.");
         this.RemovePlayerFromDepartment(player);
         networkCallbackDelegate.InvokeWithResponse(
             true,
@@ -735,6 +735,15 @@ public class DepartmentService : IDepartmentService
             {
                 { "department", playerDepartment!.Name },
             });
+    }
+
+    [UIEvent(Events.UI.Department.RemoveUser, true)]
+    private void KickPlayerFromDepartmentNui([FromSource] Player player,  ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var idRequest = expandoObject.ConvertTo<IdRequest>();
+        var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == idRequest.Id);
+        this.RemovePlayerFromDepartment(user);
+        networkCallbackDelegate.InvokeWithJson(true);
     }
 
     [UIEvent(Events.UI.Department.GetAllSimpleWithArea)]
