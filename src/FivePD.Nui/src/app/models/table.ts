@@ -1,4 +1,4 @@
-import { ActionResponse, DropdownItem } from '@models';
+import {ActionResponse, DropdownItem, IconType} from '@models';
 
 export type BadgeVariants = 'gray' | 'red' | 'green' | 'amber' | 'blue';
 
@@ -15,6 +15,10 @@ export interface ColumnOptions<T> {
   actions?: TableCellActions<T>[];
   show?: () => boolean;
   disabled?: () => boolean;
+  cellAction?: {
+    icon: IconType;
+    onClick: (item: T) => void;
+  };
 }
 
 export class Column<T> {
@@ -28,6 +32,10 @@ export class Column<T> {
   linkResolver?: (item: T) => string;
   valueResolver?: (item: T) => string;
   badgeResolver?: (item: T) => BadgeVariants;
+  cellAction?: {
+    icon: IconType;
+    onClick: (item: T) => void;
+  };
   actions?: TableCellActions<T>[];
   show: () => boolean;
 
@@ -40,6 +48,7 @@ export class Column<T> {
     this.badgeResolver = options.badgeResolver;
     this.actions = options.actions;
     this.show = options.show ? options.show : () => true;
+    this.cellAction = options.cellAction;
   }
 
 }
@@ -50,6 +59,7 @@ export interface FormattedRowItem<T> {
   link?: string;
   originalItem: T;
   actions?: Column<T>['actions'];
+  cellAction?: Column<T>['cellAction'];
 }
 
 export type FormattedRow<T> = FormattedRowItem<T>[];

@@ -11,7 +11,7 @@ import {
   DropdownItem,
   FormInputBase,
   FormSubmitEvent,
-  GeneralConfig,
+  GeneralConfig, IconType,
   NumberInput,
   Page,
   PlayerDetailsDTO,
@@ -447,6 +447,40 @@ export class DepartmentsViewComponent implements OnInit {
       new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
         accessorKey: 'Callsign',
+        cellAction: {
+          icon: IconType.Pencil,
+          onClick: item => {
+            let updatedCallsign = '';
+            this._modalFormService.open<FormattedUser>({
+                title: "",
+                fields: updatedUser => {
+                  const fields: FormInputBase<any>[] = [
+                    new TextInput({
+                      key: 'Callsign',
+                      label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+                      placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+                      required: true,
+                      value: item.Callsign,
+                    }),
+                  ];
+                  return fields;
+                },
+                buttons: {
+                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                },
+              }
+            ).result.pipe(
+              filter((res) => res.success),
+              switchMap((res) => this.userService.updateUserDetails({ Id: item.Id, Callsign: res.value['Callsign']})),
+              this._modalService.handleResponse(),
+            ).subscribe(res => {
+              if (res.Status) {
+                item.Callsign = updatedCallsign;
+              }
+              this.getDivisions(true);
+            })
+          }
+        }
       }),
     ];
 
