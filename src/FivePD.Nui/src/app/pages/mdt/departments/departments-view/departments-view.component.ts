@@ -444,7 +444,9 @@ export class DepartmentsViewComponent implements OnInit {
           label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
         },
       }),
-      new Column<FormattedUser>({
+    ];
+    if (this.userService.userHasRole(UserRole.Admin)) {
+      columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
         accessorKey: 'Callsign',
         cellAction: {
@@ -453,7 +455,7 @@ export class DepartmentsViewComponent implements OnInit {
             let updatedCallsign = '';
             this._modalFormService.open<FormattedUser>({
                 title: "",
-                fields: updatedUser => {
+                fields: updatedUser => {  
                   const fields: FormInputBase<any>[] = [
                     new TextInput({
                       key: 'Callsign',
@@ -471,7 +473,7 @@ export class DepartmentsViewComponent implements OnInit {
               }
             ).result.pipe(
               filter((res) => res.success),
-              switchMap((res) => this.userService.updateUserDetails({ Id: item.Id, Callsign: res.value['Callsign']})),
+              switchMap((res) => this.userService.updateUserDetails({Id: item.Id, Callsign: res.value['Callsign']})),
               this._modalService.handleResponse(),
             ).subscribe(res => {
               if (res.Status) {
@@ -481,8 +483,9 @@ export class DepartmentsViewComponent implements OnInit {
             })
           }
         }
-      }),
-    ];
+      }))
+    }
+
 
     if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
