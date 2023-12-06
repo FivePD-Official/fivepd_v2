@@ -583,8 +583,9 @@ export class DepartmentsViewComponent implements OnInit {
   }
 
   getDepartment(): void {
-    if (this._route.snapshot.params['id'] === null || this._route.snapshot.params['id'] === undefined) return;
-    this._departmentService.getDepartment(this._route.snapshot.params['id']).subscribe(res => {
+    const Id = this._route.snapshot.params['id'];
+    if (Id === null || Id === undefined) return;
+    this._departmentService.getDepartment(Id).subscribe(res => {
       this.department = res;
       this.getRanks();
       this.getDivisions();
