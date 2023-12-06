@@ -256,6 +256,7 @@
   "UI.LABEL.SUCCESS.JOIN": "Successful join",
   "UI.LABEL.SUCCESS.LEAVE": "Successful leave",
   "UI.LABEL.SUCCESS.SELF_ASSIGN": "Successful self-assign",
+  "UI.LABEL.PLAYER.SUCCESS.DETAILS": "Successfully changed player details",
   "UI.LABEL.TITLE.SINGULAR": "Title",
   "UI.LABEL.TRAFFIC_STOP.PLURAL": "Traffic stops",
   "UI.LABEL.TRAFFIC_STOP.SINGULAR": "Traffic stop",
