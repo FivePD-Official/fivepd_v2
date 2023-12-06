@@ -26,3 +26,4 @@ src/FivePD.Localization/Localization/optimized/*
 aws.xml
 .name
 .vs
+.idea/.idea.FivePD/.idea/discord.xml
