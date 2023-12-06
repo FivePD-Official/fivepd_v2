@@ -69,7 +69,17 @@
                 </a>
               }
               @if (!item.link && !item.actions) {
-                <p>{{ item.value }}</p>
+                @if (item.cellAction) {
+                  <button type="button"
+                              class="flex flex-row items-center gap-2 group" (click)="item.cellAction.onClick(item.originalItem)" >
+
+                    <p>{{ item.value }}</p>
+                    <div app-icon [name]="item.cellAction.icon" className="h-[20px] text-zinc-400 group-hover:text-white"></div>
+                  </button>
+
+                }@else {
+                  <p>{{ item.value }}</p>
+                }
               }
             </div>
             @if (!item.link && item.actions) {

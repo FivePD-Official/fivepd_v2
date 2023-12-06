@@ -37,6 +37,7 @@ export class UserSettingsComponent implements OnInit {
       return;
     }
 
+    if (user.DepartmentId === null || user.DepartmentId === undefined) return;
     this._departmentService.getDepartment(user.DepartmentId!).subscribe(department => {
       this.department = department;
       this.userDetailsFields = [

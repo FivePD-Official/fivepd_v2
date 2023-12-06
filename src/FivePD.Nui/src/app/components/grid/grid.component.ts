@@ -174,6 +174,10 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
           badge: value.badgeResolver ? value.badgeResolver(mappedItem) : undefined,
         };
 
+        if (value.cellAction) {
+          rowItem.cellAction = value.cellAction;
+        }
+
         if (value.actions) {
           rowItem.actions = value.actions;
         }

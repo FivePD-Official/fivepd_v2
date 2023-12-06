@@ -149,10 +149,14 @@ export class CitizenDatabaseIdComponent {
               submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
             },
             fields: () => mapAttributesToFields(attributes),
-          }).result;
+          }).result.pipe(res => {
+            return res;
+          })
         }),
         filter(res => res.success),
-        switchMap(res => this._looseDataService.addEntity(setId, res.value)),
+        switchMap(res => {
+          return this._looseDataService.addEntity(setId, res.value);
+        }),
         this._modalService.handleResponse()
       )
       .subscribe(() => {
