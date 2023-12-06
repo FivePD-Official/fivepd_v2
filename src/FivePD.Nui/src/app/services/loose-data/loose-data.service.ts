@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {
   ActionResponse,
   AddSetAttribute,
@@ -13,9 +13,9 @@ import {
   Page,
   LooseDataAttribute, Department, User, IncidentHistory, PedHistory
 } from '@models';
-import { map, Observable, switchMap, tap } from 'rxjs';
-import { SetId } from '@enums';
-import { formatDate } from "@helpers";
+import {map, Observable, switchMap, tap} from 'rxjs';
+import {SetId} from '@enums';
+import {formatDate} from "@helpers";
 
 export interface EntityValueLink {
   label: string;

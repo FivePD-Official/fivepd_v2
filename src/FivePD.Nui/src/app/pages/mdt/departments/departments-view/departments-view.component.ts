@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
   Button,
   Checkbox,
@@ -19,30 +19,30 @@ import {
   TextInput,
   User
 } from '@models';
-import { DepartmentService } from '@services/department/department.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LocalizationService } from '@services/localization/localization.service';
-import { filter, switchMap } from 'rxjs';
-import { GlobalState } from '@store';
-import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
-import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
-import { UserRole, UserService } from '@services/user/user.service';
-import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
-import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
-import { CustomValidators } from '../../../../helpers/validators';
-import { ModalService } from '@services/modals/modal/modal.service';
-import { Store } from '@ngrx/store';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EventService } from "@services/event/event.service";
-import { ConfigService } from "@services/config/config.service";
-import { TranslatePipe } from '../../../../pipes/translate.pipe';
-import { GridComponent } from '../../../../components/grid/grid.component';
-import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
-import { ContainerComponent } from '../../../../components/container/container.component';
-import { NgIf } from '@angular/common';
-import { TippyModule } from '@ngneat/helipopper';
-import { ButtonComponent } from '../../../../components/button/button.component';
-import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import {DepartmentService} from '@services/department/department.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {LocalizationService} from '@services/localization/localization.service';
+import {filter, switchMap} from 'rxjs';
+import {GlobalState} from '@store';
+import {createDepartmentCallsignFormatInputField} from '../../../../helpers/forms/department';
+import {ModalConfirmService} from '@services/modals/modal-confirm/modal-confirm.service';
+import {UserRole, UserService} from '@services/user/user.service';
+import {ValueResolver} from '@services/modals/modal-form/modal-form-value-resolver';
+import {ModalFormService} from '@services/modals/modal-form/modal-form.service';
+import {CustomValidators} from '../../../../helpers/validators';
+import {ModalService} from '@services/modals/modal/modal.service';
+import {Store} from '@ngrx/store';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {EventService} from "@services/event/event.service";
+import {ConfigService} from "@services/config/config.service";
+import {TranslatePipe} from '../../../../pipes/translate.pipe';
+import {GridComponent} from '../../../../components/grid/grid.component';
+import {DynamicFormComponent} from '../../../../components/dynamic-form/dynamic-form.component';
+import {ContainerComponent} from '../../../../components/container/container.component';
+import {NgIf} from '@angular/common';
+import {TippyModule} from '@ngneat/helipopper';
+import {ButtonComponent} from '../../../../components/button/button.component';
+import {PageHeaderComponent} from '../../../../components/page-header/page-header.component';
 import {ModalEntityViewComponent} from "../../../../components/modal/modal-entity-view/modal-entity-view.component";
 import {ATTRIBUTES, ENTITY} from "../../../../components/modal/modal-entity-view/entity-token";
 import {mapAttributesToFields} from "@helpers";
