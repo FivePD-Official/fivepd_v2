@@ -567,6 +567,7 @@ export class DepartmentsViewComponent implements OnInit {
           {
             type: 'button',
             label: "Kick",
+            disabled: item => item.Id === this.user?.User.Id,
             onClick: user => {
               this._modalConfirmService.open({
                 title: 'UI.ACTION.KICK',
@@ -577,16 +578,11 @@ export class DepartmentsViewComponent implements OnInit {
               }).result
                 .pipe(
                   filter(res => res.success),
-                  switchMap(() => this.userService.updateUserDetails({Id: user.Id})),
+                  switchMap(() => this._departmentService.kickPlayerFromUI(user.Id)),
                   this._modalService.handleResponse()
                 ).subscribe((res) => {
                 if (res.Status) {
-                  if (user.Id === this.user?.User?.Id) {
-                    return;
-                  } else {
-                    this._departmentService.kickPlayerFromUI(user.Id).subscribe(v => this.userService.refreshData());
-                  }
-
+                  this.userService.refreshData()
                 }
               })
             }

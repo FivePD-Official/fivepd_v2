@@ -738,7 +738,7 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.RemoveUser, true)]
-    private void KickPlayerFromDepartmentNui([FromSource] Player player,  ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void KickPlayerFromDepartmentNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var idRequest = expandoObject.ConvertTo<IdRequest>();
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == idRequest.Id);

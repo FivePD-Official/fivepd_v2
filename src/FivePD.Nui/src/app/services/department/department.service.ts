@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {
   ActionResponse,
@@ -73,9 +73,9 @@ export class DepartmentService {
       Id: id,
     });
   }
+
   kickPlayerFromUI(id: number): Observable<ActionResponse> {
-    console.log("Kicking player [NUI]")
-    return this._http.post<ActionResponse>('fivepd:department:removeUser',{
+    return this._http.post<ActionResponse>('fivepd:department:removeUser', {
       Id: id,
     });
   }
