@@ -340,7 +340,7 @@ export class DepartmentsViewComponent implements OnInit {
       }),
     ];
 
-    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.DeptAdmin) {
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin) || this.mode === 'edit' && this.user?.User?.Rank?.Permission.DeptAdmin) {
       columns.push(new Column<Division>({
         header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
         actions: [
