@@ -401,11 +401,29 @@ internal class Bootstrapper : BaseScript
                 {
                     Debug.WriteLine("PerformPostBootstrapPhase 9 TRUE");
                     log?.Information("The database did not exist, it has been created");
+
+                    var configService = this._provider.GetService<IConfigService>();
+                    var config = configService?.GeneralConfig?.Database;
+
+                    var tableName = string.Empty;
+                    if (config is not null)
+                    {
+                        tableName = config.IsMariaDb() ? "__EFMigrationsHistory" : "__efmigrationshistory";
+                    }
+
+                    if (string.IsNullOrEmpty(tableName))
+                    {
+                        log?.Fatal("The database type is not 'mariadb' or 'mysql'. Verify the settings in the /Config/general file and try again.");
+                        LifecycleHandler.Stop();
+                        return;
+                    }
+
                     db.Database.ExecuteSqlRaw(
-                        "CREATE TABLE __efmigrationshistory (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
+                        $"CREATE TABLE `{tableName}` (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
+
                     foreach (var migration in migrations)
                     {
-                        db.Database.ExecuteSqlRaw("INSERT INTO __efmigrationshistory (MigrationId, ProductVersion) VALUES ({0}, {1})", migration, "3.1.26");
+                        db.Database.ExecuteSqlRaw($"INSERT INTO `{tableName}` (MigrationId, ProductVersion) VALUES ('{migration}', '3.1.26')");
                     }
 
                     break;
@@ -425,7 +443,7 @@ internal class Bootstrapper : BaseScript
         catch (Exception e)
         {
             throw new DatabaseUsageException(
-                "The configured database is invalid or offline. Verify the connection settings in the /Config/database file and try again.", e);
+                "The configured database is invalid or offline. Verify the connection settings in the /Config/general file and try again.", e);
         }
 
         Debug.WriteLine("PerformPostBootstrapPhase 11");
