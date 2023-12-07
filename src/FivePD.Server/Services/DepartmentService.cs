@@ -743,7 +743,7 @@ public class DepartmentService : IDepartmentService
         var idRequest = expandoObject.ConvertTo<IdRequest>();
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == idRequest.Id);
         this.RemovePlayerFromDepartment(user);
-        networkCallbackDelegate.InvokeWithJson(true);
+        networkCallbackDelegate.InvokeWithResponse(true, "Kick", "Kicking player");
     }
 
     [UIEvent(Events.UI.Department.GetAllSimpleWithArea)]

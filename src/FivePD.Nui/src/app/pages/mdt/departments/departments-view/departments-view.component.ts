@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {
+  ActionResponse,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -23,7 +24,7 @@ import {
 import {DepartmentService} from '@services/department/department.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LocalizationService} from '@services/localization/localization.service';
-import {filter, switchMap} from 'rxjs';
+import {filter, Observable, switchMap} from 'rxjs';
 import {GlobalState} from '@store';
 import {createDepartmentCallsignFormatInputField} from '../../../../helpers/forms/department';
 import {ModalConfirmService} from '@services/modals/modal-confirm/modal-confirm.service';
@@ -561,30 +562,34 @@ export class DepartmentsViewComponent implements OnInit {
     }
 
     if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.Kick) {
+      let thing: Observable<ActionResponse>;
       columns.push(new Column<FormattedUser>({
         header: 'Actions',
         actions: [
           {
             type: 'button',
-            label: "Kick",
-            disabled: item => item.Id === this.user?.User.Id,
+            label: this._localization.translate('UI.ACTION.KICK.TITLE'),
+
             onClick: user => {
               this._modalConfirmService.open({
-                title: 'UI.ACTION.KICK',
-                description: this._localization.translate('UI.ACTION.KICK.CONFIRMATION'),
+                title: 'UI.ACTION.KICK.TITLE',
+                description: this._localization.translate('UI.LABEL.DEPARTMENT.KICK_CONFIRMATION'),
                 buttons: {
-                  submit: {variant: 'danger', label: 'UI.ACTION.KICK'},
+                  submit: {variant: 'danger', label: 'UI.ACTION.KICK.TITLE'},
                 },
               }).result
                 .pipe(
                   filter(res => res.success),
-                  switchMap(() => this._departmentService.kickPlayerFromUI(user.Id)),
+                  switchMap(() =>  {
+                    let thing = this._departmentService.kickPlayerFromUI(user.Id)
+                    thing.subscribe(v => {
+                      this.userService.refreshData()
+                      this.getDivisions(true);
+                    })
+                    return thing;
+                  }),
                   this._modalService.handleResponse()
-                ).subscribe((res) => {
-                if (res.Status) {
-                  this.userService.refreshData()
-                }
-              })
+                ).subscribe()
             }
           },
         ]
@@ -731,7 +736,7 @@ export class DepartmentsViewComponent implements OnInit {
     const permissions: string[] = [];
 
     if (rank.Permission.Kick) {
-      permissions.push(this._localization.translate('UI.ACTION.KICK'));
+      permissions.push(this._localization.translate('UI.ACTION.KICK.TITLE'));
     }
     if (rank.Permission.SetRank) {
       permissions.push(this._localization.translate('UI.ACTION.SET_RANK'));
