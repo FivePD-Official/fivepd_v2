@@ -169,6 +169,8 @@ internal readonly record struct Events
             public const string GetAllSimpleWithArea = "fivepd:department:getAllSimpleWithArea";
 
             public const string UpdateAreas = "fivepd:department:updateAreas";
+
+            public const string RemoveUser = "fivepd:department:removeUser";
         }
 
         public readonly record struct CalloutDetails
