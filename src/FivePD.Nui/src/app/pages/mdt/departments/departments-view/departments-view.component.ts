@@ -569,7 +569,7 @@ export class DepartmentsViewComponent implements OnInit {
           {
             type: 'button',
             label: this._localization.translate('UI.ACTION.KICK.TITLE'),
-
+            disabled: (item) => item.Id === this.user?.User?.Id,
             onClick: user => {
               this._modalConfirmService.open({
                 title: 'UI.ACTION.KICK.TITLE',
