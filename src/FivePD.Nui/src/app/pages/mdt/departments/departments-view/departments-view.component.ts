@@ -163,7 +163,7 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     }
 
-    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.DeptAdmin) {
       columns.push(new Column<FormattedRank>({
         header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
         actions: [
@@ -256,7 +256,7 @@ export class DepartmentsViewComponent implements OnInit {
   private createRanksButtons(): Button[] {
     const buttons: Button[] = [];
 
-    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.DeptAdmin) {
       buttons.push({
         label: this._localization.translate('UI.ACTION.CREATE_RANK'),
         show: () => this.userService.userHasRole(UserRole.Admin),
@@ -298,6 +298,10 @@ export class DepartmentsViewComponent implements OnInit {
                   key: 'SetCallsign',
                   label: 'Set callsign label',
                 }),
+                new Checkbox({
+                  key: 'DeptAdmin',
+                  label: 'Dept. Admin',
+                }),
               ]
             }));
 
@@ -336,7 +340,7 @@ export class DepartmentsViewComponent implements OnInit {
       }),
     ];
 
-    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.DeptAdmin) {
       columns.push(new Column<Division>({
         header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
         actions: [
@@ -398,7 +402,7 @@ export class DepartmentsViewComponent implements OnInit {
   private createDivisionsButtons(): Button[] {
     const buttons: Button[] = [];
 
-    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin)) {
+    if (this.mode === 'edit' && this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.DeptAdmin) {
       buttons.push({
         label: this._localization.translate('UI.ACTION.CREATE_DIVISION'),
         show: () => true,
@@ -444,7 +448,7 @@ export class DepartmentsViewComponent implements OnInit {
       })
     ];
 
-    if (this.userService.userHasRole(UserRole.Admin)) {
+    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.DeptAdmin) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
         accessorKey: 'Callsign',
@@ -491,7 +495,7 @@ export class DepartmentsViewComponent implements OnInit {
     }
 
 
-    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.SetRank) {
+    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.DeptAdmin || this.user?.User?.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
         actions: [
@@ -516,7 +520,7 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     }
 
-    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User.Rank?.Permission.SetDivision) {
+    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User.Rank?.Permission.SetDivision || this.user?.User.Rank?.Permission.DeptAdmin) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
         actions: [
@@ -561,7 +565,7 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     }
 
-    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.Kick) {
+    if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.Kick || this.user?.User.Rank?.Permission.DeptAdmin) {
       columns.push(new Column<FormattedUser>({
         header: 'Actions',
         actions: [
