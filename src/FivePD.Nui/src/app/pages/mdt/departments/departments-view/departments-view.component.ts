@@ -568,7 +568,7 @@ export class DepartmentsViewComponent implements OnInit {
           {
             type: 'button',
             label: this._localization.translate('UI.ACTION.KICK.TITLE'),
-            disabled: (item) => item.Id === this.user?.User?.Id,
+
             onClick: user => {
               this._modalConfirmService.open({
                 title: 'UI.ACTION.KICK.TITLE',
@@ -579,16 +579,11 @@ export class DepartmentsViewComponent implements OnInit {
               }).result
                 .pipe(
                   filter(res => res.success),
-                  switchMap(() =>  {
-                    let thing = this._departmentService.kickPlayerFromUI(user.Id)
-                    thing.subscribe(v => {
-                      this.userService.refreshData()
-                      this.getDivisions(true);
-                    })
-                    return thing;
-                  }),
+                  switchMap(() =>  this._departmentService.kickPlayerFromUI(user.Id)),
                   this._modalService.handleResponse()
-                ).subscribe()
+                ).subscribe(v => {
+                this.getDivisions(true);
+              })
             }
           },
         ]
