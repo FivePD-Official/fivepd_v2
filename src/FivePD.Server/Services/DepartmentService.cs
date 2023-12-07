@@ -741,15 +741,13 @@ public class DepartmentService : IDepartmentService
     {
         var idRequest = expandoObject.ConvertTo<IdRequest>();
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == idRequest.Id);
-        if (user == null)
+        if (user is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
-        else
-        {
-            this.RemovePlayerFromDepartment(user);
-        }
+
+        this.RemovePlayerFromDepartment(user);
 
         networkCallbackDelegate.InvokeWithResponse(true, "Kick", "Kicking player");
     }

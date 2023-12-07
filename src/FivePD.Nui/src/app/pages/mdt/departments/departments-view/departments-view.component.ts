@@ -581,9 +581,7 @@ export class DepartmentsViewComponent implements OnInit {
                   filter(res => res.success),
                   switchMap(() =>  this._departmentService.kickPlayerFromUI(user.Id)),
                   this._modalService.handleResponse()
-                ).subscribe(v => {
-                this.getDivisions(true);
-              })
+                ).subscribe(v => this.getUsers())
             }
           },
         ]
