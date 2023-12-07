@@ -67,11 +67,11 @@ public sealed record Vehicles
         /// <summary>
         /// Gets the livery of this vehicle.
         /// </summary>
-        public int Livery { get; init; }
+        public int Livery { get; init; } = 0;
 
         /// <summary>
         /// Gets the extras of this vehicle.
         /// </summary>
-        public List<string> Extras { get; init; } = new();
+        public List<int> Extras { get; init; } = new();
     }
 }

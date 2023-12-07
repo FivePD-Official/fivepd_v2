@@ -6,6 +6,7 @@ using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.UIModels.MenuModels;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450
@@ -60,6 +61,8 @@ public sealed class DutyMenu : Menu
                 var spawnedVehicle = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(policeVehicle.Model),
                     player.GetUnderlyingPlayer().Character.Position, player.GetUnderlyingPlayer().Character.Heading);
                 Cfx.API.SetPedIntoVehicle(player.GetUnderlyingPlayer().Character.Handle, spawnedVehicle.GetUnderlyingVehicle.Handle, -1);
+                player.GetUnderlyingPlayer().TriggerEvent("fivepd:vehicle:setVehicleOptions", spawnedVehicle.GetUnderlyingVehicle.NetworkId,
+                    JsonConvert.SerializeObject(policeVehicle.Extras), policeVehicle.Livery);
             };
             items.Add(this.VehicleSpawnerItem);
         }
