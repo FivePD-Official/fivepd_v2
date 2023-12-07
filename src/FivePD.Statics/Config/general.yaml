@@ -1,7 +1,8 @@
 Database:
+  Type: mysql # mysql or mariadb
+  Name: fivepd
   Address: 127.0.0.1
-  Port: 3306
-  DatabaseName: fivepd
+  Port: 3306 # for mariadb when using the docker compose file, use 3307
   User: root
   Password: root
 

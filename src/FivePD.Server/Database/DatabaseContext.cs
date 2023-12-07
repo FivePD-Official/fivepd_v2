@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using CitizenFX.Core;
 using FivePD.Common.ConfigModels;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.LooseData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Storage;
 
 namespace FivePD.Server.Database;
 
@@ -124,7 +129,11 @@ public class DatabaseContext : DbContext
         var config = this._configService?.GeneralConfig?.Database;
         if (config is not null)
         {
-            optionsBuilder.UseMySql(config.ToString());
+            optionsBuilder.UseMySql(config.ToString(), options =>
+            {
+                var serverVersion = ServerVersion.AutoDetect(config.ToString());
+                options.ServerVersion(serverVersion.Version, config.IsMariaDb() ? ServerType.MariaDb : ServerType.MySql);
+            });
         }
     }
 
