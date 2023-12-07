@@ -562,7 +562,6 @@ export class DepartmentsViewComponent implements OnInit {
     }
 
     if (this.userService.userHasRole(UserRole.Admin) || this.user?.User?.Rank?.Permission.Kick) {
-      let thing: Observable<ActionResponse>;
       columns.push(new Column<FormattedUser>({
         header: 'Actions',
         actions: [
