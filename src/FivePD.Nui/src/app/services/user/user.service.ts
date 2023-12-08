@@ -50,7 +50,7 @@ export class UserService {
   userIsDeptAdmin(ignoreAdmin: boolean = false): boolean {
     if (ignoreAdmin) {
       const deptAdmin = this.user?.User.Rank?.Permission.DeptAdmin;
-      return deptAdmin ? deptAdmin : false;
+      return deptAdmin ? deptAdmin && !this.userHasRole(UserRole.Admin) : false;
     }
     const hasAdmin = this.userHasRole(UserRole.Admin) || this.user?.User.Rank?.Permission.DeptAdmin;
     return hasAdmin ? hasAdmin : false;
