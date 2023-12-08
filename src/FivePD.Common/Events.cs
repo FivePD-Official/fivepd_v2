@@ -57,13 +57,17 @@ internal readonly record struct Events
         public const string InvokeMethod = "fivepd:vehicle:invokeMethod";
 
         public const string OnAlerted = "fivepd:vehicle:onAlerted";
+
+        public const string SetCosmetics = "fivepd:vehicle:setCosmetics";
     }
 
     public readonly record struct Localization
     {
-        public const string GetLocalizationFromServer = "fivepd:localization:getLocalizationFromServer";
+        public const string GetDefaultOrPreferred = "fivepd:localization:getDefaultOrPreferred";
 
         public const string GetLocalizationFromNui = "fivepd:localization:getLocalizationFromNui";
+
+        public const string GetAvailableLocalizations = "fivepd:localization:getAvailableLocalizations";
     }
 
     public readonly record struct UIEvent

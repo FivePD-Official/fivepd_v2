@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 
 namespace FivePD.Server.Interfaces;
 
@@ -10,7 +10,7 @@ public interface ILocalizationService
     /// <summary>
     /// Gets the available localizations.
     /// </summary>
-    public Dictionary<string, string> AvailableLocalizations { get; }
+    public ReadOnlyDictionary<string, string> AvailableLocalizations { get; }
 
     /// <summary>
     /// Gets the localization with the given key.

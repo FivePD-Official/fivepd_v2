@@ -33,6 +33,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
     private readonly IUnitService _unitService;
+    private readonly IPlayerHandlerService _playerHandlerService;
+    private readonly ILocalizationService _localizationService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -44,6 +46,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
+    /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
+    /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         DatabaseContext databaseContext,
@@ -51,7 +55,9 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         INotificationService notificationService,
         IConfigService configService,
         ILogger logger,
-        IUnitService unitService)
+        IUnitService unitService,
+        IPlayerHandlerService playerHandlerService,
+        ILocalizationService localizationService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._databaseContext = databaseContext;
@@ -60,6 +66,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._configService = configService;
         this._logger = logger;
         this._unitService = unitService;
+        this._playerHandlerService = playerHandlerService;
+        this._localizationService = localizationService;
     }
 
     /// <inheritdoc />
@@ -211,33 +219,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         });
     }
 
-    /// <inheritdoc />
-    public Player FindPlayerOfUser(User user)
-    {
-        return this._playerList.FirstOrDefault(player =>
-        {
-            var identifierLicense = player.Identifiers["license"] ?? string.Empty;
-            var identifierDiscord = player.Identifiers["discord"] ?? string.Empty;
-            var identifierSteam = player.Identifiers["steam"] ?? string.Empty;
-            var identifierXbl = player.Identifiers["xbl"] ?? string.Empty;
-            var identifierLive = player.Identifiers["live"] ?? string.Empty;
-
-            return user.IdentifierLicense == identifierLicense ||
-                   user.IdentifierDiscord == identifierDiscord ||
-                   user.IdentifierSteam == identifierSteam ||
-                   user.IdentifierXbl == identifierXbl ||
-                   user.IdentifierLive == identifierLive;
-        });
-    }
-
-    /// <inheritdoc />
-    public User FindUserOfPlayer(Player player)
-    {
-        return this._databaseContext.Users
-            .WhereAnyIdMatches(player)
-            .FirstOrDefault();
-    }
-
     private void OnPlayerConnected([FromSource] Player player)
     {
         this.CreatePlayerData(player);
@@ -277,7 +258,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 },
             });
 
-        var playerDetails = this.FindUserOfPlayer(player);
+        var playerDetails = this._playerHandlerService.FindUserOfPlayer(player);
         if (status == FDutyStatus.OffDuty)
         {
             this._unitService.RemovePlayerFromUnit(fPlayer);
@@ -566,7 +547,17 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             return;
         }
 
-        user.Callsign = request.Callsign;
+        if (request.Callsign is not null)
+        {
+            user.Callsign = request.Callsign;
+        }
+
+        if (request.PreferredLanguage is not null)
+        {
+            user.PreferredLanguage = request.PreferredLanguage;
+            player.TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationService.GetLocalization(request.PreferredLanguage));
+        }
+
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CHANGE", "UI.LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
     }

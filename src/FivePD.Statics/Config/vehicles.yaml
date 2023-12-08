@@ -2,7 +2,7 @@ Police:
   - Name: Police 1
     Model: police
     Livery: 0
-    Extras: [ EXTRA_1, EXTRA_2 ]
+    Extras: [ 1, 2 ]
   - Name: Police 2
     Model: police2
     SpikeStrip: false

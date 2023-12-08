@@ -6,6 +6,8 @@ Database:
   User: root # for mariadb when using the docker compose file, change to 'user'
   Password: root
 
+DefaultLanguage: en-US
+
 Features:
   DiscordRichPresence: true
   DutyNotification: true

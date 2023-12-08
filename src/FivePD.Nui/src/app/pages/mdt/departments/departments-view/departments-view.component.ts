@@ -508,7 +508,7 @@ export class DepartmentsViewComponent implements OnInit {
           {
             type: 'select',
             label: this._localization.translate('UI.LABEL.NO_RANK'),
-            selectedItemResolver: (user, dropdownItemKey) => user.RankId === dropdownItemKey,
+            value: user => user?.RankId ?? -1,
             items: () => this.ranksDropdown,
             onSelect: (user, selectedId) => {
               this.userService.changeRank({
@@ -525,6 +525,7 @@ export class DepartmentsViewComponent implements OnInit {
         accessorKey: 'RankName',
       }));
     }
+
     if (this.userService.userIsDeptAdmin() || this.user?.User?.Rank?.Permission.SetDivision) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
@@ -532,7 +533,7 @@ export class DepartmentsViewComponent implements OnInit {
           {
             type: 'select',
             label: this._localization.translate('UI.LABEL.NO_DIVISION'),
-            selectedItemResolver: (user, dropdownItemKey) => user.DivisionId === dropdownItemKey,
+            value: user => user?.DivisionId ?? -1,
             items: () => this.divisionsDropdown,
             onSelect: (user, selectedId) => {
               this.userService.changeDivision({

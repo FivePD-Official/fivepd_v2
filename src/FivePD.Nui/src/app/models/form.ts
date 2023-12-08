@@ -4,7 +4,7 @@ import { ActionResponse } from './nui-event-responses';
 import { ButtonVariants } from "./button";
 
 export interface FormSubmitEvent {
-  value: object;
+  value: any;
   markAsPristine: () => void;
 }
 

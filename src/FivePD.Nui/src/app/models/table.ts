@@ -82,7 +82,7 @@ export interface TableCellActionButton<T> extends TableCellAction<T> {
 }
 
 export interface TableCellActionSelect<T> extends TableCellAction<T> {
-  selectedItemResolver: (item: T, dropdownItemKey: any) => boolean;
+  value: (item: T) => number;
   items: () => TableCellActionSelectItem[];
   onSelect: (item: T, selectedId: number, onResponse: (response: ActionResponse) => void) => void;
 }

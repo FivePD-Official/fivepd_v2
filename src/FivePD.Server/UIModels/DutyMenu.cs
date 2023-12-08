@@ -2,10 +2,12 @@
 using System.Linq;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
+using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.UIModels.MenuModels;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450
@@ -19,19 +21,19 @@ namespace FivePD.Server.UIModels;
 public sealed class DutyMenu : Menu
 {
     private readonly IConfigService _configService;
-    private readonly ILocalizationService _localizationService;
     private readonly DutyMenuConfig _dutyMenuConfig;
     private readonly IEntityService _entityService;
+    private readonly IEventService _eventService;
 
     private MenuListItem _changeLanguageListItem;
 
-    public DutyMenu(IConfigService configService, ILocalizationService localizationService, IEntityService entityService)
+    public DutyMenu(IConfigService configService, IEntityService entityService)
         : base(Controls.DutyMenu.Id, Controls.DutyMenu.Title, Controls.DutyMenu.Key)
     {
         this._configService = configService;
-        this._localizationService = localizationService;
         this._dutyMenuConfig = configService.MenuConfig.DutyMenu;
         this._entityService = entityService;
+        this._eventService = ServiceLocator.GetService<IEventService>();
     }
 
     public MenuListItem VehicleSpawnerItem { get; private set; }
@@ -60,6 +62,15 @@ public sealed class DutyMenu : Menu
                 var spawnedVehicle = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(policeVehicle.Model),
                     player.GetUnderlyingPlayer().Character.Position, player.GetUnderlyingPlayer().Character.Heading);
                 Cfx.API.SetPedIntoVehicle(player.GetUnderlyingPlayer().Character.Handle, spawnedVehicle.GetUnderlyingVehicle.Handle, -1);
+                this._eventService.TriggerEventStrictWithoutCallback(
+                    player.GetUnderlyingPlayer(),
+                    Events.Vehicle.SetCosmetics,
+                    JsonConvert.SerializeObject(new FVehiclePropertiesDTO.SetCosmetics
+                    {
+                        NetworkId = spawnedVehicle.NetworkId,
+                        Livery = policeVehicle.Livery,
+                        Extras = policeVehicle.Extras,
+                    }));
             };
             items.Add(this.VehicleSpawnerItem);
         }
@@ -87,17 +98,6 @@ public sealed class DutyMenu : Menu
             };
             items.Add(this.LoadoutItem);
         }
-
-        this._changeLanguageListItem = new MenuListItem(
-            "DUTY_MENU.ITEM.CHANGE_LANGUAGE.TITLE",
-            "DUTY_MENU.ITEM.CHANGE_LANGUAGE.DESCRIPTION",
-            this._localizationService.AvailableLocalizations.Values.Select(x => new MenuListOption(x)).ToList());
-        this._changeLanguageListItem.OnSelect += async (player, index) =>
-        {
-            var locale = this._localizationService.AvailableLocalizations.Keys.ToList()[index];
-            player.GetUnderlyingPlayer().TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationService.GetLocalization(locale));
-        };
-        items.Add(this._changeLanguageListItem);
 
         return items;
     }
