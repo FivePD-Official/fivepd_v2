@@ -44,7 +44,7 @@ internal class FilesystemAddonLocator
     {
         var definitions = new List<AddonDefinition>();
 
-        this._logger.Information("Beginning addon locate via file system driver");
+        this._logger?.Information("Beginning addon locate via file system driver");
 
         var fileHandlerService = new FileHandlerService();
 
@@ -60,11 +60,11 @@ internal class FilesystemAddonLocator
                     var (metadata, exception) = fileHandlerService.LoadFile<AddonMetadata>(Path.DirectorySeparatorChar + addonMetadataLocation[index..], false);
                     if (exception is not null)
                     {
-                        this._logger.Error("Failed to load addon metadata for {Addon}: {Exception}", addonMetadataLocation, exception);
+                        this._logger?.Error("Failed to load addon metadata for {Addon}: {Exception}", addonMetadataLocation, exception);
                         continue;
                     }
 
-                    this._logger.Debug("Found addon metadata for {@Addon}", metadata.FriendlyName);
+                    this._logger?.Debug("Found addon metadata for {@Addon}", metadata.FriendlyName);
 
                     var definition = new AddonDefinition
                     {
@@ -85,7 +85,7 @@ internal class FilesystemAddonLocator
 
                         if (!File.Exists(assemblyPath))
                         {
-                            this._logger.Warning(
+                            this._logger?.Warning(
                                 "Tried to find an addon assembly that doesn't exist ({Assembly}). Is the {MetadataFileName} up-to-date?",
                                 assembly,
                                 MetadataFileName);
@@ -93,7 +93,7 @@ internal class FilesystemAddonLocator
                             continue;
                         }
 
-                        this._logger.Debug("Located addon assembly {Assembly}", assembly);
+                        this._logger?.Debug("Located addon assembly {Assembly}", assembly);
 
                         try
                         {
@@ -101,7 +101,7 @@ internal class FilesystemAddonLocator
                         }
                         catch (Exception e)
                         {
-                            this._logger.Warning("Failed to read addon assembly file {Assembly}. {Message}", assembly, e.Message);
+                            this._logger?.Warning("Failed to read addon assembly file {Assembly}. {Message}", assembly, e.Message);
                         }
                     }
 
@@ -110,7 +110,7 @@ internal class FilesystemAddonLocator
                         var filePath = Path.Combine(addonDirectory, file);
                         if (!File.Exists(filePath))
                         {
-                            this._logger.Warning(
+                            this._logger?.Warning(
                                 "Tried to find a file that doesn't exist ({file}). Is the {MetadataFileName} up-to-date?",
                                 file,
                                 MetadataFileName);
@@ -125,7 +125,7 @@ internal class FilesystemAddonLocator
                 }
                 catch (Exception e)
                 {
-                    this._logger.Warning(
+                    this._logger?.Warning(
                         "An exception occurred while loading the addon with metadata path {Path}. {Message}",
                         addonMetadataLocation,
                         e.Message);
@@ -133,7 +133,7 @@ internal class FilesystemAddonLocator
             }
         }
 
-        this._logger.Information("Found {@Count} addons, passing back to bootstrapper", definitions.Count);
+        this._logger?.Information("Found {@Count} addons, passing back to bootstrapper", definitions.Count);
 
         return definitions;
     }
