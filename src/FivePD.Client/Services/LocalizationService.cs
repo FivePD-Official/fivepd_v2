@@ -39,6 +39,7 @@ internal class LocalizationService : ILocalizationService, IOnInit
     /// <inheritdoc />
     public void OnInit()
     {
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Localization.GetAvailableLocalizations);
         this._eventHandlerDictionary.AddUIEvent(
             Events.Localization.GetLocalizationFromNui,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization)); }));

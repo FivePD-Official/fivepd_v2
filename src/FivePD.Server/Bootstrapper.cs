@@ -281,6 +281,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PlayerDataService>());
 
+        services.AddSingleton<PlayerHandlerService>();
+        services.AddSingleton<IPlayerHandlerService>(provider => provider.GetRequiredService<PlayerHandlerService>());
+
         services.AddSingleton<MenuService>();
         services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<MenuService>());

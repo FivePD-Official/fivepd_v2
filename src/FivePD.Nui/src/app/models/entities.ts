@@ -24,6 +24,7 @@ export interface User extends WithId {
   RankId?: number;
   Xp: number;
   FixedRank: boolean;
+  PreferredLanguage: string;
 }
 
 export type SimpleUser = Pick<User, 'Id' | 'Name'>;

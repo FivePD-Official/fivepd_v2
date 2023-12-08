@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Extensions;
 using FivePD.Server.Attributes;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using Newtonsoft.Json;
@@ -19,7 +21,7 @@ namespace FivePD.Server.Services;
 public class LocalizationService : ILocalizationService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly IPlayerDataService _playerDataService;
+    private readonly IPlayerHandlerService _playerHandlerService;
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
 
@@ -28,17 +30,17 @@ public class LocalizationService : ILocalizationService, IOnInit
 
     /// <summary>Initializes a new instance of the <see cref="LocalizationService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
+    /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     public LocalizationService(
         EventHandlerDictionary eventHandlerDictionary,
-        IPlayerDataService playerDataService,
+        IPlayerHandlerService playerHandlerService,
         IConfigService configService,
         ILogger logger)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._playerDataService = playerDataService;
+        this._playerHandlerService = playerHandlerService;
         this._configService = configService;
         this._logger = logger;
     }
@@ -51,7 +53,7 @@ public class LocalizationService : ILocalizationService, IOnInit
     {
         this.LoadLocalizations();
 
-        this._eventHandlerDictionary[Events.Localization.GetDefaultOrPreferred] += this.OnGetLocalizationFromServer;
+        this._eventHandlerDictionary[Events.Localization.GetDefaultOrPreferred] += this.OnGetDefaultOrPreferred;
     }
 
     /// <inheritdoc />
@@ -60,11 +62,11 @@ public class LocalizationService : ILocalizationService, IOnInit
         return this._localizationCache.TryGetValue(key, out var localization) ? localization : null;
     }
 
-    private void OnGetLocalizationFromServer([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void OnGetDefaultOrPreferred([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
     {
         string locale;
 
-        var user = this._playerDataService.FindUserOfPlayer(player);
+        var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null || string.IsNullOrEmpty(user.PreferredLanguage))
         {
             locale = this._configService.GeneralConfig.DefaultLanguage;
@@ -75,6 +77,12 @@ public class LocalizationService : ILocalizationService, IOnInit
         }
 
         networkCallbackDelegate.Invoke(locale, this.GetLocalization(locale));
+    }
+
+    [UIEvent(Events.Localization.GetAvailableLocalizations)]
+    private void OnGetAvailableLocalizations(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(this._availableLocalizations));
     }
 
     private void LoadLocalizations()

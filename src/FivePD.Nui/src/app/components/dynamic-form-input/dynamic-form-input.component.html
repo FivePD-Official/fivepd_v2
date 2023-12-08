@@ -69,7 +69,7 @@
           <div class="dropdown-items">
             <div class="dropdown-items--inner">
               @for (item of dropdownFilteredItems;track item) {
-                <button type="button" class="item" (click)="onDropdownSelect(item,false)">
+                <button type="button" class="item" (click)="onDropdownSelect(item)">
                   @if (multiSelect) {
                     <svg xmlns="http://www.w3.org/2000/svg"
                          fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
