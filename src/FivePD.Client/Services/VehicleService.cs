@@ -138,22 +138,26 @@ internal class VehicleService : IVehicleService, IOnInit
     private void SetCosmetics(string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<FVehiclePropertiesDTO.SetCosmetics>(serializedRequest);
-        var vehicle = Entity.FromNetworkId(request.NetworkId).Handle;
-        var configExtras = request.Extras;
-        if (configExtras.Count != 0)
+        var vehicle = Entity.FromNetworkId(request.NetworkId);
+        if (vehicle is null)
         {
-            for (int i = 1; i < 13; i++)
+            return;
+        }
+
+        if (request.Extras.Count != 0)
+        {
+            for (var i = 1; i < 13; i++)
             {
-                Cfx.API.SetVehicleExtra(vehicle, i, true);
+                Cfx.API.SetVehicleExtra(vehicle.Handle, i, true);
             }
 
-            foreach (var extra in configExtras.Where(x => Cfx.API.DoesExtraExist(vehicle, x)))
+            foreach (var extra in request.Extras.Where(x => Cfx.API.DoesExtraExist(vehicle, x)))
             {
-                Cfx.API.SetVehicleExtra(vehicle, extra, false);
+                Cfx.API.SetVehicleExtra(vehicle.Handle, extra, false);
             }
         }
 
-        Cfx.API.SetVehicleLivery(vehicle, request.Livery);
+        Cfx.API.SetVehicleLivery(vehicle.Handle, request.Livery);
     }
 
     private async Task<Vehicle> FindVehicleAsync(int networkId)
