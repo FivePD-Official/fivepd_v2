@@ -1,23 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { Button, Collation, Column, MappedLooseDataEntity, Page, User } from '@models';
-import { LooseDataService } from '@services/loose-data/loose-data.service';
-import { filter, switchMap } from 'rxjs';
-import { ATTRIBUTES, ENTITY } from '../../../components/modal/modal-entity-view/entity-token';
-import { LocalizationService } from '@services/localization/localization.service';
-import { CoreSetId } from '@enums';
-import { Store } from '@ngrx/store';
-import { ModalEntityViewComponent } from '../../../components/modal/modal-entity-view/modal-entity-view.component';
-import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
-import { GlobalState } from '@store';
-import { mapAttributesToFields, mapAttributesToGridColumns } from '@helpers';
-import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
-import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
-import { ModalService } from '@services/modals/modal/modal.service';
-import { UserRole, UserService } from '@services/user/user.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslatePipe } from '../../../pipes/translate.pipe';
-import { GridComponent } from '../../../components/grid/grid.component';
-import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
+import {Component, OnInit} from '@angular/core';
+import {Button, Collation, Column, MappedLooseDataEntity, Page, User} from '@models';
+import {LooseDataService} from '@services/loose-data/loose-data.service';
+import {filter, switchMap} from 'rxjs';
+import {ATTRIBUTES, ENTITY} from '../../../components/modal/modal-entity-view/entity-token';
+import {LocalizationService} from '@services/localization/localization.service';
+import {CoreSetId} from '@enums';
+import {Store} from '@ngrx/store';
+import {ModalEntityViewComponent} from '../../../components/modal/modal-entity-view/modal-entity-view.component';
+import {ModalConfirmService} from '@services/modals/modal-confirm/modal-confirm.service';
+import {GlobalState} from '@store';
+import {mapAttributesToFields, mapAttributesToGridColumns} from '@helpers';
+import {ValueResolver} from '@services/modals/modal-form/modal-form-value-resolver';
+import {ModalFormService} from '@services/modals/modal-form/modal-form.service';
+import {ModalService} from '@services/modals/modal/modal.service';
+import {UserRole, UserService} from '@services/user/user.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {TranslatePipe} from '../../../pipes/translate.pipe';
+import {GridComponent} from '../../../components/grid/grid.component';
+import {PageHeaderComponent} from '../../../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-reports',
@@ -112,6 +112,7 @@ export class ReportsComponent implements OnInit {
     });
   }
 
+
   ngOnInit(): void {
     this.getArrestReports();
     this.getIncidentReports();
@@ -152,7 +153,7 @@ export class ReportsComponent implements OnInit {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.EDIT'),
-              show: () => this._userService.userHasRole(UserRole.Admin),
+              show: () => this._userService.userIsDeptAdmin(),
               onClick: entity => {
                 this.modalFormService.open({
                     title: 'UI.ACTION.EDIT',
@@ -175,7 +176,7 @@ export class ReportsComponent implements OnInit {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.DELETE'),
-              show: () => this._userService.userHasRole(UserRole.Admin),
+              show: () => this._userService.userIsDeptAdmin(),
               onClick: item => {
                 this.modalConfirmService.open({
                   title: 'UI.LABEL.ARREST_REPORT.DELETE.TITLE',
@@ -242,7 +243,7 @@ export class ReportsComponent implements OnInit {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.EDIT'),
-              show: () => this._userService.userHasRole(UserRole.Admin),
+              show: () => this._userService.userIsDeptAdmin(),
               onClick: entity => {
                 this.modalFormService.open({
                     title: 'UI.ACTION.EDIT',
@@ -264,7 +265,7 @@ export class ReportsComponent implements OnInit {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.DELETE'),
-              show: () => this._userService.userHasRole(UserRole.Admin),
+              show: () => this._userService.userIsDeptAdmin(),
               onClick: item => {
                 this.modalConfirmService.open({
                   title: 'UI.LABEL.INCIDENT_REPORT.DELETE.TITLE',

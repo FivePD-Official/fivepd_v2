@@ -510,6 +510,7 @@ internal class Bootstrapper : BaseScript
                             Kick = false,
                             SetRank = false,
                             SetDivision = false,
+                            DeptAdmin = false,
                         },
                     },
                     new()
@@ -521,6 +522,7 @@ internal class Bootstrapper : BaseScript
                             Kick = false,
                             SetRank = false,
                             SetDivision = false,
+                            DeptAdmin = false,
                         },
                     },
                     new()
@@ -532,6 +534,7 @@ internal class Bootstrapper : BaseScript
                             Kick = false,
                             SetRank = false,
                             SetDivision = false,
+                            DeptAdmin = false,
                         },
                     },
                 },

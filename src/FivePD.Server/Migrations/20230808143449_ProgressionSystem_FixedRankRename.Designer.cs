@@ -302,7 +302,13 @@ namespace FivePD.Server.Migrations
                             b1.Property<bool>("SetCallsign")
                                 .HasColumnType("tinyint(1)");
 
+                            b1.Property<bool>("DeptAdmin")
+                                .HasColumnType("tinyint(1)");
+
                             b1.Property<bool>("SetRank")
+                                .HasColumnType("tinyint(1)");
+
+                            b1.Property<bool>("DeptAdmin")
                                 .HasColumnType("tinyint(1)");
 
                             b1.HasKey("RankId");

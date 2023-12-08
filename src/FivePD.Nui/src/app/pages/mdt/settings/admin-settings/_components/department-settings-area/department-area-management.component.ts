@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { SimpleDepartment, SimpleDepartmentWithArea } from "@models";
+import {SimpleDepartment, SimpleDepartmentWithArea, User} from "@models";
 import {
   CRS,
   extend,
@@ -25,6 +25,11 @@ import { NgClass } from "@angular/common";
 import { Area, GRAY, RED } from "./_models/area";
 import { customIcon } from "@services/map";
 import { IconComponent } from "../../../../../../components/icon/icon.component";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {first} from "rxjs";
+import {Store} from "@ngrx/store";
+import {GlobalState} from "@store";
+import {UserRole, UserService} from "@services/user/user.service";
 
 // TODO: lng = X, lat = Y
 
@@ -52,6 +57,17 @@ export class DepartmentAreaManagementComponent implements OnInit {
 
   modified = false;
 
+  user?: User;
+
+  constructor(
+    public readonly userService: UserService,
+    private readonly _store: Store<GlobalState>,
+  ) {
+    _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
+      this.user = state.user.details.User;
+    });
+  }
+
   readonly defaultZoom: number = 2;
 
   readonly center_x = 117.3;
@@ -70,6 +86,8 @@ export class DepartmentAreaManagementComponent implements OnInit {
 
   map!: LMap;
   customCrs: any;
+
+
 
   ngOnInit(): void {
     this.customCrs = extend({}, CRS.Simple, {
@@ -295,4 +313,5 @@ export class DepartmentAreaManagementComponent implements OnInit {
     });
   }
 
+  protected readonly UserRole = UserRole;
 }

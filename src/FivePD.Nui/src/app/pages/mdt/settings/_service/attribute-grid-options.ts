@@ -1,14 +1,14 @@
-﻿import { AttributeDataType, BadgeVariants, Button, Column, LooseDataAttribute } from "@models";
-import { createAttributesFormFields } from "../../../../helpers/forms/set-attribute";
-import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
-import { filter, switchMap } from "rxjs";
-import { UserRole, UserService } from "@services/user/user.service";
-import { LocalizationService } from "@services/localization/localization.service";
-import { LooseDataService } from "@services/loose-data/loose-data.service";
-import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
-import { inject, Injectable } from "@angular/core";
-import { ModalService } from "@services/modals/modal/modal.service";
-import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
+﻿import {AttributeDataType, BadgeVariants, Button, Column, LooseDataAttribute} from "@models";
+import {createAttributesFormFields} from "../../../../helpers/forms/set-attribute";
+import {ValueResolver} from "@services/modals/modal-form/modal-form-value-resolver";
+import {filter, switchMap} from "rxjs";
+import {UserRole, UserService} from "@services/user/user.service";
+import {LocalizationService} from "@services/localization/localization.service";
+import {LooseDataService} from "@services/loose-data/loose-data.service";
+import {ModalFormService} from "@services/modals/modal-form/modal-form.service";
+import {inject, Injectable} from "@angular/core";
+import {ModalService} from "@services/modals/modal/modal.service";
+import {ModalConfirmService} from "@services/modals/modal-confirm/modal-confirm.service";
 
 @Injectable({
   providedIn: 'root'
