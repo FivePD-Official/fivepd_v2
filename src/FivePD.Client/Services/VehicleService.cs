@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
@@ -41,7 +40,7 @@ internal class VehicleService : IVehicleService, IOnInit
         this._eventHandlerDictionary[Events.Vehicle.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
         this._eventHandlerDictionary[Events.Vehicle.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Vehicle.InvokeMethod] += new Action<string>(this.InvokeMethod);
-        this._eventHandlerDictionary[Events.Vehicle.SetVehicleOptions] += new Action<int, string, int>(this.SetVehicleOptions);
+        this._eventHandlerDictionary[Events.Vehicle.SetCosmetics] += new Action<string>(this.SetCosmetics);
     }
 
     /// <inheritdoc />
@@ -136,10 +135,11 @@ internal class VehicleService : IVehicleService, IOnInit
         }
     }
 
-    private void SetVehicleOptions(int vehicleNetworkId, string passedExtras, int configLivery)
+    private void SetCosmetics(string serializedRequest)
     {
-        var configExtras = JsonConvert.DeserializeObject<List<int>>(passedExtras);
-        var vehicle = Cfx.API.NetworkGetEntityFromNetworkId(vehicleNetworkId);
+        var request = JsonConvert.DeserializeObject<FVehiclePropertiesDTO.SetCosmetics>(serializedRequest);
+        var vehicle = Entity.FromNetworkId(request.NetworkId).Handle;
+        var configExtras = request.Extras;
         if (configExtras.Count != 0)
         {
             for (int i = 1; i < 13; i++)
@@ -153,7 +153,7 @@ internal class VehicleService : IVehicleService, IOnInit
             }
         }
 
-        Cfx.API.SetVehicleLivery(vehicle, configLivery);
+        Cfx.API.SetVehicleLivery(vehicle, request.Livery);
     }
 
     private async Task<Vehicle> FindVehicleAsync(int networkId)

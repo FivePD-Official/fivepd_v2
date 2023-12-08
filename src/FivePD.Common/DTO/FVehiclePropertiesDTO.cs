@@ -1,4 +1,5 @@
-﻿using FivePD.Common.Enums;
+﻿using System.Collections.Generic;
+using FivePD.Common.Enums;
 
 namespace FivePD.Common.DTO;
 
@@ -22,6 +23,15 @@ internal sealed record FVehiclePropertiesDTO
         public required FBlipColor Color { get; init; }
 
         public required string Text { get; init; }
+    }
+
+    public record struct SetCosmetics
+    {
+        public int NetworkId { get; set; }
+        
+        public int Livery { get; set; }
+        
+        public List<int> Extras { get; set; }
     }
 
     public sealed record Events

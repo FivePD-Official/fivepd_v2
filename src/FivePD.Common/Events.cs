@@ -58,7 +58,7 @@ internal readonly record struct Events
 
         public const string OnAlerted = "fivepd:vehicle:onAlerted";
 
-        public const string SetVehicleOptions = "fivepd:vehicle:setVehicleOptions";
+        public const string SetCosmetics = "fivepd:vehicle:setCosmetics";
     }
 
     public readonly record struct Localization
