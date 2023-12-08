@@ -67,7 +67,9 @@ export class DepartmentAreaManagementComponent implements OnInit {
       this.user = state.user.details.User;
     });
   }
-
+get editableDepartments() {
+    return this.departments.filter(x => x.Id === this.user?.DepartmentId);
+}
   readonly defaultZoom: number = 2;
 
   readonly center_x = 117.3;
