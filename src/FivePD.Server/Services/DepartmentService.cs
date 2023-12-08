@@ -205,10 +205,11 @@ public class DepartmentService : IDepartmentService
         networkCallbackDelegate.InvokeWithJson(departments);
     }
 
-    [UIEvent(Events.UI.Department.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Department.GetAllPageable, true)]
+    private void GetAllPageableUI([FromSource] Player player, ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var departmentsRequest = departmentsRequestString.ConvertTo<DepartmentsRequest>();
+        User user = this._playerDataService.FindUserOfPlayer(player);
         var filters = new Filters<Department>();
         filters.Add(
             !string.IsNullOrEmpty(departmentsRequest.Filters.Name),
@@ -216,6 +217,9 @@ public class DepartmentService : IDepartmentService
         filters.Add(
             !string.IsNullOrEmpty(departmentsRequest.Filters.Callsign),
             department => department.Callsign.ToLower().Contains(departmentsRequest.Filters.Callsign.ToLower()));
+        filters.Add(
+            departmentsRequest.Filters.UserDepartment,
+            department => department.Id == user.DepartmentId);
         var page = this._databaseContext.Departments
             .AsNoTracking()
             .Include(department => department.Users)

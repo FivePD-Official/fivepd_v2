@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {SimpleDepartment, SimpleDepartmentWithArea, User} from "@models";
 import {
   CRS,
@@ -15,16 +15,16 @@ import {
   tileLayer,
   Transformation
 } from 'leaflet';
-import { PageHeaderComponent } from "../../../../../../components/page-header/page-header.component";
-import { TranslatePipe } from "../../../../../../pipes/translate.pipe";
-import { DepartmentService } from "@services/department/department.service";
-import { ContainerComponent } from "../../../../../../components/container/container.component";
-import { nanoid } from 'nanoid';
-import { ButtonComponent } from "../../../../../../components/button/button.component";
-import { NgClass } from "@angular/common";
-import { Area, GRAY, RED } from "./_models/area";
-import { customIcon } from "@services/map";
-import { IconComponent } from "../../../../../../components/icon/icon.component";
+import {PageHeaderComponent} from "../../../../../../components/page-header/page-header.component";
+import {TranslatePipe} from "../../../../../../pipes/translate.pipe";
+import {DepartmentService} from "@services/department/department.service";
+import {ContainerComponent} from "../../../../../../components/container/container.component";
+import {nanoid} from 'nanoid';
+import {ButtonComponent} from "../../../../../../components/button/button.component";
+import {NgClass} from "@angular/common";
+import {Area, GRAY, RED} from "./_models/area";
+import {customIcon} from "@services/map";
+import {IconComponent} from "../../../../../../components/icon/icon.component";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {first} from "rxjs";
 import {Store} from "@ngrx/store";
@@ -67,9 +67,11 @@ export class DepartmentAreaManagementComponent implements OnInit {
       this.user = state.user.details.User;
     });
   }
-get editableDepartments() {
+
+  get editableDepartments() {
     return this.departments.filter(x => x.Id === this.user?.DepartmentId);
-}
+  }
+
   readonly defaultZoom: number = 2;
 
   readonly center_x = 117.3;
@@ -88,7 +90,6 @@ get editableDepartments() {
 
   map!: LMap;
   customCrs: any;
-
 
 
   ngOnInit(): void {

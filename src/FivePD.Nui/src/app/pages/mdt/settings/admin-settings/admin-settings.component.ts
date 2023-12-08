@@ -335,19 +335,12 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   getDepartments(): void {
-    this._departmentService.getAllPageable(this.departmentsCollation).subscribe(res => {
-      if (this.userService.userIsDeptAdmin(true)) {
-        const userDepts: Department[] = [];
-        for (var item in res.Items) {
-          if (this.user?.DepartmentId?.toString() === item) {
-            let thing = res.Items.find(v => v.Id.toString() === item);
-            if (thing) {
-              userDepts.push(thing);
-            }
-          }
-        }
-        res.Items = userDepts;
+    this._departmentService.getAllPageable({
+      ...this.departmentsCollation,
+      Filters: {
+        UserDepartment: true
       }
+    }).subscribe(res => {
       this.departments = res;
     });
   }

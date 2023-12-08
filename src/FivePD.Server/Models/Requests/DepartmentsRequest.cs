@@ -13,5 +13,7 @@ internal record struct DepartmentsRequest()
         public string Name { get; set; }
 
         public string Callsign { get; set; }
+        
+        public bool UserDepartment { get; set; }
     }
 }
