@@ -19,17 +19,15 @@ namespace FivePD.Server.UIModels;
 public sealed class DutyMenu : Menu
 {
     private readonly IConfigService _configService;
-    private readonly ILocalizationService _localizationService;
     private readonly DutyMenuConfig _dutyMenuConfig;
     private readonly IEntityService _entityService;
 
     private MenuListItem _changeLanguageListItem;
 
-    public DutyMenu(IConfigService configService, ILocalizationService localizationService, IEntityService entityService)
+    public DutyMenu(IConfigService configService, IEntityService entityService)
         : base(Controls.DutyMenu.Id, Controls.DutyMenu.Title, Controls.DutyMenu.Key)
     {
         this._configService = configService;
-        this._localizationService = localizationService;
         this._dutyMenuConfig = configService.MenuConfig.DutyMenu;
         this._entityService = entityService;
     }
@@ -87,17 +85,6 @@ public sealed class DutyMenu : Menu
             };
             items.Add(this.LoadoutItem);
         }
-
-        this._changeLanguageListItem = new MenuListItem(
-            "DUTY_MENU.ITEM.CHANGE_LANGUAGE.TITLE",
-            "DUTY_MENU.ITEM.CHANGE_LANGUAGE.DESCRIPTION",
-            this._localizationService.AvailableLocalizations.Values?.Select(x => new MenuListOption(x)).ToList());
-        this._changeLanguageListItem.OnSelect += async (player, index) =>
-        {
-            var locale = this._localizationService.AvailableLocalizations.Keys?.ToList()[index];
-            player.GetUnderlyingPlayer().TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationService.GetLocalization(locale));
-        };
-        items.Add(this._changeLanguageListItem);
 
         return items;
     }
