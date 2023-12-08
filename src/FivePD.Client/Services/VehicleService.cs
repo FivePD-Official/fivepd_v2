@@ -40,6 +40,7 @@ internal class VehicleService : IVehicleService, IOnInit
         this._eventHandlerDictionary[Events.Vehicle.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
         this._eventHandlerDictionary[Events.Vehicle.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Vehicle.InvokeMethod] += new Action<string>(this.InvokeMethod);
+        this._eventHandlerDictionary[Events.Vehicle.SetCosmetics] += new Action<string>(this.SetCosmetics);
     }
 
     /// <inheritdoc />
@@ -132,6 +133,31 @@ internal class VehicleService : IVehicleService, IOnInit
                 break;
             }
         }
+    }
+
+    private void SetCosmetics(string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<FVehiclePropertiesDTO.SetCosmetics>(serializedRequest);
+        var vehicle = Entity.FromNetworkId(request.NetworkId);
+        if (vehicle is null)
+        {
+            return;
+        }
+
+        if (request.Extras.Count != 0)
+        {
+            for (var i = 1; i < 13; i++)
+            {
+                Cfx.API.SetVehicleExtra(vehicle.Handle, i, true);
+            }
+
+            foreach (var extra in request.Extras.Where(x => Cfx.API.DoesExtraExist(vehicle, x)))
+            {
+                Cfx.API.SetVehicleExtra(vehicle.Handle, extra, false);
+            }
+        }
+
+        Cfx.API.SetVehicleLivery(vehicle.Handle, request.Livery);
     }
 
     private async Task<Vehicle> FindVehicleAsync(int networkId)

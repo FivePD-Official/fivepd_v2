@@ -2,10 +2,12 @@
 using System.Linq;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
+using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.UIModels.MenuModels;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450
@@ -22,6 +24,7 @@ public sealed class DutyMenu : Menu
     private readonly ILocalizationService _localizationService;
     private readonly DutyMenuConfig _dutyMenuConfig;
     private readonly IEntityService _entityService;
+    private readonly IEventService _eventService;
 
     private MenuListItem _changeLanguageListItem;
 
@@ -32,6 +35,7 @@ public sealed class DutyMenu : Menu
         this._localizationService = localizationService;
         this._dutyMenuConfig = configService.MenuConfig.DutyMenu;
         this._entityService = entityService;
+        this._eventService = ServiceLocator.GetService<IEventService>();
     }
 
     public MenuListItem VehicleSpawnerItem { get; private set; }
@@ -60,6 +64,15 @@ public sealed class DutyMenu : Menu
                 var spawnedVehicle = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(policeVehicle.Model),
                     player.GetUnderlyingPlayer().Character.Position, player.GetUnderlyingPlayer().Character.Heading);
                 Cfx.API.SetPedIntoVehicle(player.GetUnderlyingPlayer().Character.Handle, spawnedVehicle.GetUnderlyingVehicle.Handle, -1);
+                this._eventService.TriggerEventStrictWithoutCallback(
+                    player.GetUnderlyingPlayer(),
+                    Events.Vehicle.SetCosmetics,
+                    JsonConvert.SerializeObject(new FVehiclePropertiesDTO.SetCosmetics
+                    {
+                        NetworkId = spawnedVehicle.NetworkId,
+                        Livery = policeVehicle.Livery,
+                        Extras = policeVehicle.Extras,
+                    }));
             };
             items.Add(this.VehicleSpawnerItem);
         }
