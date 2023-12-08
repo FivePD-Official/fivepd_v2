@@ -28,6 +28,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 {
     private readonly DatabaseContext _databaseContext;
     private readonly IPlayerDataService _playerDataService;
+    private readonly IPlayerHandlerService _playerHandlerService;
 
     private readonly List<LooseDataEntityObservable> _observables = new();
     private readonly Dictionary<Type, string> _activeSetTypes = new();
@@ -38,10 +39,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
-    public LooseDataService(DatabaseContext databaseContext, IPlayerDataService playerDataService)
+    /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
+    public LooseDataService(DatabaseContext databaseContext, IPlayerDataService playerDataService, IPlayerHandlerService playerHandlerService)
     {
         this._databaseContext = databaseContext;
         this._playerDataService = playerDataService;
+        this._playerHandlerService = playerHandlerService;
     }
 
     /// <inheritdoc/>
@@ -850,7 +853,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             var userId = attributeValueMap.Keys.FirstOrDefault(x => x.Name == "UserId");
             if (userId is not null)
             {
-                var user = this._playerDataService.FindUserOfPlayer(player);
+                var user = this._playerHandlerService.FindUserOfPlayer(player);
                 attributeValueMap[userId] = user?.Id ?? 0;
             }
         }

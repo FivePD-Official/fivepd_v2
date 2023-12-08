@@ -25,6 +25,7 @@ internal static class LifecycleHandler
     public static void Stop()
     {
         OnStopped?.Invoke(null, EventArgs.Empty);
+        IsStopped = true;
     }
 
     public static void HandleError(Exception exception)

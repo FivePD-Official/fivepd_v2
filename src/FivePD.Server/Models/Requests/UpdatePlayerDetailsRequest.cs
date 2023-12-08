@@ -6,5 +6,7 @@ internal record struct UpdatePlayerDetailsRequest
 {
     public int Id { get; set; }
     
-    public string Callsign { get; set; }
+    public string? Callsign { get; set; }
+
+    public string? PreferredLanguage { get; set; }
 }

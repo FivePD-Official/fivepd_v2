@@ -41,6 +41,7 @@ internal class Bootstrapper : BaseScript
     private readonly Dictionary<Action, bool> _phases = new();
     private readonly Stopwatch _stopwatch = new();
     private readonly ILogger _bootstrapLogger;
+    private readonly ILogger _addonLocatorLogger;
 
     private ServiceProvider _provider;
 
@@ -52,8 +53,7 @@ internal class Bootstrapper : BaseScript
     {
         AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
         {
-            var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
-            log?.Error("AppDomain unhandled exception: {exception}", args.ExceptionObject);
+            this._bootstrapLogger?.Error("AppDomain unhandled exception: {exception}", args.ExceptionObject);
         };
 
         LifecycleHandler.OnStopped += (_, _) => this.OnStopped();
@@ -78,6 +78,10 @@ internal class Bootstrapper : BaseScript
         this._bootstrapLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
         this._bootstrapLogger.Information("Starting FivePD...");
 
+        this._addonLocatorLogger = Log.Logger.ForContext("SourceIdentifier", "AddonLocator");
+
+        this._phases.Add(this.PerformSafeToRunCheckBeforeBootstrapping, false);
+
         // Enqueue service location phase.
         this._phases.Add(this.PerformServiceLocationPhase, false);
 
@@ -87,11 +91,16 @@ internal class Bootstrapper : BaseScript
         // Enqueue post-bootstrap phase.
         this._phases.Add(this.PerformPostBootstrapPhase, false);
 
+        this._phases.Add(() => DatabaseHandler.SetParameters(this._provider, this._bootstrapLogger), false);
+
+        this._phases.Add(DatabaseHandler.EnsureCorrectState, false);
+
         // Enqueue addon startup phase.
         this._phases.Add(this.PerformAddonEnqueuePhase, false);
 
-        // Enqueue database prefill phase.
-        this._phases.Add(this.PrefillDatabase, false);
+        this._phases.Add(DatabaseHandler.Update, false);
+
+        this._phases.Add(this.PerformSafeToRunCheckAfterBootstrapping, false);
 
         // Begin running phases.
         this.Tick += this.RunNextPhaseAsync;
@@ -125,16 +134,15 @@ internal class Bootstrapper : BaseScript
         if (phase.Key is null)
         {
             // Log that we're done
-            this._bootstrapLogger.Information("FivePD bootstrapping has completed");
+            if (!LifecycleHandler.IsStopped)
+            {
+                this._bootstrapLogger.Information("FivePD bootstrapping has completed");
+            }
 
             // Stop trying to run phases
             this.Tick -= this.RunNextPhaseAsync;
             return Task.CompletedTask;
         }
-
-#if DEBUG
-        this._bootstrapLogger.Information("Running bootstrap phase: {phase}", phase.Key.Method.Name);
-#endif
 
         // Begin timing the phase
         this._stopwatch.Restart();
@@ -149,12 +157,12 @@ internal class Bootstrapper : BaseScript
             this.Tick -= this.RunNextPhaseAsync;
 
             // Log the problem
-            this._bootstrapLogger.Fatal("An error occurred during bootstrapping, stopping FivePD to prevent further issues.");
-            this._bootstrapLogger.Fatal("Exception: {exception}", e.Message);
-            this._bootstrapLogger.Debug("Stacktrace: {stacktrace}", e.StackTrace);
+            this._bootstrapLogger?.Fatal("An error occurred during bootstrapping, stopping FivePD to prevent further issues.");
+            this._bootstrapLogger?.Fatal("Exception: {exception}", e.Message);
+            this._bootstrapLogger?.Debug("Stacktrace: {stacktrace}", e.StackTrace);
             if (e.InnerException is not null)
             {
-                this._bootstrapLogger.Debug("Inner exception: {innerException}", e.InnerException);
+                this._bootstrapLogger?.Debug("Inner exception: {innerException}", e.InnerException);
             }
 
             return Task.CompletedTask;
@@ -162,9 +170,6 @@ internal class Bootstrapper : BaseScript
 
         // Once completed, log the phase duration
         this._stopwatch.Stop();
-#if DEBUG
-        this._bootstrapLogger.Information("Bootstrap phase completed in {duration}ms", this._stopwatch.ElapsedMilliseconds);
-#endif
 
         // Mark the phase as completed
         this._phases[phase.Key] = true;
@@ -276,6 +281,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PlayerDataService>());
 
+        services.AddSingleton<PlayerHandlerService>();
+        services.AddSingleton<IPlayerHandlerService>(provider => provider.GetRequiredService<PlayerHandlerService>());
+
         services.AddSingleton<MenuService>();
         services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<MenuService>());
@@ -323,15 +331,14 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     private void PerformAddonLocationPhase()
     {
-        var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "AddonLocator");
         if (this._provider is null)
         {
-            log?.Fatal("The service provider must be initialized prior to locating addons.");
+            this._addonLocatorLogger?.Fatal("The service provider must be initialized prior to locating addons.");
             LifecycleHandler.Stop();
             return;
         }
 
-        var addonLocator = new FilesystemAddonLocator(Log.Logger.ForContext("SourceIdentifier", "AddonLocator"));
+        var addonLocator = new FilesystemAddonLocator(this._addonLocatorLogger);
         var addonDefinitions = addonLocator.GetAddons().ToList();
         var addonMetadataService = this._provider.GetService<IInternalAddonMetadataService>();
         addonMetadataService.LoadAssemblies(addonDefinitions);
@@ -343,23 +350,7 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     private void PerformPostBootstrapPhase()
     {
-        Debug.WriteLine("PerformPostBootstrapPhase 1");
-
-        var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
-        Debug.WriteLine("PerformPostBootstrapPhase 2");
-
         this.LogDiagnostics();
-
-        Debug.WriteLine("PerformPostBootstrapPhase 3");
-
-        if (!this.IsSafeToRun())
-        {
-            log?.Fatal("FivePD cannot run in this environment. Verify all prerequisites have been met and try again");
-            LifecycleHandler.Stop();
-            return;
-        }
-
-        Debug.WriteLine("PerformPostBootstsrapPhase 4");
 
         // Register shutdown routine listener
         this.EventHandlers["onResourceStop"] += new Action<string>((resource) =>
@@ -370,91 +361,11 @@ internal class Bootstrapper : BaseScript
             }
         });
 
-        Debug.WriteLine("PerformPostBootstrapPhase 5");
-
-        try
-        {
-            var db = this._provider.GetService<DatabaseContext>();
-            Debug.WriteLine("PerformPostBootstrapPhase 6");
-            if (db is null)
-            {
-                throw new DatabaseUsageException("No database context is available for usage");
-            }
-
-            Debug.WriteLine("PerformPostBootstrapPhase 7 --------");
-
-            var migrations = db.Database.GetPendingMigrations().ToList();
-            Debug.WriteLine("PerformPostBootstrapPhase 7 -------- after GetPendingMigrations");
-            var databaseCreated = db.Database.EnsureCreated();
-            Debug.WriteLine("PerformPostBootstrapPhase 7 -------- after EnsureCreated");
-            if (!db.Database.CanConnect())
-            {
-                Debug.WriteLine("PerformPostBootstrapPhase 7 -------- inside CanConnect");
-                throw new DatabaseUsageException("Database connection failed");
-            }
-
-            Debug.WriteLine("PerformPostBootstrapPhase 8 --------");
-
-            switch (databaseCreated)
-            {
-                case true:
-                {
-                    Debug.WriteLine("PerformPostBootstrapPhase 9 TRUE");
-                    log?.Information("The database did not exist, it has been created");
-
-                    var configService = this._provider.GetService<IConfigService>();
-                    var config = configService?.GeneralConfig?.Database;
-
-                    var tableName = string.Empty;
-                    if (config is not null)
-                    {
-                        tableName = config.IsMariaDb() ? "__EFMigrationsHistory" : "__efmigrationshistory";
-                    }
-
-                    if (string.IsNullOrEmpty(tableName))
-                    {
-                        log?.Fatal("The database type is not 'mariadb' or 'mysql'. Verify the settings in the /Config/general file and try again.");
-                        LifecycleHandler.Stop();
-                        return;
-                    }
-
-                    db.Database.ExecuteSqlRaw(
-                        $"CREATE TABLE `{tableName}` (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
-
-                    foreach (var migration in migrations)
-                    {
-                        db.Database.ExecuteSqlRaw($"INSERT INTO `{tableName}` (MigrationId, ProductVersion) VALUES ('{migration}', '3.1.26')");
-                    }
-
-                    break;
-                }
-
-                case false when migrations.Count > 0:
-                    Debug.WriteLine("PerformPostBootstrapPhase 9 FALSE");
-                    log?.Information("Upgrading the database to {Version}", migrations.Last());
-                    db.Database.Migrate();
-                    break;
-            }
-
-            Debug.WriteLine("PerformPostBootstrapPhase 10");
-
-            log?.Information("The database is up to date");
-        }
-        catch (Exception e)
-        {
-            throw new DatabaseUsageException(
-                "The configured database is invalid or offline. Verify the connection settings in the /Config/general file and try again.", e);
-        }
-
-        Debug.WriteLine("PerformPostBootstrapPhase 11");
-
         // Register all event listeners for services
         foreach (var service in this._provider.GetServices<IOnInit>())
         {
             service.OnInit();
         }
-
-        Debug.WriteLine("PerformPostBootstrapPhase 12");
 
         var tickQueueService = this._provider.GetService<IInternalTickQueueService>();
         this.Tick += tickQueueService!.OnTickAsync;
@@ -475,71 +386,66 @@ internal class Bootstrapper : BaseScript
         }
     }
 
-    /// <summary>
-    /// Enqueues database prefill.
-    /// </summary>
-    private void PrefillDatabase()
+    private void PerformSafeToRunCheckBeforeBootstrapping()
     {
-        var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
+        var errors = new List<string>();
 
-        var databaseContext = this._provider.GetService<DatabaseContext>();
-        if (databaseContext is null)
+        if (Cfx.API.GetConvar("onesync", "off") != "on")
+        {
+            errors.Add("OneSync needs to be enabled.");
+        }
+
+        if (errors.Count == 0)
         {
             return;
         }
 
-        var addonMetadataService = this._provider.GetService<IInternalAddonMetadataService>();
-        addonMetadataService.CreateCalloutDetailsEntities();
-
-        if (!databaseContext.Departments.Any())
+        this._bootstrapLogger?.Fatal("FivePD cannot run in this environment. Verify the following:");
+        foreach (var message in errors)
         {
-            var department = new Department
-            {
-                Name = "Los Santos Police Department",
-                Callsign = "LSPD",
-                MaxUsers = 0,
-                CallsignFormat = "*L*S-NN",
-                Ranks = new List<Rank>
-                {
-                    new()
-                    {
-                        Name = "Officer I",
-                        RequiredXp = 0,
-                        Permission = new Rank.Permissions
-                        {
-                            Kick = false,
-                            SetRank = false,
-                            SetDivision = false,
-                        },
-                    },
-                    new()
-                    {
-                        Name = "Officer II",
-                        RequiredXp = 0,
-                        Permission = new Rank.Permissions
-                        {
-                            Kick = false,
-                            SetRank = false,
-                            SetDivision = false,
-                        },
-                    },
-                    new()
-                    {
-                        Name = "Sergeant",
-                        RequiredXp = 0,
-                        Permission = new Rank.Permissions
-                        {
-                            Kick = false,
-                            SetRank = false,
-                            SetDivision = false,
-                        },
-                    },
-                },
-            };
-            databaseContext.Departments.Add(department);
-            databaseContext.SaveChanges();
-            log?.Information("Created sample department");
+            this._bootstrapLogger?.Fatal($"{message}");
         }
+
+        LifecycleHandler.Stop();
+    }
+
+    private void PerformSafeToRunCheckAfterBootstrapping()
+    {
+        var errors = new List<string>();
+
+        var localizationService = this._provider.GetService<ILocalizationService>();
+        if (localizationService.AvailableLocalizations.Count == 0)
+        {
+            errors.Add("Ensure you have at least one localization file.");
+        }
+
+        var configService = this._provider.GetService<IConfigService>();
+        if (string.IsNullOrEmpty(configService.GeneralConfig.DefaultLanguage))
+        {
+            errors.Add("Ensure the \"DefaultLanguage\" option in the general config is not empty.");
+        }
+        else
+        {
+            if (localizationService.AvailableLocalizations.All(x => x.Key != configService.GeneralConfig.DefaultLanguage))
+            {
+                var availableLocalizations = string.Join(", ", localizationService.AvailableLocalizations.Select(x => x.Key));
+                errors.Add(
+                    $"Ensure the \"DefaultLanguage\" option in the general config is a valid localization. Available localizations: {availableLocalizations}");
+            }
+        }
+
+        if (errors.Count == 0)
+        {
+            return;
+        }
+
+        this._bootstrapLogger?.Fatal("FivePD cannot run in this environment. Verify the following:");
+        foreach (var message in errors)
+        {
+            this._bootstrapLogger?.Fatal($"{message}");
+        }
+
+        LifecycleHandler.Stop();
     }
 
     /// <summary>
@@ -552,8 +458,7 @@ internal class Bootstrapper : BaseScript
             return;
         }
 
-        var log = this._provider.GetService<ILogger>()?.ForContext("SourceIdentifier", "Bootstrapper");
-        log?.Information("Stopping FivePD");
+        this._bootstrapLogger?.Information("Stopping FivePD");
 
         var looseData = this._provider.GetService<ILooseDataService>();
         ((IInternalLooseDataService)looseData).DisposeAddonRepositories();
@@ -587,27 +492,10 @@ internal class Bootstrapper : BaseScript
     }
 
     /// <summary>
-    /// Determines if the resource can run in the current environment.
-    /// <returns>A boolean representing the safety of the environment.</returns>
-    /// </summary>
-    private bool IsSafeToRun()
-    {
-        // Verifies OneSync is enabled
-        if (Cfx.API.GetConvar("onesync", "off") != "on")
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
     /// Logs common diagnostic properties.
     /// </summary>
     private void LogDiagnostics()
     {
-        var log = this._provider.GetService<ILogger>()!.ForContext("SourceIdentifier", "Bootstrapper");
-
-        log.Debug("Running Cfx version {@Version}", Cfx.API.GetConvar("version", "Unknown"));
+        this._bootstrapLogger?.Debug("Running Cfx version {@Version}", Cfx.API.GetConvar("version", "Unknown"));
     }
 }

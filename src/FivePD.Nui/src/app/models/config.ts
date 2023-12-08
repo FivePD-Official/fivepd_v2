@@ -1,4 +1,5 @@
 ﻿export interface IGeneralConfig {
+  DefaultLanguage: string;
   Unit: {
     Join: string;
     MaxMembers: number;

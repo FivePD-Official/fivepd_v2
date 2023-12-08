@@ -63,9 +63,11 @@ internal readonly record struct Events
 
     public readonly record struct Localization
     {
-        public const string GetLocalizationFromServer = "fivepd:localization:getLocalizationFromServer";
+        public const string GetDefaultOrPreferred = "fivepd:localization:getDefaultOrPreferred";
 
         public const string GetLocalizationFromNui = "fivepd:localization:getLocalizationFromNui";
+
+        public const string GetAvailableLocalizations = "fivepd:localization:getAvailableLocalizations";
     }
 
     public readonly record struct UIEvent

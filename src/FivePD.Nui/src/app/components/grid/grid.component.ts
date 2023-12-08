@@ -118,6 +118,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   getSelectField(action: any, item: FormattedRowItem<T>): FormInputBase<number> {
     const dropdown = new Dropdown({
       key: '#',
+      value: action.value ? action.value(item.originalItem) : -1,
       dropdownOptions: {
         label: action.label,
         items: action.items(),
@@ -130,7 +131,6 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 
     if ('selectedItemResolver' in action) {
       (dropdown.dropdownOptions as any).type = 'single';
-      (dropdown.dropdownOptions as any).selectedItemResolver = (dropdownItemKey: any) => action.selectedItemResolver(item.originalItem, dropdownItemKey);
     }
     if ('selectedItemsResolver' in action) {
       (dropdown.dropdownOptions as any).type = 'multi';
@@ -237,6 +237,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   }
 
   onTableCellActionSelect(action: any, item: FormattedRowItem<T>, selectedItemKey: number): void {
+    console.log(action, item, selectedItemKey)
     if ('onSelect' in action) {
       action.onSelect(item.originalItem, selectedItemKey);
     } else {

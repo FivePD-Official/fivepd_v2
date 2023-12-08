@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FivePD.Client.Interfaces;
 
@@ -9,11 +8,6 @@ namespace FivePD.Client.Interfaces;
 internal interface ILocalizationService
 {
     /// <summary>
-    /// Fires when the localization has been changed.
-    /// </summary>
-    public event EventHandler<string> LocalizationChanged;
-
-    /// <summary>
     /// Gets all available locales.
     /// </summary>
     public Dictionary<string, string> Locales { get; }
@@ -22,12 +16,6 @@ internal interface ILocalizationService
     /// Gets the currently set localization.
     /// </summary>
     public dynamic CurrentLocalization { get; }
-
-    /// <summary>
-    /// Loads the passed in localization.
-    /// </summary>
-    /// <param name="locale">The localization's key.</param>
-    public void LoadLocalization(string locale);
 
     /// <summary>
     /// Gets a localization value by its key.
