@@ -47,13 +47,8 @@ export class UserService {
     return false;
   }
 
-  userIsDeptAdmin(ignoreAdmin: boolean = false): boolean {
-    if (ignoreAdmin) {
-      const deptAdmin = this.user?.User.Rank?.Permission.DeptAdmin;
-      return deptAdmin ? deptAdmin && !this.userHasRole(UserRole.Admin) : false;
-    }
-    const hasAdmin = this.userHasRole(UserRole.Admin) || this.user?.User.Rank?.Permission.DeptAdmin;
-    return hasAdmin ? hasAdmin : false;
+  userIsDeptAdmin(): boolean {
+    return this.userHasRole(UserRole.Admin) || (this.user?.User?.Rank?.Permission?.DeptAdmin || false)
   }
 
   refreshData(): void {
