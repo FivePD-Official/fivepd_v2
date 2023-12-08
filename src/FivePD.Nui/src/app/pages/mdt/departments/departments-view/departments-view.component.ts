@@ -525,7 +525,7 @@ export class DepartmentsViewComponent implements OnInit {
         accessorKey: 'RankName',
       }));
     }
-    if (this.userService.userIsDeptAdmin() || this.user?.User.Rank?.Permission.SetDivision) {
+    if (this.userService.userIsDeptAdmin() || this.user?.User?.Rank?.Permission.SetDivision) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
         actions: [
