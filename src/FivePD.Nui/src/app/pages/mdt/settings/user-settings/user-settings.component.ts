@@ -51,7 +51,7 @@ export class UserSettingsComponent implements OnInit {
       fields.push(new Dropdown({
         key: 'PreferredLanguage',
         value: preferredLanguageIndex !== -1 ? preferredLanguageIndex : defaultLanguageIndex,
-        label: 'Preferred language',
+        label: 'Language',
         required: true,
         dropdownOptions: {
           addDefaultItem: false,
