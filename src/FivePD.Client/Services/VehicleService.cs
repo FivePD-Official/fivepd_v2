@@ -151,7 +151,7 @@ internal class VehicleService : IVehicleService, IOnInit
                 Cfx.API.SetVehicleExtra(vehicle.Handle, i, true);
             }
 
-            foreach (var extra in request.Extras.Where(x => Cfx.API.DoesExtraExist(vehicle, x)))
+            foreach (var extra in request.Extras.Where(x => Cfx.API.DoesExtraExist(vehicle.Handle, x)))
             {
                 Cfx.API.SetVehicleExtra(vehicle.Handle, extra, false);
             }
