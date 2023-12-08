@@ -385,29 +385,64 @@ internal class Bootstrapper : BaseScript
 
     private void PerformSafeToRunCheckBeforeBootstrapping()
     {
-        // ReSharper disable once ReplaceWithSingleAssignment.True
-        var isSafeToRun = true;
+        var errors = new List<string>();
 
         if (Cfx.API.GetConvar("onesync", "off") != "on")
         {
-            isSafeToRun = false;
+            errors.Add("OneSync needs to be enabled.");
         }
 
-        if (!isSafeToRun)
+        if (errors.Count == 0)
         {
-            this._bootstrapLogger?.Fatal("FivePD cannot run in this environment. Verify all prerequisites have been met and try again.");
-            LifecycleHandler.Stop();
+            return;
         }
+
+        this._bootstrapLogger?.Fatal("FivePD cannot run in this environment. Verify the following:");
+        foreach (var message in errors)
+        {
+            this._bootstrapLogger?.Fatal($"{message}");
+        }
+
+        LifecycleHandler.Stop();
     }
 
     private void PerformSafeToRunCheckAfterBootstrapping()
     {
+        var errors = new List<string>();
+
         var localizationService = this._provider.GetService<ILocalizationService>();
         if (localizationService.AvailableLocalizations.Count == 0)
         {
-            this._bootstrapLogger?.Fatal("FivePD cannot run in this environment. Ensure you have at least one localization file.");
-            LifecycleHandler.Stop();
+            errors.Add("Ensure you have at least one localization file.");
         }
+
+        var configService = this._provider.GetService<IConfigService>();
+        if (string.IsNullOrEmpty(configService.GeneralConfig.DefaultLanguage))
+        {
+            errors.Add("Ensure the \"DefaultLanguage\" option in the general config is not empty.");
+        }
+        else
+        {
+            if (localizationService.AvailableLocalizations.All(x => x.Key != configService.GeneralConfig.DefaultLanguage))
+            {
+                var availableLocalizations = string.Join(", ", localizationService.AvailableLocalizations.Select(x => x.Key));
+                errors.Add(
+                    $"Ensure the \"DefaultLanguage\" option in the general config is a valid localization. Available localizations: {availableLocalizations}");
+            }
+        }
+
+        if (errors.Count == 0)
+        {
+            return;
+        }
+
+        this._bootstrapLogger?.Fatal("FivePD cannot run in this environment. Verify the following:");
+        foreach (var message in errors)
+        {
+            this._bootstrapLogger?.Fatal($"{message}");
+        }
+
+        LifecycleHandler.Stop();
     }
 
     /// <summary>

@@ -26,6 +26,8 @@ public sealed record GeneralConfig : IInternalGeneralConfig
         set => this._database = value;
     }
 
+    public string DefaultLanguage { get; init; } = string.Empty;
+
     public UnitConfig Unit { get; init; } = new();
 
     public CalloutConfig Callout { get; init; } = new();

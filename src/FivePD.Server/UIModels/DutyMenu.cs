@@ -91,10 +91,10 @@ public sealed class DutyMenu : Menu
         this._changeLanguageListItem = new MenuListItem(
             "DUTY_MENU.ITEM.CHANGE_LANGUAGE.TITLE",
             "DUTY_MENU.ITEM.CHANGE_LANGUAGE.DESCRIPTION",
-            this._localizationService.AvailableLocalizations.Values.Select(x => new MenuListOption(x)).ToList());
+            this._localizationService.AvailableLocalizations.Values?.Select(x => new MenuListOption(x)).ToList());
         this._changeLanguageListItem.OnSelect += async (player, index) =>
         {
-            var locale = this._localizationService.AvailableLocalizations.Keys.ToList()[index];
+            var locale = this._localizationService.AvailableLocalizations.Keys?.ToList()[index];
             player.GetUnderlyingPlayer().TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationService.GetLocalization(locale));
         };
         items.Add(this._changeLanguageListItem);
