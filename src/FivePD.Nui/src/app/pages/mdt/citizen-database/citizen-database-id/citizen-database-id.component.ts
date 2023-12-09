@@ -9,7 +9,7 @@ import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { IconComponent } from '../../../../components/icon/icon.component';
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
@@ -25,7 +25,7 @@ import { EntityViewComponent } from "./_components/entity-view.component";
   templateUrl: './citizen-database-id.component.html',
   styleUrls: ['./citizen-database-id.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, NgIf, IconComponent, NgFor, DatePipe, TranslatePipe, ButtonComponent, EntityViewComponent]
+  imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, ButtonComponent, EntityViewComponent]
 })
 export class CitizenDatabaseIdComponent {
 

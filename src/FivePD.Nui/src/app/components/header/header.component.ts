@@ -7,7 +7,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { DispatchService } from "@services/dispatch/dispatch.service";
 import { IconComponent } from '../icon/icon.component';
 import { ButtonComponent } from '../button/button.component';
-import { DatePipe, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { AppActions } from "@store/app.actions";
 
 @Component({
@@ -15,7 +15,7 @@ import { AppActions } from "@store/app.actions";
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.sass'],
   standalone: true,
-  imports: [NgIf, ButtonComponent, IconComponent, DatePipe]
+  imports: [ButtonComponent, IconComponent, DatePipe]
 })
 export class HeaderComponent implements OnInit {
 

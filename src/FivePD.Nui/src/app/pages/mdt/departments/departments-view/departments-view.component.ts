@@ -39,7 +39,6 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { GridComponent } from '../../../../components/grid/grid.component';
 import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
 import { ContainerComponent } from '../../../../components/container/container.component';
-import { NgIf } from '@angular/common';
 import { TippyModule } from '@ngneat/helipopper';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
@@ -61,7 +60,7 @@ type Mode = 'view' | 'edit';
   templateUrl: './departments-view.component.html',
   styleUrls: ['./departments-view.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, ButtonComponent, TippyModule, NgIf, ContainerComponent, DynamicFormComponent, GridComponent, TranslatePipe]
+  imports: [PageHeaderComponent, ButtonComponent, TippyModule, ContainerComponent, DynamicFormComponent, GridComponent, TranslatePipe]
 })
 export class DepartmentsViewComponent implements OnInit {
 

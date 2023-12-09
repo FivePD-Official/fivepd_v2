@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
 import { TimerBarEvent } from '@models';
 import { Subscription } from 'rxjs';
-import { NgIf, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-timer-bar',
   templateUrl: './timer-bar.component.html',
   styleUrls: ['./timer-bar.component.sass'],
   standalone: true,
-  imports: [NgIf, NgStyle]
+  imports: [NgStyle]
 })
 export class TimerBarComponent implements OnInit {
 

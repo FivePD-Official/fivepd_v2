@@ -23,7 +23,7 @@ import { IconComponent } from '../icon/icon.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TippyModule } from '@ngneat/helipopper';
 import { ButtonComponent } from '../button/button.component';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { TextFieldComponent } from "../form-inputs/text-field/text-field.component";
 import { SingleSelectFieldComponent } from "../form-inputs/single-select-field/single-select-field.component";
 import { MultiSelectFieldComponent } from "../form-inputs/multi-select-field/multi-select-field.component";
@@ -33,7 +33,7 @@ import { MultiSelectFieldComponent } from "../form-inputs/multi-select-field/mul
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.sass'],
   standalone: true,
-  imports: [NgIf, NgFor, ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe, TextFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent]
+  imports: [ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe, TextFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent]
 })
 export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 

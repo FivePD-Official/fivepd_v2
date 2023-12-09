@@ -8,7 +8,7 @@ import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { GridComponent } from '../../../../components/grid/grid.component';
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { LooseDataService } from "@services/loose-data/loose-data.service";
@@ -19,7 +19,7 @@ import { zip } from "rxjs";
   templateUrl: './citizen-database-index.component.html',
   styleUrls: ['./citizen-database-index.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, DynamicFormComponent, NgIf, NgFor, RouterLink, GridComponent, DatePipe, TranslatePipe]
+  imports: [PageHeaderComponent, DynamicFormComponent, RouterLink, GridComponent, DatePipe, TranslatePipe]
 })
 export class CitizenDatabaseIndexComponent implements OnInit {
 

@@ -6,7 +6,6 @@ import { CustomValidators } from "../../../../helpers/validators";
 import { filter, tap, zip } from "rxjs";
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
-import { NgIf } from '@angular/common';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { LocalizationService } from "@services/localization/localization.service";
@@ -16,7 +15,7 @@ import { ConfigService } from "@services/config/config.service";
   selector: 'app-user-settings',
   templateUrl: './user-settings.component.html',
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, NgIf, DynamicFormComponent, TranslatePipe]
+  imports: [PageHeaderComponent, ContainerComponent, DynamicFormComponent, TranslatePipe]
 })
 export class UserSettingsComponent implements OnInit {
 

@@ -35,7 +35,6 @@ import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from '../../../../components/grid/grid.component';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
-import { NgIf } from "@angular/common";
 import { ConfigService } from "@services/config/config.service";
 import {
   SingleSelectFieldComponent
@@ -45,7 +44,7 @@ import {
   selector: 'app-admin-settings',
   templateUrl: './admin-settings.component.html',
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, NgIf, SingleSelectFieldComponent]
+  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent]
 })
 export class AdminSettingsComponent implements OnInit {
 

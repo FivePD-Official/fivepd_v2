@@ -3,7 +3,6 @@ import { FormInputBase, FormSubmitEvent, ModalFormOptions } from '@models';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
 import { forkJoin, map, Observable, of, Subject, switchMap, takeUntil, tap, zip } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
-import { NgIf } from '@angular/common';
 import { IncidentHistoryService } from "@services/incident-history/incident-history.service";
 import { CoreAttributes } from "../../../helpers/core-attributes";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
@@ -16,7 +15,7 @@ import { UserService } from "@services/user/user.service";
   selector: 'app-modal-form',
   templateUrl: './modal-form.component.html',
   standalone: true,
-  imports: [NgIf, DynamicFormComponent],
+  imports: [DynamicFormComponent],
 })
 export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
 

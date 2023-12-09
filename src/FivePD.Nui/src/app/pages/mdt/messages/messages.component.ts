@@ -11,7 +11,7 @@ import { filter, switchMap } from "rxjs";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { PaginationComponent } from '../../../components/pagination/pagination.component';
 import { ButtonComponent } from '../../../components/button/button.component';
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 
 @Component({
@@ -19,7 +19,7 @@ import { PageHeaderComponent } from '../../../components/page-header/page-header
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, NgIf, ButtonComponent, NgFor, NgClass, PaginationComponent, DatePipe]
+  imports: [PageHeaderComponent, ButtonComponent, NgClass, PaginationComponent, DatePipe]
 })
 export class MessagesComponent implements OnInit {
 

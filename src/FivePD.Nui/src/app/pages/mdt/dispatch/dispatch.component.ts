@@ -22,7 +22,7 @@ import { GlobalState } from "@store";
 import { DispatcherUnitDTO, MultiSelectField, SimplePlayer, SingleSelectField } from "@models";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { ButtonComponent } from '../../../components/button/button.component';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { ContainerComponent } from '../../../components/container/container.component';
 import { AppActions } from "@store/app.actions";
 import {
@@ -54,7 +54,7 @@ const markerIcons: Record<MarkerIconName, MarkerIconProperties> = {
   templateUrl: './dispatch.component.html',
   styleUrls: ['./dispatch.component.sass'],
   standalone: true,
-  imports: [ContainerComponent, NgIf, NgFor, NgClass, ButtonComponent, TranslatePipe, MultiSelectFieldComponent]
+  imports: [ContainerComponent, NgClass, ButtonComponent, TranslatePipe, MultiSelectFieldComponent]
 })
 export class DispatchComponent implements OnInit {
 

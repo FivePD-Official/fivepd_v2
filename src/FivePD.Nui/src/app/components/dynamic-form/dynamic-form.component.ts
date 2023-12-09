@@ -17,7 +17,7 @@ import { ModalRef } from "@services/modals/modal/modal-ref";
 import { Subject, takeUntil } from "rxjs";
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ButtonComponent } from '../button/button.component';
-import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import { NgClass, NgStyle } from '@angular/common';
 import { TextFieldComponent } from "../form-inputs/text-field/text-field.component";
 import { NumberFieldComponent } from "../form-inputs/number-field/number-field.component";
 import { TextareaFieldComponent } from "../form-inputs/textarea-field/textarea-field.component";
@@ -33,7 +33,7 @@ type RemoveFocusTrap = () => void;
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.sass'],
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, NgIf, NgStyle, NgFor, ButtonComponent, TranslatePipe, TextFieldComponent, NumberFieldComponent, TextareaFieldComponent, DateFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, CheckboxFieldComponent]
+  imports: [ReactiveFormsModule, NgClass, NgStyle, ButtonComponent, TranslatePipe, TextFieldComponent, NumberFieldComponent, TextareaFieldComponent, DateFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, CheckboxFieldComponent]
 })
 export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 
