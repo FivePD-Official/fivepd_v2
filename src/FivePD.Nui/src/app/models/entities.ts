@@ -1,5 +1,5 @@
-import { LooseDataAttribute } from './loose-data';
-import { FGender, FIncidentPriority, FIncidentType, PedLicenseType } from "@enums";
+import {LooseDataAttribute} from './loose-data';
+import {FGender, FIncidentPriority, FIncidentType, PedLicenseType} from "@enums";
 
 export interface WithId {
   Id: number;
@@ -67,6 +67,7 @@ export interface Rank extends WithId {
     Kick: boolean;
     SetRank: boolean;
     SetDivision: boolean;
+    DepartmentManager: boolean;
   };
 }
 

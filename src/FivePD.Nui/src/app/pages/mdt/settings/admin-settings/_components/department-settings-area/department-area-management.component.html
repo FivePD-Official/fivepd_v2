@@ -29,7 +29,7 @@
                     (onClick)="toggleCoordinateAdd()"/>
       </div>
       <div class="flex flex-col gap-2 border border-color rounded-md">
-        @for (item of departments;track item.Id) {
+        @for (item of this.editableDepartments;track item.Id) {
           <div class="flex flex-col border-b border-color last:border-0 px-6 py-2">
             <div class="flex flex-row items-center justify-between w-full">
               <p class="text-zinc-400"
@@ -44,10 +44,12 @@
             @if (!departmentHasEnoughAreaCoordinates(item)) {
               <div class="flex flex-row items-center gap-2">
                 <div app-icon name="Warning" className="h-[20px] text-yellow-500"></div>
-                <p class="text-sm text-yellow-500 font-medium">Department has less than 3 area coordinates. Callouts will not be dispatched to its units.</p>
+                <p class="text-sm text-yellow-500 font-medium">Department has less than 3 area coordinates. Callouts
+                  will not be dispatched to its units.</p>
               </div>
             }
           </div>
+
         } @empty {
           <p class="text-zinc-400 block">
             {{ 'UI.LABEL.NO_RESULTS' | translate }}

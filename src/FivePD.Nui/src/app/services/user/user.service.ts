@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { ActionResponse, Collation, Page, PlayerDetailsDTO, SimpleUser, User } from '@models';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { GlobalState } from '@store';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { UserActions } from "@store/user.actions";
+import {Injectable} from '@angular/core';
+import {ActionResponse, Collation, Page, PlayerDetailsDTO, SimpleUser, User} from '@models';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Store} from '@ngrx/store';
+import {GlobalState} from '@store';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {UserActions} from "@store/user.actions";
 
 export enum UserRole {
   None = 0,
@@ -45,6 +45,14 @@ export class UserService {
     }
 
     return false;
+  }
+
+  userIsDepartmentManager(): boolean {
+    return this.user?.User?.Rank?.Permission?.DepartmentManager || false;
+  }
+
+  userIsDepartmentManagerOrAdmin(): boolean {
+    return this.userHasRole(UserRole.Admin) || this.userIsDepartmentManager();
   }
 
   refreshData(): void {

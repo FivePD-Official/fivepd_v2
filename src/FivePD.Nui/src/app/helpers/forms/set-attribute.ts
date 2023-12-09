@@ -1,7 +1,7 @@
-﻿import { AttributeDataType, Checkbox, Dropdown, FormInputBase, LooseDataAttribute, TextInput } from '@models';
-import { LocalizationService } from '@services/localization/localization.service';
-import { CustomValidators } from "../validators";
-import { coreAttributeNames, CoreAttributes } from "../core-attributes";
+﻿import {AttributeDataType, Checkbox, Dropdown, FormInputBase, LooseDataAttribute, TextInput} from '@models';
+import {LocalizationService} from '@services/localization/localization.service';
+import {CustomValidators} from "../validators";
+import {coreAttributeNames, CoreAttributes} from "../core-attributes";
 
 export function createAttributesFormFields(localizationService: LocalizationService, value?: LooseDataAttribute): FormInputBase<any>[] {
   const fields = [
@@ -94,12 +94,30 @@ export function createAttributesFormFields(localizationService: LocalizationServ
         items: [
           {key: CoreAttributes.UserId, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.USER_ID')},
           {key: CoreAttributes.UserIds, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.USER_IDS')},
-          {key: CoreAttributes.DepartmentId, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.DEPARTMENT_ID')},
-          {key: CoreAttributes.DepartmentIds, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.DEPARTMENT_IDS')},
-          {key: CoreAttributes.PedHistoryId, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.PED_HISTORY_ID')},
-          {key: CoreAttributes.PedHistoryIds, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.PED_HISTORY_IDS')},
-          {key: CoreAttributes.IncidentHistoryId, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.INCIDENT_HISTORY_ID')},
-          {key: CoreAttributes.IncidentHistoryIds, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.INCIDENT_HISTORY_IDS')},
+          {
+            key: CoreAttributes.DepartmentId,
+            label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.DEPARTMENT_ID')
+          },
+          {
+            key: CoreAttributes.DepartmentIds,
+            label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.DEPARTMENT_IDS')
+          },
+          {
+            key: CoreAttributes.PedHistoryId,
+            label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.PED_HISTORY_ID')
+          },
+          {
+            key: CoreAttributes.PedHistoryIds,
+            label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.PED_HISTORY_IDS')
+          },
+          {
+            key: CoreAttributes.IncidentHistoryId,
+            label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.INCIDENT_HISTORY_ID')
+          },
+          {
+            key: CoreAttributes.IncidentHistoryIds,
+            label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.INCIDENT_HISTORY_IDS')
+          },
         ],
       }
     }));

@@ -1,42 +1,44 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
   Button,
   CalloutDetails,
   Collation,
   Column,
   Department,
-  Dropdown, GeneralConfig,
+  Dropdown,
+  GeneralConfig,
   LooseDataAttribute,
   NumberInput,
-  Page,
+  Page, SimpleDepartment,
   TextInput,
   User
 } from "@models";
-import { CoreSetId } from "@enums";
-import { filter, first, switchMap } from "rxjs";
-import { UserRole, UserService } from "@services/user/user.service";
-import { LooseDataService } from "@services/loose-data/loose-data.service";
-import { LocalizationService } from "@services/localization/localization.service";
-import { Store } from "@ngrx/store";
-import { GlobalState } from "@store";
-import { AttributeGridOptions } from "../_service/attribute-grid-options";
-import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
-import { Router } from "@angular/router";
-import { DepartmentService } from "@services/department/department.service";
-import { ModalService } from "@services/modals/modal/modal.service";
-import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
-import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CustomValidators } from "../../../../helpers/validators";
-import { createDepartmentCallsignFormatInputField } from "../../../../helpers/forms/department";
-import { Validators } from "@angular/forms";
-import { TranslatePipe } from "../../../../pipes/translate.pipe";
-import { GridComponent } from '../../../../components/grid/grid.component';
-import { ContainerComponent } from '../../../../components/container/container.component';
-import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
-import { DynamicFormInputComponent } from "../../../../components/dynamic-form-input/dynamic-form-input.component";
-import { NgIf } from "@angular/common";
-import { ConfigService } from "@services/config/config.service";
+import {CoreSetId} from "@enums";
+import {filter, first, switchMap} from "rxjs";
+import {UserRole, UserService} from "@services/user/user.service";
+import {LooseDataService} from "@services/loose-data/loose-data.service";
+import {LocalizationService} from "@services/localization/localization.service";
+import {Store} from "@ngrx/store";
+import {GlobalState} from "@store";
+import {AttributeGridOptions} from "../_service/attribute-grid-options";
+import {CalloutDetailsService} from "@services/callout-details/callout-details.service";
+import {Router} from "@angular/router";
+import {DepartmentService} from "@services/department/department.service";
+import {ModalService} from "@services/modals/modal/modal.service";
+import {ModalFormService} from "@services/modals/modal-form/modal-form.service";
+import {ModalConfirmService} from "@services/modals/modal-confirm/modal-confirm.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {CustomValidators} from "../../../../helpers/validators";
+import {createDepartmentCallsignFormatInputField} from "../../../../helpers/forms/department";
+import {Validators} from "@angular/forms";
+import {TranslatePipe} from "../../../../pipes/translate.pipe";
+import {GridComponent} from '../../../../components/grid/grid.component';
+import {ContainerComponent} from '../../../../components/container/container.component';
+import {PageHeaderComponent} from '../../../../components/page-header/page-header.component';
+import {DynamicFormInputComponent} from "../../../../components/dynamic-form-input/dynamic-form-input.component";
+import {NgIf} from "@angular/common";
+import {ConfigService} from "@services/config/config.service";
+import {toInteger} from "lodash-es";
 
 @Component({
   selector: 'app-admin-settings',
@@ -86,7 +88,7 @@ export class AdminSettingsComponent implements OnInit {
   usersColumns: Column<User>[] = [
     new Column<User>({
       header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-      show: () => true,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       accessorKey: 'Name',
     }),
     new Column<User>({
@@ -128,7 +130,7 @@ export class AdminSettingsComponent implements OnInit {
     },
     {
       label: 'UI.ACTION.CREATE_DEPARTMENT',
-      show: () => true,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
     }
@@ -159,7 +161,7 @@ export class AdminSettingsComponent implements OnInit {
     }),
     new Column<Department>({
       header: 'UI.LABEL.ACTION.PLURAL',
-      show: () => this.userService.userHasRole(UserRole.Admin),
+      show: () => this.userService.userIsDepartmentManagerOrAdmin(),
       actions: [
         {
           type: 'button',
@@ -171,7 +173,7 @@ export class AdminSettingsComponent implements OnInit {
         {
           type: 'button',
           label: 'UI.ACTION.DELETE',
-          show: () => true,
+          show: () => this.userService.userHasRole(UserRole.Admin),
           disabled: () => false,
           onClick: department => {
             this._modalConfirmService.open({
@@ -289,7 +291,7 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   private getSettings(): void {
-    if (!this.user || !this.userService.userHasRole(UserRole.Admin)) {
+    if (!this.user || !this.userService.userIsDepartmentManagerOrAdmin()) {
       return;
     }
 
@@ -333,7 +335,15 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   getDepartments(): void {
-    this._departmentService.getAllPageable(this.departmentsCollation).subscribe(res => {
+    const isDepartmentManager = this.userService.userIsDepartmentManager();
+    const isAdmin = this.userService.userHasRole(UserRole.Admin);
+
+    this._departmentService.getAllPageable({
+      ...this.departmentsCollation,
+      Filters: {
+        UserDepartment: isDepartmentManager && isAdmin ? false : isDepartmentManager,
+      }
+    }).subscribe(res => {
       this.departments = res;
     });
   }
@@ -381,4 +391,6 @@ export class AdminSettingsComponent implements OnInit {
         this._modalService.handleResponse(),
       ).subscribe(() => this.getDepartments())
   }
+
+  protected readonly UserRole = UserRole;
 }

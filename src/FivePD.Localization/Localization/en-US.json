@@ -55,6 +55,7 @@
   "UI.ACTION.CREATE_DIVISION": "Create division",
   "UI.ACTION.CREATE_RANK": "Create rank",
   "UI.ACTION.DELETE": "Delete",
+  "UI.ACTION.DEPT_ADMIN": "Department Manager",
   "UI.ACTION.DISPATCH": "Dispatch",
   "UI.ACTION.EDIT": "Edit",
   "UI.ACTION.JOIN": "Join",
