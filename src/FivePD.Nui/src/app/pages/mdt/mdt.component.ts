@@ -6,14 +6,14 @@ import { NotificationWrapperComponent } from '../../components/notification-wrap
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { HeaderComponent } from '../../components/header/header.component';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from "@angular/common";
 
 @Component({
   selector: 'app-mdt',
   templateUrl: './mdt.component.html',
   styleUrls: ['./mdt.component.sass'],
   standalone: true,
-  imports: [NgClass, HeaderComponent, NgIf, SidebarComponent, RouterOutlet, NotificationWrapperComponent]
+  imports: [NgClass, HeaderComponent, SidebarComponent, RouterOutlet, NotificationWrapperComponent]
 })
 export class MdtComponent implements OnInit {
 

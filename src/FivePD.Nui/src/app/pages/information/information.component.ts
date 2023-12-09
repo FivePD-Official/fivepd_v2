@@ -5,14 +5,13 @@ import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-information',
   templateUrl: './information.component.html',
   styleUrls: ['./information.component.sass'],
   standalone: true,
-  imports: [NgIf, TranslatePipe]
+  imports: [TranslatePipe]
 })
 export class InformationComponent {
 

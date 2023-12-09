@@ -2,14 +2,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Collation, Page } from "@models";
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IconComponent } from '../icon/icon.component';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.sass'],
   standalone: true,
-  imports: [NgIf, NgClass, IconComponent, TranslatePipe]
+  imports: [NgClass, IconComponent, TranslatePipe]
 })
 export class PaginationComponent {
 

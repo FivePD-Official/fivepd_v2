@@ -23,7 +23,7 @@ export interface ModalOptions<T = any> {
 }
 
 export interface ModalFormOptions<T> extends Omit<ModalOptions<T>, 'buttons'> {
-  fields?: (entity: T) => FormInputBase<any>[];
+  fields?: (entity?: T) => FormInputBase<any>[];
   valueResolver?: ValueResolver<T>;
   buttons: ModalSubmitButton;
 }

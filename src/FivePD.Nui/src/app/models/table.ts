@@ -71,7 +71,7 @@ export type TableCellActions<T> =
   | TableCellActionCheckbox<T>;
 
 export interface TableCellAction<T> {
-  type: 'button' | 'select' | 'checkbox';
+  type: 'button' | 'singleSelect' | 'multiSelect' | 'checkbox';
   label: string;
   show?: (item: T) => boolean;
   disabled?: (item: T) => boolean;
@@ -88,7 +88,7 @@ export interface TableCellActionSelect<T> extends TableCellAction<T> {
 }
 
 export interface TableCellActionSelectMulti<T> extends TableCellAction<T> {
-  selectedItemsResolver: (item: T, dropdownItemKey: any) => boolean;
+  value: (item: T) => number[];
   items: () => TableCellActionSelectItem[];
   onSelectMulti: (item: T, selectedIds: number[], onResponse: (response: ActionResponse) => void) => void;
   resetWhenSelectedId?: number;

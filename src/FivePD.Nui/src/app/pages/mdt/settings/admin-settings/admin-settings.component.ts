@@ -1,71 +1,69 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   Button,
   CalloutDetails,
   Collation,
   Column,
   Department,
-  Dropdown,
   GeneralConfig,
   LooseDataAttribute,
-  NumberInput,
-  Page, SimpleDepartment,
+  NumberField,
+  Page,
+  SingleSelectField,
   TextInput,
   User
 } from "@models";
-import {CoreSetId} from "@enums";
-import {filter, first, switchMap} from "rxjs";
-import {UserRole, UserService} from "@services/user/user.service";
-import {LooseDataService} from "@services/loose-data/loose-data.service";
-import {LocalizationService} from "@services/localization/localization.service";
-import {Store} from "@ngrx/store";
-import {GlobalState} from "@store";
-import {AttributeGridOptions} from "../_service/attribute-grid-options";
-import {CalloutDetailsService} from "@services/callout-details/callout-details.service";
-import {Router} from "@angular/router";
-import {DepartmentService} from "@services/department/department.service";
-import {ModalService} from "@services/modals/modal/modal.service";
-import {ModalFormService} from "@services/modals/modal-form/modal-form.service";
-import {ModalConfirmService} from "@services/modals/modal-confirm/modal-confirm.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {CustomValidators} from "../../../../helpers/validators";
-import {createDepartmentCallsignFormatInputField} from "../../../../helpers/forms/department";
-import {Validators} from "@angular/forms";
-import {TranslatePipe} from "../../../../pipes/translate.pipe";
-import {GridComponent} from '../../../../components/grid/grid.component';
-import {ContainerComponent} from '../../../../components/container/container.component';
-import {PageHeaderComponent} from '../../../../components/page-header/page-header.component';
-import {DynamicFormInputComponent} from "../../../../components/dynamic-form-input/dynamic-form-input.component";
-import {NgIf} from "@angular/common";
-import {ConfigService} from "@services/config/config.service";
-import {toInteger} from "lodash-es";
+import { CoreSetId } from "@enums";
+import { filter, first, switchMap } from "rxjs";
+import { UserRole, UserService } from "@services/user/user.service";
+import { LooseDataService } from "@services/loose-data/loose-data.service";
+import { LocalizationService } from "@services/localization/localization.service";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
+import { AttributeGridOptions } from "../_service/attribute-grid-options";
+import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
+import { Router } from "@angular/router";
+import { DepartmentService } from "@services/department/department.service";
+import { ModalService } from "@services/modals/modal/modal.service";
+import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
+import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { CustomValidators } from "../../../../helpers/validators";
+import { createDepartmentCallsignFormatInputField } from "../../../../helpers/forms/department";
+import { Validators } from "@angular/forms";
+import { TranslatePipe } from "../../../../pipes/translate.pipe";
+import { GridComponent } from '../../../../components/grid/grid.component';
+import { ContainerComponent } from '../../../../components/container/container.component';
+import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import { ConfigService } from "@services/config/config.service";
+import {
+  SingleSelectFieldComponent
+} from "../../../../components/form-inputs/single-select-field/single-select-field.component";
 
 @Component({
   selector: 'app-admin-settings',
   templateUrl: './admin-settings.component.html',
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, DynamicFormInputComponent, NgIf]
+  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent]
 })
 export class AdminSettingsComponent implements OnInit {
 
   generalConfig?: GeneralConfig;
 
-  readonly setAttributeDropdown = new Dropdown({
+  readonly setAttributeDropdown = new SingleSelectField({
     key: '#',
     value: CoreSetId.ArrestReport as any,
-    dropdownOptions: {
-      label: '',
-      addDefaultItem: false,
-      items: [
-        {key: CoreSetId.ArrestReport, label: 'Arrest reports'},
-        {key: CoreSetId.IncidentReport, label: 'Incident reports'},
-        {key: CoreSetId.PedTicket, label: 'Ped tickets'},
-        {key: CoreSetId.PedWarning, label: 'Ped warnings'},
-      ],
-      size: 'normal',
-      height: 'base',
-      variant: 'secondary',
-    },
+    defaultItemLabel: '',
+    addDefaultItem: false,
+    items: [
+      {key: CoreSetId.ArrestReport, label: 'Arrest reports'},
+      {key: CoreSetId.IncidentReport, label: 'Incident reports'},
+      {key: CoreSetId.PedTicket, label: 'Ped tickets'},
+      {key: CoreSetId.PedWarning, label: 'Ped warnings'},
+    ],
+    size: 'normal',
+    height: 'base',
+    variant: 'secondary',
     required: false,
   });
   selectedSet: string = CoreSetId.ArrestReport;
@@ -96,9 +94,9 @@ export class AdminSettingsComponent implements OnInit {
       show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
-          type: 'select',
+          type: 'multiSelect',
           label: this._localization.translate('UI.LABEL.ROLE.NO'),
-          selectedItemsResolver: (user, dropdownItemKey) => this.userService.userHasRole(dropdownItemKey),
+          value: () => this.userService.getUserRoleBits(),
           items: () => {
             return [
               {key: UserRole.Admin, label: this._localization.translate('UI.LABEL.ROLE.ADMIN')},
@@ -108,7 +106,13 @@ export class AdminSettingsComponent implements OnInit {
           },
           resetWhenSelectedId: UserRole.None,
           onSelectMulti: (user, selectedIds) => {
-            this.userService.changeRole(user, selectedIds).subscribe();
+            this.userService.changeRole(user, selectedIds)
+              .pipe(
+                filter(res => res.Status),
+              )
+              .subscribe(() => {
+                this.userService.refreshData()
+              });
           }
         }
       ]
@@ -285,7 +289,7 @@ export class AdminSettingsComponent implements OnInit {
     );
   }
 
-  onTableCellActionSelect(selectedItemKey: string): void {
+  onTableCellActionSelect(selectedItemKey: any): void {
     this.selectedSet = selectedItemKey;
     this.setAttributesGrid();
   }
@@ -370,7 +374,7 @@ export class AdminSettingsComponent implements OnInit {
           validators: [CustomValidators.onlyLetters()]
         }),
         createDepartmentCallsignFormatInputField(this._localization),
-        new NumberInput({
+        new NumberField({
           key: 'MaxUsers',
           required: true,
           label: 'UI.LABEL.MAX_MEMBERS.TITLE',

@@ -18,28 +18,23 @@ export type DropdownVariants = Extract<ButtonVariants, 'secondary' | 'tertiary' 
 export type DropdownHeightVariants = 'base' | 'sm';
 
 export interface DropdownBaseOptions {
-  label: string;
+  defaultItemLabel: string;
   addDefaultItem?: boolean;
   items: DropdownItem[];
   size: 'small' | 'normal';
   height?: DropdownHeightVariants;
   variant: DropdownVariants;
-  type?: 'single' | 'multi';
 }
 
-export interface DropdownSingleOptions {
-  selectedItemResolver?: (dropdownItemKey: any) => boolean;
+export interface SingleSelectFieldOptions extends DropdownBaseOptions {
 }
 
-export interface DropdownMultiOptions {
-  selectedItemsResolver: (dropdownItemKey: any) => boolean;
+export interface MultiSelectFieldOptions extends DropdownBaseOptions {
   resetWhenSelectedId?: number;
 }
 
-export type DropdownOptions = DropdownBaseOptions & (DropdownSingleOptions | DropdownMultiOptions);
-
 interface FormInputBaseModel<T> {
-  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'checkboxGroup';
+  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'singleSelect' | 'multiSelect' | 'checkboxGroup';
   value: T | undefined;
   key: string;
   label: string;
@@ -47,12 +42,10 @@ interface FormInputBaseModel<T> {
   placeholder: string;
   required: boolean;
   readonly: boolean;
-  options: Record<string, any>;
-  dropdownOptions: DropdownOptions | undefined;
   validators: ValidatorFn[];
   asyncValidators: AsyncValidatorFn[];
-  checkboxGroup: Checkbox[];
   show?: (form: FormGroup) => boolean;
+  options: Record<string, any>;
 }
 
 export type FormInputBaseOptions<T> = {
@@ -70,10 +63,8 @@ export abstract class FormInputBase<T> {
   required: FormInputBaseModel<T>['required'];
   readonly: FormInputBaseModel<T>['readonly'];
   options: FormInputBaseModel<T>['options'];
-  dropdownOptions: FormInputBaseModel<T>['dropdownOptions'];
   validators: FormInputBaseModel<T>['validators'];
   asyncValidators: FormInputBaseModel<T>['asyncValidators'];
-  checkboxGroup: Checkbox[];
   show: (form: FormGroup) => boolean;
 
   protected constructor(
@@ -88,20 +79,10 @@ export abstract class FormInputBase<T> {
     this.placeholder = options.placeholder || '';
     this.required = !!options.required;
     this.readonly = !!options.readonly;
-    this.dropdownOptions = options.dropdownOptions || undefined;
     this.options = options.options || {};
     this.validators = options.validators || [];
     this.asyncValidators = options.asyncValidators || [];
-    this.checkboxGroup = options.checkboxGroup || [];
     this.show = options.show || (() => true);
-
-    if (this.dropdownOptions) {
-      if ('selectedItemResolver' in this.dropdownOptions) {
-        this.dropdownOptions.type = 'single';
-      } else if ('selectedItemsResolver' in this.dropdownOptions) {
-        this.dropdownOptions.type = 'multi';
-      }
-    }
   }
 
   public get type() {
@@ -115,38 +96,66 @@ export class TextInput extends FormInputBase<string> {
   }
 }
 
-export class Textarea extends FormInputBase<string> {
+export class TextareaField extends FormInputBase<string> {
   constructor(options: FormInputBaseOptions<string>) {
     super('textarea', options);
   }
 }
 
-export class NumberInput extends FormInputBase<number> {
+export class NumberField extends FormInputBase<number> {
   constructor(options: FormInputBaseOptions<number>) {
     super('number', options);
   }
 }
 
-export class DateInput extends FormInputBase<Date> {
+export class DateField extends FormInputBase<Date> {
   constructor(options: FormInputBaseOptions<Date>) {
     super('date', options);
   }
 }
 
-export class Dropdown extends FormInputBase<number> {
-  constructor(options: FormInputBaseOptions<number>) {
-    super('dropdown', options);
+export class SingleSelectField extends FormInputBase<number> {
+  defaultItemLabel: string;
+  addDefaultItem?: boolean;
+  items: DropdownItem[];
+  size: 'small' | 'normal';
+  height?: DropdownHeightVariants;
+  variant: DropdownVariants;
+
+  constructor(options: FormInputBaseOptions<number> & SingleSelectFieldOptions) {
+    super('singleSelect', options);
+    this.defaultItemLabel = options.defaultItemLabel;
+    this.addDefaultItem = options.addDefaultItem;
+    this.items = options.items;
+    this.size = options.size;
+    this.height = options.height;
+    this.variant = options.variant;
   }
 }
 
-export class Checkbox extends FormInputBase<boolean> {
+export class MultiSelectField extends FormInputBase<number[]> {
+  defaultItemLabel: string;
+  addDefaultItem?: boolean;
+  items: DropdownItem[];
+  size: 'small' | 'normal';
+  height?: DropdownHeightVariants;
+  variant: DropdownVariants;
+  resetWhenSelectedId?: number;
+
+  constructor(options: FormInputBaseOptions<number[]> & MultiSelectFieldOptions) {
+    super('multiSelect', options);
+    this.defaultItemLabel = options.defaultItemLabel;
+    this.addDefaultItem = options.addDefaultItem;
+    this.items = options.items;
+    this.size = options.size;
+    this.height = options.height;
+    this.variant = options.variant;
+    this.resetWhenSelectedId = options.resetWhenSelectedId;
+  }
+}
+
+export class CheckboxField extends FormInputBase<boolean> {
   constructor(options: FormInputBaseOptions<boolean>) {
     super('checkbox', options);
-  }
-}
-
-export class CheckboxGroup extends FormInputBase<null> {
-  constructor(options: FormInputBaseOptions<null>) {
-    super('checkboxGroup', options);
   }
 }

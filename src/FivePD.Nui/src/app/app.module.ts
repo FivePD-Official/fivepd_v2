@@ -23,7 +23,6 @@ import { NotificationComponent } from './components/notification/notification.co
 import { ButtonComponent } from './components/button/button.component';
 import { DynamicFormComponent } from './components/dynamic-form/dynamic-form.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DynamicFormInputComponent } from './components/dynamic-form-input/dynamic-form-input.component';
 import { DepartmentService } from '@services/department/department.service';
 import { ModalComponent } from './components/modal/modal.component';
 import { GridComponent } from './components/grid/grid.component';
@@ -114,7 +113,6 @@ import { AdminSettingsComponent } from "./pages/mdt/settings/admin-settings/admi
     NotificationComponent,
     ButtonComponent,
     DynamicFormComponent,
-    DynamicFormInputComponent,
     ModalComponent,
     GridComponent,
     DepartmentsViewComponent,

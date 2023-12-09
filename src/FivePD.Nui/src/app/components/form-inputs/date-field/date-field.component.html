@@ -1,0 +1,10 @@
+<app-base-field [field]="field" [form]="form" [control]="control">
+  <input type="text"
+         inputmode="numeric"
+         [formControl]="control"
+         [attr.id]="field.key"
+         [attr.placeholder]="field.placeholder | translate"
+         [appDateMask]="form"
+         [readonly]="field.readonly"
+         (input)="onChange.emit($any($event))"/>
+</app-base-field>

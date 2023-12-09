@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Button, ButtonSizes, ButtonVariants } from '@models';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 const variants: Record<ButtonVariants, string> = {
   'primary': `text-white flex flex-col justify-center items-center
@@ -49,7 +49,7 @@ const sizeVariants: Record<ButtonSizes, string> = {
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.sass'],
   standalone: true,
-  imports: [NgIf, NgClass]
+  imports: [NgClass]
 })
 export class ButtonComponent implements OnInit, OnChanges {
 
