@@ -222,7 +222,7 @@ public class DepartmentService : IDepartmentService
             department => department.Callsign.ToLower().Contains(departmentsRequest.Filters.Callsign.ToLower()));
         filters.Add(
             departmentsRequest.Filters.UserDepartment,
-            department => department.Id == user.DepartmentId || user.HasRole(UserRole.Admin));
+            department => department.Id == user.DepartmentId);
         var page = this._databaseContext.Departments
             .AsNoTracking()
             .Include(department => department.Users)
