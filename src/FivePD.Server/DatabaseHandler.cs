@@ -149,6 +149,7 @@ internal static class DatabaseHandler
                         Kick = false,
                         SetRank = false,
                         SetDivision = false,
+                        DepartmentManager = false,
                     },
                 },
                 new()
@@ -160,6 +161,7 @@ internal static class DatabaseHandler
                         Kick = false,
                         SetRank = false,
                         SetDivision = false,
+                        DepartmentManager = false,
                     },
                 },
                 new()
@@ -171,6 +173,7 @@ internal static class DatabaseHandler
                         Kick = false,
                         SetRank = false,
                         SetDivision = false,
+                        DepartmentManager = false,
                     },
                 },
             },
