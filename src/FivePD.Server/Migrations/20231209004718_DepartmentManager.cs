@@ -8,9 +8,7 @@ namespace FivePD.Server.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Permission_DepartmentManager",
-                table: "Ranks");
+            
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
