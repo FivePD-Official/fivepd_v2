@@ -28,16 +28,19 @@ public class DepartmentService : IDepartmentService
 {
     private readonly DatabaseContext _databaseContext;
     private readonly IPlayerDataService _playerDataService;
+    private readonly IPlayerHandlerService _playerHandlerService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DepartmentService"/> class.
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerDataService">The <see cref="PlayerDataService"/> to use.</param>
-    public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService)
+    /// <param name="playerHandlerService">The <see cref="PlayerHandlerService"/> to use.</param>
+    public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService, IPlayerHandlerService playerHandlerService)
     {
         this._databaseContext = databaseContext;
         this._playerDataService = playerDataService;
+        this._playerHandlerService = playerHandlerService;
     }
 
     /// <inheritdoc />
@@ -209,7 +212,7 @@ public class DepartmentService : IDepartmentService
     private void GetAllPageableUI([FromSource] Player player, ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var departmentsRequest = departmentsRequestString.ConvertTo<DepartmentsRequest>();
-        User user = this._playerDataService.FindUserOfPlayer(player);
+        User user = this._playerHandlerService.FindUserOfPlayer(player);
         var filters = new Filters<Department>();
         filters.Add(
             !string.IsNullOrEmpty(departmentsRequest.Filters.Name),
