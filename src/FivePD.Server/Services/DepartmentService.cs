@@ -747,6 +747,7 @@ public class DepartmentService : IDepartmentService
     private void KickPlayerFromDepartmentNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var idRequest = expandoObject.ConvertTo<IdRequest>();
+        Debug.WriteLine(idRequest.Id.ToString());
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == idRequest.Id);
         if (user is null)
         {
