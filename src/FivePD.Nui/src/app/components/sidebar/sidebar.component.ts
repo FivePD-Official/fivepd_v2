@@ -101,7 +101,7 @@ export class SidebarComponent {
       title: 'UI.LABEL.SETTINGS',
       path: () => '/mdt/settings/admin',
       icon: IconType.Cog,
-      show: () => this.userService.userIsDepartmentManager(),
+      show: () => this.userService.userIsDepartmentManagerOrAdmin(),
     },
     {
       title: 'Developer tools',

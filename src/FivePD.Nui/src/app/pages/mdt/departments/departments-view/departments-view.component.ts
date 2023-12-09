@@ -164,7 +164,7 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     }
 
-    if (this.mode === 'edit' && this.userService.userIsDepartmentManager()) {
+    if (this.mode === 'edit' && this.userService.userIsDepartmentManagerOrAdmin()) {
       columns.push(new Column<FormattedRank>({
         header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
         actions: [
@@ -261,10 +261,10 @@ export class DepartmentsViewComponent implements OnInit {
   private createRanksButtons(): Button[] {
     const buttons: Button[] = [];
 
-    if (this.mode === 'edit' && this.userService.userIsDepartmentManager()) {
+    if (this.mode === 'edit' && this.userService.userIsDepartmentManagerOrAdmin()) {
       buttons.push({
         label: this._localization.translate('UI.ACTION.CREATE_RANK'),
-        show: () => this.userService.userIsDepartmentManager(),
+        show: () => this.userService.userIsDepartmentManagerOrAdmin(),
         disabled: () => false,
         onClick: () => this._modalFormService.open({
           title: 'UI.ACTION.CREATE_RANK',
@@ -345,7 +345,7 @@ export class DepartmentsViewComponent implements OnInit {
       }),
     ];
 
-    if (this.mode === 'edit' && this.userService.userIsDepartmentManager()) {
+    if (this.mode === 'edit' && this.userService.userIsDepartmentManagerOrAdmin()) {
       columns.push(new Column<Division>({
         header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
         actions: [
@@ -407,7 +407,7 @@ export class DepartmentsViewComponent implements OnInit {
   private createDivisionsButtons(): Button[] {
     const buttons: Button[] = [];
 
-    if (this.mode === 'edit' && this.userService.userIsDepartmentManager()) {
+    if (this.mode === 'edit' && this.userService.userIsDepartmentManagerOrAdmin()) {
       buttons.push({
         label: this._localization.translate('UI.ACTION.CREATE_DIVISION'),
         show: () => true,
@@ -453,7 +453,7 @@ export class DepartmentsViewComponent implements OnInit {
       })
     ];
 
-    if (this.userService.userIsDepartmentManager()) {
+    if (this.userService.userIsDepartmentManagerOrAdmin()) {
 
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
@@ -501,7 +501,7 @@ export class DepartmentsViewComponent implements OnInit {
     }
 
 
-    if (this.userService.userIsDepartmentManager() || this.user?.User?.Rank?.Permission.SetRank) {
+    if (this.userService.userIsDepartmentManagerOrAdmin() || this.user?.User?.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
         actions: [
@@ -526,7 +526,7 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     }
 
-    if (this.userService.userIsDepartmentManager() || this.user?.User?.Rank?.Permission.SetDivision) {
+    if (this.userService.userIsDepartmentManagerOrAdmin() || this.user?.User?.Rank?.Permission.SetDivision) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
         actions: [
@@ -554,7 +554,7 @@ export class DepartmentsViewComponent implements OnInit {
     if (this.generalConfig?.config.Features.ProgressionSystem) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.RANK.FIXED'),
-        show: () => this.userService.userIsDepartmentManager(),
+        show: () => this.userService.userIsDepartmentManagerOrAdmin(),
         actions: [
           {
             type: 'checkbox',
@@ -571,7 +571,7 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     }
 
-    if (this.userService.userIsDepartmentManager() || this.user?.User?.Rank?.Permission.Kick) {
+    if (this.userService.userIsDepartmentManagerOrAdmin() || this.user?.User?.Rank?.Permission.Kick) {
       columns.push(new Column<FormattedUser>({
         header: 'Actions',
         actions: [

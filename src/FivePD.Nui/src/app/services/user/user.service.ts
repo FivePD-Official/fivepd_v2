@@ -48,7 +48,11 @@ export class UserService {
   }
 
   userIsDepartmentManager(): boolean {
-    return this.userHasRole(UserRole.Admin) || (this.user?.User?.Rank?.Permission?.DepartmentManager || false)
+    return this.user?.User?.Rank?.Permission?.DepartmentManager || false;
+  }
+
+  userIsDepartmentManagerOrAdmin(): boolean {
+    return this.userHasRole(UserRole.Admin) || this.userIsDepartmentManager();
   }
 
   refreshData(): void {
