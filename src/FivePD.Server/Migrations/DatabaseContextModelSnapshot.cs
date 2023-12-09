@@ -557,6 +557,9 @@ namespace FivePD.Server.Migrations
                             b1.Property<int>("RankId")
                                 .HasColumnType("int");
 
+                            b1.Property<bool>("DeptAdmin")
+                                .HasColumnType("tinyint(1)");
+
                             b1.Property<bool>("Kick")
                                 .HasColumnType("tinyint(1)");
 
@@ -564,9 +567,6 @@ namespace FivePD.Server.Migrations
                                 .HasColumnType("tinyint(1)");
 
                             b1.Property<bool>("SetRank")
-                                .HasColumnType("tinyint(1)");
-
-                            b1.Property<bool>("DeptAdmin")
                                 .HasColumnType("tinyint(1)");
 
                             b1.HasKey("RankId");
