@@ -22,7 +22,7 @@ public class MessageService : IMessageService
 {
     private readonly DatabaseContext _databaseContext;
     private readonly IInternalAddonMetadataService _addonMetadataService;
-    private readonly IPlayerDataService _playerDataService;
+    private readonly IPlayerHandlerService _playerHandlerService;
     private readonly INotificationService _notificationService;
 
     /// <summary>
@@ -30,17 +30,17 @@ public class MessageService : IMessageService
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
-    /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
+    /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
     public MessageService(
         DatabaseContext databaseContext,
         IAddonMetadataService addonMetadataService,
-        IPlayerDataService playerDataService,
+        IPlayerHandlerService playerHandlerService,
         INotificationService notificationService)
     {
         this._databaseContext = databaseContext;
         this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
-        this._playerDataService = playerDataService;
+        this._playerHandlerService = playerHandlerService;
         this._notificationService = notificationService;
     }
 
@@ -86,13 +86,13 @@ public class MessageService : IMessageService
     /// <inheritdoc />
     public Message Send(Player to, string subject, string content, string sender = "")
     {
-        var user = this._playerDataService.FindUserOfPlayer(to);
+        var user = this._playerHandlerService.FindUserOfPlayer(to);
         return this.Send(user, subject, content, sender);
     }
 
     private void NotifyUser(User user, Message message)
     {
-        var player = this._playerDataService.FindPlayerOfUser(user);
+        var player = this._playerHandlerService.FindPlayerOfUser(user);
         if (player is null)
         {
             return;
@@ -108,7 +108,7 @@ public class MessageService : IMessageService
     {
         var request = expandoObject.ConvertTo<IdRequest>();
 
-        var user = this._playerDataService.FindUserOfPlayer(player);
+        var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null)
         {
             return;
@@ -125,7 +125,7 @@ public class MessageService : IMessageService
     {
         var request = expandoObject.ConvertTo<MessageGetAllPageableRequest>();
 
-        var user = this._playerDataService.FindUserOfPlayer(player);
+        var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null)
         {
             return;
@@ -176,7 +176,7 @@ public class MessageService : IMessageService
     {
         var request = expandoObject.ConvertTo<IdRequest>();
 
-        var user = this._playerDataService.FindUserOfPlayer(player);
+        var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null)
         {
             return;

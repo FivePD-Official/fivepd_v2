@@ -26,6 +26,11 @@ public class User
     public int Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the preferred language of the user.
+    /// </summary>
+    public string PreferredLanguage { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the user is playing for the first time.
     /// </summary>
     public bool FirstLogin { get; set; }

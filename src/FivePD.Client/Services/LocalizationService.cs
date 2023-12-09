@@ -31,9 +31,6 @@ internal class LocalizationService : ILocalizationService, IOnInit
     }
 
     /// <inheritdoc />
-    public event EventHandler<string> LocalizationChanged;
-
-    /// <inheritdoc />
     public Dictionary<string, string> Locales { get; private set; }
 
     /// <inheritdoc />
@@ -42,6 +39,7 @@ internal class LocalizationService : ILocalizationService, IOnInit
     /// <inheritdoc />
     public void OnInit()
     {
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Localization.GetAvailableLocalizations);
         this._eventHandlerDictionary.AddUIEvent(
             Events.Localization.GetLocalizationFromNui,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this.CurrentLocalization)); }));
@@ -56,25 +54,7 @@ internal class LocalizationService : ILocalizationService, IOnInit
             }));
         });
 
-        this.LoadDefaultLocalization();
-    }
-
-    /// <inheritdoc />
-    public void LoadLocalization(string locale)
-    {
-        BaseScript.TriggerServerEvent(
-            Events.Localization.GetLocalizationFromServer,
-            locale,
-            new Action<string>(localization =>
-            {
-                this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
-                this.LocalizationChanged?.Invoke(this, locale);
-                Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
-                {
-                    { "Event", Events.UI.Player.LocalizationChange },
-                    { "Data", localization },
-                }));
-            }));
+        this.LoadLocalization();
     }
 
     /// <inheritdoc />
@@ -83,8 +63,18 @@ internal class LocalizationService : ILocalizationService, IOnInit
         return this.CurrentLocalization.GetValueByPath(key);
     }
 
-    private void LoadDefaultLocalization()
+    private void LoadLocalization()
     {
-        this.LoadLocalization("en-US");
+        BaseScript.TriggerServerEvent(
+            Events.Localization.GetDefaultOrPreferred,
+            new Action<string, string>((locale, localization) =>
+            {
+                this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
+                Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
+                {
+                    { "Event", Events.UI.Player.LocalizationChange },
+                    { "Data", localization },
+                }));
+            }));
     }
 }

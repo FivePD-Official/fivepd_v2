@@ -96,7 +96,7 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
       if (this.field.type === 'dropdown') {
         const selectItem = this.dropdownFilteredItems.find(item => item.key === value);
         if (selectItem) {
-          //this.onDropdownSelect(selectItem, false);
+          this.onDropdownSelect(selectItem, false);
         }
       }
 
@@ -208,11 +208,19 @@ export class DynamicFormInputComponent implements OnInit, OnChanges {
           }
         } else {
           this.dropdownSelectedItem.label = label;
+          this.control?.patchValue(this.field.value);
         }
       }
     } else if (this.field.value === undefined) {
       this.control?.patchValue(-1);
       this.dropdownSelectedItem.label = label;
+    } else {
+      const item = items.find(item => item.key === this.field.value);
+      if (item) {
+        this.setSelectedItem(item, true);
+      } else {
+        this.dropdownSelectedItem.label = label;
+      }
     }
 
     this.setMultiSelectLabel();

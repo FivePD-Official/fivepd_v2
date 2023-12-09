@@ -5,6 +5,7 @@ import { EventService } from '@services/event/event.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import getKeyFromObjectPath from 'lodash-es/get';
 import { replaceParams } from '@helpers';
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,10 @@ export class LocalizationService {
     this._http.post('fivepd:localization:getLocalizationFromNui', {}).subscribe(res => {
       this.set(res)
     });
+  }
+
+  getAvailableLocalizations() {
+    return this._http.post<Record<string, string>>('fivepd:localization:getAvailableLocalizations', {});
   }
 
   translate(path: string, params: Record<string, string> = {}, boldParams: boolean = true): string {
