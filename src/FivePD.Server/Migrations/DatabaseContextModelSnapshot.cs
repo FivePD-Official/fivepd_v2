@@ -572,9 +572,6 @@ namespace FivePD.Server.Migrations
                             b1.Property<bool>("SetRank")
                                 .HasColumnType("tinyint(1)");
 
-                            b1.Property<bool>("DepartmentManager")
-                                .HasColumnType("tinyint(1)");
-
                             b1.HasKey("RankId");
 
                             b1.ToTable("Ranks");
