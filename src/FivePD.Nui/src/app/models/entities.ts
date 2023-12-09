@@ -67,7 +67,7 @@ export interface Rank extends WithId {
     Kick: boolean;
     SetRank: boolean;
     SetDivision: boolean;
-    DeptAdmin: boolean;
+    DepartmentManager: boolean;
   };
 }
 

@@ -64,6 +64,6 @@ public class Rank
         /// Gets or sets a value indicating whether the user has the ability
         /// to change everything in a department.
         /// </summary>
-        public bool DeptAdmin { get; set; }
+        public bool DepartmentManager { get; set; }
     }
 }

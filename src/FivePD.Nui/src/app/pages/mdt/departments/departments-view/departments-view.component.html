@@ -17,7 +17,7 @@
               (onClick)="leaveDepartment()"/>
 </app-page-header>
 
-@if (mode === 'edit' && userService.userIsDeptAdmin()) {
+@if (mode === 'edit' && userService.userIsDepartmentManager()) {
 
   @if (department) {
     <app-container [columns]="1" [rows]="2">

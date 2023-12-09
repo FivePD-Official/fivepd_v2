@@ -153,7 +153,7 @@ export class ReportsComponent implements OnInit {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.EDIT'),
-              show: () => this._userService.userIsDeptAdmin(),
+              show: () => this._userService.userIsDepartmentManager(),
               onClick: entity => {
                 this.modalFormService.open({
                     title: 'UI.ACTION.EDIT',
@@ -176,7 +176,7 @@ export class ReportsComponent implements OnInit {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.DELETE'),
-              show: () => this._userService.userIsDeptAdmin(),
+              show: () => this._userService.userIsDepartmentManager(),
               onClick: item => {
                 this.modalConfirmService.open({
                   title: 'UI.LABEL.ARREST_REPORT.DELETE.TITLE',
@@ -243,7 +243,7 @@ export class ReportsComponent implements OnInit {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.EDIT'),
-              show: () => this._userService.userIsDeptAdmin(),
+              show: () => this._userService.userIsDepartmentManager(),
               onClick: entity => {
                 this.modalFormService.open({
                     title: 'UI.ACTION.EDIT',
@@ -265,7 +265,7 @@ export class ReportsComponent implements OnInit {
             {
               type: 'button',
               label: this._localization.translate('UI.ACTION.DELETE'),
-              show: () => this._userService.userIsDeptAdmin(),
+              show: () => this._userService.userIsDepartmentManager(),
               onClick: item => {
                 this.modalConfirmService.open({
                   title: 'UI.LABEL.INCIDENT_REPORT.DELETE.TITLE',

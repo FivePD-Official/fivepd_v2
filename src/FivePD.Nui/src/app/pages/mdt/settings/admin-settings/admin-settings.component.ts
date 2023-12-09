@@ -161,7 +161,7 @@ export class AdminSettingsComponent implements OnInit {
     }),
     new Column<Department>({
       header: 'UI.LABEL.ACTION.PLURAL',
-      show: () => this.userService.userIsDeptAdmin(),
+      show: () => this.userService.userIsDepartmentManager(),
       actions: [
         {
           type: 'button',
@@ -291,7 +291,7 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   private getSettings(): void {
-    if (!this.user || !this.userService.userIsDeptAdmin()) {
+    if (!this.user || !this.userService.userIsDepartmentManager()) {
       return;
     }
 
