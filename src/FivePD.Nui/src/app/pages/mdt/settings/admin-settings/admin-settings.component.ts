@@ -335,10 +335,13 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   getDepartments(): void {
+    const isDepartmentManager = this.userService.userIsDepartmentManager();
+    const isAdmin = this.userService.userHasRole(UserRole.Admin);
+
     this._departmentService.getAllPageable({
       ...this.departmentsCollation,
       Filters: {
-        UserDepartment: true
+        UserDepartment: isDepartmentManager && isAdmin ? false : isDepartmentManager,
       }
     }).subscribe(res => {
       this.departments = res;
