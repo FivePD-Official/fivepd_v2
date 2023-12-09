@@ -54,8 +54,7 @@ namespace FivePD.Server.Migrations
                     DepartmentId = table.Column<int>(nullable: true),
                     Permission_Kick = table.Column<bool>(nullable: true),
                     Permission_SetRank = table.Column<bool>(nullable: true),
-                    Permission_SetCallsign = table.Column<bool>(nullable: true),
-                    Permission_DeptAdmin = table.Column<bool>(nullable: true)
+                    Permission_SetCallsign = table.Column<bool>(nullable: true)
                 },
                 constraints: table =>
                 {
