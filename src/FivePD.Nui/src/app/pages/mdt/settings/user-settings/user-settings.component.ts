@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from "@services/user/user.service";
 import { DepartmentService } from "@services/department/department.service";
-import { Department, Dropdown, FormInputBase, FormSubmitEvent, GeneralConfig, TextInput } from "@models";
+import { Department, SingleSelectField, FormInputBase, FormSubmitEvent, GeneralConfig, TextInput } from "@models";
 import { CustomValidators } from "../../../../helpers/validators";
 import { filter, tap, zip } from "rxjs";
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
@@ -48,23 +48,20 @@ export class UserSettingsComponent implements OnInit {
 
       const defaultLanguageIndex = Object.keys(this.availableLocalizations).findIndex(locale => locale === generalConfig.config.DefaultLanguage);
       const preferredLanguageIndex = Object.keys(this.availableLocalizations).findIndex(locale => locale === user.PreferredLanguage);
-      fields.push(new Dropdown({
+      fields.push(new SingleSelectField({
         key: 'PreferredLanguage',
         value: preferredLanguageIndex !== -1 ? preferredLanguageIndex : defaultLanguageIndex,
         label: 'Language',
         required: true,
-        dropdownOptions: {
-          addDefaultItem: false,
-          label: '',
-          type: 'single',
-          height: 'base',
-          variant: 'secondary',
-          size: 'normal',
-          items: Object.values(this.availableLocalizations).map((title, index) => ({
-            key: index,
-            label: title,
-          })),
-        }
+        addDefaultItem: false,
+        height: 'base',
+        defaultItemLabel: 'Language',
+        variant: 'secondary',
+        size: 'normal',
+        items: Object.values(this.availableLocalizations).map((title, index) => ({
+          key: index,
+          label: title,
+        })),
       }));
 
       if (department) {

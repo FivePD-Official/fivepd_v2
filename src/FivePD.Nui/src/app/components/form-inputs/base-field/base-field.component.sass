@@ -1,0 +1,15 @@
+.input-label
+  @apply block font-medium text-zinc-200 mb-1.5
+  &.input-label--checkbox
+    @apply mb-0 cursor-pointer
+    &:hover ~ .checkbox-inner input
+      @apply border-primary
+
+.input-box
+  .help-label
+    @apply block text-zinc-400 mt-1.5
+
+  .input-errors
+    @apply mt-1
+    p
+      @apply block font-medium text-red-600

@@ -8,7 +8,6 @@
               (onCollationChange)="onUsersCollationChange($event)"/>
   }
 
-
   <app-grid
     [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
     [buttons]="departmentsButtons"
@@ -27,7 +26,7 @@
               [columns]="attributesColumns"
               [data]="attributePage"
               (onCollationChange)="onAttributesCollationChange($event)">
-      <app-dynamic-form-input [field]="setAttributeDropdown"
+      <app-single-select-field [field]="setAttributeDropdown"
                               (onChange)="onTableCellActionSelect($event)"/>
     </app-grid>
   }

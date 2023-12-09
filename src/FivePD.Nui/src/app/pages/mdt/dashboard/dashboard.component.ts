@@ -28,13 +28,15 @@ import { GridComponent } from '../../../components/grid/grid.component';
 import { NgIf } from '@angular/common';
 import { ContainerComponent } from '../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
+import { TextFieldComponent } from "../../../components/form-inputs/text-field/text-field.component";
+import { Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, NgIf, GridComponent, TranslatePipe]
+  imports: [PageHeaderComponent, ContainerComponent, NgIf, GridComponent, TranslatePipe, TextFieldComponent]
 })
 export class DashboardComponent implements OnInit {
 

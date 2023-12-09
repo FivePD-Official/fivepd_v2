@@ -102,10 +102,10 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
             label: item.Name,
           }));
           if (singleUser) {
-            singleUser.dropdownOptions!.items = mapped;
+            (singleUser as any)!.items = mapped;
           }
           if (multiUser) {
-            multiUser.dropdownOptions!.items = mapped;
+            (multiUser as any)!.items = mapped;
           }
         })),
       );
@@ -122,10 +122,10 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
             label: item.Name,
           }));
           if (singleDepartment) {
-            singleDepartment.dropdownOptions!.items = mapped;
+            (singleDepartment as any)!.items = mapped;
           }
           if (multiDepartment) {
-            multiDepartment.dropdownOptions!.items = mapped;
+            (multiDepartment as any)!.items = mapped;
           }
         }))
       );
@@ -142,10 +142,10 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
             label: `${item.Title} (${item.GeneratedAt})`,
           }));
           if (singleIncidentHistory) {
-            singleIncidentHistory.dropdownOptions!.items = mapped;
+            (singleIncidentHistory as any)!.items = mapped;
           }
           if (multiIncidentHistory) {
-            multiIncidentHistory.dropdownOptions!.items = mapped;
+            (multiIncidentHistory as any)!.items = mapped;
           }
         })),
       );
@@ -162,10 +162,10 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
             label: `${item.Firstname} ${item.Lastname} - ${item.Gender === FGender.Male ? 'Male' : 'Female'} - ${formatDate(new Date(item.Birthdate), 'none')}`,
           }));
           if (singlePedHistory) {
-            singlePedHistory.dropdownOptions!.items = mapped;
+            (singlePedHistory as any)!.items = mapped;
           }
           if (multiPedHistory) {
-            multiPedHistory.dropdownOptions!.items = mapped;
+            (multiPedHistory as any)!.items = mapped;
           }
         }))
       );

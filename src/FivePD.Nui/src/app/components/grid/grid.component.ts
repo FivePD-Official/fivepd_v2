@@ -1,14 +1,15 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
   Button,
-  Checkbox,
+  CheckboxField,
   Collation,
   Column,
-  Dropdown,
   FormattedRow,
   FormattedRowItem,
   FormInputBase,
+  MultiSelectField,
   Page,
+  SingleSelectField,
   TableCellAction,
   TableCellActionButton,
   TextInput
@@ -19,18 +20,20 @@ import { Router, RouterLink } from "@angular/router";
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { IconComponent } from '../icon/icon.component';
-import { DynamicFormInputComponent } from '../dynamic-form-input/dynamic-form-input.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TippyModule } from '@ngneat/helipopper';
 import { ButtonComponent } from '../button/button.component';
 import { NgClass, NgFor, NgIf } from '@angular/common';
+import { TextFieldComponent } from "../form-inputs/text-field/text-field.component";
+import { SingleSelectFieldComponent } from "../form-inputs/single-select-field/single-select-field.component";
+import { MultiSelectFieldComponent } from "../form-inputs/multi-select-field/multi-select-field.component";
 
 @Component({
   selector: 'app-grid',
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.sass'],
   standalone: true,
-  imports: [NgIf, NgFor, ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, DynamicFormInputComponent, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe]
+  imports: [NgIf, NgFor, ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe, TextFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent]
 })
 export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 
@@ -94,16 +97,14 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 
   getFilterInput(column: Column<any>): FormInputBase<any> {
     if (column.filter?.dropdown) {
-      return new Dropdown({
+      return new SingleSelectField({
         key: column.accessorKey,
-        dropdownOptions: {
-          label: column.filter?.label ?? '',
-          items: column.filter?.dropdown ?? [],
-          size: 'small',
-          height: 'sm',
-          variant: 'secondary',
-          type: 'single',
-        },
+        label: column.filter?.label ?? '',
+        defaultItemLabel: column.filter?.label ?? '',
+        items: column.filter?.dropdown ?? [],
+        size: 'small',
+        height: 'sm',
+        variant: 'secondary',
         required: false,
       });
     }
@@ -115,33 +116,36 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     });
   }
 
-  getSelectField(action: any, item: FormattedRowItem<T>): FormInputBase<number> {
-    const dropdown = new Dropdown({
+  getSingleSelectField(action: any, item: FormattedRowItem<T>) {
+    return new SingleSelectField({
       key: '#',
       value: action.value ? action.value(item.originalItem) : -1,
-      dropdownOptions: {
-        label: action.label,
-        items: action.items(),
-        size: 'small',
-        height: 'sm',
-        variant: 'tertiary-bg',
-      },
+      label: action.label,
+      defaultItemLabel: action.label,
+      items: action.items(),
+      size: 'small',
+      height: 'sm',
+      variant: 'tertiary-bg',
       required: false,
     });
+  }
 
-    if ('selectedItemResolver' in action) {
-      (dropdown.dropdownOptions as any).type = 'single';
-    }
-    if ('selectedItemsResolver' in action) {
-      (dropdown.dropdownOptions as any).type = 'multi';
-      (dropdown.dropdownOptions as any).selectedItemsResolver = (dropdownItemKey: any) => action.selectedItemsResolver(item.originalItem, dropdownItemKey);
-    }
-
-    return dropdown;
+  getMultiSelectField(action: any, item: FormattedRowItem<T>) {
+    return new MultiSelectField({
+      key: '#',
+      value: action.value ? action.value(item.originalItem) : [],
+      label: '',
+      defaultItemLabel: action.label,
+      items: action.items(),
+      size: 'small',
+      height: 'sm',
+      variant: 'tertiary-bg',
+      required: false,
+    });
   }
 
   getCheckboxField(action: any, item: FormattedRowItem<T>): FormInputBase<boolean> {
-    return new Checkbox({
+    return new CheckboxField({
       key: '#',
       required: false,
       value: action.checkedResolver(item.originalItem),
@@ -236,7 +240,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     (action as TableCellActionButton<any>).onClick(item.originalItem);
   }
 
-  onTableCellActionSelect(action: any, item: FormattedRowItem<T>, selectedItemKey: number): void {
+  onTableCellActionSelect(action: any, item: FormattedRowItem<T>, selectedItemKey: any): void {
     console.log(action, item, selectedItemKey)
     if ('onSelect' in action) {
       action.onSelect(item.originalItem, selectedItemKey);

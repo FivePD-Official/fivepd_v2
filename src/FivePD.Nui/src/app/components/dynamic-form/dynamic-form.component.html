@@ -17,9 +17,21 @@
       @for (col of formFieldColumns;track col) {
         <div>
           @for (field of col;track field) {
-            <app-dynamic-form-input [field]="field"
-                                    [form]="form"
-                                    class="w-full block [&:not(:last-of-type)]:mb-5"/>
+            @if (isTextInput(field)) {
+              <app-text-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (isNumberInput(field)) {
+              <app-number-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (isTextarea(field)) {
+              <app-textarea-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (isDateInput(field)) {
+              <app-date-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (isSingleSelect(field)) {
+              <app-single-select-field [field]="$any(field)" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (isMultiSelect(field)) {
+              <app-multi-select-field [field]="$any(field)" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (isCheckboxField(field)) {
+              <app-checkbox-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
+            }
           }
         </div>
       }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Collation, Column, Dropdown, FormInputBase, FormSubmitEvent, Page, PedHistory, TextInput } from '@models';
+import { Collation, Column, SingleSelectField, FormInputBase, FormSubmitEvent, Page, PedHistory, TextInput } from '@models';
 import { formatDate } from "@helpers";
 import { CoreSetId, FGender } from "@enums";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
@@ -39,18 +39,16 @@ export class CitizenDatabaseIndexComponent implements OnInit {
       label: 'Lastname',
       placeholder: 'Doe',
     }),
-    new Dropdown({
+    new SingleSelectField({
       key: 'Gender',
       label: 'Gender',
-      dropdownOptions: {
-        label: 'All',
-        items: [
-          {key: FGender.Male, label: 'Male'},
-          {key: FGender.Female, label: 'Female'},
-        ],
-        size: 'normal',
-        variant: 'secondary',
-      }
+      defaultItemLabel: 'All',
+      items: [
+        {key: FGender.Male, label: 'Male'},
+        {key: FGender.Female, label: 'Female'},
+      ],
+      size: 'normal',
+      variant: 'secondary',
     }),
   ];
   citizensColumns: Column<PedHistory>[] = [

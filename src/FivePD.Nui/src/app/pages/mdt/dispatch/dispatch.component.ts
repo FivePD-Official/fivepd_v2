@@ -19,13 +19,15 @@ import { Callout, DispatchService } from "@services/dispatch/dispatch.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
-import { DispatcherUnitDTO, Dropdown, SimplePlayer } from "@models";
+import { DispatcherUnitDTO, MultiSelectField, SimplePlayer, SingleSelectField } from "@models";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
-import { DynamicFormInputComponent } from '../../../components/dynamic-form-input/dynamic-form-input.component';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { ContainerComponent } from '../../../components/container/container.component';
 import { AppActions } from "@store/app.actions";
+import {
+  MultiSelectFieldComponent
+} from "../../../components/form-inputs/multi-select-field/multi-select-field.component";
 
 type MarkerIconProperties = {
   readonly size: [number, number];
@@ -52,7 +54,7 @@ const markerIcons: Record<MarkerIconName, MarkerIconProperties> = {
   templateUrl: './dispatch.component.html',
   styleUrls: ['./dispatch.component.sass'],
   standalone: true,
-  imports: [ContainerComponent, NgIf, NgFor, NgClass, ButtonComponent, DynamicFormInputComponent, TranslatePipe]
+  imports: [ContainerComponent, NgIf, NgFor, NgClass, ButtonComponent, TranslatePipe, MultiSelectFieldComponent]
 })
 export class DispatchComponent implements OnInit {
 
@@ -202,26 +204,21 @@ export class DispatchComponent implements OnInit {
     this.dispatchService.dismissCallout(callout).subscribe();
   }
 
-  getAssignCalloutToUnitsField(callout: DispatcherCalloutDTOClientWrapper): Dropdown {
-    const dropdown = new Dropdown({
+  getAssignCalloutToUnitsField(callout: DispatcherCalloutDTOClientWrapper) {
+    return new MultiSelectField({
       key: '#',
-      dropdownOptions: {
-        label: 'Assign units',
-        items: this.units
-          .filter(unit => !this.activeCallouts.some(c => c.units.some(u => u === unit.Callsign)))
-          .map(unit => ({key: unit.Callsign, label: unit.Callsign})),
-        size: 'small',
-        height: 'base',
-        variant: 'tertiary-bg',
-        selectedItemsResolver: () => false,
-      },
+      defaultItemLabel: 'Assign units',
+      items: this.units
+        .filter(unit => !this.activeCallouts.some(c => c.units.some(u => u === unit.Callsign)))
+        .map(unit => ({key: unit.Callsign, label: unit.Callsign})),
+      size: 'small',
+      height: 'base',
+      variant: 'tertiary-bg',
       required: false,
     });
-
-    return dropdown;
   }
 
-  onAssignCalloutToUnitsFieldChange(unitCallsigns: string[], callout: Callout): void {
+  onAssignCalloutToUnitsFieldChange(unitCallsigns: any[], callout: Callout): void {
     this.dispatchService.assignCalloutToUnits(unitCallsigns, callout);
   }
 

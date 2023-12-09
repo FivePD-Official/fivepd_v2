@@ -1,26 +1,30 @@
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
-import { FormInputBase, FormSubmitEvent } from '@models';
+  CheckboxField,
+  DateField,
+  FormInputBase,
+  FormSubmitEvent,
+  MultiSelectField,
+  NumberField,
+  SingleSelectField,
+  TextareaField,
+  TextInput
+} from '@models';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import deepEqual from 'fast-deep-equal/es6';
 import { CustomValidators } from '../../helpers/validators';
-import { DynamicFormInputComponent } from "../dynamic-form-input/dynamic-form-input.component";
 import { ModalRef } from "@services/modals/modal/modal-ref";
 import { Subject, takeUntil } from "rxjs";
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ButtonComponent } from '../button/button.component';
 import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import { TextFieldComponent } from "../form-inputs/text-field/text-field.component";
+import { NumberFieldComponent } from "../form-inputs/number-field/number-field.component";
+import { TextareaFieldComponent } from "../form-inputs/textarea-field/textarea-field.component";
+import { DateFieldComponent } from "../form-inputs/date-field/date-field.component";
+import { SingleSelectFieldComponent } from "../form-inputs/single-select-field/single-select-field.component";
+import { MultiSelectFieldComponent } from "../form-inputs/multi-select-field/multi-select-field.component";
+import { CheckboxFieldComponent } from "../form-inputs/checkbox-field/checkbox-field.component";
 
 type RemoveFocusTrap = () => void;
 
@@ -29,7 +33,7 @@ type RemoveFocusTrap = () => void;
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.sass'],
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, NgIf, NgStyle, NgFor, DynamicFormInputComponent, ButtonComponent, TranslatePipe]
+  imports: [ReactiveFormsModule, NgClass, NgIf, NgStyle, NgFor, ButtonComponent, TranslatePipe, TextFieldComponent, NumberFieldComponent, TextareaFieldComponent, DateFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, CheckboxFieldComponent]
 })
 export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 
@@ -53,7 +57,13 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
   modalRefLoading = false;
   currentFocus?: Element | null;
 
-  @ViewChildren(DynamicFormInputComponent, {read: ElementRef}) inputs?: QueryList<ElementRef>;
+  // TODO: trap focus into first input
+  // @ViewChildren(TextFieldComponent, {read: ElementRef}) textFieldComponents?: QueryList<ElementRef>;
+  // @ViewChildren(NumberFieldComponent, {read: ElementRef}) numberFieldComponents?: QueryList<ElementRef>;
+  // @ViewChildren(DateFieldComponent, {read: ElementRef}) dateFieldComponents?: QueryList<ElementRef>;
+  // @ViewChildren(TextareaFieldComponent, {read: ElementRef}) textareaFieldComponents?: QueryList<ElementRef>;
+  //
+  // childrenComponents: ElementRef[] = [];
 
   @Output() onSubmit = new EventEmitter<FormSubmitEvent>();
 
@@ -72,10 +82,6 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
     this.createColumns();
 
     this.modalRef?.loading.pipe(takeUntil(this.destroy$)).subscribe(loading => this.modalRefLoading = loading);
-
-    this.inputs?.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.removeFocusTrap = this.trapFocus();
-    });
   }
 
   ngOnDestroy(): void {
@@ -87,55 +93,79 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
   }
 
   ngAfterViewInit(): void {
-    if (!this.removeFocusTrap) {
-      this.removeFocusTrap = this.trapFocus();
-    }
+    // if (!this.removeFocusTrap) {
+    //   this.removeFocusTrap = this.trapFocus();
+    // }
+  }
+
+  isTextInput(v: any) {
+    return v instanceof TextInput;
+  }
+
+  isNumberInput(v: any) {
+    return v instanceof NumberField;
+  }
+
+  isTextarea(v: any) {
+    return v instanceof TextareaField;
+  }
+
+  isDateInput(v: any) {
+    return v instanceof DateField;
+  }
+
+  isSingleSelect(v: any) {
+    return v instanceof SingleSelectField;
+  }
+
+  isMultiSelect(v: any) {
+    return v instanceof MultiSelectField;
+  }
+
+  isCheckboxField(v: any) {
+    return v instanceof CheckboxField;
   }
 
   createForm(): FormGroup {
     const group: Record<string, FormControl | FormGroup> = {};
     this.formFields.forEach(field => {
       let formControl;
-      if (field.type === 'checkboxGroup') {
-        const nestedGroup: Record<string, FormControl> = {};
-        field.checkboxGroup.forEach(checkbox => {
-          nestedGroup[checkbox.key] = new FormControl(checkbox.value || false, field.validators);
-        });
-        formControl = new FormGroup(nestedGroup);
-      } else {
-        const validators = [...field.validators];
-        const asyncValidators = [...field.asyncValidators];
+      const validators = [...field.validators];
+      const asyncValidators = [...field.asyncValidators];
 
-        if (field.required) {
-          if (field.type === 'dropdown') {
-            if (field.dropdownOptions?.type === 'single') {
-              validators.push(CustomValidators.dropdownSingleRequired);
-            } else {
-              validators.push(CustomValidators.dropdownMultiRequired);
-            }
+      if (field.required) {
+        if (field.type === 'singleSelect' || field.type === 'multiSelect') {
+          if (field instanceof SingleSelectField) {
+            validators.push(CustomValidators.dropdownSingleRequired);
           } else {
-            validators.push(Validators.required);
+            validators.push(CustomValidators.dropdownMultiRequired);
           }
-        }
-
-        if (field.type === 'date') {
-          validators.push(CustomValidators.date());
-        }
-
-        let fieldValue;
-        if (field.type === 'number') {
-          fieldValue = field.value === 0 ? 0 : field.value;
-        } else if (!field.value && field.type === 'checkbox') {
-          fieldValue = false;
         } else {
-          fieldValue = field.value;
+          validators.push(Validators.required);
         }
-        formControl = new FormControl(
-          {value: fieldValue, disabled: field.readonly},
-          validators,
-          asyncValidators,
-        );
       }
+
+      if (field.type === 'date') {
+        validators.push(CustomValidators.date());
+      }
+
+      let fieldValue;
+      if (field.type === 'number') {
+        fieldValue = field.value === 0 ? 0 : field.value;
+      } else if (!field.value && field.type === 'checkbox') {
+        fieldValue = false;
+      } else if (field.type === 'singleSelect') {
+        fieldValue = -1;
+      } else if (field.type === 'multiSelect') {
+        fieldValue = [];
+      } else {
+        fieldValue = field.value;
+      }
+      formControl = new FormControl(
+        {value: fieldValue, disabled: field.readonly},
+        validators,
+        asyncValidators,
+      );
       group[field.key] = formControl;
     });
     const form = new FormGroup(group);
@@ -189,70 +219,70 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
     this.form.markAsPristine();
   }
 
-  private trapFocus(): RemoveFocusTrap {
-    if (!this.focusFirstField) {
-      return () => {
-      };
-    }
+  // private trapFocus(): RemoveFocusTrap {
+  //   if (!this.focusFirstField) {
+  //     return () => {
+  //     };
+  //   }
+  //
+  //   const focusableEls = this.focusInFirstField();
+  //   const firstFocusableEl = focusableEls[0];
+  //   const lastFocusableEl = focusableEls[focusableEls.length - 1];
+  //   this.currentFocus = focusableEls.length ? firstFocusableEl : null;
+  //
+  //   const handleFocus = (e: FocusEvent) => {
+  //     if (!e?.target) {
+  //       return;
+  //     }
+  //     e.preventDefault();
+  //
+  //     if (focusableEls.includes(e.target as HTMLElement)) {
+  //       this.currentFocus = e.target as HTMLElement;
+  //     } else {
+  //       if (this.currentFocus === firstFocusableEl) {
+  //         (lastFocusableEl as any)?.focus();
+  //       } else {
+  //         (firstFocusableEl as any)?.focus();
+  //       }
+  //       this.currentFocus = document.activeElement;
+  //     }
+  //   };
+  //
+  //   document.addEventListener('focus', handleFocus, true);
+  //
+  //   return () => {
+  //     document.removeEventListener('focus', handleFocus, true);
+  //   };
+  // }
 
-    const focusableEls = this.focusInFirstField();
-    const firstFocusableEl = focusableEls[0];
-    const lastFocusableEl = focusableEls[focusableEls.length - 1];
-    this.currentFocus = focusableEls.length ? firstFocusableEl : null;
-
-    const handleFocus = (e: FocusEvent) => {
-      if (!e?.target) {
-        return;
-      }
-      e.preventDefault();
-
-      if (focusableEls.includes(e.target as HTMLElement)) {
-        this.currentFocus = e.target as HTMLElement;
-      } else {
-        if (this.currentFocus === firstFocusableEl) {
-          (lastFocusableEl as any)?.focus();
-        } else {
-          (firstFocusableEl as any)?.focus();
-        }
-        this.currentFocus = document.activeElement;
-      }
-    };
-
-    document.addEventListener('focus', handleFocus, true);
-
-    return () => {
-      document.removeEventListener('focus', handleFocus, true);
-    };
-  }
-
-  private focusInFirstField(): Element[] {
-    if (!this.focusFirstField || !this.inputs || this.modalRefLoading) {
-      return [];
-    }
-
-    const modal = document.querySelector('app-modal-form');
-    if (!modal) {
-      return [];
-    }
-
-    const focusableEls = [...this.inputs].reduce((prev, curr) => {
-      const inputs = curr.nativeElement.querySelectorAll('input, textarea')
-      for (const input of inputs) {
-        prev.push(input);
-      }
-      return prev;
-    }, [] as Element[]);
-
-    if (!focusableEls.length) {
-      return [];
-    }
-
-    const firstFocusableEl = focusableEls[0];
-    if (firstFocusableEl.nodeName !== 'BUTTON') {
-      this.currentFocus = firstFocusableEl;
-      (firstFocusableEl as HTMLInputElement).focus();
-    }
-
-    return focusableEls;
-  }
+  // private focusInFirstField(): Element[] {
+  //   if (!this.focusFirstField || this.modalRefLoading) {
+  //     return [];
+  //   }
+  //
+  //   const modal = document.querySelector('app-modal-form');
+  //   if (!modal) {
+  //     return [];
+  //   }
+  //
+  //   const focusableEls = [...this.childrenComponents].reduce((prev, curr) => {
+  //     const inputs = curr.nativeElement.querySelectorAll('input, textarea')
+  //     for (const input of inputs) {
+  //       prev.push(input);
+  //     }
+  //     return prev;
+  //   }, [] as Element[]);
+  //
+  //   if (!focusableEls.length) {
+  //     return [];
+  //   }
+  //
+  //   const firstFocusableEl = focusableEls[0];
+  //   if (firstFocusableEl.nodeName !== 'BUTTON') {
+  //     this.currentFocus = firstFocusableEl;
+  //     (firstFocusableEl as HTMLInputElement).focus();
+  //   }
+  //
+  //   return focusableEls;
+  // }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from "@services/message/message.service";
-import { Collation, Dropdown, GeneralConfig, Message, Page, SimpleUser, Textarea, TextInput } from "@models";
+import { Collation, SingleSelectField, GeneralConfig, Message, Page, SimpleUser, TextareaField, TextInput } from "@models";
 import { FIncidentPriority } from "@enums";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ConfigService } from "@services/config/config.service";
@@ -74,20 +74,17 @@ export class MessagesComponent implements OnInit {
       fields: (users) => {
         const simpleUsers: SimpleUser[] = Array.isArray(users) ? users : [];
         return [
-          new Dropdown({
+          new SingleSelectField({
             key: 'To',
             label: 'To',
+            defaultItemLabel: 'To',
             required: true,
-            dropdownOptions: {
-              label: 'To',
-              size: 'normal',
-              variant: 'secondary',
-              type: 'multi',
-              items: simpleUsers.map(user => ({
-                key: user.Id,
-                label: user.Name,
-              })),
-            }
+            size: 'normal',
+            variant: 'secondary',
+            items: simpleUsers.map(user => ({
+              key: user.Id,
+              label: user.Name,
+            })),
           }),
           new TextInput({
             key: 'Subject',
@@ -96,7 +93,7 @@ export class MessagesComponent implements OnInit {
             readonly: false,
             placeholder: '',
           }),
-          new Textarea({
+          new TextareaField({
             key: 'Content',
             label: 'Message',
             required: true,

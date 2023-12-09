@@ -1,0 +1,23 @@
+.input-label
+  @apply block font-medium text-zinc-200 mb-1.5
+  &.input-label--checkbox
+    @apply mb-0 cursor-pointer
+
+.checkbox
+  @apply w-full flex flex-row items-center justify-between
+
+  .checkbox-inner
+    @apply relative w-[26px] h-[26px]
+
+    svg
+      @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[22px] opacity-0 text-white z-10 pointer-events-none
+
+    input
+      @apply absolute inset-0 w-full h-full border border-zinc-600 hover:border-zinc-400 checked:border-zinc-200 focus:border-zinc-400 rounded-md z-0 appearance-none bg-transparent p-0 cursor-pointer
+      &:checked
+        & ~ svg
+          @apply opacity-100
+
+  .checkbox-label
+    @apply text-zinc-300 cursor-pointer mb-0
+

@@ -1,50 +1,48 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
-  ActionResponse,
   Button,
-  Checkbox,
-  CheckboxGroup,
+  CheckboxField,
   Collation,
   Column,
   Department,
   Division,
-  Dropdown,
   DropdownItem,
   FormInputBase,
   FormSubmitEvent,
   GeneralConfig,
   IconType,
-  NumberInput,
+  NumberField,
   Page,
   PlayerDetailsDTO,
   Rank,
+  SingleSelectField,
   TextInput,
   User
 } from '@models';
-import {DepartmentService} from '@services/department/department.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {LocalizationService} from '@services/localization/localization.service';
-import {filter, Observable, switchMap} from 'rxjs';
-import {GlobalState} from '@store';
-import {createDepartmentCallsignFormatInputField} from '../../../../helpers/forms/department';
-import {ModalConfirmService} from '@services/modals/modal-confirm/modal-confirm.service';
-import {UserRole, UserService} from '@services/user/user.service';
-import {ValueResolver} from '@services/modals/modal-form/modal-form-value-resolver';
-import {ModalFormService} from '@services/modals/modal-form/modal-form.service';
-import {CustomValidators} from '../../../../helpers/validators';
-import {ModalService} from '@services/modals/modal/modal.service';
-import {Store} from '@ngrx/store';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {EventService} from "@services/event/event.service";
-import {ConfigService} from "@services/config/config.service";
-import {TranslatePipe} from '../../../../pipes/translate.pipe';
-import {GridComponent} from '../../../../components/grid/grid.component';
-import {DynamicFormComponent} from '../../../../components/dynamic-form/dynamic-form.component';
-import {ContainerComponent} from '../../../../components/container/container.component';
-import {NgIf} from '@angular/common';
-import {TippyModule} from '@ngneat/helipopper';
-import {ButtonComponent} from '../../../../components/button/button.component';
-import {PageHeaderComponent} from '../../../../components/page-header/page-header.component';
+import { DepartmentService } from '@services/department/department.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { LocalizationService } from '@services/localization/localization.service';
+import { filter, switchMap } from 'rxjs';
+import { GlobalState } from '@store';
+import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
+import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
+import { UserRole, UserService } from '@services/user/user.service';
+import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
+import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
+import { CustomValidators } from '../../../../helpers/validators';
+import { ModalService } from '@services/modals/modal/modal.service';
+import { Store } from '@ngrx/store';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EventService } from "@services/event/event.service";
+import { ConfigService } from "@services/config/config.service";
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { GridComponent } from '../../../../components/grid/grid.component';
+import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
+import { ContainerComponent } from '../../../../components/container/container.component';
+import { NgIf } from '@angular/common';
+import { TippyModule } from '@ngneat/helipopper';
+import { ButtonComponent } from '../../../../components/button/button.component';
+import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -181,36 +179,42 @@ export class DepartmentsViewComponent implements OnInit {
                       label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
                       placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
                       required: true,
-                      value: updatedRank.Name,
+                      value: updatedRank?.Name,
                     }),
                   ];
 
                   if (this.generalConfig?.config.Features.ProgressionSystem) {
-                    fields.push(new NumberInput({
+                    fields.push(new NumberField({
                       key: 'RequiredXp',
                       label: this._localization.translate('UI.LABEL.REQUIRED_XP'),
                       placeholder: this._localization.translate('UI.LABEL.REQUIRED_XP'),
                       required: true,
-                      value: updatedRank.RequiredXp,
+                      value: updatedRank?.RequiredXp,
                     }))
                   }
 
-                  fields.push(new CheckboxGroup({
-                    key: 'Permission',
-                    label: 'UI.LABEL.PERMISSIONS',
-                    checkboxGroup: [
-                      new Checkbox({key: 'Kick', label: 'Kick member', value: updatedRank.Permission.Kick}),
-                      new Checkbox({key: 'SetRank', label: 'Set rank', value: updatedRank.Permission.SetRank}),
-                      new Checkbox({
-                        key: 'SetDivision',
-                        label: 'Set division',
-                        value: updatedRank.Permission.SetDivision
-                      }), new Checkbox({
-                        key: 'DepartmentManager',
-                        label: 'Department Manager',
-                        value: updatedRank.Permission.DepartmentManager
-                      }),
-                    ]
+                  fields.push(new CheckboxField({
+                    key: 'DepartmentManager',
+                    label: 'Department Manager',
+                    value: updatedRank?.Permission?.DepartmentManager,
+                  }));
+                  fields.push(new CheckboxField({
+                    key: 'Kick',
+                    label: 'Kick member',
+                    value: updatedRank?.Permission?.Kick,
+                    show: form => !form.value['DepartmentManager'],
+                  }));
+                  fields.push(new CheckboxField({
+                    key: 'SetRank',
+                    label: 'Set rank',
+                    value: updatedRank?.Permission?.SetRank,
+                    show: form => !form.value['DepartmentManager'],
+                  }));
+                  fields.push(new CheckboxField({
+                    key: 'SetDivision',
+                    label: 'Set division',
+                    value: updatedRank?.Permission?.SetDivision,
+                    show: form => !form.value['DepartmentManager'],
                   }));
 
                   return fields;
@@ -226,7 +230,12 @@ export class DepartmentsViewComponent implements OnInit {
                     DepartmentId: this.department?.Id,
                     RankId: rank.Id,
                     Name: res.value!['Name'],
-                    Permission: res.value!['Permission'],
+                    Permission: {
+                      DepartmentManager: res.value['DepartmentManager'],
+                      Kick: res.value['Kick'],
+                      SetRank: res.value['SetRank'],
+                      SetCallsign: res.value['SetCallsign'],
+                    },
                     RequiredXp: res.value!['RequiredXp'],
                   })),
                   this._modalService.handleResponse()
@@ -279,35 +288,32 @@ export class DepartmentsViewComponent implements OnInit {
             ];
 
             if (this.generalConfig?.config.Features.ProgressionSystem) {
-              fields.push(new NumberInput({
+              fields.push(new NumberField({
                 key: 'RequiredXp',
                 label: this._localization.translate('UI.LABEL.REQUIRED_XP'),
                 placeholder: this._localization.translate('UI.LABEL.REQUIRED_XP'),
                 required: true,
-              }))
+              }));
             }
 
-            fields.push(new CheckboxGroup({
-              key: 'Permission',
-              label: 'UI.LABEL.PERMISSIONS',
-              checkboxGroup: [
-                new Checkbox({
-                  key: 'Kick',
-                  label: 'Kick label',
-                }),
-                new Checkbox({
-                  key: 'SetRank',
-                  label: 'Set rank label',
-                }),
-                new Checkbox({
-                  key: 'SetCallsign',
-                  label: 'Set callsign label',
-                }),
-                new Checkbox({
-                  key: 'DepartmentManager',
-                  label: 'Department Manager',
-                }),
-              ]
+            fields.push(new CheckboxField({
+              key: 'DepartmentManager',
+              label: 'Department Manager',
+            }));
+            fields.push(new CheckboxField({
+              key: 'Kick',
+              label: 'Kick label',
+              show: form => !form.value['DepartmentManager'],
+            }));
+            fields.push(new CheckboxField({
+              key: 'SetRank',
+              label: 'Set rank label',
+              show: form => !form.value['DepartmentManager'],
+            }));
+            fields.push(new CheckboxField({
+              key: 'SetCallsign',
+              label: 'Set callsign label',
+              show: form => !form.value['DepartmentManager'],
             }));
 
             return fields;
@@ -324,7 +330,12 @@ export class DepartmentsViewComponent implements OnInit {
             switchMap(res => this._departmentService.createRank({
               DepartmentId: this.department!.Id,
               Name: res.value['Name'],
-              Permission: res.value['Permission']
+              Permission: {
+                DepartmentManager: res.value['DepartmentManager'],
+                Kick: res.value['Kick'],
+                SetRank: res.value['SetRank'],
+                SetCallsign: res.value['SetCallsign'],
+              }
             })),
             this._modalService.handleResponse()
           ).subscribe(() => this.getRanks(true))
@@ -361,7 +372,7 @@ export class DepartmentsViewComponent implements OnInit {
                     label: 'UI.LABEL.NAME.SINGULAR',
                     placeholder: 'UI.LABEL.NAME.SINGULAR',
                     required: true,
-                    value: updatedDivision.Name,
+                    value: updatedDivision?.Name,
                   })
                 ],
                 valueResolver: new ValueResolver(division, this._departmentService.getDivision(division.Id)),
@@ -454,7 +465,6 @@ export class DepartmentsViewComponent implements OnInit {
     ];
 
     if (this.userService.userIsDepartmentManagerOrAdmin()) {
-
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
         accessorKey: 'Callsign',
@@ -463,7 +473,7 @@ export class DepartmentsViewComponent implements OnInit {
           onClick: item => {
             let updatedCallsign = '';
             this._modalFormService.open<FormattedUser>({
-                title: "",
+                title: 'Edit callsign',
                 fields: updatedUser => {
                   const fields: FormInputBase<any>[] = [
                     new TextInput({
@@ -500,13 +510,12 @@ export class DepartmentsViewComponent implements OnInit {
       }))
     }
 
-
     if (this.userService.userIsDepartmentManagerOrAdmin() || this.user?.User?.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
         header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
         actions: [
           {
-            type: 'select',
+            type: 'singleSelect',
             label: this._localization.translate('UI.LABEL.NO_RANK'),
             value: user => user?.RankId ?? -1,
             items: () => this.ranksDropdown,
@@ -531,7 +540,7 @@ export class DepartmentsViewComponent implements OnInit {
         header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
         actions: [
           {
-            type: 'select',
+            type: 'singleSelect',
             label: this._localization.translate('UI.LABEL.NO_DIVISION'),
             value: user => user?.DivisionId ?? -1,
             items: () => this.divisionsDropdown,
@@ -766,26 +775,23 @@ export class DepartmentsViewComponent implements OnInit {
         asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
-      new NumberInput({
+      new NumberField({
         key: 'MaxUsers',
         label: 'UI.LABEL.MAX_MEMBERS.TITLE',
         required: true,
         value: this.department.MaxUsers,
         helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
       }),
-      new Dropdown({
+      new SingleSelectField({
         key: 'DefaultRankId',
         label: 'UI.LABEL.DEFAULT_RANK.TITLE',
         required: false,
-        value: this.department.DefaultRankId ?? -1,
         helpLabel: 'UI.LABEL.DEFAULT_RANK.DESCRIPTION',
-        dropdownOptions: {
-          label: this._localization.translate('UI.LABEL.NO_DEFAULT_RANK'),
-          selectedItemResolver: (item) => item === this.department!.DefaultRankId,
-          items: this.ranksDropdown,
-          size: 'normal',
-          variant: 'secondary'
-        },
+        defaultItemLabel: this._localization.translate('UI.LABEL.NO_DEFAULT_RANK'),
+        value: this.department?.DefaultRankId ?? -1,
+        items: this.ranksDropdown,
+        size: 'normal',
+        variant: 'secondary'
       }),
       new TextInput({
         key: 'Callsign',
