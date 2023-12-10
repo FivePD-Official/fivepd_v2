@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from "@services/user/user.service";
 import { DepartmentService } from "@services/department/department.service";
-import { Department, SingleSelectField, FormInputBase, FormSubmitEvent, GeneralConfig, TextInput } from "@models";
+import { Department, SingleSelectField, FormInputBase, FormSubmitEvent, GeneralConfig, TextField } from "@models";
 import { CustomValidators } from "../../../../helpers/validators";
 import { filter, tap, zip } from "rxjs";
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
@@ -64,7 +64,7 @@ export class UserSettingsComponent implements OnInit {
       }));
 
       if (department) {
-        fields.push(new TextInput({
+        fields.push(new TextField({
           key: 'Callsign',
           value: user.Callsign,
           label: 'Callsign',

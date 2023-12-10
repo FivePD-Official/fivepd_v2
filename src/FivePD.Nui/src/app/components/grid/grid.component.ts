@@ -12,7 +12,7 @@ import {
   SingleSelectField,
   TableCellAction,
   TableCellActionButton,
-  TextInput
+  TextField
 } from '@models';
 import { debounceTime, Subject } from 'rxjs';
 import { formatDate } from '@helpers';
@@ -109,7 +109,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       });
     }
 
-    return new TextInput({
+    return new TextField({
       key: column.accessorKey,
       placeholder: column.filter?.label ?? '',
       required: false,

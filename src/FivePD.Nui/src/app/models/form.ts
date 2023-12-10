@@ -90,7 +90,7 @@ export abstract class FormInputBase<T> {
   }
 }
 
-export class TextInput extends FormInputBase<string> {
+export class TextField extends FormInputBase<string> {
   constructor(options: FormInputBaseOptions<string>) {
     super('text', options);
   }

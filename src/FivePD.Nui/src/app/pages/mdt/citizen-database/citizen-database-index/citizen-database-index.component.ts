@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Collation, Column, SingleSelectField, FormInputBase, FormSubmitEvent, Page, PedHistory, TextInput } from '@models';
+import { Collation, Column, SingleSelectField, FormInputBase, FormSubmitEvent, Page, PedHistory, TextField } from '@models';
 import { formatDate } from "@helpers";
 import { CoreSetId, FGender } from "@enums";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
@@ -29,12 +29,12 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     Filters: {},
   };
   formFields: FormInputBase<any>[] = [
-    new TextInput({
+    new TextField({
       key: 'Firstname',
       label: 'Firstname',
       placeholder: 'John',
     }),
-    new TextInput({
+    new TextField({
       key: 'Lastname',
       label: 'Lastname',
       placeholder: 'Doe',

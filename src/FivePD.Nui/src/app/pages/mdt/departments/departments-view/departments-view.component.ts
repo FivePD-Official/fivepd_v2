@@ -16,7 +16,7 @@ import {
   PlayerDetailsDTO,
   Rank,
   SingleSelectField,
-  TextInput,
+  TextField,
   User
 } from '@models';
 import { DepartmentService } from '@services/department/department.service';
@@ -173,7 +173,7 @@ export class DepartmentsViewComponent implements OnInit {
                 title: 'UI.LABEL.RANK.EDIT',
                 fields: updatedRank => {
                   const fields: FormInputBase<any>[] = [
-                    new TextInput({
+                    new TextField({
                       key: 'Name',
                       label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
                       placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
@@ -278,7 +278,7 @@ export class DepartmentsViewComponent implements OnInit {
           title: 'UI.ACTION.CREATE_RANK',
           fields: () => {
             const fields: FormInputBase<any>[] = [
-              new TextInput({
+              new TextField({
                 key: 'Name',
                 label: 'UI.LABEL.NAME.SINGULAR',
                 placeholder: 'UI.LABEL.NAME.SINGULAR',
@@ -366,7 +366,7 @@ export class DepartmentsViewComponent implements OnInit {
               this._modalFormService.open<Division>({
                 title: 'UI.LABEL.DIVISION.EDIT',
                 fields: updatedDivision => [
-                  new TextInput({
+                  new TextField({
                     key: 'Name',
                     label: 'UI.LABEL.NAME.SINGULAR',
                     placeholder: 'UI.LABEL.NAME.SINGULAR',
@@ -426,7 +426,7 @@ export class DepartmentsViewComponent implements OnInit {
           this._modalFormService.open({
             title: 'UI.ACTION.CREATE_DIVISION',
             fields: () => [
-              new TextInput({
+              new TextField({
                 key: 'Name',
                 label: 'UI.LABEL.NAME.SINGULAR',
                 placeholder: 'UI.LABEL.NAME.SINGULAR',
@@ -475,7 +475,7 @@ export class DepartmentsViewComponent implements OnInit {
                 title: 'Edit callsign',
                 fields: updatedUser => {
                   const fields: FormInputBase<any>[] = [
-                    new TextInput({
+                    new TextField({
                       key: 'Callsign',
                       label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
                       placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
@@ -767,7 +767,7 @@ export class DepartmentsViewComponent implements OnInit {
     }
 
     this.departmentSettingsForm = [
-      new TextInput({
+      new TextField({
         key: 'Name',
         required: true,
         label: 'UI.LABEL.NAME.SINGULAR',
@@ -792,7 +792,7 @@ export class DepartmentsViewComponent implements OnInit {
         size: 'normal',
         variant: 'secondary'
       }),
-      new TextInput({
+      new TextField({
         key: 'Callsign',
         label: 'UI.LABEL.CALLSIGN.TITLE',
         helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',

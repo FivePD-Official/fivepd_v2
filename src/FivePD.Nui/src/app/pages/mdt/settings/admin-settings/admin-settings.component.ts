@@ -10,7 +10,7 @@ import {
   NumberField,
   Page,
   SingleSelectField,
-  TextInput,
+  TextField,
   User
 } from "@models";
 import { CoreSetId } from "@enums";
@@ -361,13 +361,13 @@ export class AdminSettingsComponent implements OnInit {
     this._modalFormService.open({
       title: 'UI.ACTION.CREATE_DEPARTMENT',
       fields: () => [
-        new TextInput({
+        new TextField({
           key: 'Name',
           required: true,
           label: 'UI.LABEL.NAME.SINGULAR',
           asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value))],
         }),
-        new TextInput({
+        new TextField({
           key: 'Callsign',
           label: 'UI.LABEL.CALLSIGN.TITLE',
           helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',

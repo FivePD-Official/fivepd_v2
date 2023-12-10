@@ -17,19 +17,21 @@
       @for (col of formFieldColumns;track col) {
         <div>
           @for (field of col;track field) {
-            @if (isTextInput(field)) {
+            @if (instanceof(field, TextField)) {
               <app-text-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
-            } @else if (isNumberInput(field)) {
+            } @else if (instanceof(field, NumberField)) {
               <app-number-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
-            } @else if (isTextarea(field)) {
+            } @else if (instanceof(field, TextareaField)) {
               <app-textarea-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
-            } @else if (isDateInput(field)) {
+            } @else if (instanceof(field, DateField)) {
               <app-date-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
-            } @else if (isSingleSelect(field)) {
-              <app-single-select-field [field]="$any(field)" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
-            } @else if (isMultiSelect(field)) {
-              <app-multi-select-field [field]="$any(field)" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
-            } @else if (isCheckboxField(field)) {
+            } @else if (instanceof(field, SingleSelectField)) {
+              <app-single-select-field [field]="$any(field)" [form]="form"
+                                       class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (instanceof(field, MultiSelectField)) {
+              <app-multi-select-field [field]="$any(field)" [form]="form"
+                                      class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (instanceof(field, CheckboxField)) {
               <app-checkbox-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
             }
           }
@@ -37,6 +39,9 @@
       }
     </div>
   }
+
+  <ng-content/>
+
   @if (showSubmitButton) {
     <div class="w-full flex flex-row items-center justify-end mt-6 gap-4"
          [ngClass]="{
