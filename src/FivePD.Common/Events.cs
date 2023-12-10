@@ -269,6 +269,17 @@ internal readonly record struct Events
 
             public const string Disable = "fivepd:ui:dispatch:disable";
         }
+
+        public readonly record struct VehicleConfig
+        {
+            public const string GetAllVehicles = "fivepd:ui:vehicleConfig:getAllVehicles";
+
+            public const string AddVehicle = "fivepd:ui:vehicleConfig:addVehicle";
+
+            public const string DeleteVehicle = "fivepd:ui:vehicleConfig:deleteVehicle";
+
+            public const string EditVehicle = "fivepd:ui:vehicleConfig:editVehicle";
+        }
     }
 
     public readonly record struct DevTools

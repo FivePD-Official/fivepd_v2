@@ -247,5 +247,15 @@ public class DatabaseContext : DbContext
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
+
+        modelBuilder.Entity<VehicleConfig>(type =>
+        {
+            type.Property(t => t.Options)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<Dictionary<string, object>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        });
     }
 }

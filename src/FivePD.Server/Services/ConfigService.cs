@@ -41,9 +41,6 @@ public class ConfigService : IConfigService, IOnInit
     public MenuConfig MenuConfig => this.InternalLoadFile<MenuConfig>("/Config/menu");
 
     /// <inheritdoc />
-    public Vehicles VehiclesConfig => this.InternalLoadFile<Vehicles>("/Config/vehicles");
-
-    /// <inheritdoc />
     public List<Loadout> LoadoutsConfig => this.InternalLoadFile<List<Loadout>>("/Config/loadouts");
 
     /// <inheritdoc />

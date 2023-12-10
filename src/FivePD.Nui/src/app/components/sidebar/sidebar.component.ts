@@ -103,7 +103,7 @@ export class SidebarComponent {
     },
     {
       title: 'UI.LABEL.VEHICLE_SETTINGS',
-      path: () => 'mdt/vehicle-settings',
+      path: () => '/mdt/vehicle-settings',
       icon: IconType.Truck,
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
     },

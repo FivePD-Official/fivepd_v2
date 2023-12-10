@@ -1,35 +1,19 @@
 ﻿<app-page-header [title]="'UI.LABEL.VEHICLE_SETTINGS' | translate"/>
 
 <app-container [rows]="2" [columns]="1">
-  @if (this.userService.userHasRole(UserRole.Admin)) {
-    <app-grid [title]="'Users' | translate"
-              [columns]="usersColumns"
-              [data]="users"
-              (onCollationChange)="onUsersCollationChange($event)"/>
-  }
 
   <app-grid
-    [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
-    [buttons]="departmentsButtons"
-    [data]="departments"
-    [columns]="departmentsColumnDef"
-    (onCollationChange)="onDepartmentsCollationChange($event)"
-    (onCellAction)="getDepartments()"/>
-  @if (this.userService.userHasRole(UserRole.Admin)) {
-    <app-grid [title]="'Callouts' | translate"
-              [columns]="calloutDetailsColumns"
-              [data]="calloutDetails"
-              (onCollationChange)="onCalloutDetailsCollationChange($event)"/>
+    [title]="'UI.LABEL.VEHICLE_SETTINGS_POLICE' | translate"
+    [buttons]="vehicleConfigbuttons"
+    [columns]="policeConfigColumn"/>
 
-    <app-grid [title]="'UI.LABEL.ATTRIBUTE.PLURAL' | translate"
-              [buttons]="attributesButtons"
-              [columns]="attributesColumns"
-              [data]="attributePage"
-              (onCollationChange)="onAttributesCollationChange($event)">
-      <app-single-select-field [field]="setAttributeDropdown"
-                               (onChange)="onTableCellActionSelect($event)"/>
-    </app-grid>
+  @if (this.userService.userHasRole(UserRole.Admin)){
+    <app-grid
+      [title]="'UI.LABEL.VEHICLE_SETTINGS_AMBULANCE' | translate"
+      [buttons]="vehicleConfigbuttons"/>
+
+    <app-grid
+      [title]="'UI.LABEL.VEHICLE_SETTINGS_TOW' | translate"
+      [buttons]="vehicleConfigbuttons"/>
   }
-
-
 </app-container>
