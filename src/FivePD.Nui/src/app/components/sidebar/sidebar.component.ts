@@ -1,16 +1,16 @@
-import { Component } from '@angular/core';
-import { GlobalState } from '@store';
-import { GeneralConfig, IconType, User } from '@models';
-import { Store } from '@ngrx/store';
-import { UserRole, UserService } from '@services/user/user.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DispatchService } from "@services/dispatch/dispatch.service";
-import { ConfigService } from "@services/config/config.service";
-import { TranslatePipe } from '../../pipes/translate.pipe';
-import { IconComponent } from '../icon/icon.component';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { NgClass, NgFor, NgIf } from '@angular/common';
-import { AppActions } from "@store/app.actions";
+import {Component} from '@angular/core';
+import {GlobalState} from '@store';
+import {GeneralConfig, IconType, User} from '@models';
+import {Store} from '@ngrx/store';
+import {UserRole, UserService} from '@services/user/user.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {DispatchService} from "@services/dispatch/dispatch.service";
+import {ConfigService} from "@services/config/config.service";
+import {TranslatePipe} from '../../pipes/translate.pipe';
+import {IconComponent} from '../icon/icon.component';
+import {RouterLink, RouterLinkActive} from '@angular/router';
+import {NgClass} from '@angular/common';
+import {AppActions} from "@store/app.actions";
 
 export interface Route {
   title: string;
@@ -18,6 +18,7 @@ export interface Route {
   icon: IconType;
   show: () => boolean;
 }
+
 
 type RouteOrDivider = Route | { divider: true; };
 
@@ -29,8 +30,6 @@ type Routes = RouteOrDivider[];
   styleUrls: ['./sidebar.component.sass'],
   standalone: true,
   imports: [
-    NgFor,
-    NgIf,
     RouterLinkActive,
     RouterLink,
     IconComponent,
@@ -39,6 +38,7 @@ type Routes = RouteOrDivider[];
   ],
 })
 export class SidebarComponent {
+
 
   config?: GeneralConfig;
   user?: User;
@@ -99,7 +99,7 @@ export class SidebarComponent {
       title: 'UI.LABEL.SETTINGS',
       path: () => '/mdt/settings/admin',
       icon: IconType.Cog,
-      show: () => this.userService.userHasRole(UserRole.Admin),
+      show: () => this.userService.userIsDepartmentManagerOrAdmin(),
     },
     {
       title: 'Developer tools',

@@ -1,0 +1,10 @@
+input
+  @apply h-[40px] w-full border border-zinc-600 focus:border-zinc-400 bg-transparent rounded-md px-3 text-zinc-300 placeholder:text-zinc-400
+  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+    @apply appearance-none
+
+  &:read-only
+    @apply cursor-not-allowed
+
+  &:not(:read-only)
+    @apply hover:border-zinc-400

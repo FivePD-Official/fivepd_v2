@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { ActionResponse, Collation, Page, PlayerDetailsDTO, SimpleUser, User } from '@models';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { GlobalState } from '@store';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { UserActions } from "@store/user.actions";
+import {Injectable} from '@angular/core';
+import {ActionResponse, Collation, Page, PlayerDetailsDTO, SimpleUser, User} from '@models';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Store} from '@ngrx/store';
+import {GlobalState} from '@store';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {UserActions} from "@store/user.actions";
 
 export enum UserRole {
   None = 0,
@@ -45,6 +45,33 @@ export class UserService {
     }
 
     return false;
+  }
+
+  getUserRoleBits(): number[] {
+    if (!this.user?.User) {
+      return [];
+    }
+
+    const rolesBits: number[] = [];
+    let role = this.user.User.Role;
+
+    for (let i = 0; role != 0; i++) {
+      if ((role & 1) == 1) {
+        rolesBits.push(Math.pow(2, i));
+      }
+
+      role >>= 1;
+    }
+
+    return rolesBits;
+  }
+
+  userIsDepartmentManager(): boolean {
+    return this.user?.User?.Rank?.Permission?.DepartmentManager || false;
+  }
+
+  userIsDepartmentManagerOrAdmin(): boolean {
+    return this.userHasRole(UserRole.Admin) || this.userIsDepartmentManager();
   }
 
   refreshData(): void {

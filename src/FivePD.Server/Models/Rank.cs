@@ -59,5 +59,11 @@ public class Rank
         /// to set the callsign of other players in the department.
         /// </summary>
         public bool SetDivision { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user has the ability
+        /// to change everything in a department.
+        /// </summary>
+        public bool DepartmentManager { get; set; }
     }
 }

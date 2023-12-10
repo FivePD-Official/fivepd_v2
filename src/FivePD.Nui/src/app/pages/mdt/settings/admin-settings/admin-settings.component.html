@@ -1,11 +1,12 @@
 <app-page-header [title]="'UI.LABEL.SETTINGS' | translate"/>
 
 <app-container [rows]="2" [columns]="1">
-
-  <app-grid [title]="'Users' | translate"
-            [columns]="usersColumns"
-            [data]="users"
-            (onCollationChange)="onUsersCollationChange($event)"/>
+  @if (this.userService.userHasRole(UserRole.Admin)) {
+    <app-grid [title]="'Users' | translate"
+              [columns]="usersColumns"
+              [data]="users"
+              (onCollationChange)="onUsersCollationChange($event)"/>
+  }
 
   <app-grid
     [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
@@ -14,19 +15,21 @@
     [columns]="departmentsColumnDef"
     (onCollationChange)="onDepartmentsCollationChange($event)"
     (onCellAction)="getDepartments()"/>
+  @if (this.userService.userHasRole(UserRole.Admin)) {
+    <app-grid [title]="'Callouts' | translate"
+              [columns]="calloutDetailsColumns"
+              [data]="calloutDetails"
+              (onCollationChange)="onCalloutDetailsCollationChange($event)"/>
 
-  <app-grid [title]="'Callouts' | translate"
-            [columns]="calloutDetailsColumns"
-            [data]="calloutDetails"
-            (onCollationChange)="onCalloutDetailsCollationChange($event)"/>
-
-  <app-grid [title]="'UI.LABEL.ATTRIBUTE.PLURAL' | translate"
-            [buttons]="attributesButtons"
-            [columns]="attributesColumns"
-            [data]="attributePage"
-            (onCollationChange)="onAttributesCollationChange($event)">
-      <app-dynamic-form-input [field]="setAttributeDropdown"
+    <app-grid [title]="'UI.LABEL.ATTRIBUTE.PLURAL' | translate"
+              [buttons]="attributesButtons"
+              [columns]="attributesColumns"
+              [data]="attributePage"
+              (onCollationChange)="onAttributesCollationChange($event)">
+      <app-single-select-field [field]="setAttributeDropdown"
                               (onChange)="onTableCellActionSelect($event)"/>
-  </app-grid>
+    </app-grid>
+  }
+
 
 </app-container>

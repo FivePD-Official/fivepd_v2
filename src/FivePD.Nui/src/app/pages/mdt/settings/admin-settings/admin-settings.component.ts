@@ -5,10 +5,11 @@ import {
   Collation,
   Column,
   Department,
-  Dropdown, GeneralConfig,
+  GeneralConfig,
   LooseDataAttribute,
-  NumberInput,
+  NumberField,
   Page,
+  SingleSelectField,
   TextInput,
   User
 } from "@models";
@@ -34,36 +35,35 @@ import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from '../../../../components/grid/grid.component';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
-import { DynamicFormInputComponent } from "../../../../components/dynamic-form-input/dynamic-form-input.component";
-import { NgIf } from "@angular/common";
 import { ConfigService } from "@services/config/config.service";
+import {
+  SingleSelectFieldComponent
+} from "../../../../components/form-inputs/single-select-field/single-select-field.component";
 
 @Component({
   selector: 'app-admin-settings',
   templateUrl: './admin-settings.component.html',
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, DynamicFormInputComponent, NgIf]
+  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent]
 })
 export class AdminSettingsComponent implements OnInit {
 
   generalConfig?: GeneralConfig;
 
-  readonly setAttributeDropdown = new Dropdown({
+  readonly setAttributeDropdown = new SingleSelectField({
     key: '#',
     value: CoreSetId.ArrestReport as any,
-    dropdownOptions: {
-      label: '',
-      addDefaultItem: false,
-      items: [
-        {key: CoreSetId.ArrestReport, label: 'Arrest reports'},
-        {key: CoreSetId.IncidentReport, label: 'Incident reports'},
-        {key: CoreSetId.PedTicket, label: 'Ped tickets'},
-        {key: CoreSetId.PedWarning, label: 'Ped warnings'},
-      ],
-      size: 'normal',
-      height: 'base',
-      variant: 'secondary',
-    },
+    defaultItemLabel: '',
+    addDefaultItem: false,
+    items: [
+      {key: CoreSetId.ArrestReport, label: 'Arrest reports'},
+      {key: CoreSetId.IncidentReport, label: 'Incident reports'},
+      {key: CoreSetId.PedTicket, label: 'Ped tickets'},
+      {key: CoreSetId.PedWarning, label: 'Ped warnings'},
+    ],
+    size: 'normal',
+    height: 'base',
+    variant: 'secondary',
     required: false,
   });
   selectedSet: string = CoreSetId.ArrestReport;
@@ -86,7 +86,7 @@ export class AdminSettingsComponent implements OnInit {
   usersColumns: Column<User>[] = [
     new Column<User>({
       header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-      show: () => true,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       accessorKey: 'Name',
     }),
     new Column<User>({
@@ -94,9 +94,9 @@ export class AdminSettingsComponent implements OnInit {
       show: () => this.userService.userHasRole(UserRole.Admin),
       actions: [
         {
-          type: 'select',
+          type: 'multiSelect',
           label: this._localization.translate('UI.LABEL.ROLE.NO'),
-          selectedItemsResolver: (user, dropdownItemKey) => this.userService.userHasRole(dropdownItemKey),
+          value: () => this.userService.getUserRoleBits(),
           items: () => {
             return [
               {key: UserRole.Admin, label: this._localization.translate('UI.LABEL.ROLE.ADMIN')},
@@ -106,7 +106,13 @@ export class AdminSettingsComponent implements OnInit {
           },
           resetWhenSelectedId: UserRole.None,
           onSelectMulti: (user, selectedIds) => {
-            this.userService.changeRole(user, selectedIds).subscribe();
+            this.userService.changeRole(user, selectedIds)
+              .pipe(
+                filter(res => res.Status),
+              )
+              .subscribe(() => {
+                this.userService.refreshData()
+              });
           }
         }
       ]
@@ -128,7 +134,7 @@ export class AdminSettingsComponent implements OnInit {
     },
     {
       label: 'UI.ACTION.CREATE_DEPARTMENT',
-      show: () => true,
+      show: () => this.userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => this.tryCreateDepartment(),
     }
@@ -159,7 +165,7 @@ export class AdminSettingsComponent implements OnInit {
     }),
     new Column<Department>({
       header: 'UI.LABEL.ACTION.PLURAL',
-      show: () => this.userService.userHasRole(UserRole.Admin),
+      show: () => this.userService.userIsDepartmentManagerOrAdmin(),
       actions: [
         {
           type: 'button',
@@ -171,7 +177,7 @@ export class AdminSettingsComponent implements OnInit {
         {
           type: 'button',
           label: 'UI.ACTION.DELETE',
-          show: () => true,
+          show: () => this.userService.userHasRole(UserRole.Admin),
           disabled: () => false,
           onClick: department => {
             this._modalConfirmService.open({
@@ -283,13 +289,13 @@ export class AdminSettingsComponent implements OnInit {
     );
   }
 
-  onTableCellActionSelect(selectedItemKey: string): void {
+  onTableCellActionSelect(selectedItemKey: any): void {
     this.selectedSet = selectedItemKey;
     this.setAttributesGrid();
   }
 
   private getSettings(): void {
-    if (!this.user || !this.userService.userHasRole(UserRole.Admin)) {
+    if (!this.user || !this.userService.userIsDepartmentManagerOrAdmin()) {
       return;
     }
 
@@ -333,7 +339,15 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   getDepartments(): void {
-    this._departmentService.getAllPageable(this.departmentsCollation).subscribe(res => {
+    const isDepartmentManager = this.userService.userIsDepartmentManager();
+    const isAdmin = this.userService.userHasRole(UserRole.Admin);
+
+    this._departmentService.getAllPageable({
+      ...this.departmentsCollation,
+      Filters: {
+        UserDepartment: isDepartmentManager && isAdmin ? false : isDepartmentManager,
+      }
+    }).subscribe(res => {
       this.departments = res;
     });
   }
@@ -360,7 +374,7 @@ export class AdminSettingsComponent implements OnInit {
           validators: [CustomValidators.onlyLetters()]
         }),
         createDepartmentCallsignFormatInputField(this._localization),
-        new NumberInput({
+        new NumberField({
           key: 'MaxUsers',
           required: true,
           label: 'UI.LABEL.MAX_MEMBERS.TITLE',
@@ -381,4 +395,6 @@ export class AdminSettingsComponent implements OnInit {
         this._modalService.handleResponse(),
       ).subscribe(() => this.getDepartments())
   }
+
+  protected readonly UserRole = UserRole;
 }

@@ -1,29 +1,19 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { ATTRIBUTES, ENTITY } from './entity-token';
-import {
-  AttributeDataType,
-  Department,
-  IncidentHistory,
-  LooseDataEntityWrapper,
-  MappedLooseDataEntity,
-  PedHistory,
-  LooseDataAttribute,
-  User
-} from '@models';
+import { LooseDataAttribute, LooseDataEntityWrapper, MappedLooseDataEntity } from '@models';
 import { EntityValue, EntityValueLink, LooseDataService } from '@services/loose-data/loose-data.service';
-import { formatDate } from '@helpers';
 import { tap } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
 import { Router } from "@angular/router";
 import { IconComponent } from '../../icon/icon.component';
-import { NgFor, NgIf, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-modal-entity-view',
   templateUrl: './modal-entity-view.component.html',
   styleUrls: ['./modal-entity-view.component.sass'],
   standalone: true,
-  imports: [NgIf, NgStyle, NgFor, IconComponent]
+  imports: [NgStyle, IconComponent]
 })
 export class ModalEntityViewComponent implements OnInit {
 

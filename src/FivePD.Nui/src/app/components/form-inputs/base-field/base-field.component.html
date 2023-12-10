@@ -1,0 +1,42 @@
+<div [hidden]="!show" [formGroup]="form!" class="input-box w-full">
+  @if (field.label && field.type !== 'checkbox') {
+    <label
+      class="input-label"
+      [attr.for]="field.key"
+      [ngClass]="{ 'error': false }">
+      {{ field.label | translate }}
+    </label>
+  }
+
+  <ng-content />
+
+  @if (field.helpLabel) {
+    <span class="help-label" [innerHTML]="field.helpLabel | translate | safeHtml"></span>
+  }
+
+  @if (control && (control.invalid && (control.dirty || control.touched)) && control.errors) {
+    <div class="input-errors">
+      @if (control.errors['required']) {
+        <p>{{ 'UI.ERROR.FIELD.REQUIRED' | translate }}</p>
+      }
+      @if (control.errors['min']) {
+        <p>{{ 'UI.ERROR.FIELD.MIN' | translate: {'value': field.options['min']} }}</p>
+      }
+      @if (control.errors['max']) {
+        <p>{{ 'UI.ERROR.FIELD.MAX' | translate: {'value': field.options['max']} }}</p>
+      }
+      @if (control.errors['nameTaken']) {
+        <p>{{ 'UI.ERROR.FIELD.NAME_TAKEN' | translate }}</p>
+      }
+      @if (control.errors['pattern']) {
+        <p>{{ 'UI.ERROR.FIELD.FORMAT' | translate }}</p>
+      }
+      @if (control.errors['invalidDate']) {
+        <p>{{ 'UI.ERROR.FIELD.INVALID_DATE' | translate }}</p>
+      }
+      @if (control.errors['notCoreAttributeName']) {
+        <p>{{ 'UI.ERROR.FIELD.NO_CORE_ATTRIBUTE_NAME' | translate }}</p>
+      }
+    </div>
+  }
+</div>

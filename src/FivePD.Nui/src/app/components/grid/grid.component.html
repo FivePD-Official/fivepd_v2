@@ -35,8 +35,8 @@
           <div
             class="table-cell">
             @if (column.filter) {
-              <app-dynamic-form-input [field]="getFilterInput(column)"
-                                      (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
+              <app-text-field [field]="getFilterInput(column)"
+                              (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
             }
           </div>
         }
@@ -95,13 +95,17 @@
                                   [label]="action.label  | translate"
                                   (onClick)="tableCellActionButtonClick(action, item)"/>
                     }
-                    @if (action.type === 'select' && (action.show ? action.show(item.originalItem) : true)) {
-                      <app-dynamic-form-input [field]="getSelectField(action, item)"
+                    @if (action.type === 'singleSelect' && (action.show ? action.show(item.originalItem) : true)) {
+                      <app-single-select-field [field]="getSingleSelectField(action, item)"
                                               (onChange)="onTableCellActionSelect(action, item, $event)"/>
                     }
+                    @if (action.type === 'multiSelect' && (action.show ? action.show(item.originalItem) : true)) {
+                      <app-multi-select-field [field]="getMultiSelectField(action, item)"
+                                               (onChange)="onTableCellActionSelect(action, item, $event)"/>
+                    }
                     @if (action.type === 'checkbox' && (action.show ? action.show(item.originalItem) : true)) {
-                      <app-dynamic-form-input [field]="getCheckboxField(action, item)"
-                                              (onChange)="onTableCellActionCheckbox(action, item, $event)"/>
+<!--                      <app-dynamic-form-input [field]="getCheckboxField(action, item)"-->
+<!--                                              (onChange)="onTableCellActionCheckbox(action, item, $event)"/>-->
                     }
                   }
                 }

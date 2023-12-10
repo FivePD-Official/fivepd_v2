@@ -1,0 +1,39 @@
+.dropdown
+  @apply relative min-w-[200px]
+  &.dropdown--small
+    .dropdown-selected-item
+      p
+        @apply text-sm font-medium
+  &.dropdown--readonly
+    .dropdown-selected-item
+      @apply cursor-not-allowed
+      &:hover
+        @apply bg-transparent
+
+  .dropdown-selected-item
+    @apply relative rounded-md px-3 flex flex-row items-center justify-between cursor-pointer
+
+    svg
+      @apply h-[20px] ml-3 text-zinc-300
+
+  .dropdown-items
+    @apply relative hidden flex-col items-center w-full drop-shadow-md z-50 max-h-[200px] overflow-x-hidden bg-zinc-700 rounded-bl-md rounded-br-md py-2
+    ::-webkit-scrollbar-thumb
+      @apply bg-zinc-800
+
+    .dropdown-items--inner
+      @apply w-full h-full overflow-y-auto
+
+    .item
+      @apply w-full min-h-[35px] px-3 py-0.5 flex flex-row items-center justify-start hover:bg-zinc-600 border-none outline-none cursor-pointer
+      p
+        @apply text-zinc-300
+
+  &.dropdown--open
+    .dropdown-selected-item
+      @apply before:rounded-bl-none before:rounded-br-none rounded-bl-none rounded-br-none
+      svg
+        @apply rotate-180
+
+    .dropdown-items
+      @apply absolute flex

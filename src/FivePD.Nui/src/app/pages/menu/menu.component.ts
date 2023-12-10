@@ -16,14 +16,14 @@ import { takeUntil } from 'rxjs';
 import { injectDestroy } from "../../helpers/destroy-ref";
 import { AsPipe } from '../../pipes/as.pipe';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.sass'],
   standalone: true,
-  imports: [NgIf, NgFor, NgClass, TranslatePipe, AsPipe]
+  imports: [NgClass, TranslatePipe, AsPipe]
 })
 export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
