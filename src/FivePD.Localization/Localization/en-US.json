@@ -273,6 +273,7 @@
   "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN": "You've successfully joined {{callsign}}.",
   "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE": "You've successfully left {{callsign}}.",
   "UI.LABEL.VEHICLE_DATABASE": "Vehicle database",
+  "UI.LABEL.VEHICLE_SETTINGS": "Vehicle Settings",
   "UI.LABEL.WHOLE_NUMBER_LIST.SINGULAR": "Whole number list",
   "UI.LABEL.WHOLE_NUMBER.SINGULAR": "Whole number",
   "UI.LABEL.XP.LONG.PLURAL": "Experience points",

@@ -102,6 +102,12 @@ export class SidebarComponent {
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
     },
     {
+      title: 'UI.LABEL.VEHICLE_SETTINGS',
+      path: () => 'mdt/vehicle-settings',
+      icon: IconType.Truck,
+      show: () => this.userService.userIsDepartmentManagerOrAdmin(),
+    },
+    {
       title: 'Developer tools',
       path: () => '/mdt/devtools',
       icon: IconType.CodeBracket,
