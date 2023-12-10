@@ -69,6 +69,10 @@ export class DepartmentAreaManagementComponent implements OnInit {
   }
 
   get editableDepartments() {
+    if (this.userService.userHasRole(UserRole.Admin)) {
+      return this.departments;
+    }
+
     return this.departments.filter(x => x.Id === this.user?.DepartmentId);
   }
 
