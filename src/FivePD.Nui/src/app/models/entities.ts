@@ -188,3 +188,7 @@ export interface FVehicle extends WithId {
   Color: string;
   Brand: string;
 }
+
+export interface FVehicleDTO extends FVehicle {
+  Owner?: PedHistory;
+}

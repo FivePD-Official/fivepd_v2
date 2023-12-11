@@ -28,6 +28,7 @@ public class FVehicle : FEntity, IFStatefulContainer
         this.Color = fVehicle.Color;
         this.Brand = fVehicle.Brand;
         this.Items = fVehicle.Items;
+        this.OwnerNetworkId = fVehicle.OwnerNetworkId;
 
         this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.Stopped, false);
         this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.HasGeneratedData, false);
@@ -37,6 +38,11 @@ public class FVehicle : FEntity, IFStatefulContainer
     /// Gets the vehicle's network identifier.
     /// </summary>
     public int NetworkId { get; }
+
+    /// <summary>
+    /// Gets the network identifier of the vehicle's owner ped.
+    /// </summary>
+    public int OwnerNetworkId { get; }
 
     /// <summary>
     /// Gets the vehicle's license plate.

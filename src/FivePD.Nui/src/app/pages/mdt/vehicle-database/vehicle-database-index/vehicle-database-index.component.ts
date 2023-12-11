@@ -4,7 +4,7 @@ import {
   Collation,
   Column,
   FormInputBase,
-  FormSubmitEvent, FVehicle,
+  FormSubmitEvent, FVehicle, FVehicleDTO,
   Page,
   PedHistory,
   SingleSelectField,
@@ -33,7 +33,7 @@ import { GridComponent } from "../../../../components/grid/grid.component";
 })
 export class VehicleDatabaseIndexComponent implements OnInit {
 
-  vehicles?: Page<FVehicle>;
+  vehicles?: Page<FVehicleDTO>;
   collation: Collation = {
     Page: 1,
     Filters: {},
@@ -45,7 +45,7 @@ export class VehicleDatabaseIndexComponent implements OnInit {
       placeholder: '',
     }),
   ];
-  columns: Column<FVehicle>[] = [
+  columns: Column<FVehicleDTO>[] = [
     new Column({
       header: 'License plate',
       accessorKey: 'LicensePlate',
@@ -61,36 +61,22 @@ export class VehicleDatabaseIndexComponent implements OnInit {
       accessorKey: 'Color',
       show: () => true,
     }),
-    // new Column({
-    //   header: 'Lastname',
-    //   accessorKey: 'Lastname',
-    //   show: () => true,
-    // }),
-    // new Column({
-    //   header: 'Birthdate',
-    //   valueResolver: item => formatDate(new Date(item.Birthdate), 'none'),
-    //   show: () => true,
-    // }),
-    // new Column({
-    //   header: 'Gender',
-    //   valueResolver: item => item.Gender === FGender.Male ? 'Male' : 'Female',
-    //   show: () => true,
-    // }),
+    new Column({
+      header: 'Owner name',
+      show: () => true,
+      valueResolver: item => item.Owner ? `${item.Owner.Firstname} ${item.Owner.Lastname}` : '-',
+    })
   ];
 
-  recentlyViewedPeds: PedHistory[] = [];
-
   constructor(private readonly _vehicleService: VehicleService,
-              private readonly _router: Router,
-              public readonly store: Store<GlobalState>) {
-    // store.select('app', 'recentlyViewedPeds').subscribe(peds => this.recentlyViewedPeds = peds);
+              private readonly _router: Router) {
   }
 
   ngOnInit(): void {
     this.getAll();
   }
 
-  citizensRowLinkResolver(item: FVehicle): string {
+  citizensRowLinkResolver(item: FVehicleDTO): string {
     return `/mdt/vehicle-database/${item.Id}`;
   }
 
@@ -102,6 +88,7 @@ export class VehicleDatabaseIndexComponent implements OnInit {
   getAll(): void {
     this._vehicleService.getAll(this.collation).subscribe(res => {
       this.vehicles = res;
+      console.log(res)
     });
   }
 
