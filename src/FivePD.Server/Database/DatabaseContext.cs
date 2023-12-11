@@ -256,6 +256,13 @@ public class DatabaseContext : DbContext
                     v => JsonConvert.DeserializeObject<Dictionary<string, object>>(
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+            type.Property(t => t.Extras)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<int>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
     }
 }

@@ -1,19 +1,19 @@
-﻿<app-page-header [title]="'UI.LABEL.VEHICLE_SETTINGS' | translate"/>
+﻿<app-page-header [title]="'UI.LABEL.VEHICLE_SETTINGS.TITLE' | translate"/>
 
 <app-container [rows]="2" [columns]="1">
 
   <app-grid
-    [title]="'UI.LABEL.VEHICLE_SETTINGS_POLICE' | translate"
+    [title]="'UI.LABEL.VEHICLE_SETTINGS.POLICE' | translate"
     [buttons]="vehicleConfigbuttons"
     [columns]="policeConfigColumn"/>
 
   @if (this.userService.userHasRole(UserRole.Admin)){
     <app-grid
-      [title]="'UI.LABEL.VEHICLE_SETTINGS_AMBULANCE' | translate"
+      [title]="'UI.LABEL.VEHICLE_SETTINGS.AMBULANCE' | translate"
       [buttons]="vehicleConfigbuttons"/>
 
     <app-grid
-      [title]="'UI.LABEL.VEHICLE_SETTINGS_TOW' | translate"
+      [title]="'UI.LABEL.VEHICLE_SETTINGS.TOW' | translate"
       [buttons]="vehicleConfigbuttons"/>
   }
 </app-container>

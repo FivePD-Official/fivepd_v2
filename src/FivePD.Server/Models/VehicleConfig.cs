@@ -17,14 +17,7 @@ public class VehicleConfig
     /// <summary>
     /// Gets or sets the type of vehicle.
     /// </summary>
-    #pragma warning disable
-    public enum Type
-    {
-        Police = 0,
-        Ambulance = 1,
-        TowTruck = 2,
-    }
-    #pragma warning restore
+    public VehicleConfigType Type { get; set; }
 
     /// <summary>
     /// Gets or sets the model.

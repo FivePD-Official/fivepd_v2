@@ -62,7 +62,7 @@ export class VehicleSettingsComponent implements OnInit {
   vehicleConfig?: Page<VehicleConfig>;
   vehicleConfigbuttons: Button[] = [
     {
-      label: 'Add Vehicle',
+      label: 'UI.LABEL.VEHICLE_SETTINGS.ADD_VEHICLE',
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
       disabled: () => false,
     }

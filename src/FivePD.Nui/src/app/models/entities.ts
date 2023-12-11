@@ -1,6 +1,5 @@
 import {LooseDataAttribute} from './loose-data';
 import {FGender, FIncidentPriority, FIncidentType, PedLicenseType} from "@enums";
-import {list} from "postcss";
 
 export interface WithId {
   Id: number;
@@ -55,14 +54,10 @@ export interface SimpleDepartment extends WithId {
 export interface VehicleConfig extends WithId {
   Name: string,
   Model: string,
-  Extras: Extras[],
+  Extras: number[],
   Livery: number,
   Department: User["DepartmentId"],
   Division: Division["Name"],
-}
-
-export interface Extras extends WithId {
-  Id: number,
 }
 
 export interface SimpleDepartmentWithArea extends SimpleDepartment {

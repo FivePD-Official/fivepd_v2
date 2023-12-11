@@ -7,7 +7,7 @@ using FivePD.Common;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IVehicleConfigService" />
-public class VehicleConfigService : IVehicleConfigService, IOnInit
+internal class VehicleConfigService : IVehicleConfigService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 
