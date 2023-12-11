@@ -179,3 +179,10 @@ export interface CalloutDetailsWithDepartments extends CalloutDetails {
     DepartmentId: number;
   }[];
 }
+
+export interface FVehicle extends WithId {
+  NetworkId: number;
+  LicensePlate: string;
+  Color: string;
+  Brand: string;
+}

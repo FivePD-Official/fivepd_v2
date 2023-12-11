@@ -41,6 +41,7 @@ internal class VehicleService : IVehicleService, IOnInit
         this._eventHandlerDictionary[Events.Vehicle.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
         this._eventHandlerDictionary[Events.Vehicle.InvokeMethod] += new Action<string>(this.InvokeMethod);
         this._eventHandlerDictionary[Events.Vehicle.SetCosmetics] += new Action<string>(this.SetCosmetics);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Vehicle.GetAllPageable);
     }
 
     /// <inheritdoc />

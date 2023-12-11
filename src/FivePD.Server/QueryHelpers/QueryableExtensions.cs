@@ -13,6 +13,11 @@ namespace FivePD.Server.QueryHelpers;
 public static class QueryableExtensions
 {
     /// <summary>
+    /// The default page size.
+    /// </summary>
+    public const int DefaultPageSize = 10;
+
+    /// <summary>
     /// Conditionally includes the specified entity in the query.
     /// </summary>
     /// <param name="source">The source query.</param>
@@ -53,7 +58,7 @@ public static class QueryableExtensions
     /// <param name="filters">Conditional filters.</param>
     /// <param name="pageSize">The page size.</param>
     /// <returns>A Page object with filtered data for the given page number and page size.</returns>
-    public static Page<T> Paginate<T>(this IQueryable<T> query, int pageNumber, Filters<T> filters, int pageSize = 10)
+    public static Page<T> Paginate<T>(this IQueryable<T> query, int pageNumber, Filters<T> filters, int pageSize = DefaultPageSize)
     {
         return query.ApplyFilter(filters).Paginate(pageNumber, pageSize);
     }
@@ -91,7 +96,7 @@ public static class QueryableExtensions
     /// <param name="pageNumber">The page no. which needs to be fetched.</param>
     /// <param name="pageSize">The number or records expected in the page.</param>
     /// <returns>A Page object with filtered data for the given page number and page size.</returns>
-    private static Page<T> Paginate<T>(this IQueryable<T> query, int pageNumber, int pageSize = 10)
+    private static Page<T> Paginate<T>(this IQueryable<T> query, int pageNumber, int pageSize = DefaultPageSize)
     {
         pageNumber = pageNumber < 1 ? 1 : pageNumber;
         var result = new Page<T>

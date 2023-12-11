@@ -17,6 +17,9 @@ import {
 } from "./pages/mdt/citizen-database/citizen-database-id/citizen-database-id.component";
 import { MessagesComponent } from "./pages/mdt/messages/messages.component";
 import { CalloutDetailsComponent } from "./pages/mdt/settings/callout-details/callout-details.component";
+import {
+  VehicleDatabaseIndexComponent
+} from "./pages/mdt/vehicle-database/vehicle-database-index/vehicle-database-index.component";
 
 const mdtRoutes: Routes = [
   {
@@ -92,7 +95,12 @@ const mdtRoutes: Routes = [
   },
   {
     path: 'vehicle-database',
-    component: DashboardComponent
+    children: [
+      {
+        path: '',
+        component: VehicleDatabaseIndexComponent
+      },
+    ]
   },
   {
     path: 'departments',

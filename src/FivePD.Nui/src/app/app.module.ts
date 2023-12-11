@@ -76,6 +76,7 @@ import { MessageService } from "@services/message/message.service";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { UserSettingsComponent } from "./pages/mdt/settings/user-settings/user-settings.component";
 import { AdminSettingsComponent } from "./pages/mdt/settings/admin-settings/admin-settings.component";
+import { VehicleService } from "@services/vehicle/vehicle.service";
 
 @NgModule({
   declarations: [AppComponent],
@@ -165,6 +166,7 @@ import { AdminSettingsComponent } from "./pages/mdt/settings/admin-settings/admi
     UserService,
     WindowService,
     AttributeGridOptions,
+    VehicleService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomHttpInterceptor,

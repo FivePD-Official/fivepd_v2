@@ -1,0 +1,18 @@
+<app-page-header [title]="'UI.LABEL.CITIZEN_DATABASE' | translate"/>
+<div class="grid grid-rows-1 grid-cols-[300px_1fr] gap-10 z-0">
+  <div class="flex flex-col gap-10">
+    <app-dynamic-form title="Search"
+                      subtitle="All fields are optional. If empty, every citizen will be displayed."
+                      submitButtonLabel="Search"
+                      buttonAlignment="full"
+                      [formFields]="formFields"
+                      (onSubmit)="onSearchSubmit($event)"
+                      [showSubmitButton]="true"/>
+  </div>
+
+  <app-grid
+    [columns]="columns"
+    [data]="vehicles"
+    [rowLinkResolver]="citizensRowLinkResolver"
+    (onCollationChange)="onCollationChange($event)"/>
+</div>
