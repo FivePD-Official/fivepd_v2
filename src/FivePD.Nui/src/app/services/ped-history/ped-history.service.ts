@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { Collation, Page, PedHistory, SimplePedHistory } from "@models";
+import { Collation, Id, Page, PedHistory, SimplePedHistory } from "@models";
+import { parseId } from "../../helpers/parse-id";
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +11,9 @@ export class PedHistoryService {
 
   constructor(private readonly _http: HttpClient) { }
 
-  get(id: number | string): Observable<PedHistory> {
-    if (typeof id === 'string') {
-      id = parseInt(id);
-    }
-
+  get(id: Id): Observable<PedHistory> {
     return this._http.post<PedHistory>('fivepd:pedHistory:get', {
-      Id: id,
+      Id: parseId(id),
     });
   }
 

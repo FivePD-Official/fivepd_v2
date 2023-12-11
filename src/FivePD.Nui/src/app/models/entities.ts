@@ -1,6 +1,8 @@
 import {LooseDataAttribute} from './loose-data';
 import {FGender, FIncidentPriority, FIncidentType, PedLicenseType} from "@enums";
 
+export type Id = string | number;
+
 export interface WithId {
   Id: number;
 }
