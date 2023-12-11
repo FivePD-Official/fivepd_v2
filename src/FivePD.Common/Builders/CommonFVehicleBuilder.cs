@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Models;
+using Newtonsoft.Json;
 
 #pragma warning disable CS1591
 #pragma warning disable SA1600
@@ -25,16 +26,22 @@ public class CommonFVehicleBuilder
         this.NetworkId = networkId;
     }
 
+    [JsonProperty]
     public int NetworkId { get; private set; }
 
+    [JsonProperty]
     public int OwnerNetworkId { get; private set; }
 
+    [JsonProperty]
     public List<int> PassengerNetworkIds { get; private set; }
 
+    [JsonProperty]
     public string LicensePlate { get; private set; }
 
+    [JsonProperty]
     public string Color { get; private set; }
 
+    [JsonProperty]
     public string Brand { get; private set; }
 
     public List<Item> Items { get; private set; }

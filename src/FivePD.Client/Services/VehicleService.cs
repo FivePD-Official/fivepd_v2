@@ -62,7 +62,8 @@ internal class VehicleService : IVehicleService, IOnInit
             .WithOwner(vehicle.Driver.NetworkId)
             .WithPassengers(vehicle.Occupants.Select(ped => ped.NetworkId).ToList())
             .WithColor(vehicle.GetColorName())
-            .WithBrand(vehicle.DisplayName);
+            .WithBrand(vehicle.DisplayName)
+            .WithLicensePlate(Cfx.API.GetVehicleNumberPlateText(vehicle.Handle));
 
         BaseScript.TriggerServerEvent(Events.Vehicle.Generate, JsonConvert.SerializeObject(fVehicleBuilder));
 

@@ -5,9 +5,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
-using FivePD.Common.Models;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
@@ -45,11 +43,6 @@ public class VehicleService : IVehicleService, IOnInit
     /// <inheritdoc/>
     void IOnInit.OnInit()
     {
-#pragma warning disable SA1512
-        // this._vehicles[2] = new FVehicle(new CommonFVehicle(new CommonFVehicleBuilder(2).WithLicensePlate("ABC-123").WithBrand("abc brand").WithColor("red")));
-        // this._vehicles[4] = new FVehicle(new CommonFVehicle(new CommonFVehicleBuilder(4).WithLicensePlate("DEF-456").WithBrand("def brand").WithColor("blue")));
-#pragma warning restore SA1512
-
         this._eventHandlerDictionary[Events.Vehicle.Generate] += new Action<string>(this.GenerateVehicle);
     }
 
@@ -61,13 +54,13 @@ public class VehicleService : IVehicleService, IOnInit
 
     private void GenerateVehicle(string serializedFVehicleBuilder)
     {
-        var fVehicleBuilder = JsonConvert.DeserializeObject<CommonFVehicleBuilder>(serializedFVehicleBuilder);
-        if (fVehicleBuilder is null || this._vehicles.ContainsKey(fVehicleBuilder.NetworkId))
+        var fVehicleBuilderDto = JsonConvert.DeserializeObject<CommonFVehicleBuilder>(serializedFVehicleBuilder);
+        if (fVehicleBuilderDto is null || this._vehicles.ContainsKey(fVehicleBuilderDto.NetworkId))
         {
             return;
         }
 
-        var commonFVehicle = fVehicleBuilder
+        var commonFVehicle = fVehicleBuilderDto
             .WithItems(this._configService.Items)
             .Build();
 
