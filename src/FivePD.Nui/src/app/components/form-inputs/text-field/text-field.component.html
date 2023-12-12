@@ -3,6 +3,5 @@
          [formControl]="control"
          [attr.id]="field.key"
          [attr.placeholder]="field.placeholder | translate"
-         [readonly]="field.readonly"
-         (input)="onChange.emit($any($event))"/>
+         [readonly]="field.readonly"/>
 </app-base-field>
