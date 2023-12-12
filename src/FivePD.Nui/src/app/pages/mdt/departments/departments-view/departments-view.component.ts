@@ -43,8 +43,8 @@ import { ButtonComponent } from '../../../../components/button/button.component'
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import {
   DepartmentCallsignFormatEditorComponent
-} from "./_components/department-callsign-format-modal/department-callsign-format-editor.component";
-import { CALLSIGN_FORMAT_POSITIONS } from "./_components/department-callsign-format-modal/token";
+} from "./_components/department-callsign-format-editor/department-callsign-format-editor.component";
+import { CALLSIGN_FORMAT_POSITIONS } from "./_components/department-callsign-format-editor/token";
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -133,15 +133,18 @@ export class DepartmentsViewComponent implements OnInit {
 
   tryEditMemberCallsignFormat(): void {
     this._modalService.open(DepartmentCallsignFormatEditorComponent, {
-      title: 'Edit member callsign format',
-    }, new Map().set(CALLSIGN_FORMAT_POSITIONS, this.department?.CallsignFormat))
+      title: 'Edit callsign format',
+    }, new Map().set(CALLSIGN_FORMAT_POSITIONS, this.department!.CallsignFormat))
       .result
       .pipe(
         filter(res => res.success),
+        switchMap(res => this._departmentService.editCallsignFormat({
+          DepartmentId: this.department!.Id,
+          CallsignFormat: res.value,
+        })),
+        this._modalService.handleResponse()
       )
-      .subscribe(v => {
-        console.log(v)
-      });
+      .subscribe(() => this.getDepartment());
   }
 
   private getGeneralConfig(): void {

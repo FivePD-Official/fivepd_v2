@@ -120,7 +120,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     return new SingleSelectField({
       key: '#',
       value: action.value ? action.value(item.originalItem) : -1,
-      label: action.label,
+      label: '',
       defaultItemLabel: action.label,
       items: action.items(),
       size: 'small',

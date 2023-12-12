@@ -48,6 +48,10 @@ export class DepartmentService {
     return this._http.post<ActionResponse>('fivepd:department:edit', department);
   }
 
+  editCallsignFormat(request: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:department:editCallsignFormat', request);
+  }
+
   deleteDepartment(id: number): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:delete', {
       Id: id,

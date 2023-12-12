@@ -620,6 +620,47 @@ public class DepartmentService : IDepartmentService
             });
     }
 
+    [UIEvent(Events.UI.Department.EditCallsignFormat)]
+    private void EditDepartmentCallsignFormatUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<EditDepartmentCallsignFormatRequest>();
+        var department = this._databaseContext.Departments
+            .Include(x => x.Users)
+            .FirstOrDefault(department => department.Id == request.DepartmentId);
+        if (department is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        Debug.WriteLine("asd");
+
+        department.CallsignFormat = request.CallsignFormat;
+
+        foreach (var user in department.Users)
+        {
+            string callsign;
+            do
+            {
+                callsign = new CallsignGenerator(department.CallsignFormat).GenerateCallsign();
+            }
+            while (department.Users.Any(x => x.Callsign == callsign));
+
+            user.Callsign = callsign;
+        }
+
+        this._databaseContext.SaveChanges();
+        this.DepartmentUpdated?.Invoke(this, department);
+        networkCallbackDelegate.InvokeWithResponse(
+            true,
+            "UI.LABEL.SUCCESS.EDIT",
+            "UI.LABEL.DEPARTMENT.SUCCESS.EDIT",
+            new Dictionary<string, string>
+            {
+                { "department", department.Name },
+            });
+    }
+
     [UIEvent(Events.UI.Department.CheckIfDepartmentNameTaken)]
     private void CheckIfDepartmentNameTaken(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {

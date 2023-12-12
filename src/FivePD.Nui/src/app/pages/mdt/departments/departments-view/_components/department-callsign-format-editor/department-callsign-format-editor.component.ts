@@ -70,7 +70,7 @@ export class DepartmentCallsignFormatEditorComponent {
   }
 
   onFixedCharacterChange(index: number, event: any) {
-    this._positions[index].Value = event.target.value;
+    this._positions[index].Value = event.target.value.toUpperCase();
     this.emitChange();
   }
 

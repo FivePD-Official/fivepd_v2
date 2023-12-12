@@ -48,6 +48,7 @@
                 <input type="text"
                        maxlength="1"
                        class="border border-zinc-600 focus:border-zinc-400 w-[50px] h-[50px] text-xl font-bold text-zinc-200 bg-transparent text-center rounded-md uppercase"
+                       [value]="position.Value"
                        (input)="onFixedCharacterChange($index, $event)">
               </div>
             }
