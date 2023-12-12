@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {
   CheckboxField,
-  DateField,
+  DateField, FormChangeEvent,
   FormInputBase,
   FormSubmitEvent,
   MultiSelectField,
@@ -76,6 +76,7 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
   // childrenComponents: ElementRef[] = [];
 
   @Output() onSubmit = new EventEmitter<FormSubmitEvent>();
+  @Output() onChange = new EventEmitter<FormChangeEvent>();
 
   form!: FormGroup;
   columnsGridStyle: string = '';
@@ -89,6 +90,12 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
 
   ngOnChanges(): void {
     this.form = this.createForm();
+    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.onChange.emit({
+        value: this.form.value,
+        valid: this.form.valid,
+      })
+    });
     this.createColumns();
 
     this.modalRef?.loading.pipe(takeUntil(this.destroy$)).subscribe(loading => this.modalRefLoading = loading);

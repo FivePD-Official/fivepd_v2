@@ -8,6 +8,11 @@ export interface FormSubmitEvent {
   markAsPristine: () => void;
 }
 
+export interface FormChangeEvent {
+  value: any;
+  valid: boolean;
+}
+
 export interface DropdownItem {
   key: any;
   label: string;

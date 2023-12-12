@@ -26,7 +26,7 @@ public class Department
     /// <summary>
     /// Gets or sets the callsign format.
     /// </summary>
-    public string CallsignFormat { get; set; }
+    public List<CallsignFormatItem> CallsignFormat { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of users.

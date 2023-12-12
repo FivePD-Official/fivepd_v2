@@ -34,10 +34,22 @@ export interface DepartmentAreaCoordinate extends WithId {
   Y: number;
 }
 
+export enum CallsignFormatItemType {
+  Dash,
+  FixedCharacter,
+  RandomLetter,
+  RandomNumber,
+}
+
+export interface CallsignFormatItem {
+  Type: CallsignFormatItemType;
+  Value?: string;
+}
+
 export interface Department extends WithId {
   Name: string;
   Callsign: string;
-  CallsignFormat: string;
+  CallsignFormat: CallsignFormatItem[];
   MaxUsers: number;
   Users?: User[];
   Divisions?: Division[];

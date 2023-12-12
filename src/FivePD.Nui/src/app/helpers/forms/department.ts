@@ -2,6 +2,7 @@
 import { LocalizationService } from '@services/localization/localization.service';
 import { CustomValidators } from '../validators';
 
+// do not use
 export function createDepartmentCallsignFormatInputField(localizationService: LocalizationService, value?: Department) {
   return new TextField({
     key: 'CallsignFormat',
@@ -33,6 +34,6 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
               </table>
             `,
     validators: [CustomValidators.callsignFormat()],
-    value: value?.CallsignFormat,
+    value: '',
   });
 }

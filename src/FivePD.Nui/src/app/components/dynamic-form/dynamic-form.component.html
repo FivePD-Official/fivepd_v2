@@ -12,6 +12,9 @@
       }
     </div>
   }
+
+  <ng-content select="[top]"/>
+
   @if (form && formFieldColumns.length) {
     <div class="grid gap-7 w-full" [ngStyle]="{ grid: columnsGridStyle }">
       @for (col of formFieldColumns;track col) {
@@ -40,7 +43,7 @@
     </div>
   }
 
-  <ng-content/>
+  <ng-content select="[bottom]"/>
 
   @if (showSubmitButton) {
     <div class="w-full flex flex-row items-center justify-end mt-6 gap-4"

@@ -24,7 +24,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
 import { filter, switchMap } from 'rxjs';
 import { GlobalState } from '@store';
-import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { UserRole, UserService } from '@services/user/user.service';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
@@ -42,6 +41,10 @@ import { ContainerComponent } from '../../../../components/container/container.c
 import { TippyModule } from '@ngneat/helipopper';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import {
+  DepartmentCallsignFormatEditorComponent
+} from "./_components/department-callsign-format-modal/department-callsign-format-editor.component";
+import { CALLSIGN_FORMAT_POSITIONS } from "./_components/department-callsign-format-modal/token";
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -126,6 +129,19 @@ export class DepartmentsViewComponent implements OnInit {
   ngOnInit(): void {
     this.getGeneralConfig();
     this.getDepartment();
+  }
+
+  tryEditMemberCallsignFormat(): void {
+    this._modalService.open(DepartmentCallsignFormatEditorComponent, {
+      title: 'Edit member callsign format',
+    }, new Map().set(CALLSIGN_FORMAT_POSITIONS, this.department?.CallsignFormat))
+      .result
+      .pipe(
+        filter(res => res.success),
+      )
+      .subscribe(v => {
+        console.log(v)
+      });
   }
 
   private getGeneralConfig(): void {
@@ -799,7 +815,6 @@ export class DepartmentsViewComponent implements OnInit {
         validators: [CustomValidators.onlyLetters()],
         value: this.department.Callsign,
       }),
-      createDepartmentCallsignFormatInputField(this._localization, this.department),
     ];
   }
 

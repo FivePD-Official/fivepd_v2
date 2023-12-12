@@ -606,7 +606,6 @@ public class DepartmentService : IDepartmentService
         department.Callsign = string.IsNullOrEmpty(editDepartmentRequest.Callsign)
             ? editDepartmentRequest.Name.ToAcronym()
             : editDepartmentRequest.Callsign;
-        department.CallsignFormat = editDepartmentRequest.CallsignFormat;
         department.MaxUsers = editDepartmentRequest.MaxUsers;
         department.DefaultRankId = editDepartmentRequest.DefaultRankId == -1 ? (int?)null : editDepartmentRequest.DefaultRankId;
         this._databaseContext.SaveChanges();

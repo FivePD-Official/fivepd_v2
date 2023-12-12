@@ -76,6 +76,12 @@ import { MessageService } from "@services/message/message.service";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { UserSettingsComponent } from "./pages/mdt/settings/user-settings/user-settings.component";
 import { AdminSettingsComponent } from "./pages/mdt/settings/admin-settings/admin-settings.component";
+import {
+  CreateDepartmentModalComponent
+} from "./pages/mdt/departments/departments-view/_components/create-department-modal/create-department-modal.component";
+import {
+  DepartmentCallsignFormatEditorComponent
+} from "./pages/mdt/departments/departments-view/_components/department-callsign-format-editor/department-callsign-format-editor.component";
 
 @NgModule({
   declarations: [AppComponent],
@@ -142,7 +148,9 @@ import { AdminSettingsComponent } from "./pages/mdt/settings/admin-settings/admi
     AsPipe,
     CalloutDetailsComponent,
     AdminSettingsComponent,
-    UserSettingsComponent
+    UserSettingsComponent,
+    CreateDepartmentModalComponent,
+    DepartmentCallsignFormatEditorComponent,
   ],
   providers: [
     CalloutService,

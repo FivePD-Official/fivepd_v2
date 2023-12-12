@@ -1,0 +1,103 @@
+<div class="flex flex-col gap-6">
+
+  <ul>
+    <li class="mb-4">
+      <p class="text-sm font-medium text-zinc-400">Dash</p>
+      <p class="text-zinc-200">A dash will be inserted into the callsign at the given position.</p>
+    </li>
+    <li class="mb-4">
+      <p class="text-sm font-medium text-zinc-400">Fixed character</p>
+      <p class="text-zinc-200">The given character will be inserted into the callsign at the given position.</p>
+    </li>
+    <li class="mb-4">
+      <p class="text-sm font-medium text-zinc-400">Random letter</p>
+      <p class="text-zinc-200">A random letter will be inserted into the callsign at the given position.</p>
+    </li>
+    <li class="mb-4">
+      <p class="text-sm font-medium text-zinc-400">Random number</p>
+      <p class="text-zinc-200">A random number will be inserted into the callsign at the given position.</p>
+    </li>
+  </ul>
+
+  <div class="flex flex-row items-center gap-2">
+    <app-button (onClick)="add(CallsignFormatPositionType.Dash)"
+                label="Add dash"
+                variant="secondary"
+                [disabled]="!_positions.length || isLastPositionDash"/>
+    <app-button (onClick)="add(CallsignFormatPositionType.FixedCharacter)"
+                label="Add fixed character"
+                variant="secondary"/>
+    <app-button (onClick)="add(CallsignFormatPositionType.RandomNumber)"
+                label="Add random number"
+                variant="secondary"/>
+    <app-button (onClick)="add(CallsignFormatPositionType.RandomLetter)"
+                label="Add random letter"
+                variant="secondary"/>
+  </div>
+
+  <div class="flex flex-row items-center justify-center gap-2 h-[115px]">
+    @for (position of _positions;track position) {
+      <div class="flex flex-col items-center justify-center gap-[5px] w-[80px]">
+        <div class="bg-zinc-900/60 p-2 rounded-lg w-full h-[80px] flex flex-col justify-center items-center">
+          @switch (position.Type) {
+            @case (CallsignFormatPositionType.Dash) {
+              <p class="font-bold text-xl text-zinc-200">-</p>
+            }
+            @case (CallsignFormatPositionType.FixedCharacter) {
+              <div class="w-[50px]">
+                <input type="text"
+                       maxlength="1"
+                       class="border border-zinc-600 focus:border-zinc-400 w-[50px] h-[50px] text-xl font-bold text-zinc-200 bg-transparent text-center rounded-md uppercase"
+                       (input)="onFixedCharacterChange($index, $event)">
+              </div>
+            }
+            @case (CallsignFormatPositionType.RandomNumber) {
+              <p class="font-bold text-xl text-zinc-200">
+                0-9
+              </p>
+            }
+            @case (CallsignFormatPositionType.RandomLetter) {
+              <p class="font-bold text-xl text-zinc-200">
+                A-Z
+              </p>
+            }
+          }
+        </div>
+        <button type="button"
+                class="bg-zinc-900/60 p-2 rounded-lg w-full h-[30px] flex flex-col justify-center items-center group"
+                (click)="removePosition($index)">
+          <div app-icon name="XMark" className="h-[18px] text-zinc-400 group-hover:text-red-500"></div>
+        </button>
+      </div>
+    } @empty {
+      <p class="text-zinc-400 block">No format</p>
+    }
+  </div>
+
+  <div class="w-full flex flex-row items-start justify-between mt-6 gap-4">
+    <div class="flex flex-col items-start justify-start gap-2">
+      @if (isLastPositionDash) {
+        <p class="font-medium text-red-600">
+          Cannot end with a dash.
+        </p>
+      }
+      @if (hasNoRandomPositions && _positions.length) {
+        <p class="font-medium text-red-600">
+          Add at least one random letter or number.
+        </p>
+      }
+      @if (hasEmptyFixedCharacterPositions) {
+        <p class="font-medium text-red-600">
+          Cannot contain empty fixed character positions.
+        </p>
+      }
+    </div>
+    @if (showSubmitButton) {
+      <app-button type="submit"
+                  (onClick)="submit()"
+                  [label]="'UI.ACTION.SAVE' | translate"
+                  [disabled]="!valid"/>
+    }
+  </div>
+
+</div>
