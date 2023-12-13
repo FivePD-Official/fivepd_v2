@@ -44,7 +44,11 @@ import { PageHeaderComponent } from '../../../../components/page-header/page-hea
 import {
   DepartmentCallsignFormatEditorComponent
 } from "./_components/department-callsign-format-editor/department-callsign-format-editor.component";
-import { CALLSIGN_FORMAT_POSITIONS } from "./_components/department-callsign-format-editor/token";
+import { CALLSIGN_FORMAT_ITEMS } from "./_components/department-callsign-format-editor/token";
+import {
+  CallsignEditorComponent
+} from "../../settings/user-settings/_components/user-callsign-editor/callsign-editor.component";
+import { CALLSIGN } from "../../settings/user-settings/_components/user-callsign-editor/token";
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -105,6 +109,7 @@ export class DepartmentsViewComponent implements OnInit {
     private readonly _localization: LocalizationService,
     private readonly _departmentService: DepartmentService,
     private readonly _modalService: ModalService,
+    private readonly _userService: UserService,
     private readonly _store: Store<GlobalState>,
     private readonly _modalFormService: ModalFormService,
     private readonly _modalConfirmService: ModalConfirmService,
@@ -134,7 +139,7 @@ export class DepartmentsViewComponent implements OnInit {
   tryEditMemberCallsignFormat(): void {
     this._modalService.open(DepartmentCallsignFormatEditorComponent, {
       title: 'Edit callsign format',
-    }, new Map().set(CALLSIGN_FORMAT_POSITIONS, this.department!.CallsignFormat))
+    }, new Map().set(CALLSIGN_FORMAT_ITEMS, this.department!.CallsignFormat))
       .result
       .pipe(
         filter(res => res.success),
@@ -490,31 +495,22 @@ export class DepartmentsViewComponent implements OnInit {
           icon: IconType.Pencil,
           onClick: item => {
             let updatedCallsign = '';
-            this._modalFormService.open<FormattedUser>({
+            this._modalService.open(CallsignEditorComponent, {
                 title: 'Edit callsign',
-                fields: updatedUser => {
-                  const fields: FormInputBase<any>[] = [
-                    new TextField({
-                      key: 'Callsign',
-                      label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-                      placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-                      required: true,
-                      value: item.Callsign,
-                    }),
-                  ];
-                  return fields;
-                },
-                buttons: {
-                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
-                },
-              }
-            ).result.pipe(
-              filter((res) => res.success),
-              switchMap((res) => this.userService.updateUserDetails({Id: item.Id, Callsign: res.value['Callsign']})),
-              this._modalService.handleResponse(),
-            ).subscribe(res => {
+              }, new Map()
+                .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
+                .set(CALLSIGN, item.Callsign)
+            ).result
+              .pipe(
+                filter((res) => res.success),
+                switchMap((res) => this.userService.updateUserDetails({Id: item.Id, Callsign: res.value['Callsign']})),
+                this._modalService.handleResponse(),
+              ).subscribe(res => {
               if (res.Status) {
                 item.Callsign = updatedCallsign;
+                if (this.user?.User.Id === item.Id) {
+                  this._userService.refreshData();
+                }
               }
               this.getDivisions(true);
             })

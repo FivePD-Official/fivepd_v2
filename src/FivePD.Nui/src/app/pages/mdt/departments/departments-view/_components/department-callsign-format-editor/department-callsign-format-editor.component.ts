@@ -8,7 +8,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { TextFieldComponent } from "../../../../../../components/form-inputs/text-field/text-field.component";
 import { IconComponent } from "../../../../../../components/icon/icon.component";
 import { TranslatePipe } from "../../../../../../pipes/translate.pipe";
-import { CALLSIGN_FORMAT_POSITIONS } from "./token";
+import { CALLSIGN_FORMAT_ITEMS } from "./token";
 import { ModalRef } from "@services/modals/modal/modal-ref";
 import { CallsignFormatItem, CallsignFormatItemType } from "@models";
 
@@ -29,7 +29,7 @@ export class DepartmentCallsignFormatEditorComponent {
   @Input() showSubmitButton = true;
   @Output() onChange = new EventEmitter<CallsignFormatChangeEvent>();
 
-  constructor(@Inject(CALLSIGN_FORMAT_POSITIONS) @Optional() readonly positions: CallsignFormatItem[],
+  constructor(@Inject(CALLSIGN_FORMAT_ITEMS) @Optional() readonly positions: CallsignFormatItem[],
               @Inject(ModalRef) @Optional() readonly modalRef: ModalRef) {
     this._positions = positions ?? [];
   }
@@ -87,5 +87,5 @@ export class DepartmentCallsignFormatEditorComponent {
     }
   }
 
-  protected readonly CallsignFormatPositionType = CallsignFormatItemType;
+  protected readonly CallsignFormatItemType = CallsignFormatItemType;
 }

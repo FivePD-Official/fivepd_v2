@@ -1,24 +1,40 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from "@services/user/user.service";
 import { DepartmentService } from "@services/department/department.service";
-import { Department, SingleSelectField, FormInputBase, FormSubmitEvent, GeneralConfig, TextField } from "@models";
-import { CustomValidators } from "../../../../helpers/validators";
-import { filter, tap, zip } from "rxjs";
+import {
+  Department,
+  FormInputBase,
+  FormSubmitEvent,
+  GeneralConfig,
+  PlayerDetailsDTO,
+  SingleSelectField
+} from "@models";
+import { filter, switchMap, tap, zip } from "rxjs";
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { LocalizationService } from "@services/localization/localization.service";
 import { ConfigService } from "@services/config/config.service";
+import { ButtonComponent } from "../../../../components/button/button.component";
+import { ModalService } from "@services/modals/modal/modal.service";
+import { CallsignEditorComponent } from "./_components/user-callsign-editor/callsign-editor.component";
+import {
+  CALLSIGN_FORMAT_ITEMS
+} from "../../departments/departments-view/_components/department-callsign-format-editor/token";
+import { CALLSIGN } from "./_components/user-callsign-editor/token";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
 
 @Component({
   selector: 'app-user-settings',
   templateUrl: './user-settings.component.html',
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, DynamicFormComponent, TranslatePipe]
+  imports: [PageHeaderComponent, ContainerComponent, DynamicFormComponent, TranslatePipe, ButtonComponent]
 })
 export class UserSettingsComponent implements OnInit {
 
+  user?: PlayerDetailsDTO;
   generalConfig?: GeneralConfig;
   department?: Department;
   userDetailsFields: FormInputBase<any>[] = [];
@@ -27,7 +43,10 @@ export class UserSettingsComponent implements OnInit {
   constructor(private readonly _userService: UserService,
               private readonly _departmentService: DepartmentService,
               private readonly _localizationService: LocalizationService,
-              private readonly _configService: ConfigService) {
+              private readonly _configService: ConfigService,
+              private readonly _modalService: ModalService,
+              private readonly _store: Store<GlobalState>) {
+    _store.select('user', 'details').subscribe(user => this.user = user);
   }
 
   ngOnInit(): void {
@@ -41,6 +60,7 @@ export class UserSettingsComponent implements OnInit {
       this.loadAvailableLocales(),
       this._departmentService.getDepartment(user.DepartmentId!),
     ).subscribe(([generalConfig, availableLocalizations, department]) => {
+      this.department = department;
       this.generalConfig = generalConfig;
 
       const fields = [...this.userDetailsFields];
@@ -62,17 +82,6 @@ export class UserSettingsComponent implements OnInit {
           label: title,
         })),
       }));
-
-      if (department) {
-        fields.push(new TextField({
-          key: 'Callsign',
-          value: user.Callsign,
-          label: 'Callsign',
-          helpLabel: `Format: ${department.CallsignFormat ?? 'Unknown'}`,
-          required: true,
-          validators: [CustomValidators.callsignFormat()],
-        }));
-      }
 
       this.userDetailsFields = fields;
     });
@@ -98,6 +107,24 @@ export class UserSettingsComponent implements OnInit {
       .subscribe(() => {
         this._userService.refreshData()
       });
+  }
+
+  tryEditCallsign(): void {
+    this._modalService.open(CallsignEditorComponent, {
+        title: 'Edit callsign'
+      }, new Map()
+        .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
+        .set(CALLSIGN, this.user?.User?.Callsign)
+    ).result
+      .pipe(
+        filter(res => res.success),
+        switchMap(res => this._userService.updateUserDetails({
+          Id: this.user?.User?.Id,
+          Callsign: res.value['Callsign']
+        })),
+        this._modalService.handleResponse()
+      )
+      .subscribe(() => this._userService.refreshData());
   }
 
   private loadAvailableLocales() {

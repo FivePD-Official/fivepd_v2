@@ -11,6 +11,12 @@
 \:root
   --transition: all 0.15s cubic-bezier(0.33, 1, 0.68, 1)
 
+@layer base
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button
+    -webkit-appearance: none
+    margin: 0
+
 *
   outline: none
   user-select: none
