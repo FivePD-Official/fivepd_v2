@@ -9,7 +9,7 @@
   MappedLooseDataEntity,
   NumberField,
   TextareaField,
-  TextInput, MultiSelectField, SingleSelectFieldOptions
+  TextField, MultiSelectField, SingleSelectFieldOptions
 } from '@models';
 import { coreAttributeNames, CoreAttributes } from "./core-attributes";
 import { MultiSelectFieldComponent } from "../components/form-inputs/multi-select-field/multi-select-field.component";
@@ -175,7 +175,7 @@ export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?:
 
     let inputField: FormInputBase<any> | undefined;
     if (attr.DataType === AttributeDataType.ShortString) {
-      inputField = new TextInput(options);
+      inputField = new TextField(options);
     } else if (attr.DataType === AttributeDataType.LongString) {
       inputField = new TextareaField(options);
     } else if (attr.DataType === AttributeDataType.Integer) {

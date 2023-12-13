@@ -1,11 +1,11 @@
-﻿import {AttributeDataType, CheckboxField, SingleSelectField, FormInputBase, LooseDataAttribute, TextInput} from '@models';
+﻿import {AttributeDataType, CheckboxField, SingleSelectField, FormInputBase, LooseDataAttribute, TextField} from '@models';
 import {LocalizationService} from '@services/localization/localization.service';
 import {CustomValidators} from "../validators";
 import {coreAttributeNames, CoreAttributes} from "../core-attributes";
 
 export function createAttributesFormFields(localizationService: LocalizationService, value?: LooseDataAttribute): FormInputBase<any>[] {
   const fields = [
-    new TextInput({
+    new TextField({
       key: 'Name',
       label: localizationService.translate('UI.LABEL.NAME.SINGULAR'),
       required: true,
@@ -37,19 +37,19 @@ export function createAttributesFormFields(localizationService: LocalizationServ
         {key: AttributeDataType.Date, label: localizationService.translate('UI.LABEL.DATE.SINGULAR')},
       ]
     }),
-    new TextInput({
+    new TextField({
       key: 'Label',
       label: localizationService.translate('UI.LABEL.LABEL.SINGULAR'),
       required: true,
       value: value?.Label,
     }),
-    new TextInput({
+    new TextField({
       key: 'HelpLabel',
       label: localizationService.translate('UI.LABEL.HELP_LABEL.SINGULAR'),
       required: false,
       value: value?.HelpLabel,
     }),
-    new TextInput({
+    new TextField({
       key: 'Placeholder',
       label: localizationService.translate('UI.LABEL.PLACEHOLDER'),
       required: false,

@@ -1,18 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  AbstractControl,
-  ControlValueAccessor,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors, Validators
-} from "@angular/forms";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
-import { FormInputBase, TextInput } from "@models";
-import { CustomValidators } from "../../../helpers/validators";
+import { TextField } from "@models";
 import { SafeHtmlPipe } from "../../../pipes/safe-html.pipe";
 import { BaseFieldComponent } from "../base-field/base-field.component";
+import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
   selector: 'app-text-field',
@@ -23,7 +16,7 @@ import { BaseFieldComponent } from "../base-field/base-field.component";
 })
 export class TextFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;
-  @Input({required: true}) field!: TextInput;
+  @Input({required: true}) field!: TextField;
 
   @Output() onChange = new EventEmitter<string>();
 
@@ -31,21 +24,7 @@ export class TextFieldComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.form) {
-      const validators = [...this.field.validators];
-      if (this.field.required) {
-        validators.push(Validators.required);
-      }
-
-      const asyncValidators = [...this.field.asyncValidators];
-
-      this.pseudoFormControl = new FormControl({
-        value: this.field.value ?? '',
-        disabled: this.field.readonly
-      }, validators, asyncValidators);
-
-      this.form = new FormGroup({
-        [this.field.key]: this.pseudoFormControl,
-      });
+      this.form = createDefaultFormGroup(this.field, '');
     }
 
     if (!this.control) {

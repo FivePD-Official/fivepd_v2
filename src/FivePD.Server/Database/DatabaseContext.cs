@@ -155,6 +155,13 @@ public class DatabaseContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             type.HasOne(department => department.DefaultRank);
+
+            type.Property(t => t.CallsignFormat)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<CallsignFormatItem>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
         modelBuilder.Entity<CalloutDetailsDepartment>(type =>

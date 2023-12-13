@@ -1,14 +1,24 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  Type
+} from '@angular/core';
 import {
   CheckboxField,
-  DateField,
+  DateField, FormChangeEvent,
   FormInputBase,
   FormSubmitEvent,
   MultiSelectField,
   NumberField,
   SingleSelectField,
   TextareaField,
-  TextInput
+  TextField
 } from '@models';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import deepEqual from 'fast-deep-equal/es6';
@@ -66,6 +76,7 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
   // childrenComponents: ElementRef[] = [];
 
   @Output() onSubmit = new EventEmitter<FormSubmitEvent>();
+  @Output() onChange = new EventEmitter<FormChangeEvent>();
 
   form!: FormGroup;
   columnsGridStyle: string = '';
@@ -79,6 +90,12 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
 
   ngOnChanges(): void {
     this.form = this.createForm();
+    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.onChange.emit({
+        value: this.form.value,
+        valid: this.form.valid,
+      })
+    });
     this.createColumns();
 
     this.modalRef?.loading.pipe(takeUntil(this.destroy$)).subscribe(loading => this.modalRefLoading = loading);
@@ -98,32 +115,8 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
     // }
   }
 
-  isTextInput(v: any) {
-    return v instanceof TextInput;
-  }
-
-  isNumberInput(v: any) {
-    return v instanceof NumberField;
-  }
-
-  isTextarea(v: any) {
-    return v instanceof TextareaField;
-  }
-
-  isDateInput(v: any) {
-    return v instanceof DateField;
-  }
-
-  isSingleSelect(v: any) {
-    return v instanceof SingleSelectField;
-  }
-
-  isMultiSelect(v: any) {
-    return v instanceof MultiSelectField;
-  }
-
-  isCheckboxField(v: any) {
-    return v instanceof CheckboxField;
+  instanceof(object: any, type: any) {
+    return object instanceof type;
   }
 
   createForm(): FormGroup {
@@ -285,4 +278,11 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
   //
   //   return focusableEls;
   // }
+  protected readonly SingleSelectField = SingleSelectField;
+  protected readonly TextField = TextField;
+  protected readonly NumberField = NumberField;
+  protected readonly TextareaField = TextareaField;
+  protected readonly DateField = DateField;
+  protected readonly MultiSelectField = MultiSelectField;
+  protected readonly CheckboxField = CheckboxField;
 }

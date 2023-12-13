@@ -1,0 +1,43 @@
+<div class="flex flex-col gap-4">
+
+  <div class="flex flex-row items-center justify-center gap-2 h-[115px]">
+    @for (position of _positions;track position) {
+      <div class="flex flex-col items-center justify-center gap-[5px] w-[80px]">
+        <div class="bg-zinc-900/60 p-2 rounded-lg w-full h-[80px] flex flex-col justify-center items-center">
+          @if (position.Type === CallsignFormatItemType.Dash) {
+              <p class="font-bold text-xl text-zinc-200">-</p>
+          } @else if (position.Type === CallsignFormatItemType.FixedCharacter || position.Type === CallsignFormatItemType.RandomLetter) {
+              <div class="w-[50px]">
+                <input type="text"
+                       maxlength="1"
+                       class="border border-zinc-600 focus:border-zinc-400 w-[50px] h-[50px] text-xl font-bold text-zinc-200 bg-transparent text-center rounded-md uppercase"
+                       [value]="position.Value"
+                       (input)="onCharacterChange($index, $event)">
+              </div>
+          } @else if (position.Type === CallsignFormatItemType.RandomNumber) {
+            <div class="w-[50px]">
+              <input type="number"
+                     maxlength="1"
+                     class="border border-zinc-600 focus:border-zinc-400 w-[50px] h-[50px] text-xl font-bold text-zinc-200 bg-transparent text-center rounded-md uppercase"
+                     [value]="position.Value"
+                     (input)="onCharacterChange($index, $event)">
+            </div>
+          }
+        </div>
+        <div class="bg-zinc-900/60 p-2 rounded-lg w-full h-[30px] flex flex-col justify-center items-center group">
+          <p class="text-sm font-medium text-zinc-400 uppercase">
+            {{ getItemTypeLabel(position.Type) | translate }}
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="w-full flex flex-row items-start justify-end mt-6 gap-4">
+    <app-button type="submit"
+                (onClick)="submit()"
+                [label]="'UI.ACTION.SAVE' | translate"
+                [disabled]="!valid"/>
+  </div>
+
+</div>

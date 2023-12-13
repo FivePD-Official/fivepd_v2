@@ -16,7 +16,7 @@ import {
   PlayerDetailsDTO,
   Rank,
   SingleSelectField,
-  TextInput,
+  TextField,
   User
 } from '@models';
 import { DepartmentService } from '@services/department/department.service';
@@ -24,7 +24,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LocalizationService } from '@services/localization/localization.service';
 import { filter, switchMap } from 'rxjs';
 import { GlobalState } from '@store';
-import { createDepartmentCallsignFormatInputField } from '../../../../helpers/forms/department';
 import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confirm.service';
 import { UserRole, UserService } from '@services/user/user.service';
 import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
@@ -42,6 +41,14 @@ import { ContainerComponent } from '../../../../components/container/container.c
 import { TippyModule } from '@ngneat/helipopper';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import {
+  DepartmentCallsignFormatEditorComponent
+} from "./_components/department-callsign-format-editor/department-callsign-format-editor.component";
+import { CALLSIGN_FORMAT_ITEMS } from "./_components/department-callsign-format-editor/token";
+import {
+  CallsignEditorComponent
+} from "../../settings/user-settings/_components/user-callsign-editor/callsign-editor.component";
+import { CALLSIGN } from "../../settings/user-settings/_components/user-callsign-editor/token";
 
 interface FormattedRank extends Rank {
   Permissions: string;
@@ -102,6 +109,7 @@ export class DepartmentsViewComponent implements OnInit {
     private readonly _localization: LocalizationService,
     private readonly _departmentService: DepartmentService,
     private readonly _modalService: ModalService,
+    private readonly _userService: UserService,
     private readonly _store: Store<GlobalState>,
     private readonly _modalFormService: ModalFormService,
     private readonly _modalConfirmService: ModalConfirmService,
@@ -126,6 +134,22 @@ export class DepartmentsViewComponent implements OnInit {
   ngOnInit(): void {
     this.getGeneralConfig();
     this.getDepartment();
+  }
+
+  tryEditMemberCallsignFormat(): void {
+    this._modalService.open(DepartmentCallsignFormatEditorComponent, {
+      title: 'Edit callsign format',
+    }, new Map().set(CALLSIGN_FORMAT_ITEMS, this.department!.CallsignFormat))
+      .result
+      .pipe(
+        filter(res => res.success),
+        switchMap(res => this._departmentService.editCallsignFormat({
+          DepartmentId: this.department!.Id,
+          CallsignFormat: res.value,
+        })),
+        this._modalService.handleResponse()
+      )
+      .subscribe(() => this.getDepartment());
   }
 
   private getGeneralConfig(): void {
@@ -173,7 +197,7 @@ export class DepartmentsViewComponent implements OnInit {
                 title: 'UI.LABEL.RANK.EDIT',
                 fields: updatedRank => {
                   const fields: FormInputBase<any>[] = [
-                    new TextInput({
+                    new TextField({
                       key: 'Name',
                       label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
                       placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
@@ -278,7 +302,7 @@ export class DepartmentsViewComponent implements OnInit {
           title: 'UI.ACTION.CREATE_RANK',
           fields: () => {
             const fields: FormInputBase<any>[] = [
-              new TextInput({
+              new TextField({
                 key: 'Name',
                 label: 'UI.LABEL.NAME.SINGULAR',
                 placeholder: 'UI.LABEL.NAME.SINGULAR',
@@ -366,7 +390,7 @@ export class DepartmentsViewComponent implements OnInit {
               this._modalFormService.open<Division>({
                 title: 'UI.LABEL.DIVISION.EDIT',
                 fields: updatedDivision => [
-                  new TextInput({
+                  new TextField({
                     key: 'Name',
                     label: 'UI.LABEL.NAME.SINGULAR',
                     placeholder: 'UI.LABEL.NAME.SINGULAR',
@@ -426,7 +450,7 @@ export class DepartmentsViewComponent implements OnInit {
           this._modalFormService.open({
             title: 'UI.ACTION.CREATE_DIVISION',
             fields: () => [
-              new TextInput({
+              new TextField({
                 key: 'Name',
                 label: 'UI.LABEL.NAME.SINGULAR',
                 placeholder: 'UI.LABEL.NAME.SINGULAR',
@@ -471,31 +495,22 @@ export class DepartmentsViewComponent implements OnInit {
           icon: IconType.Pencil,
           onClick: item => {
             let updatedCallsign = '';
-            this._modalFormService.open<FormattedUser>({
+            this._modalService.open(CallsignEditorComponent, {
                 title: 'Edit callsign',
-                fields: updatedUser => {
-                  const fields: FormInputBase<any>[] = [
-                    new TextInput({
-                      key: 'Callsign',
-                      label: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-                      placeholder: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
-                      required: true,
-                      value: item.Callsign,
-                    }),
-                  ];
-                  return fields;
-                },
-                buttons: {
-                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
-                },
-              }
-            ).result.pipe(
-              filter((res) => res.success),
-              switchMap((res) => this.userService.updateUserDetails({Id: item.Id, Callsign: res.value['Callsign']})),
-              this._modalService.handleResponse(),
-            ).subscribe(res => {
+              }, new Map()
+                .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
+                .set(CALLSIGN, item.Callsign)
+            ).result
+              .pipe(
+                filter((res) => res.success),
+                switchMap((res) => this.userService.updateUserDetails({Id: item.Id, Callsign: res.value['Callsign']})),
+                this._modalService.handleResponse(),
+              ).subscribe(res => {
               if (res.Status) {
                 item.Callsign = updatedCallsign;
+                if (this.user?.User.Id === item.Id) {
+                  this._userService.refreshData();
+                }
               }
               this.getDivisions(true);
             })
@@ -767,7 +782,7 @@ export class DepartmentsViewComponent implements OnInit {
     }
 
     this.departmentSettingsForm = [
-      new TextInput({
+      new TextField({
         key: 'Name',
         required: true,
         label: 'UI.LABEL.NAME.SINGULAR',
@@ -792,14 +807,13 @@ export class DepartmentsViewComponent implements OnInit {
         size: 'normal',
         variant: 'secondary'
       }),
-      new TextInput({
+      new TextField({
         key: 'Callsign',
         label: 'UI.LABEL.CALLSIGN.TITLE',
         helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
         validators: [CustomValidators.onlyLetters()],
         value: this.department.Callsign,
       }),
-      createDepartmentCallsignFormatInputField(this._localization, this.department),
     ];
   }
 
