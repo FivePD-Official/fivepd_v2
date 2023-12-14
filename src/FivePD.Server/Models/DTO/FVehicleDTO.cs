@@ -1,4 +1,6 @@
-﻿using FivePD.Server.Attributes;
+﻿using System.Collections.Generic;
+using FivePD.Server.Attributes;
+using FivePD.Server.EntityWrappers.VehicleWrapper;
 
 namespace FivePD.Server.Models.DTO;
 
@@ -18,4 +20,6 @@ internal record struct FVehicleDTO
     public string Brand { get; init; }
 
     public PedHistory Owner { get; init; }
+    
+    public List<VehicleDocument> Documents { get; init; }
 }

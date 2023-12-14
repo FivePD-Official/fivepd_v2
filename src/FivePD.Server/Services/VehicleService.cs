@@ -60,11 +60,12 @@ public class VehicleService : IVehicleService, IOnInit
             return;
         }
 
-        var commonFVehicle = fVehicleBuilderDto
+        var fVehicle = new FVehicleBuilder(fVehicleBuilderDto)
             .WithItems(this._configService.Items)
+            .WithRandomDocuments(this._configService.GeneralConfig.Vehicles.Documents)
             .Build();
 
-        this._vehicles[commonFVehicle.NetworkId] = new FVehicle(commonFVehicle);
+        this._vehicles[fVehicle.NetworkId] = fVehicle;
     }
 
     [UIEvent(Events.Vehicle.GetAllPageable)]
@@ -92,6 +93,7 @@ public class VehicleService : IVehicleService, IOnInit
                 Color = x.Value.Color,
                 Brand = x.Value.Brand,
                 Owner = this._pedService.TryGetPed(x.Value.OwnerNetworkId).GetPedHistory(),
+                Documents = x.Value.Documents,
             }).ToList(),
         };
         var pageCount = (int)Math.Ceiling((double)page.ItemCount / pageSize);

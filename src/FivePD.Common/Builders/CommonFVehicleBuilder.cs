@@ -15,7 +15,7 @@ namespace FivePD.Common.Builders;
 /// </summary>
 public class CommonFVehicleBuilder
 {
-    private static readonly Random Random = new(Guid.NewGuid().GetHashCode());
+    protected static readonly Random Random = new(Guid.NewGuid().GetHashCode());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommonFVehicleBuilder"/> class.
@@ -30,21 +30,21 @@ public class CommonFVehicleBuilder
     public int NetworkId { get; private set; }
 
     [JsonProperty]
-    public int OwnerNetworkId { get; private set; }
+    public int OwnerNetworkId { get; protected set; }
 
     [JsonProperty]
-    public List<int> PassengerNetworkIds { get; private set; }
+    public List<int> PassengerNetworkIds { get; protected set; }
 
     [JsonProperty]
-    public string LicensePlate { get; private set; }
+    public string LicensePlate { get; protected set; }
 
     [JsonProperty]
-    public string Color { get; private set; }
+    public string Color { get; protected set; }
 
     [JsonProperty]
-    public string Brand { get; private set; }
+    public string Brand { get; protected set; }
 
-    public List<Item> Items { get; private set; }
+    public List<Item> Items { get; protected set; }
 
     public CommonFVehicleBuilder WithOwner(int networkId)
     {
@@ -73,16 +73,6 @@ public class CommonFVehicleBuilder
     public CommonFVehicleBuilder WithBrand(string brand)
     {
         this.Brand = brand;
-        return this;
-    }
-
-    public CommonFVehicleBuilder WithItems(IEnumerable<Item> items)
-    {
-        this.Items = items
-            .Where(item => item.Location.ToUpper() == "VEHICLE" || item.Location.ToUpper() == "ALL")
-            .OrderBy(_ => Guid.NewGuid())
-            .Take(Random.Next(0, 6))
-            .ToList();
         return this;
     }
 

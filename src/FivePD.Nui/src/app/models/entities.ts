@@ -182,11 +182,31 @@ export interface CalloutDetailsWithDepartments extends CalloutDetails {
   }[];
 }
 
+export enum VehicleDocumentStatus {
+  Valid,
+  Expired,
+  Suspended,
+  Revoked,
+}
+
+export enum VehicleDocumentType {
+  Insurance,
+  Registration,
+}
+
+export interface VehicleDocument {
+  Status: VehicleDocumentStatus;
+  Type: VehicleDocumentType;
+  ExpirationDate: string;
+  IssueDate: string;
+}
+
 export interface FVehicle extends WithId {
   NetworkId: number;
   LicensePlate: string;
   Color: string;
   Brand: string;
+  Documents: VehicleDocument[];
 }
 
 export interface FVehicleDTO extends FVehicle {

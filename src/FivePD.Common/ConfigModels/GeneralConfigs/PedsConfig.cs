@@ -8,7 +8,7 @@ public sealed record PedsConfig
 {
     public int ChanceToReuseData { get; init; }
 
-    public LicensesConfig Licenses { get; init; } = new();
+    public PedLicensesConfig Licenses { get; init; } = new();
 
     public WarrantsConfig Warrants { get; init; } = new();
 

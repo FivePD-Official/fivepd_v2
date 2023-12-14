@@ -20,6 +20,9 @@ import { CalloutDetailsComponent } from "./pages/mdt/settings/callout-details/ca
 import {
   VehicleDatabaseIndexComponent
 } from "./pages/mdt/vehicle-database/vehicle-database-index/vehicle-database-index.component";
+import {
+  VehicleDatabaseIdComponent
+} from "./pages/mdt/vehicle-database/vehicle-database-id/vehicle-database-id.component";
 
 const mdtRoutes: Routes = [
   {
@@ -98,8 +101,12 @@ const mdtRoutes: Routes = [
     children: [
       {
         path: '',
-        component: VehicleDatabaseIndexComponent
+        component: VehicleDatabaseIndexComponent,
       },
+      {
+        path: ':id',
+        component: VehicleDatabaseIdComponent,
+      }
     ]
   },
   {

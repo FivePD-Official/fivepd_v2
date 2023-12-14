@@ -254,21 +254,21 @@ public class FPedBuilder : CommonFPedBuilder
     /// <summary>
     /// Adds multiple licenses to the ped.
     /// </summary>
-    /// <param name="licensesConfig">The licenses config to use.</param>
+    /// <param name="pedLicensesConfig">The licenses config to use.</param>
     /// <returns>The <see cref="CommonFPedBuilder"/> instance.</returns>
-    public FPedBuilder WithRandomLicenses(LicensesConfig licensesConfig)
+    public FPedBuilder WithRandomLicenses(PedLicensesConfig pedLicensesConfig)
     {
         var licenses = new List<PedLicense>();
 
-        var asd = new Dictionary<PedLicenseType, LicensesConfig.LicenseConfig>
+        var licenseConfigs = new Dictionary<PedLicenseType, PedLicensesConfig.PedLicenseConfig>
         {
-            [PedLicenseType.Driving] = licensesConfig.Driving,
-            [PedLicenseType.Fishing] = licensesConfig.Fishing,
-            [PedLicenseType.Hunting] = licensesConfig.Hunting,
-            [PedLicenseType.Ccw] = licensesConfig.Ccw,
+            [PedLicenseType.Driving] = pedLicensesConfig.Driving,
+            [PedLicenseType.Fishing] = pedLicensesConfig.Fishing,
+            [PedLicenseType.Hunting] = pedLicensesConfig.Hunting,
+            [PedLicenseType.Ccw] = pedLicensesConfig.Ccw,
         };
 
-        foreach (var config in asd)
+        foreach (var config in licenseConfigs)
         {
             if (Random.Next(0, 101) >= config.Value.ChanceToHave)
             {

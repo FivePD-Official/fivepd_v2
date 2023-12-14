@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   Collation,
@@ -32,6 +32,8 @@ import { GridComponent } from "../../../../components/grid/grid.component";
   styleUrl: './vehicle-database-index.component.sass'
 })
 export class VehicleDatabaseIndexComponent implements OnInit {
+
+  private readonly _vehicleService =  inject(VehicleService);
 
   vehicles?: Page<FVehicleDTO>;
   collation: Collation = {
@@ -68,15 +70,11 @@ export class VehicleDatabaseIndexComponent implements OnInit {
     })
   ];
 
-  constructor(private readonly _vehicleService: VehicleService,
-              private readonly _router: Router) {
-  }
-
   ngOnInit(): void {
     this.getAll();
   }
 
-  citizensRowLinkResolver(item: FVehicleDTO): string {
+  rowLinkResolver(item: FVehicleDTO): string {
     return `/mdt/vehicle-database/${item.Id}`;
   }
 
