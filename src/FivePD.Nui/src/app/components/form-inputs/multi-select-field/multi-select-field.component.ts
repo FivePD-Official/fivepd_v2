@@ -46,6 +46,8 @@ export class MultiSelectFieldComponent implements OnInit {
       throw new Error('Form control is undefined.');
     }
 
+    this.setSelectedItems(undefined);
+
     const selectedItems = this.field.items.filter(item => (this.field.value ?? []).includes(item.key));
     for (const item of selectedItems) {
       this.setSelectedItems(item);

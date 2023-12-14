@@ -95,23 +95,23 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
     return this.columns.some(column => column.filter);
   }
 
-  getFilterInput(column: Column<any>): FormInputBase<any> {
-    if (column.filter?.dropdown) {
-      return new SingleSelectField({
-        key: column.accessorKey,
-        label: column.filter?.label ?? '',
-        defaultItemLabel: column.filter?.label ?? '',
-        items: column.filter?.dropdown ?? [],
-        size: 'small',
-        height: 'sm',
-        variant: 'secondary',
-        required: false,
-      });
-    }
-
+  getFilterInput(column: Column<any>) {
     return new TextField({
       key: column.accessorKey,
       placeholder: column.filter?.label ?? '',
+      required: false,
+    });
+  }
+
+  getFilterSingleSelectInput(column: Column<any>) {
+    return new SingleSelectField({
+      key: column.accessorKey,
+      label: '',
+      defaultItemLabel: column.filter?.label ?? '',
+      items: column.filter?.dropdown ?? [],
+      size: 'small',
+      height: 'sm',
+      variant: 'secondary',
       required: false,
     });
   }
