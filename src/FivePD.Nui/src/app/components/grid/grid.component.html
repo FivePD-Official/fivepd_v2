@@ -34,7 +34,10 @@
         @for (column of formattedColumns;track column) {
           <div
             class="table-cell">
-            @if (column.filter) {
+            @if (column.filter?.dropdown) {
+              <app-single-select-field [field]="getFilterSingleSelectInput(column)"
+                              (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
+            } @else {
               <app-text-field [field]="getFilterInput(column)"
                               (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
             }
