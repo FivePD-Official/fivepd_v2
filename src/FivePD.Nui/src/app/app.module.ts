@@ -76,12 +76,19 @@ import { MessageService } from "@services/message/message.service";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { UserSettingsComponent } from "./pages/mdt/settings/user-settings/user-settings.component";
 import { AdminSettingsComponent } from "./pages/mdt/settings/admin-settings/admin-settings.component";
+import { VehicleService } from "@services/vehicle/vehicle.service";
 import {
   CreateDepartmentModalComponent
 } from "./pages/mdt/departments/departments-view/_components/create-department-modal/create-department-modal.component";
 import {
   DepartmentCallsignFormatEditorComponent
 } from "./pages/mdt/departments/departments-view/_components/department-callsign-format-editor/department-callsign-format-editor.component";
+import {
+  VehicleDatabaseIdComponent
+} from "./pages/mdt/vehicle-database/vehicle-database-id/vehicle-database-id.component";
+import {
+  VehicleDatabaseIndexComponent
+} from "./pages/mdt/vehicle-database/vehicle-database-index/vehicle-database-index.component";
 
 @NgModule({
   declarations: [AppComponent],
@@ -124,7 +131,10 @@ import {
     DepartmentsViewComponent,
     ContainerComponent,
     IconComponent,
+    CitizenDatabaseIdComponent,
     CitizenDatabaseIndexComponent,
+    VehicleDatabaseIdComponent,
+    VehicleDatabaseIndexComponent,
     RadialMenuComponent,
     TimerBarComponent,
     ClickOutsideDirective,
@@ -142,7 +152,6 @@ import {
     DispatchComponent,
     IncidentHistoryComponent,
     WelcomeModalComponent,
-    CitizenDatabaseIdComponent,
     MessagesComponent,
     PaginationComponent,
     AsPipe,
@@ -173,6 +182,7 @@ import {
     UserService,
     WindowService,
     AttributeGridOptions,
+    VehicleService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomHttpInterceptor,

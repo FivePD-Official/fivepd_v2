@@ -6,18 +6,17 @@
                       submitButtonLabel="Search"
                       buttonAlignment="full"
                       [formFields]="formFields"
-                      (onSubmit)="onSearchSubmit($event)"
+                      (onSubmit)="collation$.next({Page:1,Filters:$event.value})"
                       [showSubmitButton]="true"/>
-    @if (recentlyViewedPeds.length) {
+    @if ((recentlyViewedPedsCount | async) ?? 0 > 0) {
       <div class="flex flex-col gap-2">
         <p class="text-sm font-medium text-zinc-400 uppercase">recently viewed</p>
-        @for (ped of recentlyViewedPeds;track ped) {
-          <div
-            [routerLink]="'/mdt/citizen-database/' + ped.Id"
+        @for (ped of recentlyViewedPeds | async;track ped) {
+          <div [routerLink]="'/mdt/citizen-database/' + ped?.Id"
             class="bg-zinc-800 rounded-md p-2 hover:cursor-pointer hover:bg-zinc-700">
-            <p class="text-zinc-300 font-medium">{{ ped.Firstname }} {{ ped.Lastname }} <span
-              class="text-sm text-zinc-400">({{ ped.Gender === FGender.Male ? 'Male' : 'Female' }})</span></p>
-            <p class="text-zinc-400 text-sm">{{ ped.Birthdate | date: 'mediumDate' }}</p>
+            <p class="text-zinc-300 font-medium">{{ ped?.Firstname }} {{ ped?.Lastname }} <span
+              class="text-sm text-zinc-400">({{ ped?.Gender === FGender.Male ? 'Male' : 'Female' }})</span></p>
+            <p class="text-zinc-400 text-sm">{{ ped?.Birthdate | date: 'mediumDate' }}</p>
           </div>
         }
       </div>
@@ -26,7 +25,7 @@
 
   <app-grid
     [columns]="citizensColumns"
-    [data]="citizens"
-    [rowLinkResolver]="citizensRowLinkResolver"
-    (onCollationChange)="onCitizensCollationChange($event)"/>
+    [data]="citizens$ | async"
+    [rowLinkResolver]="rowLinkResolver"
+    (onCollationChange)="collation$.next($event)"/>
 </div>

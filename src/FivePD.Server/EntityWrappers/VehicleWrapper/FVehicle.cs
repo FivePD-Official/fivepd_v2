@@ -4,6 +4,9 @@ using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Models;
+using FivePD.Server.EntityWrappers.PedWrapper;
+using FivePD.Server.Models;
+using FivePD.Server.Models.DTO;
 
 namespace FivePD.Server.EntityWrappers.VehicleWrapper;
 
@@ -12,22 +15,21 @@ namespace FivePD.Server.EntityWrappers.VehicleWrapper;
 /// </summary>
 public class FVehicle : FEntity, IFStatefulContainer
 {
-    private readonly CommonFVehicle _fVehicle;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FVehicle"/> class.
     /// </summary>
-    /// <param name="fVehicle">The FPed to use.</param>
-    public FVehicle(CommonFVehicle fVehicle)
+    /// <param name="builder">The FPed to use.</param>
+    public FVehicle(FVehicleBuilder builder)
     {
-        this._fVehicle = fVehicle;
         this.Properties = new(this);
 
-        this.NetworkId = fVehicle.NetworkId;
-        this.LicensePlate = fVehicle.LicensePlate;
-        this.Color = fVehicle.Color;
-        this.Brand = fVehicle.Brand;
-        this.Items = fVehicle.Items;
+        this.NetworkId = builder.NetworkId;
+        this.LicensePlate = builder.LicensePlate;
+        this.Color = builder.Color;
+        this.Brand = builder.Brand;
+        this.Items = builder.Items;
+        this.OwnerNetworkId = builder.OwnerNetworkId;
+        this.Documents = builder.Documents;
 
         this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.Stopped, false);
         this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.HasGeneratedData, false);
@@ -37,6 +39,11 @@ public class FVehicle : FEntity, IFStatefulContainer
     /// Gets the vehicle's network identifier.
     /// </summary>
     public int NetworkId { get; }
+
+    /// <summary>
+    /// Gets the network identifier of the vehicle's owner ped.
+    /// </summary>
+    public int OwnerNetworkId { get; }
 
     /// <summary>
     /// Gets the vehicle's license plate.
@@ -59,6 +66,11 @@ public class FVehicle : FEntity, IFStatefulContainer
     public List<Item> Items { get; }
 
     /// <summary>
+    /// Gets the documents of the vehicle.
+    /// </summary>
+    public List<VehicleDocument> Documents { get; }
+
+    /// <summary>
     /// Gets the vehicle's observable with a value indicating if the vehicle has been stopped.
     /// </summary>
     public FStateBagObservable<bool> Stopped { get; private set; }
@@ -74,14 +86,9 @@ public class FVehicle : FEntity, IFStatefulContainer
     public FVehicleProperties Properties { get; private set; }
 
     /// <summary>
-    /// Gets the underlying <see cref="CommonFVehicle"/>.
-    /// </summary>
-    public CommonFVehicle GetFVehicle => this._fVehicle;
-
-    /// <summary>
     /// Gets the underlying <see cref="Ped"/>.
     /// </summary>
-    public Vehicle GetUnderlyingVehicle => Entity.FromNetworkId(this._fVehicle.NetworkId) as Vehicle;
+    public Vehicle GetUnderlyingVehicle => Entity.FromNetworkId(this.NetworkId) as Vehicle;
 
     /// <summary>
     /// Gets the owner of the <see cref="FVehicle"/>.
@@ -95,7 +102,7 @@ public class FVehicle : FEntity, IFStatefulContainer
     /// <returns>The FPed.</returns>
     public static FVehicle FromVehicle(Vehicle vehicle)
     {
-        return new FVehicle(new CommonFVehicle(new CommonFVehicleBuilder(vehicle.NetworkId)));
+        return new FVehicle(new FVehicleBuilder(new CommonFVehicleBuilder(vehicle.NetworkId)));
     }
 
     /// <inheritdoc />
@@ -109,4 +116,19 @@ public class FVehicle : FEntity, IFStatefulContainer
     {
         return this.GetUnderlyingVehicle?.State;
     }
+
+    #pragma warning disable
+    internal FVehicleDTO ToDto(PedHistory owner)
+    {
+        return new()
+        {
+            Id = this.NetworkId,
+            LicensePlate = this.LicensePlate,
+            Color = this.Color,
+            Brand = this.Brand,
+            Owner = owner,
+            Documents = this.Documents,
+        };
+    }
+    #pragma warning restore
 }
