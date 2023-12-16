@@ -41,6 +41,7 @@ public class DepartmentService : IDepartmentService, IOnInit
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Leave);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.RemoveUser);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Edit);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.EditCallsignFormat);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Delete);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.Create);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Department.CheckIfDepartmentNameTaken);

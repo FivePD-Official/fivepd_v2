@@ -1,9 +1,10 @@
-﻿import { Department, TextInput } from '@models';
+﻿import { Department, TextField } from '@models';
 import { LocalizationService } from '@services/localization/localization.service';
 import { CustomValidators } from '../validators';
 
+// do not use
 export function createDepartmentCallsignFormatInputField(localizationService: LocalizationService, value?: Department) {
-  return new TextInput({
+  return new TextField({
     key: 'CallsignFormat',
     required: true,
     label: 'UI.LABEL.CALLSIGN.FORMAT.TITLE',
@@ -33,6 +34,6 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
               </table>
             `,
     validators: [CustomValidators.callsignFormat()],
-    value: value?.CallsignFormat,
+    value: '',
   });
 }

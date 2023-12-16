@@ -1,4 +1,6 @@
-﻿using FivePD.Server.Interfaces;
+﻿using System.Collections.Generic;
+using FivePD.Server.Interfaces;
+using FivePD.Server.Models;
 
 namespace FivePD.Server.Utilities;
 
@@ -9,9 +11,9 @@ using System.Text;
 public class CallsignGenerator
 {
     private readonly IRandomService _randomService = ServiceLocator.GetService<IRandomService>();
-    private readonly string _format;
+    private readonly List<CallsignFormatItem> _format;
 
-    public CallsignGenerator(string format)
+    public CallsignGenerator(List<CallsignFormatItem> format)
     {
         this._format = format;
     }
@@ -19,31 +21,16 @@ public class CallsignGenerator
     public string GenerateCallsign()
     {
         var callsignBuilder = new StringBuilder();
-        var nextCharStatic = false;
-        foreach (var placeholder in this._format)
+        foreach (var item in this._format)
         {
-            if (placeholder == '*')
+            var generatedChar = item.Type switch
             {
-                nextCharStatic = true;
-                continue;
-            }
-
-            char generatedChar;
-            if (nextCharStatic)
-            {
-                generatedChar = placeholder;
-                nextCharStatic = false;
-            }
-            else
-            {
-                generatedChar = placeholder switch
-                {
-                    'L' => this.GetRandomLetter(),
-                    'W' => this.GetRandomLetter(),
-                    'N' => this.GetRandomNumber(),
-                    _ => placeholder
-                };
-            }
+                CallsignFormatItemType.Dash => '-',
+                CallsignFormatItemType.FixedCharacter => item.Value[0],
+                CallsignFormatItemType.RandomLetter => this.GetRandomLetter(),
+                CallsignFormatItemType.RandomNumber => this.GetRandomNumber(),
+                _ => item.Value[0],
+            };
 
             callsignBuilder.Append(generatedChar);
         }

@@ -10,7 +10,7 @@ import {
   NumberField,
   Page,
   SingleSelectField,
-  TextInput,
+  TextField,
   User
 } from "@models";
 import { CoreSetId } from "@enums";
@@ -39,6 +39,9 @@ import { ConfigService } from "@services/config/config.service";
 import {
   SingleSelectFieldComponent
 } from "../../../../components/form-inputs/single-select-field/single-select-field.component";
+import {
+  CreateDepartmentModalComponent
+} from "../../departments/departments-view/_components/create-department-modal/create-department-modal.component";
 
 @Component({
   selector: 'app-admin-settings',
@@ -358,42 +361,14 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   tryCreateDepartment(): void {
-    this._modalFormService.open({
-      title: 'UI.ACTION.CREATE_DEPARTMENT',
-      fields: () => [
-        new TextInput({
-          key: 'Name',
-          required: true,
-          label: 'UI.LABEL.NAME.SINGULAR',
-          asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value))],
-        }),
-        new TextInput({
-          key: 'Callsign',
-          label: 'UI.LABEL.CALLSIGN.TITLE',
-          helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
-          validators: [CustomValidators.onlyLetters()]
-        }),
-        createDepartmentCallsignFormatInputField(this._localization),
-        new NumberField({
-          key: 'MaxUsers',
-          required: true,
-          label: 'UI.LABEL.MAX_MEMBERS.TITLE',
-          helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
-          validators: [Validators.min(0)],
-          options: {
-            min: 0,
-          }
-        }),
-      ],
-      buttons: {
-        submit: {variant: 'primary', label: 'UI.ACTION.CREATE'}
-      }
+    this._modalService.open(CreateDepartmentModalComponent, {
+      title: 'UI.ACTION.CREATE_DEPARTMENT'
     }).result
       .pipe(
         filter(res => res.success),
         switchMap(res => this._departmentService.createDepartment(res.value)),
         this._modalService.handleResponse(),
-      ).subscribe(() => this.getDepartments())
+      ).subscribe(() => this.getDepartments());
   }
 
   protected readonly UserRole = UserRole;

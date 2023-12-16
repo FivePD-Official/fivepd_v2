@@ -2,6 +2,5 @@
   <textarea [attr.id]="field.key"
             [formControl]="control"
             [attr.placeholder]="field.placeholder | translate"
-            [readonly]="field.readonly"
-            (input)="onChange.emit($any($event))"></textarea>
+            [readonly]="field.readonly"></textarea>
 </app-base-field>

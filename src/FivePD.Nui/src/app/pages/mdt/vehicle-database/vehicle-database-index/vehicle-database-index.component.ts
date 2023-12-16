@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Collation, Column, FormInputBase, FVehicleDTO, TextInput } from "@models";
+import { Collation, Column, FormInputBase, FVehicleDTO, TextField } from "@models";
 import { RouterLink } from "@angular/router";
 import { BehaviorSubject, switchMap } from "rxjs";
 import { VehicleService } from "@services/vehicle/vehicle.service";
@@ -26,7 +26,7 @@ export class VehicleDatabaseIndexComponent {
   );
 
   readonly formFields: FormInputBase<any>[] = [
-    new TextInput({
+    new TextField({
       key: 'LicensePlate',
       label: 'License plate',
       placeholder: '',

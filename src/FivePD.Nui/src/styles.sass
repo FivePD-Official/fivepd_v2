@@ -11,6 +11,12 @@
 \:root
   --transition: all 0.15s cubic-bezier(0.33, 1, 0.68, 1)
 
+@layer base
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button
+    -webkit-appearance: none
+    margin: 0
+
 *
   outline: none
   user-select: none
@@ -68,5 +74,5 @@ div[app-icon]
   & > .tippy-arrow::before
     @apply bg-zinc-700
 
-app-text-field, app-number-field, app-date-field, app-textarea-field
+app-text-field, app-number-field, app-date-field, app-textarea-field, app-single-select-field, app-multi-select-field
   @apply w-full

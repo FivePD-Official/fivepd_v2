@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Collation, Column, FormInputBase, PedHistory, SingleSelectField, TextInput } from '@models';
+import { Collation, Column, FormInputBase, PedHistory, SingleSelectField, TextField } from '@models';
 import { formatDate } from "@helpers";
 import { CoreSetId, FGender } from "@enums";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
@@ -36,12 +36,12 @@ export class CitizenDatabaseIndexComponent implements OnInit {
   readonly recentlyViewedPedsCount = this.recentlyViewedPeds.pipe(map(x => x.length));
 
   readonly formFields: FormInputBase<any>[] = [
-    new TextInput({
+    new TextField({
       key: 'Firstname',
       label: 'Firstname',
       placeholder: 'John',
     }),
-    new TextInput({
+    new TextField({
       key: 'Lastname',
       label: 'Lastname',
       placeholder: 'Doe',

@@ -158,6 +158,8 @@ internal readonly record struct Events
 
             public const string Edit = "fivepd:department:edit";
 
+            public const string EditCallsignFormat = "fivepd:department:editCallsignFormat";
+
             public const string Delete = "fivepd:department:delete";
 
             public const string DeleteDivision = "fivepd:department:deleteDivision";
