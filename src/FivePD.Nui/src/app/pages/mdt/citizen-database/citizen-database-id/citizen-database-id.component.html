@@ -1,106 +1,108 @@
-<app-page-header [title]="pedHistory ? pedHistory.Firstname + ' ' + pedHistory.Lastname : 'Citizen'"/>
+<app-page-header [title]="'Citizen record'"/>
 
-<app-container [rows]="2">
-  @if (pedHistory?.Warrants?.length) {
-    <app-container>
-      <div>
-        <div class="flex flex-row items-center gap-2">
-          <div app-icon name="Warning" className="h-[26px] text-red-500"></div>
-          <p class="text-xl font-bold text-red-500">
-            {{ 'LABEL.WARRANT.PLURAL' | translate }}
-          </p>
-        </div>
-        <div class="mt-2">
-          <p class="text-lg text-zinc-300">{{ join(pedHistory?.Warrants) }}</p>
-        </div>
-      </div>
-    </app-container>
-  }
-
-  <app-container [rows]="1" [columns]="2">
-    <div class="grid-item grid-item--details">
-      <p class="common-title">
-        {{ 'UI.LABEL.DETAILS' | translate }}
-      </p>
-      <div class="grid-item--content">
-        <ul
-          class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
-          <li>
-            <p>{{ 'LABEL.FIRSTNAME' | translate }}</p>
-            <p>{{ pedHistory?.Firstname }}</p>
-          </li>
-          <li>
-            <p>{{ 'LABEL.LASTNAME' | translate }}</p>
-            <p>{{ pedHistory?.Lastname }}</p>
-          </li>
-          <li>
-            <p>{{ 'LABEL.BIRTHDATE' | translate }}</p>
-            <p>{{ pedHistory?.Birthdate | date: 'mediumDate' }}</p>
-          </li>
-          <li>
-            <p>{{ 'LABEL.GENDER' | translate }}</p>
-            <p>{{ pedHistory?.Gender === FGender.Male ? 'Male' : 'Female' }}</p>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="grid-item">
-      <p class="common-title">
-        {{ 'LABEL.LICENSE.PLURAL' | translate }}
-      </p>
-      <div class="mt-4 w-full flex flex-row justify-start">
-        @if (!pedHistory?.Licenses?.length) {
-          <p class="relative text-lg font-medium text-zinc-400 text-center">
-            {{ 'LABEL.LICENSE.NONE' | translate }}
-          </p>
-        }
-      </div>
-      <div class="w-full grid grid-cols-2 grid-flow-row gap-4">
-        @for (license of pedHistory?.Licenses;track license) {
-          <div class="relative flex flex-col w-full rounded-lg bg-zinc-800 p-4">
-            <div class="w-full flex flex-row items-center justify-between mb-2.5">
-              <p class="text-zinc-200 text-lg font-bold">{{ licenseTypeI18nKey(license.Type) }}</p>
-              @if (license.Status !== PedLicenseStatus.Valid) {
-                <div class="flex flex-row items-center gap-2">
-                  <div app-icon name="Information" className="h-[22px] text-yellow-500"></div>
-                  <p class="font-medium text-yellow-500">{{ getLicenseStatusLabel(license) | translate }}</p>
-                </div>
-              }
-            </div>
-            <div class="flex flex-col gap-1">
-              <div class="w-full flex flex-row items-center justify-between">
-                <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.ISSUE' | translate }}</p>
-                <p class="text-zinc-400">{{ license.IssueDate | date: 'mediumDate' }}</p>
-              </div>
-              <div class="w-full flex flex-row items-center justify-between">
-                <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.EXPIRATION' | translate }}</p>
-                <p class="text-zinc-400">{{ license.ExpirationDate | date: 'mediumDate' }}</p>
-              </div>
-            </div>
+@if (pedHistory$ | async;as pedHistory) {
+  <app-container [rows]="2">
+    @if (pedHistory.Warrants.length) {
+      <app-container>
+        <div>
+          <div class="flex flex-row items-center gap-2">
+            <div app-icon name="Warning" className="h-[26px] text-red-500"></div>
+            <p class="text-xl font-bold text-red-500">
+              {{ 'LABEL.WARRANT.PLURAL' | translate }}
+            </p>
           </div>
-        }
+          <div class="mt-2">
+            <p class="text-lg text-zinc-300">{{ join(pedHistory.Warrants) }}</p>
+          </div>
+        </div>
+      </app-container>
+    }
+
+    <app-container [rows]="1" [columns]="2">
+      <div class="grid-item grid-item--details">
+        <p class="common-title">
+          {{ 'UI.LABEL.DETAILS' | translate }}
+        </p>
+        <div class="grid-item--content">
+          <ul
+            class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
+            <li>
+              <p>{{ 'LABEL.FIRSTNAME' | translate }}</p>
+              <p>{{ pedHistory.Firstname }}</p>
+            </li>
+            <li>
+              <p>{{ 'LABEL.LASTNAME' | translate }}</p>
+              <p>{{ pedHistory.Lastname }}</p>
+            </li>
+            <li>
+              <p>{{ 'LABEL.BIRTHDATE' | translate }}</p>
+              <p>{{ pedHistory.Birthdate | date: 'mediumDate' }}</p>
+            </li>
+            <li>
+              <p>{{ 'LABEL.GENDER' | translate }}</p>
+              <p>{{ pedHistory.Gender === FGender.Male ? 'Male' : 'Female' }}</p>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+
+      <div class="grid-item">
+        <p class="common-title">
+          {{ 'LABEL.LICENSE.PLURAL' | translate }}
+        </p>
+        <div class="mt-4 w-full flex flex-row justify-start">
+          @if (!pedHistory.Licenses.length) {
+            <p class="relative text-lg font-medium text-zinc-400 text-center">
+              {{ 'LABEL.LICENSE.NONE' | translate }}
+            </p>
+          }
+        </div>
+        <div class="w-full grid grid-cols-2 grid-flow-row gap-4">
+          @for (license of pedHistory.Licenses;track license) {
+            <div class="relative flex flex-col w-full rounded-lg bg-zinc-800 p-4">
+              <div class="w-full flex flex-row items-center justify-between mb-2.5">
+                <p class="text-zinc-200 text-lg font-bold">{{ licenseTypeI18nKey(license.Type) }}</p>
+                @if (license.Status !== PedLicenseStatus.Valid) {
+                  <div class="flex flex-row items-center gap-2">
+                    <div app-icon name="Information" className="h-[22px] text-yellow-500"></div>
+                    <p class="font-medium text-yellow-500">{{ getLicenseStatusLabel(license) | translate }}</p>
+                  </div>
+                }
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="w-full flex flex-row items-center justify-between">
+                  <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.ISSUE' | translate }}</p>
+                  <p class="text-zinc-400">{{ license.IssueDate | date: 'mediumDate' }}</p>
+                </div>
+                <div class="w-full flex flex-row items-center justify-between">
+                  <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.EXPIRATION' | translate }}</p>
+                  <p class="text-zinc-400">{{ license.ExpirationDate | date: 'mediumDate' }}</p>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </app-container>
+
+    <app-container [rows]="2" [columns]="2">
+
+      <entity-view title="LABEL.TICKET.PLURAL"
+                   [entities]="(tickets$ | async)!"
+                   [showCreateButton]="true"
+                   (createButtonClick)="tryCreateLooseDataEntity(CoreSetId.PedTicket)"/>
+
+      <entity-view title="LABEL.WARNING.PLURAL"
+                   [entities]="(warnings$ | async)!"
+                   [showCreateButton]="true"
+                   (createButtonClick)="tryCreateLooseDataEntity(CoreSetId.PedWarning)"/>
+
+      <entity-view title="UI.LABEL.ARREST_REPORT.PLURAL"
+                   [entities]="(arrestReports$ | async)!"
+                   [showCreateButton]="false"/>
+
+    </app-container>
 
   </app-container>
-
-  <app-container [rows]="2" [columns]="2">
-
-    <entity-view title="LABEL.TICKET.PLURAL"
-                 [entities]="tickets"
-                 [showCreateButton]="true"
-                 (createButtonClick)="tryCreateLooseDataEntity(CoreSetId.PedTicket)"/>
-
-    <entity-view title="LABEL.WARNING.PLURAL"
-                 [entities]="warnings"
-                 [showCreateButton]="true"
-                 (createButtonClick)="tryCreateLooseDataEntity(CoreSetId.PedWarning)"/>
-
-    <entity-view title="UI.LABEL.ARREST_REPORT.PLURAL"
-                 [entities]="arrestReports"
-                 [showCreateButton]="false"/>
-
-  </app-container>
-
-</app-container>
+}
