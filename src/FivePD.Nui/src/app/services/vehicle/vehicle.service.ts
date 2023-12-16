@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { BehaviorSubject, combineLatest, Observable, switchMap } from "rxjs";
 import { Collation, FVehicle, FVehicleDTO, Id, Page } from "@models";
 import { parseId } from "../../helpers/parse-id";
 
@@ -9,8 +9,7 @@ import { parseId } from "../../helpers/parse-id";
 })
 export class VehicleService {
 
-  constructor(private readonly _http: HttpClient) {
-  }
+  private readonly _http = inject(HttpClient);
 
   get(id: Id): Observable<FVehicleDTO> {
     return this._http.post<FVehicleDTO>('fivepd:vehicle:get', {

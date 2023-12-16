@@ -1,1 +1,22 @@
-<p>vehicle-database-id works!</p>
+<app-page-header [title]="'Vehicle'"/>
+
+@if (vehicle$ | async;as vehicle) {
+  <app-container [rows]="1">
+
+    <div class="grid-item grid-item--details">
+      <p class="common-title">
+        {{ 'UI.LABEL.DETAILS' | translate }}
+      </p>
+      <div class="grid-item--content">
+        <ul
+          class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
+          <li>
+            <p>{{ 'LABEL.FIRSTNAME' | translate }}</p>
+            <p>{{ vehicle.LicensePlate }}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </app-container>
+}

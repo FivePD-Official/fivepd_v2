@@ -6,13 +6,13 @@
                       submitButtonLabel="Search"
                       buttonAlignment="full"
                       [formFields]="formFields"
-                      (onSubmit)="onSearchSubmit($event)"
+                      (onSubmit)="collation$.next({Page:1, Filters: $event.value})"
                       [showSubmitButton]="true"/>
   </div>
 
   <app-grid
     [columns]="columns"
-    [data]="vehicles"
+    [data]="vehicles$ | async"
     [rowLinkResolver]="rowLinkResolver"
-    (onCollationChange)="onCollationChange($event)"/>
+    (onCollationChange)="collation$.next($event)"/>
 </div>
