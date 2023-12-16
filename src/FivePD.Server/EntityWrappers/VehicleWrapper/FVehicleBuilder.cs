@@ -23,11 +23,11 @@ public class FVehicleBuilder : CommonFVehicleBuilder
         this.Brand = fPedBuilder.Brand;
         this.Items = fPedBuilder.Items;
     }
-    
+
     /// <summary>
     /// Gets the documents of the vehicle.
     /// </summary>
-    public List<VehicleDocument> Documents { get; }
+    public List<VehicleDocument> Documents { get; } = new();
     
     public FVehicleBuilder WithItems(IEnumerable<Item> items)
     {

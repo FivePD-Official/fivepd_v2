@@ -60,6 +60,8 @@ internal readonly record struct Events
 
         public const string SetCosmetics = "fivepd:vehicle:setCosmetics";
 
+        public const string Get = "fivepd:vehicle:get";
+
         public const string GetAllPageable = "fivepd:vehicle:getAllPageable";
     }
 

@@ -4,6 +4,9 @@ using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Models;
+using FivePD.Server.EntityWrappers.PedWrapper;
+using FivePD.Server.Models;
+using FivePD.Server.Models.DTO;
 
 namespace FivePD.Server.EntityWrappers.VehicleWrapper;
 
@@ -113,4 +116,19 @@ public class FVehicle : FEntity, IFStatefulContainer
     {
         return this.GetUnderlyingVehicle?.State;
     }
+
+    #pragma warning disable
+    internal FVehicleDTO ToDto(PedHistory owner)
+    {
+        return new()
+        {
+            Id = this.NetworkId,
+            LicensePlate = this.LicensePlate,
+            Color = this.Color,
+            Brand = this.Brand,
+            Owner = owner,
+            Documents = this.Documents,
+        };
+    }
+    #pragma warning restore
 }

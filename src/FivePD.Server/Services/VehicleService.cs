@@ -68,17 +68,33 @@ public class VehicleService : IVehicleService, IOnInit
         this._vehicles[fVehicle.NetworkId] = fVehicle;
     }
 
+    [UIEvent(Events.Vehicle.Get)]
+    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<IdRequest>();
+        var fVehicle = this.TryGetVehicle(request.Id);
+        if (fVehicle is null)
+        {
+            networkCallbackDelegate.InvokeWithJson(null);
+            return;
+        }
+
+        networkCallbackDelegate.InvokeWithJson(fVehicle.ToDto(this._pedService.TryGetPed(fVehicle.OwnerNetworkId).GetPedHistory()));
+    }
+
     [UIEvent(Events.Vehicle.GetAllPageable)]
-    private void GetAllPageable(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<VehicleGetAllPageableRequest>();
         var pageNumber = request.Page < 1 ? 1 : request.Page;
 
-        var values = this._vehicles.AsQueryable();
+        var values = this._vehicles.Values.AsQueryable();
         var filters = new Filters<FVehicle>();
-        filters.Add(!string.IsNullOrEmpty(request.Filters.LicensePlate), vehicle => vehicle.LicensePlate.ToUpper().Contains(request.Filters.LicensePlate.ToUpper()));
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.LicensePlate),
+            vehicle => vehicle.LicensePlate.ToUpper().Contains(request.Filters.LicensePlate.ToUpper()));
 
-        values = filters.Get().Aggregate(values, (current, filter) => current.Where(x => filter.Expression.Compile().Invoke(x.Value)));
+        values = filters.Get().Aggregate(values, (current, filter) => current.Where(x => filter.Expression.Compile().Invoke(x)));
 
         const int pageSize = QueryableExtensions.DefaultPageSize;
         var page = new Page<FVehicleDTO>
@@ -86,15 +102,11 @@ public class VehicleService : IVehicleService, IOnInit
             CurrentPage = pageNumber,
             PageSize = pageSize,
             ItemCount = this._vehicles.Count,
-            Items = values.Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(x => new FVehicleDTO
-            {
-                Id = x.Key,
-                LicensePlate = x.Value.LicensePlate,
-                Color = x.Value.Color,
-                Brand = x.Value.Brand,
-                Owner = this._pedService.TryGetPed(x.Value.OwnerNetworkId).GetPedHistory(),
-                Documents = x.Value.Documents,
-            }).ToList(),
+            Items = values
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => x.ToDto(this._pedService.TryGetPed(x.OwnerNetworkId).GetPedHistory()))
+                .ToList(),
         };
         var pageCount = (int)Math.Ceiling((double)page.ItemCount / pageSize);
         page.PageCount = pageCount == 0 ? 1 : pageCount;
