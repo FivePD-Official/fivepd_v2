@@ -63,18 +63,18 @@ public sealed class FVehicleProperties
 
     private async Task<bool> GetPropertyBoolAsync(string property)
     {
-        var value = await this._eventService.TriggerEventAsync(this._fVehicle.Owner, Events.Vehicle.GetProperty, this._fVehicle.GetFVehicle.NetworkId, property);
+        var value = await this._eventService.TriggerEventAsync(this._fVehicle.Owner, Events.Vehicle.GetProperty, this._fVehicle.NetworkId, property);
         return bool.Parse(value);
     }
 
     private void SetPropertyString(string property, string value)
     {
-        this._eventService.TriggerEventWithoutCallback(this._fVehicle.Owner, Events.Vehicle.SetProperty, this._fVehicle.GetFVehicle.NetworkId, property, value);
+        this._eventService.TriggerEventWithoutCallback(this._fVehicle.Owner, Events.Vehicle.SetProperty, this._fVehicle.NetworkId, property, value);
     }
 
     private void SetPropertyBool(string property, bool value)
     {
-        this._eventService.TriggerEventWithoutCallback(this._fVehicle.Owner, Events.Vehicle.SetProperty, this._fVehicle.GetFVehicle.NetworkId, property, value.ToString());
+        this._eventService.TriggerEventWithoutCallback(this._fVehicle.Owner, Events.Vehicle.SetProperty, this._fVehicle.NetworkId, property, value.ToString());
     }
 
     private void InvokeMethod<T>(string method, T args = default)
@@ -84,7 +84,7 @@ public sealed class FVehicleProperties
             Events.Vehicle.InvokeMethod,
             JsonConvert.SerializeObject(new FVehiclePropertiesDTO.InvokeMethodRequest
             {
-                NetworkId = this._fVehicle.GetFVehicle.NetworkId,
+                NetworkId = this._fVehicle.NetworkId,
                 Method = method,
                 Args = JsonConvert.SerializeObject(args),
             }));

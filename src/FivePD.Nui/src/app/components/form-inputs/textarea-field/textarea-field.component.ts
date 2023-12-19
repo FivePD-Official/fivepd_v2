@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseFieldComponent } from "../base-field/base-field.component";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
-import { TextInput } from "@models";
+import { TextField } from "@models";
+import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
   selector: 'app-textarea-field',
@@ -14,7 +15,7 @@ import { TextInput } from "@models";
 })
 export class TextareaFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;
-  @Input({required: true}) field!: TextInput;
+  @Input({required: true}) field!: TextField;
 
   @Output() onChange = new EventEmitter<string>();
 
@@ -22,21 +23,7 @@ export class TextareaFieldComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.form) {
-      const validators = [...this.field.validators];
-      if (this.field.required) {
-        validators.push(Validators.required);
-      }
-
-      const asyncValidators = [...this.field.asyncValidators];
-
-      this.pseudoFormControl = new FormControl({
-        value: this.field.value ?? '',
-        disabled: this.field.readonly
-      }, validators, asyncValidators);
-
-      this.form = new FormGroup({
-        [this.field.key]: this.pseudoFormControl,
-      });
+      this.form = createDefaultFormGroup(this.field, '');
     }
 
     if (!this.control) {

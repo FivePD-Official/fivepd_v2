@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseFieldComponent } from "../base-field/base-field.component";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { ClickOutsideDirective } from "../../../directives/click-outside.directive";
 import { DropdownItem, MultiSelectField } from "@models";
@@ -12,6 +12,7 @@ import {
   dropdownSelectedItemVariantsHoverReadonly
 } from "../_helpers/dropdown";
 import { LocalizationService } from "@services/localization/localization.service";
+import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
   selector: 'app-multi-select-field',
@@ -38,26 +39,14 @@ export class MultiSelectFieldComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.form) {
-      const validators = [...this.field.validators];
-      if (this.field.required) {
-        validators.push(Validators.required);
-      }
-
-      const asyncValidators = [...this.field.asyncValidators];
-
-      this.pseudoFormControl = new FormControl({
-        value: this.field.value ?? [],
-        disabled: this.field.readonly
-      }, validators, asyncValidators);
-
-      this.form = new FormGroup({
-        [this.field.key]: this.pseudoFormControl,
-      });
+      this.form = createDefaultFormGroup(this.field, []);
     }
 
     if (!this.control) {
       throw new Error('Form control is undefined.');
     }
+
+    this.setSelectedItems(undefined);
 
     const selectedItems = this.field.items.filter(item => (this.field.value ?? []).includes(item.key));
     for (const item of selectedItems) {

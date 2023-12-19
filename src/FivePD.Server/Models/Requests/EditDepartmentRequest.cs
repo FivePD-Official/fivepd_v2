@@ -10,8 +10,6 @@ internal record struct EditDepartmentRequest()
 
     public string Callsign { get; set; } = string.Empty;
 
-    public string CallsignFormat { get; set; }
-
     public int MaxUsers { get; set; }
 
     public int DefaultRankId { get; set; }

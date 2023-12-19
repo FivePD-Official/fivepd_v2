@@ -22,16 +22,24 @@
   @if (department) {
     <app-container [columns]="1" [rows]="2">
       <app-container [columns]="2">
-        @if (departmentSettingsForm) {
-          <app-dynamic-form [title]="'UI.LABEL.DEPARTMENT.SETTINGS' | translate"
-                            [formFields]="departmentSettingsForm"
-                            [columns]="2"
-                            [limitWidth]="false"
-                            buttonAlignment="right"
-                            [disableSubmitWithOriginalValue]="true"
-                            (onSubmit)="onDepartmentSettingsSubmit($event)"
-                            [showSubmitButton]="true"/>
-        }
+        <app-container [columns]="2">
+          @if (departmentSettingsForm) {
+            <app-dynamic-form [title]="'UI.LABEL.DEPARTMENT.SETTINGS' | translate"
+                              [formFields]="departmentSettingsForm"
+                              [columns]="1"
+                              [limitWidth]="false"
+                              buttonAlignment="right"
+                              [disableSubmitWithOriginalValue]="true"
+                              (onSubmit)="onDepartmentSettingsSubmit($event)"
+                              [showSubmitButton]="true"/>
+          }
+          <div class="flex flex-col gap-4">
+            <app-button class="mt-4"
+                        label="Edit member callsign format"
+                        variant="tertiary"
+                        (onClick)="tryEditMemberCallsignFormat()"/>
+          </div>
+        </app-container>
         <app-grid [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
                   [buttons]="divisionsButtons"
                   [data]="divisions"

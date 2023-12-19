@@ -1,0 +1,79 @@
+<app-page-header [title]="'Vehicle record'"/>
+
+@if (vehicle$ | async;as vehicle) {
+  <app-container [rows]="1" [columns]="2">
+
+    <div class="grid-item grid-item--details">
+      <p class="common-title">
+        {{ 'UI.LABEL.DETAILS' | translate }}
+      </p>
+      <div class="grid-item--content">
+        <ul
+          class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
+          <li>
+            <p>{{ 'LABEL.LICENSE_PLATE.SINGULAR' | translate }}</p>
+            <p>{{ vehicle.LicensePlate }}</p>
+          </li>
+          <li>
+            <p>{{ 'LABEL.COLOR.SINGULAR' | translate }}</p>
+            <p>{{ vehicle.Color }}</p>
+          </li>
+          <li>
+            <p>{{ 'LABEL.BRAND.SINGULAR' | translate }}</p>
+            <p>{{ vehicle.Brand }}</p>
+          </li>
+          @if (vehicle.Owner) {
+            <li>
+              <p>{{ 'LABEL.OWNER.SINGULAR' | translate }}</p>
+              <a [routerLink]="'/mdt/citizen-database/' + vehicle.Owner.Id"
+                 class="group flex flex-row items-center text-zinc-300 hover:text-white">
+                {{ vehicle.Owner.Firstname }} {{ vehicle.Owner.Lastname }}
+                <div app-icon name="Link"
+                     className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-item">
+      <p class="common-title">
+        {{ 'LABEL.DOCUMENT.PLURAL' | translate }}
+      </p>
+      <div class="mt-4 w-full flex flex-row justify-start">
+        @if (!vehicle.Documents.length) {
+          <p class="relative text-lg font-medium text-zinc-400 text-center">
+            {{ 'LABEL.DOCUMENT.NONE' | translate }}
+          </p>
+        }
+      </div>
+      <div class="w-full grid grid-cols-2 grid-flow-row gap-4">
+        @for (document of vehicle.Documents;track document) {
+          <div class="relative flex flex-col w-full rounded-lg bg-zinc-800 p-4">
+            <div class="w-full flex flex-row items-center justify-between mb-2.5">
+              <p class="text-zinc-200 text-lg font-bold">{{ licenseTypeI18nKey(document.Type) }}</p>
+              @if (document.Status !== VehicleDocumentStatus.Valid) {
+                <div class="flex flex-row items-center gap-2">
+                  <div app-icon name="Information" className="h-[22px] text-yellow-500"></div>
+                  <p class="font-medium text-yellow-500">{{ getLicenseStatusLabel(document.Status) | translate }}</p>
+                </div>
+              }
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="w-full flex flex-row items-center justify-between">
+                <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.ISSUE' | translate }}</p>
+                <p class="text-zinc-400">{{ document.IssueDate | date: 'mediumDate' }}</p>
+              </div>
+              <div class="w-full flex flex-row items-center justify-between">
+                <p class="text-zinc-400 font-medium">{{ 'LABEL.DATE.EXPIRATION' | translate }}</p>
+                <p class="text-zinc-400">{{ document.ExpirationDate | date: 'mediumDate' }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </app-container>
+}

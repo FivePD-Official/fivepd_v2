@@ -7,6 +7,7 @@ using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
+using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 
@@ -105,6 +106,11 @@ public class FPed : FEntity, IFStatefulContainer
     public Player Owner => this.GetUnderlyingPed?.Owner;
 
     /// <summary>
+    /// Gets the ped's PedHistory id.
+    /// </summary>
+    public int PedHistoryId { get; internal set; }
+
+    /// <summary>
     /// Gets the entity's network identifier.
     /// </summary>
     public int NetworkId { get; }
@@ -183,6 +189,12 @@ public class FPed : FEntity, IFStatefulContainer
     {
         return new FPed(new CommonFPed(new CommonFPedBuilder(networkId)));
     }
+
+    /// <summary>
+    /// Gets the <see cref="PedHistory"/> of the ped.
+    /// </summary>
+    /// <returns>The PedHistory.</returns>
+    public PedHistory GetPedHistory() => ServiceLocator.GetService<DatabaseContext>()?.PedHistories.FirstOrDefault(x => x.Id == this.PedHistoryId);
 
     /// <inheritdoc />
     public string GetStateKey()

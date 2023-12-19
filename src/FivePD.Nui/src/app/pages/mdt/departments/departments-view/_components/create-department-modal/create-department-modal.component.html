@@ -1,0 +1,11 @@
+<app-dynamic-form [formFields]="fields"
+                  [limitWidth]="false"
+                  (onChange)="onChange($event)"/>
+<p class="block mt-8 mb-2 text-lg font-medium text-zinc-200">Member callsign format</p>
+<app-department-callsign-format-modal [showSubmitButton]="false" (onChange)="onCallsignFormatChange($event)"/>
+<div class="flex flex-row items-center justify-end gap-2.5">
+  <app-button variant="primary"
+              [label]="'Save' | translate"
+              [disabled]="!valid"
+              (onClick)="onSubmit()"/>
+</div>

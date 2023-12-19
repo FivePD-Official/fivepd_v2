@@ -5,13 +5,14 @@ import {
   ActionResponse,
   Collation,
   Department,
-  Division,
+  Division, Id,
   NameTakenResponse,
   Page,
   Rank,
   SimpleDepartment, SimpleDepartmentWithArea,
   User
 } from '@models';
+import { parseId } from "../../helpers/parse-id";
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +24,9 @@ export class DepartmentService {
   ) {
   }
 
-  getDepartment(id: number | string): Observable<Department> {
-    if (typeof id === 'string') {
-      id = parseInt(id);
-    }
+  getDepartment(id: Id): Observable<Department> {
     return this._http.post<Department>('fivepd:department:get', {
-      Id: id,
+      Id: parseId(id),
     });
   }
 
@@ -46,6 +44,10 @@ export class DepartmentService {
 
   editDepartment(department: object): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:edit', department);
+  }
+
+  editCallsignFormat(request: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:department:editCallsignFormat', request);
   }
 
   deleteDepartment(id: number): Observable<ActionResponse> {

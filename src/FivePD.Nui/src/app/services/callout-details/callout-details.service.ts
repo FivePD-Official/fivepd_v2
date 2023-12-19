@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { ActionResponse, CalloutDetails, CalloutDetailsWithDepartments, Collation, Page } from "@models";
+import { ActionResponse, CalloutDetails, CalloutDetailsWithDepartments, Collation, Id, Page } from "@models";
+import { parseId } from "../../helpers/parse-id";
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +12,9 @@ export class CalloutDetailsService {
   constructor(private readonly _http: HttpClient) {
   }
 
-  get(id: number | string): Observable<CalloutDetailsWithDepartments> {
-    if (typeof id === 'string') {
-      id = parseInt(id);
-    }
+  get(id: Id): Observable<CalloutDetailsWithDepartments> {
     return this._http.post<CalloutDetailsWithDepartments>('fivepd:calloutDetails:get', {
-      Id: id,
+      Id: parseId(id),
     });
   }
 

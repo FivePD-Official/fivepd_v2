@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Models;
+using Newtonsoft.Json;
 
 #pragma warning disable CS1591
 #pragma warning disable SA1600
@@ -14,7 +15,7 @@ namespace FivePD.Common.Builders;
 /// </summary>
 public class CommonFVehicleBuilder
 {
-    private static readonly Random Random = new(Guid.NewGuid().GetHashCode());
+    protected static readonly Random Random = new(Guid.NewGuid().GetHashCode());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommonFVehicleBuilder"/> class.
@@ -25,19 +26,25 @@ public class CommonFVehicleBuilder
         this.NetworkId = networkId;
     }
 
+    [JsonProperty]
     public int NetworkId { get; private set; }
 
-    public int OwnerNetworkId { get; private set; }
+    [JsonProperty]
+    public int OwnerNetworkId { get; protected set; }
 
-    public List<int> PassengerNetworkIds { get; private set; }
+    [JsonProperty]
+    public List<int> PassengerNetworkIds { get; protected set; }
 
-    public string LicensePlate { get; private set; }
+    [JsonProperty]
+    public string LicensePlate { get; protected set; }
 
-    public string Color { get; private set; }
+    [JsonProperty]
+    public string Color { get; protected set; }
 
-    public string Brand { get; private set; }
+    [JsonProperty]
+    public string Brand { get; protected set; }
 
-    public List<Item> Items { get; private set; }
+    public List<Item> Items { get; protected set; }
 
     public CommonFVehicleBuilder WithOwner(int networkId)
     {
@@ -66,16 +73,6 @@ public class CommonFVehicleBuilder
     public CommonFVehicleBuilder WithBrand(string brand)
     {
         this.Brand = brand;
-        return this;
-    }
-
-    public CommonFVehicleBuilder WithItems(IEnumerable<Item> items)
-    {
-        this.Items = items
-            .Where(item => item.Location.ToUpper() == "VEHICLE" || item.Location.ToUpper() == "ALL")
-            .OrderBy(_ => Guid.NewGuid())
-            .Take(Random.Next(0, 6))
-            .ToList();
         return this;
     }
 

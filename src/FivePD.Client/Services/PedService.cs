@@ -186,6 +186,8 @@ internal class PedService : IPedService, IOnInit
             return;
         }
 
+        Cfx.API.SetEntityLoadCollisionFlag(ped.Handle, true);
+
         Debug.WriteLine($"set property {property}");
 
         switch (property)
@@ -448,6 +450,8 @@ internal class PedService : IPedService, IOnInit
             return;
         }
 
+        Cfx.API.SetEntityLoadCollisionFlag(ped.Handle, true);
+
         switch (request.Method)
         {
             case FPedPropertiesDTO.Events.SetIntoVehicle:
@@ -474,6 +478,8 @@ internal class PedService : IPedService, IOnInit
         {
             return;
         }
+
+        Cfx.API.SetEntityLoadCollisionFlag(ped.Handle, true);
 
         Debug.WriteLine($"after invoking task {request.Task}");
 
@@ -1075,7 +1081,7 @@ internal class PedService : IPedService, IOnInit
         }
     }
 
-    #pragma warning disable
+#pragma warning disable
 
     private DateTime _last;
 

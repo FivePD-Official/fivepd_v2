@@ -59,6 +59,10 @@ internal readonly record struct Events
         public const string OnAlerted = "fivepd:vehicle:onAlerted";
 
         public const string SetCosmetics = "fivepd:vehicle:setCosmetics";
+
+        public const string Get = "fivepd:vehicle:get";
+
+        public const string GetAllPageable = "fivepd:vehicle:getAllPageable";
     }
 
     public readonly record struct Localization
@@ -153,6 +157,8 @@ internal readonly record struct Events
             public const string Leave = "fivepd:department:leave";
 
             public const string Edit = "fivepd:department:edit";
+
+            public const string EditCallsignFormat = "fivepd:department:editCallsignFormat";
 
             public const string Delete = "fivepd:department:delete";
 

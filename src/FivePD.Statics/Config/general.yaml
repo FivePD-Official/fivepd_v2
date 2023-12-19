@@ -77,7 +77,14 @@ Peds:
       - Governor's Warrant
 
 Vehicles:
-  Police:
+  Documents:
+    Insurance:
+      ChanceToHave: 100 # should be between 0-100. the higher the number, the more likely that a ped has a driving license
+      ChanceForExpired: 10 # should be between 0-100. the higher the number, the more likely that a ped has an invalid driving license
+    Registration:
+      ChanceToHave: 100
+      ChanceForExpired: 100
+  Police: # TODO: remove and move to the new ui vehicle config section
     EnableSpikeStripInAllVehicles: true # TODO: not implemented yet
 
 ProgressionSystem:

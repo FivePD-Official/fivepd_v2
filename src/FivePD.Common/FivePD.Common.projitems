@@ -19,11 +19,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DatabaseConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\FeatureFlagsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DispatchMenuItemConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\LicensesConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\PedLicensesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\MessagesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\PedsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\ProgressionSystemConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\UnitConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\VehicleDocumentsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\VehiclesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\WarrantsConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Item.cs" />

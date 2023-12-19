@@ -164,7 +164,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 .WithAlcoholLevel(this._configService.GeneralConfig.Peds.Alcohol)
                 .WithDrugs(this._configService.GeneralConfig.Peds.Drugs)
                 .Build();
-            this._databaseContext.PedHistories.Add(new PedHistory
+            var entry = this._databaseContext.PedHistories.Add(new PedHistory
             {
                 Firstname = fPed.Firstname,
                 Lastname = fPed.Lastname,
@@ -177,6 +177,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 Drugs = fPed.Drugs,
             });
             this._databaseContext.SaveChanges();
+            fPed.PedHistoryId = entry.Entity.Id;
         }
 
         Debug.WriteLine($"Generated data for ped with net ID of {fPed.NetworkId} - Name: {fPed.Firstname} {fPed.Lastname}");

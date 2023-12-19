@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { LocalizationService } from "@services/localization/localization.service";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { IncidentHistoryService } from "@services/incident-history/incident-history.service";
@@ -15,7 +15,7 @@ import { PageHeaderComponent } from '../../../components/page-header/page-header
   standalone: true,
   imports: [PageHeaderComponent, GridComponent, TranslatePipe]
 })
-export class IncidentHistoryComponent {
+export class IncidentHistoryComponent implements OnInit {
 
   incidentHistoryPage?: Page<IncidentHistory>;
   incidentHistoryPageCollation: Collation = {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from "@services/message/message.service";
-import { Collation, SingleSelectField, GeneralConfig, Message, Page, SimpleUser, TextareaField, TextInput } from "@models";
+import { Collation, SingleSelectField, GeneralConfig, Message, Page, SimpleUser, TextareaField, TextField } from "@models";
 import { FIncidentPriority } from "@enums";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ConfigService } from "@services/config/config.service";
@@ -86,7 +86,7 @@ export class MessagesComponent implements OnInit {
               label: user.Name,
             })),
           }),
-          new TextInput({
+          new TextField({
             key: 'Subject',
             label: 'Subject',
             required: true,

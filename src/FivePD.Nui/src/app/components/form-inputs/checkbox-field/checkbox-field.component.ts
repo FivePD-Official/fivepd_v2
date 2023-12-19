@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseFieldComponent } from "../base-field/base-field.component";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { CheckboxField } from "@models";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
+import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
   selector: 'app-checkbox-field',
@@ -22,21 +23,7 @@ export class CheckboxFieldComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.form) {
-      const validators = [...this.field.validators];
-      if (this.field.required) {
-        validators.push(Validators.required);
-      }
-
-      const asyncValidators = [...this.field.asyncValidators];
-
-      this.pseudoFormControl = new FormControl({
-        value: this.field.value ?? false,
-        disabled: this.field.readonly
-      }, validators, asyncValidators);
-
-      this.form = new FormGroup({
-        [this.field.key]: this.pseudoFormControl,
-      });
+      this.form = createDefaultFormGroup(this.field, false);
     }
 
     if (!this.control) {

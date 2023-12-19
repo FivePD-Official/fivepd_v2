@@ -1,10 +1,10 @@
 <div
   class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col items-center justify-center animate-fadeIn">
   <div #modalContainer
-       class="px-6 py-4 rounded-lg bg-zinc-800 animate-modal"
+       class="px-6 py-4 rounded-lg bg-zinc-800 animate-modal w-max"
        [ngClass]="{
-        'w-[30vw]': (modalRef.options.columns || 1) > 1,
-        'w-[500px]': (modalRef.options.columns || 1) === 1
+        'min-w-[500px]': (modalRef.options.columns || 1) === 1,
+        'min-w-[30vw]': (modalRef.options.columns || 1) > 1
        }">
     <div class="mb-6">
       <div class="flex flex-row items-center justify-between">
@@ -23,7 +23,7 @@
     </div>
     <div>
       <div #modalContent></div>
-      <div class="w-full flex flex-row items-center justify-between mt-7">
+      <div class="w-full flex flex-row items-center justify-between" [ngClass]="{'mt-7': loader || modalRef.options.buttons}">
         @if (loader) {
           <div
             class="flex flex-row items-center gap-3">

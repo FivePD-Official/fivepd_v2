@@ -8,6 +8,11 @@
                       (onSubmit)="onUserDetailsSubmit($event)"
                       [disableSubmitWithOriginalValue]="true"
                       [showSubmitButton]="true"/>
+    @if (department) {
+      <app-button label="Edit callsign"
+                  variant="tertiary"
+                  (onClick)="tryEditCallsign()"/>
+    }
   </div>
 
   <!--  <div class="flex flex-col gap-4">-->

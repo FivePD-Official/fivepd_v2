@@ -201,7 +201,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             {
                 this._databaseContext
                     .Entry(department)
-                    .Reference(x => x.AreaCoordinates)
+                    .Collection(x => x.AreaCoordinates)
                     .Load();
             }
 

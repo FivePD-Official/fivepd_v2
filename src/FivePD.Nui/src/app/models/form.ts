@@ -8,6 +8,11 @@ export interface FormSubmitEvent {
   markAsPristine: () => void;
 }
 
+export interface FormChangeEvent {
+  value: any;
+  valid: boolean;
+}
+
 export interface DropdownItem {
   key: any;
   label: string;
@@ -90,7 +95,7 @@ export abstract class FormInputBase<T> {
   }
 }
 
-export class TextInput extends FormInputBase<string> {
+export class TextField extends FormInputBase<string> {
   constructor(options: FormInputBaseOptions<string>) {
     super('text', options);
   }

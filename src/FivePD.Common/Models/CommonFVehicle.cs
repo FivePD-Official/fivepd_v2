@@ -21,12 +21,18 @@ public class CommonFVehicle
         this.Color = builder.Color;
         this.Brand = builder.Brand;
         this.Items = builder.Items;
+        this.OwnerNetworkId = builder.OwnerNetworkId;
     }
 
     /// <summary>
     /// Gets the vehicle's network identifier.
     /// </summary>
     public int NetworkId { get; }
+
+    /// <summary>
+    /// Gets the network identifier of the vehicle's owner ped.
+    /// </summary>
+    public int OwnerNetworkId { get; }
 
     /// <summary>
     /// Gets the vehicle's license plate.

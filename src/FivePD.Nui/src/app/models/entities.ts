@@ -1,6 +1,8 @@
 import {LooseDataAttribute} from './loose-data';
 import {FGender, FIncidentPriority, FIncidentType, PedLicenseType} from "@enums";
 
+export type Id = string | number;
+
 export interface WithId {
   Id: number;
 }
@@ -34,10 +36,22 @@ export interface DepartmentAreaCoordinate extends WithId {
   Y: number;
 }
 
+export enum CallsignFormatItemType {
+  Dash,
+  FixedCharacter,
+  RandomLetter,
+  RandomNumber,
+}
+
+export interface CallsignFormatItem {
+  Type: CallsignFormatItemType;
+  Value?: string;
+}
+
 export interface Department extends WithId {
   Name: string;
   Callsign: string;
-  CallsignFormat: string;
+  CallsignFormat: CallsignFormatItem[];
   MaxUsers: number;
   Users?: User[];
   Divisions?: Division[];
@@ -187,4 +201,35 @@ export interface CalloutDetailsWithDepartments extends CalloutDetails {
     CalloutDetailsId: number;
     DepartmentId: number;
   }[];
+}
+
+export enum VehicleDocumentStatus {
+  Valid,
+  Expired,
+  Suspended,
+  Revoked,
+}
+
+export enum VehicleDocumentType {
+  Insurance,
+  Registration,
+}
+
+export interface VehicleDocument {
+  Status: VehicleDocumentStatus;
+  Type: VehicleDocumentType;
+  ExpirationDate: string;
+  IssueDate: string;
+}
+
+export interface FVehicle extends WithId {
+  NetworkId: number;
+  LicensePlate: string;
+  Color: string;
+  Brand: string;
+  Documents: VehicleDocument[];
+}
+
+export interface FVehicleDTO extends FVehicle {
+  Owner?: PedHistory;
 }

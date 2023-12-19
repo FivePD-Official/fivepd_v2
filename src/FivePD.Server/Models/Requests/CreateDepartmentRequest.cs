@@ -1,4 +1,6 @@
-﻿#pragma warning disable
+﻿using System.Collections.Generic;
+
+#pragma warning disable
 
 namespace FivePD.Server.Models.Requests;
 
@@ -8,7 +10,7 @@ internal record struct CreateDepartmentRequest()
 
     public string Callsign { get; set; } = string.Empty;
 
-    public string CallsignFormat { get; set; }
+    public List<CallsignFormatItem> CallsignFormat { get; set; }
 
     public int MaxUsers { get; set; }
 }
