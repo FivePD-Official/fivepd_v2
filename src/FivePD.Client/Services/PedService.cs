@@ -530,7 +530,9 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.ChatTo:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ChatTo>(request.Args);
-                this._queueService.Queue(() => ped.Task.ChatTo(Entity.FromNetworkId(args.NetworkId) as Ped));
+                var targetPed = Entity.FromNetworkId(args.NetworkId) as Ped;
+                Cfx.API.SetEntityLoadCollisionFlag(ped.Handle, true);
+                this._queueService.Queue(() => ped.Task.ChatTo(targetPed));
                 break;
             }
 
@@ -587,16 +589,30 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.CruiseWithVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.CruiseWithVehicle>(request.Args);
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
                 this._queueService.Queue(() =>
-                    ped.Task.CruiseWithVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Speed, args.DrivingStyle));
+                    ped.Task.CruiseWithVehicle(vehicle, args.Speed, args.DrivingStyle));
                 break;
             }
 
             case FPedTasksDTO.Events.DriveTo:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.DriveTo>(request.Args);
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
                 this._queueService.Queue(() =>
-                    ped.Task.DriveTo(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.Target, args.Radius, args.Speed, args.DrivingStyle));
+                    ped.Task.DriveTo(vehicle, args.Target, args.Radius, args.Speed, args.DrivingStyle));
                 break;
             }
 
@@ -610,15 +626,29 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.EnterVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.EnterVehicle>(request.Args);
+                var vehicle = Entity.FromHandle(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
                 this._queueService.Queue(() =>
-                    ped.Task.EnterVehicle(Entity.FromHandle(args.VehicleNetworkId) as Vehicle, (VehicleSeat)args.Seat, args.Timeout, args.Speed, args.Flag));
+                    ped.Task.EnterVehicle(vehicle, (VehicleSeat)args.Seat, args.Timeout, args.Speed, args.Flag));
                 break;
             }
 
             case FPedTasksDTO.Events.FightAgainst:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FightAgainst>(request.Args);
-                this._queueService.Queue(() => ped.Task.FightAgainst(Entity.FromHandle(args.PedNetworkId) as Ped, args.Duration));
+                var targetPed = Entity.FromHandle(args.PedNetworkId) as Ped;
+                if (targetPed == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(targetPed.Handle, true);
+                this._queueService.Queue(() => ped.Task.FightAgainst(targetPed, args.Duration));
                 break;
             }
 
@@ -646,8 +676,10 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.FollowToOffsetFromEntity:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FollowToOffsetFromEntity>(request.Args);
+                var target = Entity.FromNetworkId(args.TargetNetworkId);
+                Cfx.API.SetEntityLoadCollisionFlag(target.Handle, true);
                 this._queueService.Queue(() => ped.Task.FollowToOffsetFromEntity(
-                    Entity.FromNetworkId(args.TargetNetworkId),
+                    target,
                     args.Offset,
                     args.MovementSpeed,
                     args.Timeout,
@@ -659,14 +691,18 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.GoToTarget:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.GoToTarget>(request.Args);
-                this._queueService.Queue(() => ped.Task.GoTo(Entity.FromNetworkId(args.TargetNetworkId)));
+                var target = Entity.FromNetworkId(args.TargetNetworkId);
+                Cfx.API.SetEntityLoadCollisionFlag(target.Handle, true);
+                this._queueService.Queue(() => ped.Task.GoTo(target));
                 break;
             }
 
             case FPedTasksDTO.Events.GoToTargetWithOffset:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.GoToTargetWithOffset>(request.Args);
-                this._queueService.Queue(() => ped.Task.GoTo(Entity.FromNetworkId(args.TargetNetworkId), args.Offset, args.Timeout));
+                var target = Entity.FromNetworkId(args.TargetNetworkId);
+                Cfx.API.SetEntityLoadCollisionFlag(target.Handle, true);
+                this._queueService.Queue(() => ped.Task.GoTo(target, args.Offset, args.Timeout));
                 break;
             }
 
@@ -699,8 +735,10 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.LandPlane:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LandPlane>(request.Args);
+                var plane = Entity.FromNetworkId(args.PlaneNetworkId);
+                Cfx.API.SetEntityLoadCollisionFlag(plane.Handle, true);
                 this._queueService.Queue(() =>
-                    ped.Task.LandPlane(args.StartPosition, args.TouchdownPosition, Entity.FromNetworkId(args.PlaneNetworkId) as Vehicle));
+                    ped.Task.LandPlane(args.StartPosition, args.TouchdownPosition, plane as Vehicle));
                 break;
             }
 
@@ -714,21 +752,37 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.LeaveVehicleSpecified:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LeaveVehicleSpecified>(request.Args);
-                this._queueService.Queue(() => ped.Task.LeaveVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, (LeaveVehicleFlags)args.Flags));
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
+                this._queueService.Queue(() => ped.Task.LeaveVehicle(vehicle, (LeaveVehicleFlags)args.Flags));
                 break;
             }
 
             case FPedTasksDTO.Events.LeaveVehicleCloseDoor:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LeaveVehicleCloseDoor>(request.Args);
-                this._queueService.Queue(() => ped.Task.LeaveVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, args.CloseDoor));
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
+                this._queueService.Queue(() => ped.Task.LeaveVehicle(vehicle, args.CloseDoor));
                 break;
             }
 
             case FPedTasksDTO.Events.LookAtTarget:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LookAtTarget>(request.Args);
-                this._queueService.Queue(() => ped.Task.LookAt(Entity.FromNetworkId(args.TargetNetworkId), args.Duration));
+                var target = Entity.FromNetworkId(args.TargetNetworkId);
+                Cfx.API.SetEntityLoadCollisionFlag(target.Handle, true);
+                this._queueService.Queue(() => ped.Task.LookAt(target, args.Duration));
                 break;
             }
 
@@ -749,8 +803,15 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.ParkVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ParkVehicle>(request.Args);
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
                 this._queueService.Queue(() => ped.Task.ParkVehicle(
-                    Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle,
+                    vehicle,
                     args.Position,
                     args.Heading,
                     args.Radius,
@@ -822,7 +883,14 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.ReactAndFlee:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ReactAndFlee>(request.Args);
-                this._queueService.Queue(() => ped.Task.ReactAndFlee(Entity.FromNetworkId(args.PedNetworkId) as Ped));
+                var targetPed = Entity.FromNetworkId(args.PedNetworkId) as Ped;
+                if (targetPed == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(targetPed.Handle, true);
+                this._queueService.Queue(() => ped.Task.ReactAndFlee(targetPed));
                 break;
             }
 
@@ -842,8 +910,15 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.ShootAtTarget:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ShootAtTarget>(request.Args);
+                var targetPed = Entity.FromNetworkId(args.TargetNetworkId) as Ped;
+                if (targetPed == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(targetPed.Handle, true);
                 this._queueService.Queue(() =>
-                    ped.Task.ShootAt(Entity.FromNetworkId(args.TargetNetworkId) as Ped, args.Duration, (FiringPattern)args.FiringPattern));
+                    ped.Task.ShootAt(targetPed, args.Duration, (FiringPattern)args.FiringPattern));
                 break;
             }
 
@@ -857,7 +932,14 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.ShuffleToNextVehicleSeat:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ShuffleToNextVehicleSeat>(request.Args);
-                this._queueService.Queue(() => ped.Task.ShuffleToNextVehicleSeat(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle));
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
+                this._queueService.Queue(() => ped.Task.ShuffleToNextVehicleSeat(vehicle));
                 break;
             }
 
@@ -897,7 +979,9 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.TurnToEntity:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.TurnToEntity>(request.Args);
-                ped.Task.TurnTo(Entity.FromNetworkId(args.EntityNetworkId), args.Duration);
+                var entity = Entity.FromNetworkId(args.EntityNetworkId);
+                Cfx.API.SetEntityLoadCollisionFlag(entity.Handle, true);
+                ped.Task.TurnTo(entity, args.Duration);
                 break;
             }
 
@@ -930,14 +1014,28 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.VehicleChase:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.VehicleChase>(request.Args);
-                this._queueService.Queue(() => ped.Task.VehicleChase(Entity.FromNetworkId(args.TargetNetworkId) as Ped));
+                var targetPed = Entity.FromNetworkId(args.TargetNetworkId) as Ped;
+                if (targetPed == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(targetPed.Handle, true);
+                this._queueService.Queue(() => ped.Task.VehicleChase(targetPed));
                 break;
             }
 
             case FPedTasksDTO.Events.VehicleShootAtPed:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.VehicleShootAtPed>(request.Args);
-                this._queueService.Queue(() => ped.Task.VehicleShootAtPed(Entity.FromNetworkId(args.TargetNetworkId) as Ped));
+                var target = Entity.FromNetworkId(args.TargetNetworkId) as Ped;
+                if (target == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(target.Handle, true);
+                this._queueService.Queue(() => ped.Task.VehicleShootAtPed(target));
                 break;
             }
 
@@ -964,14 +1062,28 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.WarpIntoVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.WarpIntoVehicle>(request.Args);
-                this._queueService.Queue(() => ped.Task.WarpIntoVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle, (VehicleSeat)args.Seat));
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
+                this._queueService.Queue(() => ped.Task.WarpIntoVehicle(vehicle, (VehicleSeat)args.Seat));
                 break;
             }
 
             case FPedTasksDTO.Events.WarpOutOfVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.WarpOutOfVehicle>(request.Args);
-                this._queueService.Queue(() => ped.Task.WarpOutOfVehicle(Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle));
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
+                if (vehicle == null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(vehicle.Handle, true);
+                this._queueService.Queue(() => ped.Task.WarpOutOfVehicle(vehicle));
                 break;
             }
         }
