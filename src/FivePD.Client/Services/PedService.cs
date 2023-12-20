@@ -756,6 +756,11 @@ internal class PedService : IPedService, IOnInit
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.LandPlane>(request.Args);
                 var plane = Entity.FromNetworkId(args.PlaneNetworkId);
+                if (plane == null)
+                {
+                    return;
+                }
+
                 Cfx.API.SetEntityLoadCollisionFlag(plane.Handle, true);
                 this._queueService.Queue(() =>
                     ped.Task.LandPlane(args.StartPosition, args.TouchdownPosition, plane as Vehicle));
