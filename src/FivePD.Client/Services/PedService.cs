@@ -702,6 +702,11 @@ internal class PedService : IPedService, IOnInit
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.GoToTarget>(request.Args);
                 var target = Entity.FromNetworkId(args.TargetNetworkId);
+                if (target == null)
+                {
+                    return;
+                }
+
                 Cfx.API.SetEntityLoadCollisionFlag(target.Handle, true);
                 this._queueService.Queue(() => ped.Task.GoTo(target));
                 break;
