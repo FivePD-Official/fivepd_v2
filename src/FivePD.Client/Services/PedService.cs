@@ -531,7 +531,12 @@ internal class PedService : IPedService, IOnInit
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ChatTo>(request.Args);
                 var targetPed = Entity.FromNetworkId(args.NetworkId) as Ped;
-                Cfx.API.SetEntityLoadCollisionFlag(ped.Handle, true);
+                if (targetPed== null)
+                {
+                    return;
+                }
+
+                Cfx.API.SetEntityLoadCollisionFlag(targetPed.Handle, true);
                 this._queueService.Queue(() => ped.Task.ChatTo(targetPed));
                 break;
             }
