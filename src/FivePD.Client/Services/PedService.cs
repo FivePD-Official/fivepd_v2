@@ -1010,6 +1010,11 @@ internal class PedService : IPedService, IOnInit
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.TurnToEntity>(request.Args);
                 var entity = Entity.FromNetworkId(args.EntityNetworkId);
+                if (entity == null)
+                {
+                    return;
+                }
+
                 Cfx.API.SetEntityLoadCollisionFlag(entity.Handle, true);
                 ped.Task.TurnTo(entity, args.Duration);
                 break;
