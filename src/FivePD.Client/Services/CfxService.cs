@@ -25,18 +25,18 @@ internal class CfxService : ICfxService, IOnInit
     {
         this._eventHandlerDictionary[Events.Cfx.AddAmmoToPed] += new Action<int, uint, int>((ped, weaponHash, ammo) =>
         {
-            var entity = Entity.FromNetworkId(ped);
+            var entity = this.GetEntity(ped);
             if (entity is null)
             {
                 return;
             }
-
+            
             this._queueService.Queue(() => Cfx.API.AddAmmoToPed(entity.Handle, weaponHash, ammo));
         });
 
         this._eventHandlerDictionary[Events.Cfx.AddAmmoToPedByType] += new Action<int, int, int>((ped, ammoType, ammo) =>
         {
-            var entity = Entity.FromNetworkId(ped);
+            var entity = this.GetEntity(ped);
             if (entity is null)
             {
                 return;
@@ -47,7 +47,7 @@ internal class CfxService : ICfxService, IOnInit
 
         this._eventHandlerDictionary[Events.Cfx.AddArmourToPed] += new Action<int, int>((ped, amount) =>
         {
-            var entity = Entity.FromNetworkId(ped);
+            var entity = this.GetEntity(ped);
             if (entity is null)
             {
                 return;
@@ -58,7 +58,7 @@ internal class CfxService : ICfxService, IOnInit
 
         this._eventHandlerDictionary[Events.Cfx.AddPedAmmo] += new Action<int, int, int>((ped, ammoType, amount) =>
         {
-            var entity = Entity.FromNetworkId(ped);
+            var entity = this.GetEntity(ped);
             if (entity is null)
             {
                 return;
@@ -69,7 +69,7 @@ internal class CfxService : ICfxService, IOnInit
 
         this._eventHandlerDictionary[Events.Cfx.ApplyDamageToPed] += new Action<int, int, bool>((ped, damageAmount, armorFirst) =>
         {
-            var entity = Entity.FromNetworkId(ped);
+            var entity = this.GetEntity(ped);
             if (entity is null)
             {
                 return;
@@ -82,7 +82,7 @@ internal class CfxService : ICfxService, IOnInit
             new Action<int, int, float, float, float, float, float, float, int, bool, bool, bool, bool, bool>(
                 (entityId, forceType, x, y, z, offX, offY, offZ, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12, p13) =>
                 {
-                    var entity = Entity.FromNetworkId(entityId);
+                    var entity = this.GetEntity(entityId);
                     if (entity is null)
                     {
                         return;
@@ -96,7 +96,7 @@ internal class CfxService : ICfxService, IOnInit
         this._eventHandlerDictionary[Events.Cfx.ApplyForceToEntityCenterOfMass] += new Action<int, int, float, float, float, bool, bool, bool, bool>(
             (entityId, forceType, x, y, z, p5, isDirectionRel, isForceRel, p8) =>
             {
-                var entity = Entity.FromNetworkId(entityId);
+                var entity = this.GetEntity(entityId);
                 if (entity is null)
                 {
                     return;
@@ -132,8 +132,8 @@ internal class CfxService : ICfxService, IOnInit
             int,
             bool>((i, i1, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15) =>
         {
-            var entity1 = Entity.FromNetworkId(i);
-            var entity2 = Entity.FromNetworkId(i1);
+            var entity1 = this.GetEntity(i);
+            var entity2 = this.GetEntity(i1);
             if (entity1 is null || entity2 is null)
             {
                 return;
@@ -149,7 +149,7 @@ internal class CfxService : ICfxService, IOnInit
             bool,
             bool>((arg1, arg2, arg3) =>
         {
-            var entity1 = Entity.FromNetworkId(arg1);
+            var entity1 = this.GetEntity(arg1);
             if (entity1 is null)
             {
                 return;
@@ -163,7 +163,7 @@ internal class CfxService : ICfxService, IOnInit
             int,
             int>((i, i1, i2) =>
         {
-            var entity1 = Entity.FromNetworkId(i);
+            var entity1 = this.GetEntity(i);
             if (entity1 is null)
             {
                 return;
@@ -174,7 +174,7 @@ internal class CfxService : ICfxService, IOnInit
 
         this._eventHandlerDictionary[Events.Cfx.ResurrectPed] += new Action<int>((ped) =>
         {
-            var entity = Entity.FromNetworkId(ped);
+            var entity = this.GetEntity(ped);
             if (entity is null)
             {
                 return;
@@ -185,7 +185,7 @@ internal class CfxService : ICfxService, IOnInit
 
         this._eventHandlerDictionary[Events.Cfx.SetEnableHandcuffs] += new Action<int, bool>((ped, toggle) =>
         {
-            var entity = Entity.FromNetworkId(ped);
+            var entity = this.GetEntity(ped);
             if (entity is null)
             {
                 return;
@@ -197,8 +197,8 @@ internal class CfxService : ICfxService, IOnInit
         this._eventHandlerDictionary[Events.Cfx.TaskVehiclePark] += new Action<int, int, float, float, float, float, int, float, bool>(
             (pedNetId, vehicleNetId, x, y, z, heading, mode, radius, keepEngineOn) =>
             {
-                var ped = Entity.FromNetworkId(pedNetId);
-                var vehicle = Entity.FromNetworkId(vehicleNetId);
+                var ped = this.GetEntity(pedNetId);
+                var vehicle = this.GetEntity(vehicleNetId);
                 if (ped is null || vehicle is null)
                 {
                     return;
@@ -210,8 +210,8 @@ internal class CfxService : ICfxService, IOnInit
         this._eventHandlerDictionary[Events.Cfx.TaskVehicleTempAction] += new Action<int, int, int, int>(
             (pedNetId, vehicleNetId, action, time) =>
             {
-                var ped = Entity.FromNetworkId(pedNetId);
-                var vehicle = Entity.FromNetworkId(vehicleNetId);
+                var ped = this.GetEntity(pedNetId);
+                var vehicle = this.GetEntity(vehicleNetId);
                 if (ped is null || vehicle is null)
                 {
                     return;
@@ -219,5 +219,18 @@ internal class CfxService : ICfxService, IOnInit
 
                 this._queueService.Queue(() => Cfx.API.TaskVehicleTempAction(ped.Handle, vehicle.Handle, action, time));
             });
+    }
+
+    private Entity GetEntity(int networkId)
+    {
+        var entity = Entity.FromNetworkId(networkId);
+        if (entity is null)
+        {
+            return null;
+        }
+        
+        Cfx.API.SetEntityLoadCollisionFlag(entity.Handle, true);
+
+        return entity;
     }
 }
