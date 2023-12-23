@@ -633,8 +633,6 @@ public class DepartmentService : IDepartmentService
             return;
         }
 
-        Debug.WriteLine("asd");
-
         department.CallsignFormat = request.CallsignFormat;
 
         foreach (var user in department.Users)
