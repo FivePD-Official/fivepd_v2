@@ -123,6 +123,11 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the vehicle configs.
+    /// </summary>
+    public DbSet<VehicleConfig> VehicleConfigs { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

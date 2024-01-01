@@ -23,9 +23,9 @@ internal class VehicleConfigService : IVehicleConfigService, IOnInit
     /// <inheritdoc/>
     public void OnInit()
     {
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.GetAllVehicles);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.AddVehicle);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.DeleteVehicle);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.EditVehicle);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.GetAll);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Add);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Delete);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Edit);
     }
 }

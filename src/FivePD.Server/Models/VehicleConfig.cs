@@ -20,6 +20,11 @@ public class VehicleConfig
     public VehicleConfigType Type { get; set; }
 
     /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
     /// Gets or sets the model.
     /// </summary>
     public string Model { get; set; }

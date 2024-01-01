@@ -74,6 +74,12 @@ export interface VehicleConfig extends WithId {
   Division: Division["Name"],
 }
 
+export enum VehicleConfigType {
+  Police,
+  Ambulance,
+  TowTruck,
+}
+
 export interface SimpleDepartmentWithArea extends SimpleDepartment {
   Callsign: string;
   Coordinates: DepartmentAreaCoordinate[];

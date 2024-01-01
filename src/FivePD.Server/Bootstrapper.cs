@@ -320,6 +320,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<CalloutDetailService>();
         services.AddSingleton<ICalloutDetailService>(provider => provider.GetRequiredService<CalloutDetailService>());
 
+        services.AddSingleton<VehicleConfigService>();
+        services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
+
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);

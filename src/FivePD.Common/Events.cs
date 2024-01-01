@@ -278,13 +278,13 @@ internal readonly record struct Events
 
         public readonly record struct VehicleConfig
         {
-            public const string GetAllVehicles = "fivepd:ui:vehicleConfig:getAllVehicles";
+            public const string GetAll = "fivepd:ui:vehicleConfig:getAll";
 
-            public const string AddVehicle = "fivepd:ui:vehicleConfig:addVehicle";
+            public const string Add = "fivepd:ui:vehicleConfig:add";
 
-            public const string DeleteVehicle = "fivepd:ui:vehicleConfig:deleteVehicle";
+            public const string Delete = "fivepd:ui:vehicleConfig:delete";
 
-            public const string EditVehicle = "fivepd:ui:vehicleConfig:editVehicle";
+            public const string Edit = "fivepd:ui:vehicleConfig:edit";
         }
     }
 

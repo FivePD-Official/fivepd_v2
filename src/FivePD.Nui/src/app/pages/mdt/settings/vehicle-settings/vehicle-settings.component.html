@@ -9,11 +9,9 @@
 
   @if (this.userService.userHasRole(UserRole.Admin)){
     <app-grid
-      [title]="'UI.LABEL.VEHICLE_SETTINGS.AMBULANCE' | translate"
-      [buttons]="vehicleConfigbuttons"/>
+      [title]="'UI.LABEL.VEHICLE_SETTINGS.AMBULANCE' | translate"/>
 
     <app-grid
-      [title]="'UI.LABEL.VEHICLE_SETTINGS.TOW' | translate"
-      [buttons]="vehicleConfigbuttons"/>
+      [title]="'UI.LABEL.VEHICLE_SETTINGS.TOW' | translate"/>
   }
 </app-container>
