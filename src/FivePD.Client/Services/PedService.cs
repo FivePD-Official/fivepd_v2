@@ -531,7 +531,7 @@ internal class PedService : IPedService, IOnInit
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.ChatTo>(request.Args);
                 var targetPed = Entity.FromNetworkId(args.NetworkId) as Ped;
-                if (targetPed== null)
+                if (targetPed == null)
                 {
                     return;
                 }
@@ -682,7 +682,7 @@ internal class PedService : IPedService, IOnInit
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FollowToOffsetFromEntity>(request.Args);
                 var target = Entity.FromNetworkId(args.TargetNetworkId);
-               if (targetPed == null)
+                if (target == null)
                 {
                     return;
                 }
