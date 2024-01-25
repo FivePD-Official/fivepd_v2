@@ -6,6 +6,7 @@ using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers.PedWrapper;
+using FivePD.Server.EntityWrappers.PedWrapper.States;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
@@ -205,7 +206,7 @@ public sealed class InteractionMenu : Menu
             var text = new GtaStyleText()
                 .Blue("Drug swab test")
                 .NewLine()
-                .White(fPed.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(",", fPed.Drugs.Select(x => x.Name))}");
+                .White(fPed.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(", ", fPed.Drugs.Select(x => x.Name))}");
             this._notificationService.ShowNotification(player, text.Build());
         };
         items.Add(this.DrugSwabTest);
@@ -263,53 +264,17 @@ public sealed class InteractionMenu : Menu
             {
                 case 0:
                 {
-                    if (fPed.Movement.Value == FPedMovement.Grab)
-                    {
-                        this._cfxService.DetachEntity(fPed.NetworkId, true, false);
-                        playerPed.Task.ClearAllImmediately();
-                        playerPed.Task.ClearAnimation("doors@", "door_sweep_r_hand_medium");
-                    }
-                    else if (fPed.Movement.Value == FPedMovement.Follow)
-                    {
-                        this._interactionService.TogglePedFollowPlayer(player, fPed.GetUnderlyingPed, false);
-                    }
-
-                    fPed.Movement.Value = FPedMovement.None;
-                    fPed.Task.StandStill(-1);
+                    fPed.ChangeState(new FPedStandStillState(fPed));
                     break;
                 }
                 case 1:
                 {
-                    fPed.Movement.Value = FPedMovement.Grab;
-                    fPed.GetUnderlyingPed.Heading = player.GetUnderlyingPlayer().Character.Heading;
-                    playerPed.Task.PlayAnimation(
-                        "doors@",
-                        "door_sweep_r_hand_medium",
-                        5f,
-                        -1,
-                        FAnimationFlags.StayInEndFrame | FAnimationFlags.UpperBodyOnly | FAnimationFlags.AllowRotation);
-                    this._cfxService.AttachEntityToEntity(
-                        fPed.NetworkId,
-                        player.GetUnderlyingPlayer().Character.NetworkId,
-                        0,
-                        0.2f,
-                        0.4f,
-                        0f,
-                        0f,
-                        0f,
-                        0f,
-                        false,
-                        false,
-                        false,
-                        false,
-                        2,
-                        false);
+                    fPed.ChangeState(new FPedGrabbedState(fPed, playerPed));
                     break;
                 }
                 case 2:
                 {
-                    fPed.Movement.Value = FPedMovement.Follow;
-                    this._interactionService.TogglePedFollowPlayer(player, fPed.GetUnderlyingPed, true);
+                    fPed.ChangeState(new FPedFollowPlayerState(fPed, player));
                     break;
                 }
             }
