@@ -10,29 +10,29 @@ import {
   SingleSelectField
 } from "@models";
 import { filter, switchMap, tap, zip } from "rxjs";
-import { TranslatePipe } from '../../../../pipes/translate.pipe';
-import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
-import { ContainerComponent } from '../../../../components/container/container.component';
-import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { DynamicFormComponent } from '../../../components/dynamic-form/dynamic-form.component';
+import { ContainerComponent } from '../../../components/container/container.component';
+import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 import { LocalizationService } from "@services/localization/localization.service";
 import { ConfigService } from "@services/config/config.service";
-import { ButtonComponent } from "../../../../components/button/button.component";
+import { ButtonComponent } from "../../../components/button/button.component";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { CallsignEditorComponent } from "./_components/user-callsign-editor/callsign-editor.component";
-import {
-  CALLSIGN_FORMAT_ITEMS
-} from "../../departments/departments-view/_components/department-callsign-format-editor/token";
 import { CALLSIGN } from "./_components/user-callsign-editor/token";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
+import {
+  CALLSIGN_FORMAT_ITEMS
+} from "../departments/departments-view/_components/department-callsign-format-editor/token";
 
 @Component({
-  selector: 'app-user-settings',
-  templateUrl: './user-settings.component.html',
+  selector: 'app-my-settings',
+  templateUrl: './my-settings.component.html',
   standalone: true,
   imports: [PageHeaderComponent, ContainerComponent, DynamicFormComponent, TranslatePipe, ButtonComponent]
 })
-export class UserSettingsComponent implements OnInit {
+export class MySettingsComponent implements OnInit {
 
   user?: PlayerDetailsDTO;
   generalConfig?: GeneralConfig;

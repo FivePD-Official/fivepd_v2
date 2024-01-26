@@ -74,8 +74,6 @@ import { DevtoolsService } from "@services/devtools/devtools.service";
 import { DispatchService } from "@services/dispatch/dispatch.service";
 import { MessageService } from "@services/message/message.service";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
-import { UserSettingsComponent } from "./pages/mdt/settings/user-settings/user-settings.component";
-import { AdminSettingsComponent } from "./pages/mdt/settings/admin-settings/admin-settings.component";
 import { VehicleService } from "@services/vehicle/vehicle.service";
 import {
   CreateDepartmentModalComponent
@@ -89,6 +87,9 @@ import {
 import {
   VehicleDatabaseIndexComponent
 } from "./pages/mdt/vehicle-database/vehicle-database-index/vehicle-database-index.component";
+import { sidebarReducer } from "@store/sidebar.reducer";
+import { MySettingsComponent } from "./pages/mdt/my-settings/my-settings.component";
+import { AttributesComponent } from "./pages/mdt/settings/attributes/attributes.component";
 
 @NgModule({
   declarations: [AppComponent],
@@ -112,6 +113,7 @@ import {
     StoreModule.forRoot({
       app: appReducer,
       user: userReducer,
+      sidebar: sidebarReducer,
     }),
     MdtComponent,
     HeaderComponent,
@@ -156,8 +158,8 @@ import {
     PaginationComponent,
     AsPipe,
     CalloutDetailsComponent,
-    AdminSettingsComponent,
-    UserSettingsComponent,
+    AttributesComponent,
+    MySettingsComponent,
     CreateDepartmentModalComponent,
     DepartmentCallsignFormatEditorComponent,
   ],

@@ -1,0 +1,9 @@
+<app-page-header [title]="'UI.LABEL.ATTRIBUTE.PLURAL' | translate"/>
+
+<app-grid [buttons]="attributesButtons"
+          [columns]="columns"
+          [data]="page"
+          (onCollationChange)="onAttributesCollationChange($event)">
+  <app-single-select-field [field]="setAttributeDropdown"
+                           (onChange)="onTableCellActionSelect($event)"/>
+</app-grid>

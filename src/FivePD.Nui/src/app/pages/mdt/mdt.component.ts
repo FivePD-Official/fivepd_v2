@@ -26,7 +26,7 @@ export class MdtComponent implements OnInit {
   ) {
     _store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.dispatchMode = state.app.dispatchMode;
-      this.isSidebarCollapsed = state.app.isSidebarCollapsed;
+      this.isSidebarCollapsed = state.sidebar.collapsed;
       this.windowMaximized = state.app.windowMaximized;
     });
   }

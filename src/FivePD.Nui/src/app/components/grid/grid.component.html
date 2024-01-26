@@ -37,7 +37,7 @@
             @if (column.filter?.dropdown) {
               <app-single-select-field [field]="getFilterSingleSelectInput(column)"
                               (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
-            } @else {
+            } @else if (column.filter) {
               <app-text-field [field]="getFilterInput(column)"
                               (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
             }

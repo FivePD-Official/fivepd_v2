@@ -183,6 +183,7 @@
   "UI.LABEL.ENTITY.SUCCESS.DELETE": "Item has been successfully deleted.",
   "UI.LABEL.ENTITY.SUCCESS.EDIT": "Item has been successfully edited.",
   "UI.LABEL.GENERAL": "General",
+  "UI.LABEL.GLOBAL_SETTINGS": "Global settings",
   "UI.LABEL.HELP_LABEL.SINGULAR": "Help label",
   "UI.LABEL.HIDDEN.HELP_LABEL": "The field will not be shown in forms.",
   "UI.LABEL.HIDDEN.TITLE": "Hidden",

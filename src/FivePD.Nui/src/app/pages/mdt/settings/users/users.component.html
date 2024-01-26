@@ -1,0 +1,5 @@
+<app-page-header [title]="'Users' | translate"/>
+
+<app-grid [columns]="columns"
+          [data]="users$ | async"
+          (onCollationChange)="collation$.next($event)"/>

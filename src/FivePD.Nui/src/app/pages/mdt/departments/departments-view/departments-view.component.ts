@@ -45,10 +45,8 @@ import {
   DepartmentCallsignFormatEditorComponent
 } from "./_components/department-callsign-format-editor/department-callsign-format-editor.component";
 import { CALLSIGN_FORMAT_ITEMS } from "./_components/department-callsign-format-editor/token";
-import {
-  CallsignEditorComponent
-} from "../../settings/user-settings/_components/user-callsign-editor/callsign-editor.component";
-import { CALLSIGN } from "../../settings/user-settings/_components/user-callsign-editor/token";
+import { CallsignEditorComponent } from "../../my-settings/_components/user-callsign-editor/callsign-editor.component";
+import { CALLSIGN } from "../../my-settings/_components/user-callsign-editor/token";
 
 interface FormattedRank extends Rank {
   Permissions: string;

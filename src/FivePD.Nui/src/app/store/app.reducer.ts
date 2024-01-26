@@ -3,6 +3,7 @@ import { createReducer, on } from '@ngrx/store';
 import {
   AppActions,
 } from '@store/app.actions';
+import { Routes } from "../models/sidebar";
 
 export interface Coordinate {
   X: string;
@@ -21,7 +22,6 @@ export interface DevToolsState {
 }
 
 export interface AppStateModel {
-  isSidebarCollapsed: boolean;
   previousMdtPath: string[];
   devTools: DevToolsState;
   dispatchMode: boolean;
@@ -41,7 +41,6 @@ const devToolsDefaultState: DevToolsState = {
 };
 
 const initialState: AppStateModel = {
-  isSidebarCollapsed: false,
   previousMdtPath: ['mdt', 'dashboard'],
   devTools: devToolsDefaultState,
   dispatchMode: false,
@@ -52,7 +51,6 @@ const initialState: AppStateModel = {
 
 export const appReducer = createReducer(
   initialState,
-  on(AppActions.toggleSidebarCollapse, (state) => ({...state, isSidebarCollapsed: !state.isSidebarCollapsed})),
   on(AppActions.setMDTPath, (state, {path}) => ({...state, previousMdtPath: path})),
   on(AppActions.addDevToolsCoordinate, (state, {coordinate}) => {
     const _state: AppStateModel = {
