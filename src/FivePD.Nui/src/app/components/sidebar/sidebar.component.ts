@@ -1,28 +1,17 @@
-import {Component} from '@angular/core';
-import {GlobalState} from '@store';
-import {GeneralConfig, IconType, User} from '@models';
-import {Store} from '@ngrx/store';
-import {UserRole, UserService} from '@services/user/user.service';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {DispatchService} from "@services/dispatch/dispatch.service";
-import {ConfigService} from "@services/config/config.service";
-import {TranslatePipe} from '../../pipes/translate.pipe';
-import {IconComponent} from '../icon/icon.component';
-import {RouterLink, RouterLinkActive} from '@angular/router';
-import {NgClass} from '@angular/common';
-import {AppActions} from "@store/app.actions";
-
-export interface Route {
-  title: string;
-  path: () => string;
-  icon: IconType;
-  show: () => boolean;
-}
-
-
-type RouteOrDivider = Route | { divider: true; };
-
-type Routes = RouteOrDivider[];
+import { Component } from '@angular/core';
+import { GlobalState } from '@store';
+import { GeneralConfig, IconType, User } from '@models';
+import { Store } from '@ngrx/store';
+import { UserRole, UserService } from '@services/user/user.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DispatchService } from "@services/dispatch/dispatch.service";
+import { ConfigService } from "@services/config/config.service";
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { IconComponent } from '../icon/icon.component';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { RouteOrDivider, Routes, RouteWithChildren, RouteWithoutChildren } from "../../models/sidebar";
+import { SidebarActions } from "@store/sidebar.actions";
 
 @Component({
   selector: 'app-sidebar',
@@ -35,15 +24,15 @@ type Routes = RouteOrDivider[];
     IconComponent,
     NgClass,
     TranslatePipe,
+    NgTemplateOutlet
   ],
 })
 export class SidebarComponent {
 
-
   config?: GeneralConfig;
   user?: User;
   isSidebarCollapsed: boolean = false;
-  routes: Routes = [
+  private readonly defaultRoutes: Routes = [
     {
       title: 'UI.LABEL.DASHBOARD',
       path: () => '/mdt/dashboard',
@@ -83,7 +72,7 @@ export class SidebarComponent {
     {
       title: 'UI.LABEL.MY_DEPARTMENT',
       path: () => `/mdt/departments/${this.user?.DepartmentId}`,
-      icon: IconType.Library,
+      icon: IconType.Building,
       show: () => !!this.user?.Department ?? false,
     },
     {
@@ -91,15 +80,40 @@ export class SidebarComponent {
     },
     {
       title: 'UI.LABEL.MY_SETTINGS',
-      path: () => '/mdt/settings/user',
+      path: () => `/mdt/my-settings`,
       icon: IconType.User,
       show: () => true,
     },
     {
-      title: 'UI.LABEL.SETTINGS',
-      path: () => '/mdt/settings/admin',
+      title: 'UI.LABEL.GLOBAL_SETTINGS',
       icon: IconType.Cog,
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
+      children: [
+        {
+          title: 'Users',
+          path: () => `/mdt/settings/users`,
+          icon: IconType.Users,
+          show: () => this.userService.userHasRole(UserRole.Admin),
+        },
+        {
+          title: 'Departments',
+          path: () => `/mdt/settings/departments`,
+          icon: IconType.Building2,
+          show: () => true,
+        },
+        {
+          title: 'Callouts',
+          path: () => `/mdt/settings/callouts`,
+          icon: IconType.Megaphone,
+          show: () => this.userService.userHasRole(UserRole.Admin),
+        },
+        {
+          title: 'Attributes',
+          path: () => `/mdt/settings/attributes`,
+          icon: IconType.AtSymbol,
+          show: () => this.userService.userHasRole(UserRole.Admin),
+        }
+      ]
     },
     {
       title: 'Developer tools',
@@ -108,6 +122,7 @@ export class SidebarComponent {
       show: () => this.userService.userHasRole(UserRole.Admin, UserRole.Developer),
     }
   ];
+  routes: Routes = [];
 
   constructor(
     public readonly userService: UserService,
@@ -115,9 +130,11 @@ export class SidebarComponent {
     private readonly _dispatchService: DispatchService,
     private readonly _configService: ConfigService,
   ) {
-    _store.pipe(takeUntilDestroyed()).subscribe(res => {
-      this.isSidebarCollapsed = res.app.isSidebarCollapsed;
-      this.user = res.user.details.User;
+    _store.dispatch(SidebarActions.setRoutes({routes: this.defaultRoutes}));
+    _store.pipe(takeUntilDestroyed()).subscribe(state => {
+      this.isSidebarCollapsed = state.sidebar.collapsed;
+      this.routes = state.sidebar.routes;
+      this.user = state.user.details.User;
     });
 
     this._configService.getGeneralConfig().pipe(takeUntilDestroyed()).subscribe(config => {
@@ -125,12 +142,20 @@ export class SidebarComponent {
     });
   }
 
-  isRoute(route: RouteOrDivider): route is Route {
+  isRoute(route: RouteOrDivider): route is RouteWithoutChildren {
     return !('divider' in route);
   }
 
+  hasChildren(route: RouteOrDivider): route is RouteWithChildren {
+    return 'children' in route;
+  }
+
+  toggleRoute(route: RouteWithChildren): void {
+    this._store.dispatch(SidebarActions.toggleRoute({route}));
+  }
+
   toggleSidebarCollapse(): void {
-    this._store.dispatch(AppActions.toggleSidebarCollapse());
+    this._store.dispatch(SidebarActions.toggleCollapse());
   }
 
   enableDispatchMode(): void {
@@ -138,4 +163,5 @@ export class SidebarComponent {
   }
 
   protected readonly UserRole = UserRole;
+  protected readonly IconType = IconType;
 }

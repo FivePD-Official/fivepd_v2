@@ -38,22 +38,30 @@ const mdtRoutes: Routes = [
     component: ReportsComponent
   },
   {
+    path: 'my-settings',
+    loadComponent: () => import('./pages/mdt/my-settings/my-settings.component').then(m => m.MySettingsComponent),
+  },
+  {
     path: 'settings',
     children: [
       {
-        path: 'user',
-        loadComponent: () => import('./pages/mdt/settings/user-settings/user-settings.component').then(m => m.UserSettingsComponent),
+        path: 'users',
+        loadComponent: () => import('./pages/mdt/settings/users/users.component').then(m => m.UsersComponent),
       },
       {
-        path: 'admin',
-        loadComponent: () => import('./pages/mdt/settings/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent),
+        path: 'attributes',
+        loadComponent: () => import('./pages/mdt/settings/attributes/attributes.component').then(m => m.AttributesComponent),
+      },
+      {
+        path: 'callouts',
+        loadComponent: () => import('./pages/mdt/settings/callouts/callouts.component').then(m => m.CalloutsComponent),
       },
       {
         path: 'departments',
         children: [
           {
             path: 'area-management',
-            loadComponent: () => import('./pages/mdt/settings/admin-settings/_components/department-settings-area/department-area-management.component').then(m => m.DepartmentAreaManagementComponent),
+            loadComponent: () => import('./pages/mdt/settings/departments/department-area-management/department-area-management.component').then(m => m.DepartmentAreaManagementComponent),
           },
           {
             path: ':id',
@@ -61,6 +69,10 @@ const mdtRoutes: Routes = [
             data: {
               mode: 'edit'
             },
+          },
+          {
+            path: '',
+            loadComponent: () => import('./pages/mdt/settings/departments/departments.component').then(m => m.DepartmentsComponent),
           },
         ]
       },
