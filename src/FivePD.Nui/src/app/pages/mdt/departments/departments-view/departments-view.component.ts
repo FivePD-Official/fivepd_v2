@@ -222,19 +222,19 @@ export class DepartmentsViewComponent implements OnInit {
                   }));
                   fields.push(new CheckboxField({
                     key: 'Kick',
-                    label: 'Kick member',
+                    label: this._localization.translate('UI.RANK.PERMISSION.KICK.TITLE'),
                     value: updatedRank?.Permission?.Kick,
                     show: form => !form.value['DepartmentManager'],
                   }));
                   fields.push(new CheckboxField({
                     key: 'SetRank',
-                    label: 'Set rank',
+                    label: this._localization.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'),
                     value: updatedRank?.Permission?.SetRank,
                     show: form => !form.value['DepartmentManager'],
                   }));
                   fields.push(new CheckboxField({
                     key: 'SetDivision',
-                    label: 'Set division',
+                    label: this._localization.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'),
                     value: updatedRank?.Permission?.SetDivision,
                     show: form => !form.value['DepartmentManager'],
                   }));
@@ -256,7 +256,7 @@ export class DepartmentsViewComponent implements OnInit {
                       DepartmentManager: res.value['DepartmentManager'],
                       Kick: res.value['Kick'],
                       SetRank: res.value['SetRank'],
-                      SetCallsign: res.value['SetCallsign'],
+                      SetDivision: res.value['SetDivision'],
                     },
                     RequiredXp: res.value!['RequiredXp'],
                   })),
@@ -325,17 +325,17 @@ export class DepartmentsViewComponent implements OnInit {
             }));
             fields.push(new CheckboxField({
               key: 'Kick',
-              label: 'Kick label',
+              label: this._localization.translate('UI.RANK.PERMISSION.KICK.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
             fields.push(new CheckboxField({
               key: 'SetRank',
-              label: 'Set rank label',
+              label: this._localization.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
             fields.push(new CheckboxField({
-              key: 'SetCallsign',
-              label: 'Set callsign label',
+              key: 'SetDivision',
+              label: this._localization.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
 
@@ -357,7 +357,7 @@ export class DepartmentsViewComponent implements OnInit {
                 DepartmentManager: res.value['DepartmentManager'],
                 Kick: res.value['Kick'],
                 SetRank: res.value['SetRank'],
-                SetCallsign: res.value['SetCallsign'],
+                SetDivision: res.value['SetDivision'],
               }
             })),
             this._modalService.handleResponse()
@@ -770,7 +770,7 @@ export class DepartmentsViewComponent implements OnInit {
       permissions.push(this._localization.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'));
     }
     if (rank.Permission.DepartmentManager) {
-      permissions.push(this._localization.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'))
+      permissions.push(this._localization.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'));
     }
 
     return permissions.length > 0 ? permissions.join(', ') : '-';
