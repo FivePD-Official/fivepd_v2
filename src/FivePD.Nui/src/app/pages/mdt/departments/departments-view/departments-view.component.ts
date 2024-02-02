@@ -216,7 +216,8 @@ export class DepartmentsViewComponent implements OnInit {
 
                   fields.push(new CheckboxField({
                     key: 'DepartmentManager',
-                    label: 'Department Manager',
+                    label: this._localization.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
+                    helpLabel: this._localization.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
                     value: updatedRank?.Permission?.DepartmentManager,
                   }));
                   fields.push(new CheckboxField({
@@ -319,7 +320,8 @@ export class DepartmentsViewComponent implements OnInit {
 
             fields.push(new CheckboxField({
               key: 'DepartmentManager',
-              label: 'Department Manager',
+              label: this._localization.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
+              helpLabel: this._localization.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
             }));
             fields.push(new CheckboxField({
               key: 'Kick',
@@ -598,14 +600,14 @@ export class DepartmentsViewComponent implements OnInit {
         actions: [
           {
             type: 'button',
-            label: this._localization.translate('UI.ACTION.KICK.TITLE'),
+            label: this._localization.translate('UI.ACTION.KICK'),
             disabled: user => user ? user.Id === this.user?.User.Id : false,
             onClick: user => {
               this._modalConfirmService.open({
-                title: 'UI.ACTION.KICK.TITLE',
+                title: 'UI.ACTION.KICK',
                 description: this._localization.translate('UI.LABEL.DEPARTMENT.KICK_CONFIRMATION'),
                 buttons: {
-                  submit: {variant: 'danger', label: 'UI.ACTION.KICK.TITLE'},
+                  submit: {variant: 'danger', label: 'UI.ACTION.KICK'},
                 },
               }).result
                 .pipe(
@@ -759,16 +761,16 @@ export class DepartmentsViewComponent implements OnInit {
     const permissions: string[] = [];
 
     if (rank.Permission.Kick) {
-      permissions.push(this._localization.translate('UI.ACTION.KICK.TITLE'));
+      permissions.push(this._localization.translate('UI.RANK.PERMISSION.KICK.TITLE'));
     }
     if (rank.Permission.SetRank) {
-      permissions.push(this._localization.translate('UI.ACTION.SET_RANK'));
+      permissions.push(this._localization.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'));
     }
     if (rank.Permission.SetDivision) {
-      permissions.push(this._localization.translate('UI.ACTION.SET_DIVISION'));
+      permissions.push(this._localization.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'));
     }
     if (rank.Permission.DepartmentManager) {
-      permissions.push(this._localization.translate('UI.ACTION.DEPT_ADMIN'))
+      permissions.push(this._localization.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'))
     }
 
     return permissions.length > 0 ? permissions.join(', ') : '-';
