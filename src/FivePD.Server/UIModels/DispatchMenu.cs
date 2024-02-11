@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
+using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
@@ -99,9 +101,14 @@ public sealed class DispatchMenu : Menu
                 });
             }
 
-            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.RequestIDCheck))
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.RequestIdCheck))
             {
                 actions.Add(async player => this.RequestIdCheck(player));
+            }
+            
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.RequestLicensePlateCheck))
+            {
+                actions.Add(async player => this.RequestLicensePlateCheck(player));
             }
 
             buttonItem.OnSelect += async (player) =>
@@ -155,6 +162,71 @@ public sealed class DispatchMenu : Menu
             "CHAR_CALL911",
             "LABEL.DISPATCH",
             "ID Check",
+            text.Build());
+    }
+
+    private async Task RequestLicensePlateCheck(FPlayer player)
+    {
+        var fVehicle = await this._entityService.GetClosestEntityToPlayerAsync<FVehicle>(player.GetUnderlyingPlayer());
+        if (fVehicle is null)
+        {
+            return;
+        }
+
+        if (!fVehicle.HasGeneratedData.Value)
+        {
+            return;
+        }
+
+        var text = new GtaStyleText()
+            .Append(fVehicle.LicensePlate)
+            .NewLine();
+
+        var registration = fVehicle.GetDocument(VehicleDocumentType.Registration);
+        if (registration is not null)
+        {
+            text.Append("Registration: ");
+            if (registration.Status == VehicleDocumentStatus.Valid)
+            {
+                text.Green("Valid").White().NewLine();
+            }
+            else
+            {
+                text.Yellow(registration.Status switch
+                {
+                    VehicleDocumentStatus.Expired => "Expired",
+                    VehicleDocumentStatus.Suspended => "Suspended",
+                    VehicleDocumentStatus.Revoked => "Revoked",
+                    _ => "Unknown",
+                }).White().NewLine();
+            }
+        }
+        
+        var insurance = fVehicle.GetDocument(VehicleDocumentType.Insurance);
+        if (insurance is not null)
+        {
+            text.Append("Insurance: ");
+            if (insurance.Status == VehicleDocumentStatus.Valid)
+            {
+                text.Green("Valid");
+            }
+            else
+            {
+                text.Yellow(insurance.Status switch
+                {
+                    VehicleDocumentStatus.Expired => "Expired",
+                    VehicleDocumentStatus.Suspended => "Suspended",
+                    VehicleDocumentStatus.Revoked => "Revoked",
+                    _ => "Unknown",
+                });
+            }
+        }
+        
+        this._notificationService.ShowNotificationWithTexture(
+            player,
+            "CHAR_CALL911",
+            "LABEL.DISPATCH",
+            "License plate check",
             text.Build());
     }
 }

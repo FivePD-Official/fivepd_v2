@@ -31,5 +31,7 @@ internal readonly record struct DispatchActionOnSelectKeys
 
     public const string RequestBackup = "REQUEST_BACKUP";
 
-    public const string RequestIDCheck = "REQUEST_ID_CHECK";
+    public const string RequestIdCheck = "REQUEST_ID_CHECK";
+
+    public const string RequestLicensePlateCheck = "REQUEST_LICENSE_PLATE_CHECK";
 }
