@@ -74,7 +74,7 @@ public sealed class DispatchMenu : Menu
                 actions.Add(async player => player.Unit.Availability.Value = FUnitAvailability.NotReceiving);
             }
 
-            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.CompleteCurrentCallout))
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.CompleteCurrentIncident))
             {
                 actions.Add(async player => this._incidentService.CompleteIncidentOfPlayer(player));
             }

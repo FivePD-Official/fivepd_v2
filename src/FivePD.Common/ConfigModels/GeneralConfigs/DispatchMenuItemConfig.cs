@@ -25,7 +25,7 @@ internal readonly record struct DispatchActionOnSelectKeys
 
     public const string SetPlayerCanNotReceiveCallouts = "SET_PLAYER_CAN_NOT_RECEIVE_CALLOUTS";
 
-    public const string CompleteCurrentCallout = "COMPLETE_CURRENT_CALLOUT";
+    public const string CompleteCurrentIncident = "COMPLETE_CURRENT_INCIDENT";
 
     public const string TriggerPanicMode = "TRIGGER_PANIC_MODE";
 
