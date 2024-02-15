@@ -6,6 +6,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
+using FivePD.Common.Utilities;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
@@ -240,27 +241,34 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             }
 
             var priorityCodeLabel = string.Empty;
-            var priorityColorCode = string.Empty;
+            var priorityColorCode = new GtaStyleText();
             switch (internalCallout.Callout.Priority)
             {
-                case FIncidentPriority.Code1:
+                case FPriority.Code1:
                 {
                     priorityCodeLabel = "LABEL.PRIORITY.CODE1";
-                    priorityColorCode = "~b~";
+                    priorityColorCode.Blue();
                     break;
                 }
 
-                case FIncidentPriority.Code2:
+                case FPriority.Code2:
                 {
                     priorityCodeLabel = "LABEL.PRIORITY.CODE2";
-                    priorityColorCode = "~y~";
+                    priorityColorCode.Yellow();
                     break;
                 }
 
-                case FIncidentPriority.Code3:
+                case FPriority.Code3:
                 {
                     priorityCodeLabel = "LABEL.PRIORITY.CODE3";
-                    priorityColorCode = "~r~";
+                    priorityColorCode.Orange();
+                    break;
+                }
+
+                case FPriority.Code99:
+                {
+                    priorityCodeLabel = "LABEL.PRIORITY.CODE99";
+                    priorityColorCode.Red();
                     break;
                 }
             }
@@ -276,10 +284,18 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                             Texture = "CHAR_CALL911",
                             Sender = "LABEL.DISPATCH",
                             Subject = "LABEL.CALLOUT",
-                            Content = $"{internalCallout.Callout.Title}~n~{{{{priority}}}}: {priorityColorCode}{{{{priorityCode}}}}",
+#pragma warning disable SA1515
+                            // TODO: replace content with correct i18n key like "LABEL.BACKUP.CONTENT"
+#pragma warning restore SA1515
+                            Content = new GtaStyleText()
+                                .Append(internalCallout.Callout.Title)
+                                .NewLine()
+                                .Append("{{priority}}: {{priorityColorCode}}{{priorityCode}}")
+                                .Build(),
                             ContentParams = new Dictionary<string, string>
                             {
                                 ["priority"] = "LABEL.PRIORITY.SINGULAR",
+                                ["priorityColorCode"] = priorityColorCode.Build(),
                                 ["priorityCode"] = priorityCodeLabel,
                             },
                         },

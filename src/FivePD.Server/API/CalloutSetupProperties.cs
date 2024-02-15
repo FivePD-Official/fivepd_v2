@@ -23,10 +23,11 @@ public readonly record struct CalloutSetupProperties
     /// Gets the priority of the callout.
     /// If <see cref="RandomPriority"/> is set to true, this property will be ignored.
     /// </summary>
-    public FIncidentPriority Priority { get; init; }
+    public FPriority Priority { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the priority should be randomized.
+    /// When true, the priority will be randomly selected between code 1, 2 and 3.
     /// </summary>
     public bool RandomPriority { get; init; }
 

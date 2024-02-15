@@ -25,7 +25,7 @@ public class SimpleCallout
 
     public string Description { get; internal set; }
 
-    public FIncidentPriority Priority { get; internal set; }
+    public FPriority Priority { get; internal set; }
 
     public float ActivityRadius { get; internal set; }
 
