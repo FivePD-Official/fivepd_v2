@@ -46,14 +46,14 @@ public class LocationService : ILocationService
 
         foreach (var position in this._databaseContext.LocationMarkers.Select(k => k.Position))
         {
-            Marker marker = new Marker
+            var marker = new Marker
             {
                 Position = position,
                 Color = new Marker.MarkerColor(0, 15, 240, 255),
                 TextureDict = null,
                 TextureName = null,
             };
-            Guid guid = this._markerService.AddMarker(this._playerList, marker);
+            var guid = this._markerService.AddMarker(this._playerList, marker);
             this._markers.Add(guid);
         }
     }
