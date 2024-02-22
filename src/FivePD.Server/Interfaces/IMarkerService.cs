@@ -31,4 +31,10 @@ public interface IMarkerService
     /// </summary>
     /// <param name="guid">The id of the marker.</param>
     public void RemoveMarker(Guid guid);
+
+    /// <summary>
+    /// Returns a list of markers.
+    /// </summary>
+    /// <returns>A list of existing markers.</returns>
+    public Dictionary<string, Player> GetMarkers();
 }

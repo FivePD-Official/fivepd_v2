@@ -16,7 +16,7 @@ public class MarkerService : IMarkerService
 {
     private readonly PlayerList _playerList;
 
-    private readonly Dictionary<string, Player> _markers = new();
+    private readonly Dictionary<string, Player> _markers = new Dictionary<string, Player>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MarkerService"/> class.
@@ -77,5 +77,11 @@ public class MarkerService : IMarkerService
         var id = guid.ToString();
         this._markers.Add(id, player);
         player.TriggerEvent(Events.Marker.Add, JsonConvert.SerializeObject(new MarkerDTO.Add(id, marker)));
+    }
+
+    /// <inheritdoc />
+    public Dictionary<string, Player> GetMarkers()
+    {
+        return this._markers;
     }
 }

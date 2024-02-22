@@ -123,6 +123,11 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the player location markers.
+    /// </summary>
+    public DbSet<LocationMarker> LocationMarkers { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -196,6 +201,16 @@ public class DatabaseContext : DbContext
         {
             type.HasMany(t => t.Entities);
             type.HasMany(t => t.Attributes);
+        });
+
+        modelBuilder.Entity<LocationMarker>(type =>
+        {
+            type.Property(t => t.Position)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<Vector3>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
         modelBuilder.Entity<LooseDataAttribute>(type =>
