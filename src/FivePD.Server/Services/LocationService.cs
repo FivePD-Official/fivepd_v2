@@ -18,6 +18,8 @@ public class LocationService : ILocationService
     private readonly DatabaseContext _databaseContext;
     private readonly IMarkerService _markerService;
 
+    private readonly List<Guid> _markers = new List<Guid>();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="LocationService"/> class.
     /// Constructs the LocationService.
@@ -35,11 +37,12 @@ public class LocationService : ILocationService
     /// <inheritdoc />
     public void Update(Player player)
     {
-        var markers = this._markerService.GetMarkers().Select(k => k.Key);
-        foreach (var guid in markers)
+        foreach (var guid in this._markers)
         {
-            this._markerService.RemoveMarker(Guid.Parse(guid));
+            this._markerService.RemoveMarker(guid);
         }
+
+        this._markers.Clear();
 
         foreach (var position in this._databaseContext.LocationMarkers.Select(k => k.Position))
         {
@@ -50,7 +53,8 @@ public class LocationService : ILocationService
                 TextureDict = null,
                 TextureName = null,
             };
-            this._markerService.AddMarker(this._playerList, marker);
+            Guid guid = this._markerService.AddMarker(this._playerList, marker);
+            this._markers.Add(guid);
         }
     }
 }
