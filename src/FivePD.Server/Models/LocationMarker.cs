@@ -6,7 +6,7 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a location to be used for markers in UI.
 /// </summary>
-public class Location
+public class LocationMarker
 {
     /// <summary>
     /// Gets or sets a location's identifier.
