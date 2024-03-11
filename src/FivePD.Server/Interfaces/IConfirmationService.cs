@@ -2,6 +2,7 @@
 using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.Models;
 
 namespace FivePD.Server.Interfaces;
 
@@ -10,8 +11,6 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 public interface IConfirmationService
 {
-    // TODO: trigger methods for units
-
     /// <summary>
     /// Displays a tooltip (if not null) and a notification (if not null) to the player and waits for a keypress,
     /// then responds with a boolean.
@@ -36,6 +35,20 @@ public interface IConfirmationService
     /// <param name="timeoutInMs">The timeout to wait for the keypress in milliseconds.</param>
     public void TriggerConfirmation(
         FPlayer player,
+        ConfirmationProperties properties,
+        Action<bool> callback,
+        int timeoutInMs = 5000);
+
+    /// <summary>
+    /// Displays a tooltip (if not null) and a notification (if not null) to the players of the unit and waits for a keypress,
+    /// then responds with a boolean.
+    /// </summary>
+    /// <param name="unit">The unit to trigger the confirmation for.</param>
+    /// <param name="properties">The properties of the confirmation notifications.</param>
+    /// <param name="callback">The callback to invoke at response.</param>
+    /// <param name="timeoutInMs">The timeout to wait for the keypress in milliseconds.</param>
+    public void TriggerConfirmation(
+        Unit unit,
         ConfirmationProperties properties,
         Action<bool> callback,
         int timeoutInMs = 5000);

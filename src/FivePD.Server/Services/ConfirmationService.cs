@@ -6,6 +6,7 @@ using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Models;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
@@ -51,5 +52,18 @@ public class ConfirmationService : IConfirmationService
         int timeoutInMs = 5000)
     {
         this.TriggerConfirmation(player.GetUnderlyingPlayer(), properties, callback, timeoutInMs);
+    }
+
+    /// <inheritdoc/>
+    public void TriggerConfirmation(
+        Unit unit,
+        ConfirmationProperties properties,
+        Action<bool> callback,
+        int timeoutInMs = 5000)
+    {
+        foreach (var player in unit.Players)
+        {
+            this.TriggerConfirmation(player, properties, callback, timeoutInMs);
+        }
     }
 }

@@ -84,22 +84,22 @@ internal class Bootstrapper : BaseScript
 
         // Enqueue service location phase.
         this._phases.Add(this.PerformServiceLocationPhase, false);
-        
+
         // Enqueue addon location phase.
         this._phases.Add(this.PerformAddonLocationPhase, false);
 
         // // Enqueue post-bootstrap phase.
         this._phases.Add(this.PerformPostBootstrapPhase, false);
-        
+
         this._phases.Add(() => DatabaseHandler.SetParameters(this._provider, this._bootstrapLogger), false);
-        
+
         this._phases.Add(DatabaseHandler.EnsureCorrectState, false);
-        
+
         // Enqueue addon startup phase.
         this._phases.Add(this.PerformAddonEnqueuePhase, false);
-        
+
         this._phases.Add(DatabaseHandler.Update, false);
-        
+
         this._phases.Add(this.PerformSafeToRunCheckAfterBootstrapping, false);
 
         // Begin running phases.
@@ -235,31 +235,31 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<DepartmentService>();
         services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
-        
+
         services.AddSingleton<NotificationService>();
         services.AddSingleton<INotificationService>(provider => provider.GetRequiredService<NotificationService>());
-        
+
         services.AddSingleton<EntityService>();
         services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
-        
+
         services.AddSingleton<MarkerService>();
         services.AddSingleton<IMarkerService>(provider => provider.GetRequiredService<MarkerService>());
-        
+
         services.AddSingleton<ConfirmationService>();
         services.AddSingleton<IConfirmationService>(provider => provider.GetRequiredService<ConfirmationService>());
-        
+
         services.AddSingleton<RandomService>();
         services.AddSingleton<IRandomService>(provider => provider.GetRequiredService<RandomService>());
-        
+
         services.AddSingleton<AssistanceServiceManagerService>();
         services.AddSingleton<IAssistanceServiceManagerService>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
-        
+
         services.AddSingleton<CfxService>();
         services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
-        
+
         services.AddSingleton<ProgressionSystemService>();
         services.AddSingleton<IProgressionSystemService>(provider => provider.GetRequiredService<ProgressionSystemService>());
-        
+
         services.AddSingleton<MessageService>();
         services.AddSingleton<IMessageService>(provider => provider.GetRequiredService<MessageService>());
 
@@ -269,7 +269,7 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<UnitService>();
         services.AddSingleton<IUnitService>(provider => provider.GetRequiredService<UnitService>());
-        
+
         services.AddSingleton<BackupManagerService>();
         services.AddSingleton<IBackupManagerService>(provider => provider.GetRequiredService<BackupManagerService>());
 

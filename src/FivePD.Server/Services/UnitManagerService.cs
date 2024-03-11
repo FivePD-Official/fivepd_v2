@@ -289,7 +289,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
         foreach (var unitPlayer in unit.Players.Where(p => p.NetId != player.Handle))
         {
             this._confirmationService.TriggerConfirmation(
-                unitPlayer.GetUnderlyingPlayer(),
+                unitPlayer,
                 new ConfirmationProperties
                 {
                     Notification = new ConfirmationProperties.NotificationProperties

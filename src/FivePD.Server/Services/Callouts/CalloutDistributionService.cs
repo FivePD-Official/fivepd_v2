@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -12,11 +11,9 @@ using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
-using FivePD.Server.Models.Requests;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Serilog;
@@ -273,43 +270,40 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                 }
             }
 
-            foreach (var player in unit.Players)
-            {
-                this._confirmationService.TriggerConfirmation(
-                    player,
-                    new ConfirmationProperties
+            this._confirmationService.TriggerConfirmation(
+                unit,
+                new ConfirmationProperties
+                {
+                    Notification = new ConfirmationProperties.NotificationProperties
                     {
-                        Notification = new ConfirmationProperties.NotificationProperties
-                        {
-                            Texture = "CHAR_CALL911",
-                            Sender = "LABEL.DISPATCH",
-                            Subject = "LABEL.CALLOUT",
+                        Texture = "CHAR_CALL911",
+                        Sender = "LABEL.DISPATCH",
+                        Subject = "LABEL.CALLOUT",
 #pragma warning disable SA1515
-                            // TODO: replace content with correct i18n key like "LABEL.BACKUP.CONTENT"
+                        // TODO: replace content with correct i18n key like "LABEL.BACKUP.CONTENT"
 #pragma warning restore SA1515
-                            Content = new GtaStyleText()
-                                .Append(internalCallout.Callout.Title)
-                                .NewLine()
-                                .Append("{{priority}}: {{priorityColorCode}}{{priorityCode}}")
-                                .Build(),
-                            ContentParams = new Dictionary<string, string>
-                            {
-                                ["priority"] = "LABEL.PRIORITY.SINGULAR",
-                                ["priorityColorCode"] = priorityColorCode.Build(),
-                                ["priorityCode"] = priorityCodeLabel,
-                            },
+                        Content = new GtaStyleText()
+                            .Append(internalCallout.Callout.Title)
+                            .NewLine()
+                            .Append("{{priority}}: {{priorityColorCode}}{{priorityCode}}")
+                            .Build(),
+                        ContentParams = new Dictionary<string, string>
+                        {
+                            ["priority"] = "LABEL.PRIORITY.SINGULAR",
+                            ["priorityColorCode"] = priorityColorCode.Build(),
+                            ["priorityCode"] = priorityCodeLabel,
                         },
                     },
-                    response =>
+                },
+                response =>
+                {
+                    if (!response)
                     {
-                        if (!response)
-                        {
-                            return;
-                        }
+                        return;
+                    }
 
-                        OnAccepted();
-                    });
-            }
+                    OnAccepted();
+                });
         }
 
         return notifiedUnits;

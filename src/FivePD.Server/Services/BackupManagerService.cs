@@ -18,10 +18,10 @@ public class BackupManagerService : IBackupManagerService
     private readonly IUnitService _unitService;
     private readonly IInternalIncidentService _incidentService;
     private readonly IConfigService _configService;
-    
+
     public BackupManagerService(
-        IConfirmationService confirmationService, 
-        IUnitService unitService, 
+        IConfirmationService confirmationService,
+        IUnitService unitService,
         IIncidentService incidentService,
         IConfigService configService)
     {
@@ -37,56 +37,54 @@ public class BackupManagerService : IBackupManagerService
         {
             return;
         }
-        
+
         if (requestingUnit is null)
         {
             return;
         }
-        
+
         IIncident incident = null;
         if (requestingUnit.Callout is not null)
         {
             incident = requestingUnit.InternalCallout;
-        } else if (requestingUnit.TrafficStop is not null)
+        }
+        else if (requestingUnit.TrafficStop is not null)
         {
             incident = requestingUnit.TrafficStop;
         }
-        
+
         if (incident is null)
         {
             return;
         }
-        
+
         var filteredUnits = this._unitService.Units()
             .Where(unit => unit.Callsign != requestingUnit.Callsign)
             .ToList();
         foreach (var unit in filteredUnits)
         {
-            foreach (var p in unit.Players)
+            this._confirmationService.TriggerConfirmation(unit, new ConfirmationProperties
             {
-                this._confirmationService.TriggerConfirmation(p, new ConfirmationProperties
+                Notification = new ConfirmationProperties.NotificationProperties
                 {
-                    Notification = new ConfirmationProperties.NotificationProperties
+                    Texture = "CHAR_CALL911",
+                    Sender = "LABEL.DISPATCH",
+                    Subject = "LABEL.BACKUP.TITLE",
+                    Content = "LABEL.BACKUP.CONTENT", // TODO: add new params
+                    ContentParams = new Dictionary<string, string>
                     {
-                        Texture = "CHAR_CALL911",
-                        Sender = "LABEL.DISPATCH",
-                        Subject = "LABEL.BACKUP.TITLE",
-                        Content = "LABEL.BACKUP.CONTENT", // TODO: add new params
-                        ContentParams = new Dictionary<string, string>
-                        {
-                            ["unitCallsign"] = unit.Callsign,
-                        },
-                    }
-                }, res =>
+                        ["unitCallsign"] = unit.Callsign,
+                    },
+                }
+            }, res =>
+            {
+                if (!res)
                 {
-                    if (!res)
-                    {
-                        return;
-                    }
-        
-                    this._incidentService.AssignUnitToIncident(unit, incident);
-                });
-            }
+                    return;
+                }
+
+                this._incidentService.AssignUnitToIncident(unit, incident);
+            });
         }
     }
 }
