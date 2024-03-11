@@ -22,6 +22,8 @@ internal readonly record struct Events
 
         public const string UpdateUnitStatus = "fivepd:player:updateUnitStatus";
 
+        public const string UpdatePanicModeState = "fivepd:player:updatePanicModeState";
+
         public const string GetDismissedWelcomeModal = "fivepd:player:getDismissedWelcomeModal";
 
         public const string DismissedWelcomeModal = "fivepd:player:dismissedWelcomeModal";

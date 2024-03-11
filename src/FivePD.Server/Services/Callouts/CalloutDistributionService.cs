@@ -170,7 +170,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         }
 
         var filteredUnits = this._unitService.Units()
-            .Where(unit => this._incidentService.ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .Where(unit => ((IIncidentService)this._incidentService).ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
             .ToList();
 

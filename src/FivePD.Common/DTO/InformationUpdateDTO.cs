@@ -11,6 +11,8 @@ internal sealed record InformationUpdateDTO
 
     public string Status { get; set; }
 
+    public bool PanicMode { get; set; }
+
     public FDutyStatus DutyStatus { get; set; }
 
     public FUnitAvailability Availability { get; set; }

@@ -14,7 +14,7 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a unit.
 /// </summary>
-public class Unit : IInternalUnit
+public class Unit
 {
     private readonly List<FPlayer> _players = new();
 
@@ -42,6 +42,7 @@ public class Unit : IInternalUnit
 
         this.Availability.Subscribe(this.ListenForAvailabilityChanges);
         this.Status.Subscribe(this.ListenForStatusChanges);
+        this.PanicMode.Subscribe(this.ListenForPanicModeChanges);
     }
 
     /// <summary>
@@ -68,17 +69,23 @@ public class Unit : IInternalUnit
 
         this.Availability.Subscribe(this.ListenForAvailabilityChanges);
         this.Status.Subscribe(this.ListenForStatusChanges);
+        this.PanicMode.Subscribe(this.ListenForPanicModeChanges);
     }
 
     /// <summary>
-    /// Gets the player's call availability observable.
+    /// Gets the unit's call availability observable.
     /// </summary>
     public FObservable<FUnitAvailability> Availability { get; private set; } = new(FUnitAvailability.NotReceiving);
 
     /// <summary>
-    /// Gets the player's status observable.
+    /// Gets the unit's status observable.
     /// </summary>
     public FObservable<string> Status { get; private set; } = new(string.Empty);
+
+    /// <summary>
+    /// Gets the unit's panic mode observable.
+    /// </summary>
+    public FObservable<bool> PanicMode { get; private set; } = new(false);
 
     /// <summary>
     /// Gets or sets the callsign.
@@ -105,14 +112,16 @@ public class Unit : IInternalUnit
     /// </summary>
     public ReadOnlyCollection<FPlayer> Players => this._players.AsReadOnly();
 
-    /// <inheritdoc/>
-    Callout IInternalUnit.InternalCallout { get; set; }
+    /// <summary>
+    /// Gets or sets the callout of the unit.
+    /// </summary>
+    internal Callout InternalCallout { get; set; }
 
     /// <summary>
     /// Adds a player to the unit.
     /// </summary>
     /// <param name="player">The player to add.</param>
-    void IInternalUnit.AddPlayer(FPlayer player)
+    internal void AddPlayer(FPlayer player)
     {
         if (this._players.FirstOrDefault(x => x.NetId == player.NetId) is null)
         {
@@ -125,7 +134,7 @@ public class Unit : IInternalUnit
     /// Removes the player from the unit.
     /// </summary>
     /// <param name="player">The player to remove.</param>
-    void IInternalUnit.RemovePlayer(FPlayer player)
+    internal void RemovePlayer(FPlayer player)
     {
         this._players.RemoveAll(x => x.NetId == player.NetId);
         player.UnitCallsign.Value = string.Empty;
@@ -143,7 +152,7 @@ public class Unit : IInternalUnit
             Players = this.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
             Availability = this.Availability.Value,
             Status = this.Status.Value,
-            AssignedCallout = this.Callout is null ? null : new SimpleCallout(((IInternalUnit)this).InternalCallout),
+            AssignedCallout = this.Callout is null ? null : new SimpleCallout(this.InternalCallout),
         };
     }
 
@@ -177,15 +186,12 @@ public class Unit : IInternalUnit
             player.GetUnderlyingPlayer().TriggerEvent(Common.Events.Player.UpdateUnitStatus, status);
         }
     }
-}
 
-#pragma warning disable
-
-internal interface IInternalUnit
-{
-    public void AddPlayer(FPlayer player);
-
-    public void RemovePlayer(FPlayer player);
-
-    public Callout InternalCallout { get; set; }
+    private void ListenForPanicModeChanges(bool state)
+    {
+        foreach (var player in this._players)
+        {
+            player.GetUnderlyingPlayer().TriggerEvent(Common.Events.Player.UpdatePanicModeState, state);
+        }
+    }
 }

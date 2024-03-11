@@ -10,6 +10,8 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 public interface IConfirmationService
 {
+    // TODO: trigger methods for units
+
     /// <summary>
     /// Displays a tooltip (if not null) and a notification (if not null) to the player and waits for a keypress,
     /// then responds with a boolean.

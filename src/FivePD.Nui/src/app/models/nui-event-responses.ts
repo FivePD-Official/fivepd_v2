@@ -145,6 +145,7 @@ export interface GetSafeZoneSize {
 }
 
 export interface InformationUpdateDTO extends BaseNuiEvent {
+  PanicMode: boolean;
   Status: string;
   DutyStatus: FDutyStatus;
   Availability: FUnitAvailability;

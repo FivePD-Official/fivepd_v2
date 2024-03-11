@@ -124,10 +124,10 @@ DispatchMenuItems:
   # - Divider: true TODO: place a divider between actions like request backup and check license of ped and statuses ???
   - Title: Code 4
     Description: No assist needed
-    OnSelect: [ COMPLETE_CURRENT_INCIDENT ]
+    OnSelect: [ SET_AS_STATUS, COMPLETE_CURRENT_INCIDENT ] # COMPLETE_CURRENT_INCIDENT clears the current incident AND panic mode if active
   - Title: Code 99
     Description: EMERGENCY
-    OnSelect: [ SET_AS_STATUS, TRIGGER_PANIC_MODE ]
+    OnSelect: [ SET_AS_STATUS, ENABLE_PANIC_MODE ]
   - Title: 10-5
     Description: Break
     OnSelect: [ SET_AS_STATUS, SET_PLAYER_CAN_NOT_RECEIVE_CALLOUTS ]

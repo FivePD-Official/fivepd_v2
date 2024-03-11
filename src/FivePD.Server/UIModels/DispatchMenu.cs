@@ -24,13 +24,15 @@ public sealed class DispatchMenu : Menu
     private readonly IBackupManagerService _backupManagerService;
     private readonly IEntityService _entityService;
     private readonly INotificationService _notificationService;
+    private readonly IUnitManagerService _unitManagerService;
 
     public DispatchMenu(
         IIncidentService incidentService,
         IConfigService configService,
         IBackupManagerService backupManagerService,
         IEntityService entityService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IUnitManagerService unitManagerService)
         : base(Controls.DispatchMenu.Id, Controls.DispatchMenu.Title, Controls.DispatchMenu.Key)
     {
         this._incidentService = incidentService;
@@ -38,6 +40,7 @@ public sealed class DispatchMenu : Menu
         this._backupManagerService = backupManagerService;
         this._entityService = entityService;
         this._notificationService = notificationService;
+        this._unitManagerService = unitManagerService;
     }
 
     protected override List<MenuItem> CreateItems()
@@ -76,12 +79,52 @@ public sealed class DispatchMenu : Menu
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.CompleteCurrentIncident))
             {
-                actions.Add(async player => this._incidentService.CompleteIncidentOfPlayer(player));
+                actions.Add(async player =>
+                {
+                    this._incidentService.CompleteIncidentOfPlayer(player);
+                    var unit = player.Unit;
+                    if (unit is not null)
+                    {
+                        if (unit.PanicMode.Value)
+                        {
+                            this._unitManagerService.DisablePanicMode(unit);
+                        }
+                    }
+                });
             }
 
-            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.TriggerPanicMode))
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.EnablePanicMode))
             {
-                // TODO
+                actions.Add(async player =>
+                {
+                    var unit = player.Unit;
+                    if (unit is null)
+                    {
+                        return;
+                    }
+
+                    if (!unit.PanicMode.Value)
+                    {
+                        this._unitManagerService.EnablePanicMode(unit);
+                    }
+                });
+            }
+
+            if (item.OnSelect.Contains(DispatchActionOnSelectKeys.DisablePanicMode))
+            {
+                actions.Add(async player =>
+                {
+                    var unit = player.Unit;
+                    if (unit is null)
+                    {
+                        return;
+                    }
+
+                    if (unit.PanicMode.Value)
+                    {
+                        this._unitManagerService.DisablePanicMode(unit);
+                    }
+                });
             }
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.RequestBackup))
@@ -105,7 +148,7 @@ public sealed class DispatchMenu : Menu
             {
                 actions.Add(async player => this.RequestIdCheck(player));
             }
-            
+
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.RequestLicensePlateCheck))
             {
                 actions.Add(async player => this.RequestLicensePlateCheck(player));
@@ -201,7 +244,7 @@ public sealed class DispatchMenu : Menu
                 }).White().NewLine();
             }
         }
-        
+
         var insurance = fVehicle.GetDocument(VehicleDocumentType.Insurance);
         if (insurance is not null)
         {
@@ -221,7 +264,7 @@ public sealed class DispatchMenu : Menu
                 });
             }
         }
-        
+
         this._notificationService.ShowNotificationWithTexture(
             player,
             "CHAR_CALL911",

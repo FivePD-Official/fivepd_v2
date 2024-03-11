@@ -27,7 +27,9 @@ internal readonly record struct DispatchActionOnSelectKeys
 
     public const string CompleteCurrentIncident = "COMPLETE_CURRENT_INCIDENT";
 
-    public const string TriggerPanicMode = "TRIGGER_PANIC_MODE";
+    public const string EnablePanicMode = "ENABLE_PANIC_MODE";
+
+    public const string DisablePanicMode = "DISABLE_PANIC_MODE";
 
     public const string RequestBackup = "REQUEST_BACKUP";
 
