@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
-using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
 
 namespace FivePD.Server.Services;
@@ -31,32 +31,32 @@ public class BackupManagerService : IBackupManagerService
         this._configService = configService;
     }
 
-    public void TriggerBackupRequest(Unit requestingUnit)
+    public void TriggerBackupRequest(Unit requestingUnit, FPriority priority = FPriority.Code1)
     {
         if (!this._configService.GeneralConfig.Features.Backups)
         {
             return;
         }
-
+        
         if (requestingUnit is null)
         {
             return;
         }
-
+        
         IIncident incident = null;
         if (requestingUnit.Callout is not null)
         {
-            incident = ((IInternalUnit)requestingUnit).InternalCallout;
+            incident = requestingUnit.InternalCallout;
         } else if (requestingUnit.TrafficStop is not null)
         {
             incident = requestingUnit.TrafficStop;
         }
-
+        
         if (incident is null)
         {
             return;
         }
-
+        
         var filteredUnits = this._unitService.Units()
             .Where(unit => unit.Callsign != requestingUnit.Callsign)
             .ToList();
@@ -71,7 +71,7 @@ public class BackupManagerService : IBackupManagerService
                         Texture = "CHAR_CALL911",
                         Sender = "LABEL.DISPATCH",
                         Subject = "LABEL.BACKUP.TITLE",
-                        Content = "LABEL.BACKUP.CONTENT",
+                        Content = "LABEL.BACKUP.CONTENT", // TODO: add new params
                         ContentParams = new Dictionary<string, string>
                         {
                             ["unitCallsign"] = unit.Callsign,
@@ -83,11 +83,10 @@ public class BackupManagerService : IBackupManagerService
                     {
                         return;
                     }
-
+        
                     this._incidentService.AssignUnitToIncident(unit, incident);
                 });
             }
         }
-        
     }
 }

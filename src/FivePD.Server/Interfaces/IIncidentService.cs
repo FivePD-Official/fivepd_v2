@@ -51,7 +51,7 @@ public interface IIncidentService
 /// <summary>
 /// Represents the service that handles incidents.
 /// </summary>
-internal interface IInternalIncidentService : IIncidentService
+internal interface IInternalIncidentService
 {
     /// <summary>
     /// Gets the internal callouts.

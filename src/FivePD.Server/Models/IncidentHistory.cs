@@ -38,7 +38,7 @@ public class IncidentHistory
     /// <summary>
     /// Gets or sets the priority of the incident.
     /// </summary>
-    public FIncidentPriority Priority { get; set; }
+    public FPriority Priority { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the incident.

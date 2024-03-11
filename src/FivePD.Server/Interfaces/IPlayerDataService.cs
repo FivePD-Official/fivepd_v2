@@ -14,6 +14,11 @@ namespace FivePD.Server.Interfaces;
 public interface IPlayerDataService
 {
     /// <summary>
+    /// Fires when the duty status of a player has been changed.
+    /// </summary>
+    public event EventHandler<PlayerDutyStatusChangeEventArgs> PlayerDutyStatusChanged;
+
+    /// <summary>
     /// Fires when a player's rank has been changed.
     /// </summary>
     public event EventHandler<PlayerRankChangeEventArgs> PlayerRankChanged;

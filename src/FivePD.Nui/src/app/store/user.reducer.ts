@@ -11,6 +11,7 @@ export interface UserStateModel {
 const initialState: UserStateModel = {
   details: {} as PlayerDetailsDTO,
   information: {
+    PanicMode: false,
     Event: '',
     Status: '-',
     DutyStatus: FDutyStatus.OffDuty,

@@ -53,7 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FDutyStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FFiringPattern.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FGender.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums\FIncidentPriority.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\FPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FIncidentType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FLeaveVehicleFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FMarkerType.cs" />

@@ -123,6 +123,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
 
     private async Task GenerateCalloutOfTypeAsync(Type type, bool manualTrigger = false)
     {
+        this._logger.Debug("Instantiating callout of type {Type}", type);
         var callout = this._addonMetadataService.InstantiateCallout(type);
         if (callout is null)
         {
@@ -147,7 +148,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
             //     _ => FIncidentPriority.Code1
             // };
 #pragma warning restore
-            callout.Priority = (FIncidentPriority)this._randomService.Random.Next(0, 3);
+            callout.Priority = (FPriority)this._randomService.Random.Next(0, 3);
         }
         else
         {
