@@ -194,7 +194,7 @@ public class MenuService : IMenuService, IOnInit
             return string.Empty;
         }
 
-        menu.Items.Add(item);
+        menu.InternalItems.Add(item);
 
         var listItemItems = new JArray();
         if (item.Type == MenuItemType.List)
@@ -238,7 +238,7 @@ public class MenuService : IMenuService, IOnInit
             return;
         }
 
-        menu.Items.Remove(item);
+        menu.InternalItems.Remove(item);
 
         player.TriggerEvent(Events.UI.Menu.RemoveMenuItem, new JObject
         {
@@ -312,7 +312,7 @@ public class MenuService : IMenuService, IOnInit
         foreach (var menu in menus)
         {
             var items = new List<MenuDTO.GetAllMenu.UIMenuResponse.UIMenuItemResponse>();
-            foreach (var item in menu.Items)
+            foreach (var item in menu.InternalItems)
             {
                 var listItemItems = new JArray();
                 if (item.Type == MenuItemType.List)

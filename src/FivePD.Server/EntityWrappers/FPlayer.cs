@@ -169,7 +169,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     MenuItem IFPlayerWithMenus.FindMenuItem(string hashcode)
     {
         return this._menus
-            .Select(m => m.Items.FirstOrDefault(x => x.GetHashCode().ToString() == hashcode))
+            .Select(m => m.InternalItems.FirstOrDefault(x => x.GetHashCode().ToString() == hashcode))
             .FirstOrDefault(found => found != null);
     }
 

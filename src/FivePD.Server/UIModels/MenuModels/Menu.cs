@@ -28,11 +28,6 @@ public abstract class Menu
     public string Id { get; }
 
     /// <summary>
-    /// Gets the items.
-    /// </summary>
-    public List<MenuItem> Items { get; private set; } = new(); // TODO: make this readonly for public use
-
-    /// <summary>
     /// Gets the title of the menu.
     /// </summary>
     public string Title { get; }
@@ -43,11 +38,21 @@ public abstract class Menu
     public string Key { get; set; }
 
     /// <summary>
+    /// Gets the items.
+    /// </summary>
+    public IReadOnlyList<MenuItem> Items => this.InternalItems;
+
+    /// <summary>
+    /// Gets the items.
+    /// </summary>
+    internal List<MenuItem> InternalItems { get; private set; } = new();
+
+    /// <summary>
     /// Creates the items.
     /// </summary>
     internal void CreateAndSetItems()
     {
-        this.Items = this.CreateItems();
+        this.InternalItems = this.CreateItems();
     }
 
     /// <summary>
