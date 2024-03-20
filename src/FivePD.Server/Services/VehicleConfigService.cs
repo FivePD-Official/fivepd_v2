@@ -1,4 +1,8 @@
-﻿using System.Dynamic;
+﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Text.Json.Serialization;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
@@ -8,6 +12,7 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace FivePD.Server.Services;
 
@@ -15,28 +20,78 @@ namespace FivePD.Server.Services;
 
 public class VehicleConfigService : IVehicleConfigService
 {
+    private readonly ILogger _logger;
     private readonly DatabaseContext _databaseContext;
-    private readonly EventHandlerDictionary _eventHandlerDictionary;
-    
-    public VehicleConfigService(DatabaseContext databaseContext, EventHandlerDictionary eventHandlerDictionary)
+    private readonly IMenuService _menuService;
+
+    public VehicleConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService)
     {
+        this._logger = logger;
         this._databaseContext = databaseContext;
-        this._eventHandlerDictionary = eventHandlerDictionary;
+        this._menuService = menuService;
     }
-   
-    [UIEvent(Events.UI.VehicleConfig.Add)]
-    private void GetDepartmentRankForNui(ExpandoObject requestString, NetworkCallbackDelegate networkCallbackDelegate)
+
+    public List<VehicleConfig<Dictionary<string, object>>> GetAll(VehicleConfigType type)
     {
-         var request = requestString.ConvertTo<AddVehicleConfigRequest>();
-         this._databaseContext.VehicleConfigs.Add(new VehicleConfig {
-             Type = request.Type,
-             Name = request.Name,
-             Model = request.Model,
-             Livery = request.Livery,
-             Extras = request.Extras,
-             Options = request.Options,
-         });
+        return this._databaseContext.VehicleConfigs.Where(x => x.Type == type).ToList();
+    }
+    
+    public List<VehicleConfig<TOptions>> GetAll<TOptions>(VehicleConfigType type)
+    {
+        var vehicleConfigs = this._databaseContext.VehicleConfigs.Where(x => x.Type == type).ToList();
+
+        try
+        {
+            return vehicleConfigs.Select(vehicleConfig => new VehicleConfig<TOptions>
+                {
+                    Id = vehicleConfig.Id,
+                    Name = vehicleConfig.Name,
+                    Type = vehicleConfig.Type,
+                    Livery = vehicleConfig.Livery,
+                    Model = vehicleConfig.Model,
+                    Extras = vehicleConfig.Extras,
+                    Options = JsonConvert.DeserializeObject<TOptions>(JsonConvert.SerializeObject(vehicleConfig.Options))
+                })
+                .ToList();
+        }
+        catch (Exception e)
+        {
+            this._logger.Error("Could not map a vehicle config's Options field to the given type. Exception: {Exception}", e);
+        }
+
+        return new List<VehicleConfig<TOptions>>();
+    }
+
+    [UIEvent(Events.UI.VehicleConfig.Add)]
+    private void AddVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<AddVehicleConfigRequest>();
+        this._databaseContext.VehicleConfigs.Add(new VehicleConfig<Dictionary<string, object>>
+        {
+            Type = request.Type,
+            Name = request.Name,
+            Model = request.Model,
+            Livery = request.Livery,
+            Extras = request.Extras,
+            Options = request.Options,
+        });
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "a", "b");
-    }   
+    }
+
+    [UIEvent(Events.UI.VehicleConfig.Delete)]
+    private void DeleteVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<IdRequest>();
+        var entityToRemove = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
+        if (entityToRemove is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        this._databaseContext.VehicleConfigs.Remove(entityToRemove);
+        this._databaseContext.SaveChanges();
+        networkCallbackDelegate.InvokeWithResponse(true, "a", "b");
+    }
 }

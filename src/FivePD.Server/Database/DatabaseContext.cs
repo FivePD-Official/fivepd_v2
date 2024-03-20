@@ -126,7 +126,7 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the vehicle configs.
     /// </summary>
-    public DbSet<VehicleConfig> VehicleConfigs { get; set; }
+    public DbSet<VehicleConfig<Dictionary<string, object>>> VehicleConfigs { get; set; }
 
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -260,7 +260,7 @@ public class DatabaseContext : DbContext
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
-        modelBuilder.Entity<VehicleConfig>(type =>
+        modelBuilder.Entity<VehicleConfig<Dictionary<string, object>>>(type =>
         {
             type.Property(t => t.Options)
                 .HasConversion(

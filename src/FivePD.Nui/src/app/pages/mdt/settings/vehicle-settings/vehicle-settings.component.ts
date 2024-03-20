@@ -50,7 +50,6 @@ export class VehicleSettingsComponent implements OnInit {
 
   generalConfig?: GeneralConfig;
 
-  selectedSet: string = CoreSetId.ArrestReport;
   user?: User;
 
   attributePage?: Page<LooseDataAttribute>;
@@ -291,48 +290,11 @@ export class VehicleSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getGeneralConfig();
-    this.getSettings();
-    this.setAttributesGrid();
   }
 
   private getGeneralConfig(): void {
     this._configService.getGeneralConfig().subscribe(res => {
       this.generalConfig = res;
-    });
-  }
-
-  setAttributesGrid(): void {
-    this.attributesCollation.Page = 1;
-    this.getAttributes();
-
-    this.attributesColumns = this._attributeGridOptions.createColumnList(
-      this.selectedSet,
-      () => this.getAttributes(),
-      () => {
-        this.attributesCollation.Page = 1;
-        this.getAttributes();
-      }
-    );
-    this.attributesButtons = this._attributeGridOptions.createButtons(
-      this.selectedSet,
-      () => {
-        this.attributesCollation.Page = 1;
-        this.getAttributes();
-      }
-    );
-  }
-
-  private getSettings(): void {
-    if (!this.user || !this.userService.userIsDepartmentManagerOrAdmin()) {
-      return;
-    }
-
-    this.getAttributes();
-  }
-
-  getAttributes(): void {
-    this._looseData.getSetAttributesPage(this.selectedSet, this.attributesCollation).subscribe(res => {
-      this.attributePage = res;
     });
   }
 

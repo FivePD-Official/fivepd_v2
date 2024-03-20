@@ -95,6 +95,8 @@ internal class Bootstrapper : BaseScript
 
         this._phases.Add(DatabaseHandler.EnsureCorrectState, false);
 
+        this._phases.Add(this.PerformServiceInitialization, false);
+
         // Enqueue addon startup phase.
         this._phases.Add(this.PerformAddonEnqueuePhase, false);
 
@@ -332,6 +334,7 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<IncidentService>();
         services.AddSingleton<IIncidentService>(provider => provider.GetRequiredService<IncidentService>());
+        services.AddSingleton<IInternalIncidentService>(provider => provider.GetRequiredService<IncidentService>());
 
         services.AddSingleton<CalloutDistributionService>();
         services.AddSingleton<ICalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
@@ -401,14 +404,19 @@ internal class Bootstrapper : BaseScript
             }
         });
 
-        // Register all event listeners for services
+        var tickQueueService = this._provider.GetService<IInternalTickQueueService>();
+        this.Tick += tickQueueService!.OnTickAsync;
+    }
+
+    /// <summary>
+    /// Invokes the OnInit method of services registered with the IOnInit interface.
+    /// </summary>
+    private void PerformServiceInitialization()
+    {
         foreach (var service in this._provider.GetServices<IOnInit>())
         {
             service.OnInit();
         }
-
-        var tickQueueService = this._provider.GetService<IInternalTickQueueService>();
-        this.Tick += tickQueueService!.OnTickAsync;
     }
 
     /// <summary>

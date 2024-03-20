@@ -1,10 +1,5 @@
-﻿using System;
-using CitizenFX.Core;
-using FivePD.Common;
-using FivePD.Server.EntityWrappers;
+﻿using System.Collections.Generic;
 using FivePD.Server.Models;
-using FivePD.Server.Models.Events;
-using FivePD.Server.Services;
 
 namespace FivePD.Server.Interfaces;
 
@@ -13,4 +8,18 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 public interface IVehicleConfigService
 {
+    /// <summary>
+    /// A.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns>A list of vehicle configs.</returns>
+    public List<VehicleConfig<Dictionary<string, object>>> GetAll(VehicleConfigType type);
+
+    /// <summary>
+    /// A.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <typeparam name="TOptions">The type to map the Options field.</typeparam>
+    /// <returns>A list of vehicle configs.</returns>
+    public List<VehicleConfig<TOptions>> GetAll<TOptions>(VehicleConfigType type);
 }

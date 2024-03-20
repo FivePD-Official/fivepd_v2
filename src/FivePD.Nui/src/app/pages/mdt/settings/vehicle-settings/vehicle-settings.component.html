@@ -2,16 +2,13 @@
 
 <app-container [rows]="2" [columns]="1">
 
-  <app-grid
-    [title]="'UI.LABEL.VEHICLE_SETTINGS.POLICE' | translate"
-    [buttons]="vehicleConfigbuttons"
-    [columns]="policeConfigColumn"/>
+  <app-grid [title]="'UI.LABEL.VEHICLE_SETTINGS.POLICE' | translate"
+            [buttons]="vehicleConfigbuttons"
+            [columns]="policeConfigColumn"/>
 
-  @if (this.userService.userHasRole(UserRole.Admin)){
-    <app-grid
-      [title]="'UI.LABEL.VEHICLE_SETTINGS.AMBULANCE' | translate"/>
+  @if (this.userService.userHasRole(UserRole.Admin)) {
+    <app-grid [title]="'UI.LABEL.VEHICLE_SETTINGS.AMBULANCE' | translate"/>
 
-    <app-grid
-      [title]="'UI.LABEL.VEHICLE_SETTINGS.TOW' | translate"/>
+    <app-grid [title]="'UI.LABEL.VEHICLE_SETTINGS.TOW' | translate"/>
   }
 </app-container>

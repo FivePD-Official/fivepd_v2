@@ -57,6 +57,10 @@ const mdtRoutes: Routes = [
         loadComponent: () => import('./pages/mdt/settings/callouts/callouts.component').then(m => m.CalloutsComponent),
       },
       {
+        path: 'vehicles',
+        loadComponent: () => import('./pages/mdt/settings/vehicle-settings/vehicle-settings.component').then(m => m.VehicleSettingsComponent),
+      },
+      {
         path: 'departments',
         children: [
           {
@@ -132,10 +136,6 @@ const mdtRoutes: Routes = [
         }
       }
     ]
-  },
-  {
-    path: 'vehicle-settings',
-    loadComponent: () => import('./pages/mdt/settings/vehicle-settings/vehicle-settings.component').then(m => m.VehicleSettingsComponent),
   },
   {
     path: 'devtools',

@@ -112,14 +112,14 @@ export class SidebarComponent {
           path: () => `/mdt/settings/attributes`,
           icon: IconType.AtSymbol,
           show: () => this.userService.userHasRole(UserRole.Admin),
-        }
+        },
+        {
+          title: 'UI.LABEL.VEHICLE_SETTINGS.TITLE',
+          path: () => '/mdt/settings/vehicles',
+          icon: IconType.Truck,
+          show: () => this.userService.userIsDepartmentManagerOrAdmin(),
+        },
       ]
-    },
-    {
-      title: 'UI.LABEL.VEHICLE_SETTINGS.TITLE',
-      path: () => '/mdt/vehicle-settings',
-      icon: IconType.Truck,
-      show: () => this.userService.userIsDepartmentManagerOrAdmin(),
     },
     {
       title: 'Developer tools',

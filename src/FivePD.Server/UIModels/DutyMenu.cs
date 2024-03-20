@@ -6,6 +6,7 @@ using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
@@ -24,16 +25,18 @@ public sealed class DutyMenu : Menu
     private readonly DutyMenuConfig _dutyMenuConfig;
     private readonly IEntityService _entityService;
     private readonly IEventService _eventService;
+    private readonly IVehicleConfigService _vehicleConfigService;
 
     private MenuListItem _changeLanguageListItem;
 
-    public DutyMenu(IConfigService configService, IEntityService entityService)
+    public DutyMenu(IConfigService configService, IEntityService entityService, IEventService eventService, IVehicleConfigService vehicleConfigService)
         : base(Controls.DutyMenu.Id, Controls.DutyMenu.Title, Controls.DutyMenu.Key)
     {
         this._configService = configService;
         this._dutyMenuConfig = configService.MenuConfig.DutyMenu;
         this._entityService = entityService;
-        this._eventService = ServiceLocator.GetService<IEventService>();
+        this._eventService = eventService;
+        this._vehicleConfigService = vehicleConfigService;
     }
 
     public MenuListItem VehicleSpawnerItem { get; private set; }
@@ -44,12 +47,14 @@ public sealed class DutyMenu : Menu
     {
         var items = new List<MenuItem>();
 
+        var policeVehicles = this._vehicleConfigService.GetAll(VehicleConfigType.Police); // TODO: won't refresh when vehicle configs are modified!
+
         if (this._dutyMenuConfig.SpawnVehicle.Enabled)
         {
             this.VehicleSpawnerItem = new MenuListItem(
                 "DUTY_MENU.ITEM.SPAWN_VEHICLE.TITLE",
                 "DUTY_MENU.ITEM.SPAWN_VEHICLE.DESCRIPTION",
-                this._configService.VehiclesConfig.Police.Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
+                policeVehicles.Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
             this.VehicleSpawnerItem.OnSelect += async (player, index) =>
             {
                 var lastVehicle = Cfx.API.GetVehiclePedIsIn(player.GetUnderlyingPlayer().Character.Handle, false);
@@ -58,7 +63,7 @@ public sealed class DutyMenu : Menu
                     Cfx.API.DeleteEntity(lastVehicle);
                 }
 
-                var policeVehicle = this._configService.VehiclesConfig.Police.ElementAt(index);
+                var policeVehicle = policeVehicles.ElementAt(index);
                 var spawnedVehicle = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(policeVehicle.Model),
                     player.GetUnderlyingPlayer().Character.Position, player.GetUnderlyingPlayer().Character.Heading);
                 Cfx.API.SetPedIntoVehicle(player.GetUnderlyingPlayer().Character.Handle, spawnedVehicle.GetUnderlyingVehicle.Handle, -1);
@@ -69,7 +74,7 @@ public sealed class DutyMenu : Menu
                     {
                         NetworkId = spawnedVehicle.NetworkId,
                         Livery = policeVehicle.Livery,
-                        Extras = policeVehicle.Extras,
+                        Extras = policeVehicle.Extras.ToList(),
                     }));
             };
             items.Add(this.VehicleSpawnerItem);

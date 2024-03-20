@@ -30,6 +30,7 @@ internal static class DatabaseHandler
     /// <exception cref="DatabaseUsageException">Thrown when no database context is available for usage.</exception>
     public static void SetParameters(ServiceProvider serviceProvider, ILogger logger)
     {
+        Debug.WriteLine("SetParameters");
         provider = serviceProvider;
         DatabaseHandler.logger = logger;
         databaseContext = serviceProvider.GetService<DatabaseContext>();

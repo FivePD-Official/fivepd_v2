@@ -7,7 +7,8 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Used to get/set vehicle configuration.
 /// </summary>
-public class VehicleConfig
+/// <typeparam name="TOptions">The type of the Options field..</typeparam>
+public class VehicleConfig<TOptions>
 {
     /// <summary>
     /// Gets or sets the identifier.
@@ -42,5 +43,5 @@ public class VehicleConfig
     /// <summary>
     /// Gets or sets the options by type.
     /// </summary>
-    public Dictionary<string, object> Options { get; set; }
+    public TOptions Options { get; set; }
 }
