@@ -1,13 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonComponent } from "../../../../../../components/button/button.component";
-import { IconComponent } from "../../../../../../components/icon/icon.component";
-import { TranslatePipe } from "../../../../../../pipes/translate.pipe";
+import { ButtonComponent } from "../../../../../components/button/button.component";
+import { IconComponent } from "../../../../../components/icon/icon.component";
+import { TranslatePipe } from "../../../../../pipes/translate.pipe";
 import { CallsignFormatItemType } from "@models";
 import { ModalRef } from "@services/modals/modal/modal-ref";
 import {
   CALLSIGN_FORMAT_ITEMS
-} from "../../../../departments/departments-view/_components/department-callsign-format-editor/token";
+} from "../../../departments/departments-view/_components/department-callsign-format-editor/token";
 import { CALLSIGN } from "./token";
 
 @Component({

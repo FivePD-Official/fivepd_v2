@@ -25,11 +25,15 @@ internal readonly record struct DispatchActionOnSelectKeys
 
     public const string SetPlayerCanNotReceiveCallouts = "SET_PLAYER_CAN_NOT_RECEIVE_CALLOUTS";
 
-    public const string CompleteCurrentCallout = "COMPLETE_CURRENT_CALLOUT";
+    public const string CompleteCurrentIncident = "COMPLETE_CURRENT_INCIDENT";
 
-    public const string TriggerPanicMode = "TRIGGER_PANIC_MODE";
+    public const string EnablePanicMode = "ENABLE_PANIC_MODE";
+
+    public const string DisablePanicMode = "DISABLE_PANIC_MODE";
 
     public const string RequestBackup = "REQUEST_BACKUP";
 
-    public const string RequestIDCheck = "REQUEST_ID_CHECK";
+    public const string RequestIdCheck = "REQUEST_ID_CHECK";
+
+    public const string RequestLicensePlateCheck = "REQUEST_LICENSE_PLATE_CHECK";
 }

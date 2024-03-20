@@ -15,16 +15,16 @@ import {
   tileLayer,
   Transformation
 } from 'leaflet';
-import {PageHeaderComponent} from "../../../../../../components/page-header/page-header.component";
-import {TranslatePipe} from "../../../../../../pipes/translate.pipe";
+import {PageHeaderComponent} from "../../../../../components/page-header/page-header.component";
+import {TranslatePipe} from "../../../../../pipes/translate.pipe";
 import {DepartmentService} from "@services/department/department.service";
-import {ContainerComponent} from "../../../../../../components/container/container.component";
+import {ContainerComponent} from "../../../../../components/container/container.component";
 import {nanoid} from 'nanoid';
-import {ButtonComponent} from "../../../../../../components/button/button.component";
+import {ButtonComponent} from "../../../../../components/button/button.component";
 import {NgClass} from "@angular/common";
 import {Area, GRAY, RED} from "./_models/area";
 import {customIcon} from "@services/map";
-import {IconComponent} from "../../../../../../components/icon/icon.component";
+import {IconComponent} from "../../../../../components/icon/icon.component";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {first} from "rxjs";
 import {Store} from "@ngrx/store";

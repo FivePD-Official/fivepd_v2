@@ -23,4 +23,9 @@
   Envelope = 'Envelope',
   Pencil = 'Pencil',
   Library = 'Library',
+  Globe = 'Globe',
+  Building = 'Building',
+  Building2 = 'Building2',
+  Megaphone = 'Megaphone',
+  AtSymbol = 'AtSymbol',
 }

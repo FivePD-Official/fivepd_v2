@@ -59,6 +59,4 @@ public class PedHistory
     /// Gets or sets the drugs.
     /// </summary>
     public List<Drug> Drugs { get; set; }
-
-    // TODO: Arrested, Citations, Tickets, Warnings
 }

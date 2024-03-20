@@ -150,9 +150,10 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
             this._incidentBlip.ShowRoute = true;
             var blipColor = incident.Priority switch
             {
-                FIncidentPriority.Code1 => (BlipColor)FBlipColor.Blue,
-                FIncidentPriority.Code2 => (BlipColor)FBlipColor.Yellow,
-                FIncidentPriority.Code3 => (BlipColor)FBlipColor.Red,
+                FPriority.Code1 => (BlipColor)FBlipColor.Blue,
+                FPriority.Code2 => (BlipColor)FBlipColor.Yellow,
+                FPriority.Code3 => (BlipColor)FBlipColor.Orange,
+                FPriority.Code99 => (BlipColor)FBlipColor.Red,
                 _ => (BlipColor)FBlipColor.White,
             };
             Cfx.API.SetBlipColour(this._incidentBlip.Handle, (int)blipColor);

@@ -14,7 +14,7 @@ internal sealed record DispatcherCalloutDTO
 
     public string Description { get; init; }
 
-    public FIncidentPriority Priority { get; init; }
+    public FPriority Priority { get; init; }
 
     public Vector3 Location { get; init; }
 

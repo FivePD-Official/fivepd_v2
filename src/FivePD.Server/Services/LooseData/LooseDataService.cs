@@ -280,6 +280,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     }
 
     /// <inheritdoc />
+    public LooseDataEntity GetEntity(string id, bool withTracking, bool queryCoreAttributeValue)
+    {
+        return this.InternalGetEntity(id, withTracking, queryCoreAttributeValue);
+    }
+
+    /// <inheritdoc />
     public List<LooseDataEntity> GetEntities<TS>(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
         where TS : LooseDataSet
     {
@@ -309,16 +315,17 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         this.InvokeEvent(LooseDataEntityObservableType.Delete, this.FindSetTypeById(entity.Set.Id), this.MapEntity(entity));
     }
 
-    private LooseDataEntity InternalGetEntity(string id)
+    private LooseDataEntity InternalGetEntity(string id, bool withTracking = false, bool queryCoreAttributeValue = false)
     {
-        var entity = this._databaseContext.LooseDataEntities
+        var query = withTracking ? this._databaseContext.LooseDataEntities : this._databaseContext.LooseDataEntities.AsNoTracking();
+        var entity = query
             .Include(entity => entity.Values)
             .ThenInclude(values => values.Attribute)
             .Include(entity => entity.Set)
             .ThenInclude(set => set.Attributes)
             .FirstOrDefault(entity => entity.Id == id);
 
-        var mappedEntity = entity is null ? null : this.MapEntity(entity);
+        var mappedEntity = entity is null ? null : this.MapEntity(entity, queryCoreAttributeValue);
         return mappedEntity;
     }
 
@@ -408,7 +415,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         var page = this._databaseContext.LooseDataEntities
             .Include(entity => entity.Values)
             .Include(entity => entity.Set)
-            .ThenInclude(set => set.Attributes) // TODO: why is this include needed?
+            .ThenInclude(set => set.Attributes)
             .Where(entity => entity.Set.Id == setIdAttr.Id)
             .Paginate(pageNumber, filters);
 

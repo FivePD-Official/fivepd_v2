@@ -22,9 +22,11 @@ using Serilog;
 
 namespace FivePD.Server.Services;
 
+#pragma warning disable
+
 /// <inheritdoc />
 [Obfuscate]
-public class IncidentService : IInternalIncidentService
+public class IncidentService : IIncidentService, IInternalIncidentService
 {
     private readonly ILogger _logger;
     private readonly IInternalIncidentHistoryService _incidentHistoryService;
@@ -99,7 +101,7 @@ public class IncidentService : IInternalIncidentService
         // Remove the unit from the previous incident
         if (unit.Callout is not null)
         {
-            ((IInternalIncident)((IInternalUnit)unit).InternalCallout).Units.Remove(unit);
+            ((IInternalIncident)unit.InternalCallout).Units.Remove(unit);
         }
 
         if (unit.TrafficStop is not null)
@@ -115,7 +117,7 @@ public class IncidentService : IInternalIncidentService
                 unit.TrafficStop = null;
 
                 unit.Callout = new SimpleCallout((Callout)incident);
-                ((IInternalUnit)unit).InternalCallout = (Callout)incident;
+                unit.InternalCallout = (Callout)incident;
 
                 // Settings this is not needed for traffic stops
                 unit.Availability.Value = FUnitAvailability.NotReceiving;
@@ -125,7 +127,7 @@ public class IncidentService : IInternalIncidentService
                 unit.TrafficStop = (TrafficStop)incident;
 
                 unit.Callout = null;
-                ((IInternalUnit)unit).InternalCallout = null;
+                unit.InternalCallout = null;
 
                 break;
         }
@@ -157,7 +159,7 @@ public class IncidentService : IInternalIncidentService
             return null;
         }
 
-        var callout = ((IInternalUnit)player.Unit)?.InternalCallout;
+        var callout = player.Unit?.InternalCallout;
         if (callout is not null)
         {
             return callout;
@@ -216,7 +218,7 @@ public class IncidentService : IInternalIncidentService
             {
                 case FIncidentType.Callout:
                     unit.Callout = null;
-                    ((IInternalUnit)unit).InternalCallout = null;
+                    unit.InternalCallout = null;
                     break;
                 case FIncidentType.TrafficStop:
                     unit.TrafficStop = null;

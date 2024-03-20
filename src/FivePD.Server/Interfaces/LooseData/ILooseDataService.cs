@@ -108,6 +108,15 @@ public interface ILooseDataService
     public LooseDataEntity GetEntity(string id);
 
     /// <summary>
+    /// Finds and maps the first entity with the given id.
+    /// </summary>
+    /// <param name="id">The id of the entity.</param>
+    /// <param name="withTracking">Whether to track the entities or not.</param>
+    /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
+    /// <returns>The first entity with the given id.</returns>
+    public LooseDataEntity GetEntity(string id, bool withTracking, bool queryCoreAttributeValue);
+
+    /// <summary>
     /// Finds and maps all entities of the given set.
     /// </summary>
     /// <typeparam name="TS">The type of the set which entities are needed.</typeparam>

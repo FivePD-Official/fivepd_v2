@@ -16,6 +16,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 export class InformationComponent {
 
   public information: InformationUpdateDTO = {
+    PanicMode: false,
     Event: '',
     Status: '-',
     DutyStatus: FDutyStatus.OffDuty,

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FivePD.Common.Enums;
+using FivePD.Common.Extensions;
 using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
-using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
 
 namespace FivePD.Server.Services;
@@ -18,10 +19,10 @@ public class BackupManagerService : IBackupManagerService
     private readonly IUnitService _unitService;
     private readonly IInternalIncidentService _incidentService;
     private readonly IConfigService _configService;
-    
+
     public BackupManagerService(
-        IConfirmationService confirmationService, 
-        IUnitService unitService, 
+        IConfirmationService confirmationService,
+        IUnitService unitService,
         IIncidentService incidentService,
         IConfigService configService)
     {
@@ -31,7 +32,7 @@ public class BackupManagerService : IBackupManagerService
         this._configService = configService;
     }
 
-    public void TriggerBackupRequest(Unit requestingUnit)
+    public void TriggerBackupRequest(Unit requestingUnit, FPriority priority = FPriority.Code1)
     {
         if (!this._configService.GeneralConfig.Features.Backups)
         {
@@ -46,8 +47,9 @@ public class BackupManagerService : IBackupManagerService
         IIncident incident = null;
         if (requestingUnit.Callout is not null)
         {
-            incident = ((IInternalUnit)requestingUnit).InternalCallout;
-        } else if (requestingUnit.TrafficStop is not null)
+            incident = requestingUnit.InternalCallout;
+        }
+        else if (requestingUnit.TrafficStop is not null)
         {
             incident = requestingUnit.TrafficStop;
         }
@@ -62,32 +64,29 @@ public class BackupManagerService : IBackupManagerService
             .ToList();
         foreach (var unit in filteredUnits)
         {
-            foreach (var p in unit.Players)
+            this._confirmationService.TriggerConfirmation(unit, new ConfirmationProperties
             {
-                this._confirmationService.TriggerConfirmation(p, new ConfirmationProperties
+                Notification = new ConfirmationProperties.NotificationProperties
                 {
-                    Notification = new ConfirmationProperties.NotificationProperties
+                    Texture = "CHAR_CALL911",
+                    Sender = "LABEL.DISPATCH",
+                    Subject = "LABEL.BACKUP.TITLE",
+                    Content = "LABEL.BACKUP.CONTENT",
+                    ContentParams = new Dictionary<string, string>
                     {
-                        Texture = "CHAR_CALL911",
-                        Sender = "LABEL.DISPATCH",
-                        Subject = "LABEL.BACKUP.TITLE",
-                        Content = "LABEL.BACKUP.CONTENT",
-                        ContentParams = new Dictionary<string, string>
-                        {
-                            ["unitCallsign"] = unit.Callsign,
-                        },
-                    }
-                }, res =>
+                        ["unitCallsign"] = unit.Callsign,
+                        ["priority"] = priority.GetLabelKey()
+                    },
+                }
+            }, res =>
+            {
+                if (!res)
                 {
-                    if (!res)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    this._incidentService.AssignUnitToIncident(unit, incident);
-                });
-            }
+                this._incidentService.AssignUnitToIncident(unit, incident);
+            });
         }
-        
     }
 }

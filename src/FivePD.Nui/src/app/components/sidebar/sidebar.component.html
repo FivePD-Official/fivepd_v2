@@ -1,27 +1,40 @@
 <aside class="w-full h-full border-r border-color flex flex-col items-center justify-between p-5 pt-10">
   <div class="w-full">
-    @for (item of routes;track item) {
-      @if (isRoute(item)) {
-        <a class="group decoration-0"
-           [routerLink]="item.path()"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: false }">
-          @if (item.show()) {
-            <div class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
+    @for (route of routes; track route) {
+      @if (isRoute(route) && !hasChildren(route) && route.show()) {
+        <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:route}"/>
+      } @else if (hasChildren(route) && route.show()) {
+        <div class="group decoration-0 w-full">
+          <button type="button"
+                  (click)="toggleRoute(route)"
+                  class="relative flex flex-row items-center justify-between w-full h-[50px] mb-3 decoration-0
                     before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
                     before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
+            <div class="flex flex-row items-center h-full w-full">
               <div app-icon
-                   [name]="item.icon"
+                   [name]="route.icon"
                    class="w-[50px] h-full flex flex-center justify-center"
                    className="h-[25px] text-zinc-400 group-[.active]:text-white">
               </div>
               <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
                  [ngClass]="{ 'hidden': isSidebarCollapsed }">
-                {{ item.title | translate }}
+                {{ route.title | translate }}
               </p>
             </div>
+            <div app-icon
+                 [name]="route.open ? IconType.ChevronUp : IconType.ChevronDown"
+                 class="w-[50px] h-full flex flex-center justify-center"
+                 className="h-[20px] text-zinc-400 group-[.active]:text-white">
+            </div>
+          </button>
+          @if (route.open) {
+            <div class="pl-4">
+              @for (subroute of route.children; track subroute) {
+                <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:subroute}"/>
+              }
+            </div>
           }
-        </a>
+        </div>
       } @else {
         <div class="h-[1px] w-full my-4 bg-zinc-700"></div>
       }
@@ -58,3 +71,24 @@
     </button>
   </div>
 </aside>
+
+<ng-template #link let-route="route">
+  <a class="group decoration-0"
+     [routerLink]="route.path()"
+     routerLinkActive="active"
+     [routerLinkActiveOptions]="{ exact: false }">
+    <div class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
+                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
+                    before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
+      <div app-icon
+           [name]="route.icon"
+           class="w-[50px] h-full flex flex-center justify-center"
+           className="h-[25px] text-zinc-400 group-[.active]:text-white">
+      </div>
+      <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
+         [ngClass]="{ 'hidden': isSidebarCollapsed }">
+        {{ route.title | translate }}
+      </p>
+    </div>
+  </a>
+</ng-template>

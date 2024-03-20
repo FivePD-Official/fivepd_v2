@@ -8,6 +8,7 @@ using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Database;
+using FivePD.Server.EntityWrappers.PedWrapper.States;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 
@@ -18,27 +19,6 @@ namespace FivePD.Server.EntityWrappers.PedWrapper;
 /// </summary>
 public class FPed : FEntity, IFStatefulContainer
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FPed"/> class.
-    /// </summary>
-    /// <param name="fPed">The FPed to use.</param>
-    public FPed(CommonFPed fPed)
-    {
-        this.NetworkId = fPed.NetworkId;
-
-        this.Birthdate = fPed.Birthdate;
-        this.Firstname = fPed.Firstname;
-        this.Lastname = fPed.Lastname;
-        this.Gender = fPed.Gender;
-        this.Items = fPed.Items;
-        this.Warrants = fPed.Warrants;
-        this.Licenses = new();
-        this.AlcoholLevel = fPed.AlcoholLevel;
-        this.Drugs = new();
-
-        this.Create();
-    }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FPed"/> class.
     /// </summary>
@@ -59,6 +39,32 @@ public class FPed : FEntity, IFStatefulContainer
 
         this.Create();
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FPed"/> class.
+    /// </summary>
+    /// <param name="fPed">The FPed to use.</param>
+    private FPed(CommonFPed fPed)
+    {
+        this.NetworkId = fPed.NetworkId;
+
+        this.Birthdate = fPed.Birthdate;
+        this.Firstname = fPed.Firstname;
+        this.Lastname = fPed.Lastname;
+        this.Gender = fPed.Gender;
+        this.Items = fPed.Items;
+        this.Warrants = fPed.Warrants;
+        this.Licenses = new();
+        this.AlcoholLevel = fPed.AlcoholLevel;
+        this.Drugs = new();
+
+        this.Create();
+    }
+
+    /// <summary>
+    /// Gets the ped's current state.
+    /// </summary>
+    public FPedState State { get; private set; }
 
     /// <summary>
     /// Gets the ped's observable with a value indicating if the ped is stopped.
@@ -188,6 +194,17 @@ public class FPed : FEntity, IFStatefulContainer
     public static FPed FromNetId(int networkId)
     {
         return new FPed(new CommonFPed(new CommonFPedBuilder(networkId)));
+    }
+
+    /// <summary>
+    /// Changes the state of the ped.
+    /// </summary>
+    /// <param name="state">The new state.</param>
+    public void ChangeState(FPedState state)
+    {
+        this.State?.Exit();
+        this.State = state;
+        this.State?.Enter();
     }
 
     /// <summary>

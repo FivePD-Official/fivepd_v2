@@ -34,7 +34,7 @@ public abstract class Callout : IIncident, IInternalIncident
     /// <summary>
     /// Gets the priority of the callout.
     /// </summary>
-    public FIncidentPriority Priority { get; internal set; }
+    public FPriority Priority { get; internal set; }
 
     /// <summary>
     /// Gets the activity radius of the callout.

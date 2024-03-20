@@ -1,0 +1,7 @@
+<app-page-header [title]="'Departments' | translate"/>
+
+<app-grid [buttons]="buttons"
+          [data]="departments$ | async"
+          [columns]="columns"
+          (onCollationChange)="collation$.next($event)"
+          (onCellAction)="collation$.next(collation$.value)"/>

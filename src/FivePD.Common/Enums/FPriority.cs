@@ -5,9 +5,10 @@
 /// <summary>
 /// Represents the priority of an incident.
 /// </summary>
-public enum FIncidentPriority
+public enum FPriority
 {
-    Code1,
-    Code2,
-    Code3,
+    Code1, // blue
+    Code2, // yellow
+    Code3, // orange
+    Code99, // red
 }

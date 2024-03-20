@@ -1,0 +1,5 @@
+<app-page-header [title]="'Callouts' | translate"/>
+
+<app-grid [columns]="columns"
+          [data]="calloutDetails$ | async"
+          (onCollationChange)="collation$.next($event)"/>
