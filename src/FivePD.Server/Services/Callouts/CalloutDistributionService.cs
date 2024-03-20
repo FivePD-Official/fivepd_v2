@@ -4,6 +4,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
+using FivePD.Common.Extensions;
 using FivePD.Common.Models;
 using FivePD.Common.Utilities;
 using FivePD.Server.API;
@@ -225,7 +226,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         {
             var unitAccepted = false;
 
-            void OnAccepted()
+            void Accepted()
             {
                 if (unitAccepted)
                 {
@@ -237,39 +238,6 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                 this.AssignUnitToCallout(unit, internalCallout.Callout, true);
             }
 
-            var priorityCodeLabel = string.Empty;
-            var priorityColorCode = new GtaStyleText();
-            switch (internalCallout.Callout.Priority)
-            {
-                case FPriority.Code1:
-                {
-                    priorityCodeLabel = "LABEL.PRIORITY.CODE1";
-                    priorityColorCode.Blue();
-                    break;
-                }
-
-                case FPriority.Code2:
-                {
-                    priorityCodeLabel = "LABEL.PRIORITY.CODE2";
-                    priorityColorCode.Yellow();
-                    break;
-                }
-
-                case FPriority.Code3:
-                {
-                    priorityCodeLabel = "LABEL.PRIORITY.CODE3";
-                    priorityColorCode.Orange();
-                    break;
-                }
-
-                case FPriority.Code99:
-                {
-                    priorityCodeLabel = "LABEL.PRIORITY.CODE99";
-                    priorityColorCode.Red();
-                    break;
-                }
-            }
-
             this._confirmationService.TriggerConfirmation(
                 unit,
                 new ConfirmationProperties
@@ -278,20 +246,15 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                     {
                         Texture = "CHAR_CALL911",
                         Sender = "LABEL.DISPATCH",
-                        Subject = "LABEL.CALLOUT",
-#pragma warning disable SA1515
-                        // TODO: replace content with correct i18n key like "LABEL.BACKUP.CONTENT"
-#pragma warning restore SA1515
-                        Content = new GtaStyleText()
-                            .Append(internalCallout.Callout.Title)
-                            .NewLine()
-                            .Append("{{priority}}: {{priorityColorCode}}{{priorityCode}}")
-                            .Build(),
+                        Subject = "LABEL.CALLOUT.TITLE",
+                        Content = "LABEL.CALLOUT.CONTENT",
                         ContentParams = new Dictionary<string, string>
                         {
-                            ["priority"] = "LABEL.PRIORITY.SINGULAR",
-                            ["priorityColorCode"] = priorityColorCode.Build(),
-                            ["priorityCode"] = priorityCodeLabel,
+                            ["title"] = new GtaStyleText()
+                                .Append(internalCallout.Callout.Title)
+                                .NewLine()
+                                .Build(),
+                            ["priority"] = internalCallout.Callout.Priority.GetLabelKey(),
                         },
                     },
                 },
@@ -302,7 +265,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                         return;
                     }
 
-                    OnAccepted();
+                    Accepted();
                 });
         }
 

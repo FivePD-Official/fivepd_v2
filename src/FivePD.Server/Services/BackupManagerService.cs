@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FivePD.Common.Enums;
+using FivePD.Common.Extensions;
 using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.Attributes;
@@ -70,10 +71,11 @@ public class BackupManagerService : IBackupManagerService
                     Texture = "CHAR_CALL911",
                     Sender = "LABEL.DISPATCH",
                     Subject = "LABEL.BACKUP.TITLE",
-                    Content = "LABEL.BACKUP.CONTENT", // TODO: add new params
+                    Content = "LABEL.BACKUP.CONTENT",
                     ContentParams = new Dictionary<string, string>
                     {
                         ["unitCallsign"] = unit.Callsign,
+                        ["priority"] = priority.GetLabelKey()
                     },
                 }
             }, res =>

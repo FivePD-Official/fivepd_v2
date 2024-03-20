@@ -99,8 +99,6 @@ public class MessageService : IMessageService
         }
 
         this._notificationService.ShowNotification(FPlayer.FromPlayer(player), $"You've received a new message from ~b~{message.Sender}");
-
-        // TODO: send message to player and show in UI
     }
 
     [UIEvent(Events.Message.Get, true)]
