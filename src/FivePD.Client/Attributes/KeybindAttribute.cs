@@ -34,6 +34,5 @@ internal class KeybindAttribute : Attribute
     /// <summary>
     /// Gets key's description.
     /// </summary>
-    // TODO: Change description to JSON key for translation.
     public string Description { get; }
 }
