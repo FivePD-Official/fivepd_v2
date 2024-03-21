@@ -152,6 +152,10 @@ export class SidebarComponent {
     return !('divider' in route);
   }
 
+  isDivider(route: RouteOrDivider): route is RouteWithoutChildren {
+    return !this.isRoute(route);
+  }
+
   hasChildren(route: RouteOrDivider): route is RouteWithChildren {
     return 'children' in route;
   }
