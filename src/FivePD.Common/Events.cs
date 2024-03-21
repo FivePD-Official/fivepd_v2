@@ -280,7 +280,7 @@ internal readonly record struct Events
 
         public readonly record struct VehicleConfig
         {
-            public const string GetAll = "fivepd:ui:vehicleConfig:getAll";
+            public const string GetAllPageable = "fivepd:ui:vehicleConfig:getAllPageable";
 
             public const string Add = "fivepd:ui:vehicleConfig:add";
 

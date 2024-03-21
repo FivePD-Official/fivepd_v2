@@ -10,7 +10,10 @@ using FivePD.Server.Database;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
+using FivePD.Server.QueryHelpers;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -60,6 +63,25 @@ public class VehicleConfigService : IVehicleConfigService
         }
 
         return new List<VehicleConfig<TOptions>>();
+    }
+    
+    [UIEvent(Events.UI.VehicleConfig.GetAllPageable)]
+    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<VehicleConfigsRequest>();
+        var filters = new Filters<VehicleConfig<Dictionary<string, object>>>();
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Name),
+            vehicleConfig => vehicleConfig.Name.ToLower().Contains(request.Filters.Name.ToLower()));
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Model),
+            vehicleConfig => vehicleConfig.Model.ToLower().Contains(request.Filters.Model.ToLower()));
+        filters.Add(request.Filters.Type != -1, vehicleConfig => vehicleConfig.Type == (VehicleConfigType)request.Filters.Type);
+        var page = this._databaseContext.VehicleConfigs
+            .AsNoTracking()
+            .Paginate(request.Page, filters);
+
+        networkCallbackDelegate.InvokeWithJson(page);
     }
 
     [UIEvent(Events.UI.VehicleConfig.Add)]

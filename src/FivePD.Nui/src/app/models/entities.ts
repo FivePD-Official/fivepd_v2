@@ -66,12 +66,14 @@ export interface SimpleDepartment extends WithId {
 }
 
 export interface VehicleConfig extends WithId {
-  Name: string,
-  Model: string,
-  Extras: number[],
-  Livery: number,
-  Department: User["DepartmentId"],
-  Division: Division["Name"],
+  Type: VehicleConfigType;
+  Name: string;
+  Model: string;
+  Livery: number;
+  Extras: number[];
+  Options: Record<string, any>;
+  // Department: User["DepartmentId"]; TODO
+  // Division: Division["Name"]; TODO
 }
 
 export enum VehicleConfigType {
