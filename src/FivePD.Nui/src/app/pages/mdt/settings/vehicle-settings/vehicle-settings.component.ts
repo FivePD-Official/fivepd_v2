@@ -1,7 +1,6 @@
 ﻿import { Component, inject } from '@angular/core';
 import {
   Button,
-  CheckboxField,
   Collation,
   Column,
   FormInputBase,
@@ -11,7 +10,7 @@ import {
   VehicleConfig,
   VehicleConfigType
 } from "@models";
-import { BehaviorSubject, filter, of, switchMap } from "rxjs";
+import { BehaviorSubject, filter, switchMap } from "rxjs";
 import { UserRole, UserService } from "@services/user/user.service";
 import { LocalizationService } from "@services/localization/localization.service";
 import { Router } from "@angular/router";
@@ -27,6 +26,45 @@ import {
   SingleSelectFieldComponent
 } from "../../../../components/form-inputs/single-select-field/single-select-field.component";
 import { AsyncPipe } from "@angular/common";
+
+function getBaseFields(): FormInputBase<any>[] {
+  return [
+    new TextField({
+      key: 'Name',
+      label: 'UI.LABEL.NAME.SINGULAR',
+      helpLabel: 'UI.LABEL.VEHICLE_CONFIG.NAME.HELP_LABEL',
+      required: true,
+    }),
+    new TextField({
+      key: 'Model',
+      label: 'UI.LABEL.MODEL.SINGULAR',
+      helpLabel: 'UI.LABEL.VEHICLE_CONFIG.MODEL.HELP_LABEL',
+      required: true,
+    }),
+    new NumberField({
+      key: 'Livery',
+      label: 'UI.LABEL.LIVERY.SINGULAR',
+      helpLabel: 'UI.LABEL.VEHICLE_CONFIG.LIVERY.HELP_LABEL',
+      required: false,
+    }),
+    new MultiSelectField({
+      key: 'Extras',
+      label: 'Extras',
+      defaultItemLabel: '',
+      addDefaultItem: false,
+      items: [
+        ...Array(12).fill(null).map((_, i) => {
+          const index = i + 1;
+          return {key: index, label: index.toString()};
+        }),
+      ],
+      size: "normal",
+      height: "base",
+      variant: "secondary",
+      required: false
+    })
+  ];
+}
 
 @Component({
   selector: 'app-vehicle-settings',
@@ -96,135 +134,13 @@ export class VehicleSettingsComponent {
 
   readonly policeVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly policeVehicleConfigPage$ = this.policeVehicleConfigCollation$.pipe(
-    switchMap(collation => this._vehicleConfigService.getAllPageable(VehicleConfigType.Police, collation),
-    ));
-  readonly policeVehicleConfigButtons: Button[] = [
-    {
-      label: 'Add vehicle',
-      show: () => true,
-      disabled: () => false,
-      onClick: () => this._modalFormService.open({
-        title: 'Add vehicle',
-        fields: () => {
-          const fields: FormInputBase<any>[] = [
-            new TextField({
-              key: 'Name',
-              label: 'UI.LABEL.NAME.SINGULAR',
-              helpLabel: 'UI.LABEL.VEHICLE_CONFIG.NAME.HELP_LABEL',
-              required: true,
-            }),
-            new TextField({
-              key: 'Model',
-              label: 'UI.LABEL.MODEL.SINGULAR',
-              helpLabel: 'UI.LABEL.VEHICLE_CONFIG.MODEL.HELP_LABEL',
-              required: true,
-            }),
-            new NumberField({
-              key: 'Livery',
-              label: 'UI.LABEL.LIVERY.SINGULAR',
-              helpLabel: 'UI.LABEL.VEHICLE_CONFIG.LIVERY.HELP_LABEL',
-              required: false,
-            }),
-            new MultiSelectField({
-              key: 'Extras',
-              label: 'Extras',
-              defaultItemLabel: '',
-              addDefaultItem: false,
-              items: [
-                ...Array(12).fill(null).map((_, i) => {
-                  const index = i + 1;
-                  return {key: index, label: index.toString()};
-                }),
-              ],
-              size: "normal",
-              height: "base",
-              variant: "secondary",
-              required: false
-            })
-          ];
-
-          // const vehicleTypeItems = [
-          //   {
-          //     key: VehicleConfigType.Police,
-          //     label: this._localization.translate('UI.LABEL.VEHICLE_SETTINGS.POLICE'),
-          //   },
-          // ];
-          // if (this._userService.userHasRole(UserRole.Admin)) {
-          //   vehicleTypeItems.push({
-          //     key: VehicleConfigType.Ambulance,
-          //     label: this._localization.translate('UI.LABEL.VEHICLE_SETTINGS.AMBULANCE')
-          //   });
-          //   vehicleTypeItems.push({
-          //     key: VehicleConfigType.TowTruck,
-          //     label: this._localization.translate('UI.LABEL.VEHICLE_SETTINGS.TOW')
-          //   });
-          // }
-
-          fields.push(new CheckboxField({
-            key: 'SpikeStrips',
-            label: 'Enable spike stripes?',
-            show: form => form.value['Type'] == VehicleConfigType.Police,
-          }));
-          fields.push(new CheckboxField({
-            key: 'TowLights',
-            label: 'Enable lights for Tow vehicle?',
-            show: form => form.value['Type'] == VehicleConfigType.TowTruck,
-          }));
-          fields.push(new TextField({
-            key: 'TowOffset',
-            label: 'Offset for towed vehicle (Format: x,y,z)',
-            show: form => form.value['Type'] == VehicleConfigType.TowTruck,
-          }))
-
-          return fields;
-        },
-        buttons: {
-          submit: {
-            variant: 'primary',
-            label: 'UI.ACTION.SAVE',
-          },
-        },
-      }).result
-        .pipe(
-          filter(res => res.success),
-          switchMap(res => {
-            const request: any = {
-              Type: res.value['Type'],
-              Name: res.value['Name'],
-              Model: res.value['Model'],
-              Livery: res.value['Livery'],
-              Extras: res.value['Extras'],
-              Options: {}
-            };
-
-            const spikeStrips = res.value['SpikeStrips'];
-            if (spikeStrips !== undefined) {
-              request.Options['SpikeStrips'] = spikeStrips;
-            }
-
-            const towLights = res.value['TowLights'];
-            if (spikeStrips !== undefined) {
-              request.Options['TowLights'] = towLights;
-            }
-
-            const towOffset = res.value['TowOffset'];
-            if (spikeStrips !== undefined) {
-              request.Options['TowOffset'] = towOffset;
-            }
-
-            return this._vehicleConfigService.add(request)
-          }),
-          this._modalService.handleResponse(),
-        ).subscribe(() => {
-          this._userService.refreshData();
-        })
-    }
-  ];
-
+    switchMap(collation => this._vehicleConfigService.getAllPageable(VehicleConfigType.Police, collation))
+  );
   readonly policeVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
     this.actionsColumn,
+    // TODO
     // new Column<VehicleConfig>({
     //   header: 'UI.LABEL.DEPARTMENT.SINGULAR',
     //   accessorKey: "Department",
@@ -236,6 +152,27 @@ export class VehicleSettingsComponent {
     //   header: 'UI.LABEL.DIVISION.SINGULAR',
     //   accessorKey: "Division",
     // }),
+  ];
+
+  // TODO
+  // fields.push(new CheckboxField({
+  //   key: 'SpikeStrips',
+  //   label: 'Enable spike stripes?',
+  //   show: form => form.value['Type'] == VehicleConfigType.Police,
+  // }));
+  // fields.push(new CheckboxField({
+  //   key: 'TowLights',
+  //   label: 'Enable lights for Tow vehicle?',
+  //   show: form => form.value['Type'] == VehicleConfigType.TowTruck,
+  // }));
+  // fields.push(new TextField({
+  //   key: 'TowOffset',
+  //   label: 'Offset for towed vehicle (Format: x,y,z)',
+  //   show: form => form.value['Type'] == VehicleConfigType.TowTruck,
+  // }))
+
+  readonly policeVehicleConfigButtons: Button[] = [
+    this.createAddVehicleButton(VehicleConfigType.Police, () => getBaseFields(), () => this.policeVehicleConfigCollation$.next(this.policeVehicleConfigCollation$.value)),
   ];
 
   readonly ambulanceVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
@@ -260,4 +197,29 @@ export class VehicleSettingsComponent {
     this.actionsColumn,
   ];
 
+  private createAddVehicleButton(type: VehicleConfigType, fields: () => FormInputBase<any>[], onResponse: () => void): Button {
+    return {
+      label: 'Add vehicle',
+      show: () => true,
+      disabled: () => false,
+      onClick: () => this._modalFormService.open({
+        title: 'Add vehicle',
+        fields,
+        buttons: {
+          submit: {
+            variant: 'primary',
+            label: 'UI.ACTION.SAVE',
+          },
+        },
+      }).result
+        .pipe(
+          filter(res => res.success),
+          switchMap(res => this._vehicleConfigService.add({
+            ...res.value,
+            Type: type,
+          })),
+          this._modalService.handleResponse(),
+        ).subscribe(onResponse)
+    };
+  }
 }
