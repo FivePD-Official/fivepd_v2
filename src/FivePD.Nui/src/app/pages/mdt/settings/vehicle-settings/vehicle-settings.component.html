@@ -11,11 +11,13 @@
   @if (this._userService.userHasRole(UserRole.Admin)) {
     <app-grid [title]="'Ambulance' | translate"
               [data]="ambulanceVehicleConfigPage$ | async"
+              [buttons]="ambulanceVehicleConfigButtons"
               [columns]="ambulanceVehicleConfigColumns"
               (onCollationChange)="ambulanceVehicleConfigCollation$.next($event)"/>
 
     <app-grid [title]="'Tow truck' | translate"
               [data]="towTruckVehicleConfigPage$ | async"
+              [buttons]="towTruckVehicleConfigButtons"
               [columns]="towTruckVehicleConfigColumns"
               (onCollationChange)="towTruckVehicleConfigCollation$.next($event)"/>
   }
