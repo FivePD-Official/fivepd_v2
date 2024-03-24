@@ -9,16 +9,16 @@ namespace FivePD.Server.Interfaces;
 public interface IVehicleConfigService
 {
     /// <summary>
-    /// A.
+    /// Gets all vehicle configs of a given type.
     /// </summary>
-    /// <param name="type">The type.</param>
+    /// <param name="type">The type of vehicles to retrieve.</param>
     /// <returns>A list of vehicle configs.</returns>
     public List<VehicleConfig<Dictionary<string, object>>> GetAll(VehicleConfigType type);
 
     /// <summary>
-    /// A.
+    /// Gets all vehicles configs of a given type and maps their Options field to the given <see cref="TOptions"/> type.
     /// </summary>
-    /// <param name="type">The type.</param>
+    /// <param name="type">The type of vehicles to retrieve.</param>
     /// <typeparam name="TOptions">The type to map the Options field.</typeparam>
     /// <returns>A list of vehicle configs.</returns>
     public List<VehicleConfig<TOptions>> GetAll<TOptions>(VehicleConfigType type);
