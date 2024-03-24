@@ -27,26 +27,30 @@ import {
 } from "../../../../components/form-inputs/single-select-field/single-select-field.component";
 import { AsyncPipe } from "@angular/common";
 import { Validators } from "@angular/forms";
+import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 
-function getBaseFields(): FormInputBase<any>[] {
+function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
   return [
     new TextField({
       key: 'Name',
       label: 'UI.LABEL.NAME.SINGULAR',
       helpLabel: 'UI.LABEL.VEHICLE_CONFIG.NAME.HELP_LABEL',
       required: true,
+      value: vehicleConfig?.Name,
     }),
     new TextField({
       key: 'Model',
       label: 'UI.LABEL.MODEL.SINGULAR',
       helpLabel: 'UI.LABEL.VEHICLE_CONFIG.MODEL.HELP_LABEL',
       required: true,
+      value: vehicleConfig?.Model,
     }),
     new NumberField({
       key: 'Livery',
       label: 'UI.LABEL.LIVERY.SINGULAR',
       helpLabel: 'UI.LABEL.VEHICLE_CONFIG.LIVERY.HELP_LABEL',
       required: false,
+      value: vehicleConfig?.Livery,
       validators: [Validators.min(0)],
       options: {
         min: 0,
@@ -57,6 +61,7 @@ function getBaseFields(): FormInputBase<any>[] {
       label: 'Extras',
       defaultItemLabel: '',
       addDefaultItem: false,
+      value: vehicleConfig?.Extras,
       items: [
         ...Array(12).fill(null).map((_, i) => {
           const index = i + 1;
@@ -69,6 +74,50 @@ function getBaseFields(): FormInputBase<any>[] {
       required: false
     })
   ];
+}
+
+function createTowTruckFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
+  const towedVehiclePositionOffset = vehicleConfig?.Options['TowedVehiclePositionOffset'];
+
+  return [
+    ...createBaseFields(vehicleConfig),
+    new CheckboxField({
+      key: 'SirenActive',
+      label: 'Activate siren',
+      helpLabel: 'When checked, the siren of the tow truck will be toggled automatically.',
+      required: true,
+      value: vehicleConfig?.Options['SirenActive'],
+    }),
+    new TextField({
+      key: 'TowedVehiclePositionOffset',
+      label: 'Towed vehicle position offset',
+      placeholder: 'TODO: replace with 3 fields for x,y,z',
+      helpLabel: 'format: x,y,z',
+      required: true,
+      value: towedVehiclePositionOffset ? `${towedVehiclePositionOffset['X']},${towedVehiclePositionOffset['Y']},${towedVehiclePositionOffset['Z']}` : '',
+    }),
+  ];
+}
+
+function mapTowTruckFields(value: ModalResponse['value']): ModalResponse['value'] {
+  const sirenActive = value['SirenActive'];
+  const split = value['TowedVehiclePositionOffset'].split(',');
+
+  // delete fields which should be in the Options
+  delete value['SirenActive'];
+  delete value['TowedVehiclePositionOffset'];
+
+  return {
+    ...value,
+    Options: {
+      SirenActive: sirenActive,
+      TowedVehiclePositionOffset: {
+        X: Number(split[0]),
+        Y: Number(split[1]),
+        Z: Number(split[2]),
+      },
+    }
+  };
 }
 
 @Component({
@@ -109,14 +158,14 @@ export class VehicleSettingsComponent {
   readonly policeVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
       VehicleConfigType.Police,
-      () => getBaseFields(),
+      createBaseFields,
       () => this.policeVehicleConfigCollation$.next(this.policeVehicleConfigCollation$.value)
     ),
   ];
   readonly policeVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
-    this.createActionsColumn(() => this.policeVehicleConfigCollation$.next(this.policeVehicleConfigCollation$.value)),
+    this.createActionsColumn(createBaseFields, () => this.policeVehicleConfigCollation$.next(this.policeVehicleConfigCollation$.value)),
     // TODO
     // new Column<VehicleConfig>({
     //   header: 'UI.LABEL.DEPARTMENT.SINGULAR',
@@ -139,14 +188,14 @@ export class VehicleSettingsComponent {
   readonly ambulanceVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
       VehicleConfigType.Police,
-      () => getBaseFields(),
+      createBaseFields,
       () => this.ambulanceVehicleConfigCollation$.next(this.ambulanceVehicleConfigCollation$.value)
     ),
   ];
   readonly ambulanceVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
-    this.createActionsColumn(() => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value)),
+    this.createActionsColumn(createBaseFields, () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value)),
   ];
 
   readonly towTruckVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
@@ -157,59 +206,47 @@ export class VehicleSettingsComponent {
   readonly towTruckVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
       VehicleConfigType.TowTruck,
-      () => ([
-        ...getBaseFields(),
-        new CheckboxField({
-          key: 'SirenActive',
-          label: 'Activate siren',
-          helpLabel: 'When checked, the siren of the tow truck will be toggled automatically.',
-          required: true,
-        }),
-        new TextField({
-          key: 'TowedVehiclePositionOffset',
-          label: 'Towed vehicle position offset',
-          placeholder: 'TODO: replace with 3 fields for x,y,z',
-          helpLabel: 'format: x,y,z',
-          required: true,
-        }),
-      ]),
+      createTowTruckFields,
       () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value),
-      value => {
-        const sirenActive = value['SirenActive'];
-        delete value['SirenActive'];
-        const split = value['TowedVehiclePositionOffset'].split(',');
-
-        return {
-          ...value,
-          Options: {
-            SirenActive: sirenActive,
-            TowedVehiclePositionOffset: {
-              X: Number(split[0]),
-              Y: Number(split[1]),
-              Z: Number(split[2]),
-            },
-          }
-        };
-      }
+      mapTowTruckFields
     ),
   ];
   readonly towTruckVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
-    this.createActionsColumn(() => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value)),
+    this.createActionsColumn(createTowTruckFields, () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value), mapTowTruckFields),
   ];
 
-  private createActionsColumn(onResponse: () => void): Column<VehicleConfig> {
+  private createActionsColumn(fields: (vehicleConfig: VehicleConfig | undefined) => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<VehicleConfig> {
     return new Column<VehicleConfig>({
       header: 'Actions',
       actions: [
-        // {
-        //   type: 'button',
-        //   label: 'UI.ACTION.EDIT',
-        //   show: () => true,
-        //   disabled: () => false,
-        //   onClick: item => this._router.navigate(['mdt', 'settings', 'vehicle-settings', item.Id])
-        // },
+        {
+          type: 'button',
+          label: 'UI.ACTION.EDIT',
+          show: () => true,
+          disabled: () => false,
+          onClick: vehicleConfig => this._modalFormService.open({
+            title: 'Edit vehicle',
+            fields: vehicleConfig => fields(vehicleConfig),
+            valueResolver: new ValueResolver(vehicleConfig, this._vehicleConfigService.get(vehicleConfig.Id)),
+            buttons: {
+              submit: {
+                variant: 'primary',
+                label: 'UI.ACTION.SAVE',
+              },
+            },
+          }).result
+            .pipe(
+              filter(res => res.success),
+              map(res => mapBeforeRequest ? {...res, value: mapBeforeRequest(res.value)} : res),
+              switchMap(res => this._vehicleConfigService.edit({
+                ...res.value,
+                Id: vehicleConfig.Id,
+              })),
+              this._modalService.handleResponse(),
+            ).subscribe(onResponse)
+        },
         {
           type: 'button',
           label: 'UI.ACTION.DELETE',
@@ -253,7 +290,7 @@ export class VehicleSettingsComponent {
         .pipe(
           filter(res => res.success),
           map(res => mapBeforeRequest ? {...res, value: mapBeforeRequest(res.value)} : res),
-          switchMap(res => this._vehicleConfigService.add({
+          switchMap(res => this._vehicleConfigService.create({
             ...res.value,
             Type: type,
           })),

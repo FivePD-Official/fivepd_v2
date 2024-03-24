@@ -14,12 +14,8 @@ export class VehicleConfigService {
   ) {
   }
 
-  add(request: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:ui:vehicleConfig:add', request);
-  }
-
-  delete(id: Id): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:ui:vehicleConfig:delete', {Id: parseId(id)});
+  get(id: Id): Observable<VehicleConfig> {
+    return this._http.post<VehicleConfig>('fivepd:ui:vehicleConfig:get', {Id: parseId(id)});
   }
 
   getAllPageable(type: VehicleConfigType, collation?: Collation): Observable<Page<VehicleConfig>> {
@@ -30,5 +26,17 @@ export class VehicleConfigService {
         ...collation?.Filters,
       },
     });
+  }
+
+  create(request: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:ui:vehicleConfig:create', request);
+  }
+
+  edit(request: object): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:ui:vehicleConfig:edit', request);
+  }
+
+  delete(id: Id): Observable<ActionResponse> {
+    return this._http.post<ActionResponse>('fivepd:ui:vehicleConfig:delete', {Id: parseId(id)});
   }
 }

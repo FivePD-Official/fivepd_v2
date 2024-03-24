@@ -23,8 +23,9 @@ internal class VehicleConfigService : IVehicleConfigService, IOnInit
     /// <inheritdoc/>
     public void OnInit()
     {
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Get);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.GetAllPageable);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Add);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Create);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Delete);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Edit);
     }

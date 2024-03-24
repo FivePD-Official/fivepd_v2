@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Text.Json.Serialization;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
@@ -10,7 +9,6 @@ using FivePD.Server.Database;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
-using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +62,20 @@ public class VehicleConfigService : IVehicleConfigService
 
         return new List<VehicleConfig<TOptions>>();
     }
+
+    [UIEvent(Events.UI.VehicleConfig.Get)]
+    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<IdRequest>();
+        var vehicleConfig = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
+        if (vehicleConfig is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+        
+        networkCallbackDelegate.InvokeWithJson(vehicleConfig);
+    }
     
     [UIEvent(Events.UI.VehicleConfig.GetAllPageable)]
     private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
@@ -84,8 +96,8 @@ public class VehicleConfigService : IVehicleConfigService
         networkCallbackDelegate.InvokeWithJson(page);
     }
 
-    [UIEvent(Events.UI.VehicleConfig.Add)]
-    private void AddVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.VehicleConfig.Create)]
+    private void CreateVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AddVehicleConfigRequest>();
         this._databaseContext.VehicleConfigs.Add(new VehicleConfig<Dictionary<string, object>>
@@ -98,7 +110,28 @@ public class VehicleConfigService : IVehicleConfigService
             Options = request.Options,
         });
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "a", "b");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+    }
+    
+    [UIEvent(Events.UI.VehicleConfig.Edit)]
+    private void EditVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<EditVehicleConfigRequest>();
+        var vehicleConfig = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
+        if (vehicleConfig is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        vehicleConfig.Name = request.Name;
+        vehicleConfig.Model = request.Model;
+        vehicleConfig.Livery = request.Livery;
+        vehicleConfig.Extras = request.Extras;
+        vehicleConfig.Options = request.Options;
+
+        this._databaseContext.SaveChanges();
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.VehicleConfig.Delete)]
@@ -114,6 +147,6 @@ public class VehicleConfigService : IVehicleConfigService
 
         this._databaseContext.VehicleConfigs.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "a", "b");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
     }
 }
