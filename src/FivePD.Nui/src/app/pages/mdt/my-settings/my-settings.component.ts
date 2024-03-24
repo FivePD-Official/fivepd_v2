@@ -9,7 +9,7 @@ import {
   PlayerDetailsDTO,
   SingleSelectField
 } from "@models";
-import { filter, switchMap, tap, zip } from "rxjs";
+import { filter, of, switchMap, tap, zip } from "rxjs";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { DynamicFormComponent } from '../../../components/dynamic-form/dynamic-form.component';
 import { ContainerComponent } from '../../../components/container/container.component';
@@ -58,7 +58,7 @@ export class MySettingsComponent implements OnInit {
     zip(
       this._configService.getGeneralConfig(),
       this.loadAvailableLocales(),
-      this._departmentService.getDepartment(user.DepartmentId!),
+      user.DepartmentId ? this._departmentService.getDepartment(user.DepartmentId) : of(undefined),
     ).subscribe(([generalConfig, availableLocalizations, department]) => {
       this.department = department;
       this.generalConfig = generalConfig;

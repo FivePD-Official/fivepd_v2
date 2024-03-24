@@ -112,7 +112,13 @@ export class SidebarComponent {
           path: () => `/mdt/settings/attributes`,
           icon: IconType.AtSymbol,
           show: () => this.userService.userHasRole(UserRole.Admin),
-        }
+        },
+        {
+          title: 'Vehicle settings',
+          path: () => '/mdt/settings/vehicles',
+          icon: IconType.Truck,
+          show: () => this.userService.userIsDepartmentManagerOrAdmin(),
+        },
       ]
     },
     {
@@ -144,6 +150,10 @@ export class SidebarComponent {
 
   isRoute(route: RouteOrDivider): route is RouteWithoutChildren {
     return !('divider' in route);
+  }
+
+  isDivider(route: RouteOrDivider): route is RouteWithoutChildren {
+    return !this.isRoute(route);
   }
 
   hasChildren(route: RouteOrDivider): route is RouteWithChildren {

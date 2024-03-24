@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
@@ -19,6 +17,7 @@ public class Towing : AssistanceService
     private readonly IRandomService _randomService;
     private readonly ICfxService _cfxService;
     private readonly INotificationService _notificationService;
+    private readonly IVehicleConfigService _vehicleConfigService;
 
     private FPed _driver;
     private FVehicle _towTruck;
@@ -29,13 +28,15 @@ public class Towing : AssistanceService
         IConfigService configService,
         IRandomService randomService,
         ICfxService cfxService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IVehicleConfigService vehicleConfigService)
     {
         this._entityService = entityService;
         this._configService = configService;
         this._randomService = randomService;
         this._cfxService = cfxService;
         this._notificationService = notificationService;
+        this._vehicleConfigService = vehicleConfigService;
     }
 
     public override async Task SetupAsync()
@@ -56,15 +57,15 @@ public class Towing : AssistanceService
 
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
     {
-        var serviceVehicle =
-            this._configService.VehiclesConfig.TowTruck[this._randomService.Random.Next(0, this._configService.VehiclesConfig.TowTruck.Count)];
+        var towTrucks = this._vehicleConfigService.GetAll<TowTruckVehicleConfigOptions>(VehicleConfigType.TowTruck);
+        var serviceVehicle = towTrucks[this._randomService.Random.Next(0, towTrucks.Count)];
 
         this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Benny, this.SpawnLocation, 0f);
         this._towTruck = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, 0f);
 
         this._towTruck.Properties.CreateBlip(FBlipSprite.TowTruck, FBlipColor.TrevorOrange, "Tow truck");
 
-        if (serviceVehicle.SirenActive)
+        if (serviceVehicle.Options.SirenActive)
         {
             this._towTruck.Properties.IsSirenActive(true);
         }
@@ -101,9 +102,9 @@ public class Towing : AssistanceService
             this._targetVehicle.GetUnderlyingVehicle.NetworkId,
             this._towTruck.GetUnderlyingVehicle.NetworkId,
             0,
-            serviceVehicle.TowedVehiclePositionOffset.X,
-            serviceVehicle.TowedVehiclePositionOffset.Y,
-            serviceVehicle.TowedVehiclePositionOffset.Z,
+            serviceVehicle.Options.TowedVehiclePositionOffset.X,
+            serviceVehicle.Options.TowedVehiclePositionOffset.Y,
+            serviceVehicle.Options.TowedVehiclePositionOffset.Z,
             0f,
             0f,
             0f,

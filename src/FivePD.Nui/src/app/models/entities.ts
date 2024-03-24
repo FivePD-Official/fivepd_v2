@@ -65,6 +65,23 @@ export interface SimpleDepartment extends WithId {
   Name: string;
 }
 
+export interface VehicleConfig extends WithId {
+  Type: VehicleConfigType;
+  Name: string;
+  Model: string;
+  Livery: number;
+  Extras: number[];
+  Options: Record<string, any>;
+  // Department: User["DepartmentId"]; TODO
+  // Division: Division["Name"]; TODO
+}
+
+export enum VehicleConfigType {
+  Police,
+  Ambulance,
+  TowTruck,
+}
+
 export interface SimpleDepartmentWithArea extends SimpleDepartment {
   Callsign: string;
   Coordinates: DepartmentAreaCoordinate[];

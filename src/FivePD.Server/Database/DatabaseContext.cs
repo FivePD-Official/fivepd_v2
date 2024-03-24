@@ -123,6 +123,11 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the vehicle configs.
+    /// </summary>
+    public DbSet<VehicleConfig<Dictionary<string, object>>> VehicleConfigs { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -251,6 +256,23 @@ public class DatabaseContext : DbContext
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
                     v => JsonConvert.DeserializeObject<List<Drug>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        });
+
+        modelBuilder.Entity<VehicleConfig<Dictionary<string, object>>>(type =>
+        {
+            type.Property(t => t.Options)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<Dictionary<string, object>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+            type.Property(t => t.Extras)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<int>>(
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });

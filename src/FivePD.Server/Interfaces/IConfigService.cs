@@ -39,12 +39,6 @@ public interface IConfigService
     public MenuConfig MenuConfig { get; }
 
     /// <summary>
-    /// Gets the "vehicles.json" file's content.
-    /// </summary>
-    /// <returns>Returns a deserialized <see cref="Vehicles"/> object.</returns>
-    public Vehicles VehiclesConfig { get; }
-
-    /// <summary>
     /// Gets the "menu.json" file's content.
     /// </summary>
     /// <returns>Returns a deserialized a list of <see cref="Loadout"/> objects.</returns>
