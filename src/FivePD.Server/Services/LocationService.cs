@@ -4,11 +4,13 @@ using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
@@ -16,9 +18,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FivePD.Server.Services;
 
-/// <inheritdoc />
-public class LocationService : ILocationService
+/// <inheritdoc cref="FivePD.Server.Interfaces.ILocationService" />
+public class LocationService : ILocationService, IOnInit
 {
+    private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _playerList;
     private readonly DatabaseContext _databaseContext;
     private readonly IMarkerService _markerService;
@@ -28,38 +31,31 @@ public class LocationService : ILocationService
     /// <summary>
     /// Initializes a new instance of the <see cref="LocationService"/> class.
     /// </summary>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use..</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="markerService">The <see cref="IMarkerService"/> to use.</param>
-    public LocationService(PlayerList playerList, DatabaseContext databaseContext, IMarkerService markerService)
+    public LocationService(
+        EventHandlerDictionary eventHandlerDictionary,
+        PlayerList playerList,
+        DatabaseContext databaseContext,
+        IMarkerService markerService)
     {
+        this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerList = playerList;
         this._databaseContext = databaseContext;
         this._markerService = markerService;
     }
 
     /// <inheritdoc />
-    public void Update(Player player)
+    void IOnInit.OnInit()
     {
-        foreach (var guid in this._markers)
-        {
-            this._markerService.RemoveMarker(guid);
-        }
+        this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
+    }
 
-        this._markers.Clear();
-
-        foreach (var position in this._databaseContext.Locations.Select(k => k.Position))
-        {
-            var marker = new Marker
-            {
-                Position = position,
-                Color = new Marker.MarkerColor(0, 15, 240, 255),
-                TextureDict = null,
-                TextureName = null,
-            };
-            var guid = this._markerService.AddMarker(this._playerList, marker);
-            this._markers.Add(guid);
-        }
+    private void OnPlayerConnected([FromSource] Player player)
+    {
+        this.UpdateMarkersForPlayer(player);
     }
 
     [UIEvent(Events.UI.Location.Create)]
@@ -74,6 +70,7 @@ public class LocationService : ILocationService
         });
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+        this.UpdateMarkersForAllPlayers();
     }
 
     [UIEvent(Events.UI.Location.GetAllPageable)]
@@ -106,5 +103,50 @@ public class LocationService : ILocationService
         this._databaseContext.Locations.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
+        this.UpdateMarkersForAllPlayers();
+    }
+
+    private void UpdateMarkersForAllPlayers()
+    {
+        foreach (var guid in this._markers)
+        {
+            this._markerService.RemoveMarker(guid);
+        }
+
+        this._markers.Clear();
+
+        foreach (var location in this._databaseContext.Locations)
+        {
+            var guid = this._markerService.AddMarker(this._playerList, this.CreateMarker(location));
+            this._markers.Add(guid);
+        }
+    }
+
+    private void UpdateMarkersForPlayer(Player player)
+    {
+        foreach (var location in this._databaseContext.Locations)
+        {
+            var guid = this._markerService.AddMarker(player, this.CreateMarker(location));
+            this._markers.Add(guid);
+        }
+    }
+
+    private Marker CreateMarker(Location location)
+    {
+        var marker = new Marker
+        {
+            Type = FMarkerType.MarkerTypeVerticalCylinder,
+            Position = location.Position,
+            Color = location.Type switch
+            {
+                LocationType.MdtAccess => new Marker.MarkerColor(0, 0, 255, 255),
+                LocationType.JailDropOff => new Marker.MarkerColor(0, 255, 255, 255),
+                LocationType.LoadoutSelector => new Marker.MarkerColor(255, 0, 0, 255),
+                LocationType.VehicleSelector => new Marker.MarkerColor(0, 255, 0, 255),
+                _ => new Marker.MarkerColor(255, 255, 255, 255),
+            },
+            Scale = new Vector3(1f, 1f, 1f),
+        };
+        return marker;
     }
 }
