@@ -290,6 +290,17 @@ internal readonly record struct Events
 
             public const string Edit = "fivepd:ui:vehicleConfig:edit";
         }
+
+        public readonly record struct Location
+        {
+            public const string Get = "fivepd:ui:location:get";
+
+            public const string GetAllPageable = "fivepd:ui:location:getAllPageable";
+
+            public const string Create = "fivepd:ui:location:create";
+
+            public const string Delete = "fivepd:ui:location:delete";
+        }
     }
 
     public readonly record struct DevTools

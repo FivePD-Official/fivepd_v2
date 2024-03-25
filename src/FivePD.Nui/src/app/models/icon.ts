@@ -28,4 +28,5 @@
   Building2 = 'Building2',
   Megaphone = 'Megaphone',
   AtSymbol = 'AtSymbol',
+  MapPin = 'MapPin',
 }

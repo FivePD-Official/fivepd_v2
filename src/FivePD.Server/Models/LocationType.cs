@@ -1,14 +1,14 @@
 ﻿namespace FivePD.Server.Models;
 
+#pragma warning disable
+
 /// <summary>
 /// Represents a location type to be used in marker UI.
 /// </summary>
-///
- #pragma warning disable
 public enum LocationType
 {
     MdtAccess,
-    JailDropoff,
+    JailDropOff,
     LoadoutSelector,
-    VehicleSelector
+    VehicleSelector,
 }

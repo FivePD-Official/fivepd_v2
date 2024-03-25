@@ -65,7 +65,7 @@ export class DevtoolsGeneralComponent {
       show: () => true,
       disabled: () => false,
       onClick: () => {
-        this.devtools.getCurrentPlayerCoordinate().subscribe(res => {
+        this.devtools.getCurrentPlayerPosition().subscribe(res => {
           const coordinate = {...res, date: new Date()};
           this.store.dispatch(AppActions.addDevToolsCoordinate({coordinate}))
         });

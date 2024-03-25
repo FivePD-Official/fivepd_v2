@@ -16,7 +16,7 @@ public interface IVehicleConfigService
     public List<VehicleConfig<Dictionary<string, object>>> GetAll(VehicleConfigType type);
 
     /// <summary>
-    /// Gets all vehicles configs of a given type and maps their Options field to the given <see cref="TOptions"/> type.
+    /// Gets all vehicles configs of a given type and maps their Options field to the given TOptions type.
     /// </summary>
     /// <param name="type">The type of vehicles to retrieve.</param>
     /// <typeparam name="TOptions">The type to map the Options field.</typeparam>

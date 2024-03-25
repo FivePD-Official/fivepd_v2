@@ -176,11 +176,14 @@ namespace FivePD.Server.Migrations
                     b.ToTable("IncidentHistoryUsers");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LocationMarker", b =>
+            modelBuilder.Entity("FivePD.Server.Models.Location", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Position")
                         .IsRequired()
@@ -191,7 +194,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LocationMarkers");
+                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>
@@ -475,7 +478,7 @@ namespace FivePD.Server.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.VehicleConfig", b =>
+            modelBuilder.Entity("FivePD.Server.Models.VehicleConfig<System.Collections.Generic.Dictionary<string, object>>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

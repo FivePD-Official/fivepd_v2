@@ -1,0 +1,25 @@
+<app-page-header [title]="'Locations' | translate"/>
+
+<app-grid [title]="'MDT access points' | translate"
+          [data]="mdtAccessPointsPage$ | async"
+          [buttons]="mdtAccessPointsButtons"
+          [columns]="mdtAccessPointsColumns"
+          (onCollationChange)="mdtAccessPointsCollation$.next($event)"/>
+
+<app-grid [title]="'Jail drop-off points' | translate"
+          [data]="jailDropOffPage$ | async"
+          [buttons]="jailDropOffButtons"
+          [columns]="jailDropOffColumns"
+          (onCollationChange)="jailDropOffCollation$.next($event)"/>
+
+<app-grid [title]="'Loadout selector points' | translate"
+          [data]="loadoutSelectorPage$ | async"
+          [buttons]="loadoutSelectorButtons"
+          [columns]="loadoutSelectorColumns"
+          (onCollationChange)="loadoutSelectorCollation$.next($event)"/>
+
+<app-grid [title]="'Vehicle selector points' | translate"
+          [data]="vehicleSelectorPage$ | async"
+          [buttons]="vehicleSelectorButtons"
+          [columns]="vehicleSelectorColumns"
+          (onCollationChange)="vehicleSelectorCollation$.next($event)"/>

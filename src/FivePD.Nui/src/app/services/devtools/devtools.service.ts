@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ActionResponse, DeleteEntityType } from '@models';
-import { Coordinate } from '@store/app.reducer';
+import { ActionResponse, DeleteEntityType, Vector3 } from '@models';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +18,7 @@ export class DevtoolsService {
     });
   }
 
-  getCurrentPlayerCoordinate(): Observable<Coordinate> {
-    return this.http.post<Coordinate>('fivepd:devtools:getCurrentPlayerCoordinate', {});
+  getCurrentPlayerPosition(): Observable<Vector3> {
+    return this.http.post<Vector3>('fivepd:devtools:getCurrentPlayerCoordinate', {});
   }
 }

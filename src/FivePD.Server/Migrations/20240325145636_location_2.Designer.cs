@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
+#pragma warning disable CS1591
 namespace FivePD.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240222171545_LocationMarkers")]
-    partial class LocationMarkers
+    [Migration("20240325145636_location_2")]
+    partial class location_2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -178,11 +178,14 @@ namespace FivePD.Server.Migrations
                     b.ToTable("IncidentHistoryUsers");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LocationMarker", b =>
+            modelBuilder.Entity("FivePD.Server.Models.Location", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Position")
                         .IsRequired()
@@ -475,6 +478,35 @@ namespace FivePD.Server.Migrations
                     b.HasIndex("RankId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VehicleConfig<System.Collections.Generic.Dictionary<string, object>>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Extras")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Livery")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Options")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleConfigs");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>

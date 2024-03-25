@@ -61,6 +61,10 @@ const mdtRoutes: Routes = [
         loadComponent: () => import('./pages/mdt/settings/vehicle-settings/vehicle-settings.component').then(m => m.VehicleSettingsComponent),
       },
       {
+        path: 'locations',
+        loadComponent: () => import('./pages/mdt/settings/locations/locations.component').then(m => m.LocationsComponent),
+      },
+      {
         path: 'departments',
         children: [
           {

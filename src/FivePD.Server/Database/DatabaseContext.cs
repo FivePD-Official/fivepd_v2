@@ -126,7 +126,7 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the location markers.
     /// </summary>
-    public DbSet<LocationMarker> LocationMarkers { get; set; }
+    public DbSet<Location> Locations { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the vehicle configs.
@@ -208,7 +208,7 @@ public class DatabaseContext : DbContext
             type.HasMany(t => t.Attributes);
         });
 
-        modelBuilder.Entity<LocationMarker>(type =>
+        modelBuilder.Entity<Location>(type =>
         {
             type.Property(t => t.Position)
                 .HasConversion(

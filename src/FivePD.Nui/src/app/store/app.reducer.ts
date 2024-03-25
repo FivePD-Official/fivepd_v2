@@ -1,21 +1,15 @@
-﻿import { Page, PedHistory } from '@models';
+﻿import { Page, PedHistory, Vector3 } from '@models';
 import { createReducer, on } from '@ngrx/store';
 import {
   AppActions,
 } from '@store/app.actions';
 import { Routes } from "../models/sidebar";
 
-export interface Coordinate {
-  X: string;
-  Y: string;
-  Z: string;
-}
-
 export interface WithDate {
   date: Date;
 }
 
-export type CoordinateWithDate = Coordinate & WithDate;
+export type CoordinateWithDate = Vector3 & WithDate;
 
 export interface DevToolsState {
   coordinates: Page<CoordinateWithDate>;
