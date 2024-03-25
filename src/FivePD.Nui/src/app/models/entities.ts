@@ -82,6 +82,19 @@ export enum VehicleConfigType {
   TowTruck,
 }
 
+export interface Location extends WithId {
+  Name: string;
+  Type: LocationType;
+  Position: Vector3;
+}
+
+export enum LocationType {
+  MdtAccess,
+  JailDropOff,
+  LoadoutSelector,
+  VehicleSelector,
+}
+
 export interface SimpleDepartmentWithArea extends SimpleDepartment {
   Callsign: string;
   Coordinates: DepartmentAreaCoordinate[];

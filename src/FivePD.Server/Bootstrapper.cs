@@ -8,7 +8,6 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
-using FivePD.Server.Exceptions;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
@@ -16,17 +15,14 @@ using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Interfaces.TrafficStopInterfaces;
-using FivePD.Server.Models;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
 using FivePD.Server.Services.LooseData;
 using FivePD.Server.Services.TrafficStopServices;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
-using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
 
@@ -362,6 +358,9 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<VehicleConfigService>();
         services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
+
+        services.AddSingleton<LocationService>();
+        services.AddSingleton<ILocationService>(provider => provider.GetRequiredService<LocationService>());
 
         this._provider = services.BuildServiceProvider();
 

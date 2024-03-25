@@ -333,6 +333,12 @@ internal class Bootstrapper : BaseScript
             .As<IOnInit>()
             .IsSingleton();
 
+        services
+            .RegisterType<LocationService>()
+            .As<ILocationService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);

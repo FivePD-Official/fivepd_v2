@@ -119,6 +119,12 @@ export class SidebarComponent {
           icon: IconType.Truck,
           show: () => this.userService.userIsDepartmentManagerOrAdmin(),
         },
+        {
+          title: 'Locations',
+          path: () => '/mdt/settings/locations',
+          icon: IconType.MapPin,
+          show: () => this.userService.userHasRole(UserRole.Admin),
+        },
       ]
     },
     {

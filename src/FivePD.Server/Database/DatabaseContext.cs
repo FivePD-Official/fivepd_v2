@@ -124,6 +124,11 @@ public class DatabaseContext : DbContext
     public DbSet<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
 
     /// <summary>
+    /// Gets or sets the table containing the location markers.
+    /// </summary>
+    public DbSet<Location> Locations { get; set; }
+
+    /// <summary>
     /// Gets or sets the table containing the vehicle configs.
     /// </summary>
     public DbSet<VehicleConfig<Dictionary<string, object>>> VehicleConfigs { get; set; }
@@ -201,6 +206,16 @@ public class DatabaseContext : DbContext
         {
             type.HasMany(t => t.Entities);
             type.HasMany(t => t.Attributes);
+        });
+
+        modelBuilder.Entity<Location>(type =>
+        {
+            type.Property(t => t.Position)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<Vector3>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
         modelBuilder.Entity<LooseDataAttribute>(type =>
