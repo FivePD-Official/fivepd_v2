@@ -327,6 +327,12 @@ internal class Bootstrapper : BaseScript
             .As<IOnDestroy>()
             .IsSingleton();
 
+        services
+            .RegisterType<VehicleConfigService>()
+            .As<IVehicleConfigService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);

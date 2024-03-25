@@ -75,6 +75,9 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     public string Status { get; private set; } = string.Empty;
 
     /// <inheritdoc />
+    public bool PanicMode { get; private set; }
+
+    /// <inheritdoc />
     public InformationUpdateDTO Information { get; private set; } = new();
 
     /// <inheritdoc/>
@@ -83,6 +86,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
         this._tickService.OnTick += this.OnTickAsync;
         this._eventHandlerDictionary[Events.Player.UpdateUnitAvailability] += new Action<int>(availability => this.ListenForAvailabilityStatusChanges((FUnitAvailability)availability));
         this._eventHandlerDictionary[Events.Player.UpdateUnitStatus] += new Action<string>(this.ListenForStatusChanges);
+        this._eventHandlerDictionary[Events.Player.UpdatePanicModeState] += new Action<bool>(this.ListenForPanicModeChanges);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.GetDetails);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeDivision);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeRank);
@@ -162,6 +166,13 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     {
         this.Status = status;
         this.Information.Status = status;
+        this.UpdateInformationInUI();
+    }
+
+    private void ListenForPanicModeChanges(bool state)
+    {
+        this.PanicMode = state;
+        this.Information.PanicMode = state;
         this.UpdateInformationInUI();
     }
 

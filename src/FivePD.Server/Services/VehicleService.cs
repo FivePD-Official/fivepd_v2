@@ -65,6 +65,9 @@ public class VehicleService : IVehicleService, IOnInit
             .WithRandomDocuments(this._configService.GeneralConfig.Vehicles.Documents)
             .Build();
 
+        Debug.WriteLine($"Generated data for vehicle with net ID of {fVehicle.NetworkId} - License plate: {fVehicle.LicensePlate}");
+
+        fVehicle.HasGeneratedData.Value = true;
         this._vehicles[fVehicle.NetworkId] = fVehicle;
     }
 

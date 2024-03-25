@@ -29,19 +29,22 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
     private readonly IInternalIncidentService _incidentService;
     private readonly ICalloutDistributionService _calloutDistributionService;
     private readonly IUnitService _unitService;
+    private readonly IUnitManagerService _unitManagerService;
 
     public DispatchService(
         EventHandlerDictionary eventHandlerDictionary,
         PlayerList playerList,
         IIncidentService incidentService,
         ICalloutDistributionService calloutDistributionService,
-        IUnitService unitService)
+        IUnitService unitService,
+        IUnitManagerService unitManagerService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerList = playerList;
         this._incidentService = (IInternalIncidentService)incidentService;
         this._calloutDistributionService = calloutDistributionService;
         this._unitService = unitService;
+        this._unitManagerService = unitManagerService;
     }
 
     public List<FPlayer> Dispatchers()
@@ -58,8 +61,8 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
         this._eventHandlerDictionary[Events.Dispatch.DisableForPlayer] += new Action<Player>(this.OnDisableForPlayer);
         this._eventHandlerDictionary[Events.Dispatch.DismissCallout] += new Action<Player, ExpandoObject>(this.OnCalloutDismissed);
 
-        this._unitService.OnUnitCreated += this.OnUnitCreated;
-        this._unitService.OnUnitRemoved += this.OnUnitRemoved;
+        this._unitManagerService.OnUnitCreated += this.OnUnitCreated;
+        this._unitManagerService.OnUnitRemoved += this.OnUnitRemoved;
     }
 
     [UIEvent(Events.UI.Dispatch.GetIncomingCallouts)]

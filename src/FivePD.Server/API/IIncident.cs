@@ -30,7 +30,7 @@ public interface IIncident
     /// <summary>
     /// Gets the priority of the incident.
     /// </summary>
-    public FIncidentPriority Priority { get; }
+    public FPriority Priority { get; }
 
     /// <summary>
     /// Gets the location of the incident.

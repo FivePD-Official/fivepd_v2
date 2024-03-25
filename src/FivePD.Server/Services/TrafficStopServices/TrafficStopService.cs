@@ -46,7 +46,7 @@ public class TrafficStopService : ITrafficStopService
             Description = string.Empty,
             GeneratedAt = DateTime.Now,
             Location = vehicle.GetUnderlyingVehicle.Position,
-            Priority = FIncidentPriority.Code1,
+            Priority = FPriority.Code1,
             Vehicle = vehicle,
         };
 

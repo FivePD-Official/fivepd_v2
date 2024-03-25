@@ -26,6 +26,11 @@ internal interface ILocalPlayerService
     public string Status { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the player's panic mode's status.
+    /// </summary>
+    public bool PanicMode { get; }
+
+    /// <summary>
     /// Gets the player's current information.
     /// </summary>
     public InformationUpdateDTO Information { get; }

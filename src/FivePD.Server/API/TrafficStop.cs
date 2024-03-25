@@ -29,7 +29,7 @@ public class TrafficStop : IIncident, IInternalIncident
     /// <summary>
     /// Gets the priority of the callout.
     /// </summary>
-    public FIncidentPriority Priority { get; internal set; }
+    public FPriority Priority { get; internal set; }
 
     /// <inheritdoc />
     public Vector3 Location { get; internal set; }

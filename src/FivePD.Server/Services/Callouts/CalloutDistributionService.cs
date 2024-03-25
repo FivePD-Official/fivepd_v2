@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
+using FivePD.Common.Extensions;
 using FivePD.Common.Models;
+using FivePD.Common.Utilities;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
-using FivePD.Server.Models.Requests;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Serilog;
@@ -169,7 +168,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         }
 
         var filteredUnits = this._unitService.Units()
-            .Where(unit => this._incidentService.ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .Where(unit => ((IIncidentService)this._incidentService).ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
             .ToList();
 
@@ -227,7 +226,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         {
             var unitAccepted = false;
 
-            void OnAccepted()
+            void Accepted()
             {
                 if (unitAccepted)
                 {
@@ -239,61 +238,35 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                 this.AssignUnitToCallout(unit, internalCallout.Callout, true);
             }
 
-            var priorityCodeLabel = string.Empty;
-            var priorityColorCode = string.Empty;
-            switch (internalCallout.Callout.Priority)
-            {
-                case FIncidentPriority.Code1:
+            this._confirmationService.TriggerConfirmation(
+                unit,
+                new ConfirmationProperties
                 {
-                    priorityCodeLabel = "LABEL.PRIORITY.CODE1";
-                    priorityColorCode = "~b~";
-                    break;
-                }
-
-                case FIncidentPriority.Code2:
-                {
-                    priorityCodeLabel = "LABEL.PRIORITY.CODE2";
-                    priorityColorCode = "~y~";
-                    break;
-                }
-
-                case FIncidentPriority.Code3:
-                {
-                    priorityCodeLabel = "LABEL.PRIORITY.CODE3";
-                    priorityColorCode = "~r~";
-                    break;
-                }
-            }
-
-            foreach (var player in unit.Players)
-            {
-                this._confirmationService.TriggerConfirmation(
-                    player,
-                    new ConfirmationProperties
+                    Notification = new ConfirmationProperties.NotificationProperties
                     {
-                        Notification = new ConfirmationProperties.NotificationProperties
+                        Texture = "CHAR_CALL911",
+                        Sender = "LABEL.DISPATCH",
+                        Subject = "LABEL.CALLOUT.TITLE",
+                        Content = "LABEL.CALLOUT.CONTENT",
+                        ContentParams = new Dictionary<string, string>
                         {
-                            Texture = "CHAR_CALL911",
-                            Sender = "LABEL.DISPATCH",
-                            Subject = "LABEL.CALLOUT",
-                            Content = $"{internalCallout.Callout.Title}~n~{{{{priority}}}}: {priorityColorCode}{{{{priorityCode}}}}",
-                            ContentParams = new Dictionary<string, string>
-                            {
-                                ["priority"] = "LABEL.PRIORITY.SINGULAR",
-                                ["priorityCode"] = priorityCodeLabel,
-                            },
+                            ["title"] = new GtaStyleText()
+                                .Append(internalCallout.Callout.Title)
+                                .NewLine()
+                                .Build(),
+                            ["priority"] = internalCallout.Callout.Priority.GetLabelKey(),
                         },
                     },
-                    response =>
+                },
+                response =>
+                {
+                    if (!response)
                     {
-                        if (!response)
-                        {
-                            return;
-                        }
+                        return;
+                    }
 
-                        OnAccepted();
-                    });
-            }
+                    Accepted();
+                });
         }
 
         return notifiedUnits;

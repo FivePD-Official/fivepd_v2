@@ -23,6 +23,7 @@ public class Ambulance : AssistanceService
     private readonly IRandomService _randomService;
     private readonly INotificationService _notificationService;
     private readonly ICfxService _cfxService;
+    private readonly IVehicleConfigService _vehicleConfigService;
 
     private FPed _driver;
     private FVehicle _ambulance;
@@ -36,13 +37,15 @@ public class Ambulance : AssistanceService
         IConfigService configService,
         IRandomService randomService,
         INotificationService notificationService,
-        ICfxService cfxService)
+        ICfxService cfxService,
+        IVehicleConfigService vehicleConfigService)
     {
         this._entityService = entityService;
         this._configService = configService;
         this._randomService = randomService;
         this._notificationService = notificationService;
         this._cfxService = cfxService;
+        this._vehicleConfigService = vehicleConfigService;
     }
 
     public override async Task SetupAsync()
@@ -57,8 +60,8 @@ public class Ambulance : AssistanceService
 
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
     {
-        var serviceVehicle =
-            this._configService.VehiclesConfig.Ambulance[this._randomService.Random.Next(0, this._configService.VehiclesConfig.Ambulance.Count)];
+        var towTrucks = this._vehicleConfigService.GetAll(VehicleConfigType.Ambulance);
+        var serviceVehicle = towTrucks[this._randomService.Random.Next(0, towTrucks.Count)];
 
         this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Paramedic01SMM, this.SpawnLocation, 0f);
         this._ambulance = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, 0f);

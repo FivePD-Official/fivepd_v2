@@ -53,7 +53,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the player's unit.
     /// </summary>
     /// <returns>A unit.</returns>
-    public Unit Unit => ServiceLocator.GetService<IUnitService>().GetPlayerUnit(this);
+    public Unit Unit => ServiceLocator.GetService<IUnitManagerService>().GetPlayerUnit(this);
 
     /// <summary>
     /// Gets the player's User model.
@@ -169,7 +169,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     MenuItem IFPlayerWithMenus.FindMenuItem(string hashcode)
     {
         return this._menus
-            .Select(m => m.Items.FirstOrDefault(x => x.GetHashCode().ToString() == hashcode))
+            .Select(m => m.InternalItems.FirstOrDefault(x => x.GetHashCode().ToString() == hashcode))
             .FirstOrDefault(found => found != null);
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
@@ -104,6 +105,20 @@ public class FVehicle : FEntity, IFStatefulContainer
     {
         return new FVehicle(new FVehicleBuilder(new CommonFVehicleBuilder(vehicle.NetworkId)));
     }
+
+    /// <summary>
+    /// Checks if the vehicle has a document.
+    /// </summary>
+    /// <param name="vehicleDocumentType">The document type to check.</param>
+    /// <returns>True if the vehicle has the document, false otherwise.</returns>
+    public bool HasDocument(VehicleDocumentType vehicleDocumentType) => this.Documents.Exists(x => x.Type == vehicleDocumentType);
+
+    /// <summary>
+    /// Gets the document of the specified type.
+    /// </summary>
+    /// <param name="vehicleDocumentType">The document type to get.</param>
+    /// <returns>The license.</returns>
+    public VehicleDocument GetDocument(VehicleDocumentType vehicleDocumentType) => this.Documents.FirstOrDefault(x => x.Type == vehicleDocumentType);
 
     /// <inheritdoc />
     public string GetStateKey()

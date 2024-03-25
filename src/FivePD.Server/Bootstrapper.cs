@@ -88,12 +88,14 @@ internal class Bootstrapper : BaseScript
         // Enqueue addon location phase.
         this._phases.Add(this.PerformAddonLocationPhase, false);
 
-        // Enqueue post-bootstrap phase.
+        // // Enqueue post-bootstrap phase.
         this._phases.Add(this.PerformPostBootstrapPhase, false);
 
         this._phases.Add(() => DatabaseHandler.SetParameters(this._provider, this._bootstrapLogger), false);
 
         this._phases.Add(DatabaseHandler.EnsureCorrectState, false);
+
+        this._phases.Add(this.PerformServiceInitialization, false);
 
         // Enqueue addon startup phase.
         this._phases.Add(this.PerformAddonEnqueuePhase, false);
@@ -193,9 +195,14 @@ internal class Bootstrapper : BaseScript
         services.AddDbContext<DatabaseContext>();
 
         // Addons
-        services.AddTransient<IAddonLoggerService, AddonLoggerService>();
-        services.AddSingleton<IAddonAssemblyLoader, AddonAssemblyLoader>();
-        services.AddSingleton<IAddonFileHandlerService, AddonFileHandlerService>();
+        services.AddTransient<AddonLoggerService>();
+        services.AddTransient<IAddonLoggerService>(provider => provider.GetRequiredService<AddonLoggerService>());
+
+        services.AddSingleton<AddonAssemblyLoader>();
+        services.AddTransient<IAddonAssemblyLoader>(provider => provider.GetRequiredService<AddonAssemblyLoader>());
+
+        services.AddSingleton<AddonFileHandlerService>();
+        services.AddTransient<IAddonFileHandlerService>(provider => provider.GetRequiredService<AddonFileHandlerService>());
 
         services.AddSingleton<AddonMetadataService>();
         services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
@@ -219,21 +226,54 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedWarningService>());
 
         // Other
-        services.AddSingleton<IFileHandlerService, FileHandlerService>();
-        services.AddSingleton<ICommandService, CommandService>();
-        services.AddSingleton<IDevToolsService, DevToolsService>();
-        services.AddSingleton<IDepartmentService, DepartmentService>();
-        services.AddSingleton<INotificationService, NotificationService>();
-        services.AddSingleton<IEntityService, EntityService>();
-        services.AddSingleton<IMarkerService, MarkerService>();
-        services.AddSingleton<IUnitService, UnitService>();
-        services.AddSingleton<IConfirmationService, ConfirmationService>();
-        services.AddSingleton<IRandomService, RandomService>();
-        services.AddSingleton<IAssistanceServiceManagerService, AssistanceServiceManagerService>();
-        services.AddSingleton<ICfxService, CfxService>();
-        services.AddSingleton<IBackupManagerService, BackupManagerService>();
-        services.AddSingleton<IProgressionSystemService, ProgressionSystemService>();
-        services.AddSingleton<IMessageService, MessageService>();
+        services.AddSingleton<FileHandlerService>();
+        services.AddSingleton<IFileHandlerService>(provider => provider.GetRequiredService<FileHandlerService>());
+
+        services.AddSingleton<CommandService>();
+        services.AddSingleton<ICommandService>(provider => provider.GetRequiredService<CommandService>());
+
+        services.AddSingleton<DevToolsService>();
+        services.AddSingleton<IDevToolsService>(provider => provider.GetRequiredService<DevToolsService>());
+
+        services.AddSingleton<DepartmentService>();
+        services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
+
+        services.AddSingleton<NotificationService>();
+        services.AddSingleton<INotificationService>(provider => provider.GetRequiredService<NotificationService>());
+
+        services.AddSingleton<EntityService>();
+        services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
+
+        services.AddSingleton<MarkerService>();
+        services.AddSingleton<IMarkerService>(provider => provider.GetRequiredService<MarkerService>());
+
+        services.AddSingleton<ConfirmationService>();
+        services.AddSingleton<IConfirmationService>(provider => provider.GetRequiredService<ConfirmationService>());
+
+        services.AddSingleton<RandomService>();
+        services.AddSingleton<IRandomService>(provider => provider.GetRequiredService<RandomService>());
+
+        services.AddSingleton<AssistanceServiceManagerService>();
+        services.AddSingleton<IAssistanceServiceManagerService>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
+
+        services.AddSingleton<CfxService>();
+        services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
+
+        services.AddSingleton<ProgressionSystemService>();
+        services.AddSingleton<IProgressionSystemService>(provider => provider.GetRequiredService<ProgressionSystemService>());
+
+        services.AddSingleton<MessageService>();
+        services.AddSingleton<IMessageService>(provider => provider.GetRequiredService<MessageService>());
+
+        services.AddSingleton<UnitManagerService>();
+        services.AddSingleton<IUnitManagerService>(provider => provider.GetRequiredService<UnitManagerService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UnitManagerService>());
+
+        services.AddSingleton<UnitService>();
+        services.AddSingleton<IUnitService>(provider => provider.GetRequiredService<UnitService>());
+
+        services.AddSingleton<BackupManagerService>();
+        services.AddSingleton<IBackupManagerService>(provider => provider.GetRequiredService<BackupManagerService>());
 
         services.AddSingleton<LooseDataService>();
         services.AddSingleton<ILooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
@@ -320,6 +360,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<CalloutDetailService>();
         services.AddSingleton<ICalloutDetailService>(provider => provider.GetRequiredService<CalloutDetailService>());
 
+        services.AddSingleton<VehicleConfigService>();
+        services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
+
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);
@@ -361,14 +404,19 @@ internal class Bootstrapper : BaseScript
             }
         });
 
-        // Register all event listeners for services
+        var tickQueueService = this._provider.GetService<IInternalTickQueueService>();
+        this.Tick += tickQueueService!.OnTickAsync;
+    }
+
+    /// <summary>
+    /// Invokes the OnInit method of services registered with the IOnInit interface.
+    /// </summary>
+    private void PerformServiceInitialization()
+    {
         foreach (var service in this._provider.GetServices<IOnInit>())
         {
             service.OnInit();
         }
-
-        var tickQueueService = this._provider.GetService<IInternalTickQueueService>();
-        this.Tick += tickQueueService!.OnTickAsync;
     }
 
     /// <summary>

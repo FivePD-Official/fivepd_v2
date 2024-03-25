@@ -475,6 +475,35 @@ namespace FivePD.Server.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.VehicleConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Extras")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Livery")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Options")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleConfigs");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
                 {
                     b.HasOne("FivePD.Server.Models.CalloutDetails", "CalloutDetails")

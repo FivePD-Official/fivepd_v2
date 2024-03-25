@@ -15,7 +15,7 @@ internal sealed record ClientIncidentDTO
 
     public string Description { get; init; }
 
-    public FIncidentPriority Priority { get; init; }
+    public FPriority Priority { get; init; }
 
     public float ActivityRadius { get; init; }
 

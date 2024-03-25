@@ -32,8 +32,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private readonly INotificationService _notificationService;
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
-    private readonly IUnitService _unitService;
-    private readonly IPlayerHandlerService _playerHandlerService;
     private readonly ILocalizationService _localizationService;
 
     /// <summary>
@@ -45,8 +43,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
-    /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
-    /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
@@ -55,8 +51,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         INotificationService notificationService,
         IConfigService configService,
         ILogger logger,
-        IUnitService unitService,
-        IPlayerHandlerService playerHandlerService,
         ILocalizationService localizationService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
@@ -65,10 +59,11 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._notificationService = notificationService;
         this._configService = configService;
         this._logger = logger;
-        this._unitService = unitService;
-        this._playerHandlerService = playerHandlerService;
         this._localizationService = localizationService;
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<PlayerDutyStatusChangeEventArgs> PlayerDutyStatusChanged;
 
     /// <inheritdoc />
     public event EventHandler<PlayerRankChangeEventArgs> PlayerRankChanged;
@@ -258,15 +253,13 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 },
             });
 
-        var playerDetails = this._playerHandlerService.FindUserOfPlayer(player);
-        if (status == FDutyStatus.OffDuty)
-        {
-            this._unitService.RemovePlayerFromUnit(fPlayer);
-        }
-        else
-        {
-            this._unitService.CreateUnit(playerDetails.Callsign, fPlayer);
-        }
+        this.PlayerDutyStatusChanged?.Invoke(
+            this,
+            new PlayerDutyStatusChangeEventArgs
+            {
+                Player = fPlayer,
+                Status = status,
+            });
     }
 
     private void CreatePlayerData(Player player)
