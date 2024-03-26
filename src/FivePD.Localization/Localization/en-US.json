@@ -203,6 +203,8 @@
   "UI.LABEL.LABEL.SINGULAR": "Label",
   "UI.LABEL.LETTER.SINGULAR": "Letter",
   "UI.LABEL.LIVERY.SINGULAR": "Livery",
+  "UI.LABEL.LOCATION.SUCCESS.CREATE": "Location has been successfully created.",
+  "UI.LABEL.LOCATION.SUCCESS.DELETE": "Location has been successfully deleted.",
   "UI.LABEL.LONG_TEXT.SINGULAR": "Long text",
   "UI.LABEL.MAX_MEMBERS.HELP_LABEL": "If set to zero there won't be any limit.",
   "UI.LABEL.MAX_MEMBERS.TITLE": "Max number of members",

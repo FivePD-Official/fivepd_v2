@@ -69,7 +69,7 @@ public class LocationService : ILocationService, IOnInit
             Position = request.Position,
         });
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOCATION.SUCCESS.CREATE");
         this.UpdateMarkersForAllPlayers();
     }
 
@@ -102,7 +102,7 @@ public class LocationService : ILocationService, IOnInit
 
         this._databaseContext.Locations.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOCATION.SUCCESS.DELETE");
         this.UpdateMarkersForAllPlayers();
     }
 
