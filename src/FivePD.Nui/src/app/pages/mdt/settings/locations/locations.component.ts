@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageHeaderComponent } from "../../../../components/page-header/page-header.component";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
@@ -8,9 +8,10 @@ import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
 import { BehaviorSubject, filter, switchMap } from "rxjs";
-import { Button, Collation, Column, Location, LocationType, NumberField, TextField } from "@models";
+import { Button, Collation, Column, GeneralConfig, Location, LocationType, NumberField, TextField } from "@models";
 import { LocationService } from "@services/location/location.service";
 import { DevtoolsService } from "@services/devtools/devtools.service";
+import { ConfigService } from "@services/config/config.service";
 
 @Component({
   selector: 'app-locations',
@@ -18,7 +19,7 @@ import { DevtoolsService } from "@services/devtools/devtools.service";
   imports: [CommonModule, PageHeaderComponent, TranslatePipe, GridComponent],
   templateUrl: './locations.component.html',
 })
-export class LocationsComponent {
+export class LocationsComponent implements OnInit {
 
   protected readonly _userService = inject(UserService);
   private readonly _locationService = inject(LocationService);
@@ -26,6 +27,9 @@ export class LocationsComponent {
   private readonly _modalService = inject(ModalService);
   private readonly _modalFormService = inject(ModalFormService);
   private readonly _modalConfirmService = inject(ModalConfirmService);
+  private readonly _configService = inject(ConfigService);
+
+  protected generalConfig?: GeneralConfig;
 
   readonly nameColumn = new Column<Location>({
     header: 'UI.LABEL.NAME.SINGULAR',
@@ -98,6 +102,10 @@ export class LocationsComponent {
     this.positionZColumn,
     this.createActionsColumn(() => this.vehicleSelectorCollation$.next(this.vehicleSelectorCollation$.value)),
   ];
+
+  ngOnInit(): void {
+    this._configService.getGeneralConfig().subscribe(config => this.generalConfig = config);
+  }
 
   private createActionsColumn(onResponse: () => void): Column<Location> {
     return new Column<Location>({

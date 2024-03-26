@@ -28,6 +28,9 @@
     ProgressionSystem: boolean;
     Messages: boolean;
   };
+  Mdt: {
+    Access: 'EVERYWHERE' | 'ONLY_VEHICLE' | 'ONLY_SPECIFIC_LOCATIONS' | 'ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS';
+  };
 }
 
 export class GeneralConfig {
@@ -57,5 +60,21 @@ export class GeneralConfig {
 
   canSendMessageAll(): boolean {
     return this._config.Messages.CanSend.toUpperCase() === 'ALL';
+  }
+
+  mdtAccessEverywhere(): boolean {
+    return this._config.Mdt.Access.toUpperCase() === 'EVERYWHERE';
+  }
+
+  mdtAccessOnlyVehicle(): boolean {
+    return this._config.Mdt.Access.toUpperCase() === 'ONLY_VEHICLE';
+  }
+
+  mdtAccessOnlySpecificLocations(): boolean {
+    return this._config.Mdt.Access.toUpperCase() === 'ONLY_SPECIFIC_LOCATIONS';
+  }
+
+  mdtAccessOnlyVehicleAndSpecificLocations(): boolean {
+    return this._config.Mdt.Access.toUpperCase() === 'ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS';
   }
 }

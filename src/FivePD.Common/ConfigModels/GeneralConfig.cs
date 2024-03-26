@@ -45,4 +45,6 @@ public sealed record GeneralConfig : IInternalGeneralConfig
     public VehiclesConfig Vehicles { get; init; } = new();
 
     public MessagesConfig Messages { get; init; } = new();
+
+    public MdtConfig Mdt { get; init; } = new();
 }

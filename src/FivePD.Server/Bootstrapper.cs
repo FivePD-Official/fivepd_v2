@@ -360,6 +360,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
 
         services.AddSingleton<LocationService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocationService>());
         services.AddSingleton<ILocationService>(provider => provider.GetRequiredService<LocationService>());
 
         this._provider = services.BuildServiceProvider();
