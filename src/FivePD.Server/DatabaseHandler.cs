@@ -78,7 +78,7 @@ internal static class DatabaseHandler
 
                     if (string.IsNullOrEmpty(tableName))
                     {
-                        logger?.Fatal("The database type is not 'mariadb' or 'mysql'. Verify the settings in the /Config/general file and try again.");
+                        logger?.Fatal("The database type is not 'MARIADB' or 'MYSQL'. Verify the settings in the /Config/general file and try again.");
                         LifecycleHandler.Stop();
                         return;
                     }

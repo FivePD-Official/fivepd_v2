@@ -1,11 +1,11 @@
 ﻿export interface IGeneralConfig {
   DefaultLanguage: string;
   Unit: {
-    Join: string;
+    Join: 'FREE' | 'REQUEST';
     MaxMembers: number;
   };
   Callout: {
-    DispatchType: 'auto' | 'manual';
+    DispatchType: 'AUTO' | 'MANUAL';
     MinIntervalInMs: number;
     MaxIntervalInMs: number;
     MaxActiveCallouts: number;
