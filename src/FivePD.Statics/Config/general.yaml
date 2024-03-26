@@ -24,13 +24,13 @@ Unit:
   Join: FREE # FREE = anyone can join, REQUEST = players have to request to join
 
 Callout:
-  DispatchType: auto # auto = automatic dispatch, manual = manual dispatch
+  DispatchType: AUTO # AUTO = automatic dispatch, MANUAL = manual dispatch
   MinIntervalInMs: 4000
   MaxIntervalInMs: 5000
   MaxActiveCallouts: 3 # 0 = unlimited, 0+ = limited
   DispatchTimeoutInMs: 30000 # dispatchers have 30 seconds to assign a unit to a callout
   AreaBasedDispatch: true # true = callouts will be dispatched to a unit only if the callout is within its department's area, false = callouts will be dispatched to a unit regardless of the callout's location
-  DynamicDispatch: # dynamic dispatch is only available when DispatchType is set to auto
+  DynamicDispatch: # dynamic dispatch is only available when DispatchType is set to AUTO
     Enabled: false # true = only units within the specified radius will be dispatched, false = all units
     Radius: 200 # radius measured from callout position
 
