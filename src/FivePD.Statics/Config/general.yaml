@@ -1,5 +1,5 @@
 Database:
-  Type: mysql # mysql or mariadb
+  Type: MYSQL # mysql or mariadb
   Name: fivepd
   Address: 127.0.0.1
   Port: 3306 # for mariadb when using the docker compose file, change to 3307
@@ -21,7 +21,7 @@ Features:
 
 Unit:
   MaxMembers: 0 # 0 = unlimited, 1+ = limited
-  Join: free # free = anyone can join, request = players have to request to join
+  Join: FREE # FREE = anyone can join, REQUEST = players have to request to join
 
 Callout:
   DispatchType: auto # auto = automatic dispatch, manual = manual dispatch
@@ -101,10 +101,10 @@ ProgressionSystem:
     VehicleImpounded: 50  # TODO: not implemented yet
 
 AssistanceServices:
-  SpawnType: auto # auto = automatic spawn locations, manual = should specify SpawnLocations
+  SpawnType: AUTO # AUTO = automatic spawn locations, MANUAL = should specify SpawnLocations
   Ambulance:
     ChanceToRevive: 100 # should be between 0-100. the higher the number, the more likely that a ped will be revived
-  SpawnLocations: # optional; only used when SpawnType is set to manual, a random location will be picked for each type
+  SpawnLocations: # optional; only used when SpawnType is set to MANUAL, a random location will be picked for each type
     Ambulance:
       - X: 0
         Y: -1.5
@@ -115,7 +115,7 @@ AssistanceServices:
         Z: 1
 
 Messages:
-  CanSend: all # all = everyone can send messages, admins = only admins can send messages
+  CanSend: ALL # ALL = everyone can send messages, ADMIN = only admins can send messages
 
 DispatchMenuItems:
   - Title: Request ID check from dispatch
