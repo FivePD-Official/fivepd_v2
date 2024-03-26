@@ -21,14 +21,16 @@
                 {{ route.title | translate }}
               </p>
             </div>
-            <div app-icon
-                 [name]="route.open ? IconType.ChevronUp : IconType.ChevronDown"
-                 class="w-[50px] h-full flex flex-center justify-center"
-                 className="h-[20px] text-zinc-400 group-[.active]:text-white">
-            </div>
+            @if (!isSidebarCollapsed) {
+              <div app-icon
+                   [name]="route.open ? IconType.ChevronUp : IconType.ChevronDown"
+                   class="w-[50px] h-full flex flex-center justify-center"
+                   className="h-[20px] text-zinc-400 group-[.active]:text-white">
+              </div>
+            }
           </button>
           @if (route.open) {
-            <div class="pl-4">
+            <div class="border-l border-color" [ngClass]="{'pl-4': !isSidebarCollapsed, 'pl-2': isSidebarCollapsed}">
               @for (subroute of route.children; track subroute) {
                 <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:subroute}"/>
               }
