@@ -3,7 +3,7 @@
 namespace FivePD.Server.Models;
 
 /// <summary>
-/// Represents a location to be used for markers in UI.
+/// Represents a location.
 /// </summary>
 public class Location
 {

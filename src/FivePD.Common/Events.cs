@@ -303,7 +303,12 @@ internal readonly record struct Events
         }
     }
 
-    public readonly record struct DevTools
+    public readonly record struct Location
+    {
+        public const string Update = "fivepd:location:update";
+    }
+
+public readonly record struct DevTools
     {
         public const string DeleteEntities = "fivepd:devtools:deleteEntities";
 

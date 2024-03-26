@@ -34,6 +34,9 @@ Callout:
     Enabled: false # true = only units within the specified radius will be dispatched, false = all units
     Radius: 200 # radius measured from callout position
 
+Mdt:
+  Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE, ONLY_SPECIFIC_LOCATIONS, ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS - admins can access the MDT anywhere and can add locations in the settings 
+
 Peds:
   ChanceToReuseData: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again
   Alcohol:

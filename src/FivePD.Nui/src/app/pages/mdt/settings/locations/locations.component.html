@@ -1,10 +1,12 @@
 <app-page-header [title]="'Locations' | translate"/>
 
-<app-grid [title]="'MDT access points' | translate"
-          [data]="mdtAccessPointsPage$ | async"
-          [buttons]="mdtAccessPointsButtons"
-          [columns]="mdtAccessPointsColumns"
-          (onCollationChange)="mdtAccessPointsCollation$.next($event)"/>
+@if (generalConfig?.mdtAccessOnlySpecificLocations() || generalConfig?.mdtAccessOnlyVehicleAndSpecificLocations()) {
+  <app-grid [title]="'MDT access points' | translate"
+            [data]="mdtAccessPointsPage$ | async"
+            [buttons]="mdtAccessPointsButtons"
+            [columns]="mdtAccessPointsColumns"
+            (onCollationChange)="mdtAccessPointsCollation$.next($event)"/>
+}
 
 <app-grid [title]="'Jail drop-off points' | translate"
           [data]="jailDropOffPage$ | async"

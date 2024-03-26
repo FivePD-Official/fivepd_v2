@@ -15,6 +15,7 @@ using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -51,11 +52,22 @@ public class LocationService : ILocationService, IOnInit
     void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
+
+        var locations = this._databaseContext.Locations.ToList();
+        foreach (var player in this._playerList)
+        {
+            this.OnInitOrOnPlayerConnected(player, locations);
+        }
     }
 
     private void OnPlayerConnected([FromSource] Player player)
     {
-        this.UpdateMarkersForPlayer(player);
+        this.OnInitOrOnPlayerConnected(player, this._databaseContext.Locations.ToList());
+    }
+
+    private void OnInitOrOnPlayerConnected(Player player, List<Location> locations)
+    {
+        this.UpdateMarkersForPlayer(player, locations);
     }
 
     [UIEvent(Events.UI.Location.Create)]
@@ -115,20 +127,22 @@ public class LocationService : ILocationService, IOnInit
 
         this._markers.Clear();
 
-        foreach (var location in this._databaseContext.Locations)
+        var locations = this._databaseContext.Locations.ToList();
+        foreach (var player in this._playerList)
         {
-            var guid = this._markerService.AddMarker(this._playerList, this.CreateMarker(location));
-            this._markers.Add(guid);
+            this.UpdateMarkersForPlayer(player, locations);
         }
     }
 
-    private void UpdateMarkersForPlayer(Player player)
+    private void UpdateMarkersForPlayer(Player player, List<Location> locations)
     {
-        foreach (var location in this._databaseContext.Locations)
+        foreach (var location in locations)
         {
             var guid = this._markerService.AddMarker(player, this.CreateMarker(location));
             this._markers.Add(guid);
         }
+
+        player.TriggerEvent(Events.Location.Update, JsonConvert.SerializeObject(locations));
     }
 
     private Marker CreateMarker(Location location)

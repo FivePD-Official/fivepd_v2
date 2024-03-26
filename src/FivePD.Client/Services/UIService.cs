@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Dynamic;
+using System.Linq;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Attributes;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
+using FivePD.Client.Models;
 using FivePD.Client.Utilities;
 using FivePD.Common;
+using FivePD.Common.ConfigModels;
+using FivePD.Common.ConfigModels.GeneralConfigs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
@@ -20,22 +25,38 @@ internal class UIService : IUIService, IOnInit
     private readonly IConfigService _configService;
     private readonly IControlService _controlService;
     private readonly IUIManagerService _uiManagerService;
+    private readonly ILocationService _locationService;
+
+    private GeneralConfig _generalConfig = new()
+    {
+        Mdt = new MdtConfig
+        {
+            Access = "EVERYWHERE",
+        },
+    };
 
     /// <summary>Initializes a new instance of the <see cref="UIService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
     /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
+    /// <param name="locationService">The <see cref="ILocationService"/> to use.</param>
     public UIService(
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
         IControlService controlService,
-        IUIManagerService uiManagerService)
+        IUIManagerService uiManagerService,
+        ILocationService locationService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._controlService = controlService;
         this._uiManagerService = uiManagerService;
+        this._locationService = locationService;
+
+#pragma warning disable CS4014
+        this.GetGeneralConfigAsync();
+#pragma warning restore CS4014
     }
 
     /// <inheritdoc />
@@ -79,7 +100,33 @@ internal class UIService : IUIService, IOnInit
     /// <inheritdoc />
     public void OpenMDT()
     {
-        this._uiManagerService.ToggleView(Events.UIEvent.Mdt);
+        // TODO: check for admin role
+        if (this._generalConfig.Mdt.AccessEverywhere())
+        {
+            this._uiManagerService.ToggleView(Events.UIEvent.Mdt);
+            return;
+        }
+
+        var playerIsInVehicle = Game.PlayerPed.IsInVehicle();
+        if (this._generalConfig.Mdt.AccessOnlyVehicle() && playerIsInVehicle)
+        {
+            this._uiManagerService.ToggleView(Events.UIEvent.Mdt);
+            return;
+        }
+
+        var isInRangeOfMarkedLocation = this._locationService.Locations
+            .Where(x => x.Type == LocationType.MdtAccess)
+            .Any(x => Game.PlayerPed.IsInRangeOf(x.Position, 3f));
+        if (this._generalConfig.Mdt.AccessOnlySpecificLocations() && isInRangeOfMarkedLocation)
+        {
+            this._uiManagerService.ToggleView(Events.UIEvent.Mdt);
+            return;
+        }
+
+        if (this._generalConfig.Mdt.AccessOnlyVehicleAndSpecificLocations() && (playerIsInVehicle || isInRangeOfMarkedLocation))
+        {
+            this._uiManagerService.ToggleView(Events.UIEvent.Mdt);
+        }
     }
 
     /// <inheritdoc />
@@ -155,5 +202,12 @@ internal class UIService : IUIService, IOnInit
         Cfx.API.SetCursorLocation(0.5f, 0.5f);
 
         this._uiManagerService.ToggleView(Events.UIEvent.RadialMenu, menuId);
+    }
+
+#pragma warning disable S3241
+    private async Task GetGeneralConfigAsync()
+#pragma warning restore S3241
+    {
+        this._generalConfig = await this._configService.GeneralConfig;
     }
 }
