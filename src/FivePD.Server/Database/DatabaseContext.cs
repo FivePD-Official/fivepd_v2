@@ -150,6 +150,11 @@ public class DatabaseContext : DbContext
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        foreach (var entity in modelBuilder.Model.GetEntityTypes())
+        {
+            entity.SetTableName("fivepd_" + entity.GetTableName());
+        }
+
         modelBuilder.Entity<Department>(type =>
         {
             type.HasMany(department => department.Users)
