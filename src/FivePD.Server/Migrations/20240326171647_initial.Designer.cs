@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-#pragma warning disable CS1591
+#pragma warning disable
 namespace FivePD.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230901180944_loosedata_id")]
-    partial class loosedata_id
+    [Migration("20240326171647_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,6 +18,44 @@ namespace FivePD.Server.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.26")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("FivePD.Server.Models.CalloutDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("AssemblyName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("RulesetType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TypeName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_CalloutDetails");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
+                {
+                    b.Property<int>("CalloutDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CalloutDetailsId", "DepartmentId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("fivepd_CalloutDetailsDepartments");
+                });
 
             modelBuilder.Entity("FivePD.Server.Models.Department", b =>
                 {
@@ -44,7 +82,29 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("DefaultRankId");
 
-                    b.ToTable("Departments");
+                    b.ToTable("fivepd_Departments");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.DepartmentAreaCoordinate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("X")
+                        .HasColumnType("float");
+
+                    b.Property<float>("Y")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("fivepd_DepartmentAreaCoordinates");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Division", b =>
@@ -63,14 +123,13 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Divisions");
+                    b.ToTable("fivepd_Divisions");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.IncidentHistory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -95,7 +154,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IncidentHistories");
+                    b.ToTable("fivepd_IncidentHistories");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.IncidentHistoryUser", b =>
@@ -104,8 +163,8 @@ namespace FivePD.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("IncidentHistoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("IncidentHistoryId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -116,7 +175,28 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IncidentHistoryUsers");
+                    b.ToTable("fivepd_IncidentHistoryUsers");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.Location", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_Locations");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>
@@ -133,6 +213,9 @@ namespace FivePD.Server.Migrations
 
                     b.Property<string>("HelpLabel")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Hidden")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Label")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -165,7 +248,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("SetId");
 
-                    b.ToTable("LooseDataAttributes");
+                    b.ToTable("fivepd_LooseDataAttributes");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataEntity", b =>
@@ -180,7 +263,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("SetId");
 
-                    b.ToTable("LooseDataEntities");
+                    b.ToTable("fivepd_LooseDataEntities");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataSet", b =>
@@ -190,7 +273,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LooseDataSets");
+                    b.ToTable("fivepd_LooseDataSets");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataValue", b =>
@@ -214,7 +297,100 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("EntityId");
 
-                    b.ToTable("LooseDataValues");
+                    b.ToTable("fivepd_LooseDataValues");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Sender")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("fivepd_Messages");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.PedHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double>("AlcoholLevel")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("Birthdate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Drugs")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Firstname")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Items")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Lastname")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Warrants")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_PedHistories");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.PedLicense", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("PedHistoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedHistoryId");
+
+                    b.ToTable("fivepd_PedLicenses");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Rank", b =>
@@ -236,7 +412,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Ranks");
+                    b.ToTable("fivepd_Ranks");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.User", b =>
@@ -251,8 +427,14 @@ namespace FivePD.Server.Migrations
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("DismissedWelcomeMessage")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int?>("DivisionId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("FirstLogin")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("FixedRank")
                         .HasColumnType("tinyint(1)");
@@ -275,6 +457,9 @@ namespace FivePD.Server.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<string>("PreferredLanguage")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<int?>("RankId")
                         .HasColumnType("int");
 
@@ -292,7 +477,51 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("RankId");
 
-                    b.ToTable("Users");
+                    b.ToTable("fivepd_Users");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VehicleConfig<System.Collections.Generic.Dictionary<string, object>>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Extras")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Livery")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Options")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_VehicleConfigs");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.CalloutDetails", "CalloutDetails")
+                        .WithMany("CalloutDetailsDepartments")
+                        .HasForeignKey("CalloutDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FivePD.Server.Models.Department", "Department")
+                        .WithMany("CalloutDetailsDepartments")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Department", b =>
@@ -300,6 +529,13 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.Rank", "DefaultRank")
                         .WithMany()
                         .HasForeignKey("DefaultRankId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.DepartmentAreaCoordinate", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.Department", "Department")
+                        .WithMany("AreaCoordinates")
+                        .HasForeignKey("DepartmentId");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Division", b =>
@@ -348,6 +584,22 @@ namespace FivePD.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.Message", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.User", "User")
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.PedLicense", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.PedHistory", "PedHistory")
+                        .WithMany("Licenses")
+                        .HasForeignKey("PedHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.Rank", b =>
                 {
                     b.HasOne("FivePD.Server.Models.Department", "Department")
@@ -360,10 +612,13 @@ namespace FivePD.Server.Migrations
                             b1.Property<int>("RankId")
                                 .HasColumnType("int");
 
+                            b1.Property<bool>("DepartmentManager")
+                                .HasColumnType("tinyint(1)");
+
                             b1.Property<bool>("Kick")
                                 .HasColumnType("tinyint(1)");
 
-                            b1.Property<bool>("SetCallsign")
+                            b1.Property<bool>("SetDivision")
                                 .HasColumnType("tinyint(1)");
 
                             b1.Property<bool>("SetRank")
@@ -371,7 +626,7 @@ namespace FivePD.Server.Migrations
 
                             b1.HasKey("RankId");
 
-                            b1.ToTable("Ranks");
+                            b1.ToTable("fivepd_Permissions");
 
                             b1.WithOwner()
                                 .HasForeignKey("RankId");
