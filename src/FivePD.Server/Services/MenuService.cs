@@ -30,6 +30,7 @@ public class MenuService : IMenuService, IOnInit
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
+    private readonly IConfigService _configService;
 
     private readonly Dictionary<Type, string> _menus = new(); // Menu type, menu key
 
@@ -39,27 +40,51 @@ public class MenuService : IMenuService, IOnInit
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
-    public MenuService(IServiceProvider serviceProvider, EventHandlerDictionary eventHandlerDictionary, ILogger logger)
+    public MenuService(
+        IServiceProvider serviceProvider, 
+        EventHandlerDictionary eventHandlerDictionary, 
+        ILogger logger,
+        IConfigService configService)
     {
         this._serviceProvider = serviceProvider;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._logger = logger;
+        this._configService = configService;
     }
 
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
-        this.Register<VehicleSelectorMenu>();
-        this.Register<LoadoutSelectorMenu>();
-        this.Register<DispatchMenu>();
-        this.Register<AssistanceMenu>();
-        this.Register<InteractionMenu>();
-
         this._eventHandlerDictionary[Events.UI.Menu.OnOpen] += new Action<Player, string, NetworkCallbackDelegate>(this.OnMenuOpen);
         this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string>(this.OnButtonSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, bool>(this.OnCheckboxSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnListSelect] += new Action<Player, string, int>(this.OnListSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnListIndexChange] += new Action<Player, string, int>(this.OnListIndexChange);
+
+        if (this._configService.GeneralConfig.Menu.VehicleSelector.Enabled)
+        {
+            this.Register<VehicleSelectorMenu>();
+        }
+
+        if (this._configService.GeneralConfig.Menu.LoadoutSelector.Enabled)
+        {
+            this.Register<LoadoutSelectorMenu>();
+        }
+
+        if (this._configService.GeneralConfig.Menu.Dispatch.Enabled)
+        {
+            this.Register<DispatchMenu>();
+        }
+
+        if (this._configService.GeneralConfig.Menu.Assistance.Enabled)
+        {
+            this.Register<AssistanceMenu>();
+        }
+        
+        if (this._configService.GeneralConfig.Menu.Interaction.Enabled)
+        {
+            this.Register<InteractionMenu>();
+        }
     }
 
     /// <inheritdoc />

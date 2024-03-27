@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
@@ -50,7 +49,19 @@ public sealed class AssistanceMenu : Menu
 
     public override bool CanOpen(FPlayer player)
     {
-        return true;
+        var config = this._configService.GeneralConfig.Menu.Assistance;
+        if (config.AccessEverywhere())
+        {
+            return true;
+        }
+
+        var playerIsInVehicle = player.FPed.Properties.IsInVehicle;
+        if (config.AccessOnlyVehicle() && playerIsInVehicle)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     protected override List<MenuItem> CreateItems()

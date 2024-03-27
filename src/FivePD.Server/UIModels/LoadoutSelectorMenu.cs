@@ -1,16 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.ConfigModels.MenuConfigs;
-using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
-using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S1450
@@ -44,8 +40,31 @@ public sealed class LoadoutSelectorMenu : Menu
 
     public override bool CanOpen(FPlayer player)
     {
+        var config = this._configService.GeneralConfig.Menu.LoadoutSelector;
+        if (config.AccessEverywhere())
+        {
+            return true;
+        }
+
+        var playerIsInVehicle = player.FPed.Properties.IsInVehicle;
+        if (config.AccessOnlyVehicle() && playerIsInVehicle)
+        {
+            return true;
+        }
+
         var locations = this._locationService.GetAll(LocationType.LoadoutSelector);
-        return locations.Any(x => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(x.Position) <= 3f);
+        var isInRangeOfMarkedLocation = locations.Any(x => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(x.Position) <= 3f);
+        if (config.AccessOnlySpecificLocations() && isInRangeOfMarkedLocation)
+        {
+            return true;
+        }
+
+        if (config.AccessOnlyVehicleAndSpecificLocations() && (playerIsInVehicle || isInRangeOfMarkedLocation))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     protected override List<MenuItem> CreateItems()

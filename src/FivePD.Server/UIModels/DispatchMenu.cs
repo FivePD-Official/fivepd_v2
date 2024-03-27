@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
@@ -210,7 +209,19 @@ public sealed class DispatchMenu : Menu
 
     public override bool CanOpen(FPlayer player)
     {
-        return true;
+        var config = this._configService.GeneralConfig.Menu.Dispatch;
+        if (config.AccessEverywhere())
+        {
+            return true;
+        }
+
+        var playerIsInVehicle = player.FPed.Properties.IsInVehicle;
+        if (config.AccessOnlyVehicle() && playerIsInVehicle)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private async Task RequestLicensePlateCheck(FPlayer player)
