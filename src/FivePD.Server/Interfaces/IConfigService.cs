@@ -35,12 +35,6 @@ public interface IConfigService
     /// <summary>
     /// Gets the "menu.json" file's content.
     /// </summary>
-    /// <returns>Returns the menu configuration.</returns>
-    public MenuConfig MenuConfig { get; }
-
-    /// <summary>
-    /// Gets the "menu.json" file's content.
-    /// </summary>
     /// <returns>Returns a deserialized a list of <see cref="Loadout"/> objects.</returns>
     public List<Loadout> LoadoutsConfig { get; }
 

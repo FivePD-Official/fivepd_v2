@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Server.EntityWrappers;
 
 namespace FivePD.Server.UIModels.MenuModels;
 
@@ -46,6 +47,14 @@ public abstract class Menu
     /// Gets the items.
     /// </summary>
     internal List<MenuItem> InternalItems { get; private set; } = new();
+
+    /// <summary>
+    /// Invoked upon pressing the key of the menu.
+    /// The menu will be opened for the player only if the return value is true.
+    /// </summary>
+    /// <param name="player">The player who initiated the opening of the menu.</param>
+    /// <returns>A value indicating whether the menu should be opened or not.</returns>
+    public abstract bool CanOpen(FPlayer player);
 
     /// <summary>
     /// Creates the items.

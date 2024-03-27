@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.Enums;
 using FivePD.Common.Utilities;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.PedWrapper.States;
 using FivePD.Server.Interfaces;
@@ -54,6 +54,23 @@ public sealed class InteractionMenu : Menu
     internal MenuButtonItem StepOutOfVehicle { get; private set; }
 
     internal MenuListItem Movement { get; private set; }
+    
+    public override bool CanOpen(FPlayer player)
+    {
+        var config = this._configService.GeneralConfig.Menu.Interaction;
+        if (config.AccessEverywhere())
+        {
+            return true;
+        }
+
+        var playerIsInVehicle = player.FPed.Properties.IsInVehicle;
+        if (config.AccessOnlyVehicle() && playerIsInVehicle)
+        {
+            return true;
+        }
+
+        return false;
+    }
 
     protected override List<MenuItem> CreateItems()
     {

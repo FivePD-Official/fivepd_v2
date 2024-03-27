@@ -47,4 +47,6 @@ public sealed record GeneralConfig : IInternalGeneralConfig
     public MessagesConfig Messages { get; init; } = new();
 
     public MdtConfig Mdt { get; init; } = new();
+
+    public MenusConfig Menu { get; init; } = new();
 }
