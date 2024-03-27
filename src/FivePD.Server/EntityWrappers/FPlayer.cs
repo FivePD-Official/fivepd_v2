@@ -166,6 +166,12 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     }
 
     /// <inheritdoc/>
+    Menu IFPlayerWithMenus.FindMenu(string id)
+    {
+        return this._menus.FirstOrDefault(x => x.Id == id);
+    }
+
+    /// <inheritdoc/>
     MenuItem IFPlayerWithMenus.FindMenuItem(string hashcode)
     {
         return this._menus

@@ -227,6 +227,8 @@ internal readonly record struct Events
         {
             public const string GetAll = "fivepd:menu:getAll";
 
+            public const string OnOpen = "fivepd:menu:onMenuOpen";
+
             public const string OnButtonSelect = "fivepd:menu:onButtonSelect";
 
             public const string OnCheckboxSelect = "fivepd:menu:onCheckboxSelect";

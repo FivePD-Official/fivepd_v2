@@ -208,6 +208,11 @@ public sealed class DispatchMenu : Menu
             text.Build());
     }
 
+    public override bool CanOpen(FPlayer player)
+    {
+        return true;
+    }
+
     private async Task RequestLicensePlateCheck(FPlayer player)
     {
         var fVehicle = await this._entityService.GetClosestEntityToPlayerAsync<FVehicle>(player.GetUnderlyingPlayer());

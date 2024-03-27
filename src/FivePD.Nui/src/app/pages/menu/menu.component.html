@@ -11,7 +11,7 @@
                   before:absolute before:z-10 before:inset-0 before:w-full before:h-full before:bg-white/[0.05]
                   [&.selector--on-select]:before:bg-primary/10 [&.selector--on-select]:border-primary"></div>
 
-        @for (item of menuItems;track item) {
+        @for (item of menuItems; track item) {
           <div #item
                class="relative z-20 w-full h-[40px] min-h-[40px] max-h-[40px] flex flex-row items-center justify-between gap-6 px-3"
                [ngClass]="{ 'opacity-50': !item.Enabled }">
@@ -33,32 +33,39 @@
             @if (item.type === MenuItemType.List) {
               <div
                 class="relative -mr-3 w-[calc(30px+100px+30px)] h-full grid grid-rows-1 grid-cols-[30px_1fr_30px] items-center justify-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="left-arrow h-[22px] text-zinc-300 transition-none [&.on-press]:text-primary"
-                     [ngClass]="{ 'text-zinc-500': (item | as: MenuListItem).currentIndex === 0}"
-                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                </svg>
-                <div class="relative w-full h-full overflow-hidden">
-                  <div
-                    class="absolute z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row items-center"
-                    [ngClass]="getMarqueeClass($any(item))">
-                    <p class="whitespace-nowrap"
-                       [ngClass]="{
-                  'text-zinc-300': (item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex].Enabled,
-                  'text-zinc-400': !(item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex].Enabled
-                  }"
-                    >
-                      {{ (item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex].Title }}
-                    </p>
+                @if ((item | as: MenuListItem).items.length) {
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="left-arrow h-[22px] text-zinc-300 transition-none [&.on-press]:text-primary"
+                       [ngClass]="{ 'text-zinc-500': (item | as: MenuListItem).currentIndex === 0}"
+                       fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                  <div class="relative w-full h-full overflow-hidden">
+                    <div
+                      class="absolute z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row items-center"
+                      [ngClass]="getMarqueeClass($any(item))">
+                      <p class="whitespace-nowrap"
+                         [ngClass]="{
+                    'text-zinc-300': (item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex]?.Enabled,
+                    'text-zinc-400': !(item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex]?.Enabled
+                    }"
+                      >
+                        {{ (item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex]?.Title }}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="right-arrow h-[22px] text-zinc-300 transition-none [&.on-press]:text-primary"
-                     [ngClass]="{ 'text-zinc-500': (item | as: MenuListItem).currentIndex === (item | as: MenuListItem).items!.length - 1 }"
-                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="right-arrow h-[22px] text-zinc-300 transition-none [&.on-press]:text-primary"
+                       [ngClass]="{ 'text-zinc-500': (item | as: MenuListItem).currentIndex === (item | as: MenuListItem).items!.length - 1 }"
+                       fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                  </svg>
+                } @else {
+                  <p
+                    class="absolute z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-zinc-300">
+                    No items
+                  </p>
+                }
               </div>
             }
           </div>

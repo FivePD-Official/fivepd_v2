@@ -28,6 +28,7 @@ public class LocationService : ILocationService, IOnInit
     private readonly IMarkerService _markerService;
 
     private readonly List<Guid> _markers = new();
+    private List<Location> _cachedLocations = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocationService"/> class.
@@ -53,21 +54,28 @@ public class LocationService : ILocationService, IOnInit
     {
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
 
-        var locations = this._databaseContext.Locations.ToList();
+        this._cachedLocations = this._databaseContext.Locations.ToList();
+
         foreach (var player in this._playerList)
         {
-            this.OnInitOrOnPlayerConnected(player, locations);
+            this.OnInitOrOnPlayerConnected(player);
         }
+    }
+
+    /// <inheritdoc />
+    public List<Location> GetAll(LocationType type)
+    {
+        return this._cachedLocations.Where(x => x.Type == type).ToList();
     }
 
     private void OnPlayerConnected([FromSource] Player player)
     {
-        this.OnInitOrOnPlayerConnected(player, this._databaseContext.Locations.ToList());
+        this.OnInitOrOnPlayerConnected(player);
     }
 
-    private void OnInitOrOnPlayerConnected(Player player, List<Location> locations)
+    private void OnInitOrOnPlayerConnected(Player player)
     {
-        this.UpdateMarkersForPlayer(player, locations);
+        this.UpdateMarkersForPlayer(player);
     }
 
     [UIEvent(Events.UI.Location.Create)]
@@ -120,6 +128,8 @@ public class LocationService : ILocationService, IOnInit
 
     private void UpdateMarkersForAllPlayers()
     {
+        this._cachedLocations = this._databaseContext.Locations.ToList();
+
         foreach (var guid in this._markers)
         {
             this._markerService.RemoveMarker(guid);
@@ -127,22 +137,21 @@ public class LocationService : ILocationService, IOnInit
 
         this._markers.Clear();
 
-        var locations = this._databaseContext.Locations.ToList();
         foreach (var player in this._playerList)
         {
-            this.UpdateMarkersForPlayer(player, locations);
+            this.UpdateMarkersForPlayer(player);
         }
     }
 
-    private void UpdateMarkersForPlayer(Player player, List<Location> locations)
+    private void UpdateMarkersForPlayer(Player player)
     {
-        foreach (var location in locations)
+        foreach (var location in this._cachedLocations)
         {
             var guid = this._markerService.AddMarker(player, this.CreateMarker(location));
             this._markers.Add(guid);
         }
 
-        player.TriggerEvent(Events.Location.Update, JsonConvert.SerializeObject(locations));
+        player.TriggerEvent(Events.Location.Update, JsonConvert.SerializeObject(this._cachedLocations));
     }
 
     private Marker CreateMarker(Location location)

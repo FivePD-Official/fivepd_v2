@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models.AssistanceServiceModels;
@@ -47,6 +48,11 @@ public sealed class AssistanceMenu : Menu
 
     private Guid _requestedTowingId = Guid.Empty;
 
+    public override bool CanOpen(FPlayer player)
+    {
+        return true;
+    }
+
     protected override List<MenuItem> CreateItems()
     {
         var items = new List<MenuItem>();
@@ -86,7 +92,7 @@ public sealed class AssistanceMenu : Menu
                     this._assistanceService.Cancel(ref this._requestedTowingId);
                     return Task.CompletedTask;
                 };
-                
+
                 void OnCancel()
                 {
                     this._menuService.UpdateMenuListOption<AssistanceMenu, bool>(player, m => m.RequestService, index, item => item.Enabled, true);

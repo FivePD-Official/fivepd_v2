@@ -18,6 +18,13 @@ internal interface IFPlayerWithMenus
     void SetMenus(List<Menu> menus);
 
     /// <summary>
+    /// Finds the first menu with the given id.
+    /// </summary>
+    /// <param name="id">The id of the menu.</param>
+    /// <returns>The found menu.</returns>
+    Menu FindMenu(string id);
+
+    /// <summary>
     /// Finds the first menu item with the given hashcode.
     /// </summary>
     /// <param name="hashcode">The menu item's hashcode.</param>

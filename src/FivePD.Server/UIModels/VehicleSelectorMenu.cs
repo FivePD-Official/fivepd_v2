@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.MenuConfigs;
 using FivePD.Common.DTO;
 using FivePD.Common.Enums;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
@@ -19,29 +21,42 @@ namespace FivePD.Server.UIModels;
 
 #pragma warning disable
 
-public sealed class DutyMenu : Menu
+public sealed class VehicleSelectorMenu : Menu
 {
     private readonly IConfigService _configService;
     private readonly DutyMenuConfig _dutyMenuConfig;
     private readonly IEntityService _entityService;
     private readonly IEventService _eventService;
     private readonly IVehicleConfigService _vehicleConfigService;
+    private readonly ILocationService _locationService;
 
     private MenuListItem _changeLanguageListItem;
 
-    public DutyMenu(IConfigService configService, IEntityService entityService, IEventService eventService, IVehicleConfigService vehicleConfigService)
-        : base(Controls.DutyMenu.Id, Controls.DutyMenu.Title, Controls.DutyMenu.Key)
+    public VehicleSelectorMenu(
+        IConfigService configService, 
+        IEntityService entityService,
+        IEventService eventService, 
+        IVehicleConfigService vehicleConfigService,
+        ILocationService locationService)
+        : base(Controls.VehicleSelectorMenu.Id, Controls.VehicleSelectorMenu.Title, Controls.VehicleSelectorMenu.Key)
     {
         this._configService = configService;
         this._dutyMenuConfig = configService.MenuConfig.DutyMenu;
         this._entityService = entityService;
         this._eventService = eventService;
         this._vehicleConfigService = vehicleConfigService;
+        this._locationService = locationService;
     }
 
     public MenuListItem VehicleSpawnerItem { get; private set; }
 
     public MenuListItem LoadoutItem { get; private set; }
+
+    public override bool CanOpen(FPlayer player)
+    {
+        var locations = this._locationService.GetAll(LocationType.VehicleSelector);
+        return locations.Any(x => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(x.Position) <= 3f);
+    }
 
     protected override List<MenuItem> CreateItems()
     {

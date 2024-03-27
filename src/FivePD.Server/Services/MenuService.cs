@@ -49,11 +49,12 @@ public class MenuService : IMenuService, IOnInit
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
-        this.Register<DutyMenu>();
+        this.Register<VehicleSelectorMenu>();
         this.Register<DispatchMenu>();
         this.Register<AssistanceMenu>();
         this.Register<InteractionMenu>();
 
+        this._eventHandlerDictionary[Events.UI.Menu.OnOpen] += new Action<Player, string, NetworkCallbackDelegate>(this.OnMenuOpen);
         this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string>(this.OnButtonSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, bool>(this.OnCheckboxSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnListSelect] += new Action<Player, string, int>(this.OnListSelect);
@@ -343,6 +344,26 @@ public class MenuService : IMenuService, IOnInit
         var fPlayer = (IFPlayerWithMenus)FPlayer.FromNetId(player.Handle);
         fPlayer.SetMenus(menus);
         networkCallbackDelegate.InvokeWithJson(response);
+    }
+
+    private void OnMenuOpen([FromSource] Player player, string menuId, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var fPlayer = FPlayer.FromNetId(player.Handle);
+        if (fPlayer is null)
+        {
+            networkCallbackDelegate.Invoke(false);
+            return;
+        }
+
+        var menu = ((IFPlayerWithMenus)fPlayer).FindMenu(menuId);
+        if (menu is null)
+        {
+            networkCallbackDelegate.Invoke(false);
+            return;
+        }
+
+        var canOpen = menu.CanOpen(FPlayer.FromPlayer(player));
+        networkCallbackDelegate.Invoke(canOpen);
     }
 
     private void OnButtonSelect([FromSource] Player player, string hashcode)
