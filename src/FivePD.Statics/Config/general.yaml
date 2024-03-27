@@ -104,8 +104,6 @@ Vehicles:
     Registration:
       ChanceToHave: 100
       ChanceForExpired: 100
-  Police: # TODO: remove and move to the new ui vehicle config section
-    EnableSpikeStripInAllVehicles: true # TODO: not implemented yet
 
 ProgressionSystem:
   ExperiencePoints:
