@@ -80,6 +80,9 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     /// <inheritdoc />
     public InformationUpdateDTO Information { get; private set; } = new();
 
+    /// <inheritdoc />
+    public int Role { get; private set; }
+
     /// <inheritdoc/>
     public void OnInit()
     {
@@ -87,6 +90,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
         this._eventHandlerDictionary[Events.Player.UpdateUnitAvailability] += new Action<int>(availability => this.ListenForAvailabilityStatusChanges((FUnitAvailability)availability));
         this._eventHandlerDictionary[Events.Player.UpdateUnitStatus] += new Action<string>(this.ListenForStatusChanges);
         this._eventHandlerDictionary[Events.Player.UpdatePanicModeState] += new Action<bool>(this.ListenForPanicModeChanges);
+        this._eventHandlerDictionary[Events.Player.OnRoleChange] += new Action<int>(role => this.Role = role);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.GetDetails);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeDivision);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeRank);
@@ -95,12 +99,24 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.ChangeFixedRank);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.UpdateDetails);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.User.GetAllSimple);
+
+        BaseScript.TriggerServerEvent(Events.Player.GetRole, new Action<int>(role =>
+        {
+            Debug.WriteLine($"GET ROLE {role}");
+            this.Role = role;
+        }));
     }
 
     /// <inheritdoc/>
     public void OnDestroy()
     {
         this._tickService.OnTick -= this.OnTickAsync;
+    }
+
+    /// <inheritdoc/>
+    public bool PlayerHasRole(UserRole role)
+    {
+        return (this.Role & (int)role) == (int)role;
     }
 
     /// <inheritdoc/>
