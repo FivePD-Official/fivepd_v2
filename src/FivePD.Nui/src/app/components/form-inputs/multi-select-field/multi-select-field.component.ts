@@ -50,12 +50,12 @@ export class MultiSelectFieldComponent implements OnInit {
 
     const selectedItems = this.field.items.filter(item => (this.field.value ?? []).includes(item.key));
     for (const item of selectedItems) {
-      this.setSelectedItems(item);
+      this.setSelectedItems(item, false);
     }
 
     this.control.valueChanges.subscribe(v => {
       if (Array.isArray(this.control.value) && !this.control.value.length) {
-        this.control?.patchValue([]);
+        this.control?.patchValue([], {emitEvent: false});
       }
 
       this.onChange.emit(this.dropdownSelectedItems.map(x => x.key));
@@ -99,15 +99,19 @@ export class MultiSelectFieldComponent implements OnInit {
     return this.dropdownSelectedItems.some(x => x.key === item.key);
   }
 
-  private setSelectedItems(item: DropdownItem | undefined): void {
+  private setSelectedItems(item: DropdownItem | undefined, toggleItem = true): void {
     if (item) {
       let value = [...this.control.value];
-      const valueIndex = value.indexOf(item.key);
-      if (valueIndex > -1) {
-        value.splice(valueIndex, 1);
-      } else {
-        value.push(item.key);
+      if (toggleItem) {
+        const valueIndex = value.indexOf(item.key);
+        if (valueIndex > -1) {
+          value.splice(valueIndex, 1);
+        } else {
+          value.push(item.key);
+        }
       }
+
+      console.log('set', value)
 
       const valueIndex2 = this.dropdownSelectedItems.findIndex(x => x.key === item.key);
       if (valueIndex2 > -1) {

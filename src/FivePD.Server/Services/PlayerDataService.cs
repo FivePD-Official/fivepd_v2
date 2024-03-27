@@ -33,6 +33,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
     private readonly ILocalizationService _localizationService;
+    private readonly IPlayerHandlerService _playerHandlerService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -44,6 +45,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
+    /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         DatabaseContext databaseContext,
@@ -51,7 +53,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         INotificationService notificationService,
         IConfigService configService,
         ILogger logger,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IPlayerHandlerService playerHandlerService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._databaseContext = databaseContext;
@@ -60,6 +63,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._configService = configService;
         this._logger = logger;
         this._localizationService = localizationService;
+        this._playerHandlerService = playerHandlerService;
     }
 
     /// <inheritdoc/>
@@ -77,6 +81,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
         this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, NetworkCallbackDelegate>(this.GetDismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.DismissedWelcomeModal] += new Action<Player>(this.DismissedWelcomeModal);
+        this._eventHandlerDictionary[Events.Player.GetRole] += new Action<Player, NetworkCallbackDelegate>(this.GetRole);
 
         foreach (var player in this._playerList)
         {
@@ -314,6 +319,12 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
     }
 
+    private void GetRole([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var user = this._playerHandlerService.FindUserOfPlayer(player);
+        networkCallbackDelegate.Invoke(user?.Role ?? 0);
+    }
+
     [UIEvent(Events.UI.Player.GetDetails, true)]
     private void GetPlayerDetailsUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -517,6 +528,9 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             {
                 { "name", user.Name },
             });
+
+        var playerOfUser = this._playerHandlerService.FindPlayerOfUser(user);
+        playerOfUser?.TriggerEvent(Events.Player.OnRoleChange, user.Role);
     }
 
     [UIEvent(Events.User.GetAllSimple)]

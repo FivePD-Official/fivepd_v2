@@ -27,6 +27,10 @@ internal readonly record struct Events
         public const string GetDismissedWelcomeModal = "fivepd:player:getDismissedWelcomeModal";
 
         public const string DismissedWelcomeModal = "fivepd:player:dismissedWelcomeModal";
+
+        public const string GetRole = "fivepd:player:getRole";
+
+        public const string OnRoleChange = "fivepd:player:onRoleChange";
     }
 
     public readonly record struct Ped

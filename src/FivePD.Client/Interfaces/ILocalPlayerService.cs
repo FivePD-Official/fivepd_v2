@@ -36,6 +36,18 @@ internal interface ILocalPlayerService
     public InformationUpdateDTO Information { get; }
 
     /// <summary>
+    /// Gets the player's role.
+    /// </summary>
+    public int Role { get; }
+
+    /// <summary>
+    /// Gets whether the user has the specified role.
+    /// </summary>
+    /// <param name="role">The role you want to check.</param>
+    /// <returns>A boolean.</returns>
+    public bool PlayerHasRole(UserRole role);
+
+    /// <summary>
     /// Updated the information callout.
     /// </summary>
     /// <param name="clientIncidentWithAddress">The new callout.</param>

@@ -66,6 +66,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\MenuItemType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\UserRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtensions.cs" />

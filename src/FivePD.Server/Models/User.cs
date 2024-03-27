@@ -1,19 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using FivePD.Common.Enums;
 
 namespace FivePD.Server.Models;
-
-#pragma warning disable
-[Flags]
-public enum UserRole
-{
-    None = 0,
-    Admin = 1,
-    Developer = 2,
-    Dispatcher = 4,
-}
-#pragma warning restore
 
 /// <summary>
 /// Represents the 'users' table.

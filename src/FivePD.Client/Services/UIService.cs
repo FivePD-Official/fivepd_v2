@@ -12,6 +12,7 @@ using FivePD.Client.Utilities;
 using FivePD.Common;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.ConfigModels.GeneralConfigs;
+using FivePD.Common.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Cfx = CitizenFX.Core.Native;
@@ -26,6 +27,7 @@ internal class UIService : IUIService, IOnInit
     private readonly IControlService _controlService;
     private readonly IUIManagerService _uiManagerService;
     private readonly ILocationService _locationService;
+    private readonly ILocalPlayerService _localPlayerService;
 
     private GeneralConfig _generalConfig = new()
     {
@@ -41,18 +43,21 @@ internal class UIService : IUIService, IOnInit
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
     /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
     /// <param name="locationService">The <see cref="ILocationService"/> to use.</param>
+    /// <param name="localPlayerService">The <see cref="ILocalPlayerService"/> to use.</param>
     public UIService(
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
         IControlService controlService,
         IUIManagerService uiManagerService,
-        ILocationService locationService)
+        ILocationService locationService,
+        ILocalPlayerService localPlayerService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._controlService = controlService;
         this._uiManagerService = uiManagerService;
         this._locationService = locationService;
+        this._localPlayerService = localPlayerService;
 
 #pragma warning disable CS4014
         this.GetGeneralConfigAsync();
@@ -100,8 +105,7 @@ internal class UIService : IUIService, IOnInit
     /// <inheritdoc />
     public void OpenMDT()
     {
-        // TODO: check for admin role
-        if (this._generalConfig.Mdt.AccessEverywhere())
+        if (this._generalConfig.Mdt.AccessEverywhere() || this._localPlayerService.PlayerHasRole(UserRole.Admin))
         {
             this._uiManagerService.ToggleView(Events.UIEvent.Mdt);
             return;
