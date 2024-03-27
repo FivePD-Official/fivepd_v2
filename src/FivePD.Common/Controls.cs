@@ -7,6 +7,8 @@ internal sealed record Controls
     // Menus
     public static readonly Control VehicleSelectorMenu = new("fivepd::vehicleSelectorMenu", "F10", "Vehicle selector menu");
 
+    public static readonly Control LoadoutSelectorMenu = new("fivepd::vehicleSelectorMenu", "F11", "Loadout selector menu");
+
     public static readonly Control DispatchMenu = new("fivepd::dispatchMenu", "F4", "Dispatch menu");
 
     public static readonly Control AssistanceMenu = new("fivepd::assistanceMenu", "F5", "Assistance menu");

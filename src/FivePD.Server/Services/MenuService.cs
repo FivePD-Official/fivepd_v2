@@ -50,6 +50,7 @@ public class MenuService : IMenuService, IOnInit
     void IOnInit.OnInit()
     {
         this.Register<VehicleSelectorMenu>();
+        this.Register<LoadoutSelectorMenu>();
         this.Register<DispatchMenu>();
         this.Register<AssistanceMenu>();
         this.Register<InteractionMenu>();
