@@ -114,7 +114,7 @@ export class SidebarComponent {
           show: () => this.userService.userHasRole(UserRole.Admin),
         },
         {
-          title: 'Vehicle settings',
+          title: 'Vehicles',
           path: () => '/mdt/settings/vehicles',
           icon: IconType.Truck,
           show: () => this.userService.userIsDepartmentManagerOrAdmin(),
