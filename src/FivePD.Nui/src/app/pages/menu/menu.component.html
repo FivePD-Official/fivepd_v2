@@ -46,11 +46,11 @@
                       [ngClass]="getMarqueeClass($any(item))">
                       <p class="whitespace-nowrap"
                          [ngClass]="{
-                    'text-zinc-300': (item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex]?.Enabled,
-                    'text-zinc-400': !(item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex]?.Enabled
+                    'text-zinc-300': (item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex].Enabled,
+                    'text-zinc-400': !(item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex].Enabled
                     }"
                       >
-                        {{ (item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex]?.Title }}
+                        {{ (item | as: MenuListItem).items[(item | as: MenuListItem).currentIndex].Title }}
                       </p>
                     </div>
                   </div>
