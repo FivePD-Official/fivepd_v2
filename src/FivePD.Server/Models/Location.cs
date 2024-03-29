@@ -1,10 +1,12 @@
-﻿using CitizenFX.Core;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using CitizenFX.Core;
 
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents a location.
 /// </summary>
+[Table("fivepd_locations")]
 public class Location
 {
     /// <summary>

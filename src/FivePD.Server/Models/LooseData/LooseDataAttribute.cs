@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models.LooseData;
 
 /// <summary>
 /// Represents a <see cref="LooseDataSet"/> attribute.
 /// </summary>
+[Table("fivepd_loose_data_attributes")]
 public class LooseDataAttribute
 {
     /// <summary>

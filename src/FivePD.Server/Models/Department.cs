@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Models.DTO;
 
 namespace FivePD.Server.Models;
@@ -6,6 +7,7 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents the 'departments' table.
 /// </summary>
+[Table("fivepd_departments")]
 public class Department
 {
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Utilities;
 
 namespace FivePD.Server.Models;
@@ -6,6 +7,7 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a license.
 /// </summary>
+[Table("fivepd_ped_licenses")]
 public class PedLicense
 {
     /// <summary>

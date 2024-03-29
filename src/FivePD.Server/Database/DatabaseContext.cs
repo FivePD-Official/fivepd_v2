@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using CitizenFX.Core;
 using FivePD.Common.ConfigModels;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.LooseData;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
@@ -150,11 +151,6 @@ public class DatabaseContext : DbContext
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var entity in modelBuilder.Model.GetEntityTypes())
-        {
-            entity.SetTableName("fivepd_" + entity.GetTableName());
-        }
-
         modelBuilder.Entity<Department>(type =>
         {
             type.HasMany(department => department.Users)
