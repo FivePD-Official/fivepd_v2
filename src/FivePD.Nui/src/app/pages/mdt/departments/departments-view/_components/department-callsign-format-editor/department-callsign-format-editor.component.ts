@@ -59,6 +59,7 @@ export class DepartmentCallsignFormatEditorComponent {
 
   add(type: CallsignFormatItemType) {
     this._positions.push({
+      Value: type === CallsignFormatItemType.FixedCharacter ? '' : undefined,
       Type: type,
     });
     this.emitChange();
