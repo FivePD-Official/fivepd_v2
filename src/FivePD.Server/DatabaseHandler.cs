@@ -137,7 +137,27 @@ internal static class DatabaseHandler
             Name = "Los Santos Police Department",
             Callsign = "LSPD",
             MaxUsers = 0,
-            CallsignFormat = new List<CallsignFormatItem>(),
+            CallsignFormat = new List<CallsignFormatItem>
+            {
+                new()
+                {
+                    Type = CallsignFormatItemType.FixedCharacter,
+                    Value = "L",
+                },
+                new()
+                {
+                    Type = CallsignFormatItemType.FixedCharacter,
+                    Value = "S",
+                },
+                new()
+                {
+                    Type = CallsignFormatItemType.Dash,
+                },
+                new()
+                {
+                    Type = CallsignFormatItemType.RandomNumber,
+                },
+            },
             Ranks = new List<Rank>
             {
                 new()
