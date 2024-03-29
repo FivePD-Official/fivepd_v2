@@ -32,7 +32,9 @@
           @if (route.open) {
             <div class="border-l border-color" [ngClass]="{'pl-4': !isSidebarCollapsed, 'pl-2': isSidebarCollapsed}">
               @for (subroute of route.children; track subroute) {
-                <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:subroute}"/>
+                @if (subroute.show()) {
+                  <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:subroute}"/>
+                }
               }
             </div>
           }
