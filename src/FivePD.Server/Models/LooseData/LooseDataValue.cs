@@ -1,8 +1,11 @@
-﻿namespace FivePD.Server.Models.LooseData;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FivePD.Server.Models.LooseData;
 
 /// <summary>
 /// Represents an entity's attribute value.
 /// </summary>
+[Table("fivepd_loose_data_values")]
 public class LooseDataValue
 {
     /// <summary>

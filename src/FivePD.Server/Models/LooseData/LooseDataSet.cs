@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models.LooseData;
 
 /// <summary>
 /// Represents a dynamic data set.
 /// </summary>
+[Table("fivepd_loose_data_sets")]
 public class LooseDataSet
 {
     /// <summary>

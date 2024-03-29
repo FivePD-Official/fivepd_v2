@@ -7,6 +7,7 @@ namespace FivePD.Server.Models.LooseData;
 /// <summary>
 /// Represents a dynamic entity.
 /// </summary>
+[Table("fivepd_loose_data_entities")]
 public class LooseDataEntity
 {
     /// <summary>

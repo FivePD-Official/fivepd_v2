@@ -1,7 +1,10 @@
-﻿namespace FivePD.Server.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FivePD.Server.Models;
 
 #pragma warning disable
 
+[Table("fivepd_callout_details_departments")]
 public class CalloutDetailsDepartment
 {
     public int CalloutDetailsId { get; set; }

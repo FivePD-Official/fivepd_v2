@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents the 'divisions' table.
 /// </summary>
+[Table("fivepd_divisions")]
 public class Division
 {
     /// <summary>

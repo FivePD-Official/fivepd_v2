@@ -10,7 +10,7 @@ namespace FivePD.Server.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "fivepd_CalloutDetails",
+                name: "fivepd_callout_details",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -22,11 +22,11 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_CalloutDetails", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_callout_details", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_IncidentHistories",
+                name: "fivepd_incident_histories",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
@@ -40,11 +40,11 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_IncidentHistories", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_incident_histories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_Locations",
+                name: "fivepd_locations",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -55,22 +55,22 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_Locations", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_locations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_LooseDataSets",
+                name: "fivepd_loose_data_sets",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_LooseDataSets", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_loose_data_sets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_PedHistories",
+                name: "fivepd_ped_histories",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -86,11 +86,11 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_PedHistories", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_ped_histories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_VehicleConfigs",
+                name: "fivepd_vehicle_configs",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -104,11 +104,11 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_VehicleConfigs", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_vehicle_configs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_LooseDataAttributes",
+                name: "fivepd_loose_data_attributes",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -129,17 +129,17 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_LooseDataAttributes", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_loose_data_attributes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fivepd_LooseDataAttributes_fivepd_LooseDataSets_SetId",
+                        name: "FK_fivepd_loose_data_attributes_fivepd_loose_data_sets_SetId",
                         column: x => x.SetId,
-                        principalTable: "fivepd_LooseDataSets",
+                        principalTable: "fivepd_loose_data_sets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_LooseDataEntities",
+                name: "fivepd_loose_data_entities",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
@@ -147,17 +147,17 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_LooseDataEntities", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_loose_data_entities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fivepd_LooseDataEntities_fivepd_LooseDataSets_SetId",
+                        name: "FK_fivepd_loose_data_entities_fivepd_loose_data_sets_SetId",
                         column: x => x.SetId,
-                        principalTable: "fivepd_LooseDataSets",
+                        principalTable: "fivepd_loose_data_sets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_PedLicenses",
+                name: "fivepd_ped_licenses",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
@@ -169,17 +169,17 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_PedLicenses", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_ped_licenses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fivepd_PedLicenses_fivepd_PedHistories_PedHistoryId",
+                        name: "FK_fivepd_ped_licenses_fivepd_ped_histories_PedHistoryId",
                         column: x => x.PedHistoryId,
-                        principalTable: "fivepd_PedHistories",
+                        principalTable: "fivepd_ped_histories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_LooseDataValues",
+                name: "fivepd_loose_data_values",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -190,23 +190,23 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_LooseDataValues", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_loose_data_values", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fivepd_LooseDataValues_fivepd_LooseDataAttributes_AttributeId",
+                        name: "FK_fivepd_loose_data_values_fivepd_loose_data_attributes_Attrib~",
                         column: x => x.AttributeId,
-                        principalTable: "fivepd_LooseDataAttributes",
+                        principalTable: "fivepd_loose_data_attributes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_fivepd_LooseDataValues_fivepd_LooseDataEntities_EntityId",
+                        name: "FK_fivepd_loose_data_values_fivepd_loose_data_entities_EntityId",
                         column: x => x.EntityId,
-                        principalTable: "fivepd_LooseDataEntities",
+                        principalTable: "fivepd_loose_data_entities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_CalloutDetailsDepartments",
+                name: "fivepd_callout_details_departments",
                 columns: table => new
                 {
                     CalloutDetailsId = table.Column<int>(nullable: false),
@@ -214,17 +214,17 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_CalloutDetailsDepartments", x => new { x.CalloutDetailsId, x.DepartmentId });
+                    table.PrimaryKey("PK_fivepd_callout_details_departments", x => new { x.CalloutDetailsId, x.DepartmentId });
                     table.ForeignKey(
-                        name: "FK_fivepd_CalloutDetailsDepartments_fivepd_CalloutDetails_Callo~",
+                        name: "FK_fivepd_callout_details_departments_fivepd_callout_details_Ca~",
                         column: x => x.CalloutDetailsId,
-                        principalTable: "fivepd_CalloutDetails",
+                        principalTable: "fivepd_callout_details",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_DepartmentAreaCoordinates",
+                name: "fivepd_department_area_coordinates",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -235,11 +235,11 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_DepartmentAreaCoordinates", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_department_area_coordinates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_Divisions",
+                name: "fivepd_divisions",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -249,26 +249,30 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_Divisions", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_divisions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_Ranks",
+                name: "fivepd_ranks",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     RequiredXp = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    DepartmentId = table.Column<int>(nullable: true)
+                    DepartmentId = table.Column<int>(nullable: true),
+                    Permission_Kick = table.Column<bool>(nullable: true),
+                    Permission_SetRank = table.Column<bool>(nullable: true),
+                    Permission_SetDivision = table.Column<bool>(nullable: true),
+                    Permission_DepartmentManager = table.Column<bool>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_Ranks", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_ranks", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_Departments",
+                name: "fivepd_departments",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -281,38 +285,17 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_Departments", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_departments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fivepd_Departments_fivepd_Ranks_DefaultRankId",
+                        name: "FK_fivepd_departments_fivepd_ranks_DefaultRankId",
                         column: x => x.DefaultRankId,
-                        principalTable: "fivepd_Ranks",
+                        principalTable: "fivepd_ranks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_Permissions",
-                columns: table => new
-                {
-                    RankId = table.Column<int>(nullable: false),
-                    Kick = table.Column<bool>(nullable: false),
-                    SetRank = table.Column<bool>(nullable: false),
-                    SetDivision = table.Column<bool>(nullable: false),
-                    DepartmentManager = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_fivepd_Permissions", x => x.RankId);
-                    table.ForeignKey(
-                        name: "FK_fivepd_Permissions_fivepd_Ranks_RankId",
-                        column: x => x.RankId,
-                        principalTable: "fivepd_Ranks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "fivepd_Users",
+                name: "fivepd_users",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -336,29 +319,29 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_Users", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fivepd_Users_fivepd_Departments_DepartmentId",
+                        name: "FK_fivepd_users_fivepd_departments_DepartmentId",
                         column: x => x.DepartmentId,
-                        principalTable: "fivepd_Departments",
+                        principalTable: "fivepd_departments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_fivepd_Users_fivepd_Divisions_DivisionId",
+                        name: "FK_fivepd_users_fivepd_divisions_DivisionId",
                         column: x => x.DivisionId,
-                        principalTable: "fivepd_Divisions",
+                        principalTable: "fivepd_divisions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_fivepd_Users_fivepd_Ranks_RankId",
+                        name: "FK_fivepd_users_fivepd_ranks_RankId",
                         column: x => x.RankId,
-                        principalTable: "fivepd_Ranks",
+                        principalTable: "fivepd_ranks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_IncidentHistoryUsers",
+                name: "fivepd_incident_history_users",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -368,23 +351,23 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_IncidentHistoryUsers", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_incident_history_users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fivepd_IncidentHistoryUsers_fivepd_IncidentHistories_Inciden~",
+                        name: "FK_fivepd_incident_history_users_fivepd_incident_histories_Inci~",
                         column: x => x.IncidentHistoryId,
-                        principalTable: "fivepd_IncidentHistories",
+                        principalTable: "fivepd_incident_histories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_fivepd_IncidentHistoryUsers_fivepd_Users_UserId",
+                        name: "FK_fivepd_incident_history_users_fivepd_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "fivepd_Users",
+                        principalTable: "fivepd_users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fivepd_Messages",
+                name: "fivepd_messages",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -398,124 +381,124 @@ namespace FivePD.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fivepd_Messages", x => x.Id);
+                    table.PrimaryKey("PK_fivepd_messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fivepd_Messages_fivepd_Users_UserId",
+                        name: "FK_fivepd_messages_fivepd_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "fivepd_Users",
+                        principalTable: "fivepd_users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_CalloutDetailsDepartments_DepartmentId",
-                table: "fivepd_CalloutDetailsDepartments",
+                name: "IX_fivepd_callout_details_departments_DepartmentId",
+                table: "fivepd_callout_details_departments",
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_DepartmentAreaCoordinates_DepartmentId",
-                table: "fivepd_DepartmentAreaCoordinates",
+                name: "IX_fivepd_department_area_coordinates_DepartmentId",
+                table: "fivepd_department_area_coordinates",
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_Departments_DefaultRankId",
-                table: "fivepd_Departments",
+                name: "IX_fivepd_departments_DefaultRankId",
+                table: "fivepd_departments",
                 column: "DefaultRankId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_Divisions_DepartmentId",
-                table: "fivepd_Divisions",
+                name: "IX_fivepd_divisions_DepartmentId",
+                table: "fivepd_divisions",
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_IncidentHistoryUsers_IncidentHistoryId",
-                table: "fivepd_IncidentHistoryUsers",
+                name: "IX_fivepd_incident_history_users_IncidentHistoryId",
+                table: "fivepd_incident_history_users",
                 column: "IncidentHistoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_IncidentHistoryUsers_UserId",
-                table: "fivepd_IncidentHistoryUsers",
+                name: "IX_fivepd_incident_history_users_UserId",
+                table: "fivepd_incident_history_users",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_LooseDataAttributes_SetId",
-                table: "fivepd_LooseDataAttributes",
+                name: "IX_fivepd_loose_data_attributes_SetId",
+                table: "fivepd_loose_data_attributes",
                 column: "SetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_LooseDataEntities_SetId",
-                table: "fivepd_LooseDataEntities",
+                name: "IX_fivepd_loose_data_entities_SetId",
+                table: "fivepd_loose_data_entities",
                 column: "SetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_LooseDataValues_AttributeId",
-                table: "fivepd_LooseDataValues",
+                name: "IX_fivepd_loose_data_values_AttributeId",
+                table: "fivepd_loose_data_values",
                 column: "AttributeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_LooseDataValues_EntityId",
-                table: "fivepd_LooseDataValues",
+                name: "IX_fivepd_loose_data_values_EntityId",
+                table: "fivepd_loose_data_values",
                 column: "EntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_Messages_UserId",
-                table: "fivepd_Messages",
+                name: "IX_fivepd_messages_UserId",
+                table: "fivepd_messages",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_PedLicenses_PedHistoryId",
-                table: "fivepd_PedLicenses",
+                name: "IX_fivepd_ped_licenses_PedHistoryId",
+                table: "fivepd_ped_licenses",
                 column: "PedHistoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_Ranks_DepartmentId",
-                table: "fivepd_Ranks",
+                name: "IX_fivepd_ranks_DepartmentId",
+                table: "fivepd_ranks",
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_Users_DepartmentId",
-                table: "fivepd_Users",
+                name: "IX_fivepd_users_DepartmentId",
+                table: "fivepd_users",
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_Users_DivisionId",
-                table: "fivepd_Users",
+                name: "IX_fivepd_users_DivisionId",
+                table: "fivepd_users",
                 column: "DivisionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fivepd_Users_RankId",
-                table: "fivepd_Users",
+                name: "IX_fivepd_users_RankId",
+                table: "fivepd_users",
                 column: "RankId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_fivepd_CalloutDetailsDepartments_fivepd_Departments_Departme~",
-                table: "fivepd_CalloutDetailsDepartments",
+                name: "FK_fivepd_callout_details_departments_fivepd_departments_Depart~",
+                table: "fivepd_callout_details_departments",
                 column: "DepartmentId",
-                principalTable: "fivepd_Departments",
+                principalTable: "fivepd_departments",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_fivepd_DepartmentAreaCoordinates_fivepd_Departments_Departme~",
-                table: "fivepd_DepartmentAreaCoordinates",
+                name: "FK_fivepd_department_area_coordinates_fivepd_departments_Depart~",
+                table: "fivepd_department_area_coordinates",
                 column: "DepartmentId",
-                principalTable: "fivepd_Departments",
+                principalTable: "fivepd_departments",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_fivepd_Divisions_fivepd_Departments_DepartmentId",
-                table: "fivepd_Divisions",
+                name: "FK_fivepd_divisions_fivepd_departments_DepartmentId",
+                table: "fivepd_divisions",
                 column: "DepartmentId",
-                principalTable: "fivepd_Departments",
+                principalTable: "fivepd_departments",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_fivepd_Ranks_fivepd_Departments_DepartmentId",
-                table: "fivepd_Ranks",
+                name: "FK_fivepd_ranks_fivepd_departments_DepartmentId",
+                table: "fivepd_ranks",
                 column: "DepartmentId",
-                principalTable: "fivepd_Departments",
+                principalTable: "fivepd_departments",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -523,65 +506,62 @@ namespace FivePD.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_fivepd_Ranks_fivepd_Departments_DepartmentId",
-                table: "fivepd_Ranks");
+                name: "FK_fivepd_ranks_fivepd_departments_DepartmentId",
+                table: "fivepd_ranks");
 
             migrationBuilder.DropTable(
-                name: "fivepd_CalloutDetailsDepartments");
+                name: "fivepd_callout_details_departments");
 
             migrationBuilder.DropTable(
-                name: "fivepd_DepartmentAreaCoordinates");
+                name: "fivepd_department_area_coordinates");
 
             migrationBuilder.DropTable(
-                name: "fivepd_IncidentHistoryUsers");
+                name: "fivepd_incident_history_users");
 
             migrationBuilder.DropTable(
-                name: "fivepd_Locations");
+                name: "fivepd_locations");
 
             migrationBuilder.DropTable(
-                name: "fivepd_LooseDataValues");
+                name: "fivepd_loose_data_values");
 
             migrationBuilder.DropTable(
-                name: "fivepd_Messages");
+                name: "fivepd_messages");
 
             migrationBuilder.DropTable(
-                name: "fivepd_PedLicenses");
+                name: "fivepd_ped_licenses");
 
             migrationBuilder.DropTable(
-                name: "fivepd_Permissions");
+                name: "fivepd_vehicle_configs");
 
             migrationBuilder.DropTable(
-                name: "fivepd_VehicleConfigs");
+                name: "fivepd_callout_details");
 
             migrationBuilder.DropTable(
-                name: "fivepd_CalloutDetails");
+                name: "fivepd_incident_histories");
 
             migrationBuilder.DropTable(
-                name: "fivepd_IncidentHistories");
+                name: "fivepd_loose_data_attributes");
 
             migrationBuilder.DropTable(
-                name: "fivepd_LooseDataAttributes");
+                name: "fivepd_loose_data_entities");
 
             migrationBuilder.DropTable(
-                name: "fivepd_LooseDataEntities");
+                name: "fivepd_users");
 
             migrationBuilder.DropTable(
-                name: "fivepd_Users");
+                name: "fivepd_ped_histories");
 
             migrationBuilder.DropTable(
-                name: "fivepd_PedHistories");
+                name: "fivepd_loose_data_sets");
 
             migrationBuilder.DropTable(
-                name: "fivepd_LooseDataSets");
+                name: "fivepd_divisions");
 
             migrationBuilder.DropTable(
-                name: "fivepd_Divisions");
+                name: "fivepd_departments");
 
             migrationBuilder.DropTable(
-                name: "fivepd_Departments");
-
-            migrationBuilder.DropTable(
-                name: "fivepd_Ranks");
+                name: "fivepd_ranks");
         }
     }
 }

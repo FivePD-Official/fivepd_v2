@@ -3,16 +3,14 @@ using System;
 using FivePD.Server.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-#pragma warning disable
+
 namespace FivePD.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240326171647_initial")]
-    partial class initial
+    partial class DatabaseContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,7 +37,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("fivepd_CalloutDetails");
+                    b.ToTable("fivepd_callout_details");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
@@ -54,7 +52,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("fivepd_CalloutDetailsDepartments");
+                    b.ToTable("fivepd_callout_details_departments");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Department", b =>
@@ -82,7 +80,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("DefaultRankId");
 
-                    b.ToTable("fivepd_Departments");
+                    b.ToTable("fivepd_departments");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.DepartmentAreaCoordinate", b =>
@@ -104,7 +102,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("fivepd_DepartmentAreaCoordinates");
+                    b.ToTable("fivepd_department_area_coordinates");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Division", b =>
@@ -123,7 +121,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("fivepd_Divisions");
+                    b.ToTable("fivepd_divisions");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.IncidentHistory", b =>
@@ -154,7 +152,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("fivepd_IncidentHistories");
+                    b.ToTable("fivepd_incident_histories");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.IncidentHistoryUser", b =>
@@ -175,7 +173,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("fivepd_IncidentHistoryUsers");
+                    b.ToTable("fivepd_incident_history_users");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Location", b =>
@@ -196,7 +194,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("fivepd_Locations");
+                    b.ToTable("fivepd_locations");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>
@@ -248,7 +246,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("SetId");
 
-                    b.ToTable("fivepd_LooseDataAttributes");
+                    b.ToTable("fivepd_loose_data_attributes");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataEntity", b =>
@@ -263,7 +261,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("SetId");
 
-                    b.ToTable("fivepd_LooseDataEntities");
+                    b.ToTable("fivepd_loose_data_entities");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataSet", b =>
@@ -273,7 +271,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("fivepd_LooseDataSets");
+                    b.ToTable("fivepd_loose_data_sets");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataValue", b =>
@@ -297,7 +295,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("EntityId");
 
-                    b.ToTable("fivepd_LooseDataValues");
+                    b.ToTable("fivepd_loose_data_values");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Message", b =>
@@ -328,7 +326,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("fivepd_Messages");
+                    b.ToTable("fivepd_messages");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.PedHistory", b =>
@@ -363,7 +361,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("fivepd_PedHistories");
+                    b.ToTable("fivepd_ped_histories");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.PedLicense", b =>
@@ -390,7 +388,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("PedHistoryId");
 
-                    b.ToTable("fivepd_PedLicenses");
+                    b.ToTable("fivepd_ped_licenses");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Rank", b =>
@@ -412,7 +410,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("fivepd_Ranks");
+                    b.ToTable("fivepd_ranks");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.User", b =>
@@ -477,13 +475,19 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("RankId");
 
-                    b.ToTable("fivepd_Users");
+                    b.ToTable("fivepd_users");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.VehicleConfig<System.Collections.Generic.Dictionary<string, object>>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DivisionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Extras")
@@ -506,7 +510,11 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("fivepd_VehicleConfigs");
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("DivisionId");
+
+                    b.ToTable("fivepd_vehicle_configs");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
@@ -626,7 +634,7 @@ namespace FivePD.Server.Migrations
 
                             b1.HasKey("RankId");
 
-                            b1.ToTable("fivepd_Permissions");
+                            b1.ToTable("fivepd_ranks");
 
                             b1.WithOwner()
                                 .HasForeignKey("RankId");
@@ -647,6 +655,17 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.Rank", "Rank")
                         .WithMany("Users")
                         .HasForeignKey("RankId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VehicleConfig<System.Collections.Generic.Dictionary<string, object>>", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
+
+                    b.HasOne("FivePD.Server.Models.Division", "Division")
+                        .WithMany()
+                        .HasForeignKey("DivisionId");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,8 +1,11 @@
-﻿namespace FivePD.Server.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents the 'department_area_coordinates' table.
 /// </summary>
+[Table("fivepd_department_area_coordinates")]
 public class DepartmentAreaCoordinate
 {
     /// <summary>

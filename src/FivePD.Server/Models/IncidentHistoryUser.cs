@@ -1,8 +1,11 @@
-﻿namespace FivePD.Server.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents an incident (callout or traffic stop) history.
 /// </summary>
+[Table("fivepd_incident_history_users")]
 public class IncidentHistoryUser
 {
     /// <summary>
