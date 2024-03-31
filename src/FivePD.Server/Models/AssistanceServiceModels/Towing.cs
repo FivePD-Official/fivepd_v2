@@ -13,7 +13,6 @@ namespace FivePD.Server.Models.AssistanceServiceModels;
 public class Towing : AssistanceService
 {
     private readonly IEntityService _entityService;
-    private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
     private readonly ICfxService _cfxService;
     private readonly INotificationService _notificationService;
@@ -25,14 +24,12 @@ public class Towing : AssistanceService
 
     public Towing(
         IEntityService entityService,
-        IConfigService configService,
         IRandomService randomService,
         ICfxService cfxService,
         INotificationService notificationService,
         IVehicleConfigService vehicleConfigService)
     {
         this._entityService = entityService;
-        this._configService = configService;
         this._randomService = randomService;
         this._cfxService = cfxService;
         this._notificationService = notificationService;
@@ -58,6 +55,12 @@ public class Towing : AssistanceService
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
     {
         var towTrucks = this._vehicleConfigService.GetAll<TowTruckVehicleConfigOptions>(VehicleConfigType.TowTruck);
+        if (towTrucks.Count == 0)
+        {
+            this.OnCompletedOrCancelled();
+            return;
+        }
+
         var serviceVehicle = towTrucks[this._randomService.Random.Next(0, towTrucks.Count)];
 
         this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Benny, this.SpawnLocation, 0f);
@@ -130,13 +133,24 @@ public class Towing : AssistanceService
 
     private void OnCompletedOrCancelled()
     {
-        this._towTruck.Properties.RemoveBlips();
-        this._driver.Task.CruiseWithVehicle(this._towTruck.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
-        Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
-        Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.Handle, 100f);
-        Cfx.API.SetEntityDistanceCullingRadius(this._targetVehicle.GetUnderlyingVehicle.Handle, 100f);
-        this._driver.Properties.MarkAsNoLongerNeeded();
-        this._towTruck.Properties.MarkAsNoLongerNeeded();
-        this._targetVehicle.Properties.MarkAsNoLongerNeeded();
+        if (this._driver is not null)
+        {
+            Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
+            this._driver.Task.CruiseWithVehicle(this._towTruck.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
+            this._driver.Properties.MarkAsNoLongerNeeded();
+        }
+
+        if (this._towTruck is not null)
+        {
+            this._towTruck.Properties.RemoveBlips();
+            Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.Handle, 100f);
+            this._towTruck.Properties.MarkAsNoLongerNeeded();
+        }
+
+        if (this._targetVehicle is not null)
+        {
+            Cfx.API.SetEntityDistanceCullingRadius(this._targetVehicle.GetUnderlyingVehicle.Handle, 100f);
+            this._targetVehicle.Properties.MarkAsNoLongerNeeded();
+        }
     }
 }

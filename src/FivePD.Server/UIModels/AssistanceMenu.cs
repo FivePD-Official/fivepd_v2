@@ -91,7 +91,7 @@ public sealed class AssistanceMenu : Menu
                     this._menuService.RemoveMenuItem<AssistanceMenu>(player, cancelAmbulanceItem);
                 }
 
-                this._requestedAmbulanceId = this._assistanceService.Call<Ambulance>(player, OnCancel);
+                this._requestedAmbulanceId = await this._assistanceService.CallAsync<Ambulance>(player, OnCancel);
                 this._menuService.AddMenuItem<AssistanceMenu>(player, cancelAmbulanceItem);
             }
             else if (index == 1)
@@ -110,7 +110,7 @@ public sealed class AssistanceMenu : Menu
                     this._menuService.RemoveMenuItem<AssistanceMenu>(player, cancelTowingItem);
                 }
 
-                this._requestedTowingId = this._assistanceService.Call<Towing>(player, OnCancel);
+                this._requestedTowingId = await this._assistanceService.CallAsync<Towing>(player, OnCancel);
                 this._menuService.AddMenuItem<AssistanceMenu>(player, cancelTowingItem);
             }
 

@@ -60,8 +60,14 @@ public class Ambulance : AssistanceService
 
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
     {
-        var towTrucks = this._vehicleConfigService.GetAll(VehicleConfigType.Ambulance);
-        var serviceVehicle = towTrucks[this._randomService.Random.Next(0, towTrucks.Count)];
+        var ambulances = this._vehicleConfigService.GetAll(VehicleConfigType.Ambulance);
+        if (ambulances.Count == 0)
+        {
+            this.OnCompletedOrCancelled();
+            return;
+        }
+
+        var serviceVehicle = ambulances[this._randomService.Random.Next(0, ambulances.Count)];
 
         this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Paramedic01SMM, this.SpawnLocation, 0f);
         this._ambulance = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, 0f);
@@ -144,12 +150,19 @@ public class Ambulance : AssistanceService
 
     private void OnCompletedOrCancelled()
     {
-        this._ambulance.Properties.IsSirenActive(false);
-        this._ambulance.Properties.RemoveBlips();
-        this._driver.Task.CruiseWithVehicle(this._ambulance.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
-        Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
-        Cfx.API.SetEntityDistanceCullingRadius(this._ambulance.GetUnderlyingVehicle.Handle, 100f);
-        this._driver.Properties.MarkAsNoLongerNeeded();
-        this._ambulance.Properties.MarkAsNoLongerNeeded();
+        if (this._driver is not null)
+        {
+            Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
+            this._driver.Properties.MarkAsNoLongerNeeded();
+        }
+
+        if (this._ambulance is not null)
+        {
+            this._ambulance.Properties.IsSirenActive(false);
+            this._ambulance.Properties.RemoveBlips();
+            this._driver?.Task.CruiseWithVehicle(this._ambulance.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
+            Cfx.API.SetEntityDistanceCullingRadius(this._ambulance.GetUnderlyingVehicle.Handle, 100f);
+            this._ambulance.Properties.MarkAsNoLongerNeeded();
+        }
     }
 }
