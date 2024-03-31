@@ -187,7 +187,7 @@ export class VehicleSettingsComponent {
   );
   readonly ambulanceVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
-      VehicleConfigType.Police,
+      VehicleConfigType.Ambulance,
       createBaseFields,
       () => this.ambulanceVehicleConfigCollation$.next(this.ambulanceVehicleConfigCollation$.value)
     ),

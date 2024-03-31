@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Models.AssistanceServiceModels;
 
@@ -16,7 +17,7 @@ public interface IAssistanceServiceManagerService
     /// <param name="onCanceled">The action to invoke when the assistance service is canceled.</param>
     /// <typeparam name="T">The type of assistance service to call.</typeparam>
     /// <returns>The GUID of the assistance service.</returns>
-    public Guid Call<T>(FPlayer requestedBy, Action onCanceled = null)
+    public Task<Guid> CallAsync<T>(FPlayer requestedBy, Action onCanceled = null)
         where T : AssistanceService;
 
     /// <summary>

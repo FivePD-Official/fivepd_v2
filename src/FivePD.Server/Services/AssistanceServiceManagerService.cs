@@ -22,6 +22,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     private readonly ILogger _logger;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
+    private readonly IVector3Service _vector3Service;
 
     private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _assistanceServices = new();
 
@@ -33,22 +34,25 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
+    /// <param name="vector3Service">The <see cref="IVector3Service"/> to use.</param>
     public AssistanceServiceManagerService(
         IServiceProvider serviceProvider,
         ITickQueueService tickQueueService,
         ILogger logger,
         IConfigService configService,
-        IRandomService randomService)
+        IRandomService randomService,
+        IVector3Service vector3Service)
     {
         this._serviceProvider = serviceProvider;
         this._tickQueueService = tickQueueService;
         this._logger = logger;
         this._configService = configService;
         this._randomService = randomService;
+        this._vector3Service = vector3Service;
     }
 
     /// <inheritdoc />
-    public Guid Call<T>(FPlayer requestedBy, Action onCanceled = null)
+    public async Task<Guid> CallAsync<T>(FPlayer requestedBy, Action onCanceled = null)
         where T : AssistanceService
     {
         try
@@ -60,7 +64,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
             if (this._configService.GeneralConfig.AssistanceServices.SpawnTypeAuto())
             {
-                ((IInternalAssistanceService)assistanceService).SpawnLocation = new Vector3(704.09f, -117.47f, 52.83f); // TODO: get random location
+                var location = await this._vector3Service.GetRandomLocationAsync(requestedBy.GetUnderlyingPlayer().Character);
+                ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
             }
             else
             {
@@ -86,7 +91,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
             var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, onCanceled, new CancellationTokenSource(), this._logger);
             this._assistanceServices.TryAdd(guid, assistanceServiceInvoker);
+#pragma warning disable CS4014
             this._tickQueueService.EnqueueAsync(assistanceServiceInvoker.InvokeAssistanceServiceMethodsAsync);
+#pragma warning restore CS4014
 
             return guid;
         }
