@@ -484,12 +484,6 @@ namespace FivePD.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DivisionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Extras")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -509,10 +503,6 @@ namespace FivePD.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("DivisionId");
 
                     b.ToTable("fivepd_vehicle_configs");
                 });
@@ -655,17 +645,6 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.Rank", "Rank")
                         .WithMany("Users")
                         .HasForeignKey("RankId");
-                });
-
-            modelBuilder.Entity("FivePD.Server.Models.VehicleConfig<System.Collections.Generic.Dictionary<string, object>>", b =>
-                {
-                    b.HasOne("FivePD.Server.Models.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId");
-
-                    b.HasOne("FivePD.Server.Models.Division", "Division")
-                        .WithMany()
-                        .HasForeignKey("DivisionId");
                 });
 #pragma warning restore 612, 618
         }
