@@ -87,7 +87,7 @@ public class FVehicle : FEntity, IFStatefulContainer
     public FVehicleProperties Properties { get; private set; }
 
     /// <summary>
-    /// Gets the underlying <see cref="Ped"/>.
+    /// Gets the underlying <see cref="Vehicle"/>.
     /// </summary>
     public Vehicle GetUnderlyingVehicle => Entity.FromNetworkId(this.NetworkId) as Vehicle;
 
@@ -100,10 +100,20 @@ public class FVehicle : FEntity, IFStatefulContainer
     /// Created an <see cref="FVehicle"/> wrapper from the specified <see cref="Vehicle"/>.
     /// </summary>
     /// <param name="vehicle">The <see cref="Vehicle"/> instance to use.</param>
-    /// <returns>The FPed.</returns>
+    /// <returns>The FVehicle.</returns>
     public static FVehicle FromVehicle(Vehicle vehicle)
     {
         return new FVehicle(new FVehicleBuilder(new CommonFVehicleBuilder(vehicle.NetworkId)));
+    }
+
+    /// <summary>
+    /// Created an <see cref="FVehicle"/> wrapper from the specified <see cref="Vehicle"/>.
+    /// </summary>
+    /// <param name="networkId">The network ID of the vehicle.</param>
+    /// <returns>The FVehicle.</returns>
+    public static FVehicle FromNetId(int networkId)
+    {
+        return new FVehicle(new FVehicleBuilder(new CommonFVehicleBuilder(networkId)));
     }
 
     /// <summary>

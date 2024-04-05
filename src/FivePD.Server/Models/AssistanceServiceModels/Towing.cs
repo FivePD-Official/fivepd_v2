@@ -81,7 +81,7 @@ public class Towing : AssistanceService
             this._targetVehicle.GetUnderlyingVehicle.Position,
             0f,
             25f,
-            (int)FDrivingStyle.Emergency);
+            (int)FDrivingStyle.Normal);
 
         while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetVehicle.GetUnderlyingVehicle.Position) >= 150f)
         {

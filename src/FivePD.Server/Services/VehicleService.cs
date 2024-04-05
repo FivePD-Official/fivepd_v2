@@ -49,7 +49,16 @@ public class VehicleService : IVehicleService, IOnInit
     /// <inheritdoc/>
     public FVehicle TryGetVehicle(int networkId)
     {
-        return this._vehicles.TryGetValue(networkId, out var fVehicle) ? fVehicle : null;
+        var found = this._vehicles.TryGetValue(networkId, out var vehicle);
+        if (found)
+        {
+            return vehicle;
+        }
+
+        vehicle = FVehicle.FromNetId(networkId);
+        this._vehicles[networkId] = vehicle;
+
+        return vehicle;
     }
 
     private void GenerateVehicle(string serializedFVehicleBuilder)
