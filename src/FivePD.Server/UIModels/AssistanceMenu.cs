@@ -73,7 +73,7 @@ public sealed class AssistanceMenu : Menu
         this.AmbulanceButton = new MenuButtonItem("Request Ambulance", "");
         this.AmbulanceButton.OnSelect += async player =>
         {
-            if (this.AmbulanceButton.Title == "Request Ambulance")
+            if (this._requestedAmbulanceId == Guid.Empty)
             {
                 this._requestedAmbulanceId = await this._assistanceService.CallAsync<Ambulance>(player, OnCancel);
                 this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.AmbulanceButton, item => item.Title, "Cancel Ambulance");
@@ -86,6 +86,7 @@ public sealed class AssistanceMenu : Menu
             void OnCancel()
             {
                 this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.AmbulanceButton, item => item.Title, "Request Ambulance");
+                this._requestedAmbulanceId = Guid.Empty;
             }
 
             
@@ -95,7 +96,7 @@ public sealed class AssistanceMenu : Menu
         this.TowButton = new MenuButtonItem("Request Tow", "");
         this.TowButton.OnSelect += async player =>
         {
-            if (this.TowButton.Title == "Request Tow")
+            if (this._requestedTowingId == Guid.Empty)
             {
                 this._requestedTowingId = await this._assistanceService.CallAsync<Towing>(player, OnCancel);
                 this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.TowButton, item => item.Title, "Cancel Tow");
@@ -108,6 +109,7 @@ public sealed class AssistanceMenu : Menu
             void OnCancel()
             {
                 this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.TowButton, item => item.Title, "Request Tow");
+                this._requestedTowingId = Guid.Empty;
             }
         };
         items.Add(this.TowButton);

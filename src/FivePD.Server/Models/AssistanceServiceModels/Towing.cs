@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
@@ -81,7 +83,7 @@ public class Towing : AssistanceService
             this._targetVehicle.GetUnderlyingVehicle.Position,
             0f,
             25f,
-            (int)FDrivingStyle.Normal);
+            (int)FDrivingStyle.Emergency);
 
         while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetVehicle.GetUnderlyingVehicle.Position) >= 150f)
         {
@@ -92,12 +94,23 @@ public class Towing : AssistanceService
 
             await Task.Delay(100);
         }
+        
+        this._driver.Task.ClearAll();
+        this._driver.Task.DriveTo(
+            this._towTruck.GetUnderlyingVehicle,
+            this._targetVehicle.GetUnderlyingVehicle.Position,
+            0f,
+            5f,
+            (int)FDrivingStyle.Emergency);
 
-        if (this._targetVehicle.GetUnderlyingVehicle is null)
+        if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetVehicle.GetUnderlyingVehicle.Position) >= 150f)
         {
             cancellationTokenSource.Cancel();
+            this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
             return;
         }
+        
+        Debug.WriteLine(this._targetVehicle.GetUnderlyingVehicle.ToString());
 
         await Task.Delay(2000);
 
