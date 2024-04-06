@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
@@ -22,6 +24,8 @@ public class Towing : AssistanceService
     private FVehicle _towTruck;
     private FVehicle _targetVehicle;
 
+    private Vector3 _targetPosition;
+
     public Towing(
         IEntityService entityService,
         IRandomService randomService,
@@ -39,6 +43,7 @@ public class Towing : AssistanceService
     public override async Task SetupAsync()
     {
         this._targetVehicle = this._entityService.GetClosestFVehicleToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
+        this._targetPosition = this._targetVehicle.GetUnderlyingVehicle.Position;
     }
 
     public override Task<bool> CanRunAsync()
@@ -78,12 +83,12 @@ public class Towing : AssistanceService
         this._driver.Properties.SetBlockPermanentEvents(true);
         this._driver.Task.DriveTo(
             this._towTruck.GetUnderlyingVehicle,
-            this._targetVehicle.GetUnderlyingVehicle.Position,
+            this._targetPosition,
             0f,
             25f,
             (int)FDrivingStyle.Emergency);
 
-        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetVehicle.GetUnderlyingVehicle.Position) >= 150f)
+        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
@@ -92,13 +97,22 @@ public class Towing : AssistanceService
 
             await Task.Delay(100);
         }
+        
+        this._driver.Task.ClearAll();
+        this._driver.Task.DriveTo(
+            this._towTruck.GetUnderlyingVehicle,
+            this._targetVehicle.GetUnderlyingVehicle.Position,
+            0f,
+            5f,
+            (int)FDrivingStyle.Emergency);
 
-        if (this._targetVehicle.GetUnderlyingVehicle is null)
+        if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
             cancellationTokenSource.Cancel();
+            this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
             return;
         }
-
+        
         await Task.Delay(2000);
 
         this._cfxService.AttachEntityToEntity(

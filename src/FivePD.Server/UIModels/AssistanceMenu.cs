@@ -41,7 +41,9 @@ public sealed class AssistanceMenu : Menu
         this._menuService = menuService;
     }
 
-    internal MenuListItem RequestService { get; private set; }
+    internal MenuButtonItem AmbulanceButton { get; private set; }
+
+    internal MenuButtonItem TowButton { get; private set; }
 
     private Guid _requestedAmbulanceId = Guid.Empty;
 
@@ -68,55 +70,49 @@ public sealed class AssistanceMenu : Menu
     {
         var items = new List<MenuItem>();
 
-        this.RequestService = new MenuListItem("Request", "", new List<MenuListOption>
+        this.AmbulanceButton = new MenuButtonItem("Request Ambulance", "");
+        this.AmbulanceButton.OnSelect += async player =>
         {
-            new("Ambulance"),
-            new("Towing"),
-        });
-        this.RequestService.OnSelect += async (player, index) =>
-        {
-            if (index == 0)
+            if (this._requestedAmbulanceId == Guid.Empty)
             {
-                var cancelAmbulanceItem = new MenuButtonItem("Cancel ambulance", string.Empty);
-                cancelAmbulanceItem.OnSelect += _ =>
-                {
-                    OnCancel();
-                    this._assistanceService.Cancel(ref this._requestedAmbulanceId);
-                    return Task.CompletedTask;
-                };
-
-                void OnCancel()
-                {
-                    this._menuService.UpdateMenuListOption<AssistanceMenu, bool>(player, m => m.RequestService, index, item => item.Enabled, true);
-                    this._menuService.RemoveMenuItem<AssistanceMenu>(player, cancelAmbulanceItem);
-                }
-
                 this._requestedAmbulanceId = await this._assistanceService.CallAsync<Ambulance>(player, OnCancel);
-                this._menuService.AddMenuItem<AssistanceMenu>(player, cancelAmbulanceItem);
+                this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.AmbulanceButton, item => item.Title, "Cancel Ambulance");
             }
-            else if (index == 1)
+            else
             {
-                var cancelTowingItem = new MenuButtonItem("Cancel towing", string.Empty);
-                cancelTowingItem.OnSelect += _ =>
-                {
-                    OnCancel();
-                    this._assistanceService.Cancel(ref this._requestedTowingId);
-                    return Task.CompletedTask;
-                };
-
-                void OnCancel()
-                {
-                    this._menuService.UpdateMenuListOption<AssistanceMenu, bool>(player, m => m.RequestService, index, item => item.Enabled, true);
-                    this._menuService.RemoveMenuItem<AssistanceMenu>(player, cancelTowingItem);
-                }
-
-                this._requestedTowingId = await this._assistanceService.CallAsync<Towing>(player, OnCancel);
-                this._menuService.AddMenuItem<AssistanceMenu>(player, cancelTowingItem);
+                this._assistanceService.Cancel(ref this._requestedAmbulanceId);
             }
 
-            this._menuService.UpdateMenuListOption<AssistanceMenu, bool>(player, m => m.RequestService, index, item => item.Enabled, false);
+            void OnCancel()
+            {
+                this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.AmbulanceButton, item => item.Title, "Request Ambulance");
+                this._requestedAmbulanceId = Guid.Empty;
+            }
+
+            
         };
-        items.Add(this.RequestService);
+        items.Add(this.AmbulanceButton);
+
+        this.TowButton = new MenuButtonItem("Request Tow", "");
+        this.TowButton.OnSelect += async player =>
+        {
+            if (this._requestedTowingId == Guid.Empty)
+            {
+                this._requestedTowingId = await this._assistanceService.CallAsync<Towing>(player, OnCancel);
+                this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.TowButton, item => item.Title, "Cancel Tow");
+            }
+            else
+            {
+                this._assistanceService.Cancel(ref this._requestedTowingId);
+            }
+
+            void OnCancel()
+            {
+                this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.TowButton, item => item.Title, "Request Tow");
+                this._requestedTowingId = Guid.Empty;
+            }
+        };
+        items.Add(this.TowButton);
 
         return items;
     }
