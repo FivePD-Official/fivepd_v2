@@ -28,6 +28,7 @@ import {
 import { AsyncPipe } from "@angular/common";
 import { Validators } from "@angular/forms";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
+import { LocalizationService } from "@services/localization/localization.service";
 
 function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
   return [
@@ -76,21 +77,21 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
   ];
 }
 
-function createTowTruckFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
+function createTowTruckFields(localizationService: LocalizationService, vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
   const towedVehiclePositionOffset = vehicleConfig?.Options['TowedVehiclePositionOffset'];
 
   return [
     ...createBaseFields(vehicleConfig),
     new CheckboxField({
       key: 'SirenActive',
-      label: 'Activate siren',
-      helpLabel: 'When checked, the siren of the tow truck will be toggled automatically.',
+      label: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.SIREN_ACTIVE.LABEL'),
+      helpLabel: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.SIREN_ACTIVE.HELP_LABEL'),
       required: true,
       value: vehicleConfig?.Options['SirenActive'],
     }),
     new TextField({
       key: 'TowedVehiclePositionOffset',
-      label: 'Towed vehicle position offset',
+      label: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.TOWED_VEHICLE_POSITION_OFFSET.LABEL'),
       placeholder: 'TODO: replace with 3 fields for x,y,z',
       helpLabel: 'format: x,y,z',
       required: true,
@@ -135,6 +136,7 @@ export class VehicleSettingsComponent {
   private readonly _modalService = inject(ModalService);
   private readonly _modalFormService = inject(ModalFormService);
   private readonly _modalConfirmService = inject(ModalConfirmService);
+  private readonly _localizationService = inject(LocalizationService);
 
   readonly nameColumn = new Column<VehicleConfig>({
     header: 'UI.LABEL.NAME.SINGULAR',
@@ -206,7 +208,7 @@ export class VehicleSettingsComponent {
   readonly towTruckVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
       VehicleConfigType.TowTruck,
-      createTowTruckFields,
+      () => createTowTruckFields(this._localizationService),
       () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value),
       mapTowTruckFields
     ),
@@ -214,12 +216,12 @@ export class VehicleSettingsComponent {
   readonly towTruckVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
-    this.createActionsColumn(createTowTruckFields, () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value), mapTowTruckFields),
+    this.createActionsColumn(() => createTowTruckFields(this._localizationService), () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value), mapTowTruckFields),
   ];
 
   private createActionsColumn(fields: (vehicleConfig: VehicleConfig | undefined) => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<VehicleConfig> {
     return new Column<VehicleConfig>({
-      header: 'Actions',
+      header: 'UI.LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
@@ -227,7 +229,7 @@ export class VehicleSettingsComponent {
           show: () => true,
           disabled: () => false,
           onClick: vehicleConfig => this._modalFormService.open({
-            title: 'Edit vehicle',
+            title: 'UI.LABEL.VEHICLE_CONFIG.EDIT.TITLE',
             fields: vehicleConfig => fields(vehicleConfig),
             valueResolver: new ValueResolver(vehicleConfig, this._vehicleConfigService.get(vehicleConfig.Id)),
             buttons: {
@@ -253,8 +255,8 @@ export class VehicleSettingsComponent {
           show: () => true,
           disabled: () => false,
           onClick: vehicleConfig => this._modalConfirmService.open({
-            title: 'Delete vehicle',
-            description: `Are you sure you want to delete the vehicle with name of <b>${vehicleConfig.Name}</b>?`,
+            title: 'UI.LABEL.VEHICLE_CONFIG.DELETE.TITLE',
+            description: this._localizationService.translate('UI.LABEL.VEHICLE_CONFIG.DELETE.DESCRIPTION', {name: vehicleConfig.Name}),
             buttons: {
               submit: {
                 variant: 'danger',
@@ -274,11 +276,11 @@ export class VehicleSettingsComponent {
 
   private createAddVehicleButton(type: VehicleConfigType, fields: () => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Button {
     return {
-      label: 'Create vehicle',
+      label: this._localizationService.translate('UI.LABEL.VEHICLE_CONFIG.CREATE.TITLE'),
       show: () => true,
       disabled: () => false,
       onClick: () => this._modalFormService.open({
-        title: 'Create vehicle',
+        title: 'UI.LABEL.VEHICLE_CONFIG.CREATE.TITLE',
         fields,
         buttons: {
           submit: {
