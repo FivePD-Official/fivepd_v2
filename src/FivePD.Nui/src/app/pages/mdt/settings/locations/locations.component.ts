@@ -12,6 +12,7 @@ import { Button, Collation, Column, GeneralConfig, Location, LocationType, Numbe
 import { LocationService } from "@services/location/location.service";
 import { DevtoolsService } from "@services/devtools/devtools.service";
 import { ConfigService } from "@services/config/config.service";
+import { LocalizationService } from "@services/localization/localization.service";
 
 @Component({
   selector: 'app-locations',
@@ -28,6 +29,7 @@ export class LocationsComponent implements OnInit {
   private readonly _modalFormService = inject(ModalFormService);
   private readonly _modalConfirmService = inject(ModalConfirmService);
   private readonly _configService = inject(ConfigService);
+  private readonly _localizationService = inject(LocalizationService);
 
   protected generalConfig?: GeneralConfig;
 
@@ -109,7 +111,7 @@ export class LocationsComponent implements OnInit {
 
   private createActionsColumn(onResponse: () => void): Column<Location> {
     return new Column<Location>({
-      header: 'Actions',
+      header: 'UI.LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
@@ -117,8 +119,10 @@ export class LocationsComponent implements OnInit {
           show: () => true,
           disabled: () => false,
           onClick: location => this._modalConfirmService.open({
-            title: 'Delete location',
-            description: `Are you sure you want to delete the location with name of <b>${location.Name}</b>?`,
+            title: 'UI.LABEL.LOCATION.DELETE.TITLE',
+            description: this._localizationService.translate('UI.LABEL.LOCATION.DELETE.DESCRIPTION', {
+              name: location.Name,
+            }),
             buttons: {
               submit: {
                 variant: 'danger',
@@ -138,13 +142,13 @@ export class LocationsComponent implements OnInit {
 
   private createAddLocationButton(type: LocationType, onResponse: () => void): Button {
     return {
-      label: 'Create location',
+      label: 'UI.LABEL.LOCATION.CREATE.TITLE',
       show: () => true,
       disabled: () => false,
       onClick: () => this._devToolsService.getCurrentPlayerPosition().pipe(
         switchMap(playerPosition => this._modalFormService.open({
-          title: 'Create location',
-          description: 'The components X, Y, and Z are prepopulated with your present coordinates.',
+          title: 'UI.LABEL.LOCATION.CREATE.TITLE',
+          description: this._localizationService.translate('UI.LABEL.LOCATION.CREATE.DESCRIPTION'),
           fields: () => [
             new TextField({
               key: 'Name',

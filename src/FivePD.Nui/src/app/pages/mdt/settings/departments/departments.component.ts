@@ -52,12 +52,14 @@ export class DepartmentsComponent implements OnInit {
 
   readonly buttons: Button[] = [
     {
-      label: 'Manage areas',
+      label: 'UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TITLE',
       show: () => true,
       disabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch ?? true,
       tooltip: {
         enabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch ?? true,
-        text: 'To manage areas enable the "AreaBasedDispatch" option in the General config.',
+        text: this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TOOLTIP', {
+          configKey: 'AreaBasedDispatch',
+        }),
         placement: 'left',
       },
       onClick: () => this._router.navigate(['mdt', 'settings', 'departments', 'area-management']),

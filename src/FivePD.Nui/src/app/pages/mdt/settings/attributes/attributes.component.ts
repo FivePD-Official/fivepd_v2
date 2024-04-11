@@ -10,6 +10,7 @@ import { PageHeaderComponent } from '../../../../components/page-header/page-hea
 import {
   SingleSelectFieldComponent
 } from "../../../../components/form-inputs/single-select-field/single-select-field.component";
+import { LocalizationService } from "@services/localization/localization.service";
 
 @Component({
   selector: 'app-attributes',
@@ -21,6 +22,7 @@ export class AttributesComponent implements OnInit {
 
   private readonly _looseData = inject(LooseDataService);
   private readonly _attributeGridOptions = inject(AttributeGridOptions);
+  private readonly _localizationService = inject(LocalizationService);
 
   readonly setAttributeDropdown = new SingleSelectField({
     key: '#',
@@ -28,10 +30,10 @@ export class AttributesComponent implements OnInit {
     defaultItemLabel: '',
     addDefaultItem: false,
     items: [
-      {key: CoreSetId.ArrestReport, label: 'Arrest reports'},
-      {key: CoreSetId.IncidentReport, label: 'Incident reports'},
-      {key: CoreSetId.PedTicket, label: 'Ped tickets'},
-      {key: CoreSetId.PedWarning, label: 'Ped warnings'},
+      {key: CoreSetId.ArrestReport, label: this._localizationService.translate('UI.LABEL.LOOSE_DATA_SET.TYPE.ARREST_REPORTS.TITLE')},
+      {key: CoreSetId.IncidentReport, label: this._localizationService.translate('UI.LABEL.LOOSE_DATA_SET.TYPE.INCIDENT_REPORTS.TITLE')},
+      {key: CoreSetId.PedTicket, label: this._localizationService.translate('UI.LABEL.LOOSE_DATA_SET.TYPE.PED_TICKETS.TITLE')},
+      {key: CoreSetId.PedWarning, label: this._localizationService.translate('UI.LABEL.LOOSE_DATA_SET.TYPE.PED_WARNINGS.TITLE')},
     ],
     size: 'normal',
     height: 'base',

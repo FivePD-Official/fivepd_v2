@@ -11,9 +11,7 @@
     }
   </div>
   <div class="flex flex-row items-center h-full">
-    <p class="text-zinc-200 px-8">
-      Logged in as <b>{{ user?.Name }}</b>
-    </p>
+    <p class="text-zinc-200 px-8" [innerHTML]="loggedInAsText"></p>
     <button class="group w-[80px] h-full flex flex-col items-center justify-center border-l border-color cursor-pointer"
             (click)="toggleMaximizedWindow()">
       @if (!windowMaximized) {

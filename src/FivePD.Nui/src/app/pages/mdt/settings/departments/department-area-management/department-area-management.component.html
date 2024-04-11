@@ -1,30 +1,22 @@
-<app-page-header [title]="'Department area management' | translate"/>
+<app-page-header [title]="'UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.TITLE' | translate"/>
 
 <div class="relative w-full grid grid-rows-1 grid-cols-2 gap-6">
 
   <div class="flex flex-col gap-10">
 
     <div class="flex flex-col gap-4">
-      <p class="text-zinc-400">
-        In order to add an area to a department, press the <span class="italic">Edit</span> button in its row,
-        then select the <span class="italic">Add area coordinates</span> button, and click on the map to add a
-        coordinate.
-      </p>
-      <p class="text-zinc-400">
-        Right click on a coordinate marker to remove it.
-      </p>
-      <p class="text-zinc-400">
-        You can also drag the coordinate markers to change their position, when the <span class="italic">Edit</span>
-        mode is enabled.
-        Note that you cannot drag them while adding a new coordinate.
-      </p>
+      <p class="text-zinc-400" [innerHTML]="guide1Text"></p>
+      <p class="text-zinc-400" [innerHTML]="guide2Text"></p>
+      <p class="text-zinc-400" [innerHTML]="guide3Text"></p>
     </div>
 
     <div class="flex flex-col gap-4">
       <div class="flex flex-row items-center justify-end gap-2">
-        <p class="text-zinc-400">Add area coordinates</p>
+        <p class="text-zinc-400">
+          {{ 'UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.ADD_AREA_COORDINATES' | translate }}
+        </p>
         <app-button variant="tertiary"
-                    [label]="canAddPolygonCoordinate ? 'Cancel' : 'Add'"
+                    [label]="(canAddPolygonCoordinate ? 'UI.ACTION.CANCEL' : 'UI.ACTION.ADD') | translate"
                     [disabled]="!currentlyEditingDepartment"
                     (onClick)="toggleCoordinateAdd()"/>
       </div>
@@ -38,14 +30,15 @@
               </p>
               <app-button variant="tertiary"
                           size="sm"
-                          [label]="currentlyEditingDepartment?.Id === item.Id ? 'Cancel edit' : 'Edit'"
+                          [label]="(currentlyEditingDepartment?.Id === item.Id ? 'UI.ACTION.CANCEL_EDIT' : 'UI.ACTION.EDIT') | translate"
                           (onClick)="toggleEdit(item)"/>
             </div>
             @if (!departmentHasEnoughAreaCoordinates(item)) {
               <div class="flex flex-row items-center gap-2">
                 <div app-icon name="Warning" className="h-[20px] text-yellow-500"></div>
-                <p class="text-sm text-yellow-500 font-medium">Department has less than 3 area coordinates. Callouts
-                  will not be dispatched to its units.</p>
+                <p class="text-sm text-yellow-500 font-medium">
+                  {{ guide4Text }}
+                </p>
               </div>
             }
           </div>

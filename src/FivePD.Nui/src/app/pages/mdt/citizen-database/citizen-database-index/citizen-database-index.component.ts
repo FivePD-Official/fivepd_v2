@@ -13,6 +13,7 @@ import { DynamicFormComponent } from '../../../../components/dynamic-form/dynami
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { LooseDataService } from "@services/loose-data/loose-data.service";
 import { BehaviorSubject, map, switchMap, zip } from "rxjs";
+import { LocalizationService } from "@services/localization/localization.service";
 
 @Component({
   selector: 'app-citizen-database-index',
@@ -26,6 +27,7 @@ export class CitizenDatabaseIndexComponent implements OnInit {
   private readonly _pedHistoryService = inject(PedHistoryService);
   private readonly _store = inject<Store<GlobalState>>(Store<GlobalState>);
   private readonly _looseDataService = inject(LooseDataService);
+  private readonly _localizationService = inject(LocalizationService);
 
   readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly citizens$ = this.collation$.pipe(
@@ -38,21 +40,21 @@ export class CitizenDatabaseIndexComponent implements OnInit {
   readonly formFields: FormInputBase<any>[] = [
     new TextField({
       key: 'Firstname',
-      label: 'Firstname',
+      label: 'LABEL.FIRSTNAME',
       placeholder: 'John',
     }),
     new TextField({
       key: 'Lastname',
-      label: 'Lastname',
+      label: 'LABEL.LASTNAME',
       placeholder: 'Doe',
     }),
     new SingleSelectField({
       key: 'Gender',
-      label: 'Gender',
-      defaultItemLabel: 'All',
+      label: 'LABEL.GENDER.TITLE',
+      defaultItemLabel: this._localizationService.translate('UI.LABEL.ALL'),
       items: [
-        {key: FGender.Male, label: 'Male'},
-        {key: FGender.Female, label: 'Female'},
+        {key: FGender.Male, label: this._localizationService.translate('LABEL.GENDER.MALE')},
+        {key: FGender.Female, label: this._localizationService.translate('LABEL.GENDER.FEMALE')},
       ],
       size: 'normal',
       variant: 'secondary',
@@ -60,23 +62,23 @@ export class CitizenDatabaseIndexComponent implements OnInit {
   ];
   readonly citizensColumns: Column<PedHistory>[] = [
     new Column({
-      header: 'Firstname',
+      header: 'LABEL.FIRSTNAME',
       accessorKey: 'Firstname',
       show: () => true,
     }),
     new Column({
-      header: 'Lastname',
+      header: 'LABEL.LASTNAME',
       accessorKey: 'Lastname',
       show: () => true,
     }),
     new Column({
-      header: 'Birthdate',
+      header: 'LABEL.BIRTHDATE',
       valueResolver: item => formatDate(new Date(item.Birthdate), 'none'),
       show: () => true,
     }),
     new Column({
-      header: 'Gender',
-      valueResolver: item => item.Gender === FGender.Male ? 'Male' : 'Female',
+      header: 'LABEL.GENDER.TITLE',
+      valueResolver: item => this._localizationService.translate(item.Gender === FGender.Male ? 'LABEL.GENDER.MALE' : 'LABEL.GENDER.FEMALE'),
       show: () => true,
     }),
   ];

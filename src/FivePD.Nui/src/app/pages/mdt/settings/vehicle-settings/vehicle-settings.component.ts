@@ -59,7 +59,7 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
     }),
     new MultiSelectField({
       key: 'Extras',
-      label: 'Extras',
+      label: 'UI.LABEL.EXTRA.PLURAL',
       defaultItemLabel: '',
       addDefaultItem: false,
       value: vehicleConfig?.Extras,

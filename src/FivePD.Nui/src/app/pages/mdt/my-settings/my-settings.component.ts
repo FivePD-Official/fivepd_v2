@@ -7,7 +7,7 @@ import {
   FormSubmitEvent,
   GeneralConfig,
   PlayerDetailsDTO,
-  SingleSelectField
+  SingleSelectField, User
 } from "@models";
 import { filter, of, switchMap, tap, zip } from "rxjs";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
@@ -70,11 +70,11 @@ export class MySettingsComponent implements OnInit {
       fields.push(new SingleSelectField({
         key: 'PreferredLanguage',
         value: preferredLanguageIndex !== -1 ? preferredLanguageIndex : defaultLanguageIndex,
-        label: 'Language',
+        label: 'UI.LABEL.LANGUAGE.SINGULAR',
         required: true,
         addDefaultItem: false,
         height: 'base',
-        defaultItemLabel: 'Language',
+        defaultItemLabel: this._localizationService.translate('UI.LABEL.LANGUAGE.SINGULAR'),
         variant: 'secondary',
         size: 'normal',
         items: Object.values(this.availableLocalizations).map((title, index) => ({
@@ -111,7 +111,7 @@ export class MySettingsComponent implements OnInit {
 
   tryEditCallsign(): void {
     this._modalService.open(CallsignEditorComponent, {
-        title: 'Edit callsign'
+        title: 'UI.ACTION.EDIT_CALLSIGN'
       }, new Map()
         .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
         .set(CALLSIGN, this.user?.User?.Callsign)
