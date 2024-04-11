@@ -1,26 +1,26 @@
-<app-page-header [title]="'Locations' | translate"/>
+<app-page-header [title]="'UI.LABEL.LOCATION.PLURAL' | translate"/>
 
 @if (generalConfig?.mdtAccessOnlySpecificLocations() || generalConfig?.mdtAccessOnlyVehicleAndSpecificLocations()) {
-  <app-grid [title]="'MDT access points' | translate"
+  <app-grid [title]="'UI.LABEL.LOCATION.TYPE.MDT.TITLE.PLURAL' | translate"
             [data]="mdtAccessPointsPage$ | async"
             [buttons]="mdtAccessPointsButtons"
             [columns]="mdtAccessPointsColumns"
             (onCollationChange)="mdtAccessPointsCollation$.next($event)"/>
 }
 
-<app-grid [title]="'Jail drop-off points' | translate"
+<app-grid [title]="'UI.LABEL.LOCATION.TYPE.JAIL_DROP_OFF.TITLE.PLURAL' | translate"
           [data]="jailDropOffPage$ | async"
           [buttons]="jailDropOffButtons"
           [columns]="jailDropOffColumns"
           (onCollationChange)="jailDropOffCollation$.next($event)"/>
 
-<app-grid [title]="'Loadout selector points' | translate"
+<app-grid [title]="'UI.LABEL.LOCATION.TYPE.LOADOUT_SELECTOR.TITLE.PLURAL' | translate"
           [data]="loadoutSelectorPage$ | async"
           [buttons]="loadoutSelectorButtons"
           [columns]="loadoutSelectorColumns"
           (onCollationChange)="loadoutSelectorCollation$.next($event)"/>
 
-<app-grid [title]="'Vehicle selector points' | translate"
+<app-grid [title]="'UI.LABEL.LOCATION.TYPE.VEHICLE_SELECTOR.TITLE.PLURAL' | translate"
           [data]="vehicleSelectorPage$ | async"
           [buttons]="vehicleSelectorButtons"
           [columns]="vehicleSelectorColumns"

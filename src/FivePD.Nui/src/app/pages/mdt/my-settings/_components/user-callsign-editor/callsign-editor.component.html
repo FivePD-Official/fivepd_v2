@@ -2,7 +2,7 @@
 
   <div class="flex flex-row items-center justify-center gap-2 h-[115px]">
     @for (position of _positions;track position) {
-      <div class="flex flex-col items-center justify-center gap-[5px] w-[80px]">
+      <div class="flex flex-col items-center justify-center gap-[5px] min-w-[80px]">
         <div class="bg-zinc-900/60 p-2 rounded-lg w-full h-[80px] flex flex-col justify-center items-center">
           @if (position.Type === CallsignFormatItemType.Dash) {
               <p class="font-bold text-xl text-zinc-200">-</p>

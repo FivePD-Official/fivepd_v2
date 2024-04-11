@@ -40,13 +40,13 @@ export class SidebarComponent {
       show: () => true,
     },
     {
-      title: 'UI.LABEL.CITIZEN_DATABASE',
+      title: 'UI.LABEL.CITIZEN_DATABASE.TITLE',
       path: () => '/mdt/citizen-database',
       icon: IconType.Identification,
       show: () => true,
     },
     {
-      title: 'UI.LABEL.VEHICLE_DATABASE',
+      title: 'UI.LABEL.VEHICLE_DATABASE.TITLE',
       path: () => '/mdt/vehicle-database',
       icon: IconType.Truck,
       show: () => true,
@@ -90,37 +90,37 @@ export class SidebarComponent {
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
       children: [
         {
-          title: 'Users',
+          title: 'UI.LABEL.USER.PLURAL',
           path: () => `/mdt/settings/users`,
           icon: IconType.Users,
           show: () => this.userService.userHasRole(UserRole.Admin),
         },
         {
-          title: 'Departments',
+          title: 'UI.LABEL.DEPARTMENT.PLURAL',
           path: () => `/mdt/settings/departments`,
           icon: IconType.Building2,
           show: () => true,
         },
         {
-          title: 'Callouts',
+          title: 'UI.LABEL.CALLOUT.PLURAL',
           path: () => `/mdt/settings/callouts`,
           icon: IconType.Megaphone,
           show: () => this.userService.userHasRole(UserRole.Admin),
         },
         {
-          title: 'Attributes',
+          title: 'UI.LABEL.ATTRIBUTE.PLURAL',
           path: () => `/mdt/settings/attributes`,
           icon: IconType.AtSymbol,
           show: () => this.userService.userHasRole(UserRole.Admin),
         },
         {
-          title: 'Vehicles',
+          title: 'UI.LABEL.VEHICLE.PLURAL',
           path: () => '/mdt/settings/vehicles',
           icon: IconType.Truck,
           show: () => this.userService.userIsDepartmentManagerOrAdmin(),
         },
         {
-          title: 'Locations',
+          title: 'UI.LABEL.LOCATION.PLURAL',
           path: () => '/mdt/settings/locations',
           icon: IconType.MapPin,
           show: () => this.userService.userHasRole(UserRole.Admin),
@@ -128,7 +128,7 @@ export class SidebarComponent {
       ]
     },
     {
-      title: 'Developer tools',
+      title: 'UI.LABEL.DEVELOPER_TOOLS.TITLE',
       path: () => '/mdt/devtools',
       icon: IconType.CodeBracket,
       show: () => this.userService.userHasRole(UserRole.Admin, UserRole.Developer),

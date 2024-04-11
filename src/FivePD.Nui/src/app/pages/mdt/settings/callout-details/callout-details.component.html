@@ -1,4 +1,4 @@
-<app-page-header title="Callout details"/>
+<app-page-header [title]="'UI.LABEL.CALLOUT_DETAILS.TITLE' | translate"/>
 
 <app-container [columns]="1" [rows]="2">
 
@@ -6,26 +6,26 @@
     <p class="common-title">{{ 'UI.LABEL.DETAILS' | translate }}</p>
     <div class="flex flex-col gap-4 max-w-max">
       <div class="grid grid-rows-1 grid-cols-2 gap-8">
-        <p class="font-medium text-zinc-400">{{ 'Name' | translate }}</p>
+        <p class="font-medium text-zinc-400">{{ 'UI.LABEL.NAME.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">{{ calloutDetails?.TypeName }}</p>
       </div>
       <div class="grid grid-rows-1 grid-cols-2 gap-8">
-        <p class="text-zinc-400">{{ 'Assembly name' | translate }}</p>
+        <p class="text-zinc-400">{{ 'UI.LABEL.ASSEMBLY_NAME.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">{{ calloutDetails?.AssemblyName }}</p>
       </div>
       <div class="grid grid-rows-1 grid-cols-2 gap-8">
-        <p class="text-zinc-400">{{ 'Active' | translate }}</p>
-        <p class="text-zinc-200">{{ calloutDetails?.Active ? 'Yes' : 'No' }}</p>
+        <p class="text-zinc-400">{{ 'UI.LABEL.ACTIVE' | translate }}</p>
+        <p class="text-zinc-200">{{ (calloutDetails?.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO') | translate }}</p>
       </div>
     </div>
   </div>
 
   @if (form) {
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
-      <p class="common-title">Departments</p>
+      <p class="common-title">{{ 'UI.LABEL.DEPARTMENT.PLURAL' | translate }}</p>
       <div class="flex flex-col gap-4">
         <div class="max-w-max grid grid-rows-1 grid-cols-2 gap-8">
-          <p class="text-zinc-400">Ruleset type</p>
+          <p class="text-zinc-400">{{ 'UI.LABEL.RULESET.TYPE' | translate }}</p>
           <div class="flex flex-col gap-4">
             <div class="flex flex-row gap-2 group relative">
               <input type="radio" id="allowlist" [formControl]="rulesetType" [value]="CalloutDetailsRulesetType.Allow"
@@ -40,7 +40,7 @@
                 }">
                 </div>
               </div>
-              <label class="text-zinc-200" for="allowlist">Allowlist</label>
+              <label class="text-zinc-200" for="allowlist">{{ 'UI.LABEL.RULESET.ALLOWLIST' | translate }}</label>
             </div>
             <div class="flex flex-row gap-2 group relative">
               <input type="radio" id="denylist" [formControl]="rulesetType" [value]="CalloutDetailsRulesetType.Deny"
@@ -53,27 +53,27 @@
               'opacity-100': rulesetType.value === CalloutDetailsRulesetType.Deny
               }"></div>
               </div>
-              <label class="text-zinc-200" for="denylist">Denylist</label>
+              <label class="text-zinc-200" for="denylist">{{ 'UI.LABEL.RULESET.DENYLIST' | translate }}</label>
             </div>
           </div>
         </div>
         @if (rulesetType.value === CalloutDetailsRulesetType.Allow) {
           <p class="text-zinc-400">
-            Only the selected departments will receive this callout.
+            {{ 'UI.LABEL.CALLOUT_DETAILS.RULESET.ALLOWLIST' | translate }}
           </p>
         }
         @if (rulesetType.value === CalloutDetailsRulesetType.Deny) {
           <p class="text-zinc-400">
-            All departments will receive this callout except the selected ones.
+            {{ 'UI.LABEL.CALLOUT_DETAILS.RULESET.DENYLIST' | translate }}
           </p>
         }
       </div>
       <div class="mt-4 grid grid-rows-1 grid-cols-[4fr_1fr_4fr] items-end">
         <div>
-          <p class="text-zinc-400">All departments</p>
+          <p class="text-zinc-400">{{ 'UI.LABEL.CALLOUT_DETAILS.DEPARTMENT.ALL' |translate }}</p>
           <div class="mt-2 border border-color h-[300px] overflow-x-hidden rounded-md">
             <div>
-              @for (department of availableDepartments;track department) {
+              @for (department of availableDepartments; track department) {
                 <div (click)="department.selected = !department.selected"
                      class="group hover:cursor-pointer min-h-[50px] flex flex-row items-center gap-4 px-4">
                   <div app-icon
@@ -102,10 +102,10 @@
           </button>
         </div>
         <div>
-          <p class="text-zinc-400">Selected departments</p>
+          <p class="text-zinc-400">{{ 'UI.LABEL.CALLOUT_DETAILS.DEPARTMENT.SELECTED' | translate }}</p>
           <div class="mt-2 border border-color h-[300px] overflow-x-hidden rounded-md">
             <div>
-              @for (department of selectedDepartments;track department) {
+              @for (department of selectedDepartments; track department) {
                 <div
                   (click)="department.selected = !department.selected"
                   class="group hover:cursor-pointer min-h-[50px] flex flex-row items-center gap-4 px-4">

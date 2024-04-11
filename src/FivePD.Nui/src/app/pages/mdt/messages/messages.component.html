@@ -1,6 +1,6 @@
-<app-page-header title="Messages">
+<app-page-header [title]="'UI.LABEL.MESSAGES.TITLE' | translate">
   @if (config?.canSendMessageAll()) {
-    <app-button label="Send message"
+    <app-button [label]="'UI.LABEL.MESSAGES.ACTION.SEND' | translate"
                 (onClick)="trySendMessage()"/>
   }
 </app-page-header>
@@ -8,7 +8,9 @@
 <div class="w-full flex flex-col items-center">
   @if (!messagesPage?.Items?.length) {
     <div class="mt-10">
-      <p class="text-zinc-400 block text-xl">You have no messages.</p>
+      <p class="text-zinc-400 block text-xl">
+        {{ 'UI.LABEL.MESSAGES.NO_MESSAGES' | translate }}
+      </p>
     </div>
   }
 </div>
@@ -17,7 +19,7 @@
   <div class="w-full grid grid-rows-1 grid-cols-[3fr_7fr] gap-8">
 
     <div class="flex flex-col">
-      @for (message of messagesPage?.Items;track message;let i = $index) {
+      @for (message of messagesPage?.Items; track message; let i = $index) {
         <button
           class="p-4 flex flex-col items-start justify-start border-t border-l border-r border-color"
           [ngClass]="{
@@ -37,8 +39,8 @@
             <p class="text-zinc-200 text-lg font-bold">{{ message.Subject }}</p>
           </div>
           <div class="w-full flex flex-row items-center justify-between">
-            <p class="text-zinc-400 text-left">
-              Sent by <span class="font-bold">{{ message.Sender }}</span>
+            <p class="text-zinc-400 text-left"
+               [innerHTML]="localizationService.translate('UI.LABEL.MESSAGES.MESSAGE_SENT_BY', {name: message.Sender})">
             </p>
             <p class="text-zinc-400 text-right">
               {{ message.SentAt | date: 'medium' }}
@@ -60,10 +62,7 @@
     @if (selectedMessage) {
       <div class="flex flex-col items-start justify-start">
         <h1 class="text-zinc-200 font-bold text-2xl">{{ selectedMessage!.Subject }}</h1>
-        <p class="text-zinc-400 mt-2">
-          Sent by <span class="font-bold">{{ selectedMessage!.Sender }}</span> at <span
-          class="font-bold">{{ selectedMessage!.SentAt | date: 'medium' }}</span>
-        </p>
+        <p class="text-zinc-400 mt-2" [innerHTML]="getLocalizedSentAtLabel(selectedMessage)"></p>
         <div class="mt-6">
           <p class="text-zinc-400">{{ selectedMessage!.Content }}</p>
         </div>

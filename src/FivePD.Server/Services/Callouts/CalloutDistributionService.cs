@@ -246,7 +246,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                     {
                         Texture = "CHAR_CALL911",
                         Sender = "LABEL.DISPATCH",
-                        Subject = "LABEL.CALLOUT.TITLE",
+                        Subject = "LABEL.CALLOUT.TITLE", // TODO: check if this is new GtaStyleText().Yellow("LABEL.CALLOUT.TITLE").Build() and the title value is "Callout" without color, the text is correctly translated on the client
                         Content = "LABEL.CALLOUT.CONTENT",
                         ContentParams = new Dictionary<string, string>
                         {

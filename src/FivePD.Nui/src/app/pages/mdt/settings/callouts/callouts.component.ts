@@ -8,6 +8,7 @@ import { Router } from "@angular/router";
 import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
 import { UserRole, UserService } from "@services/user/user.service";
 import { BehaviorSubject, switchMap } from "rxjs";
+import { LocalizationService } from "@services/localization/localization.service";
 
 @Component({
   selector: 'app-callouts',
@@ -20,6 +21,7 @@ export class CalloutsComponent {
   private readonly _router = inject(Router);
   private readonly _userService = inject(UserService);
   private readonly _calloutDetailsService = inject(CalloutDetailsService);
+  private readonly _localizationService = inject(LocalizationService);
 
   readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly calloutDetails$ = this.collation$.pipe(
@@ -36,16 +38,16 @@ export class CalloutsComponent {
       accessorKey: 'AssemblyName',
     }),
     new Column({
-      header: 'Active',
-      valueResolver: item => item.Active ? 'Yes' : 'No',
+      header: 'UI.LABEL.ACTIVE',
+      valueResolver: item => this._localizationService.translate(item.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
       badgeResolver: item => item.Active ? 'green' : 'red'
     }),
     new Column({
-      header: 'Actions',
+      header: 'UI.LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'Edit',
+          label: 'UI.ACTION.EDIT',
           show: () => this._userService.userHasRole(UserRole.Admin),
           onClick: item => this._router.navigate(['mdt', 'settings', 'callout-details', item.Id]),
         },

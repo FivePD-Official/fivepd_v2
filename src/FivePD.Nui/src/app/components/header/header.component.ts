@@ -9,6 +9,7 @@ import { IconComponent } from '../icon/icon.component';
 import { ButtonComponent } from '../button/button.component';
 import { DatePipe } from '@angular/common';
 import { AppActions } from "@store/app.actions";
+import { LocalizationService } from "@services/localization/localization.service";
 
 @Component({
   selector: 'app-header',
@@ -27,6 +28,7 @@ export class HeaderComponent implements OnInit {
     private readonly _store: Store<GlobalState>,
     private readonly _dispatchService: DispatchService,
     public readonly window: WindowService,
+    private readonly _localizationService: LocalizationService
   ) {
     _store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details.User;
@@ -36,6 +38,12 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  get loggedInAsText() {
+    return this._localizationService.translate('UI.LABEL.HEADER.LOGGED_IN_AS', {
+      name: this.user?.Name ?? '-',
+    })
   }
 
   get dateNow() {

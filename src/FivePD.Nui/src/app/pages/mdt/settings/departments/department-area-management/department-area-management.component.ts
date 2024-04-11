@@ -1,5 +1,5 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {SimpleDepartment, SimpleDepartmentWithArea, User} from "@models";
+import { Component, inject, OnInit } from '@angular/core';
+import { SimpleDepartment, SimpleDepartmentWithArea, User } from "@models";
 import {
   CRS,
   extend,
@@ -15,21 +15,23 @@ import {
   tileLayer,
   Transformation
 } from 'leaflet';
-import {PageHeaderComponent} from "../../../../../components/page-header/page-header.component";
-import {TranslatePipe} from "../../../../../pipes/translate.pipe";
-import {DepartmentService} from "@services/department/department.service";
-import {ContainerComponent} from "../../../../../components/container/container.component";
-import {nanoid} from 'nanoid';
-import {ButtonComponent} from "../../../../../components/button/button.component";
-import {NgClass} from "@angular/common";
-import {Area, GRAY, RED} from "./_models/area";
-import {customIcon} from "@services/map";
-import {IconComponent} from "../../../../../components/icon/icon.component";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {first} from "rxjs";
-import {Store} from "@ngrx/store";
-import {GlobalState} from "@store";
-import {UserRole, UserService} from "@services/user/user.service";
+import { PageHeaderComponent } from "../../../../../components/page-header/page-header.component";
+import { TranslatePipe } from "../../../../../pipes/translate.pipe";
+import { DepartmentService } from "@services/department/department.service";
+import { ContainerComponent } from "../../../../../components/container/container.component";
+import { nanoid } from 'nanoid';
+import { ButtonComponent } from "../../../../../components/button/button.component";
+import { NgClass } from "@angular/common";
+import { Area, GRAY, RED } from "./_models/area";
+import { customIcon } from "@services/map";
+import { IconComponent } from "../../../../../components/icon/icon.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { first, takeUntil } from "rxjs";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
+import { UserRole, UserService } from "@services/user/user.service";
+import { LocalizationService } from "@services/localization/localization.service";
+import { injectDestroy } from "../../../../../helpers/destroy-ref";
 
 // TODO: lng = X, lat = Y
 
@@ -37,6 +39,8 @@ type MarkerAttribution = {
   id: string;
   departmentId: number | string;
 }
+
+const MIN_AREA_COORDINATES = 3;
 
 @Component({
   selector: 'app-department-area-management',
@@ -46,7 +50,11 @@ type MarkerAttribution = {
 })
 export class DepartmentAreaManagementComponent implements OnInit {
 
-  private readonly departmentService = inject(DepartmentService);
+  private readonly destroy$ = injectDestroy();
+  private readonly _store = inject<Store<GlobalState>>(Store);
+  private readonly _userService = inject(UserService);
+  private readonly _departmentService = inject(DepartmentService);
+  private readonly _localizationService = inject(LocalizationService);
 
   departments: SimpleDepartmentWithArea[] = [];
   currentlyEditingDepartment?: SimpleDepartmentWithArea;
@@ -59,17 +67,31 @@ export class DepartmentAreaManagementComponent implements OnInit {
 
   user?: User;
 
-  constructor(
-    public readonly userService: UserService,
-    private readonly _store: Store<GlobalState>,
-  ) {
-    _store.pipe(takeUntilDestroyed(), first()).subscribe(state => {
-      this.user = state.user.details.User;
-    });
+  get guide1Text() {
+    return this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.A', {
+      edit: `<span class="italic">${this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.EDIT')}</span>`,
+      addAreaCoordinates: `<span class="italic">${this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.ADD_AREA_COORDINATES')}</span>`,
+    }, false);
+  }
+
+  get guide2Text() {
+    return this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.B');
+  }
+
+  get guide3Text() {
+    return this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.C', {
+      edit: `<span class="italic">${this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.EDIT')}</span>`,
+    }, false);
+  }
+
+  get guide4Text() {
+    return this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.D', {
+      number: MIN_AREA_COORDINATES.toString(),
+    }, false);
   }
 
   get editableDepartments() {
-    if (this.userService.userHasRole(UserRole.Admin)) {
+    if (this._userService.userHasRole(UserRole.Admin)) {
       return this.departments;
     }
 
@@ -97,6 +119,10 @@ export class DepartmentAreaManagementComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this._store.pipe(takeUntil(this.destroy$), first()).subscribe(state => {
+      this.user = state.user.details.User;
+    });
+
     this.customCrs = extend({}, CRS.Simple, {
       projection: Projection.LonLat,
       scale: function (zoom: any) {
@@ -123,7 +149,7 @@ export class DepartmentAreaManagementComponent implements OnInit {
       return false;
     }
 
-    return area.coordinates.size >= 3;
+    return area.coordinates.size >= MIN_AREA_COORDINATES;
   }
 
   toggleEdit(department?: SimpleDepartmentWithArea): void {
@@ -211,7 +237,7 @@ export class DepartmentAreaManagementComponent implements OnInit {
       }))),
     };
 
-    this.departmentService.updateAreas(request).subscribe(() => {
+    this._departmentService.updateAreas(request).subscribe(() => {
       this.modified = false;
       this.toggleEdit(undefined);
       this.getDepartments();
@@ -304,7 +330,7 @@ export class DepartmentAreaManagementComponent implements OnInit {
   }
 
   private getDepartments(): void {
-    this.departmentService.getAllSimpleWithArea().subscribe(departments => {
+    this._departmentService.getAllSimpleWithArea().subscribe(departments => {
       this.departments = departments;
 
       for (const area of Object.values(this.areas)) {

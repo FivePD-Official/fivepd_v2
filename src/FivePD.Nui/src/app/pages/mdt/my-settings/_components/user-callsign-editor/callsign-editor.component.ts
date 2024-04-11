@@ -9,6 +9,7 @@ import {
   CALLSIGN_FORMAT_ITEMS
 } from "../../../departments/departments-view/_components/department-callsign-format-editor/token";
 import { CALLSIGN } from "./token";
+import { LocalizationService } from "@services/localization/localization.service";
 
 @Component({
   selector: 'app-user-callsign-editor',
@@ -18,6 +19,7 @@ import { CALLSIGN } from "./token";
 })
 export class CallsignEditorComponent implements OnInit {
 
+  private readonly _localizationService = inject(LocalizationService);
   private readonly _modalRef = inject(ModalRef);
   protected readonly _positions = inject(CALLSIGN_FORMAT_ITEMS);
   private readonly _callsign = inject(CALLSIGN);
@@ -42,7 +44,7 @@ export class CallsignEditorComponent implements OnInit {
     }
 
     if (type === CallsignFormatItemType.FixedCharacter) {
-      return 'Any';
+      return this._localizationService.translate('UI.LABEL.ANY');
     }
 
     if (type === CallsignFormatItemType.RandomLetter) {

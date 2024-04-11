@@ -28,28 +28,28 @@ export class VehicleDatabaseIndexComponent {
   readonly formFields: FormInputBase<any>[] = [
     new TextField({
       key: 'LicensePlate',
-      label: 'License plate',
+      label: 'LABEL.LICENSE_PLATE.SINGULAR',
       placeholder: '',
     }),
   ];
   readonly columns: Column<FVehicleDTO>[] = [
     new Column({
-      header: 'License plate',
+      header: 'LABEL.LICENSE_PLATE.SINGULAR',
       accessorKey: 'LicensePlate',
       show: () => true,
     }),
     new Column({
-      header: 'Brand',
+      header: 'LABEL.BRAND.SINGULAR',
       accessorKey: 'Brand',
       show: () => true,
     }),
     new Column({
-      header: 'Color',
+      header: 'LABEL.COLOR.SINGULAR',
       accessorKey: 'Color',
       show: () => true,
     }),
     new Column({
-      header: 'Owner name',
+      header: 'LABEL.OWNER_NAME',
       show: () => true,
       valueResolver: item => item.Owner ? `${item.Owner.Firstname} ${item.Owner.Lastname}` : '-',
     })
