@@ -2,11 +2,13 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  inject,
   Input,
   OnChanges,
   OnInit,
   QueryList,
   SimpleChanges,
+  ViewChild,
   ViewChildren
 } from '@angular/core';
 import { MenuItemType } from '@enums';
@@ -27,38 +29,50 @@ import { NgClass } from '@angular/common';
 })
 export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
-  destroy$ = injectDestroy();
+  protected readonly MenuListItem = MenuListItem;
+  protected readonly MenuCheckboxItem = MenuCheckboxItem;
+  protected readonly MenuItemType = MenuItemType;
 
-  @Input() menu!: Menu;
+  protected currentItemDescription: string = '';
+  protected menuItems: MenuItem[] = [];
 
-  currentItemDescription: string = '';
-  menuContainer: HTMLElement | null = null;
-  selectorNode: HTMLElement | null = null;
-  menuItems: MenuItem[] = [];
+  private readonly destroy$ = injectDestroy();
+  private readonly _eventService = inject(EventService);
 
-  @ViewChildren('item') items!: QueryList<ElementRef<HTMLDivElement>>;
+  @Input({required: true}) menu!: Menu;
 
-  constructor(
-    private _event: EventService,
-  ) {
-    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_up')
+  @ViewChildren('element') elements!: QueryList<ElementRef<HTMLDivElement>>;
+  @ViewChildren('dividerElement') dividerElements!: QueryList<ElementRef<HTMLDivElement>>;
+  @ViewChildren('itemElement') itemElements!: QueryList<ElementRef<HTMLDivElement>>;
+
+  @ViewChild('selector') selectorElement!: ElementRef<HTMLDivElement>;
+
+  ngOnInit(): void {
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_up')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuUp());
-    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_down')
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_down')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuDown());
-    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_left')
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_left')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuLeft());
-    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_right')
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_right')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuRight());
-    this._event.onEvent<BaseNuiEvent>('fivepd:menu:control_select')
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_select')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuSelect());
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit() {
+    if (this.selectorElement?.nativeElement) {
+      const first = this.nonDividerMenuItems[0];
+      const index = this.menuItems.findIndex(x => x.hashcode === first.hashcode);
+      const item = this.elements.get(index);
+      this.selectorElement.nativeElement.style.transition = 'none'; // remove if we'll decide to add back transitions
+      this.selectorElement.nativeElement.style.top = item ? item.nativeElement.offsetTop + 'px' : '0px';
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -71,41 +85,41 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     this.menu.currentItemIndex$.next(0);
     this.currentItemDescription = '';
 
-    if (this.selectorNode) {
-      this.selectorNode.style.top = '0px';
-    }
-
-    if (this.items) {
-      const currentItemNode = this.items.get(this.menu.currentItemIndex$.value);
+    if (this.elements) {
+      const currentItemNode = this.elements.get(this.menu.currentItemIndex$.value);
       currentItemNode?.nativeElement.scrollIntoView({behavior: 'auto', block: 'nearest'});
     }
-
-    this.menu.currentItemIndex$.subscribe(index => {
-      if (index === 0 && this.selectorNode) {
-        this.selectorNode.style.top = '0px';
-      }
-    });
   }
 
-  ngAfterViewInit(): void {
-    this.menuContainer = document.querySelector('.menu-items');
-    this.selectorNode = document.querySelector('#selector');
+  get nonDividerMenuItems() {
+    return this.menuItems.filter(x => !x.divider);
   }
 
-  public get MenuItemType() {
-    return MenuItemType;
+  get dividerMenuItems() {
+    return this.menuItems.filter(x => x.divider);
+  }
+
+  get menuItemsHeight() {
+    if (this.menuItems.length >= 5) {
+      return '200px';
+    }
+
+    const itemsHeight = this.menuItems.length * 40;
+    const dividerItemsHeight = this.dividerMenuItems.length * 40;
+
+    return (itemsHeight + dividerItemsHeight) + 'px';
   }
 
   onMenuUp(): void {
-    if (!this.selectorNode || !this.items?.length || !this.menuItems) {
+    if (!this.selectorElement.nativeElement || !this.itemElements?.length || !this.nonDividerMenuItems) {
       return;
     }
 
     const previousIndex = this.menu.currentItemIndex$.value;
     if (this.menu.currentItemIndex$.value > 0) this.menu.currentItemIndex$.next(this.menu.currentItemIndex$.value - 1);
-    else this.menu.currentItemIndex$.next(this.menuItems.length - 1);
+    else this.menu.currentItemIndex$.next(this.nonDividerMenuItems.length - 1);
 
-    const currentItem = this.menuItems[this.menu.currentItemIndex$.value];
+    const currentItem = this.nonDividerMenuItems[this.menu.currentItemIndex$.value];
     if (!currentItem.Enabled) {
       this.onMenuUp();
       return;
@@ -113,27 +127,36 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.currentItemDescription = currentItem.Description;
 
-    const currentItemNode = this.items.get(this.menu.currentItemIndex$.value);
-    this.selectorNode.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
-    currentItemNode?.nativeElement.scrollIntoView({
-      behavior: previousIndex === 0 ? 'auto' : 'smooth',
+    const currentItemNode = this.itemElements.get(this.menu.currentItemIndex$.value);
+    this.selectorElement.nativeElement.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
+
+    const index = this.menuItems.findIndex(x => x.hashcode === currentItem.hashcode);
+    let closestDividerToCurrentItemNode: ElementRef<HTMLDivElement> | undefined;
+    if (this.menuItems[index - 1]?.divider) {
+      closestDividerToCurrentItemNode = this.elements.get(index - 1);
+    } else {
+      closestDividerToCurrentItemNode = currentItemNode;
+    }
+    closestDividerToCurrentItemNode?.nativeElement.scrollIntoView({
+      // uncomment if we'll decide to add back transitions - behavior: previousIndex === 0 ? 'auto' : 'smooth',
+      behavior: 'auto',
       block: 'nearest'
     });
   }
 
   onMenuDown(): void {
-    if (!this.selectorNode || !this.items?.length || !this.menuItems) {
+    if (!this.selectorElement.nativeElement || !this.itemElements?.length || !this.nonDividerMenuItems) {
       return;
     }
 
     const previousIndex = this.menu.currentItemIndex$.value;
-    if (this.menu.currentItemIndex$.value < this.menuItems.length - 1) {
+    if (this.menu.currentItemIndex$.value < this.nonDividerMenuItems.length - 1) {
       this.menu.currentItemIndex$.next(this.menu.currentItemIndex$.value + 1);
     } else {
       this.menu.currentItemIndex$.next(0);
     }
 
-    const currentItem = this.menuItems[this.menu.currentItemIndex$.value];
+    const currentItem = this.nonDividerMenuItems[this.menu.currentItemIndex$.value];
     if (!currentItem.Enabled) {
       this.onMenuDown();
       return;
@@ -141,10 +164,19 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.currentItemDescription = currentItem.Description;
 
-    const currentItemNode = this.items.get(this.menu.currentItemIndex$.value);
-    this.selectorNode.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
-    currentItemNode?.nativeElement.scrollIntoView({
-      behavior: previousIndex > this.menu.currentItemIndex$.value ? 'auto' : 'smooth',
+    const currentItemNode = this.itemElements.get(this.menu.currentItemIndex$.value);
+    this.selectorElement.nativeElement.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
+
+    const index = this.menuItems.findIndex(x => x.hashcode === currentItem.hashcode);
+    let closestDividerToCurrentItemNode: ElementRef<HTMLDivElement> | undefined;
+    if (this.menuItems[index - 1]?.divider && previousIndex > this.menu.currentItemIndex$.value) {
+      closestDividerToCurrentItemNode = this.elements.get(index - 1);
+    } else {
+      closestDividerToCurrentItemNode = currentItemNode;
+    }
+    closestDividerToCurrentItemNode?.nativeElement.scrollIntoView({
+      // uncomment if we'll decide to add back transitions - behavior: previousIndex > this.menu.currentItemIndex$.value ? 'auto' : 'smooth',
+      behavior: 'auto',
       block: 'nearest'
     });
   }
@@ -158,7 +190,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   onMenuSelect() {
-    if (!this.selectorNode || !this.items?.length || !this.menuItems) {
+    if (!this.selectorElement.nativeElement || !this.elements?.length || !this.menuItems) {
       return;
     }
 
@@ -168,9 +200,9 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     // Change DOM state
-    this.selectorNode.classList.add('selector--on-select');
+    this.selectorElement.nativeElement.classList.add('selector--on-select');
     setTimeout(() => {
-      this.selectorNode!.classList.remove('selector--on-select');
+      this.selectorElement.nativeElement!.classList.remove('selector--on-select');
     }, 100);
 
     // Change actual item state
@@ -201,7 +233,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   onListSlide(dir: 'left' | 'right'): void {
-    if (!this.selectorNode || !this.items?.length || !this.menuItems) {
+    if (!this.elements?.length || !this.menuItems) {
       return;
     }
 
@@ -210,7 +242,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
       return;
     }
 
-    const currentItemNode = this.items.get(this.menu.currentItemIndex$.value);
+    const currentItemNode = this.elements.get(this.menu.currentItemIndex$.value);
     const leftArrow = currentItemNode?.nativeElement.querySelector('.left-arrow');
     const rightArrow = currentItemNode?.nativeElement.querySelector('.right-arrow');
 
@@ -226,7 +258,4 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
       currentItem.next();
     }
   }
-
-  protected readonly MenuListItem = MenuListItem;
-  protected readonly MenuCheckboxItem = MenuCheckboxItem;
 }

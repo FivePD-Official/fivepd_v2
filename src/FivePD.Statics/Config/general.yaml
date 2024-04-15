@@ -139,7 +139,8 @@ DispatchMenuItems:
     OnSelect: [ REQUEST_LICENSE_PLATE_CHECK ]
   - Title: Request backup
     OnSelect: [ REQUEST_BACKUP ]
-  # - Divider: true TODO: place a divider between actions like request backup and check license of ped and statuses ???
+  - Title: Statuses
+    Divider: true # divider items have no Description or OnSelect actions 
   - Title: Code 4
     Description: No assist needed
     OnSelect: [ SET_AS_STATUS, COMPLETE_CURRENT_INCIDENT ] # COMPLETE_CURRENT_INCIDENT clears the current incident AND panic mode if active

@@ -14,6 +14,7 @@ import {
 } from '@models';
 import { MenuItemType } from '@enums';
 import { HttpClient } from '@angular/common/http';
+import { MenuDividerItem } from "../../models/menu/MenuDividerItem";
 
 @Injectable({
   providedIn: 'root'
@@ -132,6 +133,10 @@ export class MenuService {
   private createItem(item: MenuItemDto): MenuItem | undefined {
     let _item: MenuItem | undefined;
     switch (item.Type) {
+      case MenuItemType.Divider: {
+        _item = new MenuDividerItem(item.Title);
+        break;
+      }
       case MenuItemType.Button: {
         _item = new MenuButtonItem(item.Title, item.Description, item.Hashcode);
         break;

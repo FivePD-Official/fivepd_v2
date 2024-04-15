@@ -23,6 +23,7 @@ export interface MenuItemDto {
   Title: string;
   Description: string;
   Type: number;
+  Divider: boolean;
   Items?: MenuListOption[];
 }
 

@@ -6,6 +6,11 @@
 public enum MenuItemType
 {
     /// <summary>
+    /// Displays a divider line between other items.
+    /// </summary>
+    Divider,
+
+    /// <summary>
     /// Will only trigger an action on press.
     /// </summary>
     Button,

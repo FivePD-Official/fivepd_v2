@@ -1,7 +1,8 @@
 export enum MenuItemType {
+  Divider,
   Button,
   List,
-  Toggle
+  Toggle,
 }
 
 export enum DateFormat {
