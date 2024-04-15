@@ -1,5 +1,4 @@
 import { MenuItemType } from '@enums';
-import { MenuListItem } from './MenuListItem';
 
 export abstract class MenuItem {
 
@@ -9,12 +8,15 @@ export abstract class MenuItem {
 
   private readonly _type: MenuItemType;
   private readonly _hashcode: string;
+  private readonly _divider: boolean;
 
   protected constructor(title: string, description: string, hashcode: string, type: MenuItemType) {
     this.Title = title;
     this.Description = description;
     this._hashcode = hashcode;
     this._type = type;
+
+    this._divider = type === MenuItemType.Divider;
   }
 
   get type(): MenuItemType {
@@ -23,6 +25,10 @@ export abstract class MenuItem {
 
   get hashcode(): string {
     return this._hashcode;
+  }
+
+  get divider(): boolean {
+    return this._divider;
   }
 
   abstract onPress(): void;

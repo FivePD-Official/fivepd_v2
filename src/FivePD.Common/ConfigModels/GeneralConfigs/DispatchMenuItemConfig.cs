@@ -11,6 +11,8 @@ public sealed record DispatchMenuItemConfig
     public string Description { get; init; }
 
     public List<string> OnSelect { get; init; }
+    
+    public bool Divider { get; init; }
 }
 
 internal readonly record struct DispatchActionOnSelectKeys

@@ -50,6 +50,11 @@ public sealed class DispatchMenu : Menu
         {
             if (item.OnSelect is null)
             {
+                if (item.Divider)
+                {
+                    items.Add(new MenuDividerItem(item.Title));
+                }
+
                 continue;
             }
 
