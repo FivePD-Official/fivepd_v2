@@ -50,16 +50,16 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   ngOnInit(): void {
     this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_up')
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.onMenuUp());
+      .subscribe(() => this.onVerticalControl('up'));
     this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_down')
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.onMenuDown());
+      .subscribe(() => this.onVerticalControl('down'));
     this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_left')
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.onMenuLeft());
+      .subscribe(() => this.onHorizontalControl('left'));
     this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_right')
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.onMenuRight());
+      .subscribe(() => this.onHorizontalControl('right'));
     this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_select')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.onMenuSelect());
@@ -67,11 +67,12 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     if (this.selectorElement?.nativeElement) {
-      const first = this.nonDividerMenuItems[0];
-      const index = this.menuItems.findIndex(x => x.hashcode === first.hashcode);
-      const item = this.elements.get(index);
-      this.selectorElement.nativeElement.style.transition = 'none'; // remove if we'll decide to add back transitions
-      this.selectorElement.nativeElement.style.top = item ? item.nativeElement.offsetTop + 'px' : '0px';
+      const firstItem = this.nonDividerMenuItems[0];
+      if (firstItem) {
+        const index = this.menuItems.findIndex(x => x.hashcode === firstItem.hashcode);
+        const item = this.elements.get(index);
+        this.selectorElement.nativeElement.style.top = item ? item.nativeElement.offsetTop + 'px' : '0px';
+      }
     }
   }
 
@@ -95,33 +96,36 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     return this.menuItems.filter(x => !x.divider);
   }
 
-  get dividerMenuItems() {
-    return this.menuItems.filter(x => x.divider);
-  }
-
   get menuItemsHeight() {
     if (this.menuItems.length >= 5) {
       return '200px';
     }
 
-    const itemsHeight = this.menuItems.length * 40;
-    const dividerItemsHeight = this.dividerMenuItems.length * 40;
-
-    return (itemsHeight + dividerItemsHeight) + 'px';
+    return this.menuItems.length * 40 + 'px';
   }
 
-  onMenuUp(): void {
+  onVerticalControl(dir: 'up' | 'down'): void {
     if (!this.selectorElement.nativeElement || !this.itemElements?.length || !this.nonDividerMenuItems) {
       return;
     }
 
-    const previousIndex = this.menu.currentItemIndex$.value;
-    if (this.menu.currentItemIndex$.value > 0) this.menu.currentItemIndex$.next(this.menu.currentItemIndex$.value - 1);
-    else this.menu.currentItemIndex$.next(this.nonDividerMenuItems.length - 1);
+    if (dir === 'up') {
+      if (this.menu.currentItemIndex$.value > 0) {
+        this.menu.currentItemIndex$.next(this.menu.currentItemIndex$.value - 1);
+      } else {
+        this.menu.currentItemIndex$.next(this.nonDividerMenuItems.length - 1);
+      }
+    } else {
+      if (this.menu.currentItemIndex$.value < this.nonDividerMenuItems.length - 1) {
+        this.menu.currentItemIndex$.next(this.menu.currentItemIndex$.value + 1);
+      } else {
+        this.menu.currentItemIndex$.next(0);
+      }
+    }
 
     const currentItem = this.nonDividerMenuItems[this.menu.currentItemIndex$.value];
     if (!currentItem.Enabled) {
-      this.onMenuUp();
+      this.onVerticalControl(dir);
       return;
     }
 
@@ -132,61 +136,20 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
     const index = this.menuItems.findIndex(x => x.hashcode === currentItem.hashcode);
     let closestDividerToCurrentItemNode: ElementRef<HTMLDivElement> | undefined;
-    if (this.menuItems[index - 1]?.divider) {
-      closestDividerToCurrentItemNode = this.elements.get(index - 1);
-    } else {
-      closestDividerToCurrentItemNode = currentItemNode;
-    }
-    closestDividerToCurrentItemNode?.nativeElement.scrollIntoView({
-      // uncomment if we'll decide to add back transitions - behavior: previousIndex === 0 ? 'auto' : 'smooth',
-      behavior: 'auto',
-      block: 'nearest'
-    });
-  }
-
-  onMenuDown(): void {
-    if (!this.selectorElement.nativeElement || !this.itemElements?.length || !this.nonDividerMenuItems) {
-      return;
-    }
-
     const previousIndex = this.menu.currentItemIndex$.value;
-    if (this.menu.currentItemIndex$.value < this.nonDividerMenuItems.length - 1) {
-      this.menu.currentItemIndex$.next(this.menu.currentItemIndex$.value + 1);
-    } else {
-      this.menu.currentItemIndex$.next(0);
-    }
-
-    const currentItem = this.nonDividerMenuItems[this.menu.currentItemIndex$.value];
-    if (!currentItem.Enabled) {
-      this.onMenuDown();
-      return;
-    }
-
-    this.currentItemDescription = currentItem.Description;
-
-    const currentItemNode = this.itemElements.get(this.menu.currentItemIndex$.value);
-    this.selectorElement.nativeElement.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
-
-    const index = this.menuItems.findIndex(x => x.hashcode === currentItem.hashcode);
-    let closestDividerToCurrentItemNode: ElementRef<HTMLDivElement> | undefined;
-    if (this.menuItems[index - 1]?.divider && previousIndex > this.menu.currentItemIndex$.value) {
+    if (
+      dir === 'up' && (this.menuItems[index - 1]?.divider)
+      ||
+      dir === 'down' && (this.menuItems[index - 1]?.divider && previousIndex > this.menu.currentItemIndex$.value)
+    ) {
       closestDividerToCurrentItemNode = this.elements.get(index - 1);
     } else {
       closestDividerToCurrentItemNode = currentItemNode;
     }
     closestDividerToCurrentItemNode?.nativeElement.scrollIntoView({
-      // uncomment if we'll decide to add back transitions - behavior: previousIndex > this.menu.currentItemIndex$.value ? 'auto' : 'smooth',
       behavior: 'auto',
       block: 'nearest'
     });
-  }
-
-  onMenuLeft(): void {
-    this.onListSlide('left');
-  }
-
-  onMenuRight(): void {
-    this.onListSlide('right');
   }
 
   onMenuSelect() {
@@ -232,7 +195,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
-  onListSlide(dir: 'left' | 'right'): void {
+  onHorizontalControl(dir: 'left' | 'right'): void {
     if (!this.elements?.length || !this.menuItems) {
       return;
     }

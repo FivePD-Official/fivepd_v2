@@ -8,8 +8,8 @@
            [style.height]="menuItemsHeight">
         <div #selector
              id="selector"
-             class="absolute z-10 inset-0 w-full h-[40px] border-l-[4px] border-r-[4px] border-zinc-500
-                  before:absolute before:z-10 before:inset-0 before:w-full before:h-full before:bg-white/[0.05]
+             class="absolute transition-none z-10 inset-0 w-full h-[40px] border-l-[4px] border-r-[4px] border-zinc-500
+                  before:absolute before:z-10 before:transition-none before:inset-0 before:w-full before:h-full before:bg-white/[0.05]
                   [&.selector--on-select]:before:bg-primary/20 [&.selector--on-select]:border-primary"></div>
 
         @for (item of menuItems; track item) {
