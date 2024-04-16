@@ -12,13 +12,15 @@
                   before:absolute before:z-10 before:transition-none before:inset-0 before:w-full before:h-full before:bg-white/[0.05]
                   [&.selector--on-select]:before:bg-primary/20 [&.selector--on-select]:border-primary"></div>
 
-        @for (item of menuItems; track item) {
+        @for (item of items; track item) {
           @if (item.divider) {
-            <div #element #dividerElement class="h-[40px] min-h-[40px] max-h-[40px] w-full flex flex-row items-center px-3">
+            <div #element #dividerElement
+                 class="h-[40px] min-h-[40px] max-h-[40px] w-full flex flex-row items-center px-3">
               <p class="text-zinc-300 font-bold text-sm">{{ item.Title | translate }}</p>
             </div>
           } @else {
-            <div #element #itemElement class="relative z-20 w-full h-[40px] min-h-[40px] max-h-[40px] flex flex-row items-center justify-between gap-6 px-3"
+            <div #element #itemElement
+                 class="relative z-20 w-full h-[40px] min-h-[40px] max-h-[40px] flex flex-row items-center justify-between gap-6 px-3"
                  [ngClass]="{ 'opacity-50': !item.Enabled }">
               <p class="text-zinc-400">{{ item.Title | translate }}</p>
 
@@ -81,7 +83,7 @@
 
       <div class="w-full flex flex-row items-center justify-end px-4 py-2">
         <p class="text-sm font-medium text-zinc-400">
-          {{ this.menu.currentItemIndex$.value + 1 }} / {{ nonDividerMenuItems.length }}
+          {{ this.menu.currentItemIndex$.value + 1 }} / {{ nonDividerItems.length }}
         </p>
       </div>
 

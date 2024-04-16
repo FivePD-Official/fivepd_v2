@@ -34,7 +34,8 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   protected readonly MenuItemType = MenuItemType;
 
   protected currentItemDescription: string = '';
-  protected menuItems: MenuItem[] = [];
+  protected items: MenuItem[] = [];
+  protected nonDividerItems: MenuItem[] = [];
 
   private readonly destroy$ = injectDestroy();
   private readonly _eventService = inject(EventService);
@@ -62,14 +63,14 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
       .subscribe(() => this.onHorizontalControl('right'));
     this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_select')
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.onMenuSelect());
+      .subscribe(() => this.onSelect());
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     if (this.selectorElement?.nativeElement) {
-      const firstItem = this.nonDividerMenuItems[0];
+      const firstItem = this.nonDividerItems[0];
       if (firstItem) {
-        const index = this.menuItems.findIndex(x => x.hashcode === firstItem.hashcode);
+        const index = this.items.findIndex(x => x.hashcode === firstItem.hashcode);
         const item = this.elements.get(index);
         this.selectorElement.nativeElement.style.top = item ? item.nativeElement.offsetTop + 'px' : '0px';
       }
@@ -82,7 +83,8 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
       return;
     }
 
-    this.menuItems = menu.items ?? [];
+    this.items = menu.items ?? [];
+    this.nonDividerItems = this.items.filter(x => !x.divider);
     this.menu.currentItemIndex$.next(0);
     this.currentItemDescription = '';
 
@@ -92,72 +94,32 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
-  get nonDividerMenuItems() {
-    return this.menuItems.filter(x => !x.divider);
+  getMarqueeClass(item: MenuListItem): Record<string, boolean> {
+    if (item.items.length <= item.currentIndex) {
+      return {};
+    }
+
+    const className = item.items[item.currentIndex].Title.length > 10 ? 'marquee' : '';
+
+    return {
+      [className]: true,
+    }
   }
 
-  get menuItemsHeight() {
-    if (this.menuItems.length >= 5) {
+  get menuItemsHeight(): string {
+    if (this.items.length >= 5) {
       return '200px';
     }
 
-    return this.menuItems.length * 40 + 'px';
+    return this.items.length * 40 + 'px';
   }
 
-  onVerticalControl(dir: 'up' | 'down'): void {
-    if (!this.selectorElement.nativeElement || !this.itemElements?.length || !this.nonDividerMenuItems) {
+  private onSelect(): void {
+    if (!this.selectorElement?.nativeElement || !this.elements?.length) {
       return;
     }
 
-    if (dir === 'up') {
-      if (this.menu.currentItemIndex$.value > 0) {
-        this.menu.currentItemIndex$.next(this.menu.currentItemIndex$.value - 1);
-      } else {
-        this.menu.currentItemIndex$.next(this.nonDividerMenuItems.length - 1);
-      }
-    } else {
-      if (this.menu.currentItemIndex$.value < this.nonDividerMenuItems.length - 1) {
-        this.menu.currentItemIndex$.next(this.menu.currentItemIndex$.value + 1);
-      } else {
-        this.menu.currentItemIndex$.next(0);
-      }
-    }
-
-    const currentItem = this.nonDividerMenuItems[this.menu.currentItemIndex$.value];
-    if (!currentItem.Enabled) {
-      this.onVerticalControl(dir);
-      return;
-    }
-
-    this.currentItemDescription = currentItem.Description;
-
-    const currentItemNode = this.itemElements.get(this.menu.currentItemIndex$.value);
-    this.selectorElement.nativeElement.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
-
-    const index = this.menuItems.findIndex(x => x.hashcode === currentItem.hashcode);
-    let closestDividerToCurrentItemNode: ElementRef<HTMLDivElement> | undefined;
-    const previousIndex = this.menu.currentItemIndex$.value;
-    if (
-      dir === 'up' && (this.menuItems[index - 1]?.divider)
-      ||
-      dir === 'down' && (this.menuItems[index - 1]?.divider && previousIndex > this.menu.currentItemIndex$.value)
-    ) {
-      closestDividerToCurrentItemNode = this.elements.get(index - 1);
-    } else {
-      closestDividerToCurrentItemNode = currentItemNode;
-    }
-    closestDividerToCurrentItemNode?.nativeElement.scrollIntoView({
-      behavior: 'auto',
-      block: 'nearest'
-    });
-  }
-
-  onMenuSelect() {
-    if (!this.selectorElement.nativeElement || !this.elements?.length || !this.menuItems) {
-      return;
-    }
-
-    const currentItem = this.menuItems[this.menu.currentItemIndex$.value];
+    const currentItem = this.items[this.menu.currentItemIndex$.value];
     if (!currentItem.Enabled) {
       return;
     }
@@ -183,24 +145,63 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     currentItem.onPress();
   }
 
-  getMarqueeClass(item: MenuListItem): Record<string, boolean> {
-    if (item.items.length <= item.currentIndex) {
-      return {};
-    }
-
-    const className = item.items[item.currentIndex].Title.length > 10 ? 'marquee' : '';
-
-    return {
-      [className]: true,
-    }
-  }
-
-  onHorizontalControl(dir: 'left' | 'right'): void {
-    if (!this.elements?.length || !this.menuItems) {
+  private onVerticalControl(dir: 'up' | 'down'): void {
+    if (!this.selectorElement?.nativeElement || !this.itemElements?.length) {
       return;
     }
 
-    const currentItem: MenuListItem = this.menuItems[this.menu.currentItemIndex$.value] as MenuListItem;
+    const previousIndex = this.menu.currentItemIndex$.value;
+    let newIndex: number;
+    if (dir === 'up') {
+      if (previousIndex > 0) {
+        newIndex = previousIndex - 1;
+      } else {
+        newIndex = this.nonDividerItems.length - 1;
+      }
+    } else {
+      if (previousIndex < this.nonDividerItems.length - 1) {
+        newIndex = previousIndex + 1;
+      } else {
+        newIndex = 0;
+      }
+    }
+    this.menu.currentItemIndex$.next(newIndex);
+
+    const currentItem = this.nonDividerItems[this.menu.currentItemIndex$.value];
+    if (!currentItem.Enabled && this.nonDividerItems.some(x => x.Enabled)) {
+      this.onVerticalControl(dir);
+      return;
+    }
+
+    this.currentItemDescription = currentItem.Description;
+
+    const currentItemNode = this.itemElements.get(this.menu.currentItemIndex$.value);
+    this.selectorElement.nativeElement.style.top = `${currentItemNode?.nativeElement.offsetTop}px`;
+
+    const itemIndex = this.items.findIndex(x => x.hashcode === currentItem.hashcode);
+    const previousItem = this.items[itemIndex - 1];
+    let closestDividerToCurrentItemNode: ElementRef<HTMLDivElement> | undefined;
+    if (
+      dir === 'up' && (previousItem?.divider)
+      ||
+      dir === 'down' && (previousItem?.divider && previousIndex > this.menu.currentItemIndex$.value)
+    ) {
+      closestDividerToCurrentItemNode = this.elements.get(itemIndex - 1);
+    } else {
+      closestDividerToCurrentItemNode = currentItemNode;
+    }
+    closestDividerToCurrentItemNode?.nativeElement.scrollIntoView({
+      behavior: 'auto',
+      block: 'nearest'
+    });
+  }
+
+  private onHorizontalControl(dir: 'left' | 'right'): void {
+    if (!this.elements?.length) {
+      return;
+    }
+
+    const currentItem: MenuListItem = this.items[this.menu.currentItemIndex$.value] as MenuListItem;
     if (currentItem.type !== MenuItemType.List) {
       return;
     }
