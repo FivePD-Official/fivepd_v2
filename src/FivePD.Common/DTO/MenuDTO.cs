@@ -30,6 +30,8 @@ internal sealed record MenuDTO
 
                 public string Description { get; init; }
 
+                public bool Enabled { get; init; }
+
                 public MenuItemType Type { get; init; }
 
                 public JArray Items { get; init; }

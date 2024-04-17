@@ -18,11 +18,12 @@ public abstract class MenuItem
     /// </summary>
     /// <param name="title">The title of this item.</param>
     /// <param name="description">The description of this item.</param>
+    /// <param name="enabled">The state of this item.</param>
     /// <param name="type">The type of this item.</param>
-    protected MenuItem(string title, string description, MenuItemType type)
+    protected MenuItem(string title, string description, bool enabled, MenuItemType type)
     {
         this.Title = title;
-        this.Enabled = true;
+        this.Enabled = enabled;
         this.Description = description;
         this.Type = type;
     }

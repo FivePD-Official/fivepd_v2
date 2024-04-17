@@ -119,7 +119,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
       return;
     }
 
-    const currentItem = this.items[this.menu.currentItemIndex$.value];
+    const currentItem = this.nonDividerItems[this.menu.currentItemIndex$.value];
     if (!currentItem.Enabled) {
       return;
     }
@@ -168,10 +168,6 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     this.menu.currentItemIndex$.next(newIndex);
 
     const currentItem = this.nonDividerItems[this.menu.currentItemIndex$.value];
-    if (!currentItem.Enabled && this.nonDividerItems.some(x => x.Enabled)) {
-      this.onVerticalControl(dir);
-      return;
-    }
 
     this.currentItemDescription = currentItem.Description;
 
@@ -201,12 +197,12 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
       return;
     }
 
-    const currentItem: MenuListItem = this.items[this.menu.currentItemIndex$.value] as MenuListItem;
+    const currentItem: MenuListItem = this.nonDividerItems[this.menu.currentItemIndex$.value] as MenuListItem;
     if (currentItem.type !== MenuItemType.List) {
       return;
     }
 
-    const currentItemNode = this.elements.get(this.menu.currentItemIndex$.value);
+    const currentItemNode = this.itemElements.get(this.menu.currentItemIndex$.value);
     const leftArrow = currentItemNode?.nativeElement.querySelector('.left-arrow');
     const rightArrow = currentItemNode?.nativeElement.querySelector('.right-arrow');
 
