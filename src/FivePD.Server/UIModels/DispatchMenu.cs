@@ -46,7 +46,7 @@ public sealed class DispatchMenu : Menu
     {
         var items = new List<MenuItem>();
 
-        foreach (var item in this._configService.GeneralConfig.DispatchMenuItems)
+        foreach (var item in this._configService.GeneralConfig.Menu.Dispatch.Items)
         {
             if (item.OnSelect is null)
             {
