@@ -83,6 +83,31 @@ Menu:
   Interaction:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE
+  SceneManager:
+    Enabled: true
+    SpeedZone:
+      Enabled: true
+      Speed: [ 0,5,10,20,30,40,50 ]
+      Radius: [ 5,10,20,30,40,50,60,70,80,90,100 ]
+    ObjectPlacement:
+      Enabled: true
+      Objects:
+        - Name: Small cone
+          Model: prop_roadcone02a
+        - Name: Big cone
+          Model: prop_roadcone01a
+        - Name: Bigger cone
+          Model: prop_barrier_wat_03b
+        - Name: Do not cross
+          Model: prop_barrier_work05
+        - Name: Road work ahead
+          Model: prop_barrier_work04a
+        - Name: Road work ahead 2
+          Model: prop_barrier_work06b
+        - Name: Small barrier
+          Model: prop_barrier_work01c
+        - Name: Big barrier
+          Model: prop_barrier_work06a
 
 Peds:
   ChanceToReuseData: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again

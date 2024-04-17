@@ -366,6 +366,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<Vector3Service>();
         services.AddSingleton<IVector3Service>(provider => provider.GetRequiredService<Vector3Service>());
 
+        services.AddSingleton<SceneManagementService>();
+        services.AddSingleton<ISceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
+
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);

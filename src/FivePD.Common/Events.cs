@@ -444,6 +444,15 @@ public readonly record struct DevTools
         public const string GetAllSimple = "fivepd:user:getAllSimple";
     }
 
+    public readonly record struct SceneManagement
+    {
+        public const string CreateSpeedZone = "fivepd:sceneManagement:createSpeedZone";
+
+        public const string DeleteSpeedZone = "fivepd:sceneManagement:deleteSpeedZone";
+
+        public const string ReleaseSpeedZoneTraffic = "fivepd:sceneManagement:releaseSpeedZoneTraffic";
+    }
+
     public readonly record struct Cfx
     {
         // void AddAmmoToPed(int ped,uint weaponHash,int ammo);

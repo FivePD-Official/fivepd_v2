@@ -107,8 +107,8 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   get menuItemsHeight(): string {
-    if (this.items.length >= 5) {
-      return '200px';
+    if (this.items.length >= 10) {
+      return '400px';
     }
 
     return this.items.length * 40 + 'px';
