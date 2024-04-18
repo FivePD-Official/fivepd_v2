@@ -1,6 +1,6 @@
 ﻿using CitizenFX.Core;
 
-namespace FivePD.Server.Models;
+namespace FivePD.Common.Models;
 
 /// <summary>
 /// Represents a speed zone.

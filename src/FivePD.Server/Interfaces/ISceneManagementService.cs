@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
-using FivePD.Server.Models;
+using FivePD.Common.Models;
 
 namespace FivePD.Server.Interfaces;
 
@@ -29,7 +29,8 @@ public interface ISceneManagementService
     /// Deletes the speed zone with the specified id.
     /// </summary>
     /// <param name="id">The id of the speed zone to delete.</param>
-    public void DeleteSpeedZone(Guid id);
+    /// <returns>A value indicating whether the deletion could be completed or not.</returns>
+    public bool DeleteSpeedZone(Guid id);
 
     /// <summary>
     /// Releases the traffic for a given speed zone.

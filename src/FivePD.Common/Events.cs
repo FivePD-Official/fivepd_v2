@@ -449,8 +449,6 @@ public readonly record struct DevTools
         public const string CreateSpeedZone = "fivepd:sceneManagement:createSpeedZone";
 
         public const string DeleteSpeedZone = "fivepd:sceneManagement:deleteSpeedZone";
-
-        public const string ReleaseSpeedZoneTraffic = "fivepd:sceneManagement:releaseSpeedZoneTraffic";
     }
 
     public readonly record struct Cfx
@@ -499,5 +497,8 @@ public readonly record struct DevTools
 
         // void TaskVehicleTempAction(int driver, int vehicle, int action, int time);
         public const string TaskVehicleTempAction = "fivepd:cfx:TaskVehicleTempAction";
+
+        // void SetEntityAsMissionEntity(int entity, bool p1, bool p2);
+        public const string SetEntityAsMissionEntity = "fivepd:cfx:SetEntityAsMissionEntity";
     }
 }

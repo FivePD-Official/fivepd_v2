@@ -136,12 +136,12 @@ public class EntityService : IEntityService
     /// <inheritdoc />
     public List<Vehicle> GetAllVehicles()
     {
-        if (Cfx.API.GetAllVehicles() is not List<object> pedIds)
+        if (Cfx.API.GetAllVehicles() is not List<object> vehicleIds)
         {
             return new List<Vehicle>();
         }
 
-        return pedIds
+        return vehicleIds
             .Select(Convert.ToInt32)
             .Select(x => new Vehicle(x))
             .ToList();

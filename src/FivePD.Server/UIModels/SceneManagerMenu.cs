@@ -15,6 +15,7 @@ public class SceneManagerMenu : Menu
 {
     private readonly IConfigService _configService;
     private readonly ISceneManagementService _sceneManagementService;
+    private readonly IMenuService _menuService;
     
     private int _selectedSpeedZoneSpeed;
     private int _selectedSpeedZoneRadius;
@@ -22,12 +23,20 @@ public class SceneManagerMenu : Menu
 
     public SceneManagerMenu(
         IConfigService configService,
-        ISceneManagementService sceneManagementService)
+        ISceneManagementService sceneManagementService,
+        IMenuService menuService)
         : base(Controls.SceneManagerMenu.Id, Controls.SceneManagerMenu.Title, Controls.SceneManagerMenu.Key)
     {
         this._configService = configService;
         this._sceneManagementService = sceneManagementService;
+        this._menuService = menuService;
     }
+    
+    internal MenuButtonItem CreateSpeedZone { get; private set; }
+
+    internal MenuButtonItem DeleteSpeedZone { get; private set; }
+
+    internal MenuButtonItem ReleaseTraffic { get; private set; }
 
     public override bool CanOpen(FPlayer player)
     {
@@ -54,49 +63,62 @@ public class SceneManagerMenu : Menu
     private List<MenuItem> CreateSpeedZoneItems()
     {
         var items = new List<MenuItem> { new MenuDividerItem("Speed zone") };
-        
-        var speeds = this._configService.GeneralConfig.Menu.SceneManager.SpeedZone.Speed
-            .Select(x => new MenuListOption(x.ToString()))
-            .ToList();
 
-        var speedSelector = new MenuListItem("Speed", string.Empty, speeds);
-        speedSelector.OnSelect += (_, index) =>
+        var speedList = this._configService.GeneralConfig.Menu.SceneManager.SpeedZone.Speed;
+        var radiusList = this._configService.GeneralConfig.Menu.SceneManager.SpeedZone.Radius;
+        
+        this._selectedSpeedZoneSpeed = speedList.Count > 0 ? speedList[0] : 0;
+        this._selectedSpeedZoneRadius = radiusList.Count > 0 ? radiusList[0] : 0;
+
+        var speedSelector = new MenuListItem("Speed", "The maximum speed inside the zone to be created.", speedList.Select(x => new MenuListOption(x.ToString())).ToList());
+        speedSelector.OnIndexChange += (_, index) =>
         {
-            this._selectedSpeedZoneSpeed = this._configService.GeneralConfig.Menu.SceneManager.SpeedZone.Speed[index];
+            this._selectedSpeedZoneSpeed = speedList[index];
             return Task.CompletedTask;
         };
         items.Add(speedSelector);
 
-        var radiuses = this._configService.GeneralConfig.Menu.SceneManager.SpeedZone.Radius
-            .Select(x => new MenuListOption(x.ToString()))
-            .ToList();
-        var radiusSelector = new MenuListItem("Radius", string.Empty, radiuses);
-        radiusSelector.OnSelect += (_, index) =>
+        var radiusSelector = new MenuListItem("Radius", "The radius of the zone to be created.", radiusList.Select(x => new MenuListOption(x.ToString())).ToList());
+        radiusSelector.OnIndexChange += (_, index) =>
         {
-            this._selectedSpeedZoneRadius = this._configService.GeneralConfig.Menu.SceneManager.SpeedZone.Radius[index];
+            this._selectedSpeedZoneRadius = radiusList[index];
             return Task.CompletedTask;
         };
         items.Add(radiusSelector);
 
-        var createSpeedZone = new MenuButtonItem("Create speed zone", string.Empty);
-        createSpeedZone.OnSelect += player =>
+        this.CreateSpeedZone = new MenuButtonItem("Create speed zone", "Creates a speed zone with the specified speed and radius.");
+        this.CreateSpeedZone.OnSelect += player =>
         {
             this._createdSpeedZoneId = this._sceneManagementService.CreateSpeedZone(player.GetUnderlyingPlayer().Character.Position, this._selectedSpeedZoneRadius, this._selectedSpeedZoneSpeed);
+            this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.CreateSpeedZone, i => i.Enabled, false);
+            this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.DeleteSpeedZone, i => i.Enabled, true);
+            this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.ReleaseTraffic, i => i.Enabled, true);
             return Task.CompletedTask;
         };
-        items.Add(createSpeedZone);
+        items.Add(this.CreateSpeedZone);
 
-        var deleteSpeedZone = new MenuButtonItem("Delete speed zone", string.Empty, false);
-        deleteSpeedZone.OnSelect += _ =>
+        this.DeleteSpeedZone = new MenuButtonItem("Delete speed zone", "Deletes the speed zone you've created.", false);
+        this.DeleteSpeedZone.OnSelect += player =>
         {
-            this._sceneManagementService.DeleteSpeedZone(this._createdSpeedZoneId);
+            var deleted = this._sceneManagementService.DeleteSpeedZone(this._createdSpeedZoneId);
+            if (deleted)
+            {
+                this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.CreateSpeedZone, i => i.Enabled, true);
+                this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.DeleteSpeedZone, i => i.Enabled, false);
+                this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.ReleaseTraffic, i => i.Enabled, false);
+                this._createdSpeedZoneId = Guid.Empty;
+            }
             return Task.CompletedTask;
         };
-        items.Add(deleteSpeedZone);
+        items.Add(this.DeleteSpeedZone);
 
-        var releaseTraffic = new MenuButtonItem("Release traffic", string.Empty, false);
-        releaseTraffic.OnSelect += (player) => { return Task.CompletedTask; };
-        items.Add(releaseTraffic);
+        this.ReleaseTraffic = new MenuButtonItem("Release traffic", "Use when the speed is set to 0 and you want all vehicles inside the zone to drive away.", false);
+        this.ReleaseTraffic.OnSelect += _ =>
+        {
+            this._sceneManagementService.ReleaseSpeedZoneTraffic(this._createdSpeedZoneId);
+            return Task.CompletedTask;
+        };
+        items.Add(this.ReleaseTraffic);
 
         return items;
     }
