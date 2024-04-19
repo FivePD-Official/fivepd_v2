@@ -40,6 +40,8 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   private readonly destroy$ = injectDestroy();
   private readonly _eventService = inject(EventService);
 
+  private menuWidth = '';
+
   @Input({required: true}) menu!: Menu;
 
   @ViewChildren('element') elements!: QueryList<ElementRef<HTMLDivElement>>;
@@ -47,6 +49,9 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChildren('itemElement') itemElements!: QueryList<ElementRef<HTMLDivElement>>;
 
   @ViewChild('selector') selectorElement!: ElementRef<HTMLDivElement>;
+
+  @ViewChild('itemsContainer') itemsContainerElement!: ElementRef<HTMLDivElement>;
+  @ViewChildren('descriptionContainer') descriptionContainerElement!: QueryList<ElementRef<HTMLDivElement>>;
 
   ngOnInit(): void {
     this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_up')
@@ -75,6 +80,21 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
         this.selectorElement.nativeElement.style.top = item ? item.nativeElement.offsetTop + 'px' : '0px';
       }
     }
+
+    if (this.itemsContainerElement?.nativeElement) {
+      const width = Math.round(this.itemsContainerElement.nativeElement.getBoundingClientRect().width) + 20;
+      this.menuWidth = `${width}px`
+      this.itemsContainerElement.nativeElement.style.width = this.menuWidth;
+    }
+
+    this.descriptionContainerElement.changes
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((queryList: QueryList<ElementRef<HTMLDivElement>>) => {
+        if (this.menuWidth && queryList.first?.nativeElement) {
+          queryList.first.nativeElement.style.width = this.menuWidth;
+          queryList.first.nativeElement.style.maxWidth = this.menuWidth;
+        }
+      })
   }
 
   ngOnChanges(changes: SimpleChanges): void {

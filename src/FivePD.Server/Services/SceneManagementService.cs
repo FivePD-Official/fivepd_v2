@@ -93,21 +93,19 @@ public class SceneManagementService : ISceneManagementService
             return;
         }
 
-        #pragma warning disable
-
-        // .Where(x => x.Position.DistanceToSquared(speedZone.Position) <= speedZone.Radius)
-        var vehicles = this._entityService.GetAllVehicles().ToList();
-        Debug.WriteLine($"vehicles: {vehicles.Count}");
+        // TODO: multiplying by 20 doesn't seem right, but without it the distance is way off. the distance between the origin and origin+radius/2 == radius for some reason
+        // TODO: also might be worth to check the distance calculation in the EntityService as well
+        var vehicles = this._entityService.GetAllVehicles()
+            .Where(x => x.Position.DistanceToSquared2D(speedZone.Position) <= speedZone.Radius * 20)
+            .ToList();
         foreach (var vehicle in vehicles)
         {
             var pedHandle = Cfx.API.GetPedInVehicleSeat(vehicle.Handle, -1);
-            Debug.WriteLine($"handle: {pedHandle}");
             if (Entity.FromHandle(pedHandle) is not Ped ped)
             {
                 continue;
             }
 
-            Debug.WriteLine($"CruiseWithVehicle: {pedHandle}");
             var fped = FPed.FromPed(ped);
             this._cfxService.SetEntityAsMissionEntity(fped.GetUnderlyingPed.NetworkId, true, true);
             fped.Task.CruiseWithVehicle(vehicle, 10f);

@@ -1,6 +1,6 @@
 @if (menu) {
-  <div class="absolute top-0 left-0 min-w-[300px]">
-    <div class="rounded-lg bg-zinc-900 relative w-full overflow-hidden">
+  <div class="absolute top-0 left-0">
+    <div #itemsContainer class="rounded-lg bg-zinc-900 relative min-w-[300px] overflow-hidden">
       <div class="flex flex-row items-center justify-start px-4 py-5">
         <p class="font-medium text-zinc-100">{{ menu.title | translate }}</p>
       </div>
@@ -91,7 +91,7 @@
     </div>
 
     @if (currentItemDescription) {
-      <div class="mt-1 rounded-lg bg-zinc-900 w-full px-4 py-2.5">
+      <div #descriptionContainer class="mt-1 rounded-lg bg-zinc-900 px-4 py-2.5">
         <p class="text-zinc-400">{{ currentItemDescription | translate }}</p>
       </div>
     }
