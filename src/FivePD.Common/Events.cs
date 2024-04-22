@@ -74,6 +74,8 @@ internal readonly record struct Events
         public const string Get = "fivepd:vehicle:get";
 
         public const string GetAllPageable = "fivepd:vehicle:getAllPageable";
+
+        public const string FetchData = "fivepd:vehicle:fetchData";
     }
 
     public readonly record struct Localization
