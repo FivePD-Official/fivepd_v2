@@ -82,11 +82,6 @@ internal class AlprService : IAlprService, IOnInit
 
     private void RunALPR()
     {
-        if (!this.enabled)
-        {
-            return;
-        }
-
         var task = this._tickService.EnqueueInterval(
             () =>
             {
