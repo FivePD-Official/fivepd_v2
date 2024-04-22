@@ -10,6 +10,7 @@ using FivePD.Common.DTO;
 
 namespace FivePD.Client.Services;
 
+/// <inheritdoc />
 internal class AlprService : IAlprService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
@@ -21,6 +22,14 @@ internal class AlprService : IAlprService, IOnInit
     private bool enabled = false;
     private Guid taskGuid = new Guid("0");
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AlprService"/> class.
+    /// </summary>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
+    /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
+    /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
+    /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     public AlprService(EventHandlerDictionary eventHandlerDictionary, IControlService controlService, INotificationService notificationService, ITickService tickService, IVehicleService vehicleService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
@@ -30,6 +39,7 @@ internal class AlprService : IAlprService, IOnInit
         this._vehicleService = vehicleService;
     }
 
+    /// <inheritdoc/>
     public void OnInit()
     {
         this._controlservice.RegisterKeybind(Controls.ToggleALPR.Id, Controls.ToggleALPR.Key, Controls.ToggleALPR.Title, () =>
@@ -104,11 +114,13 @@ internal class AlprService : IAlprService, IOnInit
                         });
                     });
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // Do nothing.
+                    Debug.WriteLine(ex.ToString());
                 }
-            }, 5000);
+            },
+            5000);
         this.taskGuid = task;
     }
 }
