@@ -40,16 +40,13 @@ internal class AlprService : IAlprService, IOnInit
         this._notificationService = notificationService;
         this._tickService = tickService;
         this._vehicleService = vehicleService;
-        Debug.WriteLine("Public method runs");
     }
 
     /// <inheritdoc/>
     public void OnInit()
     {
-        Debug.WriteLine("OnInit runs");
         this._controlservice.RegisterKeybind(Controls.ToggleALPR.Id, Controls.ToggleALPR.Key, Controls.ToggleALPR.Title, () =>
         {
-            Debug.WriteLine("ALPR Key pressed!");
             this.enabled = !this.enabled;
             string content = this.enabled ? "ALPR ~g~Enabled~s~" : "ALPR ~r~Disabled~s~";
             this._notificationService.ShowTooltip(content, true);
@@ -91,7 +88,6 @@ internal class AlprService : IAlprService, IOnInit
         var task = this._tickService.EnqueueInterval(
             () =>
             {
-                Debug.WriteLine("Looping every 5 seconds");
                 if (!this.enabled)
                 {
                     this._tickService.DequeueInterval(this.taskGuid);
@@ -104,12 +100,10 @@ internal class AlprService : IAlprService, IOnInit
                     nearbyVehicles.ForEach((vehicle) =>
                     {
                         this._vehicleService.GenerateVehicle(vehicle);
-                        Debug.WriteLine("Triggering server event");
                         BaseScript.TriggerServerEvent(Events.Vehicle.FetchData, vehicle.NetworkId);
 
                         this._eventHandlerDictionary[Events.Vehicle.FetchData] += new Action<bool, string>((wanted, content) =>
                         {
-                            Debug.WriteLine("Got from FetchData");
                             if (wanted)
                             {
                                 this._notificationService.ShowNotification(content);

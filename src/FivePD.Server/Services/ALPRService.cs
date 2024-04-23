@@ -49,13 +49,11 @@ public class AlprService : IAlprService, IOnInit
 
     private void OnFetchData([FromSource] Player source, int netId)
     {
-        Debug.WriteLine("OnFetchData");
         var fVehicle = FVehicle.FromNetId(netId);
         var ownerPed = FPed.FromNetId(fVehicle.OwnerNetworkId);
         ownerPed.Warrants.Add("Bench Warrant");
         if (ownerPed.Warrants.Count > 0)
         {
-            Debug.WriteLine("Warrant!");
             string flaggedWarrant = ownerPed.Warrants[0];
             string insurance = this.GetValidity(fVehicle, VehicleDocumentType.Insurance);
             string registration = this.GetValidity(fVehicle, VehicleDocumentType.Registration);
@@ -78,7 +76,6 @@ public class AlprService : IAlprService, IOnInit
                 .Yellow($"Registration: ").White(registration)
                 .Build();
 
-            Debug.WriteLine("check3");
             BaseScript.TriggerClientEvent(source, Events.Vehicle.FetchData, ownerPed.Warrants.Count > 0, content);
             return;
         }
