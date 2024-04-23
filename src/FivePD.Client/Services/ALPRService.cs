@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
+using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.DTO;
 
@@ -20,7 +21,8 @@ internal class AlprService : IAlprService, IOnInit
     private readonly IVehicleService _vehicleService;
 
     private bool enabled = false;
-    private Guid taskGuid = new Guid("0");
+    private Guid defaultGuid = Guid.NewGuid();
+    private Guid taskGuid;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AlprService"/> class.
@@ -32,18 +34,22 @@ internal class AlprService : IAlprService, IOnInit
     /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     public AlprService(EventHandlerDictionary eventHandlerDictionary, IControlService controlService, INotificationService notificationService, ITickService tickService, IVehicleService vehicleService)
     {
+        this.taskGuid = this.defaultGuid;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._controlservice = controlService;
         this._notificationService = notificationService;
         this._tickService = tickService;
         this._vehicleService = vehicleService;
+        Debug.WriteLine("Public method runs");
     }
 
     /// <inheritdoc/>
     public void OnInit()
     {
+        Debug.WriteLine("OnInit runs");
         this._controlservice.RegisterKeybind(Controls.ToggleALPR.Id, Controls.ToggleALPR.Key, Controls.ToggleALPR.Title, () =>
         {
+            Debug.WriteLine("ALPR Key pressed!");
             this.enabled = !this.enabled;
             string content = this.enabled ? "ALPR ~g~Enabled~s~" : "ALPR ~r~Disabled~s~";
             this._notificationService.ShowTooltip(content, true);
@@ -85,9 +91,11 @@ internal class AlprService : IAlprService, IOnInit
         var task = this._tickService.EnqueueInterval(
             () =>
             {
+                Debug.WriteLine("Looping every 5 seconds");
                 if (!this.enabled)
                 {
                     this._tickService.DequeueInterval(this.taskGuid);
+                    this.taskGuid = this.defaultGuid;
                 }
 
                 try
@@ -96,10 +104,12 @@ internal class AlprService : IAlprService, IOnInit
                     nearbyVehicles.ForEach((vehicle) =>
                     {
                         this._vehicleService.GenerateVehicle(vehicle);
+                        Debug.WriteLine("Triggering server event");
                         BaseScript.TriggerServerEvent(Events.Vehicle.FetchData, vehicle.NetworkId);
 
                         this._eventHandlerDictionary[Events.Vehicle.FetchData] += new Action<bool, string>((wanted, content) =>
                         {
+                            Debug.WriteLine("Got from FetchData");
                             if (wanted)
                             {
                                 this._notificationService.ShowNotification(content);
