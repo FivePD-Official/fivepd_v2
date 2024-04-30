@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FivePD.Server.Models.LooseData;
+namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Represents an entity's attribute value.
 /// </summary>
-[Table("fivepd_loose_data_values")]
-public class LooseDataValue
+[Table("fivepd_variable_data_values")]
+public class VariableDataValue
 {
     /// <summary>
     /// Gets or sets the id of this value.
@@ -16,12 +16,12 @@ public class LooseDataValue
     /// <summary>
     /// Gets or sets the attribute which this value belongs to.
     /// </summary>
-    public LooseDataAttribute Attribute { get; set; }
+    public VariableDataAttribute Attribute { get; set; }
 
     /// <summary>
     /// Gets or sets the entity which this value belongs to.
     /// </summary>
-    public LooseDataEntity Entity { get; set; }
+    public VariableDataEntity Entity { get; set; }
 
     /// <summary>
     /// Gets or sets the actual value in a serialized format.

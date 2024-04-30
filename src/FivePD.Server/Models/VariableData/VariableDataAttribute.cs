@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FivePD.Server.Models.LooseData;
+namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
-/// Represents a <see cref="LooseDataSet"/> attribute.
+/// Represents a <see cref="VariableDataSet"/> attribute.
 /// </summary>
-[Table("fivepd_loose_data_attributes")]
-public class LooseDataAttribute
+[Table("fivepd_variable_data_attributes")]
+public class VariableDataAttribute
 {
     /// <summary>
     /// Should be used to specify whether an attribute was created by an admin or not.
@@ -22,16 +22,16 @@ public class LooseDataAttribute
     /// <summary>
     /// Gets or sets which set this attribute belongs to.
     /// </summary>
-    public LooseDataSet Set { get; set; }
+    public VariableDataSet Set { get; set; }
 
     /// <summary>
     /// Gets or sets the data type of this attribute.
     /// </summary>
-    public LooseDataType DataType { get; set; }
+    public VariableDataType DataType { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the addon which created this attribute.
-    /// If it was created by an admin it should equal to <see cref="LooseDataAttribute.AddedByAdminAddonId"/>.
+    /// If it was created by an admin it should equal to <see cref="VariableDataAttribute.AddedByAdminAddonId"/>.
     /// </summary>
     public string AddonId { get; set; }
 
@@ -93,7 +93,7 @@ public class LooseDataAttribute
     {
         /// <summary>
         /// Gets or sets the items which will be displayed in dropdown fields.
-        /// Only works if the <see cref="LooseDataAttribute.DataType"/> is set to <see cref="LooseDataType.Integer"/>.
+        /// Only works if the <see cref="VariableDataAttribute.DataType"/> is set to <see cref="VariableDataType.Integer"/>.
         /// </summary>
         public Dictionary<int, string> Items { get; set; }
     }

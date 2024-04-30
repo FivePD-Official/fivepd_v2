@@ -2,13 +2,13 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Utilities;
 
-namespace FivePD.Server.Models.LooseData;
+namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Represents a dynamic entity.
 /// </summary>
-[Table("fivepd_loose_data_entities")]
-public class LooseDataEntity
+[Table("fivepd_variable_data_entities")]
+public class VariableDataEntity
 {
     /// <summary>
     /// Gets or sets the id of this entity.
@@ -16,24 +16,24 @@ public class LooseDataEntity
     public string Id { get; set; } = IdGenerator.Generate();
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="LooseDataSet"/> which this entity belongs to.
+    /// Gets or sets the id of the <see cref="VariableDataSet"/> which this entity belongs to.
     /// </summary>
     public string SetId { get; set; }
 
     /// <summary>
     /// Gets or sets the set this entity belongs to.
     /// </summary>
-    public LooseDataSet Set { get; set; }
+    public VariableDataSet Set { get; set; }
 
     /// <summary>
     /// Gets or sets the values of this entity.
     /// </summary>
-    public IList<LooseDataValue> Values { get; set; }
+    public IList<VariableDataValue> Values { get; set; }
 
     /// <summary>
     /// Gets or sets the values of this entity.
     /// If adding or updating an entity this should be used
-    /// instead of the <see cref="LooseDataEntity.Values"/> property.
+    /// instead of the <see cref="VariableDataEntity.Values"/> property.
     /// </summary>
     [NotMapped]
     public Dictionary<string, object> MappedValues { get; set; }

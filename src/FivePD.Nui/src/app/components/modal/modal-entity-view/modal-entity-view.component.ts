@@ -1,12 +1,12 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { ATTRIBUTES, ENTITY } from './entity-token';
-import { LooseDataAttribute, LooseDataEntityWrapper, MappedLooseDataEntity } from '@models';
-import { EntityValue, EntityValueLink, LooseDataService } from '@services/loose-data/loose-data.service';
+import { VariableDataAttribute, VariableDataEntityWrapper, MappedVariableDataEntity } from '@models';
 import { tap } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
 import { Router } from "@angular/router";
 import { IconComponent } from '../../icon/icon.component';
 import { NgStyle } from '@angular/common';
+import { EntityValue, EntityValueLink, VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
   selector: 'app-modal-entity-view',
@@ -22,9 +22,9 @@ export class ModalEntityViewComponent implements OnInit {
 
   constructor(
     private modalRef: ModalRef,
-    @Inject(ENTITY) private mappedEntity: MappedLooseDataEntity,
-    @Inject(ATTRIBUTES) private attributes: LooseDataAttribute[],
-    private _looseData: LooseDataService,
+    @Inject(ENTITY) private mappedEntity: MappedVariableDataEntity,
+    @Inject(ATTRIBUTES) private attributes: VariableDataAttribute[],
+    private _variableDataService: VariableDataService,
     private readonly _router: Router,
   ) {
   }
@@ -49,7 +49,7 @@ export class ModalEntityViewComponent implements OnInit {
 
   private getEntity(): void {
     this.modalRef.startLoading('Updating...');
-    this._looseData.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id)
+    this._variableDataService.getEntity(this.mappedEntity.SetId, this.mappedEntity.Id)
       .pipe(
         tap(() => this.modalRef.stopLoading())
       )
@@ -58,8 +58,8 @@ export class ModalEntityViewComponent implements OnInit {
       });
   }
 
-  private mapEntityValues(entityWrapper: LooseDataEntityWrapper): void {
-    const values = this._looseData.mapEntityValues(entityWrapper);
+  private mapEntityValues(entityWrapper: VariableDataEntityWrapper): void {
+    const values = this._variableDataService.mapEntityValues(entityWrapper);
     const columns = [];
     for (let i = this.modalRef.options?.columns ?? 1; i > 0; i--) {
       columns.push(values.splice(0, Math.ceil(values.length / i)));

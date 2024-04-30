@@ -13,40 +13,40 @@ using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
-using FivePD.Server.Interfaces.LooseData;
-using FivePD.Server.Models.LooseData;
+using FivePD.Server.Interfaces.VariableData;
 using FivePD.Server.Models.Requests;
+using FivePD.Server.Models.VariableData;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace FivePD.Server.Services.LooseData;
+namespace FivePD.Server.Services.VariableData;
 
-/// <inheritdoc cref="FivePD.Server.Interfaces.LooseData.ILooseDataService" />
+/// <inheritdoc cref="IVariableDataService" />
 [Obfuscate]
-public class LooseDataService : ILooseDataService, IInternalLooseDataService
+public class VariableDataService : IVariableDataService, IInternalVariableDataService
 {
     private readonly DatabaseContext _databaseContext;
     private readonly IPlayerHandlerService _playerHandlerService;
 
-    private readonly List<LooseDataEntityObservable> _observables = new();
+    private readonly List<VariableDataEntityObservable> _observables = new();
     private readonly Dictionary<Type, string> _activeSetTypes = new();
     private readonly List<object> _addonRepositoryInstances = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LooseDataService"/> class.
+    /// Initializes a new instance of the <see cref="VariableDataService"/> class.
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
-    public LooseDataService(DatabaseContext databaseContext, IPlayerHandlerService playerHandlerService)
+    public VariableDataService(DatabaseContext databaseContext, IPlayerHandlerService playerHandlerService)
     {
         this._databaseContext = databaseContext;
         this._playerHandlerService = playerHandlerService;
     }
 
     /// <inheritdoc/>
-    void IInternalLooseDataService.DisposeAddonRepositories()
+    void IInternalVariableDataService.DisposeAddonRepositories()
     {
         foreach (var addonRepositoryInstance in this._addonRepositoryInstances)
         {
@@ -55,35 +55,35 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     }
 
     /// <inheritdoc />
-    public void RegisterAddonRepository<TLooseDataSet, TLooseDataRepository>(TLooseDataRepository repository)
-        where TLooseDataSet : LooseDataSet
-        where TLooseDataRepository : LooseDataRepository<TLooseDataSet>
+    public void RegisterAddonRepository<TVariableDataSet, TVariableDataRepository>(TVariableDataRepository repository)
+        where TVariableDataSet : VariableDataSet
+        where TVariableDataRepository : VariableDataRepository<TVariableDataSet>
     {
         this._addonRepositoryInstances.Add(repository);
         ((IOnInit)repository).OnInit();
     }
 
     /// <inheritdoc />
-    public IDisposable OnAdded<TS>(Action<LooseDataEvent> observer)
+    public IDisposable OnAdded<TS>(Action<VariableDataEvent> observer)
     {
-        return this.OnEvent<TS>(LooseDataEntityObservableType.Add, observer);
+        return this.OnEvent<TS>(VariableDataEntityObservableType.Add, observer);
     }
 
     /// <inheritdoc />
-    public IDisposable OnUpdated<TS>(Action<LooseDataEvent> observer)
+    public IDisposable OnUpdated<TS>(Action<VariableDataEvent> observer)
     {
-        return this.OnEvent<TS>(LooseDataEntityObservableType.Update, observer);
+        return this.OnEvent<TS>(VariableDataEntityObservableType.Update, observer);
     }
 
     /// <inheritdoc />
-    public IDisposable OnDeleted<TS>(Action<LooseDataEvent> observer)
+    public IDisposable OnDeleted<TS>(Action<VariableDataEvent> observer)
     {
-        return this.OnEvent<TS>(LooseDataEntityObservableType.Delete, observer);
+        return this.OnEvent<TS>(VariableDataEntityObservableType.Delete, observer);
     }
 
     /// <inheritdoc />
-    public void RegisterSetAttributes<TS>(List<LooseDataAttribute> attributes)
-        where TS : LooseDataSet
+    public void RegisterSetAttributes<TS>(List<VariableDataAttribute> attributes)
+        where TS : VariableDataSet
     {
         var assemblyName = this.GetExecutingAssemblyName();
         if (string.IsNullOrEmpty(assemblyName))
@@ -99,7 +99,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         var setType = typeof(TS);
         this._activeSetTypes[setType] = assemblyName;
 
-        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        var setIdAttr = setType.GetCustomAttribute<VariableDataSetIdAttribute>();
         if (setIdAttr is null)
         {
             return;
@@ -110,7 +110,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var set = this._databaseContext.LooseDataSets
+        var set = this._databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .Include(set => set.Entities)
             .ThenInclude(entities => entities.Values)
@@ -119,7 +119,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         {
             set = Activator.CreateInstance<TS>();
             set.Id = setIdAttr.Id;
-            this._databaseContext.LooseDataSets.Add(set);
+            this._databaseContext.VariableDataSets.Add(set);
         }
 
         foreach (var attr in attributes)
@@ -132,20 +132,20 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             foreach (var attr in attributes.Where(attr => set.Attributes.All(setAttr => setAttr.Name != attr.Name)))
             {
                 attr.Set = set;
-                var addedAttributeEntry = this._databaseContext.LooseDataAttributes.Add(attr);
+                var addedAttributeEntry = this._databaseContext.VariableDataAttributes.Add(attr);
                 this._databaseContext.SaveChanges();
                 foreach (var entity in set.Entities)
                 {
-                    var value = new LooseDataValue
+                    var value = new VariableDataValue
                     {
                         Entity = entity,
                         Attribute = addedAttributeEntry.Entity,
                         Value = JsonConvert.SerializeObject(
-                            attr.DataType == LooseDataType.Date
+                            attr.DataType == VariableDataType.Date
                                 ? DateTime.Now
                                 : null),
                     };
-                    this._databaseContext.LooseDataValues.Add(value);
+                    this._databaseContext.VariableDataValues.Add(value);
                 }
             }
         }
@@ -158,8 +158,8 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     }
 
     /// <inheritdoc />
-    public void UpdateSetAttribute<TS>(string attributeName, LooseDataAttribute newAttributeValues)
-        where TS : LooseDataSet
+    public void UpdateSetAttribute<TS>(string attributeName, VariableDataAttribute newAttributeValues)
+        where TS : VariableDataSet
     {
         var assemblyName = this.GetExecutingAssemblyName();
         if (string.IsNullOrEmpty(assemblyName))
@@ -173,13 +173,13 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        var setIdAttr = setType.GetCustomAttribute<VariableDataSetIdAttribute>();
         if (setIdAttr is null)
         {
             return;
         }
 
-        var attributeToUpdate = this._databaseContext.LooseDataAttributes
+        var attributeToUpdate = this._databaseContext.VariableDataAttributes
             .FirstOrDefault(attr => attr.Name == attributeName);
         if (attributeToUpdate is null)
         {
@@ -205,7 +205,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
     /// <inheritdoc />
     public void DeleteSetAttribute<TS>(string attributeName)
-        where TS : LooseDataSet
+        where TS : VariableDataSet
     {
         var assemblyName = this.GetExecutingAssemblyName();
         if (string.IsNullOrEmpty(assemblyName))
@@ -219,13 +219,13 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        var setIdAttr = setType.GetCustomAttribute<VariableDataSetIdAttribute>();
         if (setIdAttr is null)
         {
             return;
         }
 
-        var attributeToDelete = this._databaseContext.LooseDataAttributes
+        var attributeToDelete = this._databaseContext.VariableDataAttributes
             .FirstOrDefault(attr => attr.Name == attributeName);
         if (attributeToDelete is null)
         {
@@ -237,20 +237,20 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             throw new ArgumentException("Can't delete attribute of a different addon");
         }
 
-        var valuesToDelete = this._databaseContext.LooseDataValues
+        var valuesToDelete = this._databaseContext.VariableDataValues
             .Include(value => value.Attribute)
             .Where(value => value.Attribute.Id == attributeToDelete.Id);
-        this._databaseContext.LooseDataValues.RemoveRange(valuesToDelete);
-        this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
+        this._databaseContext.VariableDataValues.RemoveRange(valuesToDelete);
+        this._databaseContext.VariableDataAttributes.Remove(attributeToDelete);
         this._databaseContext.SaveChanges();
     }
 
     /// <inheritdoc />
-    public LooseDataEntity AddEntity<TS>(LooseDataEntity entityToAdd)
-        where TS : LooseDataSet
+    public VariableDataEntity AddEntity<TS>(VariableDataEntity entityToAdd)
+        where TS : VariableDataSet
     {
         var setType = typeof(TS);
-        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        var setIdAttr = setType.GetCustomAttribute<VariableDataSetIdAttribute>();
         if (setIdAttr is null)
         {
             return null;
@@ -260,7 +260,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     }
 
     /// <inheritdoc />
-    public void UpdateEntity(LooseDataEntity entityToUpdate)
+    public void UpdateEntity(VariableDataEntity entityToUpdate)
     {
         var originalEntity = this.GetEntity(entityToUpdate.Id);
         if (originalEntity is null)
@@ -272,34 +272,34 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     }
 
     /// <inheritdoc />
-    public LooseDataEntity GetEntity(string id)
+    public VariableDataEntity GetEntity(string id)
     {
         return this.InternalGetEntity(id);
     }
 
     /// <inheritdoc />
-    public LooseDataEntity GetEntity(string id, bool withTracking, bool queryCoreAttributeValue)
+    public VariableDataEntity GetEntity(string id, bool withTracking, bool queryCoreAttributeValue)
     {
         return this.InternalGetEntity(id, withTracking, queryCoreAttributeValue);
     }
 
     /// <inheritdoc />
-    public List<LooseDataEntity> GetEntities<TS>(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
-        where TS : LooseDataSet
+    public List<VariableDataEntity> GetEntities<TS>(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
+        where TS : VariableDataSet
     {
         return this.GetEntitiesWithOptionalType<TS>(null, withTracking, queryCoreAttributeValue, filter);
     }
 
     /// <inheritdoc />
-    public List<LooseDataEntity> GetEntities(Type setType, bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
+    public List<VariableDataEntity> GetEntities(Type setType, bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
     {
-        return this.GetEntitiesWithOptionalType<LooseDataSet>(setType, withTracking, queryCoreAttributeValue, filter);
+        return this.GetEntitiesWithOptionalType<VariableDataSet>(setType, withTracking, queryCoreAttributeValue, filter);
     }
 
     /// <inheritdoc />
-    public void DeleteEntity(LooseDataEntity entityToDelete)
+    public void DeleteEntity(VariableDataEntity entityToDelete)
     {
-        var entity = this._databaseContext.LooseDataEntities
+        var entity = this._databaseContext.VariableDataEntities
             .Include(entity => entity.Values)
             .Include(entity => entity.Set)
             .FirstOrDefault(entity => entity.Id == entityToDelete.Id);
@@ -308,21 +308,21 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        this._databaseContext.LooseDataEntities.Remove(entity);
+        this._databaseContext.VariableDataEntities.Remove(entity);
         this._databaseContext.SaveChanges();
         this.InvokeEvent(
-            LooseDataEntityObservableType.Delete,
+            VariableDataEntityObservableType.Delete,
             this.FindSetTypeById(entity.Set.Id),
-            new LooseDataEvent
+            new VariableDataEvent
             {
                 Entity = this.MapEntity(entity),
                 Player = null,
             });
     }
 
-    private LooseDataEntity InternalGetEntity(string id, bool withTracking = false, bool queryCoreAttributeValue = false)
+    private VariableDataEntity InternalGetEntity(string id, bool withTracking = false, bool queryCoreAttributeValue = false)
     {
-        var query = withTracking ? this._databaseContext.LooseDataEntities : this._databaseContext.LooseDataEntities.AsNoTracking();
+        var query = withTracking ? this._databaseContext.VariableDataEntities : this._databaseContext.VariableDataEntities.AsNoTracking();
         var entity = query
             .Include(entity => entity.Values)
             .ThenInclude(values => values.Attribute)
@@ -334,23 +334,23 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         return mappedEntity;
     }
 
-    private List<LooseDataEntity> GetEntitiesWithOptionalType<TS>(
+    private List<VariableDataEntity> GetEntitiesWithOptionalType<TS>(
         Type setType,
         bool withTracking,
         bool queryCoreAttributeValues,
         IReadOnlyDictionary<string, object> filter = null)
-        where TS : LooseDataSet
+        where TS : VariableDataSet
     {
-        var setIdAttr = (setType ?? typeof(TS)).GetCustomAttribute<LooseDataSetIdAttribute>();
+        var setIdAttr = (setType ?? typeof(TS)).GetCustomAttribute<VariableDataSetIdAttribute>();
         if (setIdAttr is null)
         {
-            return new List<LooseDataEntity>();
+            return new List<VariableDataEntity>();
         }
 
-        var query = withTracking ? this._databaseContext.LooseDataEntities : this._databaseContext.LooseDataEntities.AsNoTracking();
+        var query = withTracking ? this._databaseContext.VariableDataEntities : this._databaseContext.VariableDataEntities.AsNoTracking();
         var entities = query
             .Include(entity => entity.Values)
-            .ThenInclude(looseDataValue => looseDataValue.Attribute)
+            .ThenInclude(v => v.Attribute)
             .Include(entity => entity.Set)
             .ThenInclude(set => set.Attributes)
             .Where(entity => entity.Set.Id == setIdAttr.Id)
@@ -361,7 +361,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return entities.Select(x => this.MapEntity(x, queryCoreAttributeValues)).ToList();
         }
 
-        var itemsToRemove = new List<LooseDataEntity>();
+        var itemsToRemove = new List<VariableDataEntity>();
         foreach (var entity in entities)
         {
             foreach (var value in entity.Values)
@@ -409,15 +409,15 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         return entities.Select(x => this.MapEntity(x, queryCoreAttributeValues)).ToList();
     }
 
-    private Page<LooseDataEntity> GetEntitiesPage(Type setType, int pageNumber, Filters<LooseDataEntity> filters)
+    private Page<VariableDataEntity> GetEntitiesPage(Type setType, int pageNumber, Filters<VariableDataEntity> filters)
     {
-        var setIdAttr = setType.GetCustomAttribute<LooseDataSetIdAttribute>();
+        var setIdAttr = setType.GetCustomAttribute<VariableDataSetIdAttribute>();
         if (setIdAttr is null)
         {
-            return new Page<LooseDataEntity>();
+            return new Page<VariableDataEntity>();
         }
 
-        var page = this._databaseContext.LooseDataEntities
+        var page = this._databaseContext.VariableDataEntities
             .Include(entity => entity.Values)
             .Include(entity => entity.Set)
             .ThenInclude(set => set.Attributes)
@@ -428,7 +428,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         return page;
     }
 
-    private LooseDataEntity MapEntity(LooseDataEntity entity, bool queryCoreAttributeValues = true)
+    private VariableDataEntity MapEntity(VariableDataEntity entity, bool queryCoreAttributeValues = true)
     {
         if (entity.Set?.Attributes is null || entity.Values is null)
         {
@@ -437,7 +437,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         entity.MappedValues = new Dictionary<string, object>();
         foreach (var value in entity.Values.Where(a =>
-                     a.Attribute.AddonId == LooseDataAttribute.AddedByAdminAddonId || this._activeSetTypes.ContainsValue(a.Attribute.AddonId)))
+                     a.Attribute.AddonId == VariableDataAttribute.AddedByAdminAddonId || this._activeSetTypes.ContainsValue(a.Attribute.AddonId)))
         {
             var deserializedValue = JsonConvert.DeserializeObject(value.Value);
             entity.MappedValues[value.Attribute.Name] = deserializedValue;
@@ -504,11 +504,11 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         return entity;
     }
 
-    [UIEvent(Events.UI.LooseData.GetSetAttribute)]
+    [UIEvent(Events.UI.VariableData.GetSetAttribute)]
     private void GetSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
-        var attribute = this._databaseContext.LooseDataAttributes
+        var attribute = this._databaseContext.VariableDataAttributes
             .AsNoTracking()
             .FirstOrDefault(set => set.Id == request.Id);
 
@@ -522,11 +522,11 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithJson(attribute);
     }
 
-    [UIEvent(Events.UI.LooseData.GetSetAttributes)]
+    [UIEvent(Events.UI.VariableData.GetSetAttributes)]
     private void GetSetAttributesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<GetSetRequest>();
-        var set = this._databaseContext.LooseDataSets
+        var set = this._databaseContext.VariableDataSets
             .AsNoTracking()
             .Include(set => set.Attributes)
             .FirstOrDefault(set => set.Id == request.SetId);
@@ -545,24 +545,24 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithJson(set.Attributes);
     }
 
-    [UIEvent(Events.UI.LooseData.GetSetAttributesPageable)]
+    [UIEvent(Events.UI.VariableData.GetSetAttributesPageable)]
     private void GetSetAttributesPageableFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<GetSetRequest>();
-        var page = this._databaseContext.LooseDataAttributes
+        var page = this._databaseContext.VariableDataAttributes
             .AsNoTracking()
             .Include(attr => attr.Set)
             .Where(attr => attr.Set.Id == request.SetId)
-            .Paginate(request.Page, new Filters<LooseDataAttribute>());
+            .Paginate(request.Page, new Filters<VariableDataAttribute>());
 
         networkCallbackDelegate.InvokeWithJson(page);
     }
 
-    [UIEvent(Events.UI.LooseData.AddSetAttribute)]
+    [UIEvent(Events.UI.VariableData.AddSetAttribute)]
     private void AddSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AddSetAttributeRequest>();
-        var set = this._databaseContext.LooseDataSets
+        var set = this._databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .Include(set => set.Entities)
             .ThenInclude(entities => entities.Values)
@@ -575,7 +575,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         if (!string.IsNullOrEmpty(request.AttributeType))
         {
-            LooseDataAttribute coreAttribute = request.AttributeType switch
+            VariableDataAttribute coreAttribute = request.AttributeType switch
             {
                 "UserId" => new CoreAttributes.UserId(),
                 "UserIds" => new CoreAttributes.UserIds(),
@@ -600,24 +600,24 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        request.Attribute.AddonId = LooseDataAttribute.AddedByAdminAddonId;
+        request.Attribute.AddonId = VariableDataAttribute.AddedByAdminAddonId;
         request.Attribute.Set = set;
 
-        var addedAttributeEntry = this._databaseContext.LooseDataAttributes.Add(request.Attribute);
+        var addedAttributeEntry = this._databaseContext.VariableDataAttributes.Add(request.Attribute);
         this._databaseContext.SaveChanges();
 
         foreach (var entity in set.Entities)
         {
-            var value = new LooseDataValue
+            var value = new VariableDataValue
             {
                 Entity = entity,
                 Attribute = addedAttributeEntry.Entity,
                 Value = JsonConvert.SerializeObject(
-                    request.Attribute.DataType == LooseDataType.Date
+                    request.Attribute.DataType == VariableDataType.Date
                         ? DateTime.Now
                         : null),
             };
-            this._databaseContext.LooseDataValues.Add(value);
+            this._databaseContext.VariableDataValues.Add(value);
         }
 
         this._databaseContext.SaveChanges();
@@ -627,12 +627,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         });
     }
 
-    [UIEvent(Events.UI.LooseData.EditSetAttribute)]
+    [UIEvent(Events.UI.VariableData.EditSetAttribute)]
     private void EditSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<EditSetAttributeRequest>();
 
-        var set = this._databaseContext.LooseDataSets
+        var set = this._databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .FirstOrDefault(set => set.Id == request.SetId);
         if (set is null)
@@ -641,7 +641,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var attribute = this._databaseContext.LooseDataAttributes.FirstOrDefault(attr => attr.Id == request.Attribute.Id);
+        var attribute = this._databaseContext.VariableDataAttributes.FirstOrDefault(attr => attr.Id == request.Attribute.Id);
         if (attribute is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -674,15 +674,15 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         });
     }
 
-    [UIEvent(Events.UI.LooseData.DeleteSetAttribute)]
+    [UIEvent(Events.UI.VariableData.DeleteSetAttribute)]
     private void DeleteSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<DeleteSetAttributeRequest>();
-        var set = this._databaseContext.LooseDataSets
+        var set = this._databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .Include(set => set.Entities)
             .ThenInclude(entities => entities.Values)
-            .ThenInclude(looseDataValue => looseDataValue.Attribute)
+            .ThenInclude(v => v.Attribute)
             .FirstOrDefault(set => set.Id == request.SetId);
         if (set is null)
         {
@@ -690,7 +690,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var attributeToDelete = this._databaseContext.LooseDataAttributes
+        var attributeToDelete = this._databaseContext.VariableDataAttributes
             .FirstOrDefault(attr => attr.Id == request.AttributeId);
         if (attributeToDelete is null)
         {
@@ -702,12 +702,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         {
             foreach (var value in entity.Values.Where(value => value.Attribute.Id == request.AttributeId))
             {
-                this._databaseContext.LooseDataValues.Remove(value);
+                this._databaseContext.VariableDataValues.Remove(value);
             }
         }
 
         var attributeName = attributeToDelete.Name;
-        this._databaseContext.LooseDataAttributes.Remove(attributeToDelete);
+        this._databaseContext.VariableDataAttributes.Remove(attributeToDelete);
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
         {
@@ -715,7 +715,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         });
     }
 
-    [UIEvent(Events.UI.LooseData.GetEntity)]
+    [UIEvent(Events.UI.VariableData.GetEntity)]
     private void GetEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<GetSetEntityRequest>();
@@ -730,7 +730,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithJson(entity);
     }
 
-    [UIEvent(Events.UI.LooseData.GetEntitiesPageable)]
+    [UIEvent(Events.UI.VariableData.GetEntitiesPageable)]
     private void GetEntitiesPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<GetSetEntitiesPageableRequest>();
@@ -741,12 +741,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var filters = new Filters<LooseDataEntity>();
+        var filters = new Filters<VariableDataEntity>();
         var entities = this.GetEntitiesPage(setType, request.Page, filters);
         networkCallbackDelegate.InvokeWithJson(entities);
     }
 
-    [UIEvent(Events.UI.LooseData.GetEntities)]
+    [UIEvent(Events.UI.VariableData.GetEntities)]
     private void GetEntitiesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<GetSetEntitiesRequest>();
@@ -766,7 +766,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithJson(entities);
     }
 
-    [UIEvent(Events.UI.LooseData.AddEntity, true)]
+    [UIEvent(Events.UI.VariableData.AddEntity, true)]
     private void AddEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AddEntityRequest>();
@@ -777,7 +777,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var addedEntity = this.InternalAddEntity(player, request.SetId, new LooseDataEntity(), request.Entity);
+        var addedEntity = this.InternalAddEntity(player, request.SetId, new VariableDataEntity(), request.Entity);
         if (addedEntity is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -787,7 +787,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
-    [UIEvent(Events.UI.LooseData.EditEntity, true)]
+    [UIEvent(Events.UI.VariableData.EditEntity, true)]
     private void UpdateEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AddEntityRequest>();
@@ -802,7 +802,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
     }
 
-    [UIEvent(Events.UI.LooseData.DeleteEntity, true)]
+    [UIEvent(Events.UI.VariableData.DeleteEntity, true)]
     private void DeleteEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<DeleteEntityRequest>();
@@ -813,7 +813,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        var entityToDelete = this._databaseContext.LooseDataEntities
+        var entityToDelete = this._databaseContext.VariableDataEntities
             .FirstOrDefault(entity => entity.Id == request.Id);
         if (entityToDelete is null)
         {
@@ -821,12 +821,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        this._databaseContext.LooseDataEntities.Remove(entityToDelete);
+        this._databaseContext.VariableDataEntities.Remove(entityToDelete);
         this._databaseContext.SaveChanges();
         this.InvokeEvent(
-            LooseDataEntityObservableType.Delete,
+            VariableDataEntityObservableType.Delete,
             setType,
-            new LooseDataEvent
+            new VariableDataEvent
             {
                 Entity = entityToDelete,
                 Player = FPlayer.FromPlayer(player),
@@ -834,9 +834,9 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
-    private LooseDataEntity InternalAddEntity(Player player, string setId, LooseDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)
+    private VariableDataEntity InternalAddEntity(Player player, string setId, VariableDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)
     {
-        var set = this._databaseContext.LooseDataSets
+        var set = this._databaseContext.VariableDataSets
             .Include(s => s.Attributes)
             .FirstOrDefault(s => s.Id == setId);
         if (set is null)
@@ -844,11 +844,11 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return null;
         }
 
-        var attributeValueMap = new Dictionary<LooseDataAttribute, object>();
+        var attributeValueMap = new Dictionary<VariableDataAttribute, object>();
         foreach (var attr in set.Attributes)
         {
             object value = null;
-            if (attr.DataType == LooseDataType.Date)
+            if (attr.DataType == VariableDataType.Date)
             {
                 value = DateTime.Now;
             }
@@ -877,7 +877,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             }
         }
 
-        var values = attributeValueMap.Select(item => new LooseDataValue
+        var values = attributeValueMap.Select(item => new VariableDataValue
             {
                 Attribute = item.Key,
                 Entity = entityToAdd,
@@ -886,13 +886,13 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             .ToList();
 
         entityToAdd.Set = set;
-        this._databaseContext.LooseDataValues.AddRange(values);
-        var entityEntry = this._databaseContext.LooseDataEntities.Add(entityToAdd);
+        this._databaseContext.VariableDataValues.AddRange(values);
+        var entityEntry = this._databaseContext.VariableDataEntities.Add(entityToAdd);
         this._databaseContext.SaveChanges();
         this.InvokeEvent(
-            LooseDataEntityObservableType.Add,
+            VariableDataEntityObservableType.Add,
             this.FindSetTypeById(setId),
-            new LooseDataEvent
+            new VariableDataEvent
             {
                 Entity = this.MapEntity(entityEntry.Entity),
                 Player = FPlayer.FromPlayer(player),
@@ -902,8 +902,8 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
     private void InternalUpdateEntity(Player player, string setId, string entityId, Dictionary<string, object> newValues)
     {
-        var set = this._databaseContext.LooseDataSets
-            .Include(looseDataSet => looseDataSet.Attributes)
+        var set = this._databaseContext.VariableDataSets
+            .Include(set => set.Attributes)
             .FirstOrDefault(set => set.Id == setId);
         if (set is null)
         {
@@ -927,9 +927,9 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             attributeValueMap[attribute.Name] = value.Value;
         }
 
-        var entityValues = this._databaseContext.LooseDataValues
+        var entityValues = this._databaseContext.VariableDataValues
             .Include(value => value.Entity)
-            .Include(looseDataValue => looseDataValue.Attribute)
+            .Include(value => value.Attribute)
             .Where(value => value.Entity.Id == entityId)
             .ToList();
         foreach (var dataValue in entityValues)
@@ -939,9 +939,9 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         this._databaseContext.SaveChanges();
         this.InvokeEvent(
-            LooseDataEntityObservableType.Update,
+            VariableDataEntityObservableType.Update,
             this.FindSetTypeById(setId),
-            new LooseDataEvent
+            new VariableDataEvent
             {
                 Entity = this.InternalGetEntity(entityId),
                 Player = FPlayer.FromPlayer(player),
@@ -953,26 +953,26 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         var assemblyTypes = Assembly.GetExecutingAssembly().GetTypes();
         var type = assemblyTypes
             .Where(type => type.IsClass)
-            .Where(type => type.GetCustomAttribute<LooseDataSetIdAttribute>() != null)
-            .FirstOrDefault(type => type.GetCustomAttribute<LooseDataSetIdAttribute>().Id == setId);
+            .Where(type => type.GetCustomAttribute<VariableDataSetIdAttribute>() != null)
+            .FirstOrDefault(type => type.GetCustomAttribute<VariableDataSetIdAttribute>().Id == setId);
 
         return type;
     }
 
-    private IDisposable OnEvent<TS>(LooseDataEntityObservableType observableType, Action<LooseDataEvent> observer)
+    private IDisposable OnEvent<TS>(VariableDataEntityObservableType observableType, Action<VariableDataEvent> observer)
     {
         var type = typeof(TS);
         var observable = this._observables.FirstOrDefault(o => o.SetType == type && o.Type == observableType);
         if (observable is null)
         {
-            observable = new LooseDataEntityObservable(type, observableType);
+            observable = new VariableDataEntityObservable(type, observableType);
             this._observables.Add(observable);
         }
 
         return observable.Subscribe(@event => { observer?.Invoke(@event); });
     }
 
-    private void InvokeEvent(LooseDataEntityObservableType observableType, Type setType, LooseDataEvent @event)
+    private void InvokeEvent(VariableDataEntityObservableType observableType, Type setType, VariableDataEvent @event)
     {
         var observable = this._observables.FirstOrDefault(o => o.Type == observableType && o.SetType == setType);
         observable?.InvokeObservers(@event);

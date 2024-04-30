@@ -12,7 +12,6 @@ import { NotificationService } from '@services/notification/notification.service
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DepartmentService } from '@services/department/department.service';
 import { UserService } from '@services/user/user.service';
-import { LooseDataService } from '@services/loose-data/loose-data.service';
 import { TippyModule, tooltipVariation } from '@ngneat/helipopper';
 import { StoreModule } from '@ngrx/store';
 import { userReducer } from '@store/user.reducer';
@@ -31,6 +30,7 @@ import { MessageService } from "@services/message/message.service";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { VehicleService } from "@services/vehicle/vehicle.service";
 import { sidebarReducer } from "@store/sidebar.reducer";
+import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @NgModule({
   declarations: [AppComponent],
@@ -68,7 +68,7 @@ import { sidebarReducer } from "@store/sidebar.reducer";
     IncidentService,
     IncidentHistoryService,
     LocalizationService,
-    LooseDataService,
+    VariableDataService,
     MenuService,
     MessageService,
     ModalService,

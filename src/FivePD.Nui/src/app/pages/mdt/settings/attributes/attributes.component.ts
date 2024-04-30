@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Button, Collation, Column, LooseDataAttribute, Page, SingleSelectField } from "@models";
+import { Button, Collation, Column, VariableDataAttribute, Page, SingleSelectField } from "@models";
 import { CoreSetId } from "@enums";
-import { LooseDataService } from "@services/loose-data/loose-data.service";
 import { AttributeGridOptions } from "../_service/attribute-grid-options";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from '../../../../components/grid/grid.component';
@@ -11,6 +10,7 @@ import {
   SingleSelectFieldComponent
 } from "../../../../components/form-inputs/single-select-field/single-select-field.component";
 import { LocalizationService } from "@services/localization/localization.service";
+import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
   selector: 'app-attributes',
@@ -20,7 +20,7 @@ import { LocalizationService } from "@services/localization/localization.service
 })
 export class AttributesComponent implements OnInit {
 
-  private readonly _looseData = inject(LooseDataService);
+  private readonly _variableDataService = inject(VariableDataService);
   private readonly _attributeGridOptions = inject(AttributeGridOptions);
   private readonly _localizationService = inject(LocalizationService);
 
@@ -42,12 +42,12 @@ export class AttributesComponent implements OnInit {
   });
   selectedSet: string = CoreSetId.ArrestReport;
 
-  page?: Page<LooseDataAttribute>;
+  page?: Page<VariableDataAttribute>;
   collation: Collation = {
     Page: 1,
     Filters: {},
   };
-  columns: Column<LooseDataAttribute>[] = [];
+  columns: Column<VariableDataAttribute>[] = [];
   attributesButtons: Button[] = [];
 
   ngOnInit(): void {
@@ -82,7 +82,7 @@ export class AttributesComponent implements OnInit {
   }
 
   getAttributes(): void {
-    this._looseData.getSetAttributesPage(this.selectedSet, this.collation).subscribe(res => {
+    this._variableDataService.getSetAttributesPage(this.selectedSet, this.collation).subscribe(res => {
       this.page = res;
     });
   }

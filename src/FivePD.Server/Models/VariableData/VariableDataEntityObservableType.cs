@@ -1,9 +1,9 @@
-﻿namespace FivePD.Server.Models.LooseData;
+﻿namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
-/// Defines the possible types of <see cref="LooseDataEntityObservable"/>.
+/// Defines the possible types of <see cref="VariableDataEntityObservable"/>.
 /// </summary>
-public enum LooseDataEntityObservableType
+public enum VariableDataEntityObservableType
 {
     /// <summary>
     /// Fires when an entity has been added to a set.

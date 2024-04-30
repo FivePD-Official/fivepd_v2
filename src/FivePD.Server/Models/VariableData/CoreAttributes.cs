@@ -1,4 +1,4 @@
-﻿namespace FivePD.Server.Models.LooseData;
+﻿namespace FivePD.Server.Models.VariableData;
 
 #pragma warning disable
 
@@ -6,13 +6,13 @@ public class CoreAttributes
 {
     public readonly record struct Options(bool Hidden, bool Required, bool Readonly, bool ShowInGrid); 
     
-    public class SubmitDate : LooseDataAttribute
+    public class SubmitDate : VariableDataAttribute
     {
         public SubmitDate(Options options = default)
         {
             this.Name = "SubmitDate";
             this.Label = "Date of submit";
-            this.DataType = LooseDataType.Date;
+            this.DataType = VariableDataType.Date;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
@@ -21,13 +21,13 @@ public class CoreAttributes
         }
     }
 
-    public class DepartmentId : LooseDataAttribute
+    public class DepartmentId : VariableDataAttribute
     {
         public DepartmentId(Options options = default)
         {
             this.Name = "DepartmentId";
             this.Label = "Department";
-            this.DataType = LooseDataType.Integer;
+            this.DataType = VariableDataType.Integer;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
@@ -36,13 +36,13 @@ public class CoreAttributes
         }
     }
 
-    public class DepartmentIds : LooseDataAttribute
+    public class DepartmentIds : VariableDataAttribute
     {
         public DepartmentIds(Options options = default)
         {
             this.Name = "DepartmentIds";
             this.Label = "Departments";
-            this.DataType = LooseDataType.IntegerList;
+            this.DataType = VariableDataType.IntegerList;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
@@ -51,13 +51,13 @@ public class CoreAttributes
         }
     }
 
-    public class UserId : LooseDataAttribute
+    public class UserId : VariableDataAttribute
     {
         public UserId(Options options = default)
         {
             this.Name = "UserId";
             this.Label = "User";
-            this.DataType = LooseDataType.Integer;
+            this.DataType = VariableDataType.Integer;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
@@ -66,13 +66,13 @@ public class CoreAttributes
         }
     }
 
-    public class UserIds : LooseDataAttribute
+    public class UserIds : VariableDataAttribute
     {
         public UserIds(Options options = default)
         {
             this.Name = "UserIds";
             this.Label = "Users";
-            this.DataType = LooseDataType.IntegerList;
+            this.DataType = VariableDataType.IntegerList;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
@@ -81,13 +81,13 @@ public class CoreAttributes
         }
     }
 
-    public class IncidentHistoryId : LooseDataAttribute
+    public class IncidentHistoryId : VariableDataAttribute
     {
         public IncidentHistoryId(Options options = default)
         {
             this.Name = "IncidentHistoryId";
             this.Label = "Incident";
-            this.DataType = LooseDataType.Integer;
+            this.DataType = VariableDataType.Integer;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
@@ -96,13 +96,13 @@ public class CoreAttributes
         }
     }
 
-    public class IncidentHistoryIds : LooseDataAttribute
+    public class IncidentHistoryIds : VariableDataAttribute
     {
         public IncidentHistoryIds(Options options = default)
         {
             this.Name = "IncidentHistoryIds";
             this.Label = "Incidents";
-            this.DataType = LooseDataType.IntegerList;
+            this.DataType = VariableDataType.IntegerList;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
@@ -111,13 +111,13 @@ public class CoreAttributes
         }
     }
 
-    public class PedHistoryId : LooseDataAttribute
+    public class PedHistoryId : VariableDataAttribute
     {
         public PedHistoryId(Options options = default)
         {
             this.Name = "PedHistoryId";
             this.Label = "Ped";
-            this.DataType = LooseDataType.Integer;
+            this.DataType = VariableDataType.Integer;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
@@ -126,13 +126,13 @@ public class CoreAttributes
         }
     }
 
-    public class PedHistoryIds : LooseDataAttribute
+    public class PedHistoryIds : VariableDataAttribute
     {
         public PedHistoryIds(Options options = default)
         {
             this.Name = "PedHistoryIds";
             this.Label = "Peds";
-            this.DataType = LooseDataType.IntegerList;
+            this.DataType = VariableDataType.IntegerList;
 
             this.Required = options.Required;
             this.ShowInGrid = options.ShowInGrid;
