@@ -1,52 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using FivePD.Server.Interfaces.Lifecycle;
-using FivePD.Server.Models.LooseData;
+using FivePD.Server.Models.VariableData;
 
-namespace FivePD.Server.Interfaces.LooseData;
+namespace FivePD.Server.Interfaces.VariableData;
 
 /// <summary>
 /// Responsible for managing loose data set entities.
 /// </summary>
 /// <typeparam name="TS">The type of the set to use.</typeparam>
-public abstract class LooseDataRepository<TS> : IOnInit, IOnDestroy
-    where TS : LooseDataSet
+public abstract class VariableDataRepository<TS> : IOnInit, IOnDestroy
+    where TS : VariableDataSet
 {
-    private readonly ILooseDataService _looseDataService;
+    private readonly IVariableDataService _variableDataService;
 
     private readonly List<IDisposable> _disposables = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LooseDataRepository{TS}"/> class.
+    /// Initializes a new instance of the <see cref="VariableDataRepository{TS}"/> class.
     /// </summary>
-    /// <param name="looseDataService">The <see cref="ILooseDataService"/> to use.</param>
-    protected LooseDataRepository(ILooseDataService looseDataService)
+    /// <param name="variableDataService">The <see cref="IVariableDataService"/> to use.</param>
+    protected VariableDataRepository(IVariableDataService variableDataService)
     {
-        this._looseDataService = looseDataService;
+        this._variableDataService = variableDataService;
     }
 
     /// <summary>
     /// Invoked when an entity is added.
     /// </summary>
-    public event EventHandler<LooseDataEvent> OnAdded;
+    public event EventHandler<VariableDataEvent> OnAdded;
 
     /// <summary>
     /// Invoked when an entity is updated.
     /// </summary>
-    public event EventHandler<LooseDataEvent> OnUpdated;
+    public event EventHandler<VariableDataEvent> OnUpdated;
 
     /// <summary>
     /// Invoked when an entity is deleted.
     /// </summary>
-    public event EventHandler<LooseDataEvent> OnDeleted;
+    public event EventHandler<VariableDataEvent> OnDeleted;
 
     /// <inheritdoc/>
     void IOnInit.OnInit()
     {
-        this._looseDataService.RegisterSetAttributes<TS>(this.RegisterSetAttributes());
-        this._disposables.Add(this._looseDataService.OnAdded<TS>(@event => this.OnAdded?.Invoke(this, @event)));
-        this._disposables.Add(this._looseDataService.OnUpdated<TS>(@event => this.OnUpdated?.Invoke(this, @event)));
-        this._disposables.Add(this._looseDataService.OnDeleted<TS>(@event => this.OnDeleted?.Invoke(this, @event)));
+        this._variableDataService.RegisterSetAttributes<TS>(this.RegisterSetAttributes());
+        this._disposables.Add(this._variableDataService.OnAdded<TS>(@event => this.OnAdded?.Invoke(this, @event)));
+        this._disposables.Add(this._variableDataService.OnUpdated<TS>(@event => this.OnUpdated?.Invoke(this, @event)));
+        this._disposables.Add(this._variableDataService.OnDeleted<TS>(@event => this.OnDeleted?.Invoke(this, @event)));
     }
 
     /// <inheritdoc/>
@@ -63,27 +63,27 @@ public abstract class LooseDataRepository<TS> : IOnInit, IOnDestroy
     /// </summary>
     /// <param name="entity">The entity to add.</param>
     /// <returns>The inserted entity.</returns>
-    public LooseDataEntity Add(LooseDataEntity entity)
+    public VariableDataEntity Add(VariableDataEntity entity)
     {
-        return this._looseDataService.AddEntity<TS>(entity);
+        return this._variableDataService.AddEntity<TS>(entity);
     }
 
     /// <summary>
     /// Updates an entity.
     /// </summary>
     /// <param name="entity">The entity to update.</param>
-    public void Update(LooseDataEntity entity)
+    public void Update(VariableDataEntity entity)
     {
-        this._looseDataService.UpdateEntity(entity);
+        this._variableDataService.UpdateEntity(entity);
     }
 
     /// <summary>
     /// Deletes an entity.
     /// </summary>
     /// <param name="entity">The entity to delete.</param>
-    public void Delete(LooseDataEntity entity)
+    public void Delete(VariableDataEntity entity)
     {
-        this._looseDataService.DeleteEntity(entity);
+        this._variableDataService.DeleteEntity(entity);
     }
 
     /// <summary>
@@ -91,9 +91,9 @@ public abstract class LooseDataRepository<TS> : IOnInit, IOnDestroy
     /// </summary>
     /// <param name="id">The ID of the entity to get.</param>
     /// <returns>The entity.</returns>
-    public LooseDataEntity Get(string id)
+    public VariableDataEntity Get(string id)
     {
-        return this._looseDataService.GetEntity(id);
+        return this._variableDataService.GetEntity(id);
     }
 
     /// <summary>
@@ -103,9 +103,9 @@ public abstract class LooseDataRepository<TS> : IOnInit, IOnDestroy
     /// <param name="withTracking">Whether to track the entities or not.</param>
     /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
     /// <returns>The entity.</returns>
-    public LooseDataEntity Get(string id, bool withTracking, bool queryCoreAttributeValue)
+    public VariableDataEntity Get(string id, bool withTracking, bool queryCoreAttributeValue)
     {
-        return this._looseDataService.GetEntity(id, withTracking, queryCoreAttributeValue);
+        return this._variableDataService.GetEntity(id, withTracking, queryCoreAttributeValue);
     }
 
     /// <summary>
@@ -115,14 +115,14 @@ public abstract class LooseDataRepository<TS> : IOnInit, IOnDestroy
     /// <param name="queryCoreAttributeValue">The id sof the entity.</param>
     /// <param name="filter">The id of the entity.</param>
     /// <returns>The entities.</returns>
-    public List<LooseDataEntity> GetAll(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
+    public List<VariableDataEntity> GetAll(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
     {
-        return this._looseDataService.GetEntities<TS>(withTracking, queryCoreAttributeValue, filter);
+        return this._variableDataService.GetEntities<TS>(withTracking, queryCoreAttributeValue, filter);
     }
 
     /// <summary>
     /// Registers the attributes for the set.
     /// </summary>
     /// <returns>The attributes.</returns>
-    protected abstract List<LooseDataAttribute> RegisterSetAttributes();
+    protected abstract List<VariableDataAttribute> RegisterSetAttributes();
 }

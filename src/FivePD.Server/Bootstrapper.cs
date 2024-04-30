@@ -13,13 +13,13 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Lifecycle;
-using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Interfaces.TrafficStopInterfaces;
+using FivePD.Server.Interfaces.VariableData;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
-using FivePD.Server.Services.LooseData;
 using FivePD.Server.Services.TrafficStopServices;
+using FivePD.Server.Services.VariableData;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
@@ -271,9 +271,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<BackupManagerService>();
         services.AddSingleton<IBackupManagerService>(provider => provider.GetRequiredService<BackupManagerService>());
 
-        services.AddSingleton<LooseDataService>();
-        services.AddSingleton<ILooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
-        services.AddSingleton<IInternalLooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
+        services.AddSingleton<VariableDataService>();
+        services.AddSingleton<IVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
+        services.AddSingleton<IInternalVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
 
         services.AddSingleton<ConfigService>();
         services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());
@@ -511,8 +511,8 @@ internal class Bootstrapper : BaseScript
 
         this._bootstrapLogger?.Information("Stopping FivePD");
 
-        var looseData = this._provider.GetService<ILooseDataService>();
-        ((IInternalLooseDataService)looseData).DisposeAddonRepositories();
+        var variableDataService = this._provider.GetService<IVariableDataService>();
+        ((IInternalVariableDataService)variableDataService).DisposeAddonRepositories();
 
         // Dispose all internal services with the interface IDisposableService
         foreach (var service in this._provider.GetServices<IOnDestroy>())

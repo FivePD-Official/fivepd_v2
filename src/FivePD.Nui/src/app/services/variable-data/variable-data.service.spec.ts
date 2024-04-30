@@ -1,13 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { VariableDataService } from './variable-data.service';
 
-import { LooseDataService } from './loose-data.service';
-
-describe('LooseDataService', () => {
-  let service: LooseDataService;
+describe('VariableDataService', () => {
+  let service: VariableDataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(LooseDataService);
+    service = TestBed.inject(VariableDataService);
   });
 
   it('should be created', () => {

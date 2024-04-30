@@ -1,25 +1,26 @@
 ﻿using System.Collections.Generic;
-using FivePD.Server.Interfaces.LooseData;
-using FivePD.Server.Models.LooseData;
+using FivePD.Server.Interfaces.VariableData;
+using FivePD.Server.Models.VariableData;
+using FivePD.Server.Models.VariableData.Sets;
 
-namespace FivePD.Server.Services.LooseData;
+namespace FivePD.Server.Services.VariableData;
 
 /// <inheritdoc />
-public class ArrestReportService : LooseDataRepository<ArrestReportSet>
+public class ArrestReportService : VariableDataRepository<ArrestReportSet>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ArrestReportService"/> class.
     /// </summary>
-    /// <param name="looseDataService">The <see cref="ILooseDataService"/> to use.</param>
-    public ArrestReportService(ILooseDataService looseDataService)
-        : base(looseDataService)
+    /// <param name="variableDataService">The <see cref="IVariableDataService"/> to use.</param>
+    public ArrestReportService(IVariableDataService variableDataService)
+        : base(variableDataService)
     {
     }
 
     /// <inheritdoc />
-    protected override List<LooseDataAttribute> RegisterSetAttributes()
+    protected override List<VariableDataAttribute> RegisterSetAttributes()
     {
-        return new List<LooseDataAttribute>
+        return new List<VariableDataAttribute>
         {
             new CoreAttributes.UserId(new CoreAttributes.Options { Hidden = true }),
             new CoreAttributes.SubmitDate(new CoreAttributes.Options { Hidden = true }),
@@ -28,7 +29,7 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
             {
                 Name = "ArrestDate",
                 Label = "Date of arrest",
-                DataType = LooseDataType.Date,
+                DataType = VariableDataType.Date,
                 Required = true,
                 ShowInGrid = true,
             },
@@ -36,7 +37,7 @@ public class ArrestReportService : LooseDataRepository<ArrestReportSet>
             {
                 Name = "Narrative",
                 Label = "Narrative",
-                DataType = LooseDataType.LongString,
+                DataType = VariableDataType.LongString,
                 Required = true,
             },
         };

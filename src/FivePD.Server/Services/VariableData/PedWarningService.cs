@@ -1,25 +1,26 @@
 ﻿using System.Collections.Generic;
-using FivePD.Server.Interfaces.LooseData;
-using FivePD.Server.Models.LooseData;
+using FivePD.Server.Interfaces.VariableData;
+using FivePD.Server.Models.VariableData;
+using FivePD.Server.Models.VariableData.Sets;
 
-namespace FivePD.Server.Services.LooseData;
+namespace FivePD.Server.Services.VariableData;
 
 /// <inheritdoc />
-public class PedWarningService : LooseDataRepository<PedWarningSet>
+public class PedWarningService : VariableDataRepository<PedWarningSet>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="PedWarningService"/> class.
     /// </summary>
-    /// <param name="looseDataService">The <see cref="ILooseDataService"/> to use.</param>
-    public PedWarningService(ILooseDataService looseDataService)
-        : base(looseDataService)
+    /// <param name="variableDataService">The <see cref="IVariableDataService"/> to use.</param>
+    public PedWarningService(IVariableDataService variableDataService)
+        : base(variableDataService)
     {
     }
 
     /// <inheritdoc />
-    protected override List<LooseDataAttribute> RegisterSetAttributes()
+    protected override List<VariableDataAttribute> RegisterSetAttributes()
     {
-        return new List<LooseDataAttribute>
+        return new List<VariableDataAttribute>
         {
             new CoreAttributes.UserId(new CoreAttributes.Options { Hidden = true }),
             new CoreAttributes.SubmitDate(new CoreAttributes.Options { Hidden = true }),
@@ -28,21 +29,21 @@ public class PedWarningService : LooseDataRepository<PedWarningSet>
             {
                 Name = "Offense",
                 Label = "Offense",
-                DataType = LooseDataType.LongString,
+                DataType = VariableDataType.LongString,
                 Required = true,
             },
             new()
             {
                 Name = "Location",
                 Label = "Location",
-                DataType = LooseDataType.LongString,
+                DataType = VariableDataType.LongString,
                 Required = true,
             },
             new()
             {
                 Name = "Note",
                 Label = "Note",
-                DataType = LooseDataType.LongString,
+                DataType = VariableDataType.LongString,
                 Required = false,
             },
         };

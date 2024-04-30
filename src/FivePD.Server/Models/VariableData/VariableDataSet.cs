@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FivePD.Server.Models.LooseData;
+namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Represents a dynamic data set.
 /// </summary>
-[Table("fivepd_loose_data_sets")]
-public class LooseDataSet
+[Table("fivepd_variable_data_sets")]
+public class VariableDataSet
 {
     /// <summary>
     /// Gets or sets the id of this set.
@@ -17,10 +17,10 @@ public class LooseDataSet
     /// <summary>
     /// Gets or sets the entities of this set.
     /// </summary>
-    public IList<LooseDataEntity> Entities { get; set; }
+    public IList<VariableDataEntity> Entities { get; set; }
 
     /// <summary>
     /// Gets or sets the attributes of this set.
     /// </summary>
-    public IList<LooseDataAttribute> Attributes { get; set; }
+    public IList<VariableDataAttribute> Attributes { get; set; }
 }

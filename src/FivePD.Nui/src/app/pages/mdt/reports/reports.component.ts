@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Button, Collation, Column, MappedLooseDataEntity, Page, User} from '@models';
-import {LooseDataService} from '@services/loose-data/loose-data.service';
+import {Button, Collation, Column, MappedVariableDataEntity, Page, User} from '@models';
 import {filter, switchMap} from 'rxjs';
 import {ATTRIBUTES, ENTITY} from '../../../components/modal/modal-entity-view/entity-token';
 import {LocalizationService} from '@services/localization/localization.service';
@@ -18,6 +17,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TranslatePipe} from '../../../pipes/translate.pipe';
 import {GridComponent} from '../../../components/grid/grid.component';
 import {PageHeaderComponent} from '../../../components/page-header/page-header.component';
+import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
   selector: 'app-reports',
@@ -46,11 +46,11 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(CoreSetId.ArrestReport)),
+        fields: () => mapAttributesToFields(this._variableDataService.getSetAttributes(CoreSetId.ArrestReport)),
       }).result
         .pipe(
           filter(res => res.success),
-          switchMap(res => this._looseData.addEntity(CoreSetId.ArrestReport, {
+          switchMap(res => this._variableDataService.addEntity(CoreSetId.ArrestReport, {
             ...res.value!,
           })),
           this._modal.handleResponse()
@@ -61,8 +61,8 @@ export class ReportsComponent implements OnInit {
     Page: 1,
     Filters: {},
   };
-  arrestReports?: Page<MappedLooseDataEntity>;
-  arrestReportColumns: Column<MappedLooseDataEntity>[] = [];
+  arrestReports?: Page<MappedVariableDataEntity>;
+  arrestReportColumns: Column<MappedVariableDataEntity>[] = [];
 
   incidentReportButtons: Button[] = [
     {
@@ -80,11 +80,11 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: () => mapAttributesToFields(this._looseData.getSetAttributes(CoreSetId.IncidentReport)),
+        fields: () => mapAttributesToFields(this._variableDataService.getSetAttributes(CoreSetId.IncidentReport)),
       }).result
         .pipe(
           filter(res => res.success),
-          switchMap(res => this._looseData.addEntity(CoreSetId.IncidentReport, {
+          switchMap(res => this._variableDataService.addEntity(CoreSetId.IncidentReport, {
             ...res.value!,
           })),
           this._modal.handleResponse()
@@ -95,12 +95,12 @@ export class ReportsComponent implements OnInit {
     Page: 1,
     Filters: {},
   };
-  incidentReports?: Page<MappedLooseDataEntity>;
-  incidentReportColumns: Column<MappedLooseDataEntity>[] = [];
+  incidentReports?: Page<MappedVariableDataEntity>;
+  incidentReportColumns: Column<MappedVariableDataEntity>[] = [];
 
   constructor(
     private readonly store: Store<GlobalState>,
-    private readonly _looseData: LooseDataService,
+    private readonly _variableDataService: VariableDataService,
     private readonly _localization: LocalizationService,
     private readonly _modal: ModalService,
     private readonly modalFormService: ModalFormService,
@@ -119,12 +119,12 @@ export class ReportsComponent implements OnInit {
   }
 
   getArrestReports(): void {
-    this._looseData.getEntitiesPageable(CoreSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
+    this._variableDataService.getEntitiesPageable(CoreSetId.ArrestReport, this.arrestReportCollation).subscribe(wrapper => {
       this.arrestReports = wrapper.page;
       this.arrestReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
           index: 0,
-          item: new Column<MappedLooseDataEntity>({
+          item: new Column<MappedVariableDataEntity>({
             header: 'UI.LABEL.ID.SHORT.SINGULAR',
             valueResolver: item => item.Id.toString(),
           }),
@@ -161,13 +161,13 @@ export class ReportsComponent implements OnInit {
                       submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
                     },
                     columns: 2,
-                    fields: updatedEntity => mapAttributesToFields(this._looseData.getSetAttributes(entity.SetId), updatedEntity),
-                    valueResolver: new ValueResolver(entity, this._looseData.getEntity(entity.SetId, entity.Id), v => v.entity)
+                    fields: updatedEntity => mapAttributesToFields(this._variableDataService.getSetAttributes(entity.SetId), updatedEntity),
+                    valueResolver: new ValueResolver(entity, this._variableDataService.getEntity(entity.SetId, entity.Id), v => v.entity)
                   }
                 ).result
                   .pipe(
                     filter(res => res.success),
-                    switchMap(res => this._looseData.editEntity(CoreSetId.ArrestReport, entity.Id, {...entity, ...res.value!})),
+                    switchMap(res => this._variableDataService.editEntity(CoreSetId.ArrestReport, entity.Id, {...entity, ...res.value!})),
                     this._modal.handleResponse(),
                   )
                   .subscribe(() => this.getArrestReports());
@@ -187,7 +187,7 @@ export class ReportsComponent implements OnInit {
                 }).result
                   .pipe(
                     filter(res => res.success),
-                    switchMap(() => this._looseData.deleteEntity(CoreSetId.ArrestReport, item.Id)),
+                    switchMap(() => this._variableDataService.deleteEntity(CoreSetId.ArrestReport, item.Id)),
                     this._modal.handleResponse()
                   ).subscribe(() => this.getArrestReports())
               }
@@ -204,19 +204,19 @@ export class ReportsComponent implements OnInit {
   }
 
   getIncidentReports(): void {
-    this._looseData.getEntitiesPageable(CoreSetId.IncidentReport, this.incidentReportCollation).subscribe(wrapper => {
+    this._variableDataService.getEntitiesPageable(CoreSetId.IncidentReport, this.incidentReportCollation).subscribe(wrapper => {
       this.incidentReports = wrapper.page;
       this.incidentReportColumns = mapAttributesToGridColumns(wrapper.attributes, [
         {
           index: 0,
-          item: new Column<MappedLooseDataEntity>({
+          item: new Column<MappedVariableDataEntity>({
             header: 'UI.LABEL.ID.SHORT.SINGULAR',
             valueResolver: item => item.Id.toString(),
           }),
         },
         // {
         //   index: 2,
-        //   item: new Column<MappedLooseDataEntity>({
+        //   item: new Column<MappedVariableDataEntity>({
         //     header: 'Submitted by',
         //     valueResolver: item => item['User'] ? item['User']['Name'] : '',
         //   }),
@@ -250,13 +250,13 @@ export class ReportsComponent implements OnInit {
                     buttons: {
                       submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
                     },
-                    fields: updatedEntity => mapAttributesToFields(this._looseData.getSetAttributes(entity.SetId), updatedEntity),
-                    valueResolver: new ValueResolver(entity, this._looseData.getEntity(entity.SetId, entity.Id), v => v.entity)
+                    fields: updatedEntity => mapAttributesToFields(this._variableDataService.getSetAttributes(entity.SetId), updatedEntity),
+                    valueResolver: new ValueResolver(entity, this._variableDataService.getEntity(entity.SetId, entity.Id), v => v.entity)
                   }
                 ).result
                   .pipe(
                     filter(res => res.success),
-                    switchMap(res => this._looseData.editEntity(CoreSetId.IncidentReport, entity.Id, {...entity, ...res.value!})),
+                    switchMap(res => this._variableDataService.editEntity(CoreSetId.IncidentReport, entity.Id, {...entity, ...res.value!})),
                     this._modal.handleResponse(),
                   )
                   .subscribe(() => this.getIncidentReports());
@@ -276,7 +276,7 @@ export class ReportsComponent implements OnInit {
                 }).result
                   .pipe(
                     filter(res => res.success),
-                    switchMap(() => this._looseData.deleteEntity(CoreSetId.IncidentReport, item.Id)),
+                    switchMap(() => this._variableDataService.deleteEntity(CoreSetId.IncidentReport, item.Id)),
                     this._modal.handleResponse()
                   ).subscribe(() => this.getIncidentReports())
               }

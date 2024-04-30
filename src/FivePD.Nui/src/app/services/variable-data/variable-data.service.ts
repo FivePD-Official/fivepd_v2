@@ -6,12 +6,12 @@ import {
   AttributeDataType,
   Collation,
   EditSetAttribute,
-  LooseDataEntity,
-  LooseDataEntityPageWrapper,
-  LooseDataEntityWrapper,
-  MappedLooseDataEntity,
+  VariableDataEntity,
+  VariableDataEntityPageWrapper,
+  VariableDataEntityWrapper,
+  MappedVariableDataEntity,
   Page,
-  LooseDataAttribute, Department, User, IncidentHistory, PedHistory
+  VariableDataAttribute, Department, User, IncidentHistory, PedHistory
 } from '@models';
 import {map, Observable, switchMap, tap} from 'rxjs';
 import {SetId} from '@enums';
@@ -30,32 +30,32 @@ export interface EntityValue {
 @Injectable({
   providedIn: 'root'
 })
-export class LooseDataService {
+export class VariableDataService {
 
-  private _sets: Record<string, LooseDataAttribute[]> = {};
+  private _sets: Record<string, VariableDataAttribute[]> = {};
 
   constructor(
     private _http: HttpClient,
   ) {
   }
 
-  getSetAttribute(setId: SetId, attributeId: number): Observable<LooseDataAttribute> {
+  getSetAttribute(setId: SetId, attributeId: number): Observable<VariableDataAttribute> {
     return this.updateSetAttribute(setId, attributeId);
   }
 
-  getSetAttributes(setId: SetId): LooseDataAttribute[] {
+  getSetAttributes(setId: SetId): VariableDataAttribute[] {
     return this._sets[setId];
   }
 
-  getSetAttributesPage(setId: SetId, collation: Collation): Observable<Page<LooseDataAttribute>> {
-    return this._http.post<Page<LooseDataAttribute>>('fivepd:looseData:getSetAttributesPageable', {
+  getSetAttributesPage(setId: SetId, collation: Collation): Observable<Page<VariableDataAttribute>> {
+    return this._http.post<Page<VariableDataAttribute>>('fivepd:variableData:getSetAttributesPageable', {
       SetId: setId,
       ...collation
     });
   }
 
   addSetAttribute(setId: SetId, attributeType: string, attribute: AddSetAttribute): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:looseData:addSetAttribute', {
+    return this._http.post<ActionResponse>('fivepd:variableData:addSetAttribute', {
       SetId: setId,
       AttributeType: attributeType,
       Attribute: attribute
@@ -63,22 +63,22 @@ export class LooseDataService {
   }
 
   editSetAttribute(setId: SetId, attribute: EditSetAttribute): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:looseData:editSetAttribute', {
+    return this._http.post<ActionResponse>('fivepd:variableData:editSetAttribute', {
       SetId: setId,
       Attribute: attribute
     });
   }
 
   deleteSetAttribute(setId: SetId, attributeId: number): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:looseData:deleteSetAttribute', {
+    return this._http.post<ActionResponse>('fivepd:variableData:deleteSetAttribute', {
       SetId: setId,
       AttributeId: attributeId
     });
   }
 
-  getEntity(setId: SetId, id: number): Observable<LooseDataEntityWrapper> {
+  getEntity(setId: SetId, id: number): Observable<VariableDataEntityWrapper> {
     return this.updateSetAttributes(setId).pipe(
-      switchMap(() => this._http.post<LooseDataEntity>('fivepd:looseData:getEntity', {
+      switchMap(() => this._http.post<VariableDataEntity>('fivepd:variableData:getEntity', {
         SetId: setId,
         Id: id,
       }).pipe(
@@ -92,14 +92,14 @@ export class LooseDataService {
     );
   }
 
-  getEntitiesPageable(setId: SetId, collation: Collation): Observable<LooseDataEntityPageWrapper> {
+  getEntitiesPageable(setId: SetId, collation: Collation): Observable<VariableDataEntityPageWrapper> {
     return this.updateSetAttributes(setId).pipe(
-      switchMap(() => this._http.post<Page<LooseDataEntity>>('fivepd:looseData:getEntitiesPageable', {
+      switchMap(() => this._http.post<Page<VariableDataEntity>>('fivepd:variableData:getEntitiesPageable', {
         SetId: setId,
         ...collation,
       }).pipe(
         map(page => {
-          page.Items = page.Items.map(entity => this.mapEntity(setId, entity)) as LooseDataEntity[];
+          page.Items = page.Items.map(entity => this.mapEntity(setId, entity)) as VariableDataEntity[];
           return {
             page: page,
             attributes: this.getSetAttributes(setId),
@@ -109,8 +109,8 @@ export class LooseDataService {
     );
   }
 
-  getEntities(setId: SetId, filter: Record<string, any>): Observable<MappedLooseDataEntity[]> {
-    return this._http.post<LooseDataEntity[]>('fivepd:looseData:getEntities', {
+  getEntities(setId: SetId, filter: Record<string, any>): Observable<MappedVariableDataEntity[]> {
+    return this._http.post<VariableDataEntity[]>('fivepd:variableData:getEntities', {
       SetId: setId,
       Filter: filter,
     }).pipe(
@@ -119,14 +119,14 @@ export class LooseDataService {
   }
 
   addEntity(setId: SetId, entity: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:looseData:addEntity', {
+    return this._http.post<ActionResponse>('fivepd:variableData:addEntity', {
       SetId: setId,
       Entity: entity,
     });
   }
 
   editEntity(setId: SetId, entityId: number, entity: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:looseData:editEntity', {
+    return this._http.post<ActionResponse>('fivepd:variableData:editEntity', {
       SetId: setId,
       EntityId: entityId,
       Entity: entity,
@@ -134,21 +134,21 @@ export class LooseDataService {
   }
 
   deleteEntity(setId: SetId, id: number): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:looseData:deleteEntity', {
+    return this._http.post<ActionResponse>('fivepd:variableData:deleteEntity', {
       SetId: setId,
       Id: id,
     });
   }
 
-  updateSetAttributes(setId: SetId): Observable<LooseDataAttribute[]> {
-    return this._http.post<LooseDataAttribute[]>('fivepd:looseData:getSetAttributes', {
+  updateSetAttributes(setId: SetId): Observable<VariableDataAttribute[]> {
+    return this._http.post<VariableDataAttribute[]>('fivepd:variableData:getSetAttributes', {
       SetId: setId,
     }).pipe(
       tap(attributes => this._sets[setId] = attributes)
     );
   }
 
-  mapEntityValues(entityWrapper: LooseDataEntityWrapper): EntityValue[] {
+  mapEntityValues(entityWrapper: VariableDataEntityWrapper): EntityValue[] {
     const values: EntityValue[] = [];
     for (const attr of entityWrapper.attributes) {
       let name = attr.Label ?? '<Missing label>';
@@ -243,8 +243,8 @@ export class LooseDataService {
     return values;
   }
 
-  private updateSetAttribute(setId: SetId, attributeId: number): Observable<LooseDataAttribute> {
-    return this._http.post<LooseDataAttribute>('fivepd:looseData:getSetAttribute', {
+  private updateSetAttribute(setId: SetId, attributeId: number): Observable<VariableDataAttribute> {
+    return this._http.post<VariableDataAttribute>('fivepd:variableData:getSetAttribute', {
       Id: attributeId,
     }).pipe(
       tap(attribute => {
@@ -258,9 +258,9 @@ export class LooseDataService {
     );
   }
 
-  private mapEntity(setId: SetId, entity: LooseDataEntity): MappedLooseDataEntity {
+  private mapEntity(setId: SetId, entity: VariableDataEntity): MappedVariableDataEntity {
     const attributes = this.getSetAttributes(setId);
-    const mappedEntity: MappedLooseDataEntity = {
+    const mappedEntity: MappedVariableDataEntity = {
       Id: entity.Id,
       SetId: entity.SetId,
       ...entity.MappedValues,

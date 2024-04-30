@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using FivePD.Server.Models.LooseData;
+using FivePD.Server.Models.VariableData;
 
-namespace FivePD.Server.Interfaces.LooseData;
+namespace FivePD.Server.Interfaces.VariableData;
 
 /// <summary>
 /// Handles the dynamic data sets and entities.
 /// </summary>
-public interface ILooseDataService
+public interface IVariableDataService
 {
     /// <summary>
     /// Registers the given <paramref name="repository"/>.
@@ -16,16 +16,16 @@ public interface ILooseDataService
     /// <typeparam name="TS">The type of the set to register.</typeparam>
     /// <typeparam name="TR">The type of the repository to register.</typeparam>
     public void RegisterAddonRepository<TS, TR>(TR repository)
-        where TS : LooseDataSet
-        where TR : LooseDataRepository<TS>;
+        where TS : VariableDataSet
+        where TR : VariableDataRepository<TS>;
 
     /// <summary>
     /// Registers attributes to the given dynamic data set type.
     /// </summary>
     /// <param name="attributes">The attributes to register.</param>
     /// <typeparam name="TS">The type of the set.</typeparam>
-    public void RegisterSetAttributes<TS>(List<LooseDataAttribute> attributes)
-        where TS : LooseDataSet;
+    public void RegisterSetAttributes<TS>(List<VariableDataAttribute> attributes)
+        where TS : VariableDataSet;
 
     /// <summary>
     /// Updates the attribute of the given name
@@ -36,8 +36,8 @@ public interface ILooseDataService
     /// <param name="newAttributeValues">The new values of the attribute.</param>
     /// <typeparam name="TS">The set to delete the attribute from.</typeparam>
     /// <exception cref="ArgumentException">When the executing addon tries to delete another addon's attribute.</exception>
-    public void UpdateSetAttribute<TS>(string attributeName, LooseDataAttribute newAttributeValues)
-        where TS : LooseDataSet;
+    public void UpdateSetAttribute<TS>(string attributeName, VariableDataAttribute newAttributeValues)
+        where TS : VariableDataSet;
 
     /// <summary>
     /// Deletes an attribute with the given name
@@ -48,7 +48,7 @@ public interface ILooseDataService
     /// <typeparam name="TS">The set to delete the attribute from.</typeparam>
     /// <exception cref="ArgumentException">When the executing addon tries to delete another addon's attribute.</exception>
     public void DeleteSetAttribute<TS>(string attributeName)
-        where TS : LooseDataSet;
+        where TS : VariableDataSet;
 
     /// <summary>
     /// Fires when an entity is added to the given <typeparamref name="TS"/> set
@@ -56,8 +56,8 @@ public interface ILooseDataService
     /// </summary>
     /// <param name="observer">The action that will executed upon firing with the added entity.</param>
     /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
-    /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnAdded<TS>(Action<LooseDataEvent> observer);
+    /// <returns>A disposable <see cref="VariableDataEntityObservableSubscription"/>.</returns>
+    public IDisposable OnAdded<TS>(Action<VariableDataEvent> observer);
 
     /// <summary>
     /// Fires when an entity in the given <typeparamref name="TS"/> set is edited
@@ -65,8 +65,8 @@ public interface ILooseDataService
     /// </summary>
     /// <param name="observer">The action that will executed upon firing with the edited entity.</param>
     /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
-    /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnUpdated<TS>(Action<LooseDataEvent> observer);
+    /// <returns>A disposable <see cref="VariableDataEntityObservableSubscription"/>.</returns>
+    public IDisposable OnUpdated<TS>(Action<VariableDataEvent> observer);
 
     /// <summary>
     /// Fires when an entity from the given <typeparamref name="TS"/> set is deleted
@@ -74,8 +74,8 @@ public interface ILooseDataService
     /// </summary>
     /// <param name="observer">The action that will executed upon fire deleted entity.</param>
     /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
-    /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnDeleted<TS>(Action<LooseDataEvent> observer);
+    /// <returns>A disposable <see cref="VariableDataEntityObservableSubscription"/>.</returns>
+    public IDisposable OnDeleted<TS>(Action<VariableDataEvent> observer);
 
     /// <summary>
     /// Inserts an entity into the database with all its
@@ -85,27 +85,27 @@ public interface ILooseDataService
     /// <param name="entityToAdd">The entity to insert.</param>
     /// <typeparam name="TS">The type of the set where the entity should be inserted.</typeparam>
     /// <returns>The inserted entity.</returns>
-    public LooseDataEntity AddEntity<TS>(LooseDataEntity entityToAdd)
-        where TS : LooseDataSet;
+    public VariableDataEntity AddEntity<TS>(VariableDataEntity entityToAdd)
+        where TS : VariableDataSet;
 
     /// <summary>
     /// Updates the values of the entity in the database.
     /// </summary>
     /// <param name="entityToUpdate">The entity to update.</param>
-    public void UpdateEntity(LooseDataEntity entityToUpdate);
+    public void UpdateEntity(VariableDataEntity entityToUpdate);
 
     /// <summary>
     /// Deletes an entity.
     /// </summary>
     /// <param name="entityToDelete">The entity to delete.</param>
-    public void DeleteEntity(LooseDataEntity entityToDelete);
+    public void DeleteEntity(VariableDataEntity entityToDelete);
 
     /// <summary>
     /// Finds and maps the first entity with the given id.
     /// </summary>
     /// <param name="id">The id of the entity.</param>
     /// <returns>The first entity with the given id.</returns>
-    public LooseDataEntity GetEntity(string id);
+    public VariableDataEntity GetEntity(string id);
 
     /// <summary>
     /// Finds and maps the first entity with the given id.
@@ -114,7 +114,7 @@ public interface ILooseDataService
     /// <param name="withTracking">Whether to track the entities or not.</param>
     /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
     /// <returns>The first entity with the given id.</returns>
-    public LooseDataEntity GetEntity(string id, bool withTracking, bool queryCoreAttributeValue);
+    public VariableDataEntity GetEntity(string id, bool withTracking, bool queryCoreAttributeValue);
 
     /// <summary>
     /// Finds and maps all entities of the given set.
@@ -124,8 +124,8 @@ public interface ILooseDataService
     /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
     /// <param name="filter">The filter to apply to the query.</param>
     /// <returns>All entities of the set.</returns>
-    public List<LooseDataEntity> GetEntities<TS>(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
-        where TS : LooseDataSet;
+    public List<VariableDataEntity> GetEntities<TS>(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
+        where TS : VariableDataSet;
 
     /// <summary>
     /// Finds and maps all entities of the given set.
@@ -135,13 +135,13 @@ public interface ILooseDataService
     /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
     /// <param name="filter">The filter to apply to the query.</param>
     /// <returns>All entities of the set.</returns>
-    public List<LooseDataEntity> GetEntities(Type setType, bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null);
+    public List<VariableDataEntity> GetEntities(Type setType, bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null);
 }
 
 /// <summary>
 /// Handles the dynamic data sets and entities.
 /// </summary>
-internal interface IInternalLooseDataService
+internal interface IInternalVariableDataService
 {
     /// <summary>
     /// Disposes all addon repositories.

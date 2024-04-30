@@ -1,10 +1,10 @@
-﻿namespace FivePD.Server.Models.LooseData;
+﻿namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Defines the type of the attribute.
 /// Mainly used for displaying the correct input fields in the NUI.
 /// </summary>
-public enum LooseDataType
+public enum VariableDataType
 {
     /// <summary>
     /// This type will display a text input field in forms.

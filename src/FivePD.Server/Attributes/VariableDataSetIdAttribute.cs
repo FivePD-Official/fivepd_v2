@@ -6,13 +6,13 @@ namespace FivePD.Server.Attributes;
 /// Used for handling the dynamic data sets.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public class LooseDataSetIdAttribute : Attribute
+public class VariableDataSetIdAttribute : Attribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="LooseDataSetIdAttribute"/> class.
+    /// Initializes a new instance of the <see cref="VariableDataSetIdAttribute"/> class.
     /// </summary>
     /// <param name="id">The id of the set.</param>
-    public LooseDataSetIdAttribute(string id)
+    public VariableDataSetIdAttribute(string id)
     {
         this.Id = id;
     }

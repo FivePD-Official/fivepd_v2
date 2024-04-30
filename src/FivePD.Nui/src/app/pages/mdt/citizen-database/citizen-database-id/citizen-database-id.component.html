@@ -91,12 +91,12 @@
       <entity-view title="LABEL.TICKET.PLURAL"
                    [entities]="(tickets$ | async)!"
                    [showCreateButton]="true"
-                   (createButtonClick)="tryCreateLooseDataEntity(CoreSetId.PedTicket)"/>
+                   (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.PedTicket)"/>
 
       <entity-view title="LABEL.WARNING.PLURAL"
                    [entities]="(warnings$ | async)!"
                    [showCreateButton]="true"
-                   (createButtonClick)="tryCreateLooseDataEntity(CoreSetId.PedWarning)"/>
+                   (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.PedWarning)"/>
 
       <entity-view title="UI.LABEL.ARREST_REPORT.PLURAL"
                    [entities]="(arrestReports$ | async)!"
