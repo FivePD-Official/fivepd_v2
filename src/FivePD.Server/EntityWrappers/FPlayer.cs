@@ -123,6 +123,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the underlying Cfx player.
     /// </summary>
     /// <returns>A Cfx player.</returns>
+    /// TODO: check if we can use PlayerList[this.NetId] here instead of manually creating the player instance
     public Player GetUnderlyingPlayer()
     {
         return CreateInstance<Player>(this.NetId);

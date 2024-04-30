@@ -4,7 +4,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Extensions;
 
 /// <summary>
-/// Holds extension methods for CitizenFX.Core.Client.Vector3.
+/// Provides extension methods for CitizenFX.Core.Client.Vector3.
 /// </summary>
 internal static class Vector3Extensions
 {
