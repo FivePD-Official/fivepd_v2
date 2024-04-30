@@ -186,7 +186,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        if (attributeToUpdate.AddonId == "FivePD Gamemode" || attributeToUpdate.AddonId != assemblyName)
+        if (attributeToUpdate.AddonId == "FivePD Gamemode" || attributeToUpdate.AddonId == "FivePD" || attributeToUpdate.AddonId != assemblyName)
         {
             throw new ArgumentException("Can't update attribute of a different addon");
         }
@@ -232,7 +232,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        if (attributeToDelete.AddonId == "FivePD Gamemode" || attributeToDelete.AddonId != assemblyName)
+        if (attributeToDelete.AddonId == "FivePD Gamemode" || attributeToDelete.AddonId == "FivePD" || attributeToDelete.AddonId != assemblyName)
         {
             throw new ArgumentException("Can't delete attribute of a different addon");
         }
