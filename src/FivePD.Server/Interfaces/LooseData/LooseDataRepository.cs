@@ -28,25 +28,25 @@ public abstract class LooseDataRepository<TS> : IOnInit, IOnDestroy
     /// <summary>
     /// Invoked when an entity is added.
     /// </summary>
-    public event EventHandler<LooseDataEntity> OnAdded;
+    public event EventHandler<LooseDataEvent> OnAdded;
 
     /// <summary>
     /// Invoked when an entity is updated.
     /// </summary>
-    public event EventHandler<LooseDataEntity> OnUpdated;
+    public event EventHandler<LooseDataEvent> OnUpdated;
 
     /// <summary>
     /// Invoked when an entity is deleted.
     /// </summary>
-    public event EventHandler<LooseDataEntity> OnDeleted;
+    public event EventHandler<LooseDataEvent> OnDeleted;
 
     /// <inheritdoc/>
     void IOnInit.OnInit()
     {
         this._looseDataService.RegisterSetAttributes<TS>(this.RegisterSetAttributes());
-        this._disposables.Add(this._looseDataService.OnAdded<TS>(entity => this.OnAdded?.Invoke(this, entity)));
-        this._disposables.Add(this._looseDataService.OnUpdated<TS>(entity => this.OnUpdated?.Invoke(this, entity)));
-        this._disposables.Add(this._looseDataService.OnDeleted<TS>(entity => this.OnDeleted?.Invoke(this, entity)));
+        this._disposables.Add(this._looseDataService.OnAdded<TS>(@event => this.OnAdded?.Invoke(this, @event)));
+        this._disposables.Add(this._looseDataService.OnUpdated<TS>(@event => this.OnUpdated?.Invoke(this, @event)));
+        this._disposables.Add(this._looseDataService.OnDeleted<TS>(@event => this.OnDeleted?.Invoke(this, @event)));
     }
 
     /// <inheritdoc/>

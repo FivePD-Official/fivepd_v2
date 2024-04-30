@@ -9,6 +9,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -27,7 +28,6 @@ namespace FivePD.Server.Services.LooseData;
 public class LooseDataService : ILooseDataService, IInternalLooseDataService
 {
     private readonly DatabaseContext _databaseContext;
-    private readonly IPlayerDataService _playerDataService;
     private readonly IPlayerHandlerService _playerHandlerService;
 
     private readonly List<LooseDataEntityObservable> _observables = new();
@@ -38,12 +38,10 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     /// Initializes a new instance of the <see cref="LooseDataService"/> class.
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
-    /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
-    public LooseDataService(DatabaseContext databaseContext, IPlayerDataService playerDataService, IPlayerHandlerService playerHandlerService)
+    public LooseDataService(DatabaseContext databaseContext, IPlayerHandlerService playerHandlerService)
     {
         this._databaseContext = databaseContext;
-        this._playerDataService = playerDataService;
         this._playerHandlerService = playerHandlerService;
     }
 
@@ -66,19 +64,19 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
     }
 
     /// <inheritdoc />
-    public IDisposable OnAdded<TS>(Action<LooseDataEntity> observer)
+    public IDisposable OnAdded<TS>(Action<LooseDataEvent> observer)
     {
         return this.OnEvent<TS>(LooseDataEntityObservableType.Add, observer);
     }
 
     /// <inheritdoc />
-    public IDisposable OnUpdated<TS>(Action<LooseDataEntity> observer)
+    public IDisposable OnUpdated<TS>(Action<LooseDataEvent> observer)
     {
         return this.OnEvent<TS>(LooseDataEntityObservableType.Update, observer);
     }
 
     /// <inheritdoc />
-    public IDisposable OnDeleted<TS>(Action<LooseDataEntity> observer)
+    public IDisposable OnDeleted<TS>(Action<LooseDataEvent> observer)
     {
         return this.OnEvent<TS>(LooseDataEntityObservableType.Delete, observer);
     }
@@ -270,7 +268,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             throw new ArgumentException("No entity exist with the given id");
         }
 
-        this.InternalUpdateEntity(originalEntity.SetId, originalEntity.Id, entityToUpdate.MappedValues);
+        this.InternalUpdateEntity(null, originalEntity.SetId, originalEntity.Id, entityToUpdate.MappedValues);
     }
 
     /// <inheritdoc />
@@ -312,7 +310,14 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         this._databaseContext.LooseDataEntities.Remove(entity);
         this._databaseContext.SaveChanges();
-        this.InvokeEvent(LooseDataEntityObservableType.Delete, this.FindSetTypeById(entity.Set.Id), this.MapEntity(entity));
+        this.InvokeEvent(
+            LooseDataEntityObservableType.Delete,
+            this.FindSetTypeById(entity.Set.Id),
+            new LooseDataEvent
+            {
+                Entity = this.MapEntity(entity),
+                Player = null,
+            });
     }
 
     private LooseDataEntity InternalGetEntity(string id, bool withTracking = false, bool queryCoreAttributeValue = false)
@@ -782,8 +787,8 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
-    [UIEvent(Events.UI.LooseData.EditEntity)]
-    private void UpdateEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.LooseData.EditEntity, true)]
+    private void UpdateEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AddEntityRequest>();
         var setType = this.FindSetTypeById(request.SetId);
@@ -793,12 +798,12 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             return;
         }
 
-        this.InternalUpdateEntity(request.SetId, request.EntityId, request.Entity);
+        this.InternalUpdateEntity(player, request.SetId, request.EntityId, request.Entity);
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
     }
 
-    [UIEvent(Events.UI.LooseData.DeleteEntity)]
-    private void DeleteEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.LooseData.DeleteEntity, true)]
+    private void DeleteEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<DeleteEntityRequest>();
         var setType = this.FindSetTypeById(request.SetId);
@@ -818,7 +823,14 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
 
         this._databaseContext.LooseDataEntities.Remove(entityToDelete);
         this._databaseContext.SaveChanges();
-        this.InvokeEvent(LooseDataEntityObservableType.Delete, setType, entityToDelete);
+        this.InvokeEvent(
+            LooseDataEntityObservableType.Delete,
+            setType,
+            new LooseDataEvent
+            {
+                Entity = entityToDelete,
+                Player = FPlayer.FromPlayer(player),
+            });
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
@@ -877,11 +889,18 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         this._databaseContext.LooseDataValues.AddRange(values);
         var entityEntry = this._databaseContext.LooseDataEntities.Add(entityToAdd);
         this._databaseContext.SaveChanges();
-        this.InvokeEvent(LooseDataEntityObservableType.Add, this.FindSetTypeById(setId), this.MapEntity(entityEntry.Entity));
+        this.InvokeEvent(
+            LooseDataEntityObservableType.Add,
+            this.FindSetTypeById(setId),
+            new LooseDataEvent
+            {
+                Entity = this.MapEntity(entityEntry.Entity),
+                Player = FPlayer.FromPlayer(player),
+            });
         return entityEntry.Entity;
     }
 
-    private void InternalUpdateEntity(string setId, string entityId, Dictionary<string, object> newValues)
+    private void InternalUpdateEntity(Player player, string setId, string entityId, Dictionary<string, object> newValues)
     {
         var set = this._databaseContext.LooseDataSets
             .Include(looseDataSet => looseDataSet.Attributes)
@@ -919,7 +938,14 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         }
 
         this._databaseContext.SaveChanges();
-        this.InvokeEvent(LooseDataEntityObservableType.Update, this.FindSetTypeById(setId), this.InternalGetEntity(entityId));
+        this.InvokeEvent(
+            LooseDataEntityObservableType.Update,
+            this.FindSetTypeById(setId),
+            new LooseDataEvent
+            {
+                Entity = this.InternalGetEntity(entityId),
+                Player = FPlayer.FromPlayer(player),
+            });
     }
 
     private Type FindSetTypeById(string setId)
@@ -933,7 +959,7 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
         return type;
     }
 
-    private IDisposable OnEvent<TS>(LooseDataEntityObservableType observableType, Action<LooseDataEntity> observer)
+    private IDisposable OnEvent<TS>(LooseDataEntityObservableType observableType, Action<LooseDataEvent> observer)
     {
         var type = typeof(TS);
         var observable = this._observables.FirstOrDefault(o => o.SetType == type && o.Type == observableType);
@@ -943,13 +969,13 @@ public class LooseDataService : ILooseDataService, IInternalLooseDataService
             this._observables.Add(observable);
         }
 
-        return observable.Subscribe(entity => { observer?.Invoke(entity); });
+        return observable.Subscribe(@event => { observer?.Invoke(@event); });
     }
 
-    private void InvokeEvent(LooseDataEntityObservableType observableType, Type setType, LooseDataEntity entity)
+    private void InvokeEvent(LooseDataEntityObservableType observableType, Type setType, LooseDataEvent @event)
     {
         var observable = this._observables.FirstOrDefault(o => o.Type == observableType && o.SetType == setType);
-        observable?.InvokeObservers(entity);
+        observable?.InvokeObservers(@event);
     }
 
     private string GetExecutingAssemblyName()
