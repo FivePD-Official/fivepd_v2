@@ -1,4 +1,5 @@
 ﻿using System;
+using FivePD.Server.Interfaces.LooseData;
 
 namespace FivePD.Server.Models.LooseData;
 
@@ -8,7 +9,7 @@ namespace FivePD.Server.Models.LooseData;
 #pragma warning disable S3881 // Conforms to pattern.
 public class LooseDataEntityObservableSubscription : IDisposable
 {
-    private readonly Action<LooseDataEntity> _action;
+    private readonly Action<LooseDataEvent> _action;
     private LooseDataEntityObservable _subject;
 
     /// <summary>
@@ -16,7 +17,7 @@ public class LooseDataEntityObservableSubscription : IDisposable
     /// </summary>
     /// <param name="subject">The <see cref="LooseDataEntityObservable"/> to use.</param>
     /// <param name="action">The action to unsubscribe.</param>
-    public LooseDataEntityObservableSubscription(LooseDataEntityObservable subject, Action<LooseDataEntity> action)
+    public LooseDataEntityObservableSubscription(LooseDataEntityObservable subject, Action<LooseDataEvent> action)
     {
         this._subject = subject;
         this._action = action;

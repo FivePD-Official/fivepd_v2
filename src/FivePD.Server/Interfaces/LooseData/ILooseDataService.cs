@@ -57,7 +57,7 @@ public interface ILooseDataService
     /// <param name="observer">The action that will executed upon firing with the added entity.</param>
     /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
     /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnAdded<TS>(Action<LooseDataEntity> observer);
+    public IDisposable OnAdded<TS>(Action<LooseDataEvent> observer);
 
     /// <summary>
     /// Fires when an entity in the given <typeparamref name="TS"/> set is edited
@@ -66,7 +66,7 @@ public interface ILooseDataService
     /// <param name="observer">The action that will executed upon firing with the edited entity.</param>
     /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
     /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnUpdated<TS>(Action<LooseDataEntity> observer);
+    public IDisposable OnUpdated<TS>(Action<LooseDataEvent> observer);
 
     /// <summary>
     /// Fires when an entity from the given <typeparamref name="TS"/> set is deleted
@@ -75,7 +75,7 @@ public interface ILooseDataService
     /// <param name="observer">The action that will executed upon fire deleted entity.</param>
     /// <typeparam name="TS">The type of the set to subscribe to.</typeparam>
     /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable OnDeleted<TS>(Action<LooseDataEntity> observer);
+    public IDisposable OnDeleted<TS>(Action<LooseDataEvent> observer);
 
     /// <summary>
     /// Inserts an entity into the database with all its

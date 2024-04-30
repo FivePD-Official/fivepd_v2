@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FivePD.Server.Interfaces.LooseData;
 
 namespace FivePD.Server.Models.LooseData;
 
@@ -8,7 +9,7 @@ namespace FivePD.Server.Models.LooseData;
 /// </summary>
 public class LooseDataEntityObservable
 {
-    private readonly List<Action<LooseDataEntity>> _observers = new();
+    private readonly List<Action<LooseDataEvent>> _observers = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LooseDataEntityObservable"/> class.
@@ -36,7 +37,7 @@ public class LooseDataEntityObservable
     /// </summary>
     /// <param name="observer">The action which will be invoked.</param>
     /// <returns>A disposable <see cref="LooseDataEntityObservableSubscription"/>.</returns>
-    public IDisposable Subscribe(Action<LooseDataEntity> observer)
+    public IDisposable Subscribe(Action<LooseDataEvent> observer)
     {
         this._observers.Add(observer);
         return new LooseDataEntityObservableSubscription(this, observer);
@@ -46,7 +47,7 @@ public class LooseDataEntityObservable
     /// Unsubscribes the given observer.
     /// </summary>
     /// <param name="action">The action to unsubscribe.</param>
-    public void Unsubscribe(Action<LooseDataEntity> action)
+    public void Unsubscribe(Action<LooseDataEvent> action)
     {
         this._observers.Remove(action);
     }
@@ -54,12 +55,12 @@ public class LooseDataEntityObservable
     /// <summary>
     /// Invokes all observers.
     /// </summary>
-    /// <param name="entity">The entity to invoke the action with.</param>
-    public void InvokeObservers(LooseDataEntity entity)
+    /// <param name="event">The entity to invoke the action with.</param>
+    public void InvokeObservers(LooseDataEvent @event)
     {
         foreach (var o in this._observers)
         {
-            o?.Invoke(entity);
+            o?.Invoke(@event);
         }
     }
 }
