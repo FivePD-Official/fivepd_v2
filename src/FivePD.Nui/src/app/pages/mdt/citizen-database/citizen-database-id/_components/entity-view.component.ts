@@ -3,7 +3,7 @@ import { TranslatePipe } from "../../../../../pipes/translate.pipe";
 import { IconComponent } from "../../../../../components/icon/icon.component";
 import { ButtonComponent } from "../../../../../components/button/button.component";
 import { Router } from "@angular/router";
-import { EntityValue, EntityValueLink } from "@services/loose-data/loose-data.service";
+import { EntityValue, EntityValueLink } from "@services/variable-data/variable-data.service";
 
 @Component({
   selector: 'entity-view',

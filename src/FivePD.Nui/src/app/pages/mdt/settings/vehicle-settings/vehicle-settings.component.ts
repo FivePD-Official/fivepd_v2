@@ -29,6 +29,7 @@ import { AsyncPipe } from "@angular/common";
 import { Validators } from "@angular/forms";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 import { LocalizationService } from "@services/localization/localization.service";
+import { collationWithAdditionalFilters } from "../../../../helpers/request";
 
 function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
   return [
@@ -155,7 +156,7 @@ export class VehicleSettingsComponent {
 
   readonly policeVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly policeVehicleConfigPage$ = this.policeVehicleConfigCollation$.pipe(
-    switchMap(collation => this._vehicleConfigService.getAllPageable(VehicleConfigType.Police, collation))
+    switchMap(collation => this._vehicleConfigService.getPage(collationWithAdditionalFilters(collation, {Type: VehicleConfigType.Police})))
   );
   readonly policeVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
@@ -185,7 +186,7 @@ export class VehicleSettingsComponent {
   readonly ambulanceVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly ambulanceVehicleConfigPage$ = this.ambulanceVehicleConfigCollation$.pipe(
     filter(() => this._userService.userHasRole(UserRole.Admin)),
-    switchMap(collation => this._vehicleConfigService.getAllPageable(VehicleConfigType.Ambulance, collation))
+    switchMap(collation => this._vehicleConfigService.getPage(collationWithAdditionalFilters(collation, {Type: VehicleConfigType.Ambulance})))
   );
   readonly ambulanceVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
@@ -203,7 +204,7 @@ export class VehicleSettingsComponent {
   readonly towTruckVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly towTruckVehicleConfigPage$ = this.towTruckVehicleConfigCollation$.pipe(
     filter(() => this._userService.userHasRole(UserRole.Admin)),
-    switchMap(collation => this._vehicleConfigService.getAllPageable(VehicleConfigType.TowTruck, collation))
+    switchMap(collation => this._vehicleConfigService.getPage(collationWithAdditionalFilters(collation, {Type: VehicleConfigType.TowTruck})))
   );
   readonly towTruckVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(

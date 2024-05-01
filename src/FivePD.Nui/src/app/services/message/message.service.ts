@@ -1,35 +1,30 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { ActionResponse, Collation, Message, Page } from "@models";
+import { ActionResponse, Collation, Id, Message } from "@models";
+import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class MessageService {
+export class MessageService extends BaseApiService<Message> {
 
-  constructor(private readonly _http: HttpClient) {
+  override baseUrl = 'fivepd:message';
+
+  get(id: Id) {
+    return this._get('get', id);
   }
 
-  get(id: number): Observable<Message> {
-    return this._http.post<Message>('fivepd:message:get', {
-      Id: id,
-    });
-  }
-
-  getAllPageable(collation?: Collation): Observable<Page<Message>> {
-    return this._http.post<Page<Message>>('fivepd:message:getAllPageable', {
-      ...collation
-    });
+  getPage(collation: Collation) {
+    return this._getPage('getAllPageable', collation);
   }
 
   read(id: number): Observable<void> {
-    return this._http.post<void>('fivepd:message:read', {
+    return this.httpClient.post<void>(this.createUrl('read'), {
       Id: id,
     });
   }
 
   send(request: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:message:send', request);
+    return this.httpClient.post<ActionResponse>(this.createUrl('send'), request);
   }
 }

@@ -1,42 +1,31 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ActionResponse, Collation, Id, Page, VehicleConfig, VehicleConfigType } from '@models';
-import { parseId } from "../../helpers/parse-id";
+import { Collation, Id, VehicleConfig, VehicleConfigType } from '@models';
+import { CrudApiService } from "@services/api/crud-api/crud-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class VehicleConfigService {
+export class VehicleConfigService extends CrudApiService<VehicleConfig> {
 
-  constructor(
-    private _http: HttpClient,
-  ) {
+  override baseUrl = 'fivepd:ui:vehicleConfig';
+
+  get(id: Id) {
+    return this._get('get', id);
   }
 
-  get(id: Id): Observable<VehicleConfig> {
-    return this._http.post<VehicleConfig>('fivepd:ui:vehicleConfig:get', {Id: parseId(id)});
+  getPage(collation: Collation<{ Type: VehicleConfigType }>) {
+    return this._getPage('getAllPageable', collation);
   }
 
-  getAllPageable(type: VehicleConfigType, collation?: Collation): Observable<Page<VehicleConfig>> {
-    return this._http.post<Page<VehicleConfig>>('fivepd:ui:vehicleConfig:getAllPageable', {
-      ...collation,
-      Filters: {
-        Type: type,
-        ...collation?.Filters,
-      },
-    });
+  create(request: object) {
+    return this._create('create', request);
   }
 
-  create(request: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:ui:vehicleConfig:create', request);
+  edit(request: object) {
+    return this._edit('edit', request);
   }
 
-  edit(request: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:ui:vehicleConfig:edit', request);
-  }
-
-  delete(id: Id): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:ui:vehicleConfig:delete', {Id: parseId(id)});
+  delete(id: Id) {
+    return this._delete('delete', id);
   }
 }
