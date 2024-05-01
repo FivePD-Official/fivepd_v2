@@ -1,36 +1,35 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
+import { inject, Injectable } from '@angular/core';
 import { Observable } from "rxjs";
-import { Collation, Department, IncidentHistory, Page, SimpleIncidentHistory } from "@models";
+import { Collation, IncidentHistory, SimpleIncidentHistory } from "@models";
 import { GlobalState } from "@store";
 import { Store } from "@ngrx/store";
+import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class IncidentHistoryService {
+export class IncidentHistoryService extends BaseApiService<IncidentHistory> {
 
-  userId!: number;
+  override baseUrl = 'fivepd:incidentHistory';
 
-  constructor(
-    private readonly _http: HttpClient,
-    private readonly _store: Store<GlobalState>,
-  ) {
-    _store.select('user', 'details', 'User', 'Id').subscribe(userId => this.userId = userId);
+  private readonly _store = inject<Store<GlobalState>>(Store);
+  private userId!: number;
+
+  constructor() {
+    super();
+    this._store.select('user', 'details', 'User', 'Id').subscribe(userId => this.userId = userId);
   }
 
-  get(id: string): Observable<IncidentHistory> {
-    return this._http.post<IncidentHistory>('fivepd:incidentHistory:get', {
-      Id: id,
-    });
+  get(id: string) {
+    return this._get('get', id);
   }
 
-  getAll(collation?: Collation): Observable<Page<IncidentHistory>> {
-    return this._http.post<Page<IncidentHistory>>('fivepd:incidentHistory:getAllPageable', collation);
+  getPage(collation: Collation) {
+    return this._getPage('getAllPageable', collation);
   }
 
   getAllOfUser(): Observable<SimpleIncidentHistory[]> {
-    return this._http.post<SimpleIncidentHistory[]>('fivepd:incidentHistory:getAllOfUser', {
+    return this.httpClient.post<SimpleIncidentHistory[]>(this.createUrl('getAllOfUser'), {
       Id: this.userId,
     });
   }

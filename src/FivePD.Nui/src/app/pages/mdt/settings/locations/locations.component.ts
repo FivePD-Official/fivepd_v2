@@ -13,6 +13,7 @@ import { LocationService } from "@services/location/location.service";
 import { DevtoolsService } from "@services/devtools/devtools.service";
 import { ConfigService } from "@services/config/config.service";
 import { LocalizationService } from "@services/localization/localization.service";
+import { collationWithAdditionalFilters } from "../../../../helpers/request";
 
 @Component({
   selector: 'app-locations',
@@ -55,7 +56,7 @@ export class LocationsComponent implements OnInit {
 
   readonly mdtAccessPointsCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly mdtAccessPointsPage$ = this.mdtAccessPointsCollation$.pipe(
-    switchMap(collation => this._locationService.getAllPageable(LocationType.MdtAccess, collation))
+    switchMap(collation => this._locationService.getPage(collationWithAdditionalFilters(collation, {Type: LocationType.MdtAccess})))
   );
   readonly mdtAccessPointsButtons: Button[] = [this.createAddLocationButton(LocationType.MdtAccess, () => this.mdtAccessPointsCollation$.next(this.mdtAccessPointsCollation$.value))];
   readonly mdtAccessPointsColumns: Column<Location>[] = [
@@ -68,7 +69,7 @@ export class LocationsComponent implements OnInit {
 
   readonly jailDropOffCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly jailDropOffPage$ = this.jailDropOffCollation$.pipe(
-    switchMap(collation => this._locationService.getAllPageable(LocationType.JailDropOff, collation))
+    switchMap(collation => this._locationService.getPage(collationWithAdditionalFilters(collation, {Type: LocationType.JailDropOff})))
   );
   readonly jailDropOffButtons: Button[] = [this.createAddLocationButton(LocationType.JailDropOff, () => this.jailDropOffCollation$.next(this.jailDropOffCollation$.value))];
   readonly jailDropOffColumns: Column<Location>[] = [
@@ -81,7 +82,7 @@ export class LocationsComponent implements OnInit {
 
   readonly loadoutSelectorCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly loadoutSelectorPage$ = this.loadoutSelectorCollation$.pipe(
-    switchMap(collation => this._locationService.getAllPageable(LocationType.LoadoutSelector, collation))
+    switchMap(collation => this._locationService.getPage(collationWithAdditionalFilters(collation, {Type: LocationType.LoadoutSelector})))
   );
   readonly loadoutSelectorButtons: Button[] = [this.createAddLocationButton(LocationType.LoadoutSelector, () => this.loadoutSelectorCollation$.next(this.loadoutSelectorCollation$.value))];
   readonly loadoutSelectorColumns: Column<Location>[] = [
@@ -94,7 +95,7 @@ export class LocationsComponent implements OnInit {
 
   readonly vehicleSelectorCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly vehicleSelectorPage$ = this.vehicleSelectorCollation$.pipe(
-    switchMap(collation => this._locationService.getAllPageable(LocationType.VehicleSelector, collation))
+    switchMap(collation => this._locationService.getPage(collationWithAdditionalFilters(collation, {Type: LocationType.VehicleSelector})))
   );
   readonly vehicleSelectorButtons: Button[] = [this.createAddLocationButton(LocationType.VehicleSelector, () => this.vehicleSelectorCollation$.next(this.vehicleSelectorCollation$.value))];
   readonly vehicleSelectorColumns: Column<Location>[] = [

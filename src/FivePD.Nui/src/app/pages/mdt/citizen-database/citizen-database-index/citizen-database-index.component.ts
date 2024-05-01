@@ -31,7 +31,7 @@ export class CitizenDatabaseIndexComponent implements OnInit {
 
   readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly citizens$ = this.collation$.pipe(
-    switchMap(collation => this._pedHistoryService.getAll(collation)),
+    switchMap(collation => this._pedHistoryService.getPage(collation)),
   );
 
   readonly recentlyViewedPeds = this._store.select('app', 'recentlyViewedPeds');

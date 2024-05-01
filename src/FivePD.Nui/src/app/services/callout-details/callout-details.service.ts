@@ -3,26 +3,24 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { ActionResponse, CalloutDetails, CalloutDetailsWithDepartments, Collation, Id, Page } from "@models";
 import { parseId } from "../../helpers/parse-id";
+import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class CalloutDetailsService {
+export class CalloutDetailsService extends BaseApiService<CalloutDetails> {
 
-  constructor(private readonly _http: HttpClient) {
+  override baseUrl = 'fivepd:calloutDetails';
+
+  get(id: Id) {
+    return this._get<CalloutDetailsWithDepartments>('get', id);
   }
 
-  get(id: Id): Observable<CalloutDetailsWithDepartments> {
-    return this._http.post<CalloutDetailsWithDepartments>('fivepd:calloutDetails:get', {
-      Id: parseId(id),
-    });
-  }
-
-  getAll(collation?: Collation): Observable<Page<CalloutDetails>> {
-    return this._http.post<Page<CalloutDetails>>('fivepd:calloutDetails:getAllPageable', collation);
+  getPage(collation: Collation) {
+    return this._getPage('getAllPageable', collation);
   }
 
   updateRuleset(request: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:calloutDetails:updateRuleset', request);
+    return this.httpClient.post<ActionResponse>(this.createUrl('updateRuleset'), request);
   }
 }

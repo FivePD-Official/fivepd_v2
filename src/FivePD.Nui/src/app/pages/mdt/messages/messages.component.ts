@@ -58,7 +58,7 @@ export class MessagesComponent implements OnInit {
   }
 
   getMessages(): void {
-    this._messageService.getAllPageable(this.messagesCollation).subscribe(page => {
+    this._messageService.getPage(this.messagesCollation).subscribe(page => {
       this.messagesPage = page;
     });
   }

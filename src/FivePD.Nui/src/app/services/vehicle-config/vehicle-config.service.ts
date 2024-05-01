@@ -1,11 +1,11 @@
 ﻿import { Injectable } from '@angular/core';
 import { Collation, Id, VehicleConfig, VehicleConfigType } from '@models';
-import { BaseApiService } from "@services/base-api/base-api.service";
+import { CrudApiService } from "@services/api/crud-api/crud-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class VehicleConfigService extends BaseApiService<VehicleConfig> {
+export class VehicleConfigService extends CrudApiService<VehicleConfig> {
 
   override baseUrl = 'fivepd:ui:vehicleConfig';
 
