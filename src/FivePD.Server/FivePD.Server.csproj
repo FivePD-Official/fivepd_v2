@@ -112,4 +112,9 @@
       </Folder>
       <Folder Include="Migrations" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\FivePD.Statics\eula.txt">
+        <Link>FivePD.Statics\eula.txt</Link>
+      </Content>
+    </ItemGroup>
 </Project>

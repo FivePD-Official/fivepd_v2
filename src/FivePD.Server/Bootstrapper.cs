@@ -76,8 +76,6 @@ internal class Bootstrapper : BaseScript
 
         this._addonLocatorLogger = Log.Logger.ForContext("SourceIdentifier", "AddonLocator");
 
-        this._phases.Add(this.PerformSafeToRunCheckBeforeBootstrapping, false);
-
         // Enqueue service location phase.
         this._phases.Add(this.PerformServiceLocationPhase, false);
 
@@ -437,32 +435,20 @@ internal class Bootstrapper : BaseScript
         }
     }
 
-    private void PerformSafeToRunCheckBeforeBootstrapping()
+    private void PerformSafeToRunCheckAfterBootstrapping()
     {
         var errors = new List<string>();
+
+        var (eulaAccepted, eulaError) = LicenseHandler.ValidateEula();
+        if (!eulaAccepted)
+        {
+            errors.Add(eulaError);
+        }
 
         if (Cfx.API.GetConvar("onesync", "off") != "on")
         {
             errors.Add("OneSync needs to be enabled.");
         }
-
-        if (errors.Count == 0)
-        {
-            return;
-        }
-
-        this._bootstrapLogger?.Fatal("FivePD cannot run in this environment. Verify the following:");
-        foreach (var message in errors)
-        {
-            this._bootstrapLogger?.Fatal($"{message}");
-        }
-
-        LifecycleHandler.Stop();
-    }
-
-    private void PerformSafeToRunCheckAfterBootstrapping()
-    {
-        var errors = new List<string>();
 
         var localizationService = this._provider.GetService<ILocalizationService>();
         if (localizationService.AvailableLocalizations.Count == 0)
