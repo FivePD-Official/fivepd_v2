@@ -22,7 +22,7 @@ export class VehicleDatabaseIndexComponent {
 
   readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly vehicles$ = this.collation$.pipe(
-    switchMap(collation => this._vehicleService.getAll(collation)),
+    switchMap(collation => this._vehicleService.getPage(collation)),
   );
 
   readonly formFields: FormInputBase<any>[] = [

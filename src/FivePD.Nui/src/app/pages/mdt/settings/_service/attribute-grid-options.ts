@@ -1,14 +1,14 @@
-﻿import {AttributeDataType, BadgeVariants, Button, Column, LooseDataAttribute} from "@models";
+﻿import {AttributeDataType, BadgeVariants, Button, Column, VariableDataAttribute} from "@models";
 import {createAttributesFormFields} from "../../../../helpers/forms/set-attribute";
 import {ValueResolver} from "@services/modals/modal-form/modal-form-value-resolver";
 import {filter, switchMap} from "rxjs";
 import {UserRole, UserService} from "@services/user/user.service";
 import {LocalizationService} from "@services/localization/localization.service";
-import {LooseDataService} from "@services/loose-data/loose-data.service";
 import {ModalFormService} from "@services/modals/modal-form/modal-form.service";
 import {inject, Injectable} from "@angular/core";
 import {ModalService} from "@services/modals/modal/modal.service";
 import {ModalConfirmService} from "@services/modals/modal-confirm/modal-confirm.service";
+import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Injectable({
   providedIn: 'root'
@@ -16,16 +16,16 @@ import {ModalConfirmService} from "@services/modals/modal-confirm/modal-confirm.
 export class AttributeGridOptions {
 
   private readonly _userService = inject(UserService);
-  private readonly _looseDataService = inject(LooseDataService);
+  private readonly _variableDataService = inject(VariableDataService);
   private readonly _modalService = inject(ModalService);
   private readonly _modalFormService = inject(ModalFormService);
   private readonly _modalConfirmService = inject(ModalConfirmService);
   private readonly _localizationService = inject(LocalizationService);
 
-  valueResolver = (item: LooseDataAttribute, key: keyof LooseDataAttribute): string => this._localizationService.translate(item[key] ? 'UI.LABEL.YES' : 'UI.LABEL.NO');
-  badgeResolver = (item: LooseDataAttribute, key: keyof LooseDataAttribute): BadgeVariants => item[key] ? 'green' : 'gray';
+  valueResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): string => this._localizationService.translate(item[key] ? 'UI.LABEL.YES' : 'UI.LABEL.NO');
+  badgeResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): BadgeVariants => item[key] ? 'green' : 'gray';
 
-  createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<LooseDataAttribute>[] {
+  createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<VariableDataAttribute>[] {
     return [
       {
         header: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
@@ -97,11 +97,11 @@ export class AttributeGridOptions {
                   submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
                 },
                 fields: updatedAttribute => createAttributesFormFields(this._localizationService, updatedAttribute),
-                valueResolver: new ValueResolver<LooseDataAttribute>(attribute, this._looseDataService.getSetAttribute(set, attribute.Id))
+                valueResolver: new ValueResolver<VariableDataAttribute>(attribute, this._variableDataService.getSetAttribute(set, attribute.Id))
               }).result
                 .pipe(
                   filter(res => res.success),
-                  switchMap(res => this._looseDataService.editSetAttribute(set, {
+                  switchMap(res => this._variableDataService.editSetAttribute(set, {
                     Id: attribute.Id,
                     Name: res.value['Name'],
                     Label: res.value['Label'],
@@ -132,7 +132,7 @@ export class AttributeGridOptions {
               }).result
                 .pipe(
                   filter(res => res.success),
-                  switchMap(() => this._looseDataService.deleteSetAttribute(set, item.Id)),
+                  switchMap(() => this._variableDataService.deleteSetAttribute(set, item.Id)),
                   this._modalService.handleResponse()
                 ).subscribe(() => onDelete())
             }
@@ -160,7 +160,7 @@ export class AttributeGridOptions {
           }).result
             .pipe(
               filter(res => res.success),
-              switchMap(res => this._looseDataService.addSetAttribute(
+              switchMap(res => this._variableDataService.addSetAttribute(
                 set,
                 res.value['AttributeType'] === -1 ? '' : res.value['AttributeType'],
                 {

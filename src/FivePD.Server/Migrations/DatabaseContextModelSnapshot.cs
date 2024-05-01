@@ -197,107 +197,6 @@ namespace FivePD.Server.Migrations
                     b.ToTable("fivepd_locations");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("AddonId")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<int>("DataType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("HelpLabel")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<bool>("Hidden")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Label")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("Options")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Placeholder")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<bool>("Readonly")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("Required")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("SetId")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                    b.Property<bool>("ShowInGrid")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SetId");
-
-                    b.ToTable("fivepd_loose_data_attributes");
-                });
-
-            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataEntity", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                    b.Property<string>("SetId")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SetId");
-
-                    b.ToTable("fivepd_loose_data_entities");
-                });
-
-            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataSet", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("fivepd_loose_data_sets");
-                });
-
-            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataValue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AttributeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EntityId")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttributeId");
-
-                    b.HasIndex("EntityId");
-
-                    b.ToTable("fivepd_loose_data_values");
-                });
-
             modelBuilder.Entity("FivePD.Server.Models.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -478,6 +377,107 @@ namespace FivePD.Server.Migrations
                     b.ToTable("fivepd_users");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataAttribute", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("AddonId")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HelpLabel")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Hidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Label")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Options")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Placeholder")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Readonly")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("SetId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("ShowInGrid")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SetId");
+
+                    b.ToTable("fivepd_variable_data_attributes");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<string>("SetId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SetId");
+
+                    b.ToTable("fivepd_variable_data_entities");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataSet", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_variable_data_sets");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EntityId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttributeId");
+
+                    b.HasIndex("EntityId");
+
+                    b.ToTable("fivepd_variable_data_values");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.VehicleConfig<System.Collections.Generic.Dictionary<string, object>>", b =>
                 {
                     b.Property<int>("Id")
@@ -556,32 +556,6 @@ namespace FivePD.Server.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataAttribute", b =>
-                {
-                    b.HasOne("FivePD.Server.Models.LooseData.LooseDataSet", "Set")
-                        .WithMany("Attributes")
-                        .HasForeignKey("SetId");
-                });
-
-            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataEntity", b =>
-                {
-                    b.HasOne("FivePD.Server.Models.LooseData.LooseDataSet", "Set")
-                        .WithMany("Entities")
-                        .HasForeignKey("SetId");
-                });
-
-            modelBuilder.Entity("FivePD.Server.Models.LooseData.LooseDataValue", b =>
-                {
-                    b.HasOne("FivePD.Server.Models.LooseData.LooseDataAttribute", "Attribute")
-                        .WithMany()
-                        .HasForeignKey("AttributeId");
-
-                    b.HasOne("FivePD.Server.Models.LooseData.LooseDataEntity", "Entity")
-                        .WithMany("Values")
-                        .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("FivePD.Server.Models.Message", b =>
                 {
                     b.HasOne("FivePD.Server.Models.User", "User")
@@ -645,6 +619,32 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.Rank", "Rank")
                         .WithMany("Users")
                         .HasForeignKey("RankId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataAttribute", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.VariableData.VariableDataSet", "Set")
+                        .WithMany("Attributes")
+                        .HasForeignKey("SetId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataEntity", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.VariableData.VariableDataSet", "Set")
+                        .WithMany("Entities")
+                        .HasForeignKey("SetId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataValue", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.VariableData.VariableDataAttribute", "Attribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId");
+
+                    b.HasOne("FivePD.Server.Models.VariableData.VariableDataEntity", "Entity")
+                        .WithMany("Values")
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

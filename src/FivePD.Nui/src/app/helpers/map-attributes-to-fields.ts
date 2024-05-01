@@ -5,8 +5,8 @@
   SingleSelectField,
   FormInputBase,
   FormInputBaseOptions,
-  LooseDataAttribute,
-  MappedLooseDataEntity,
+  VariableDataAttribute,
+  MappedVariableDataEntity,
   NumberField,
   TextareaField,
   TextField, MultiSelectField, SingleSelectFieldOptions
@@ -14,7 +14,7 @@
 import { coreAttributeNames, CoreAttributes } from "./core-attributes";
 import { MultiSelectFieldComponent } from "../components/form-inputs/multi-select-field/multi-select-field.component";
 
-export function mapAttributesToFields(attributes: LooseDataAttribute[], entity?: MappedLooseDataEntity, additionalFields: FormInputBase<any>[] = []): FormInputBase<any>[] {
+export function mapAttributesToFields(attributes: VariableDataAttribute[], entity?: MappedVariableDataEntity, additionalFields: FormInputBase<any>[] = []): FormInputBase<any>[] {
   const fields: FormInputBase<any>[] = [];
 
   // Add predefined fields

@@ -3,29 +3,28 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Collation, Id, Page, PedHistory, SimplePedHistory } from "@models";
 import { parseId } from "../../helpers/parse-id";
+import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class PedHistoryService {
+export class PedHistoryService extends BaseApiService<PedHistory> {
 
-  private readonly _http = inject(HttpClient);
+  override baseUrl = 'fivepd:pedHistory';
 
-  get(id: Id): Observable<PedHistory> {
-    return this._http.post<PedHistory>('fivepd:pedHistory:get', {
-      Id: parseId(id),
-    });
+  get(id: Id) {
+    return this._get('get', id);
   }
 
-  getAll(collation?: Collation): Observable<Page<PedHistory>> {
+  getPage(collation: Collation) {
     if (collation && collation.Filters['Gender'] === undefined) {
       collation.Filters['Gender'] = -1;
     }
 
-    return this._http.post<Page<PedHistory>>('fivepd:pedHistory:getAllPageable', collation);
+    return this._getPage('getAllPageable', collation);
   }
 
   getAllSimple(): Observable<SimplePedHistory[]> {
-    return this._http.post<SimplePedHistory[]>('fivepd:pedHistory:getAllSimple', {});
+    return this.httpClient.post<SimplePedHistory[]>(this.createUrl('getAllSimple'), {});
   }
 }

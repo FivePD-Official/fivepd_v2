@@ -201,31 +201,31 @@ internal readonly record struct Events
             public const string UpdateRuleset = "fivepd:calloutDetails:updateRuleset";
         }
 
-        public readonly record struct LooseData
+        public readonly record struct VariableData
         {
-            public const string GetSetAttribute = "fivepd:looseData:getSetAttribute";
+            public const string GetSetAttribute = "fivepd:variableData:getSetAttribute";
 
-            public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
+            public const string GetSetAttributes = "fivepd:variableData:getSetAttributes";
 
-            public const string GetSetAttributesPageable = "fivepd:looseData:getSetAttributesPageable";
+            public const string GetSetAttributesPageable = "fivepd:variableData:getSetAttributesPageable";
 
-            public const string AddSetAttribute = "fivepd:looseData:addSetAttribute";
+            public const string AddSetAttribute = "fivepd:variableData:addSetAttribute";
 
-            public const string EditSetAttribute = "fivepd:looseData:editSetAttribute";
+            public const string EditSetAttribute = "fivepd:variableData:editSetAttribute";
 
-            public const string DeleteSetAttribute = "fivepd:looseData:deleteSetAttribute";
+            public const string DeleteSetAttribute = "fivepd:variableData:deleteSetAttribute";
 
-            public const string GetEntity = "fivepd:looseData:getEntity";
+            public const string GetEntity = "fivepd:variableData:getEntity";
 
-            public const string GetEntitiesPageable = "fivepd:looseData:getEntitiesPageable";
+            public const string GetEntitiesPageable = "fivepd:variableData:getEntitiesPageable";
 
-            public const string GetEntities = "fivepd:looseData:getEntities";
+            public const string GetEntities = "fivepd:variableData:getEntities";
 
-            public const string AddEntity = "fivepd:looseData:addEntity";
+            public const string AddEntity = "fivepd:variableData:addEntity";
 
-            public const string EditEntity = "fivepd:looseData:editEntity";
+            public const string EditEntity = "fivepd:variableData:editEntity";
 
-            public const string DeleteEntity = "fivepd:looseData:deleteEntity";
+            public const string DeleteEntity = "fivepd:variableData:deleteEntity";
         }
 
         public readonly record struct Menu

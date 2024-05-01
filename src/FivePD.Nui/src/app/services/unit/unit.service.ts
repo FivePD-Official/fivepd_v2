@@ -1,43 +1,37 @@
 import { Injectable } from '@angular/core';
-import { ActionResponse, Page, PlayerDetailsDTO, UnitDTO } from "@models";
-import { HttpClient } from "@angular/common/http";
-import { Store } from "@ngrx/store";
-import { GlobalState } from "@store";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Observable, tap } from "rxjs";
+import { ActionResponse, Id, UnitDTO } from "@models";
+import { Observable } from "rxjs";
+import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class UnitService {
+export class UnitService extends BaseApiService<UnitDTO> {
 
-  user?: PlayerDetailsDTO;
+  override baseUrl = 'fivepd:unit';
 
-  constructor(
-    private _http: HttpClient,
-    private readonly store: Store<GlobalState>,
-  ) {
-    store.pipe(takeUntilDestroyed()).subscribe(state => this.user = state.user.details);
+  get(id: Id) {
+    return this._get('NOT_IMPLEMENTED', id); // TODO
   }
 
-  getAll(): Observable<Page<UnitDTO>> {
-    return this._http.post<Page<UnitDTO>>('fivepd:unit:getAll', {});
+  getPage() {
+    return this._getPage('getAll');
   }
 
   join(unit: UnitDTO): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:unit:join', {
+    return this.httpClient.post<ActionResponse>(this.createUrl('join'), {
       Callsign: unit.Callsign,
     });
   }
 
   requestToJoin(unit: UnitDTO): Observable<void> {
-    return this._http.post<void>('fivepd:unit:requestToJoin', {
+    return this.httpClient.post<void>(this.createUrl('requestToJoin'), {
       Callsign: unit.Callsign,
     });
   }
 
   leave(unit: UnitDTO): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:unit:leave', {
+    return this.httpClient.post<ActionResponse>(this.createUrl('leave'), {
       Callsign: unit.Callsign,
     });
   }

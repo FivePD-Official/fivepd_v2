@@ -1,23 +1,19 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { BehaviorSubject, combineLatest, Observable, switchMap } from "rxjs";
-import { Collation, FVehicle, FVehicleDTO, Id, Page } from "@models";
-import { parseId } from "../../helpers/parse-id";
+import { Injectable } from '@angular/core';
+import { Collation, FVehicleDTO, Id } from "@models";
+import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class VehicleService {
+export class VehicleService extends BaseApiService<FVehicleDTO> {
 
-  private readonly _http = inject(HttpClient);
+  override baseUrl = 'fivepd:vehicle';
 
-  get(id: Id): Observable<FVehicleDTO> {
-    return this._http.post<FVehicleDTO>('fivepd:vehicle:get', {
-      Id: parseId(id),
-    });
+  get(id: Id) {
+    return this._get('get', id);
   }
 
-  getAll(collation?: Collation): Observable<Page<FVehicleDTO>> {
-    return this._http.post<Page<FVehicleDTO>>('fivepd:vehicle:getAllPageable', collation);
+  getPage(collation: Collation) {
+    return this._getPage('getAllPageable', collation);
   }
 }

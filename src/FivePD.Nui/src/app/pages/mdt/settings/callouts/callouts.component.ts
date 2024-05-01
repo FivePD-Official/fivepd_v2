@@ -25,7 +25,7 @@ export class CalloutsComponent {
 
   readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly calloutDetails$ = this.collation$.pipe(
-    switchMap(collation => this._calloutDetailsService.getAll(collation)),
+    switchMap(collation => this._calloutDetailsService.getPage(collation)),
   );
 
   readonly columns: Column<CalloutDetails>[] = [

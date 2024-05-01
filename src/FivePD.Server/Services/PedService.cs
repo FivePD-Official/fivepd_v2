@@ -13,10 +13,9 @@ using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
-using FivePD.Server.Interfaces.LooseData;
+using FivePD.Server.Interfaces.VariableData;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
-using FivePD.Server.Models.LooseData;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +33,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private readonly DatabaseContext _databaseContext;
     private readonly IRandomService _randomService;
     private readonly ITickQueueService _tickQueueService;
-    private readonly ILooseDataService _looseDataService;
+    private readonly IVariableDataService _variableDataService;
 
     private readonly ConcurrentDictionary<int, FPed> _peds = new();
     private Guid _checkPedsId;
@@ -47,21 +46,21 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
-    /// <param name="looseDataService">The <see cref="ILooseDataService" /> to use.</param>
+    /// <param name="variableDataService">The <see cref="IVariableDataService" /> to use.</param>
     public PedService(
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
         DatabaseContext databaseContext,
         IRandomService randomService,
         ITickQueueService tickQueueService,
-        ILooseDataService looseDataService)
+        IVariableDataService variableDataService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._databaseContext = databaseContext;
         this._randomService = randomService;
         this._tickQueueService = tickQueueService;
-        this._looseDataService = looseDataService;
+        this._variableDataService = variableDataService;
     }
 
     /// <inheritdoc/>

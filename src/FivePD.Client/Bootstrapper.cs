@@ -291,8 +291,8 @@ internal class Bootstrapper : BaseScript
             .IsSingleton();
 
         services
-            .RegisterType<LooseDataService>()
-            .As<ILooseDataService>()
+            .RegisterType<VariableDataService>()
+            .As<IVariableDataService>()
             .As<IOnInit>()
             .IsSingleton();
 

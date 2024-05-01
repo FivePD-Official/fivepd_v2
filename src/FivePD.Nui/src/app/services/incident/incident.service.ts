@@ -1,28 +1,30 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { IncidentWrapper, IncidentDTO, Page, ActionResponse } from "@models";
+import { ActionResponse, Id, IncidentDTO, IncidentWrapper } from "@models";
+import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class IncidentService {
+export class IncidentService extends BaseApiService<IncidentDTO> {
 
-  constructor(
-    private _http: HttpClient,
-  ) {
+  override baseUrl = 'fivepd:incident';
+
+  get(id: Id) {
+    return this._get('NOT_IMPLEMENTED', id); // TODO
+  }
+
+  getPage() {
+    return this._getPage('getAllActive');
   }
 
   getAssignedIncident(): Observable<IncidentWrapper> {
-    return this._http.post<IncidentWrapper>('fivepd:incident:getAssigned', {});
+    return this.httpClient.post<IncidentWrapper>(this.createUrl('getAssigned'), {});
   }
 
-  getAll(): Observable<Page<IncidentDTO>> {
-    return this._http.post<Page<IncidentDTO>>('fivepd:incident:getAllActive', {});
-  }
 
   selfAssign(incident: IncidentDTO): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:incident:selfAssign', {
+    return this.httpClient.post<ActionResponse>(this.createUrl('selfAssign'), {
       Id: incident.Id,
     });
   }
