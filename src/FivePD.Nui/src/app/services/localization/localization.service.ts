@@ -5,7 +5,6 @@ import { EventService } from '@services/event/event.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import getKeyFromObjectPath from 'lodash-es/get';
 import { replaceParams } from '@helpers';
-import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: 'root'

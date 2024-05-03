@@ -1,8 +1,35 @@
 import { TranslatePipe } from './translate.pipe';
+import { TestBed } from '@angular/core/testing';
+import { LocalizationService } from '@services/localization/localization.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+
+  jest.mock('lodash-es/get', () => {
+    return {
+      __esModule: true,
+      default: 'mockDefaultExport',
+      nameExport: jest.fn(),
+    }
+  })
 
 describe('TranslatePipe', () => {
-  it('create an instance', () => {
-    const pipe = new TranslatePipe();
+  let pipe: TranslatePipe;
+  let localizationService: LocalizationService;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        HttpClientTestingModule
+      ],
+      providers: [
+        LocalizationService
+      ]
+    }).compileComponents();
+
+    localizationService = TestBed.inject(LocalizationService);
+    pipe = new TranslatePipe(localizationService);
+  });
+
+  it('can be created', () => {
     expect(pipe).toBeTruthy();
   });
 });
