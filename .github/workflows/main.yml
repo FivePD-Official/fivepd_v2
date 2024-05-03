@@ -16,13 +16,13 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 6.0.x
 
       - name: Test .NET
         run: |
           cd ./src/FivePD.UnitTests
           dotnet restore
-          dotnet test --no-build --verbosity normal
+          dotnet test --no-build --verbosity detailed
 
       # - name: Setup Node
       #   uses: actions/setup-node@v4
