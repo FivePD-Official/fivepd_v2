@@ -20,6 +20,7 @@ jobs:
 
       - name: Test .NET
         run: |
+          cd ./src/FivePD.UnitTests
           dotnet restore
           dotnet test --no-build --verbosity normal
 
