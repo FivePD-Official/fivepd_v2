@@ -26,10 +26,10 @@ jobs:
 
       - name: Build and test UI
         uses: actions/setup-node@v3
-        working-directory: ./src/FivePD.Nui
         with:
           node-version: 20.x
           cache: 'npm'
       - run: |
+          cd ./src/FivePD.Nui
           npm ci
           npm test
