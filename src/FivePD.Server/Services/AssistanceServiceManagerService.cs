@@ -73,11 +73,11 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
                 var type = typeof(T);
                 if (type == typeof(Ambulance))
                 {
-                    locations = this._configService.GeneralConfig.AssistanceServices.SpawnLocations.Ambulance;
+                    locations = this._configService.GeneralConfig.AssistanceServices.Ambulance.SpawnLocations;
                 }
                 else if (type == typeof(Towing))
                 {
-                    locations = this._configService.GeneralConfig.AssistanceServices.SpawnLocations.TowTruck;
+                    locations = this._configService.GeneralConfig.AssistanceServices.TowTruck.SpawnLocations;
                 }
 
                 if (locations.Count == 0)
