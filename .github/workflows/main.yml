@@ -25,10 +25,11 @@ jobs:
       #     dotnet test --no-build --verbosity normal
 
       - name: Build and test UI
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20.x
           cache: 'npm'
+          cache-dependency-path: './src/FivePD.Nui/package-lock.json'
       - run: |
           cd ./src/FivePD.Nui
           npm ci
