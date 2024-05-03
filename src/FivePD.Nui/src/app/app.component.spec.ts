@@ -62,7 +62,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
-  it('can be created', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 

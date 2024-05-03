@@ -3,7 +3,6 @@
 const jestConfig: JestConfigWithTsJest = {
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/setup.jest.ts'],
-  globalSetup: 'jest-preset-angular/global-setup',
   collectCoverageFrom: [
     '<rootDir>/src/app/**/*.ts',
     '!<rootDir>/src/app/**/index.ts',

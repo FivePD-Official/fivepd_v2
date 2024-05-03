@@ -13,26 +13,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # - name: Setup .NET
-      #   uses: actions/setup-dotnet@v4
-      #   with:
-      #     dotnet-version: 8.0.x
-
-      # - name: Build and test .NET
-      #   run: |
-      #     dotnet restore
-      #     dotnet build --configuration Release
-      #     dotnet test --no-build --verbosity normal
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          node-version: 20.x
-          cache: 'npm'
-          cache-dependency-path: './src/FivePD.Nui/package-lock.json'
+          dotnet-version: 8.0.x
 
-      - name: Run UI tests
+      - name: Build and test .NET
         run: |
-          cd ./src/FivePD.Nui
-          npm ci --force
-          npm test
+          dotnet restore
+          dotnet build --configuration Release
+          dotnet test --no-build --verbosity normal
+
+      # - name: Setup Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 20.x
+      #     cache: "npm"
+      #     cache-dependency-path: "./src/FivePD.Nui/package-lock.json"
+
+      # - name: Run UI tests
+      #   run: |
+      #     cd ./src/FivePD.Nui
+      #     npm ci --force
+      #     npm test
