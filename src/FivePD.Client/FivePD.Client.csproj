@@ -16,7 +16,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <RootNamespace>FivePD.Client</RootNamespace>
-    <EmitCompilerGeneratedFiles>False</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>$(SolutionDir)/dev/FXServer-Data/resources/fivepd/Libraries/FivePD.Client</OutputPath>

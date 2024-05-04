@@ -14,7 +14,6 @@
     <RootNamespace>FivePD.Localization</RootNamespace>
     <OutputType>Exe</OutputType>
     <SkipUnchangedFiles>false</SkipUnchangedFiles>
-    <EmitCompilerGeneratedFiles>False</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>.</OutputPath>
