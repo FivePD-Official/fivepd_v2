@@ -18,9 +18,9 @@ namespace FivePD.Server;
 /// </summary>
 internal static class DatabaseHandler
 {
-    private static ServiceProvider provider;
-    private static ILogger logger;
-    private static DatabaseContext databaseContext;
+    private static ServiceProvider _provider;
+    private static ILogger _logger;
+    private static DatabaseContext _databaseContext;
 
     /// <summary>
     /// Sets the parameters of the current instance.
@@ -30,11 +30,11 @@ internal static class DatabaseHandler
     /// <exception cref="DatabaseUsageException">Thrown when no database context is available for usage.</exception>
     public static void SetParameters(ServiceProvider serviceProvider, ILogger logger)
     {
-        provider = serviceProvider;
-        DatabaseHandler.logger = logger;
-        databaseContext = serviceProvider.GetService<DatabaseContext>();
+        _provider = serviceProvider;
+        _logger = logger;
+        _databaseContext = serviceProvider.GetService<DatabaseContext>();
 
-        if (databaseContext is null)
+        if (_databaseContext is null)
         {
             throw new DatabaseUsageException("No database context is available for usage.");
         }
@@ -48,59 +48,16 @@ internal static class DatabaseHandler
         try
         {
             Debug.WriteLine("EnsureCorrectState --------");
-
-            var migrations = databaseContext.Database.GetPendingMigrations().ToList();
-            Debug.WriteLine("EnsureCorrectState -------- after GetPendingMigrations");
-            var databaseCreated = databaseContext.Database.EnsureCreated();
-            Debug.WriteLine("EnsureCorrectState -------- after EnsureCreated");
-            if (!databaseContext.Database.CanConnect())
+            _databaseContext.Database.Migrate();
+            Debug.WriteLine("EnsureCorrectState -------- after Create & Migrate Check");
+            if (!_databaseContext.Database.CanConnect())
             {
                 Debug.WriteLine("EnsureCorrectState -------- inside CanConnect");
                 throw new DatabaseUsageException("Database connection failed");
             }
 
             Debug.WriteLine("EnsureCorrectState -------- after CanConnect");
-
-            switch (databaseCreated)
-            {
-                case true:
-                {
-                    logger?.Information("The database did not exist, it has been created");
-
-                    var configService = provider.GetService<IConfigService>();
-                    var config = configService?.GeneralConfig?.Database;
-
-                    var tableName = string.Empty;
-                    if (config is not null)
-                    {
-                        tableName = config.IsMariaDb() ? "__EFMigrationsHistory" : "__efmigrationshistory";
-                    }
-
-                    if (string.IsNullOrEmpty(tableName))
-                    {
-                        logger?.Fatal("The database type is not 'MARIADB' or 'MYSQL'. Verify the settings in the /Config/general file and try again.");
-                        LifecycleHandler.Stop();
-                        return;
-                    }
-
-                    databaseContext.Database.ExecuteSqlRaw(
-                        $"CREATE TABLE `{tableName}` (MigrationId VARCHAR(95) NOT NULL PRIMARY KEY, ProductVersion VARCHAR(32) NOT NULL)");
-
-                    foreach (var migration in migrations)
-                    {
-                        databaseContext.Database.ExecuteSqlRaw($"INSERT INTO `{tableName}` (MigrationId, ProductVersion) VALUES ('{migration}', '3.1.26')");
-                    }
-
-                    break;
-                }
-
-                case false when migrations.Count > 0:
-                    logger?.Information("Upgrading the database to {Version}", migrations.Last());
-                    databaseContext.Database.Migrate();
-                    break;
-            }
-
-            logger?.Information("The database is up to date");
+            _logger?.Information("The database is up to date");
         }
         catch (Exception e)
         {
@@ -113,21 +70,21 @@ internal static class DatabaseHandler
     /// Updates the database with a sample department if there are none
     /// and updates the callouts.
     /// </summary>
-    public static void Update()
+    public static void SeedData()
     {
-        UpdateCallouts();
-        AddSampleDepartment();
+        SeedCallouts();
+        SeedSampleDepartment();
     }
 
-    private static void UpdateCallouts()
+    private static void SeedCallouts()
     {
-        var addonMetadataService = provider.GetService<IInternalAddonMetadataService>();
+        var addonMetadataService = _provider.GetService<IInternalAddonMetadataService>();
         addonMetadataService.CreateCalloutDetailsEntities();
     }
 
-    private static void AddSampleDepartment()
+    private static void SeedSampleDepartment()
     {
-        if (databaseContext.Departments.Any())
+        if (_databaseContext.Departments.Any())
         {
             return;
         }
@@ -198,8 +155,8 @@ internal static class DatabaseHandler
                 },
             },
         };
-        databaseContext.Departments.Add(department);
-        databaseContext.SaveChanges();
-        logger?.Information("Created sample department.");
+        _databaseContext.Departments.Add(department);
+        _databaseContext.SaveChanges();
+        _logger?.Information("Created sample department.");
     }
 }

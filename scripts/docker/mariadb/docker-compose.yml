@@ -1,14 +1,12 @@
-﻿version: '3.1'
+﻿version: '3.9'
 
 services:
   db:
     image: mariadb:latest
-    container_name: my-mariadb
+    container_name: fpd-mariadb
     environment:
-      MYSQL_DATABASE: fivepd
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: user
-      MYSQL_PASSWORD: root
+      MARIADB_DATABASE: fivepd
+      MARIADB_ROOT_PASSWORD: root
     ports:
       - '3307:3306'
     volumes:
