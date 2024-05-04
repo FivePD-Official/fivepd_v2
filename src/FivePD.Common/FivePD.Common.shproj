@@ -3,6 +3,7 @@
     <PropertyGroup Label="Globals">
         <ProjectGuid>{63ECCE32-17F2-4B76-91AE-FAFD2E080610}</ProjectGuid>
         <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+        <EmitCompilerGeneratedFiles>False</EmitCompilerGeneratedFiles>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <OutputPath>bin\Release\</OutputPath>

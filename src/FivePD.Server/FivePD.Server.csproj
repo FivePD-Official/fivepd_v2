@@ -20,6 +20,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <DefineConstants>IS_GAMEMODE_SERVER</DefineConstants>
         <RootNamespace>FivePD.Server</RootNamespace>
+        <EmitCompilerGeneratedFiles>False</EmitCompilerGeneratedFiles>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
         <OutputPath>$(SolutionDir)/dev/FXServer-Data/resources/fivepd/Libraries/FivePD.Server</OutputPath>

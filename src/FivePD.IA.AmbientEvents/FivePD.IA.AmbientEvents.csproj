@@ -8,6 +8,7 @@
         <Platforms>x64;AnyCPU</Platforms>
         <LangVersion>11</LangVersion>
         <RootNamespace>FivePD.IA.AmbientEvents</RootNamespace>
+        <EmitCompilerGeneratedFiles>False</EmitCompilerGeneratedFiles>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
