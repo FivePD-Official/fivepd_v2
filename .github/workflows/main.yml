@@ -20,8 +20,9 @@ jobs:
 
       - name: Test .NET
         run: |
-          cd ./src/FivePD.UnitTests
           dotnet restore
+          dotnet build
+          cd ./src/FivePD.UnitTests
           dotnet test --verbosity detailed
 
       # - name: Setup Node
