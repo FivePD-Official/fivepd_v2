@@ -17,11 +17,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 6.0.x
+          cache: true
 
       - name: Test .NET
         run: |
           dotnet restore
-          dotnet build
+          sudo dotnet build
           cd ./src/FivePD.UnitTests
           dotnet test --verbosity detailed
 
