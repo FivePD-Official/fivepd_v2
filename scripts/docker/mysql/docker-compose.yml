@@ -3,12 +3,13 @@
 services:
   db:
     image: mysql
+    container_name: fpd-mysql
     cap_add:
       - SYS_NICE
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=fivepd
-      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      MYSQL_DATABASE: fivepd
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - '3306:3306'
     volumes:
