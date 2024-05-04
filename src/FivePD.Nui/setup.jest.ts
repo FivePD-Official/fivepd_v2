@@ -7,3 +7,19 @@ jest.mock('lodash-es/get', () => {
     nameExport: jest.fn(),
   }
 });
+
+jest.mock('@store/sidebar.actions', () => {
+  return {
+    __esModule: true,
+    SidebarActions: {
+      setRoutes: jest.fn(),
+    }
+  }
+});
+
+jest.mock('nanoid', () => {
+  return {
+    __esModule: true,
+    nanoid: jest.fn().mockImplementation(() => 1)
+  }
+});

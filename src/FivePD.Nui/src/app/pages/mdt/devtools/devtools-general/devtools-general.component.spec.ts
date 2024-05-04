@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DevtoolsGeneralComponent } from './devtools-general.component';
+import { TestHelperModule } from "../../../../../test-helpers/test-helper.module";
+import { TippyModule } from "@ngneat/helipopper";
+import { ButtonComponent } from "../../../../components/button/button.component";
+import { mockedTippyModule } from "../../../../../test-helpers/mock-tippy";
 
 describe('DevtoolsViewComponent', () => {
   let component: DevtoolsGeneralComponent;
@@ -8,9 +11,18 @@ describe('DevtoolsViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [DevtoolsGeneralComponent]
-})
-    .compileComponents();
+      imports: [
+        DevtoolsGeneralComponent,
+        ButtonComponent,
+        TestHelperModule.builder()
+          .withWindowEventListener()
+          .withStore()
+          .withLocalizationService()
+          .build()
+      ],
+    })
+      .overrideModule(TippyModule, mockedTippyModule())
+      .compileComponents();
 
     fixture = TestBed.createComponent(DevtoolsGeneralComponent);
     component = fixture.componentInstance;

@@ -44,7 +44,7 @@ export class NotificationWrapperComponent implements OnInit, OnDestroy {
         }
       });
       this.notifications = this.notifications.filter((x) => x.timer !== 5);
-    }, 1000);
+    }, 1000) as unknown as number;
   }
 
   ngOnDestroy(): void {

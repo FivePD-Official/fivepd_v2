@@ -7,6 +7,9 @@ import NonFunctionPropertyNames = jest.NonFunctionPropertyNames;
 import Mocked = jest.Mocked;
 import { MockStore } from './mock-store';
 import { Store } from "@ngrx/store";
+import { TranslatePipe } from "../app/pipes/translate.pipe";
+import { MockTranslatePipe } from "./mock-translate-pipe";
+import { LocalizationService } from "@services/localization/localization.service";
 
 interface Nextable<T> {
   next: (value: T) => void;
@@ -82,6 +85,31 @@ class TestHelperModuleBuilder {
     }
 
     this.providedObjects.set(Store, new MockStore() as unknown as Store);
+
+    return this;
+  }
+
+  withTranslatePipe() {
+    if (this.hasProvidedObject(TranslatePipe)) {
+      return this;
+    }
+
+    this.providedObjects.set(TranslatePipe, new MockTranslatePipe() as TranslatePipe);
+
+    return this;
+  }
+
+  withLocalizationService() {
+    if (this.hasProvidedObject(LocalizationService)) {
+      return this;
+    }
+
+    const mockedLocalizationService = {
+      load: () => {},
+      translate: (path: string) => `translated: ${path}`,
+    };
+
+    this.providedObjects.set(LocalizationService, mockedLocalizationService as LocalizationService);
 
     return this;
   }

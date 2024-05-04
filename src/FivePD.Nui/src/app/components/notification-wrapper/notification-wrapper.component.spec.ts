@@ -8,9 +8,8 @@ describe('NotificationWrapperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [NotificationWrapperComponent]
-})
-    .compileComponents();
+      imports: [NotificationWrapperComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(NotificationWrapperComponent);
     component = fixture.componentInstance;

@@ -1,16 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GridComponent } from './grid.component';
+import { TestHelperModule } from "../../../test-helpers/test-helper.module";
 
-describe('GridComponent', () => {
-  let component: GridComponent;
-  let fixture: ComponentFixture<GridComponent>;
+describe('GridComponent<T>', () => {
+  let component: GridComponent<any>;
+  let fixture: ComponentFixture<GridComponent<any>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [GridComponent]
-})
-    .compileComponents();
+      imports: [
+        GridComponent,
+        TestHelperModule.builder()
+          .withTranslatePipe()
+          .withLocalizationService()
+          .build()
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(GridComponent);
     component = fixture.componentInstance;
