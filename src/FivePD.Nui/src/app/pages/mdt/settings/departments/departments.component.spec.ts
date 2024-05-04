@@ -1,6 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DepartmentsComponent } from './departments.component';
+import { TestHelperModule } from "../../../../../test-helpers/test-helper.module";
+import { GridComponent } from "../../../../components/grid/grid.component";
+import { PageHeaderComponent } from "../../../../components/page-header/page-header.component";
+import { TippyModule } from "@ngneat/helipopper";
+import { mockedTippyModule } from "../../../../../test-helpers/mock-tippy";
 
 describe('DepartmentsComponent', () => {
   let component: DepartmentsComponent;
@@ -8,10 +13,18 @@ describe('DepartmentsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DepartmentsComponent]
+      imports: [
+        DepartmentsComponent,
+        TestHelperModule.builder()
+          .withLocalizationService()
+          .withTranslatePipe()
+          .withStore()
+          .build()
+      ]
     })
-    .compileComponents();
-    
+      .overrideModule(TippyModule, mockedTippyModule())
+      .compileComponents();
+
     fixture = TestBed.createComponent(DepartmentsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

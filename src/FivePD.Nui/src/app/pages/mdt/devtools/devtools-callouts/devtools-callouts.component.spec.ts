@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DevtoolsCalloutsComponent } from './devtools-callouts.component';
+import { TestHelperModule } from "../../../../../test-helpers/test-helper.module";
 
 describe('DevtoolsCalloutsComponent', () => {
   let component: DevtoolsCalloutsComponent;
@@ -8,9 +9,14 @@ describe('DevtoolsCalloutsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [DevtoolsCalloutsComponent]
-})
-    .compileComponents();
+      imports: [
+        DevtoolsCalloutsComponent,
+        TestHelperModule.builder()
+          .withTranslatePipe()
+          .withLocalizationService()
+          .build()
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DevtoolsCalloutsComponent);
     component = fixture.componentInstance;

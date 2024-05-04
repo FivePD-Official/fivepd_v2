@@ -53,7 +53,7 @@ export class TimerBarComponent implements OnInit {
     const addToPercentage = 1000 / this.timeToHold;
     this.interval = setInterval(() => {
       this.percentage += addToPercentage;
-    }, 1);
+    }, 1) as unknown as number;
   }
 
 }
