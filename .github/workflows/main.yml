@@ -22,7 +22,7 @@ jobs:
         run: |
           cd ./src/FivePD.UnitTests
           dotnet restore
-          dotnet test --no-build --verbosity detailed
+          dotnet test --verbosity detailed
 
       # - name: Setup Node
       #   uses: actions/setup-node@v4
