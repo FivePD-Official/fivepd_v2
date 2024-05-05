@@ -119,7 +119,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
       return;
     }
 
-    const currentItem = this.items[this.menu.currentItemIndex$.value];
+    const currentItem = this.nonDividerItems[this.menu.currentItemIndex$.value];
     if (!currentItem.Enabled) {
       return;
     }
