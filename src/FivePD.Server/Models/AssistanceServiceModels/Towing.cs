@@ -43,7 +43,7 @@ public class Towing : AssistanceService
     public override async Task SetupAsync()
     {
         this._targetVehicle = this._entityService.GetClosestFVehicleToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
-        this._targetPosition = this._targetVehicle.GetUnderlyingVehicle.Position;
+        this._targetPosition = this._targetVehicle?.GetUnderlyingVehicle.Position ?? default;
     }
 
     public override Task<bool> CanRunAsync()
@@ -62,8 +62,7 @@ public class Towing : AssistanceService
         var towTrucks = this._vehicleConfigService.GetAll<TowTruckVehicleConfigOptions>(VehicleConfigType.TowTruck);
         if (towTrucks.Count == 0)
         {
-            this.OnCompletedOrCancelled();
-            return;
+            towTrucks.Add(DefaultVehicleConfigs.TowTruck);
         }
 
         var serviceVehicle = towTrucks[this._randomService.Random.Next(0, towTrucks.Count)];

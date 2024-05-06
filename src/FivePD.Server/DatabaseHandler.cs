@@ -4,9 +4,10 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
-using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Models;
+using FivePD.Server.Models.AssistanceServiceModels;
+using FivePD.Server.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -74,6 +75,7 @@ internal static class DatabaseHandler
     {
         SeedCallouts();
         SeedSampleDepartment();
+        SeedVehicleConfigs();
     }
 
     private static void SeedCallouts()
@@ -158,5 +160,22 @@ internal static class DatabaseHandler
         _databaseContext.Departments.Add(department);
         _databaseContext.SaveChanges();
         _logger?.Information("Created sample department.");
+    }
+
+    private static void SeedVehicleConfigs()
+    {
+        if (_databaseContext.VehicleConfigs.Any())
+        {
+            return;
+        }
+
+        var ambulance = DefaultVehicleConfigs.Ambulance;
+        var police = DefaultVehicleConfigs.Police;
+        var towTruck = VehicleConfigOptionsConverter.ConvertOptionsToDictionary(DefaultVehicleConfigs.TowTruck);
+
+        var towTrucks = new List<VehicleConfig<Dictionary<string, object>>>() { ambulance, police, towTruck };
+
+        _databaseContext.VehicleConfigs.AddRange(towTrucks);
+        _databaseContext.SaveChanges();
     }
 }
