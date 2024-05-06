@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FivePD.Common.DTO;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Tests.Helpers;
@@ -45,7 +46,7 @@ internal class CallsignGeneratorTests
             },
         });
         var callsign = callsignGenerator.GenerateCallsign();
-        Assert.AreEqual($"{RandomLetterWithSeed0}8", callsign);
+        Assert.That(callsign, Is.EqualTo($"{RandomLetterWithSeed0}8"));
     }
     
     [Test]
@@ -65,7 +66,7 @@ internal class CallsignGeneratorTests
             },
         });
         var callsign = callsignGenerator.GenerateCallsign();
-        Assert.AreEqual("LN", callsign);
+        Assert.That(callsign, Is.EqualTo("LN"));
     }
     
     [Test]
@@ -94,7 +95,7 @@ internal class CallsignGeneratorTests
             },
         });
         var callsign = callsignGenerator.GenerateCallsign();
-        Assert.AreEqual($"L{RandomLetterWithSeed0}N8", callsign);
+        Assert.That(callsign, Is.EqualTo($"L{RandomLetterWithSeed0}N8"));
     }
 
     [Test]
@@ -129,6 +130,6 @@ internal class CallsignGeneratorTests
             },
         });
         var callsign = callsignGenerator.GenerateCallsign();
-        Assert.AreEqual($"7-V-75", callsign);
+        Assert.That(callsign, Is.EqualTo("7-V-75"));
     }
 }

@@ -13,7 +13,7 @@ internal class Test_StringExtensions
     public void ReplaceParams_Without_Parameters()
     {
         var actual = "lorem ipsum {{toReplace}} sit amet".ReplaceParams(new Dictionary<string, string>());
-        Assert.AreEqual("lorem ipsum {{toReplace}} sit amet", actual);
+        Assert.That(actual, Is.EqualTo("lorem ipsum {{toReplace}} sit amet"));
     }
 
     [Test]
@@ -23,7 +23,7 @@ internal class Test_StringExtensions
         {
             ["toReplace"] = "dolor"
         });
-        Assert.AreEqual("lorem ipsum dolor sit amet", actual);
+        Assert.That(actual, Is.EqualTo("lorem ipsum dolor sit amet"));
     }
     
     [Test]
@@ -33,7 +33,7 @@ internal class Test_StringExtensions
         {
             ["keyToReplace"] = "~b~",
         });
-        Assert.AreEqual("lorem ipsum ~b~dolor sit amet", actual);
+        Assert.That(actual, Is.EqualTo("lorem ipsum ~b~dolor sit amet"));
     }
     
     [Test]
@@ -46,24 +46,24 @@ internal class Test_StringExtensions
             ["replaceToSit"] = "sit",
             ["colorRed"] = "~r~",
         });
-        Assert.AreEqual("lorem ipsum ~b~dolor sit ~r~amet", actual);
+        Assert.That(actual, Is.EqualTo("lorem ipsum ~b~dolor sit ~r~amet"));
     }
 
     [Test]
     public void ToAcronym_Single_Word()
     {
-        Assert.AreEqual("A", "ABC".ToAcronym());
+        Assert.That("A", Is.EqualTo("ABC".ToAcronym()));
     }
 
     [Test]
     public void ToAcronym_Multiple_Words()
     {
-        Assert.AreEqual("AD", "Abc Def".ToAcronym());
+        Assert.That("AD", Is.EqualTo("Abc Def".ToAcronym()));
     }
 
     [Test]
     public void ToAcronym_Case_Conversion()
     {
-        Assert.AreEqual("L", "lowercase".ToAcronym());
+        Assert.That("L", Is.EqualTo("lowercase".ToAcronym()));
     }
 }
