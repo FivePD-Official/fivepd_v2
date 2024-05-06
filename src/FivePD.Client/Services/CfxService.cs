@@ -219,6 +219,19 @@ internal class CfxService : ICfxService, IOnInit
 
                 this._queueService.Queue(() => Cfx.API.TaskVehicleTempAction(ped.Handle, vehicle.Handle, action, time));
             });
+        
+        this._eventHandlerDictionary[Events.Cfx.GetPointOnRoadSide] += new Action<float, float, float>((x, y, z) =>
+        {
+            Vector3 location = new Vector3(x, y, z);
+            if (location is null)
+            {
+                return;
+            }
+            Vector3 outPosition;
+            
+            
+            this._queueService.Queue(() => Cfx.API.GetPointOnRoadSide(x, y, z, 1, ref outPosition));
+        });
     }
 
     private Entity GetEntity(int networkId)

@@ -490,5 +490,8 @@ public readonly record struct DevTools
 
         // void TaskVehicleTempAction(int driver, int vehicle, int action, int time);
         public const string TaskVehicleTempAction = "fivepd:cfx:TaskVehicleTempAction";
+        
+        // bool GetPointOnRoadSide(float x, float y, float z, init p3, ref Vector3 outPosition)
+        public const string GetPointOnRoadSide = "fivepd:cfx:GetPointOnRoadSIde";
     }
 }
