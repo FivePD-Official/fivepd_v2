@@ -32,4 +32,12 @@ public class Vector3Service : IVector3Service
         var location = JsonConvert.DeserializeObject<Vector3>(serializedVector3);
         return location;
     }
+
+    /// <inheritdoc />
+    public async Task<Vector3> GetPointOnRoadSideAsync(Entity entity, int p3)
+    {
+        var serializedVector3 = await this._eventService.TriggerEventAsync(null, Events.Vector3.GetPointOnRoadSide, entity.NetworkId, p3);
+        var point = JsonConvert.DeserializeObject<Vector3>(serializedVector3);
+        return point;
+    }
 }
