@@ -18,7 +18,7 @@ internal readonly record struct Events
     {
         public const string GetRandomOffset = "fivepd:vector3:getRandomOffset";
         
-        public const string GetPointOnRoadSide = "fivepd:cfx:GetPointOnRoadSIde";
+        public const string GetPointOnRoadSide = "fivepd:vector3:GetPointOnRoadSide";
     }
 
     public readonly record struct Player

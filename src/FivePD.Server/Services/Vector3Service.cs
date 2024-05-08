@@ -34,9 +34,9 @@ public class Vector3Service : IVector3Service
     }
 
     /// <inheritdoc />
-    public async Task<Vector3> GetPointOnRoadSideAsync(Entity entity, int p3)
+    public async Task<Vector3> GetPointOnRoadSideAsync(Entity entity)
     {
-        var serializedVector3 = await this._eventService.TriggerEventAsync(null, Events.Vector3.GetPointOnRoadSide, entity.NetworkId, p3);
+        var serializedVector3 = await this._eventService.TriggerEventAsync(null, Events.Vector3.GetPointOnRoadSide, entity.NetworkId);
         var point = JsonConvert.DeserializeObject<Vector3>(serializedVector3);
         return point;
     }

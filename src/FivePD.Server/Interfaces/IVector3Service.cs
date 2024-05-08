@@ -19,7 +19,6 @@ public interface IVector3Service
     /// Gets a random location on roadside from vector3 coordinates.
     /// </summary>
     /// <param name="entity">The entity.</param>
-    /// <param name="p3">Always set to 1.</param>
     /// <returns>A random roadside Vector3.</returns>
-    public Task<Vector3> GetPointOnRoadSideAsync(Entity entity, int p3);
+    public Task<Vector3> GetPointOnRoadSideAsync(Entity entity);
 }

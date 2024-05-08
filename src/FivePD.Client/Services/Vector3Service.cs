@@ -30,28 +30,29 @@ internal class Vector3Service : IVector3Service, IOnInit
                 BaseScript.TriggerServerEvent(Events.Generic.Callback, callbackId, JsonConvert.SerializeObject(new Vector3(0,0,0)));
                 return;
             }
-            
-            var val = this._random.Next(150, 250);
-            var x = this._random.Next(-1*val, val);
-            var y = this._random.Next(-1*val, val);
-            var pos = entity.GetOffsetPosition(new Vector3(x,y,0));
-            var location = new Vector3();
-            Cfx.API.GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 1, ref location, 0, 0, 0);
+
+            var location = this.GetRandomOffsetAsync(entityNetworkId);
             BaseScript.TriggerServerEvent(Events.Generic.Callback, callbackId, JsonConvert.SerializeObject(location));
         });
         
-        this._eventHandlerDictionary[Events.Vector3.GetPointOnRoadSide] += new Action<string, int, int>((callbackId, entityNetworkId, p3) =>
+        this._eventHandlerDictionary[Events.Vector3.GetPointOnRoadSide] += new Action<string, int>((callbackId, entityNetworkId) =>
         {
-            var entity = Entity.FromNetworkId(entityNetworkId);
-            var val = this._random.Next(150, 250);
-            var x = this._random.Next(-1*val, val);
-            var y = this._random.Next(-1*val, val);
-            var pos = entity.GetOffsetPosition(new Vector3(x,y,0));
-            var location = new Vector3();
-            Cfx.API.GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 1, ref location, 0, 0, 0);
+            var location = this.GetRandomOffsetAsync(entityNetworkId);
             var point = new Vector3();
-            Cfx.API.GetPointOnRoadSide(location.X, location.Y, location.Z, p3, ref point);
+            Cfx.API.GetPointOnRoadSide(location.X, location.Y, location.Z, 1, ref point);
             BaseScript.TriggerServerEvent(Events.Generic.Callback, callbackId, JsonConvert.SerializeObject(point));
         });
+    }
+    
+    private Vector3 GetRandomOffsetAsync(int entityNetworkId)
+    {
+        var entity = Entity.FromNetworkId(entityNetworkId);
+        var val = this._random.Next(150, 250);
+        var x = this._random.Next(-1*val, val);
+        var y = this._random.Next(-1*val, val);
+        var pos = entity.GetOffsetPosition(new Vector3(x,y,0));
+        var location = new Vector3();
+        Cfx.API.GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 1, ref location, 0, 0, 0);
+        return location;
     }
 }
