@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
@@ -27,6 +28,7 @@ internal class SceneManagementService : ISceneManagementService, IOnInit
     {
         this._eventHandlerDictionary[Events.SceneManagement.CreateSpeedZone] += new Action<string>(this.CreateSpeedZone);
         this._eventHandlerDictionary[Events.SceneManagement.DeleteSpeedZone] += new Action<string>(this.DeleteSpeedZone);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.SceneManagement.GetAllSpeedZones);
     }
 
     private void CreateSpeedZone(string serializedSpeedZone)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
@@ -100,7 +101,8 @@ public class SceneManagerMenu : Menu
         this.CreateSpeedZone = new MenuButtonItem("UI.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.TITLE", "UI.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.DESCRIPTION");
         this.CreateSpeedZone.OnSelect += player =>
         {
-            this._createdSpeedZoneId = this._sceneManagementService.CreateSpeedZone(
+            this._createdSpeedZoneId = ((IInternalSceneManagementService)this._sceneManagementService).CreateSpeedZone(
+                player,
                 player.GetUnderlyingPlayer().Character.Position,
                 this._selectedSpeedZoneRadius,
                 this._selectedSpeedZoneSpeed);
@@ -134,8 +136,9 @@ public class SceneManagerMenu : Menu
             "UI.MENU.SCENE_MANAGER.SPEED_ZONE.RELEASE.TITLE",
             "UI.MENU.SCENE_MANAGER.SPEED_ZONE.RELEASE.DESCRIPTION",
             false);
-        this.ReleaseTraffic.OnSelect += _ =>
+        this.ReleaseTraffic.OnSelect += p =>
         {
+            Debug.WriteLine($"pos: {Math.Sqrt(this._sceneManagementService.SpeedZones()[0].Position.DistanceToSquared2D(p.GetUnderlyingPlayer().Character.Position))}");
             this._sceneManagementService.ReleaseSpeedZoneTraffic(this._createdSpeedZoneId);
             return Task.CompletedTask;
         };

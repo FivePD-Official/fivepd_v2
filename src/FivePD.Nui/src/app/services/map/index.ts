@@ -1,5 +1,7 @@
 ﻿import { icon as LIcon } from "leaflet";
 
+export * from './map-handler';
+
 export type MarkerIconProperties = {
   readonly size: [number, number];
 }
@@ -8,7 +10,8 @@ export type MarkerIconName =
   | 'code2'
   | 'code1'
   | 'player'
-  | 'departmentArea';
+  | 'departmentArea'
+  | 'speedZone';
 
 export const markerIcons: Record<MarkerIconName, MarkerIconProperties> = {
   code3: {
@@ -24,6 +27,9 @@ export const markerIcons: Record<MarkerIconName, MarkerIconProperties> = {
     size: [38, 38],
   },
   departmentArea: {
+    size: [33, 38],
+  },
+  speedZone: {
     size: [33, 38],
   },
 };

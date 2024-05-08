@@ -446,6 +446,8 @@ public readonly record struct DevTools
 
     public readonly record struct SceneManagement
     {
+        public const string GetAllSpeedZones = "fivepd:sceneManagement:getAllSpeedZones";
+
         public const string CreateSpeedZone = "fivepd:sceneManagement:createSpeedZone";
 
         public const string DeleteSpeedZone = "fivepd:sceneManagement:deleteSpeedZone";

@@ -136,7 +136,7 @@ export class DepartmentsViewComponent implements OnInit {
 
   tryEditMemberCallsignFormat(): void {
     this._modalService.open(DepartmentCallsignFormatEditorComponent, {
-      title: 'Edit callsign format',
+      title: 'Edit member callsign format',
     }, new Map().set(CALLSIGN_FORMAT_ITEMS, this.department!.CallsignFormat))
       .result
       .pipe(

@@ -79,6 +79,7 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
 }
 
 function createTowTruckFields(localizationService: LocalizationService, vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
+  console.log('A', vehicleConfig)
   const towedVehiclePositionOffset = vehicleConfig?.Options['TowedVehiclePositionOffset'];
 
   return [
@@ -93,8 +94,8 @@ function createTowTruckFields(localizationService: LocalizationService, vehicleC
     new TextField({
       key: 'TowedVehiclePositionOffset',
       label: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.TOWED_VEHICLE_POSITION_OFFSET.LABEL'),
-      placeholder: 'TODO: replace with 3 fields for x,y,z',
-      helpLabel: 'format: x,y,z',
+      // placeholder: 'TODO: replace with 3 fields for x,y,z',
+      helpLabel: 'temporary format: X,Y,Z',
       required: true,
       value: towedVehiclePositionOffset ? `${towedVehiclePositionOffset['X']},${towedVehiclePositionOffset['Y']},${towedVehiclePositionOffset['Z']}` : '',
     }),
@@ -217,7 +218,7 @@ export class VehicleSettingsComponent {
   readonly towTruckVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
-    this.createActionsColumn(() => createTowTruckFields(this._localizationService), () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value), mapTowTruckFields),
+    this.createActionsColumn(vehicleConfig => createTowTruckFields(this._localizationService, vehicleConfig), () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value), mapTowTruckFields),
   ];
 
   private createActionsColumn(fields: (vehicleConfig: VehicleConfig | undefined) => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<VehicleConfig> {
@@ -229,26 +230,29 @@ export class VehicleSettingsComponent {
           label: 'UI.ACTION.EDIT',
           show: () => true,
           disabled: () => false,
-          onClick: vehicleConfig => this._modalFormService.open({
-            title: 'UI.LABEL.VEHICLE_CONFIG.EDIT.TITLE',
-            fields: vehicleConfig => fields(vehicleConfig),
-            valueResolver: new ValueResolver(vehicleConfig, this._vehicleConfigService.get(vehicleConfig.Id)),
-            buttons: {
-              submit: {
-                variant: 'primary',
-                label: 'UI.ACTION.SAVE',
+          onClick: vehicleConfig => {
+            console.log(vehicleConfig)
+            this._modalFormService.open({
+              title: 'UI.LABEL.VEHICLE_CONFIG.EDIT.TITLE',
+              fields: vehicleConfig => fields(vehicleConfig),
+              valueResolver: new ValueResolver(vehicleConfig, this._vehicleConfigService.get(vehicleConfig.Id)),
+              buttons: {
+                submit: {
+                  variant: 'primary',
+                  label: 'UI.ACTION.SAVE',
+                },
               },
-            },
-          }).result
-            .pipe(
-              filter(res => res.success),
-              map(res => mapBeforeRequest ? {...res, value: mapBeforeRequest(res.value)} : res),
-              switchMap(res => this._vehicleConfigService.edit({
-                ...res.value,
-                Id: vehicleConfig.Id,
-              })),
-              this._modalService.handleResponse(),
-            ).subscribe(onResponse)
+            }).result
+              .pipe(
+                filter(res => res.success),
+                map(res => mapBeforeRequest ? {...res, value: mapBeforeRequest(res.value)} : res),
+                switchMap(res => this._vehicleConfigService.edit({
+                  ...res.value,
+                  Id: vehicleConfig.Id,
+                })),
+                this._modalService.handleResponse(),
+              ).subscribe(onResponse)
+          }
         },
         {
           type: 'button',

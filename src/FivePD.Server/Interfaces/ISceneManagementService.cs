@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Common.Models;
+using FivePD.Server.EntityWrappers;
 
 namespace FivePD.Server.Interfaces;
 
@@ -37,4 +38,20 @@ public interface ISceneManagementService
     /// </summary>
     /// <param name="id">The id of the speed zone.</param>
     public void ReleaseSpeedZoneTraffic(Guid id);
+}
+
+/// <summary>
+/// Responsible for handling scene management related tasks.
+/// </summary>
+internal interface IInternalSceneManagementService
+{
+    /// <summary>
+    /// Creates a speed zone.
+    /// </summary>
+    /// <param name="player">The player who created the speed zone.</param>
+    /// <param name="position">The position.</param>
+    /// <param name="radius">The radius.</param>
+    /// <param name="speed">The maximum speed.</param>
+    /// <returns>The id of the created speed zone.</returns>
+    Guid CreateSpeedZone(FPlayer player, Vector3 position, int radius, int speed);
 }

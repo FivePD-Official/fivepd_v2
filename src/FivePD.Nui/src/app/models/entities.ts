@@ -254,3 +254,14 @@ export interface FVehicle extends WithId {
 export interface FVehicleDTO extends FVehicle {
   Owner?: PedHistory;
 }
+
+export interface SpeedZone {
+  Position: Vector3;
+  Radius: number;
+  Speed: number;
+}
+
+export interface SpeedZoneWithPlayerDTO {
+  SpeedZone: SpeedZone;
+  PlayerName: string;
+}

@@ -1,10 +1,16 @@
 <div class="mb-6 grid grid-rows-1 grid-flow-col gap-2 bg-zinc-800 p-1 rounded-lg border border-zinc-700">
-  @for (tab of tabs;track tab) {
-    <div class="group rounded-md h-[40px] hover:bg-zinc-700 cursor-pointer flex flex-row items-center justify-center"
-         [routerLink]="tab.routerLink"
-         routerLinkActive="bg-zinc-700 active"
-         [routerLinkActiveOptions]="{exact: true}">
-      <p class="text-center text-zinc-400 group-[.active]:text-zinc-100">{{ tab.label | translate }}</p>
-    </div>
+  @for (tab of tabs; track tab) {
+    @if (tab.disabled && tab.disabled()) {
+      <div class="group rounded-md h-[40px] cursor-not-allowed flex flex-row items-center justify-center">
+        <p class="text-center text-zinc-400 group-[.active]:text-zinc-100">{{ tab.label | translate }}</p>
+      </div>
+    } @else {
+      <div class="group rounded-md h-[40px] cursor-pointer hover:bg-zinc-700 flex flex-row items-center justify-center"
+           [routerLink]="tab.routerLink"
+           routerLinkActive="bg-zinc-700 active"
+           [routerLinkActiveOptions]="{exact: true}">
+        <p class="text-center text-zinc-400 group-[.active]:text-zinc-100">{{ tab.label | translate }}</p>
+      </div>
+    }
   }
 </div>
