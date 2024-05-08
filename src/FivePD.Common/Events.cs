@@ -17,6 +17,8 @@ internal readonly record struct Events
     public readonly record struct Vector3
     {
         public const string GetRandomOffset = "fivepd:vector3:getRandomOffset";
+        
+        public const string GetPointOnRoadSide = "fivepd:vector3:GetPointOnRoadSide";
     }
 
     public readonly record struct Player

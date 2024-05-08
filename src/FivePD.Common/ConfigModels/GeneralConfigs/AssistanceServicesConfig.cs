@@ -18,20 +18,25 @@ public sealed record AssistanceServicesConfig
     {
         return this.SpawnType.ToUpper() == "MANUAL";
     }
-
-    public AssistanceServiceSpawnLocations SpawnLocations { get; init; } = new();
-
+    
     public AmbulanceConfig Ambulance { get; init; } = new();
+    public AmbulanceConfig AirAmbulance { get; init; } = new();
+    public BaseServiceConfig AnimalControl { get; init; } = new();
+    public BaseServiceConfig Coroner { get; init; } = new();
+    public BaseServiceConfig Mechanic { get; init; } = new();
+    public BaseServiceConfig PrisonTransport { get; init; } = new();
+    public BaseServiceConfig Taxi { get; init; } = new();
+    public BaseServiceConfig TowTruck { get; init; } = new();
 }
 
-public sealed record AssistanceServiceSpawnLocations
+
+public record BaseServiceConfig
 {
-    public List<Vector3> Ambulance { get; init; } = new();
-
-    public List<Vector3> TowTruck { get; init; } = new();
+    public bool Enabled { get; init; }
+    public List<Vector3> SpawnLocations { get; init; } = new();
 }
 
-public sealed record AmbulanceConfig
+public sealed record AmbulanceConfig : BaseServiceConfig
 {
     public int ChanceToRevive { get; init; }
 }

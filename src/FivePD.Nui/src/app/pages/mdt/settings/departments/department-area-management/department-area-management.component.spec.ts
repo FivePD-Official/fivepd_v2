@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DepartmentAreaManagementComponent } from './department-area-management.component';
+import { TestHelperModule } from "../../../../../../test-helpers/test-helper.module";
 
 describe('DepartmentSettingsAreaComponent', () => {
   let component: DepartmentAreaManagementComponent;
@@ -8,9 +9,15 @@ describe('DepartmentSettingsAreaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DepartmentAreaManagementComponent]
-    })
-    .compileComponents();
+      imports: [
+        DepartmentAreaManagementComponent,
+        TestHelperModule.builder()
+          .withLocalizationService()
+          .withTranslatePipe()
+          .withStore()
+          .build()
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DepartmentAreaManagementComponent);
     component = fixture.componentInstance;

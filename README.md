@@ -1,8 +1,9 @@
 ## Development
 
-1. Install the Nuget packages and install the Node packages in the `FivePD.Nui` project
-1. Insert the latest recommended build of FXServer into the `FXServer` directory
-1. Select the Debug solution configuration
+1. Navigate to the `/src/FivePD.Nui/` project/folder and execute `npm install` if the commands fails, do `npm install --force` instead
+1. [Download](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and extract the latest recommended build of FXServer into the `/dev/FXServer/` directory
+1. Change the build configuration to `Debug` via Main Menu > Build > Change Solution Configuration
+1. Setup a database of your choosing, either by installing MySQL Community Server or MariaDB to your local PC, or by using one of the Docker configurations metioned in the "Databases" section
 1. Start the `Run FXServer` run configuration
 1. Run the `Start NUI development server` configuration and make sure the value of `ui_page` is `http://localhost:4200`
    in your `fxmanifest.lua`
@@ -12,12 +13,19 @@ folder and restart the resource.
 
 ### Databases
 
-You can start a MySQL or a MariaDB server with the corresponding docker configurations.
-Make sure to change the connections settings.
+If you choose to run a database locally, you will need to download [MySQL Community Server](https://dev.mysql.com/downloads/mysql/) or [MariaDB](https://mariadb.org/download/?t=mariadb&p=mariadb&r=11.3.2&os=windows&cpu=x86_64&pkg=msi&mirror=heanet-ltd). Be sure to configure your database options correctly in the `general.yaml` file.
+
+Alternatively, you can -- and should -- use one of the included Docker configurations. In order to do so, download [Docker Desktop](https://www.docker.com/products/docker-desktop/) and choose either "Run MySQL" or "Run MariaDB" in the run configuration dropdown.
+
+- Host: localhost
+- Username: root
+- Password root
+- Port: 3306 (MySQL) 3307 (MariaDB)
+
 
 ### Running Migrations
 
-Use the command below in the root folder. Migrations require a startup project to run properly.
+To create a migration, execute the following command from the `/src/` folder:
 
 ```
 dotnet ef migrations add <MigrationName> --project .\FivePD.Server\FivePD.Server.csproj --startup-project .\FivePD.StartupProject\FivePD.StartupProject.csproj

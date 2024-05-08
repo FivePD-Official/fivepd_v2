@@ -1,0 +1,50 @@
+name: main
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Build solution
+        run: |
+          sudo dotnet restore
+          sudo dotnet build
+
+      - name: Run tests
+        run: |
+          cd ./src/FivePD.UnitTests
+          sudo dotnet test
+
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: "npm"
+          cache-dependency-path: "./src/FivePD.Nui/package-lock.json"
+
+      - name: Install dependencies
+        run: |
+          cd ./src/FivePD.Nui
+          npm ci --force
+
+      - name: Run tests
+        run: |
+          cd ./src/FivePD.Nui
+          npm test

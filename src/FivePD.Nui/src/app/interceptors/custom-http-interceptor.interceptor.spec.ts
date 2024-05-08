@@ -1,12 +1,15 @@
 import { TestBed } from '@angular/core/testing';
-
-import { CustomHttpInterceptor } from './custom-http-interceptor.service';
+import { CustomHttpInterceptor } from "./custom-http-interceptor.interceptor";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 describe('CustomHttpInterceptorInterceptor', () => {
   beforeEach(() => TestBed.configureTestingModule({
+    imports: [
+      HttpClientTestingModule,
+    ],
     providers: [
-      CustomHttpInterceptor
-      ]
+      CustomHttpInterceptor,
+    ],
   }));
 
   it('should be created', () => {

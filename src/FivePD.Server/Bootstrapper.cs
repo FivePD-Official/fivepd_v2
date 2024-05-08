@@ -94,7 +94,7 @@ internal class Bootstrapper : BaseScript
         // Enqueue addon startup phase.
         this._phases.Add(this.PerformAddonEnqueuePhase, false);
 
-        this._phases.Add(DatabaseHandler.Update, false);
+        this._phases.Add(DatabaseHandler.SeedData, false);
 
         this._phases.Add(this.PerformSafeToRunCheckAfterBootstrapping, false);
 

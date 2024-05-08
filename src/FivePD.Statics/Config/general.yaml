@@ -2,8 +2,8 @@ Database:
   Type: MYSQL # mysql or mariadb
   Name: fivepd
   Address: 127.0.0.1
-  Port: 3306 # for mariadb when using the docker compose file, change to 3307
-  User: root # for mariadb when using the docker compose file, change to 'user'
+  Port: 3306 # MySQL: 3306, MariaDB: 3307
+  User: root
   Password: root
 
 DefaultLanguage: en-US
@@ -172,14 +172,61 @@ ProgressionSystem:
 
 AssistanceServices:
   SpawnType: AUTO # AUTO = automatic spawn locations, MANUAL = should specify SpawnLocations
-  Ambulance:
-    ChanceToRevive: 100 # should be between 0-100. the higher the number, the more likely that a ped will be revived
-  SpawnLocations: # optional; only used when SpawnType is set to MANUAL, a random location will be picked for each type
-    Ambulance:
+  # ----------
+  AirAmbulance:
+    Enabled: true
+    ChanceToRevive: 100
+    SpawnLocations:
       - X: 0
         Y: -1.5
         Z: 1
-    TowTruck:
+  # ----------
+  Ambulance:
+    Enabled: true
+    ChanceToRevive: 50
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  AnimalControl:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  Coroner:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  Mechanic:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  PrisonTransport:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  Taxi:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  TowTruck:
+    Enabled: true
+    SpawnLocations:
       - X: 0
         Y: -1.5
         Z: 1
