@@ -5,10 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.DTO;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.AssistanceServiceModels;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace FivePD.Server.Services;
@@ -64,8 +66,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
             if (this._configService.GeneralConfig.AssistanceServices.SpawnTypeAuto())
             {
-                var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
-                ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
+                var serializedJson = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
+                ((IInternalAssistanceService)assistanceService).SpawnLocation = JsonConvert.DeserializeObject<Vector3ServiceDTOs.ServiceSpawnData>(serializedJson).location;
+                ((IInternalAssistanceService)assistanceService).SpawnHeading = JsonConvert.DeserializeObject<Vector3ServiceDTOs.ServiceSpawnData>(serializedJson).heading;
             }
             else
             {
@@ -82,8 +85,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
                 if (locations.Count == 0)
                 {
-                    var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
-                    ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
+                    var serializedJson = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
+                    ((IInternalAssistanceService)assistanceService).SpawnLocation = JsonConvert.DeserializeObject<Vector3ServiceDTOs.ServiceSpawnData>(serializedJson).location;
+                    ((IInternalAssistanceService)assistanceService).SpawnHeading = JsonConvert.DeserializeObject<Vector3ServiceDTOs.ServiceSpawnData>(serializedJson).heading;
                 }
                 else
                 {

@@ -45,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\MenuDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\OnVehicleAlertedDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\SimplePlayerDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\Vector3ServiceDTOs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FAnimationFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FBlipColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FBlipSprite.cs" />
