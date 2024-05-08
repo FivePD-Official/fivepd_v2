@@ -88,7 +88,6 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
                 }
                 else
                 {
-                    Debug.WriteLine("Manual locations found");
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = locations[this._randomService.Random.Next(0, locations.Count)];
                 }
             }
