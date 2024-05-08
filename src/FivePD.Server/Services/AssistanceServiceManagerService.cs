@@ -82,7 +82,6 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
                 if (locations.Count == 0)
                 {
-                    this._logger.Error("Assistance service with type \"{Type}\". No fixed locations found, service spawned randomly.", typeof(T));
                     var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
                 }
