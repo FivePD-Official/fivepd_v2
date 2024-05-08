@@ -63,8 +63,7 @@ public class Ambulance : AssistanceService
         var ambulances = this._vehicleConfigService.GetAll(VehicleConfigType.Ambulance);
         if (ambulances.Count == 0)
         {
-            this.OnCompletedOrCancelled();
-            return;
+            ambulances.Add(DefaultVehicleConfigs.Ambulance);
         }
 
         var serviceVehicle = ambulances[this._randomService.Random.Next(0, ambulances.Count)];
