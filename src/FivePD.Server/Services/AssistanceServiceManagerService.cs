@@ -64,7 +64,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
             if (this._configService.GeneralConfig.AssistanceServices.SpawnTypeAuto())
             {
-                var location = await this._vector3Service.GetRandomLocationAsync(requestedBy.GetUnderlyingPlayer().Character);
+                var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
                 ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
             }
             else
@@ -73,20 +73,22 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
                 var type = typeof(T);
                 if (type == typeof(Ambulance))
                 {
-                    locations = this._configService.GeneralConfig.AssistanceServices.Ambulance.SpawnLocations;
+                    locations = this._configService?.GeneralConfig.AssistanceServices.Ambulance.SpawnLocations ?? new List<Vector3>();
                 }
                 else if (type == typeof(Towing))
                 {
-                    locations = this._configService.GeneralConfig.AssistanceServices.TowTruck.SpawnLocations;
+                    locations = this._configService?.GeneralConfig.AssistanceServices.TowTruck.SpawnLocations ?? new List<Vector3>();
                 }
 
                 if (locations.Count == 0)
                 {
-                    this._logger.Error("Failed to call assistance service with type \"{Type}\". No locations found.", typeof(T));
-                    return Guid.Empty;
+                    var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
+                    ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
                 }
-
-                ((IInternalAssistanceService)assistanceService).SpawnLocation = locations[this._randomService.Random.Next(0, locations.Count)];
+                else
+                {
+                    ((IInternalAssistanceService)assistanceService).SpawnLocation = locations[this._randomService.Random.Next(0, locations.Count)];
+                }
             }
 
             var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, onCanceled, new CancellationTokenSource(), this._logger);
