@@ -64,7 +64,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
             if (this._configService.GeneralConfig.AssistanceServices.SpawnTypeAuto())
             {
-                var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character, 1);
+                var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
                 ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
             }
             else
@@ -73,21 +73,22 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
                 var type = typeof(T);
                 if (type == typeof(Ambulance))
                 {
-                    locations = this._configService.GeneralConfig.AssistanceServices.Ambulance.SpawnLocations;
+                    locations = this._configService?.GeneralConfig.AssistanceServices.Ambulance.SpawnLocations ?? new List<Vector3>();
                 }
                 else if (type == typeof(Towing))
                 {
-                    locations = this._configService.GeneralConfig.AssistanceServices.TowTruck.SpawnLocations;
+                    locations = this._configService?.GeneralConfig.AssistanceServices.TowTruck.SpawnLocations ?? new List<Vector3>();
                 }
 
                 if (locations.Count == 0)
                 {
                     this._logger.Error("Assistance service with type \"{Type}\". No fixed locations found, service spawned randomly.", typeof(T));
-                    var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character, 1);
+                    var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
                 }
                 else
                 {
+                    Debug.WriteLine("Manual locations found");
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = locations[this._randomService.Random.Next(0, locations.Count)];
                 }
             }
