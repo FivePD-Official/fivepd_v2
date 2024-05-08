@@ -33,7 +33,7 @@ public sealed record AssistanceServicesConfig
 public record BaseServiceConfig
 {
     public bool Enabled { get; init; }
-    public List<Vector3> SpawnLocations { get; init; }
+    public List<Vector3> SpawnLocations { get; init; } = new();
 }
 
 public sealed record AmbulanceConfig : BaseServiceConfig
