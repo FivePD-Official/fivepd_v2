@@ -45,7 +45,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\MenuDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\OnVehicleAlertedDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\SimplePlayerDTO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DTO\Vector3ServiceDTOs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FAnimationFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FBlipColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FBlipSprite.cs" />
@@ -87,6 +86,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\NotificationDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\WeaponCollectionDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Vector3WithHeading.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateBagKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\GtaStyleText.cs" />

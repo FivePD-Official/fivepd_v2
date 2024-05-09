@@ -5,12 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using FivePD.Common.DTO;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.AssistanceServiceModels;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace FivePD.Server.Services;
@@ -64,11 +62,16 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             var assistanceService = this.CreateInstance<T>();
             ((IInternalAssistanceService)assistanceService).RequestedBy = requestedBy;
 
+            async Task SetRandomLocation()
+            {
+                var pointOnRoadSide = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
+                ((IInternalAssistanceService)assistanceService).SpawnLocation = pointOnRoadSide.Location;
+                ((IInternalAssistanceService)assistanceService).SpawnHeading = pointOnRoadSide.Heading;
+            }
+
             if (this._configService.GeneralConfig.AssistanceServices.SpawnTypeAuto())
             {
-                var serializedJson = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
-                ((IInternalAssistanceService)assistanceService).SpawnLocation = JsonConvert.DeserializeObject<Vector3ServiceDTOs.ServiceSpawnData>(serializedJson).location;
-                ((IInternalAssistanceService)assistanceService).SpawnHeading = JsonConvert.DeserializeObject<Vector3ServiceDTOs.ServiceSpawnData>(serializedJson).heading;
+                await SetRandomLocation();
             }
             else
             {
@@ -85,9 +88,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
                 if (locations.Count == 0)
                 {
-                    var serializedJson = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
-                    ((IInternalAssistanceService)assistanceService).SpawnLocation = JsonConvert.DeserializeObject<Vector3ServiceDTOs.ServiceSpawnData>(serializedJson).location;
-                    ((IInternalAssistanceService)assistanceService).SpawnHeading = JsonConvert.DeserializeObject<Vector3ServiceDTOs.ServiceSpawnData>(serializedJson).heading;
+                    await SetRandomLocation();
                 }
                 else
                 {
