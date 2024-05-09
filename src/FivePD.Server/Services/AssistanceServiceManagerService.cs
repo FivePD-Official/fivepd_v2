@@ -62,10 +62,16 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             var assistanceService = this.CreateInstance<T>();
             ((IInternalAssistanceService)assistanceService).RequestedBy = requestedBy;
 
+            async Task SetRandomLocation()
+            {
+                var pointOnRoadSide = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
+                ((IInternalAssistanceService)assistanceService).SpawnLocation = pointOnRoadSide.Location;
+                ((IInternalAssistanceService)assistanceService).SpawnHeading = pointOnRoadSide.Heading;
+            }
+
             if (this._configService.GeneralConfig.AssistanceServices.SpawnTypeAuto())
             {
-                var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
-                ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
+                await SetRandomLocation();
             }
             else
             {
@@ -82,8 +88,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
 
                 if (locations.Count == 0)
                 {
-                    var location = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
-                    ((IInternalAssistanceService)assistanceService).SpawnLocation = location;
+                    await SetRandomLocation();
                 }
                 else
                 {
