@@ -116,10 +116,6 @@ internal readonly record struct Events
         public const string MenuSelect = "fivepd:menu:control_select";
 
         public const string RadialMenuControl = "fivepd:radialMenu:control";
-
-        public const string PlaySound = "fivepd:sound:play";
-
-        public const string Speak = "fivepd:sound:speak";
     }
 
     public readonly record struct UI
@@ -455,6 +451,13 @@ public readonly record struct DevTools
         public const string DeleteSpeedZone = "fivepd:sceneManagement:deleteSpeedZone";
 
         public const string DeleteUI = "fivepd:sceneManagement:deleteUI";
+    }
+
+    public readonly record struct Audio
+    {
+        public const string PlaySound = "fivepd:audio:playSound";
+
+        public const string Speak = "fivepd:audio:speak";
     }
 
     public readonly record struct Cfx
