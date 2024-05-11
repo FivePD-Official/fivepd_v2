@@ -40,6 +40,8 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   private readonly destroy$ = injectDestroy();
   private readonly _eventService = inject(EventService);
 
+  private menuWidth = '';
+
   @Input({required: true}) menu!: Menu;
 
   @ViewChildren('element') elements!: QueryList<ElementRef<HTMLDivElement>>;
@@ -47,6 +49,9 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChildren('itemElement') itemElements!: QueryList<ElementRef<HTMLDivElement>>;
 
   @ViewChild('selector') selectorElement!: ElementRef<HTMLDivElement>;
+
+  @ViewChild('itemsContainer') itemsContainerElement!: ElementRef<HTMLDivElement>;
+  @ViewChildren('descriptionContainer') descriptionContainerElement!: QueryList<ElementRef<HTMLDivElement>>;
 
   ngOnInit(): void {
     this._eventService.onEvent<BaseNuiEvent>('fivepd:menu:control_up')
@@ -75,6 +80,21 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
         this.selectorElement.nativeElement.style.top = item ? item.nativeElement.offsetTop + 'px' : '0px';
       }
     }
+
+    if (this.itemsContainerElement?.nativeElement) {
+      const width = Math.round(this.itemsContainerElement.nativeElement.getBoundingClientRect().width) + 20;
+      this.menuWidth = `${width}px`
+      this.itemsContainerElement.nativeElement.style.width = this.menuWidth;
+    }
+
+    this.descriptionContainerElement.changes
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((queryList: QueryList<ElementRef<HTMLDivElement>>) => {
+        if (this.menuWidth && queryList.first?.nativeElement) {
+          queryList.first.nativeElement.style.width = this.menuWidth;
+          queryList.first.nativeElement.style.maxWidth = this.menuWidth;
+        }
+      })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -107,8 +127,8 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   get menuItemsHeight(): string {
-    if (this.items.length >= 5) {
-      return '200px';
+    if (this.items.length >= 10) {
+      return '400px';
     }
 
     return this.items.length * 40 + 'px';
@@ -168,10 +188,6 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
     this.menu.currentItemIndex$.next(newIndex);
 
     const currentItem = this.nonDividerItems[this.menu.currentItemIndex$.value];
-    if (!currentItem.Enabled && this.nonDividerItems.some(x => x.Enabled)) {
-      this.onVerticalControl(dir);
-      return;
-    }
 
     this.currentItemDescription = currentItem.Description;
 
@@ -201,12 +217,12 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
       return;
     }
 
-    const currentItem: MenuListItem = this.items[this.menu.currentItemIndex$.value] as MenuListItem;
+    const currentItem: MenuListItem = this.nonDividerItems[this.menu.currentItemIndex$.value] as MenuListItem;
     if (currentItem.type !== MenuItemType.List) {
       return;
     }
 
-    const currentItemNode = this.elements.get(this.menu.currentItemIndex$.value);
+    const currentItemNode = this.itemElements.get(this.menu.currentItemIndex$.value);
     const leftArrow = currentItemNode?.nativeElement.querySelector('.left-arrow');
     const rightArrow = currentItemNode?.nativeElement.querySelector('.right-arrow');
 

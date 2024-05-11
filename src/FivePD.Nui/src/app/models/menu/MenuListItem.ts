@@ -7,8 +7,8 @@ export class MenuListItem extends MenuItem {
 
   public items: MenuListOption[] = [];
 
-  constructor(title: string, description: string, hashcode: string) {
-    super(title, description, hashcode, MenuItemType.List);
+  constructor(title: string, description: string, enabled: boolean, hashcode: string) {
+    super(title, description, enabled, hashcode, MenuItemType.List);
   }
 
   get currentIndex(): number {

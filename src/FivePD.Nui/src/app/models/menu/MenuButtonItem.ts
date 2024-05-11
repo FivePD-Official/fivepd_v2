@@ -4,8 +4,8 @@ import { MenuListItem } from './MenuListItem';
 
 export class MenuButtonItem extends MenuItem {
 
-  constructor(title: string, description: string, hashcode: string) {
-    super(title, description, hashcode, MenuItemType.Button);
+  constructor(title: string, description: string, enabled: boolean, hashcode: string) {
+    super(title, description, enabled, hashcode, MenuItemType.Button);
   }
 
   override onPress() {

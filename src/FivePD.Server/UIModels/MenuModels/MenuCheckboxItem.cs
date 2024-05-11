@@ -17,8 +17,9 @@ public class MenuCheckboxItem : MenuItem, IMenuCheckboxItemWithEvents
     /// </summary>
     /// <param name="title">The title of this item.</param>
     /// <param name="description">The description of this item.</param>
-    public MenuCheckboxItem(string title, string description)
-        : base(title, description, MenuItemType.Checkbox)
+    /// <param name="enabled">The state of this item.</param>
+    public MenuCheckboxItem(string title, string description, bool enabled = true)
+        : base(title, description, enabled, MenuItemType.Checkbox)
     {
     }
 

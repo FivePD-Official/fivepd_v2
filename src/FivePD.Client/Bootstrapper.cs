@@ -345,6 +345,12 @@ internal class Bootstrapper : BaseScript
             .As<IOnInit>()
             .IsSingleton();
 
+        services
+            .RegisterType<SceneManagementService>()
+            .As<ISceneManagementService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);

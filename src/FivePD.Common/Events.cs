@@ -446,6 +446,17 @@ public readonly record struct DevTools
         public const string GetAllSimple = "fivepd:user:getAllSimple";
     }
 
+    public readonly record struct SceneManagement
+    {
+        public const string GetAllSpeedZones = "fivepd:sceneManagement:getAllSpeedZones";
+
+        public const string CreateSpeedZone = "fivepd:sceneManagement:createSpeedZone";
+
+        public const string DeleteSpeedZone = "fivepd:sceneManagement:deleteSpeedZone";
+
+        public const string DeleteUI = "fivepd:sceneManagement:deleteUI";
+    }
+
     public readonly record struct Cfx
     {
         // void AddAmmoToPed(int ped,uint weaponHash,int ammo);
@@ -492,7 +503,8 @@ public readonly record struct DevTools
 
         // void TaskVehicleTempAction(int driver, int vehicle, int action, int time);
         public const string TaskVehicleTempAction = "fivepd:cfx:TaskVehicleTempAction";
-        
-        
+
+        // void SetEntityAsMissionEntity(int entity, bool p1, bool p2);
+        public const string SetEntityAsMissionEntity = "fivepd:cfx:SetEntityAsMissionEntity";
     }
 }

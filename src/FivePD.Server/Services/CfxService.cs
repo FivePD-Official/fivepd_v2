@@ -130,4 +130,9 @@ public class CfxService : ICfxService
     {
         this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(driver).Owner, Events.Cfx.TaskVehicleTempAction, driver, vehicle, action, time);
     }
+
+    public void SetEntityAsMissionEntity(int entity, bool p1, bool p2)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.SetEntityAsMissionEntity, entity, p1, p2);
+    }
 }

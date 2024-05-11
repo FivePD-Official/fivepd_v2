@@ -14,7 +14,7 @@ public class MenuDividerItem : MenuItem
     /// </summary>
     /// <param name="title">The title of this item.</param>
     public MenuDividerItem(string title)
-        : base(title, string.Empty, MenuItemType.Divider)
+        : base(title, string.Empty, true, MenuItemType.Divider)
     {
     }
 }

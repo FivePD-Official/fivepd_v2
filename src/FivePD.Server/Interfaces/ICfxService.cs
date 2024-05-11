@@ -65,6 +65,8 @@ public interface ICfxService
     public void SetEnableHandcuffs(int ped, bool toggle);
 
     public void TaskVehiclePark(int ped, int vehicle, float x, float y, float z, float heading, int mode, float radius, bool keepEngineOn);
-    
+
     public void TaskVehicleTempAction(int driver, int vehicle, int action, int time);
+
+    public void SetEntityAsMissionEntity(int entity, bool p1, bool p2);
 }

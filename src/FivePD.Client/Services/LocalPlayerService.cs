@@ -102,7 +102,6 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
 
         BaseScript.TriggerServerEvent(Events.Player.GetRole, new Action<int>(role =>
         {
-            Debug.WriteLine($"GET ROLE {role}");
             this.Role = role;
         }));
     }

@@ -132,6 +132,12 @@ export class SidebarComponent {
       path: () => '/mdt/devtools',
       icon: IconType.CodeBracket,
       show: () => this.userService.userHasRole(UserRole.Admin, UserRole.Developer),
+    },
+    {
+      title: 'Scene management',
+      path: () => '/mdt/scene-management',
+      icon: IconType.Warning,
+      show: () => this.userService.userHasRole(UserRole.Admin),
     }
   ];
   routes: Routes = [];

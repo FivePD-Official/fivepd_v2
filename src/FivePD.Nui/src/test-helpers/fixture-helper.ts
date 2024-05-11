@@ -33,15 +33,6 @@ export class FixtureHelper {
   getTrimmedTextContent(): string {
     return this.elementToUse.textContent.trim();
   }
-
-  getDecodedHref(): string {
-    const href = this.elementToUse.getAttribute('href');
-    if (!href) {
-      return '';
-    }
-
-    return decodeURIComponent(href);
-  }
 }
 
 export class FixtureHelperElement extends FixtureHelper {

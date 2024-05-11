@@ -10,6 +10,7 @@ import { Store } from "@ngrx/store";
 import { TranslatePipe } from "../app/pipes/translate.pipe";
 import { MockTranslatePipe } from "./mock-translate-pipe";
 import { LocalizationService } from "@services/localization/localization.service";
+import { RouterTestingModule } from "@angular/router/testing";
 
 interface Nextable<T> {
   next: (value: T) => void;
@@ -65,6 +66,7 @@ class TestHelperModuleBuilder {
 
     const router: any = {
       events: new Subject(),
+      navigate: jest.fn(),
     };
     this.providedObjects.set(Router, router as unknown as Router);
     return this;
@@ -131,7 +133,10 @@ class TestHelperModuleBuilder {
 }
 
 @NgModule({
-  imports: [HttpClientTestingModule],
+  imports: [
+    HttpClientTestingModule,
+    RouterTestingModule,
+  ],
   declarations: []
 })
 export class TestHelperModule {

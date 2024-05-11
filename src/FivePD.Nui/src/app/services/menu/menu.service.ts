@@ -138,16 +138,16 @@ export class MenuService {
         break;
       }
       case MenuItemType.Button: {
-        _item = new MenuButtonItem(item.Title, item.Description, item.Hashcode);
+        _item = new MenuButtonItem(item.Title, item.Description, item.Enabled, item.Hashcode);
         break;
       }
       case MenuItemType.List: {
-        _item = new MenuListItem(item.Title, item.Description, item.Hashcode);
+        _item = new MenuListItem(item.Title, item.Description, item.Enabled, item.Hashcode);
         (_item as MenuListItem).items = item.Items!.map(x => new MenuListOption(x.Title, x.Enabled));
         break;
       }
       case MenuItemType.Toggle: {
-        _item = new MenuCheckboxItem(item.Title, item.Description, item.Hashcode);
+        _item = new MenuCheckboxItem(item.Title, item.Description, item.Enabled, item.Hashcode);
         break;
       }
     }

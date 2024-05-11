@@ -10,9 +10,10 @@ export abstract class MenuItem {
   private readonly _hashcode: string;
   private readonly _divider: boolean;
 
-  protected constructor(title: string, description: string, hashcode: string, type: MenuItemType) {
+  protected constructor(title: string, description: string, enabled: boolean, hashcode: string, type: MenuItemType) {
     this.Title = title;
     this.Description = description;
+    this.Enabled = enabled;
     this._hashcode = hashcode;
     this._type = type;
 

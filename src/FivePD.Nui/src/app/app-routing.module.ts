@@ -155,6 +155,16 @@ const mdtRoutes: Routes = [
       }
     ]
   },
+  {
+    path: 'scene-management',
+    loadComponent: () => import('./pages/mdt/scene-management/scene-management.component').then(m => m.SceneManagementComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/mdt/scene-management/scene-management-speed-zone/scene-management-speed-zone.component').then(m => m.SceneManagementSpeedZoneComponent),
+      },
+    ],
+  },
 ];
 
 const routes: Routes = [

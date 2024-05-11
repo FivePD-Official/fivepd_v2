@@ -41,8 +41,8 @@ public class MenuService : IMenuService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     public MenuService(
-        IServiceProvider serviceProvider, 
-        EventHandlerDictionary eventHandlerDictionary, 
+        IServiceProvider serviceProvider,
+        EventHandlerDictionary eventHandlerDictionary,
         ILogger logger,
         IConfigService configService)
     {
@@ -80,10 +80,15 @@ public class MenuService : IMenuService, IOnInit
         {
             this.Register<AssistanceMenu>();
         }
-        
+
         if (this._configService.GeneralConfig.Menu.Interaction.Enabled)
         {
             this.Register<InteractionMenu>();
+        }
+
+        if (this._configService.GeneralConfig.Menu.SceneManager.Enabled)
+        {
+            this.Register<SceneManagerMenu>();
         }
     }
 
@@ -353,6 +358,7 @@ public class MenuService : IMenuService, IOnInit
                     Hashcode = item.GetHashCode().ToString(),
                     Title = item.Title,
                     Description = item.Description,
+                    Enabled = item.Enabled,
                     Type = item.Type,
                     Items = listItemItems,
                 });
