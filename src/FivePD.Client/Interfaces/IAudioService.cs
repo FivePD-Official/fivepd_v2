@@ -1,17 +1,23 @@
-﻿using FivePD.Client.Utilities;
+﻿using FivePD.Common.Enums;
 
 namespace FivePD.Client.Interfaces;
 
 /// <summary>
 /// Responsible for playing various sounds in the NUI.
 /// </summary>
-internal interface ISoundService
+internal interface IAudioService
 {
     /// <summary>
-    /// Plays a sound effect.
+    /// Plays a sound.
     /// </summary>
     /// <param name="sound">The sound effect's name to play.</param>
     public void Play(Sound sound);
+
+    /// <summary>
+    /// Plays a sound.
+    /// </summary>
+    /// <param name="soundFileName">The name of the sound file to play.</param>
+    public void Play(string soundFileName);
 
     /// <summary>
     /// Reads out a text.

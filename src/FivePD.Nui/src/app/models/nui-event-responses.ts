@@ -207,3 +207,11 @@ export interface OnUnitCreated extends BaseNuiEvent {
 export interface OnUnitRemoved extends BaseNuiEvent {
   Callsign: string;
 }
+
+export interface OnAudioSpeak extends BaseNuiEvent {
+  Sound: string;
+}
+
+export interface OnAudioPlaySound extends BaseNuiEvent {
+  Text: string;
+}

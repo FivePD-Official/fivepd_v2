@@ -368,6 +368,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<ISceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
         services.AddSingleton<IInternalSceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
 
+        services.AddSingleton<AudioService>();
+        services.AddSingleton<IAudioService>(provider => provider.GetRequiredService<AudioService>());
+
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);

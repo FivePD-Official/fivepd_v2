@@ -23,7 +23,7 @@
             <div #element #itemElement
                  class="relative z-20 w-full h-[40px] min-h-[40px] max-h-[40px] flex flex-row items-center justify-between gap-6 px-3"
                  [ngClass]="{ 'opacity-50': !item.Enabled }">
-              <p class="text-zinc-400">{{ item.Title | translate }}</p>
+              <p class="text-zinc-400 whitespace-nowrap">{{ item.Title | translate }}</p>
 
               @if (item.type === MenuItemType.Toggle) {
                 <div

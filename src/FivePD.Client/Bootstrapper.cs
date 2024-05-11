@@ -192,8 +192,10 @@ internal class Bootstrapper : BaseScript
             .IsSingleton();
 
         services
-            .RegisterType<SoundService>()
-            .As<ISoundService>();
+            .RegisterType<AudioService>()
+            .As<IAudioService>()
+            .As<IOnInit>()
+            .IsSingleton();
 
         services
             .RegisterType<ControlService>()

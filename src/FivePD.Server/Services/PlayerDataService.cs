@@ -34,6 +34,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private readonly ILogger _logger;
     private readonly ILocalizationService _localizationService;
     private readonly IPlayerHandlerService _playerHandlerService;
+    private readonly IAudioService _audioService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -46,6 +47,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
+    /// <param name="audioService">The <see cref="IAudioService"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         DatabaseContext databaseContext,
@@ -54,7 +56,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         IConfigService configService,
         ILogger logger,
         ILocalizationService localizationService,
-        IPlayerHandlerService playerHandlerService)
+        IPlayerHandlerService playerHandlerService,
+        IAudioService audioService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._databaseContext = databaseContext;
@@ -64,6 +67,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._logger = logger;
         this._localizationService = localizationService;
         this._playerHandlerService = playerHandlerService;
+        this._audioService = audioService;
     }
 
     /// <inheritdoc/>
@@ -240,6 +244,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private void OnPlayerDutyStatusChanged(Player player, FDutyStatus status)
     {
         var fPlayer = FPlayer.FromNetId(player.Handle);
+
+        this._audioService.Play(fPlayer, Sound.Beep);
 
         this._notificationService.ShowNotificationWithTexture(
             this._playerList.Where(p => p.Handle != player.Handle),
