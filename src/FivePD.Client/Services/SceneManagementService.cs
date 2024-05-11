@@ -29,6 +29,7 @@ internal class SceneManagementService : ISceneManagementService, IOnInit
         this._eventHandlerDictionary[Events.SceneManagement.CreateSpeedZone] += new Action<string>(this.CreateSpeedZone);
         this._eventHandlerDictionary[Events.SceneManagement.DeleteSpeedZone] += new Action<string>(this.DeleteSpeedZone);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.SceneManagement.GetAllSpeedZones);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.SceneManagement.DeleteUI);
     }
 
     private void CreateSpeedZone(string serializedSpeedZone)

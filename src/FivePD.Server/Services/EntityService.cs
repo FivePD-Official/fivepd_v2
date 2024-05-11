@@ -160,7 +160,7 @@ public class EntityService : IEntityService
     {
         return this.GetAllVehicles()
             .OrderBy(x => x.Position.DistanceToSquared(entity.Position))
-            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && x.Position.DistanceToSquared(entity.Position) <= range);
+            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && Math.Sqrt(x.Position.DistanceToSquared(entity.Position)) <= range);
     }
 
     /// <inheritdoc />
@@ -174,7 +174,7 @@ public class EntityService : IEntityService
     public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float range = 15f)
     {
         return this.GetAllVehicles()
-            .Where(x => x.Position.DistanceToSquared(entity.Position) <= range).ToList();
+            .Where(x => Math.Sqrt(x.Position.DistanceToSquared(entity.Position)) <= range).ToList();
     }
 
     /// <inheritdoc />

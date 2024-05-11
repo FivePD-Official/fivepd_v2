@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.Models.Events;
 
 namespace FivePD.Server.Interfaces;
 
@@ -11,6 +12,16 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 public interface ISceneManagementService
 {
+    /// <summary>
+    /// Fires when a speed zone has been created.
+    /// </summary>
+    public event EventHandler<SpeedZoneCreatedEventArgs> SpeedZoneCreated;
+
+    /// <summary>
+    /// Fires when a speed zone has been deleted.
+    /// </summary>
+    public event EventHandler<SpeedZoneDeletedEventArgs> SpeedZoneDeleted;
+
     /// <summary>
     /// Gets the speed zones.
     /// </summary>

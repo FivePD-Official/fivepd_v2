@@ -12,6 +12,8 @@ using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.DTO;
+using FivePD.Server.Models.Events;
+using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -43,6 +45,12 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
     }
 
     /// <inheritdoc />
+    public event EventHandler<SpeedZoneCreatedEventArgs> SpeedZoneCreated;
+
+    /// <inheritdoc />
+    public event EventHandler<SpeedZoneDeletedEventArgs> SpeedZoneDeleted;
+
+    /// <inheritdoc />
     public List<SpeedZone> SpeedZones()
     {
         return this._speedZones.Select(x => x.Value.Zone).ToList();
@@ -68,6 +76,9 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
             return false;
         }
 
+        var speedZone = this._speedZones[id];
+        this.SpeedZoneDeleted?.Invoke(this, new SpeedZoneDeletedEventArgs(speedZone.Player, id, speedZone.Zone));
+
         this._speedZones.Remove(id);
         foreach (var player in this._playerList)
         {
@@ -85,8 +96,6 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
             return;
         }
 
-        // TODO: multiplying by 20 doesn't seem right, but without it the distance is way off. the distance between the origin and origin+radius/2 == radius for some reason
-        // TODO: also might be worth to check the distance calculation in the EntityService as well
         var vehicles = this._entityService.GetAllVehicles()
             .Where(x => Math.Sqrt(x.Position.DistanceToSquared2D(speedZone.Zone.Position)) <= speedZone.Zone.Radius)
             .ToList();
@@ -126,6 +135,8 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
             p.TriggerEvent(Events.SceneManagement.CreateSpeedZone, dto);
         }
 
+        this.SpeedZoneCreated?.Invoke(this, new SpeedZoneCreatedEventArgs(player, id, speedZone));
+
         return id;
     }
 
@@ -134,10 +145,30 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
     {
         var speedZonesWithPlayers = this._speedZones.Select(a => new SpeedZoneWithPlayerDTO
         {
+            Id = a.Key.ToString(),
             SpeedZone = a.Value.Zone,
             PlayerName = a.Value.Player.GetUnderlyingPlayer().Name,
         }).ToList();
         networkCallbackDelegate.InvokeWithJson(speedZonesWithPlayers);
+    }
+
+    [UIEvent(Events.SceneManagement.DeleteUI)]
+    private void DeleteUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<StringIdRequest>();
+        if (!Guid.TryParse(request.Id, out var guid))
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        if (!this.DeleteSpeedZone(guid))
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        networkCallbackDelegate.InvokeWithResponse(true, "a", "b");
     }
 
     private sealed record SpeedZoneWithPlayer(SpeedZone Zone, FPlayer Player);

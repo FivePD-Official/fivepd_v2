@@ -136,7 +136,7 @@ export class SidebarComponent {
     {
       title: 'Scene management',
       path: () => '/mdt/scene-management',
-      icon: IconType.CodeBracket,
+      icon: IconType.Warning,
       show: () => this.userService.userHasRole(UserRole.Admin),
     }
   ];

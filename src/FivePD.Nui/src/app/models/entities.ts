@@ -261,7 +261,7 @@ export interface SpeedZone {
   Speed: number;
 }
 
-export interface SpeedZoneWithPlayerDTO {
+export interface SpeedZoneWithPlayerDTO extends WithStringId {
   SpeedZone: SpeedZone;
   PlayerName: string;
 }

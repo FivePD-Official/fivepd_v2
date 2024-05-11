@@ -24,6 +24,7 @@ public class SceneManagerMenu : Menu
     private int _selectedSpeedZoneSpeed;
     private int _selectedSpeedZoneRadius;
     private Guid _createdSpeedZoneId = Guid.Empty;
+    private FPlayer _currentPlayer;
 
     public SceneManagerMenu(
         IConfigService configService,
@@ -36,6 +37,14 @@ public class SceneManagerMenu : Menu
         this._sceneManagementService = sceneManagementService;
         this._menuService = menuService;
         this._entityService = entityService;
+
+        sceneManagementService.SpeedZoneDeleted += (_, args) =>
+        {
+            if (this._createdSpeedZoneId == args.Id)
+            {
+                this.OnDeleteSpeedZone(this._currentPlayer);
+            }
+        };
     }
 
     internal MenuButtonItem CreateSpeedZone { get; private set; }
@@ -101,6 +110,7 @@ public class SceneManagerMenu : Menu
         this.CreateSpeedZone = new MenuButtonItem("UI.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.TITLE", "UI.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.DESCRIPTION");
         this.CreateSpeedZone.OnSelect += player =>
         {
+            this._currentPlayer = player;
             this._createdSpeedZoneId = ((IInternalSceneManagementService)this._sceneManagementService).CreateSpeedZone(
                 player,
                 player.GetUnderlyingPlayer().Character.Position,
@@ -122,10 +132,7 @@ public class SceneManagerMenu : Menu
             var deleted = this._sceneManagementService.DeleteSpeedZone(this._createdSpeedZoneId);
             if (deleted)
             {
-                this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.CreateSpeedZone, i => i.Enabled, true);
-                this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.DeleteSpeedZone, i => i.Enabled, false);
-                this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.ReleaseTraffic, i => i.Enabled, false);
-                this._createdSpeedZoneId = Guid.Empty;
+                this.OnDeleteSpeedZone(player);
             }
 
             return Task.CompletedTask;
@@ -145,6 +152,15 @@ public class SceneManagerMenu : Menu
         items.Add(this.ReleaseTraffic);
 
         return items;
+    }
+
+    private void OnDeleteSpeedZone(FPlayer player)
+    {
+        this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.CreateSpeedZone, i => i.Enabled, true);
+        this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.DeleteSpeedZone, i => i.Enabled, false);
+        this._menuService.UpdateMenuItem<SceneManagerMenu, bool>(player, m => m.ReleaseTraffic, i => i.Enabled, false);
+        this._createdSpeedZoneId = Guid.Empty;
+        this._currentPlayer = null;
     }
 
     private List<MenuItem> CreateObjectPlacementItems()

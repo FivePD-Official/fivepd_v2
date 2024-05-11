@@ -1,42 +1,73 @@
-import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MapHandler } from "@services/map";
 import { SceneManagementService } from "@services/scene-management/scene-management.service";
-import { takeUntil, tap } from "rxjs";
-import { LatLng } from "leaflet";
-import { injectDestroy } from "../../../../helpers/destroy-ref";
+import { BehaviorSubject, map, switchMap } from "rxjs";
+import { GridComponent } from "../../../../components/grid/grid.component";
+import { Column, Page, SpeedZoneWithPlayerDTO } from "@models";
+import { UserRole, UserService } from "@services/user/user.service";
 
 @Component({
   selector: 'app-scene-management-speed-zone',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, GridComponent],
   templateUrl: './scene-management-speed-zone.component.html',
 })
-export class SceneManagementSpeedZoneComponent implements OnInit, AfterViewInit {
+export class SceneManagementSpeedZoneComponent {
 
-  private readonly destroy$ = injectDestroy();
-  private readonly _sceneManagementService = inject(SceneManagementService);
+  protected readonly sceneManagementService = inject(SceneManagementService);
+  protected readonly _userService = inject(UserService);
 
-  private mapHandler!: MapHandler;
+  readonly refreshSpeedZones$ = new BehaviorSubject<null>(null);
+  readonly speedZones$ = this.refreshSpeedZones$.pipe(
+    switchMap(() => this.sceneManagementService.getAll()),
+    map(speedZone => {
+      const page: Page<SpeedZoneWithPlayerDTO> = {
+        PageSize: speedZone.length,
+        PageCount: speedZone.length,
+        Items: speedZone,
+        CurrentPage: 1,
+        ItemCount: speedZone.length,
+      }
+      return page;
+    }),
+  );
 
-  ngOnInit(): void {
-    this._sceneManagementService.getAll()
-      .pipe(
-        takeUntil(this.destroy$),
-        tap(speedZones => {
-          console.log(speedZones)
-          for (const zone of speedZones) {
-            this.mapHandler.addMarker({
-              latLng: new LatLng(zone.SpeedZone.Position.Y, zone.SpeedZone.Position.X),
-            }).setIcon(this.mapHandler.createIcon('speedZone'))
-          }
-        }),
-      )
-      .subscribe();
-  }
+  readonly columns: Column<SpeedZoneWithPlayerDTO>[] = [
+    new Column({
+      header: 'Created by',
+      valueResolver: x => x.PlayerName ?? 'Addon',
+    }),
+    new Column({
+      header: 'Speed',
+      valueResolver: x => x.SpeedZone.Speed.toString(),
+    }),
+    new Column({
+      header: 'Radius',
+      valueResolver: x => x.SpeedZone.Radius.toString(),
+    }),
+    new Column({
+      header: 'Position',
+      valueResolver: x => `${x.SpeedZone.Position.X}, ${x.SpeedZone.Position.Y}, ${x.SpeedZone.Position.Z}`,
+    }),
+    new Column({
+      header: 'Actions',
+      show: () => this._userService.userHasRole(UserRole.Admin),
+      actions: [
+        {
+          type: 'button',
+          label: 'Delete',
+          onClick: speedZone => {
+            this.sceneManagementService.delete(speedZone.Id).subscribe(() => this.refreshSpeedZones$.next(null));
+          },
+        }
+      ]
+    }),
+  ];
 
-  ngAfterViewInit(): void {
-    this.mapHandler = new MapHandler();
-  }
+  // private mapHandler!: MapHandler;
+
+  // ngAfterViewInit(): void {
+  //   this.mapHandler = new MapHandler();
+  // }
 
 }

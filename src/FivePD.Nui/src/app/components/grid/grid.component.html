@@ -123,9 +123,11 @@
       </p>
     }
 
-    <app-pagination [collation]="collation"
-                    [data]="data"
-                    (onPageChange)="onPageChange($event)"/>
+    @if (showPagination) {
+      <app-pagination [collation]="collation"
+                      [data]="data"
+                      (onPageChange)="onPageChange($event)"/>
+    }
 
   </div>
 </div>

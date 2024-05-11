@@ -1,3 +1,7 @@
-<div class="relative inset-0 w-full h-[1000px]">
-  <div id="map" class="w-full h-full bg-zinc-900"></div>
+<div class="w-full flex flex-col gap-4">
+
+  <app-grid [columns]="columns"
+            [data]="speedZones$ | async"
+            [showPagination]="false"/>
+
 </div>

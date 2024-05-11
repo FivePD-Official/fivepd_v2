@@ -17,7 +17,5 @@ export interface Tab {
   imports: [NgFor, RouterLinkActive, RouterLink, TranslatePipe, NgClass]
 })
 export class TabsComponent {
-
-  @Input() tabs: Tab[] = [];
-
+  @Input({required: true}) tabs: Tab[] = [];
 }

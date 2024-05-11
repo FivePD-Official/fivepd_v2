@@ -8,6 +8,8 @@ namespace FivePD.Server.Models.DTO;
 [Obfuscate]
 internal record struct SpeedZoneWithPlayerDTO
 {
+    public string Id;
+
     public SpeedZone SpeedZone;
 
     public string PlayerName;
