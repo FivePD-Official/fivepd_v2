@@ -79,6 +79,12 @@ export class SidebarComponent {
       divider: true,
     },
     {
+      title: 'Scene management',
+      path: () => '/mdt/scene-management',
+      icon: IconType.Warning,
+      show: () => this.userService.userHasRole(UserRole.Admin),
+    },
+    {
       title: 'UI.LABEL.MY_SETTINGS',
       path: () => `/mdt/my-settings`,
       icon: IconType.User,
@@ -133,12 +139,6 @@ export class SidebarComponent {
       icon: IconType.CodeBracket,
       show: () => this.userService.userHasRole(UserRole.Admin, UserRole.Developer),
     },
-    {
-      title: 'Scene management',
-      path: () => '/mdt/scene-management',
-      icon: IconType.Warning,
-      show: () => this.userService.userHasRole(UserRole.Admin),
-    }
   ];
   routes: Routes = [];
 
