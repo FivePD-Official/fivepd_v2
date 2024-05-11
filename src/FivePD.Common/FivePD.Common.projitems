@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\Vehicles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\CreateSpeedZoneDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\CreateSpeedZoneDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\IncidentDTOs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\CommonDispatcherUnitDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\DispatcherCalloutDTO.cs" />
@@ -87,6 +88,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\NotificationDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\WeaponCollectionDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SpeedZone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Vector3WithHeading.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SpeedZone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateBagKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\CfxStyleText.cs" />
