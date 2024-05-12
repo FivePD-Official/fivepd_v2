@@ -5,6 +5,7 @@ using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Models.AssistanceServiceModels;
@@ -22,6 +23,10 @@ public class Towing : AssistanceService
     private FPed _driver;
     private FVehicle _towTruck;
     private FVehicle _targetVehicle;
+    
+    private const float SlowingDistance = 125f;
+    private const float MaximumSpeed = 25f;
+    private const float MinimumSpeed = 5f;
 
     private Vector3 _targetPosition;
 
@@ -79,21 +84,21 @@ public class Towing : AssistanceService
         this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._towTruck.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
-        this._driver.Task.DriveTo(
-            this._towTruck.GetUnderlyingVehicle,
-            this._targetPosition,
-            0f,
-            25f,
-            (int)FDrivingStyle.Emergency);
 
-        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
+        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= SlowingDistance)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
                 return;
             }
+            
+            var distance = Vector3.Distance(this._towTruck.GetUnderlyingVehicle.Position, this._targetPosition);
+            var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
+            var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
+            
+            this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, currentSpeed, (int)FDrivingStyle.Emergency);
 
-            await Task.Delay(100);
+            await Task.Delay(500);
         }
         
         this._driver.Task.ClearAll();
@@ -102,7 +107,7 @@ public class Towing : AssistanceService
             this._targetVehicle.GetUnderlyingVehicle.Position,
             0f,
             5f,
-            (int)FDrivingStyle.Emergency);
+            (int)FDrivingStyle.Normal);
 
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
