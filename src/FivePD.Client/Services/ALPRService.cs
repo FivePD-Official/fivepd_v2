@@ -32,7 +32,12 @@ internal class AlprService : IAlprService, IOnInit
     /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
-    public AlprService(EventHandlerDictionary eventHandlerDictionary, IControlService controlService, INotificationService notificationService, ITickService tickService, IVehicleService vehicleService)
+    public AlprService(
+        EventHandlerDictionary eventHandlerDictionary,
+        IControlService controlService,
+        INotificationService notificationService,
+        ITickService tickService,
+        IVehicleService vehicleService)
     {
         this.taskGuid = this.defaultGuid;
         this._eventHandlerDictionary = eventHandlerDictionary;
@@ -47,6 +52,11 @@ internal class AlprService : IAlprService, IOnInit
     {
         this._controlservice.RegisterKeybind(Controls.ToggleALPR.Id, Controls.ToggleALPR.Key, Controls.ToggleALPR.Title, () =>
         {
+            if (!Game.PlayerPed.IsInPoliceVehicle)
+            {
+                return;
+            }
+
             this.enabled = !this.enabled;
             string content = this.enabled ? "ALPR ~g~Enabled~s~" : "ALPR ~r~Disabled~s~";
             this._notificationService.ShowTooltip(content, true);

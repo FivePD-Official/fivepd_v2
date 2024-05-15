@@ -51,7 +51,6 @@ public class AlprService : IAlprService, IOnInit
     {
         var fVehicle = FVehicle.FromNetId(netId);
         var ownerPed = FPed.FromNetId(fVehicle.OwnerNetworkId);
-        ownerPed.Warrants.Add("Bench Warrant");
         if (ownerPed.Warrants.Count > 0)
         {
             string flaggedWarrant = ownerPed.Warrants[0];
