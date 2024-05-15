@@ -72,7 +72,7 @@ internal class AlprService : IAlprService, IOnInit
                 continue;
             }
 
-            if (veh.Position.DistanceToSquared(Game.PlayerPed.Position) > 50f)
+            if (veh.Position.DistanceToSquared(Game.PlayerPed.Position) > radius)
             {
                 continue;
             }
