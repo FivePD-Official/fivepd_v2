@@ -2,8 +2,8 @@ Database:
   Type: mysql # mysql or mariadb
   Name: fivepd
   Address: 127.0.0.1
-  Port: 3306 # for mariadb when using the docker compose file, change to 3307
-  User: root # for mariadb when using the docker compose file, change to 'user'
+  Port: 3306 # MySQL: 3306, MariaDB: 3307
+  User: root
   Password: root
 
 DefaultLanguage: en-US
@@ -83,6 +83,31 @@ Menu:
   Interaction:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE
+  SceneManager:
+    Enabled: true
+    SpeedZone:
+      Enabled: true
+      Speed: [ 0,5,10,20,30,40,50 ]
+      Radius: [ 5,10,20,30,40,50,60,70,80,90,100 ]
+    ObjectPlacement:
+      Enabled: true
+      Objects:
+        - Name: Small cone
+          Model: prop_roadcone02a
+        - Name: Big cone
+          Model: prop_roadcone01a
+        - Name: Bigger cone
+          Model: prop_barrier_wat_03b
+        - Name: Do not cross
+          Model: prop_barrier_work05
+        - Name: Road work ahead
+          Model: prop_barrier_work04a
+        - Name: Road work ahead 2
+          Model: prop_barrier_work06b
+        - Name: Small barrier
+          Model: prop_barrier_work01c
+        - Name: Big barrier
+          Model: prop_barrier_work06a
 
 Peds:
   ChanceToReuseData: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again
@@ -147,14 +172,61 @@ ProgressionSystem:
 
 AssistanceServices:
   SpawnType: AUTO # AUTO = automatic spawn locations, MANUAL = should specify SpawnLocations
-  Ambulance:
-    ChanceToRevive: 100 # should be between 0-100. the higher the number, the more likely that a ped will be revived
-  SpawnLocations: # optional; only used when SpawnType is set to MANUAL, a random location will be picked for each type
-    Ambulance:
+  # ----------
+  AirAmbulance:
+    Enabled: true
+    ChanceToRevive: 100
+    SpawnLocations:
       - X: 0
         Y: -1.5
         Z: 1
-    TowTruck:
+  # ----------
+  Ambulance:
+    Enabled: true
+    ChanceToRevive: 50
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  AnimalControl:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  Coroner:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  Mechanic:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  PrisonTransport:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  Taxi:
+    Enabled: true
+    SpawnLocations:
+      - X: 0
+        Y: -1.5
+        Z: 1
+  # ----------
+  TowTruck:
+    Enabled: true
+    SpawnLocations:
       - X: 0
         Y: -1.5
         Z: 1

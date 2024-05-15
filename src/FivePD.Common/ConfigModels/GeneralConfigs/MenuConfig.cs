@@ -16,6 +16,8 @@ public sealed record MenusConfig
 
     public MenuConfig Interaction { get; init; } = new();
 
+    public SceneManagerMenuConfig SceneManager { get; init; } = new();
+
     public record MenuConfig
     {
         public bool Enabled { get; init; } = true;
@@ -46,5 +48,35 @@ public sealed record MenusConfig
     public sealed record DispatchMenuConfig : MenuConfig
     {
         public List<DispatchMenuItemConfig> Items { get; init; } = new();
+    }
+
+    public sealed record SceneManagerMenuConfig : MenuConfig
+    {
+        public SpeedZoneConfig SpeedZone { get; init; } = new();
+
+        public ObjectPlacementConfig ObjectPlacement { get; init; } = new();
+
+        public sealed record SpeedZoneConfig
+        {
+            public bool Enabled { get; init; }
+
+            public List<int> Speed { get; init; } = new();
+
+            public List<int> Radius { get; init; } = new();
+        }
+        
+        public sealed record ObjectPlacementConfig
+        {
+            public bool Enabled { get; init; }
+            
+            public List<ObjectConfig> Objects { get; init; } = new();
+
+            public sealed record ObjectConfig
+            {
+                public string Name { get; init; }
+
+                public string Model { get; init; }
+            }
+        }
     }
 }

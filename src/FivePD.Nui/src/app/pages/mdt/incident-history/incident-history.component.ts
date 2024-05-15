@@ -80,7 +80,7 @@ export class IncidentHistoryComponent implements OnInit {
   }
 
   getIncidentHistoryPage(): void {
-    this._incidentHistoryService.getAll(this.incidentHistoryPageCollation)
+    this._incidentHistoryService.getPage(this.incidentHistoryPageCollation)
       .subscribe(page => this.incidentHistoryPage = page);
   }
 

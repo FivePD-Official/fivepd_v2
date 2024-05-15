@@ -1,11 +1,11 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Utilities;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Models.AssistanceServiceModels;
@@ -23,6 +23,10 @@ public class Towing : AssistanceService
     private FPed _driver;
     private FVehicle _towTruck;
     private FVehicle _targetVehicle;
+    
+    private const float SlowingDistance = 125f;
+    private const float MaximumSpeed = 25f;
+    private const float MinimumSpeed = 5f;
 
     private Vector3 _targetPosition;
 
@@ -43,7 +47,7 @@ public class Towing : AssistanceService
     public override async Task SetupAsync()
     {
         this._targetVehicle = this._entityService.GetClosestFVehicleToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
-        this._targetPosition = this._targetVehicle.GetUnderlyingVehicle.Position;
+        this._targetPosition = this._targetVehicle?.GetUnderlyingVehicle.Position ?? default;
     }
 
     public override Task<bool> CanRunAsync()
@@ -62,14 +66,13 @@ public class Towing : AssistanceService
         var towTrucks = this._vehicleConfigService.GetAll<TowTruckVehicleConfigOptions>(VehicleConfigType.TowTruck);
         if (towTrucks.Count == 0)
         {
-            this.OnCompletedOrCancelled();
-            return;
+            towTrucks.Add(DefaultVehicleConfigs.TowTruck);
         }
 
         var serviceVehicle = towTrucks[this._randomService.Random.Next(0, towTrucks.Count)];
 
         this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Benny, this.SpawnLocation, 0f);
-        this._towTruck = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, 0f);
+        this._towTruck = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, this.SpawnHeading);
 
         this._towTruck.Properties.CreateBlip(FBlipSprite.TowTruck, FBlipColor.TrevorOrange, "Tow truck");
 
@@ -81,21 +84,21 @@ public class Towing : AssistanceService
         this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._towTruck.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
-        this._driver.Task.DriveTo(
-            this._towTruck.GetUnderlyingVehicle,
-            this._targetPosition,
-            0f,
-            25f,
-            (int)FDrivingStyle.Emergency);
 
-        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
+        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= SlowingDistance)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
                 return;
             }
+            
+            var distance = Vector3.Distance(this._towTruck.GetUnderlyingVehicle.Position, this._targetPosition);
+            var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
+            var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
+            
+            this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, currentSpeed, (int)FDrivingStyle.Emergency);
 
-            await Task.Delay(100);
+            await Task.Delay(500);
         }
         
         this._driver.Task.ClearAll();
@@ -104,7 +107,7 @@ public class Towing : AssistanceService
             this._targetVehicle.GetUnderlyingVehicle.Position,
             0f,
             5f,
-            (int)FDrivingStyle.Emergency);
+            (int)FDrivingStyle.Normal);
 
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {

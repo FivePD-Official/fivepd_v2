@@ -22,6 +22,7 @@ export interface MenuItemDto {
   Hashcode: string;
   Title: string;
   Description: string;
+  Enabled: boolean;
   Type: number;
   Divider: boolean;
   Items?: MenuListOption[];
@@ -205,4 +206,12 @@ export interface OnUnitCreated extends BaseNuiEvent {
 
 export interface OnUnitRemoved extends BaseNuiEvent {
   Callsign: string;
+}
+
+export interface OnAudioSpeak extends BaseNuiEvent {
+  Sound: string;
+}
+
+export interface OnAudioPlaySound extends BaseNuiEvent {
+  Text: string;
 }

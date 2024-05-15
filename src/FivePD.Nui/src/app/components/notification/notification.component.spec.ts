@@ -8,12 +8,18 @@ describe('NotificationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [NotificationComponent]
-})
-    .compileComponents();
+      imports: [NotificationComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(NotificationComponent);
     component = fixture.componentInstance;
+
+    component.notification = {
+      type: "success",
+      title: 'title',
+      description: 'description',
+    };
+
     fixture.detectChanges();
   });
 

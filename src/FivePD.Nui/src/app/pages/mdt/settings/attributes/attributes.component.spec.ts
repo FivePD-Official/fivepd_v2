@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AttributesComponent } from './attributes.component';
+import { TestHelperModule } from "../../../../../test-helpers/test-helper.module";
+import { TippyModule } from "@ngneat/helipopper";
+import { mockedTippyModule } from "../../../../../test-helpers/mock-tippy";
 
 describe('AdminSettingsComponent', () => {
   let component: AttributesComponent;
@@ -8,9 +11,17 @@ describe('AdminSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AttributesComponent]
+      imports: [
+        AttributesComponent,
+        TestHelperModule.builder()
+          .withTranslatePipe()
+          .withLocalizationService()
+          .withStore()
+          .build()
+      ]
     })
-    .compileComponents();
+      .overrideModule(TippyModule, mockedTippyModule())
+      .compileComponents();
 
     fixture = TestBed.createComponent(AttributesComponent);
     component = fixture.componentInstance;

@@ -14,8 +14,9 @@ public class MenuButtonItem : MenuItem, IMenuButtonItemWithEvents
     /// </summary>
     /// <param name="title">The title of this item.</param>
     /// <param name="description">The description of this item.</param>
-    public MenuButtonItem(string title, string description)
-        : base(title, description, MenuItemType.Button)
+    /// <param name="enabled">The state of this item.</param>
+    public MenuButtonItem(string title, string description, bool enabled = true)
+        : base(title, description, enabled, MenuItemType.Button)
     {
     }
 

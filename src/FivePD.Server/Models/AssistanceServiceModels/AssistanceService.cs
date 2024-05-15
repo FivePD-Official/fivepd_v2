@@ -21,6 +21,11 @@ public abstract class AssistanceService : IInternalAssistanceService
     public Vector3 SpawnLocation => ((IInternalAssistanceService)this).SpawnLocation;
 
     /// <summary>
+    /// Gets the heading for the assistance service to face.
+    /// </summary>
+    public float SpawnHeading => ((IInternalAssistanceService)this).SpawnHeading;
+
+    /// <summary>
     /// Gets or sets the player who requested the assistance service.
     /// </summary>
     FPlayer IInternalAssistanceService.RequestedBy { get; set; }
@@ -29,6 +34,11 @@ public abstract class AssistanceService : IInternalAssistanceService
     /// Gets or sets the location where the assistance service should spawn.
     /// </summary>
     Vector3 IInternalAssistanceService.SpawnLocation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the location where the assistance service should spawn.
+    /// </summary>
+    float IInternalAssistanceService.SpawnHeading { get; set; }
 
     /// <summary>
     /// Sets up the assistance service.
@@ -79,4 +89,9 @@ internal interface IInternalAssistanceService
     /// Gets or sets the location where the assistance service should spawn.
     /// </summary>
     public Vector3 SpawnLocation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the heading for the assistance service to face.
+    /// </summary>
+    public float SpawnHeading { get; set; }
 }

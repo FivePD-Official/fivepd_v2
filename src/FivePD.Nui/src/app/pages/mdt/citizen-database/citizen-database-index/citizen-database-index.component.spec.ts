@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CitizenDatabaseIndexComponent } from './citizen-database-index.component';
+import { TestHelperModule } from "../../../../../test-helpers/test-helper.module";
 
 describe('CitizenDatabaseIndexComponent', () => {
   let component: CitizenDatabaseIndexComponent;
@@ -8,9 +8,15 @@ describe('CitizenDatabaseIndexComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [CitizenDatabaseIndexComponent]
-})
-    .compileComponents();
+      imports: [
+        CitizenDatabaseIndexComponent,
+        TestHelperModule.builder()
+          .withStore()
+          .withTranslatePipe()
+          .withLocalizationService()
+          .build()
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CitizenDatabaseIndexComponent);
     component = fixture.componentInstance;

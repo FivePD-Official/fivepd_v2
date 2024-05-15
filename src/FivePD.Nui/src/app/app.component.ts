@@ -11,6 +11,7 @@ import { MenuService } from '@services/menu/menu.service';
 import { ConfigService } from "@services/config/config.service";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { UserService } from "@services/user/user.service";
+import { AudioService } from "@services/audio/audio.service";
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,7 @@ export class AppComponent implements OnInit {
     private readonly _configService: ConfigService,
     private readonly _modalService: ModalService,
     private readonly _userService: UserService,
+    private readonly _soundService: AudioService,
   ) {
   }
 
@@ -60,6 +62,8 @@ export class AppComponent implements OnInit {
 
       enableAnimations();
     });
+
+    this._soundService.listenToEvents();
   }
 
   disableAnimations() {

@@ -41,7 +41,7 @@ public abstract class Menu
     /// <summary>
     /// Gets the items.
     /// </summary>
-    public IReadOnlyList<MenuItem> Items => this.InternalItems;
+    public IReadOnlyCollection<MenuItem> Items => this.InternalItems.AsReadOnly();
 
     /// <summary>
     /// Gets the items.

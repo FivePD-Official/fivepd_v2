@@ -1,4 +1,4 @@
-import {LooseDataAttribute} from './loose-data';
+import {VariableDataAttribute} from './loose-data';
 import {FGender, FIncidentPriority, FIncidentType, PedLicenseType} from "@enums";
 
 export type Id = string | number;
@@ -123,26 +123,26 @@ export interface Page<T> {
   ItemCount: number;
 }
 
-export interface LooseDataEntity extends WithId {
+export interface VariableDataEntity extends WithId {
   SetId: string;
   MappedValues: Record<string, any>;
   Set?: {
-    Attributes?: LooseDataAttribute[];
+    Attributes?: VariableDataAttribute[];
   }
 }
 
-export interface MappedLooseDataEntity extends Omit<LooseDataEntity, 'MappedValues'> {
+export interface MappedVariableDataEntity extends Omit<VariableDataEntity, 'MappedValues'> {
   [key: string]: any;
 }
 
-export interface LooseDataEntityWrapper {
-  entity: MappedLooseDataEntity;
-  attributes: LooseDataAttribute[];
+export interface VariableDataEntityWrapper {
+  entity: MappedVariableDataEntity;
+  attributes: VariableDataAttribute[];
 }
 
-export interface LooseDataEntityPageWrapper {
-  page: Page<MappedLooseDataEntity>;
-  attributes: LooseDataAttribute[];
+export interface VariableDataEntityPageWrapper {
+  page: Page<MappedVariableDataEntity>;
+  attributes: VariableDataAttribute[];
 }
 
 export interface Vector3 {
@@ -253,4 +253,15 @@ export interface FVehicle extends WithId {
 
 export interface FVehicleDTO extends FVehicle {
   Owner?: PedHistory;
+}
+
+export interface SpeedZone {
+  Position: Vector3;
+  Radius: number;
+  Speed: number;
+}
+
+export interface SpeedZoneWithPlayerDTO extends WithStringId {
+  SpeedZone: SpeedZone;
+  PlayerName: string;
 }

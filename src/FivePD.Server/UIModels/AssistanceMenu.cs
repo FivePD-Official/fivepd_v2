@@ -68,51 +68,56 @@ public sealed class AssistanceMenu : Menu
 
     protected override List<MenuItem> CreateItems()
     {
+        var assistanceServicesConfig = this._configService.GeneralConfig.AssistanceServices;
         var items = new List<MenuItem>();
 
-        this.AmbulanceButton = new MenuButtonItem("Request Ambulance", "");
-        this.AmbulanceButton.OnSelect += async player =>
+        if (assistanceServicesConfig.Ambulance.Enabled)
         {
-            if (this._requestedAmbulanceId == Guid.Empty)
+            this.AmbulanceButton = new MenuButtonItem("Request Ambulance", "");
+            this.AmbulanceButton.OnSelect += async player =>
             {
-                this._requestedAmbulanceId = await this._assistanceService.CallAsync<Ambulance>(player, OnCancel);
-                this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.AmbulanceButton, item => item.Title, "Cancel Ambulance");
-            }
-            else
-            {
-                this._assistanceService.Cancel(ref this._requestedAmbulanceId);
-            }
+                if (this._requestedAmbulanceId == Guid.Empty)
+                {
+                    this._requestedAmbulanceId = await this._assistanceService.CallAsync<Ambulance>(player, OnCancel);
+                    this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.AmbulanceButton, item => item.Title, "Cancel Ambulance");
+                }
+                else
+                {
+                    this._assistanceService.Cancel(ref this._requestedAmbulanceId);
+                }
 
-            void OnCancel()
-            {
-                this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.AmbulanceButton, item => item.Title, "Request Ambulance");
-                this._requestedAmbulanceId = Guid.Empty;
-            }
+                void OnCancel()
+                {
+                    this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.AmbulanceButton, item => item.Title, "Request Ambulance");
+                    this._requestedAmbulanceId = Guid.Empty;
+                }
+            };
+            items.Add(this.AmbulanceButton);
+        }
 
-            
-        };
-        items.Add(this.AmbulanceButton);
-
-        this.TowButton = new MenuButtonItem("Request Tow", "");
-        this.TowButton.OnSelect += async player =>
+        if (assistanceServicesConfig.TowTruck.Enabled)
         {
-            if (this._requestedTowingId == Guid.Empty)
+            this.TowButton = new MenuButtonItem("Request Tow", "");
+            this.TowButton.OnSelect += async player =>
             {
-                this._requestedTowingId = await this._assistanceService.CallAsync<Towing>(player, OnCancel);
-                this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.TowButton, item => item.Title, "Cancel Tow");
-            }
-            else
-            {
-                this._assistanceService.Cancel(ref this._requestedTowingId);
-            }
+                if (this._requestedTowingId == Guid.Empty)
+                {
+                    this._requestedTowingId = await this._assistanceService.CallAsync<Towing>(player, OnCancel);
+                    this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.TowButton, item => item.Title, "Cancel Tow");
+                }
+                else
+                {
+                    this._assistanceService.Cancel(ref this._requestedTowingId);
+                }
 
-            void OnCancel()
-            {
-                this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.TowButton, item => item.Title, "Request Tow");
-                this._requestedTowingId = Guid.Empty;
-            }
-        };
-        items.Add(this.TowButton);
+                void OnCancel()
+                {
+                    this._menuService.UpdateMenuItem<AssistanceMenu, string>(player, m => m.TowButton, item => item.Title, "Request Tow");
+                    this._requestedTowingId = Guid.Empty;
+                }
+            };
+            items.Add(this.TowButton);
+        }
 
         return items;
     }

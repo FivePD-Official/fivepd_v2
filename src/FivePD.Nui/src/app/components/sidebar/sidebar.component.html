@@ -1,53 +1,55 @@
-<aside class="w-full h-full border-r border-color flex flex-col items-center justify-between p-5 pt-10">
-  <div class="w-full">
-    @for (route of routes; track route) {
-      @if (isRoute(route) && !hasChildren(route) && route.show()) {
-        <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:route}"/>
-      } @else if (hasChildren(route) && route.show()) {
-        <div class="group decoration-0 w-full">
-          <button type="button"
-                  (click)="toggleRoute(route)"
-                  class="relative flex flex-row items-center justify-between w-full h-[50px] mb-3 decoration-0
+<aside class="w-full h-full border-r border-color flex flex-col items-center justify-between py-5">
+  <div class="w-full max-h-[80%] overflow-hidden">
+    <div class="h-full overflow-x-auto px-5">
+      @for (route of routes; track route) {
+        @if (isRoute(route) && !hasChildren(route) && route.show()) {
+          <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:route}"/>
+        } @else if (hasChildren(route) && route.show()) {
+          <div class="group decoration-0 w-full">
+            <button type="button"
+                    (click)="toggleRoute(route)"
+                    class="relative flex flex-row items-center justify-between w-full h-[50px] mb-3 decoration-0
                     before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
                     before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
-            <div class="flex flex-row items-center h-full w-full">
-              <div app-icon
-                   [name]="route.icon"
-                   class="w-[50px] h-full flex flex-center justify-center"
-                   className="h-[25px] text-zinc-400 group-[.active]:text-white">
+              <div class="flex flex-row items-center h-full w-full">
+                <div app-icon
+                     [name]="route.icon"
+                     class="w-[50px] h-full flex flex-center justify-center"
+                     className="h-[25px] text-zinc-400 group-[.active]:text-white">
+                </div>
+                <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
+                   [ngClass]="{ 'hidden': isSidebarCollapsed }">
+                  {{ route.title | translate }}
+                </p>
               </div>
-              <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
-                 [ngClass]="{ 'hidden': isSidebarCollapsed }">
-                {{ route.title | translate }}
-              </p>
-            </div>
-            @if (!isSidebarCollapsed) {
-              <div app-icon
-                   [name]="route.open ? IconType.ChevronUp : IconType.ChevronDown"
-                   class="w-[50px] h-full flex flex-center justify-center"
-                   className="h-[20px] text-zinc-400 group-[.active]:text-white">
+              @if (!isSidebarCollapsed) {
+                <div app-icon
+                     [name]="route.open ? IconType.ChevronUp : IconType.ChevronDown"
+                     class="w-[50px] h-full flex flex-center justify-center"
+                     className="h-[20px] text-zinc-400 group-[.active]:text-white">
+                </div>
+              }
+            </button>
+            @if (route.open) {
+              <div class="border-l border-color" [ngClass]="{'pl-4': !isSidebarCollapsed, 'pl-2': isSidebarCollapsed}">
+                @for (subroute of route.children; track subroute) {
+                  @if (subroute.show()) {
+                    <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:subroute}"/>
+                  }
+                }
               </div>
             }
-          </button>
-          @if (route.open) {
-            <div class="border-l border-color" [ngClass]="{'pl-4': !isSidebarCollapsed, 'pl-2': isSidebarCollapsed}">
-              @for (subroute of route.children; track subroute) {
-                @if (subroute.show()) {
-                  <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:subroute}"/>
-                }
-              }
-            </div>
-          }
-        </div>
-      } @else if (isDivider(route)) {
-        <div class="h-[1px] w-full my-4 bg-zinc-700"></div>
+          </div>
+        } @else if (isDivider(route)) {
+          <div class="h-[1px] w-full my-4 bg-zinc-700"></div>
+        }
       }
-    }
+    </div>
   </div>
 
-  <div class="w-full">
-    @if (config?.dispatchTypeManual() && userService.userHasRole(UserRole.Dispatcher)) {
-      <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3
+  <div class="w-full flex flex-col gap-2 px-5">
+    @if (true || config?.dispatchTypeManual() && userService.userHasRole(UserRole.Dispatcher)) {
+      <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center
                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
                    before:bg-zinc-800 hover:before:bg-zinc-700"
               (click)="enableDispatchMode()">
@@ -60,7 +62,7 @@
       </span>
       </button>
     }
-    <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center mb-3
+    <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center
                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
                    before:bg-zinc-800 hover:before:bg-zinc-700"
             (click)="toggleSidebarCollapse()">

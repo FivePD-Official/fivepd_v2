@@ -4,7 +4,7 @@ import { MenuItem } from '@models';
 export class MenuDividerItem extends MenuItem {
 
   constructor(title: string) {
-    super(title, '', '', MenuItemType.Divider);
+    super(title, '', true, '', MenuItemType.Divider);
   }
 
   override onPress() {

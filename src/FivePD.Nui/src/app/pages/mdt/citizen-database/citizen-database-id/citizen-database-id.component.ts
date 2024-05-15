@@ -13,13 +13,13 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
-import { LooseDataService } from "@services/loose-data/loose-data.service";
 import { mapAttributesToFields } from "@helpers";
 import { ButtonComponent } from "../../../../components/button/button.component";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { EntityViewComponent } from "./_components/entity-view.component";
 import { parseId } from "../../../../helpers/parse-id";
+import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
   selector: 'app-citizen-database-id',
@@ -33,7 +33,7 @@ export class CitizenDatabaseIdComponent {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _pedHistoryService = inject(PedHistoryService);
   private readonly _store = inject<Store<GlobalState>>(Store<GlobalState>);
-  private readonly _looseDataService = inject(LooseDataService);
+  private readonly _variableDataService = inject(VariableDataService);
   private readonly _modalService = inject(ModalService);
   private readonly _modalFormService = inject(ModalFormService);
 
@@ -56,10 +56,10 @@ export class CitizenDatabaseIdComponent {
     this.id$,
     this.ticketsRefresh$,
   ]).pipe(
-    switchMap(([id]) => this._looseDataService.getEntities(CoreSetId.PedTicket, {PedHistoryId: id})),
-    map(entities => entities.map(x => this._looseDataService.mapEntityValues({
+    switchMap(([id]) => this._variableDataService.getEntities(CoreSetId.PedTicket, {PedHistoryId: id})),
+    map(entities => entities.map(x => this._variableDataService.mapEntityValues({
       entity: x,
-      attributes: this._looseDataService.getSetAttributes(CoreSetId.PedTicket),
+      attributes: this._variableDataService.getSetAttributes(CoreSetId.PedTicket),
     }))),
   );
 
@@ -68,18 +68,18 @@ export class CitizenDatabaseIdComponent {
     this.id$,
     this.warningsRefresh$,
   ]).pipe(
-    switchMap(([id]) => this._looseDataService.getEntities(CoreSetId.PedWarning, {PedHistoryId: id})),
-    map(entities => entities.map(x => this._looseDataService.mapEntityValues({
+    switchMap(([id]) => this._variableDataService.getEntities(CoreSetId.PedWarning, {PedHistoryId: id})),
+    map(entities => entities.map(x => this._variableDataService.mapEntityValues({
       entity: x,
-      attributes: this._looseDataService.getSetAttributes(CoreSetId.PedWarning),
+      attributes: this._variableDataService.getSetAttributes(CoreSetId.PedWarning),
     }))),
   );
 
   readonly arrestReports$ = this.id$.pipe(
-    switchMap(id => this._looseDataService.getEntities(CoreSetId.ArrestReport, {PedHistoryIds: [id]})),
-    map(entities => entities.map(x => this._looseDataService.mapEntityValues({
+    switchMap(id => this._variableDataService.getEntities(CoreSetId.ArrestReport, {PedHistoryIds: [id]})),
+    map(entities => entities.map(x => this._variableDataService.mapEntityValues({
       entity: x,
-      attributes: this._looseDataService.getSetAttributes(CoreSetId.ArrestReport),
+      attributes: this._variableDataService.getSetAttributes(CoreSetId.ArrestReport),
     }))),
   );
 
@@ -113,15 +113,15 @@ export class CitizenDatabaseIdComponent {
     }
   }
 
-  tryCreateLooseDataEntity(setId: SetId): void {
-    of(this._looseDataService.getSetAttributes(setId))
+  tryCreateVariableDataEntity(setId: SetId): void {
+    of(this._variableDataService.getSetAttributes(setId))
       .pipe(
         switchMap(attributes => {
           if (attributes) {
             return of(attributes);
           }
 
-          return this._looseDataService.updateSetAttributes(setId);
+          return this._variableDataService.updateSetAttributes(setId);
         }),
         switchMap(attributes => {
           return this._modalFormService.open({
@@ -136,7 +136,7 @@ export class CitizenDatabaseIdComponent {
         }),
         filter(res => res.success),
         switchMap(res => {
-          return this._looseDataService.addEntity(setId, res.value);
+          return this._variableDataService.addEntity(setId, res.value);
         }),
         this._modalService.handleResponse()
       )

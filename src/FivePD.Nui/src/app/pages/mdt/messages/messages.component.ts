@@ -2,22 +2,20 @@ import { Component, inject, OnInit } from '@angular/core';
 import { MessageService } from "@services/message/message.service";
 import {
   Collation,
-  SingleSelectField,
   GeneralConfig,
   Message,
+  MultiSelectField,
   Page,
   SimpleUser,
   TextareaField,
-  TextField,
-  MultiSelectField, VehicleConfigType
+  TextField
 } from "@models";
 import { FIncidentPriority } from "@enums";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ConfigService } from "@services/config/config.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { UserService } from "@services/user/user.service";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
-import { BehaviorSubject, filter, switchMap } from "rxjs";
+import { filter, switchMap, takeUntil } from "rxjs";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { PaginationComponent } from '../../../components/pagination/pagination.component';
 import { ButtonComponent } from '../../../components/button/button.component';
@@ -25,6 +23,7 @@ import { DatePipe, NgClass } from '@angular/common';
 import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { LocalizationService } from "@services/localization/localization.service";
+import { injectDestroy } from "../../../helpers/destroy-ref";
 
 @Component({
   selector: 'app-messages',
@@ -35,6 +34,7 @@ import { LocalizationService } from "@services/localization/localization.service
 })
 export class MessagesComponent implements OnInit {
 
+  private readonly destroy$ = injectDestroy();
   private readonly _messageService = inject(MessageService);
   private readonly _configService = inject(ConfigService);
   private readonly _modalService = inject(ModalService);
@@ -51,14 +51,14 @@ export class MessagesComponent implements OnInit {
   selectedMessage?: Message;
 
   ngOnInit(): void {
-    this._configService.getGeneralConfig().pipe(takeUntilDestroyed()).subscribe(config => {
+    this._configService.getGeneralConfig().pipe(takeUntil(this.destroy$)).subscribe(config => {
       this.config = config;
     });
     this.getMessages();
   }
 
   getMessages(): void {
-    this._messageService.getAllPageable(this.messagesCollation).subscribe(page => {
+    this._messageService.getPage(this.messagesCollation).subscribe(page => {
       this.messagesPage = page;
     });
   }

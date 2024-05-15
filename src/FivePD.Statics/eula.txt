@@ -1,0 +1,3 @@
+﻿By changing the below setting to TRUE, you acknowledge that you have read and understood our EULA which can be found at the following URL: {url}
+
+EULA: true

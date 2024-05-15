@@ -230,13 +230,13 @@ export class DashboardComponent implements OnInit {
   }
 
   private getUnits(): void {
-    this._unitService.getAll().subscribe(res => {
+    this._unitService.getPage().subscribe(res => {
       this.units = res;
     });
   }
 
   private getIncidents(): void {
-    this._incidentService.getAll().subscribe(res => {
+    this._incidentService.getPage().subscribe(res => {
       this.incidents = res;
     });
   }

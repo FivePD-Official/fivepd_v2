@@ -1,4 +1,4 @@
-﻿using FivePD.Server.Models.LooseData;
+﻿using FivePD.Server.Models.VariableData;
 
 #pragma warning disable
 
@@ -10,5 +10,5 @@ internal record struct AddSetAttributeRequest
 
     public string AttributeType { get; set; }
 
-    public LooseDataAttribute Attribute { get; set; }
+    public VariableDataAttribute Attribute { get; set; }
 }

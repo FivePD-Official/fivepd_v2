@@ -1,5 +1,5 @@
-﻿export interface Collation {
+﻿export interface Collation<TFilters = Record<string, any>> {
   Page: number;
-  Filters: Record<string, any>;
+  Filters: TFilters;
   Sorting?: any; // TODO
 }

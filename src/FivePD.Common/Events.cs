@@ -17,6 +17,8 @@ internal readonly record struct Events
     public readonly record struct Vector3
     {
         public const string GetRandomOffset = "fivepd:vector3:getRandomOffset";
+        
+        public const string GetPointOnRoadSide = "fivepd:vector3:GetPointOnRoadSide";
     }
 
     public readonly record struct Player
@@ -116,10 +118,6 @@ internal readonly record struct Events
         public const string MenuSelect = "fivepd:menu:control_select";
 
         public const string RadialMenuControl = "fivepd:radialMenu:control";
-
-        public const string PlaySound = "fivepd:sound:play";
-
-        public const string Speak = "fivepd:sound:speak";
     }
 
     public readonly record struct UI
@@ -203,31 +201,31 @@ internal readonly record struct Events
             public const string UpdateRuleset = "fivepd:calloutDetails:updateRuleset";
         }
 
-        public readonly record struct LooseData
+        public readonly record struct VariableData
         {
-            public const string GetSetAttribute = "fivepd:looseData:getSetAttribute";
+            public const string GetSetAttribute = "fivepd:variableData:getSetAttribute";
 
-            public const string GetSetAttributes = "fivepd:looseData:getSetAttributes";
+            public const string GetSetAttributes = "fivepd:variableData:getSetAttributes";
 
-            public const string GetSetAttributesPageable = "fivepd:looseData:getSetAttributesPageable";
+            public const string GetSetAttributesPageable = "fivepd:variableData:getSetAttributesPageable";
 
-            public const string AddSetAttribute = "fivepd:looseData:addSetAttribute";
+            public const string AddSetAttribute = "fivepd:variableData:addSetAttribute";
 
-            public const string EditSetAttribute = "fivepd:looseData:editSetAttribute";
+            public const string EditSetAttribute = "fivepd:variableData:editSetAttribute";
 
-            public const string DeleteSetAttribute = "fivepd:looseData:deleteSetAttribute";
+            public const string DeleteSetAttribute = "fivepd:variableData:deleteSetAttribute";
 
-            public const string GetEntity = "fivepd:looseData:getEntity";
+            public const string GetEntity = "fivepd:variableData:getEntity";
 
-            public const string GetEntitiesPageable = "fivepd:looseData:getEntitiesPageable";
+            public const string GetEntitiesPageable = "fivepd:variableData:getEntitiesPageable";
 
-            public const string GetEntities = "fivepd:looseData:getEntities";
+            public const string GetEntities = "fivepd:variableData:getEntities";
 
-            public const string AddEntity = "fivepd:looseData:addEntity";
+            public const string AddEntity = "fivepd:variableData:addEntity";
 
-            public const string EditEntity = "fivepd:looseData:editEntity";
+            public const string EditEntity = "fivepd:variableData:editEntity";
 
-            public const string DeleteEntity = "fivepd:looseData:deleteEntity";
+            public const string DeleteEntity = "fivepd:variableData:deleteEntity";
         }
 
         public readonly record struct Menu
@@ -446,6 +444,24 @@ public readonly record struct DevTools
         public const string GetAllSimple = "fivepd:user:getAllSimple";
     }
 
+    public readonly record struct SceneManagement
+    {
+        public const string GetAllSpeedZones = "fivepd:sceneManagement:getAllSpeedZones";
+
+        public const string CreateSpeedZone = "fivepd:sceneManagement:createSpeedZone";
+
+        public const string DeleteSpeedZone = "fivepd:sceneManagement:deleteSpeedZone";
+
+        public const string DeleteUI = "fivepd:sceneManagement:deleteUI";
+    }
+
+    public readonly record struct Audio
+    {
+        public const string PlaySound = "fivepd:audio:playSound";
+
+        public const string Speak = "fivepd:audio:speak";
+    }
+
     public readonly record struct Cfx
     {
         // void AddAmmoToPed(int ped,uint weaponHash,int ammo);
@@ -492,5 +508,8 @@ public readonly record struct DevTools
 
         // void TaskVehicleTempAction(int driver, int vehicle, int action, int time);
         public const string TaskVehicleTempAction = "fivepd:cfx:TaskVehicleTempAction";
+
+        // void SetEntityAsMissionEntity(int entity, bool p1, bool p2);
+        public const string SetEntityAsMissionEntity = "fivepd:cfx:SetEntityAsMissionEntity";
     }
 }

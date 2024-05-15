@@ -13,13 +13,13 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Lifecycle;
-using FivePD.Server.Interfaces.LooseData;
 using FivePD.Server.Interfaces.TrafficStopInterfaces;
+using FivePD.Server.Interfaces.VariableData;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
-using FivePD.Server.Services.LooseData;
 using FivePD.Server.Services.TrafficStopServices;
+using FivePD.Server.Services.VariableData;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
@@ -76,8 +76,6 @@ internal class Bootstrapper : BaseScript
 
         this._addonLocatorLogger = Log.Logger.ForContext("SourceIdentifier", "AddonLocator");
 
-        this._phases.Add(this.PerformSafeToRunCheckBeforeBootstrapping, false);
-
         // Enqueue service location phase.
         this._phases.Add(this.PerformServiceLocationPhase, false);
 
@@ -96,7 +94,7 @@ internal class Bootstrapper : BaseScript
         // Enqueue addon startup phase.
         this._phases.Add(this.PerformAddonEnqueuePhase, false);
 
-        this._phases.Add(DatabaseHandler.Update, false);
+        this._phases.Add(DatabaseHandler.SeedData, false);
 
         this._phases.Add(this.PerformSafeToRunCheckAfterBootstrapping, false);
 
@@ -271,9 +269,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<BackupManagerService>();
         services.AddSingleton<IBackupManagerService>(provider => provider.GetRequiredService<BackupManagerService>());
 
-        services.AddSingleton<LooseDataService>();
-        services.AddSingleton<ILooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
-        services.AddSingleton<IInternalLooseDataService>(provider => provider.GetRequiredService<LooseDataService>());
+        services.AddSingleton<VariableDataService>();
+        services.AddSingleton<IVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
+        services.AddSingleton<IInternalVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
 
         services.AddSingleton<ConfigService>();
         services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());
@@ -365,10 +363,17 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<Vector3Service>();
         services.AddSingleton<IVector3Service>(provider => provider.GetRequiredService<Vector3Service>());
-
+        
         services.AddSingleton<AlprService>();
         services.AddSingleton<IAlprService>(provider => provider.GetRequiredService<AlprService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AlprService>());
+
+        services.AddSingleton<SceneManagementService>();
+        services.AddSingleton<ISceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
+        services.AddSingleton<IInternalSceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
+
+        services.AddSingleton<AudioService>();
+        services.AddSingleton<IAudioService>(provider => provider.GetRequiredService<AudioService>());
 
         this._provider = services.BuildServiceProvider();
 
@@ -441,32 +446,20 @@ internal class Bootstrapper : BaseScript
         }
     }
 
-    private void PerformSafeToRunCheckBeforeBootstrapping()
+    private void PerformSafeToRunCheckAfterBootstrapping()
     {
         var errors = new List<string>();
+
+        var (eulaAccepted, eulaError) = LicenseHandler.ValidateEula();
+        if (!eulaAccepted)
+        {
+            errors.Add(eulaError);
+        }
 
         if (Cfx.API.GetConvar("onesync", "off") != "on")
         {
             errors.Add("OneSync needs to be enabled.");
         }
-
-        if (errors.Count == 0)
-        {
-            return;
-        }
-
-        this._bootstrapLogger?.Fatal("FivePD cannot run in this environment. Verify the following:");
-        foreach (var message in errors)
-        {
-            this._bootstrapLogger?.Fatal($"{message}");
-        }
-
-        LifecycleHandler.Stop();
-    }
-
-    private void PerformSafeToRunCheckAfterBootstrapping()
-    {
-        var errors = new List<string>();
 
         var localizationService = this._provider.GetService<ILocalizationService>();
         if (localizationService.AvailableLocalizations.Count == 0)
@@ -515,8 +508,8 @@ internal class Bootstrapper : BaseScript
 
         this._bootstrapLogger?.Information("Stopping FivePD");
 
-        var looseData = this._provider.GetService<ILooseDataService>();
-        ((IInternalLooseDataService)looseData).DisposeAddonRepositories();
+        var variableDataService = this._provider.GetService<IVariableDataService>();
+        ((IInternalVariableDataService)variableDataService).DisposeAddonRepositories();
 
         // Dispose all internal services with the interface IDisposableService
         foreach (var service in this._provider.GetServices<IOnDestroy>())

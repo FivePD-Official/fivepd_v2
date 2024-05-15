@@ -5,7 +5,7 @@ using CitizenFX.Core;
 using FivePD.Common.ConfigModels;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
-using FivePD.Server.Models.LooseData;
+using FivePD.Server.Models.VariableData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
@@ -72,22 +72,22 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the dynamic data sets.
     /// </summary>
-    public DbSet<LooseDataSet> LooseDataSets { get; set; }
+    public DbSet<VariableDataSet> VariableDataSets { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the dynamic entities.
     /// </summary>
-    public DbSet<LooseDataEntity> LooseDataEntities { get; set; }
+    public DbSet<VariableDataEntity> VariableDataEntities { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the attributes of the dynamic data sets.
     /// </summary>
-    public DbSet<LooseDataAttribute> LooseDataAttributes { get; set; }
+    public DbSet<VariableDataAttribute> VariableDataAttributes { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the values of dynamic entities.
     /// </summary>
-    public DbSet<LooseDataValue> LooseDataValues { get; set; }
+    public DbSet<VariableDataValue> VariableDataValues { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the incident histories.
@@ -203,7 +203,7 @@ public class DatabaseContext : DbContext
             .OwnsOne(rank => rank.Permission)
             .WithOwner();
 
-        modelBuilder.Entity<LooseDataSet>(type =>
+        modelBuilder.Entity<VariableDataSet>(type =>
         {
             type.HasMany(t => t.Entities);
             type.HasMany(t => t.Attributes);
@@ -219,17 +219,17 @@ public class DatabaseContext : DbContext
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
-        modelBuilder.Entity<LooseDataAttribute>(type =>
+        modelBuilder.Entity<VariableDataAttribute>(type =>
         {
             type.Property(t => t.Options)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
-                    v => JsonConvert.DeserializeObject<LooseDataAttribute.AttributeOptions>(
+                    v => JsonConvert.DeserializeObject<VariableDataAttribute.AttributeOptions>(
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
-        modelBuilder.Entity<LooseDataEntity>(type =>
+        modelBuilder.Entity<VariableDataEntity>(type =>
         {
             type.HasOne(t => t.Set);
             type.HasMany(t => t.Values)
@@ -237,7 +237,7 @@ public class DatabaseContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<LooseDataValue>(type =>
+        modelBuilder.Entity<VariableDataValue>(type =>
         {
             type.HasOne(t => t.Attribute);
             type.HasOne(t => t.Entity);

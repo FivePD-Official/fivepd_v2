@@ -6,10 +6,11 @@ describe('PaginationComponent', () => {
   let component: PaginationComponent;
   let fixture: ComponentFixture<PaginationComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-    imports: [PaginationComponent]
-});
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [PaginationComponent]
+    }).compileComponents();
+
     fixture = TestBed.createComponent(PaginationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

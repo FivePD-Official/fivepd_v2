@@ -29,6 +29,7 @@ import { AsyncPipe } from "@angular/common";
 import { Validators } from "@angular/forms";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 import { LocalizationService } from "@services/localization/localization.service";
+import { collationWithAdditionalFilters } from "../../../../helpers/request";
 
 function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
   return [
@@ -78,6 +79,7 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
 }
 
 function createTowTruckFields(localizationService: LocalizationService, vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
+  console.log('A', vehicleConfig)
   const towedVehiclePositionOffset = vehicleConfig?.Options['TowedVehiclePositionOffset'];
 
   return [
@@ -92,8 +94,8 @@ function createTowTruckFields(localizationService: LocalizationService, vehicleC
     new TextField({
       key: 'TowedVehiclePositionOffset',
       label: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.TOWED_VEHICLE_POSITION_OFFSET.LABEL'),
-      placeholder: 'TODO: replace with 3 fields for x,y,z',
-      helpLabel: 'format: x,y,z',
+      // placeholder: 'TODO: replace with 3 fields for x,y,z',
+      helpLabel: 'temporary format: X,Y,Z',
       required: true,
       value: towedVehiclePositionOffset ? `${towedVehiclePositionOffset['X']},${towedVehiclePositionOffset['Y']},${towedVehiclePositionOffset['Z']}` : '',
     }),
@@ -155,7 +157,7 @@ export class VehicleSettingsComponent {
 
   readonly policeVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly policeVehicleConfigPage$ = this.policeVehicleConfigCollation$.pipe(
-    switchMap(collation => this._vehicleConfigService.getAllPageable(VehicleConfigType.Police, collation))
+    switchMap(collation => this._vehicleConfigService.getPage(collationWithAdditionalFilters(collation, {Type: VehicleConfigType.Police})))
   );
   readonly policeVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
@@ -185,7 +187,7 @@ export class VehicleSettingsComponent {
   readonly ambulanceVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly ambulanceVehicleConfigPage$ = this.ambulanceVehicleConfigCollation$.pipe(
     filter(() => this._userService.userHasRole(UserRole.Admin)),
-    switchMap(collation => this._vehicleConfigService.getAllPageable(VehicleConfigType.Ambulance, collation))
+    switchMap(collation => this._vehicleConfigService.getPage(collationWithAdditionalFilters(collation, {Type: VehicleConfigType.Ambulance})))
   );
   readonly ambulanceVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
@@ -203,7 +205,7 @@ export class VehicleSettingsComponent {
   readonly towTruckVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly towTruckVehicleConfigPage$ = this.towTruckVehicleConfigCollation$.pipe(
     filter(() => this._userService.userHasRole(UserRole.Admin)),
-    switchMap(collation => this._vehicleConfigService.getAllPageable(VehicleConfigType.TowTruck, collation))
+    switchMap(collation => this._vehicleConfigService.getPage(collationWithAdditionalFilters(collation, {Type: VehicleConfigType.TowTruck})))
   );
   readonly towTruckVehicleConfigButtons: Button[] = [
     this.createAddVehicleButton(
@@ -216,7 +218,7 @@ export class VehicleSettingsComponent {
   readonly towTruckVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
-    this.createActionsColumn(() => createTowTruckFields(this._localizationService), () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value), mapTowTruckFields),
+    this.createActionsColumn(vehicleConfig => createTowTruckFields(this._localizationService, vehicleConfig), () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value), mapTowTruckFields),
   ];
 
   private createActionsColumn(fields: (vehicleConfig: VehicleConfig | undefined) => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<VehicleConfig> {
@@ -228,26 +230,29 @@ export class VehicleSettingsComponent {
           label: 'UI.ACTION.EDIT',
           show: () => true,
           disabled: () => false,
-          onClick: vehicleConfig => this._modalFormService.open({
-            title: 'UI.LABEL.VEHICLE_CONFIG.EDIT.TITLE',
-            fields: vehicleConfig => fields(vehicleConfig),
-            valueResolver: new ValueResolver(vehicleConfig, this._vehicleConfigService.get(vehicleConfig.Id)),
-            buttons: {
-              submit: {
-                variant: 'primary',
-                label: 'UI.ACTION.SAVE',
+          onClick: vehicleConfig => {
+            console.log(vehicleConfig)
+            this._modalFormService.open({
+              title: 'UI.LABEL.VEHICLE_CONFIG.EDIT.TITLE',
+              fields: vehicleConfig => fields(vehicleConfig),
+              valueResolver: new ValueResolver(vehicleConfig, this._vehicleConfigService.get(vehicleConfig.Id)),
+              buttons: {
+                submit: {
+                  variant: 'primary',
+                  label: 'UI.ACTION.SAVE',
+                },
               },
-            },
-          }).result
-            .pipe(
-              filter(res => res.success),
-              map(res => mapBeforeRequest ? {...res, value: mapBeforeRequest(res.value)} : res),
-              switchMap(res => this._vehicleConfigService.edit({
-                ...res.value,
-                Id: vehicleConfig.Id,
-              })),
-              this._modalService.handleResponse(),
-            ).subscribe(onResponse)
+            }).result
+              .pipe(
+                filter(res => res.success),
+                map(res => mapBeforeRequest ? {...res, value: mapBeforeRequest(res.value)} : res),
+                switchMap(res => this._vehicleConfigService.edit({
+                  ...res.value,
+                  Id: vehicleConfig.Id,
+                })),
+                this._modalService.handleResponse(),
+              ).subscribe(onResponse)
+          }
         },
         {
           type: 'button',

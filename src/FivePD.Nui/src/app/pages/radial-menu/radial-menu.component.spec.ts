@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RadialMenuComponent } from './radial-menu.component';
+import { TestHelperModule } from "../../../test-helpers/test-helper.module";
+import { RouterTestingModule } from "@angular/router/testing";
 
 describe('RadialMenuComponent', () => {
   let component: RadialMenuComponent;
@@ -8,9 +10,14 @@ describe('RadialMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [RadialMenuComponent]
-})
-    .compileComponents();
+      imports: [
+        RadialMenuComponent,
+        RouterTestingModule,
+        TestHelperModule.builder()
+          .withWindowEventListener()
+          .build()
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(RadialMenuComponent);
     component = fixture.componentInstance;

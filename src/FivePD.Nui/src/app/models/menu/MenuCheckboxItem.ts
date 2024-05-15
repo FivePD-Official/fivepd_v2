@@ -6,8 +6,8 @@ export class MenuCheckboxItem extends MenuItem {
 
   public Checked = false;
 
-  constructor(title: string, description: string, hashcode: string) {
-    super(title, description, hashcode, MenuItemType.Toggle);
+  constructor(title: string, description: string, enabled: boolean, hashcode: string) {
+    super(title, description, enabled, hashcode, MenuItemType.Toggle);
   }
 
   toggle(): void {

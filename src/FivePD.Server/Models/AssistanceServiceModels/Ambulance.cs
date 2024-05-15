@@ -27,6 +27,9 @@ public class Ambulance : AssistanceService
 
     private FPed _driver;
     private FVehicle _ambulance;
+    private const float SlowingDistance = 125f;
+    private const float MaximumSpeed = 30f;
+    private const float MinimumSpeed = 5f;
 
     private Vector3 _target;
 
@@ -63,31 +66,35 @@ public class Ambulance : AssistanceService
         var ambulances = this._vehicleConfigService.GetAll(VehicleConfigType.Ambulance);
         if (ambulances.Count == 0)
         {
-            this.OnCompletedOrCancelled();
-            return;
+            ambulances.Add(DefaultVehicleConfigs.Ambulance);
         }
 
         var serviceVehicle = ambulances[this._randomService.Random.Next(0, ambulances.Count)];
 
         this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Paramedic01SMM, this.SpawnLocation, 0f);
-        this._ambulance = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, 0f);
-
+        this._ambulance = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, this.SpawnHeading);
+        
         this._ambulance.Properties.CreateBlip(FBlipSprite.Health, FBlipColor.Red, "Ambulance");
         this._ambulance.Properties.IsSirenActive(true);
 
         this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._ambulance.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
-        this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, 30f, (int)FDrivingStyle.Emergency);
 
-        while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= 125f)
+        while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
                 return;
             }
+            
+            var distance = Vector3.Distance(this._ambulance.GetUnderlyingVehicle.Position, this._target);
+            var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
+            var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
+            
+            this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, currentSpeed, (int)FDrivingStyle.Emergency);
 
-            await Task.Delay(100);
+            await Task.Delay(500);
         }
 
         this._driver.Task.LeaveVehicle(FLeaveVehicleFlags.LeaveDoorOpen);

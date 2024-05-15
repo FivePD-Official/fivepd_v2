@@ -11,9 +11,9 @@ import { GridComponent } from '../../../../components/grid/grid.component';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
-import { LooseDataService } from "@services/loose-data/loose-data.service";
 import { BehaviorSubject, map, switchMap, zip } from "rxjs";
 import { LocalizationService } from "@services/localization/localization.service";
+import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
   selector: 'app-citizen-database-index',
@@ -26,12 +26,12 @@ export class CitizenDatabaseIndexComponent implements OnInit {
 
   private readonly _pedHistoryService = inject(PedHistoryService);
   private readonly _store = inject<Store<GlobalState>>(Store<GlobalState>);
-  private readonly _looseDataService = inject(LooseDataService);
+  private readonly _variableDataService = inject(VariableDataService);
   private readonly _localizationService = inject(LocalizationService);
 
   readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly citizens$ = this.collation$.pipe(
-    switchMap(collation => this._pedHistoryService.getAll(collation)),
+    switchMap(collation => this._pedHistoryService.getPage(collation)),
   );
 
   readonly recentlyViewedPeds = this._store.select('app', 'recentlyViewedPeds');
@@ -85,10 +85,10 @@ export class CitizenDatabaseIndexComponent implements OnInit {
 
   ngOnInit(): void {
     zip(
-      this._looseDataService.updateSetAttributes(CoreSetId.PedTicket),
-      this._looseDataService.updateSetAttributes(CoreSetId.PedWarning),
-      this._looseDataService.updateSetAttributes(CoreSetId.ArrestReport),
-      this._looseDataService.updateSetAttributes(CoreSetId.IncidentReport),
+      this._variableDataService.updateSetAttributes(CoreSetId.PedTicket),
+      this._variableDataService.updateSetAttributes(CoreSetId.PedWarning),
+      this._variableDataService.updateSetAttributes(CoreSetId.ArrestReport),
+      this._variableDataService.updateSetAttributes(CoreSetId.IncidentReport),
     ).subscribe();
   }
 

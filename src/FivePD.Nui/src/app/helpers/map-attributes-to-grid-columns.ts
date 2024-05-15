@@ -1,11 +1,11 @@
-﻿import { Column, MappedLooseDataEntity, LooseDataAttribute } from '@models';
+﻿import { Column, MappedVariableDataEntity, VariableDataAttribute } from '@models';
 
 export interface InsertableItem<T> {
   index: number;
   item: T;
 }
 
-export function mapAttributesToGridColumns(attributes: LooseDataAttribute[], itemsToInsert: InsertableItem<Column<MappedLooseDataEntity>>[] = []): Column<MappedLooseDataEntity>[] {
+export function mapAttributesToGridColumns(attributes: VariableDataAttribute[], itemsToInsert: InsertableItem<Column<MappedVariableDataEntity>>[] = []): Column<MappedVariableDataEntity>[] {
   const attributesWithoutOrder = [];
   const attributesWithOrder = [];
   for (const attr of attributes.filter(attr => attr.ShowInGrid)) {
@@ -16,7 +16,7 @@ export function mapAttributesToGridColumns(attributes: LooseDataAttribute[], ite
     }
   }
 
-  const columns: Column<MappedLooseDataEntity>[] = attributesWithOrder
+  const columns: Column<MappedVariableDataEntity>[] = attributesWithOrder
     .sort((a,b) => {
       if (!a.Order || !b.Order) return -1;
       if (a.Order < b.Order) return -1;
@@ -24,7 +24,7 @@ export function mapAttributesToGridColumns(attributes: LooseDataAttribute[], ite
       return 0;
     })
     .map(attr => {
-      return new Column<MappedLooseDataEntity>({
+      return new Column<MappedVariableDataEntity>({
         header: attr.Label!,
         accessorKey: attr.Name,
         show: () => true,
@@ -32,7 +32,7 @@ export function mapAttributesToGridColumns(attributes: LooseDataAttribute[], ite
     });
 
   for (const attr of attributesWithoutOrder) {
-    columns.push(new Column<MappedLooseDataEntity>({
+    columns.push(new Column<MappedVariableDataEntity>({
       header: attr.Label!,
       accessorKey: attr.Name,
       show: () => true,
