@@ -352,7 +352,7 @@ internal class Bootstrapper : BaseScript
             .As<IAlprService>()
             .As<IOnInit>()
             .IsSingleton();
-            
+
         services
             .RegisterType<SceneManagementService>()
             .As<ISceneManagementService>()
