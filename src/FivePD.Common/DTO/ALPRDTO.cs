@@ -1,6 +1,6 @@
 ﻿namespace FivePD.Common.DTO
 {
-    internal sealed record AlprDTO
+    internal sealed record AlprDto
     {
         public record struct AlprDTO
         {
