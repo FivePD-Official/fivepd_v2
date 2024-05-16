@@ -28,7 +28,7 @@ internal sealed record Controls
 
     public static readonly Control OpenInformation = new("fivepd::openInformation", "I", "Open information panel");
 
-    public static readonly Control ToggleALPR = new Control("fivepd::toggleALPR", "F9", "Toggle ALPR");
+    public static readonly Control ToggleALPR = new Control("fivepd::toggleALPR", "F7", "Toggle ALPR");
 
     public sealed record Control(string Id, string Key, string Title = "", int TimeToHoldInMs = 0)
     {
