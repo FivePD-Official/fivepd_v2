@@ -1,5 +1,5 @@
 Database:
-  Type: MYSQL # mysql or mariadb
+  Type: mysql # mysql or mariadb
   Name: fivepd
   Address: 127.0.0.1
   Port: 3306 # MySQL: 3306, MariaDB: 3307

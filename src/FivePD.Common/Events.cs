@@ -13,11 +13,11 @@ internal readonly record struct Events
     {
         public const string Stop = "fivepd:lifecycle:stop";
     }
-    
+
     public readonly record struct Vector3
     {
         public const string GetRandomOffset = "fivepd:vector3:getRandomOffset";
-        
+
         public const string GetPointOnRoadSide = "fivepd:vector3:GetPointOnRoadSide";
     }
 
@@ -76,6 +76,12 @@ internal readonly record struct Events
         public const string Get = "fivepd:vehicle:get";
 
         public const string GetAllPageable = "fivepd:vehicle:getAllPageable";
+    }
+
+    public readonly record struct ALPR
+    {
+        public const string Check = "fivepd:alpr:check";
+        public const string Notify = "fivepd:alpr:notify";
     }
 
     public readonly record struct Localization
@@ -317,7 +323,7 @@ internal readonly record struct Events
         public const string Update = "fivepd:location:update";
     }
 
-public readonly record struct DevTools
+    public readonly record struct DevTools
     {
         public const string DeleteEntities = "fivepd:devtools:deleteEntities";
 
