@@ -2,11 +2,13 @@
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.DTO;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -64,9 +66,27 @@ public class AlprService : IAlprService, IOnInit
 
     private void Check([FromSource] Player source, int netId)
     {
+        var emptyDTO = new AlprDTO.AlprDTO()
+        {
+            WantedStatus = false,
+            Data = "An error occurred.",
+        };
+
+
         var fVehicle = FVehicle.FromNetId(netId);
+        if (fVehicle is null)
+        {
+            BaseScript.TriggerClientEvent(source, Events.ALPR.Check, emptyDTO);
+            return;
+        }
+
         var ownerPed = FPed.FromNetId(fVehicle.OwnerNetworkId);
-        // If fVehicle or ownerPed is null, send empty DTO back.
+        if (ownerPed is null)
+        {
+            BaseScript.TriggerClientEvent(source, Events.ALPR.Check, emptyDTO);
+            return;
+        }
+
         if (ownerPed.Warrants.Count > 0)
         {
             string flaggedWarrant = ownerPed.Warrants[0];
@@ -89,10 +109,16 @@ public class AlprService : IAlprService, IOnInit
                 .Yellow($"Registration: {this.GetDocumentStatusLabel(fVehicle, VehicleDocumentType.Registration)}")
                 .Build();
 
-            BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, ownerPed.Warrants.Count > 0, content);
+            var dTO = JsonConvert.SerializeObject(new AlprDTO.AlprDTO()
+            {
+                WantedStatus = ownerPed.Warrants.Count > 0,
+                Data = content,
+            });
+
+            BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, dTO);
             return;
         }
 
-        BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, ownerPed.Warrants.Count > 0);
+        BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, emptyDTO);
     }
 }
