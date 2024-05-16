@@ -59,7 +59,7 @@ internal class AlprService : IAlprService, IOnInit
             }
 
             this.enabled = !this.enabled;
-            var content = new GtaStyleText().White("ALPR");
+            var content = new GtaStyleText().White("ALPR ");
             this._notificationService.ShowTooltip(this.enabled ? content.Green("Enabled").Build() : content.Red("Disabled").Build(), true);
             if (this.enabled)
             {
