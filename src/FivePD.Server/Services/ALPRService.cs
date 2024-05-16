@@ -66,23 +66,15 @@ public class AlprService : IAlprService, IOnInit
 
     private void Check([FromSource] Player source, int netId)
     {
-        var emptyDTO = new AlprDto.AlprDTO
-        {
-            WantedStatus = false,
-            Data = "An error occurred.",
-        };
-
         var fVehicle = FVehicle.FromNetId(netId);
         if (fVehicle is null)
         {
-            BaseScript.TriggerClientEvent(source, Events.ALPR.Check, emptyDTO);
             return;
         }
 
         var ownerPed = FPed.FromNetId(fVehicle.OwnerNetworkId);
         if (ownerPed is null)
         {
-            BaseScript.TriggerClientEvent(source, Events.ALPR.Check, emptyDTO);
             return;
         }
 
@@ -108,16 +100,13 @@ public class AlprService : IAlprService, IOnInit
                 .Yellow($"Registration: {this.GetDocumentStatusLabel(fVehicle, VehicleDocumentType.Registration)}")
                 .Build();
 
-            var dTO = JsonConvert.SerializeObject(new AlprDto.AlprDTO
+            var dTO = JsonConvert.SerializeObject(new CheckNotificationDTO()
             {
                 WantedStatus = ownerPed.Warrants.Count > 0,
-                Data = content,
+                NotificationContent = content,
             });
 
             BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, dTO);
-            return;
         }
-
-        BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, emptyDTO);
     }
 }

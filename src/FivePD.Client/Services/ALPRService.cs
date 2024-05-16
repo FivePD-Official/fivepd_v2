@@ -8,6 +8,8 @@ using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Models;
 using FivePD.Common;
 using FivePD.Common.DTO;
+using FivePD.Common.Utilities;
+using Newtonsoft.Json;
 
 namespace FivePD.Client.Services;
 
@@ -57,8 +59,8 @@ internal class AlprService : IAlprService, IOnInit
             }
 
             this.enabled = !this.enabled;
-            string content = this.enabled ? "ALPR ~g~Enabled~s~" : "ALPR ~r~Disabled~s~";
-            this._notificationService.ShowTooltip(content, true);
+            var content = new GtaStyleText().White("ALPR");
+            this._notificationService.ShowTooltip(this.enabled ? content.Green("Enabled").Build() : content.Red("Disabled").Build(), true);
             if (this.enabled)
             {
                 this.RunALPR();
@@ -70,18 +72,19 @@ internal class AlprService : IAlprService, IOnInit
             }
         });
 
-        this._eventHandlerDictionary[Events.ALPR.Notify] += new Action<bool, string>((wanted, content) =>
+        this._eventHandlerDictionary[Events.ALPR.Notify] += new Action<string>((seralizedDTO) =>
         {
-            if (wanted)
+            var obj = JsonConvert.DeserializeObject<CheckNotificationDTO>(seralizedDTO);
+            if (obj.WantedStatus)
             {
-                this._notificationService.ShowNotification(content);
+                this._notificationService.ShowNotification(obj.NotificationContent);
             }
         });
     }
 
     private void RunALPR()
     {
-        var task = this._tickService.EnqueueInterval(
+        this.taskGuid = this._tickService.EnqueueInterval(
             () =>
             {
                 List<Vehicle> nearbyVehicles = World.GetAllVehicles().Where(x => World.GetDistance(x.Position, Game.PlayerPed.Position) <= 20f).ToList();
@@ -92,6 +95,5 @@ internal class AlprService : IAlprService, IOnInit
                 }
             },
             5000);
-        this.taskGuid = task;
     }
 }
