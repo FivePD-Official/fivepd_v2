@@ -66,7 +66,7 @@ public class AlprService : IAlprService, IOnInit
 
     private void Check([FromSource] Player source, int netId)
     {
-        var emptyDTO = new AlprDTO.AlprDTO()
+        var emptyDTO = new AlprDto.AlprDTO
         {
             WantedStatus = false,
             Data = "An error occurred.",
@@ -108,7 +108,7 @@ public class AlprService : IAlprService, IOnInit
                 .Yellow($"Registration: {this.GetDocumentStatusLabel(fVehicle, VehicleDocumentType.Registration)}")
                 .Build();
 
-            var dTO = JsonConvert.SerializeObject(new AlprDTO.AlprDTO()
+            var dTO = JsonConvert.SerializeObject(new AlprDto.AlprDTO
             {
                 WantedStatus = ownerPed.Warrants.Count > 0,
                 Data = content,
