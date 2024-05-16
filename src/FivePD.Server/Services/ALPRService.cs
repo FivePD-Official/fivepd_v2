@@ -33,7 +33,7 @@ public class AlprService : IAlprService, IOnInit
         this._eventHandlerDictionary[Events.ALPR.Check] += Check;
     }
 
-    private string GetValidity(FVehicle fVehicle, VehicleDocumentType vehicleDocumentType)
+    private string GetDocumentStatusLabel(FVehicle fVehicle, VehicleDocumentType vehicleDocumentType)
     {
         var text = new GtaStyleText();
 
@@ -84,9 +84,9 @@ public class AlprService : IAlprService, IOnInit
                 .NewLine()
                 .Yellow($"Flagged Warrant: ").White(flaggedWarrant)
                 .NewLine()
-                .Yellow($"Insurance: {this.GetValidity(fVehicle, VehicleDocumentType.Insurance)}")
+                .Yellow($"Insurance: {this.GetDocumentStatusLabel(fVehicle, VehicleDocumentType.Insurance)}")
                 .NewLine()
-                .Yellow($"Registration: {this.GetValidity(fVehicle, VehicleDocumentType.Registration)}")
+                .Yellow($"Registration: {this.GetDocumentStatusLabel(fVehicle, VehicleDocumentType.Registration)}")
                 .Build();
 
             BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, ownerPed.Warrants.Count > 0, content);
