@@ -21,7 +21,6 @@ internal class AlprService : IAlprService, IOnInit
     private readonly IVehicleService _vehicleService;
 
     private bool enabled = false;
-    private Guid defaultGuid = Guid.NewGuid();
     private Guid taskGuid;
 
     /// <summary>
@@ -39,7 +38,7 @@ internal class AlprService : IAlprService, IOnInit
         ITickService tickService,
         IVehicleService vehicleService)
     {
-        this.taskGuid = this.defaultGuid;
+        this.taskGuid = Guid.Empty;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._controlservice = controlService;
         this._notificationService = notificationService;
@@ -64,33 +63,20 @@ internal class AlprService : IAlprService, IOnInit
             {
                 this.RunALPR();
             }
+            else
+            {
+                this._tickService.DequeueInterval(this.taskGuid);
+                this.taskGuid = Guid.Empty;
+            }
         });
-    }
 
-    private List<Vehicle> GetNearbyVehicles(float radius = 20f)
-    {
-        List<Vehicle> nearbyVehicles = new();
-        foreach (var veh in World.GetAllVehicles())
+        this._eventHandlerDictionary[Events.ALPR.Notify] += new Action<bool, string>((wanted, content) =>
         {
-            if (veh == null)
+            if (wanted)
             {
-                continue;
+                this._notificationService.ShowNotification(content);
             }
-
-            if (!veh.Exists())
-            {
-                continue;
-            }
-
-            if (veh.Position.DistanceToSquared(Game.PlayerPed.Position) > radius)
-            {
-                continue;
-            }
-
-            nearbyVehicles.Add(veh);
-        }
-
-        return nearbyVehicles;
+        });
     }
 
     private void RunALPR()
@@ -98,35 +84,11 @@ internal class AlprService : IAlprService, IOnInit
         var task = this._tickService.EnqueueInterval(
             () =>
             {
-                if (!this.enabled)
+                List<Vehicle> nearbyVehicles = World.GetAllVehicles().Where(x => World.GetDistance(x.Position, Game.PlayerPed.Position) <= 20f).ToList();
+                foreach (var nearbyVehicle in nearbyVehicles)
                 {
-                    this._tickService.DequeueInterval(this.taskGuid);
-                    this.taskGuid = this.defaultGuid;
-                }
-
-                try
-                {
-                    List<Vehicle> nearbyVehicles = this.GetNearbyVehicles();
-                    nearbyVehicles.ForEach((vehicle) =>
-                    {
-                        this._vehicleService.GenerateVehicle(vehicle);
-                        BaseScript.TriggerServerEvent(Events.ALPR.Check, vehicle.NetworkId);
-
-                        this._eventHandlerDictionary[Events.ALPR.Notify] += new Action<bool, string>((wanted, content) =>
-                        {
-                            if (wanted)
-                            {
-                                this._notificationService.ShowNotification(content);
-                            }
-
-                            this._eventHandlerDictionary.Remove(Events.ALPR.Notify);
-                        });
-                    });
-                }
-                catch (Exception ex)
-                {
-                    // Do nothing.
-                    Debug.WriteLine(ex.ToString());
+                    this._vehicleService.GenerateVehicle(nearbyVehicle);
+                    BaseScript.TriggerServerEvent(Events.ALPR.Check, nearbyVehicle.NetworkId);
                 }
             },
             5000);

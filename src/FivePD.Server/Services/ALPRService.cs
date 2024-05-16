@@ -72,7 +72,6 @@ public class AlprService : IAlprService, IOnInit
             Data = "An error occurred.",
         };
 
-
         var fVehicle = FVehicle.FromNetId(netId);
         if (fVehicle is null)
         {
