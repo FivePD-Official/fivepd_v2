@@ -110,16 +110,16 @@ internal class AlprService : IAlprService, IOnInit
                     nearbyVehicles.ForEach((vehicle) =>
                     {
                         this._vehicleService.GenerateVehicle(vehicle);
-                        BaseScript.TriggerServerEvent(Events.Vehicle.FetchData, vehicle.NetworkId);
+                        BaseScript.TriggerServerEvent(Events.ALPR.Check, vehicle.NetworkId);
 
-                        this._eventHandlerDictionary[Events.Vehicle.FetchData] += new Action<bool, string>((wanted, content) =>
+                        this._eventHandlerDictionary[Events.ALPR.Notify] += new Action<bool, string>((wanted, content) =>
                         {
                             if (wanted)
                             {
                                 this._notificationService.ShowNotification(content);
                             }
 
-                            this._eventHandlerDictionary.Remove(Events.Vehicle.FetchData);
+                            this._eventHandlerDictionary.Remove(Events.ALPR.Notify);
                         });
                     });
                 }

@@ -30,32 +30,46 @@ public class AlprService : IAlprService, IOnInit
     /// <inheritdoc/>
     public void OnInit()
     {
-        this._eventHandlerDictionary[Events.Vehicle.FetchData] += OnFetchData;
+        this._eventHandlerDictionary[Events.ALPR.Check] += Check;
     }
 
     private string GetValidity(FVehicle fVehicle, VehicleDocumentType vehicleDocumentType)
     {
-        bool hasDocument = fVehicle.HasDocument(vehicleDocumentType);
-        string documentString = !hasDocument ? "~r~None" : "Has";
-        if (hasDocument)
+        var text = new GtaStyleText();
+
+        var hasDocument = fVehicle.HasDocument(vehicleDocumentType);
+        if (!hasDocument)
         {
-            documentString = fVehicle.GetDocument(vehicleDocumentType).Status.ToString() == VehicleDocumentStatus.Valid.ToString()
-                ? $"~g~Valid"
-                : $"~r~{fVehicle.GetDocument(vehicleDocumentType).Status.ToString()}";
+            return text.Red("None").Build();
         }
 
-        return documentString;
+        var document = fVehicle.GetDocument(vehicleDocumentType);
+        if (document.Status == VehicleDocumentStatus.Valid)
+        {
+            text.Green("Valid");
+        }
+        else
+        {
+            text.Red(document.Status switch
+            {
+                VehicleDocumentStatus.Expired => "Expired",
+                VehicleDocumentStatus.Suspended => "Suspended",
+                VehicleDocumentStatus.Revoked => "Revoked",
+                _ => "Unknown",
+            });
+        }
+
+        return text.Build();
     }
 
-    private void OnFetchData([FromSource] Player source, int netId)
+    private void Check([FromSource] Player source, int netId)
     {
         var fVehicle = FVehicle.FromNetId(netId);
         var ownerPed = FPed.FromNetId(fVehicle.OwnerNetworkId);
+        // If fVehicle or ownerPed is null, send empty DTO back.
         if (ownerPed.Warrants.Count > 0)
         {
             string flaggedWarrant = ownerPed.Warrants[0];
-            string insurance = this.GetValidity(fVehicle, VehicleDocumentType.Insurance);
-            string registration = this.GetValidity(fVehicle, VehicleDocumentType.Registration);
 
             var content = new GtaStyleText()
                 .Blue($"[ALPR]")
@@ -70,15 +84,15 @@ public class AlprService : IAlprService, IOnInit
                 .NewLine()
                 .Yellow($"Flagged Warrant: ").White(flaggedWarrant)
                 .NewLine()
-                .Yellow($"Insurance: ").White(insurance)
+                .Yellow($"Insurance: {this.GetValidity(fVehicle, VehicleDocumentType.Insurance)}")
                 .NewLine()
-                .Yellow($"Registration: ").White(registration)
+                .Yellow($"Registration: {this.GetValidity(fVehicle, VehicleDocumentType.Registration)}")
                 .Build();
 
-            BaseScript.TriggerClientEvent(source, Events.Vehicle.FetchData, ownerPed.Warrants.Count > 0, content);
+            BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, ownerPed.Warrants.Count > 0, content);
             return;
         }
 
-        BaseScript.TriggerClientEvent(source, Events.Vehicle.FetchData, ownerPed.Warrants.Count > 0);
+        BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, ownerPed.Warrants.Count > 0);
     }
 }
