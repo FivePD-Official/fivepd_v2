@@ -48,16 +48,12 @@ internal static class DatabaseHandler
     {
         try
         {
-            Debug.WriteLine("EnsureCorrectState --------");
             _databaseContext.Database.Migrate();
-            Debug.WriteLine("EnsureCorrectState -------- after Create & Migrate Check");
             if (!_databaseContext.Database.CanConnect())
             {
-                Debug.WriteLine("EnsureCorrectState -------- inside CanConnect");
                 throw new DatabaseUsageException("Database connection failed");
             }
 
-            Debug.WriteLine("EnsureCorrectState -------- after CanConnect");
             _logger?.Information("The database is up to date");
         }
         catch (Exception e)
@@ -177,5 +173,6 @@ internal static class DatabaseHandler
 
         _databaseContext.VehicleConfigs.AddRange(towTrucks);
         _databaseContext.SaveChanges();
+        _logger?.Information("Created sample vehicle configs.");
     }
 }

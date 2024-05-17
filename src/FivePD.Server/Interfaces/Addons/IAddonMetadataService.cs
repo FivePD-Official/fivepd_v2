@@ -12,9 +12,14 @@ namespace FivePD.Server.Interfaces.Addons;
 public interface IAddonMetadataService
 {
     /// <summary>
-    /// Gets the loaded callout types.
+    /// Gets the loaded callouts.
     /// </summary>
     public ReadOnlyCollection<Type> CalloutTypes { get; }
+
+    /// <summary>
+    /// Gets the loaded extensions.
+    /// </summary>
+    public ReadOnlyCollection<IExtension> Extensions { get; }
 }
 
 /// <summary>
@@ -23,14 +28,14 @@ public interface IAddonMetadataService
 internal interface IInternalAddonMetadataService
 {
     /// <summary>
-    /// Gets the loaded callout types.
+    /// Gets the loaded callouts.
     /// </summary>
     public ReadOnlyCollection<CalloutType> CalloutTypes { get; }
 
     /// <summary>
-    /// Gets.
+    /// Gets the loaded extensions.
     /// </summary>
-    public List<IExtension> Extensions { get; }
+    public ReadOnlyCollection<IExtension> Extensions { get; }
 
     /// <summary>
     /// Instantiates a callout from a type.

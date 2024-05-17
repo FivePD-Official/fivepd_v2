@@ -45,11 +45,14 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
     /// <inheritdoc />
     public ReadOnlyCollection<Type> CalloutTypes => this._calloutTypes.Select(type => type.Type).ToList().AsReadOnly();
 
+    /// <inheritdoc/>
+    public ReadOnlyCollection<IExtension> Extensions => this._extensions.AsReadOnly();
+
     /// <inheritdoc />
     ReadOnlyCollection<CalloutType> IInternalAddonMetadataService.CalloutTypes => this._calloutTypes.AsReadOnly();
 
     /// <inheritdoc/>
-    List<IExtension> IInternalAddonMetadataService.Extensions => this._extensions;
+    ReadOnlyCollection<IExtension> IInternalAddonMetadataService.Extensions => this._extensions.AsReadOnly();
 
     /// <inheritdoc/>
     Callout IInternalAddonMetadataService.InstantiateCallout(Type type)
@@ -102,7 +105,7 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
         foreach (var addon in definitions)
         {
             this._logger.ForContext("SourceIdentifier", "AddonLocator").Information(
-                "Registering addon \"{@AddonName}\" version {@AddonVersion}",
+                "Registering addon \"{AddonName}\" version \"{AddonVersion}\"",
                 addon.FriendlyName,
                 addon.FriendlyVersion);
 

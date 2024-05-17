@@ -120,6 +120,8 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
             return;
         }
 
+        this._logger.Information("Registering a menu of type \"{Type}\"", type);
+
         this._menus.Add(type, menu.Key);
     }
 

@@ -133,7 +133,7 @@ internal class FilesystemAddonLocator
             }
         }
 
-        this._logger?.Information("Found {@Count} addons, passing back to bootstrapper", definitions.Count);
+        this._logger?.Information("Found {@Count} addons", definitions.Count);
 
         return definitions;
     }

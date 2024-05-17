@@ -102,6 +102,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             return;
         }
 
+        this._logger.Information("Registering an assistance service of type \"{Type}\"", type);
+
         this._availableServices[type] = options;
     }
 
