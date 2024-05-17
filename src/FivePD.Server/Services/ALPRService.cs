@@ -78,7 +78,11 @@ public class AlprService : IAlprService, IOnInit
             return;
         }
 
-        if (ownerPed.Warrants.Count > 0)
+        var insuranceStatusLabel = this.GetDocumentStatusLabel(fVehicle, VehicleDocumentType.Insurance);
+        var registrationStatusLabel = this.GetDocumentStatusLabel(fVehicle, VehicleDocumentType.Registration);
+
+        if (ownerPed.Warrants.Count > 0 || insuranceStatusLabel != new GtaStyleText().Green("Valid").Build() ||
+            registrationStatusLabel != new GtaStyleText().Green("Valid").Build())
         {
             string flaggedWarrant = ownerPed.Warrants[0];
 
