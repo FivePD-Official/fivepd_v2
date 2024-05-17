@@ -12,6 +12,7 @@ using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Models;
@@ -141,24 +142,6 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         return true;
     }
 
-    // TODO: move to a better place
-    private bool IsPointInsidePolygon(IReadOnlyList<Vector3> points, Vector3 point)
-    {
-        var count = 0;
-        var n = points.Count;
-
-        for (int i = 0, j = n - 1; i < n; j = i++)
-        {
-            if (points[i].Y > point.Y != points[j].Y > point.Y &&
-                point.X < ((points[j].X - points[i].X) * (point.Y - points[i].Y) / (points[j].Y - points[i].Y)) + points[i].X)
-            {
-                count++;
-            }
-        }
-
-        return count % 2 == 1;
-    }
-
     private List<Unit> DispatchCalloutToUnits(InternalCallout internalCallout)
     {
         if (internalCallout is null)
@@ -206,9 +189,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
 
             filteredUnits = valueTuples
                 .Where(x => x.Department.AreaCoordinates.Count >= 3)
-                .Where(x => this.IsPointInsidePolygon(
-                    x.Department.AreaCoordinates.Select(c => new Vector3(c.X, c.Y, 0f)).ToList(),
-                    internalCallout.Callout.Location))
+                .Where(x => internalCallout.Callout.Location.IsInsidePolygon(x.Department.AreaCoordinates.Select(c => new Vector3(c.X, c.Y, 0f))))
                 .Select(x => x.unit)
                 .ToList();
         }
