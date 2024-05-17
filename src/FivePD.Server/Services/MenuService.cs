@@ -25,7 +25,7 @@ namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IMenuService" />
 [Obfuscate]
-public class MenuService : IMenuService, IOnInit
+public class MenuService : IMenuService, IInternalMenuService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IServiceProvider _serviceProvider;
@@ -60,7 +60,10 @@ public class MenuService : IMenuService, IOnInit
         this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, bool>(this.OnCheckboxSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnListSelect] += new Action<Player, string, int>(this.OnListSelect);
         this._eventHandlerDictionary[Events.UI.Menu.OnListIndexChange] += new Action<Player, string, int>(this.OnListIndexChange);
+    }
 
+    void IInternalMenuService.RegisterMenus()
+    {
         if (this._configService.GeneralConfig.Menu.VehicleSelector.Enabled)
         {
             this.Register<VehicleSelectorMenu>();
@@ -158,6 +161,41 @@ public class MenuService : IMenuService, IOnInit
         player.TriggerEvent(Events.UI.Menu.UpdateMenuItem, new JObject
         {
             { "Hashcode", propertyObj.GetHashCode().ToString() },
+            { "Property", propertyMember.Name },
+            { "Value", JToken.FromObject(value) },
+        });
+    }
+    
+    /// <inheritdoc />
+    public void UpdateMenuItem<TMenu, TProperty>(
+        FPlayer player,
+        MenuItem item,
+        Expression<Func<MenuItem, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu
+    {
+        if (value is null)
+        {
+            return;
+        }
+
+        var propertyMember = (property.Body as MemberExpression)?.Member;
+        if (propertyMember is null)
+        {
+            return;
+        }
+
+        var menu = player.GetMenu<Menu>(typeof(TMenu));
+        var actualPropertyMember = this.GetMember(typeof(MenuItem), propertyMember.Name);
+        if (actualPropertyMember is null)
+        {
+            return;
+        }
+
+        this.SetValueOfProperty(actualPropertyMember, item, value);
+        player.TriggerEvent(Events.UI.Menu.UpdateMenuItem, new JObject
+        {
+            { "Hashcode", item.GetHashCode().ToString() },
             { "Property", propertyMember.Name },
             { "Value", JToken.FromObject(value) },
         });

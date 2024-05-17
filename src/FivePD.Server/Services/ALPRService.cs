@@ -10,21 +10,18 @@ using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="FivePD.Server.Interfaces.IAlprService" />
 public class AlprService : IAlprService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly IPedService _pedService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AlprService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">Event handler dictionary.</param>
-    /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
-    public AlprService(EventHandlerDictionary eventHandlerDictionary, IPedService pedService)
+    public AlprService(EventHandlerDictionary eventHandlerDictionary)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._pedService = pedService;
     }
 
     /// <inheritdoc/>

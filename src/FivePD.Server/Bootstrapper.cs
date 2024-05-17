@@ -98,6 +98,15 @@ internal class Bootstrapper : BaseScript
 
         this._phases.Add(this.PerformSafeToRunCheckAfterBootstrapping, false);
 
+        // Register menus after addons are loaded.
+        this._phases.Add(
+            () =>
+            {
+                var menuService = this._provider.GetService<IInternalMenuService>();
+                menuService.RegisterMenus();
+            },
+            false);
+
         // Begin running phases.
         this.Tick += this.RunNextPhaseAsync;
     }
@@ -249,6 +258,7 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<AssistanceServiceManagerService>();
         services.AddSingleton<IAssistanceServiceManagerService>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
 
         services.AddSingleton<CfxService>();
         services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
@@ -320,6 +330,7 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<MenuService>();
         services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
+        services.AddSingleton<IInternalMenuService>(provider => provider.GetRequiredService<MenuService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<MenuService>());
 
         services.AddSingleton<CalloutManagerService>();
