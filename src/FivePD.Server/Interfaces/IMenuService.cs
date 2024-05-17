@@ -34,6 +34,22 @@ public interface IMenuService
         where TMenu : Menu;
 
     /// <summary>
+    /// Updated a menu item's property value.
+    /// </summary>
+    /// <param name="player">The player whose menu item needs to be updated.</param>
+    /// <param name="item">The menu item to update.</param>
+    /// <param name="property">The property.</param>
+    /// <param name="value">The new value.</param>
+    /// <typeparam name="TMenu">The type of the menu.</typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    public void UpdateMenuItem<TMenu, TProperty>(
+        FPlayer player,
+        MenuItem item,
+        Expression<Func<MenuItem, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu;
+
+    /// <summary>
     /// Updates a menu list item's option property value.
     /// </summary>
     /// <param name="player">A.</param>
@@ -70,3 +86,10 @@ public interface IMenuService
     public void RemoveMenuItem<TMenu>(FPlayer player, MenuItem item)
         where TMenu : Menu;
 }
+
+#pragma warning disable
+internal interface IInternalMenuService
+{
+    public void RegisterMenus();
+}
+#pragma warning restore

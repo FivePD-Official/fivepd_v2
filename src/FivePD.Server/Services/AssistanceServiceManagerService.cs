@@ -8,14 +8,15 @@ using CitizenFX.Core;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models.AssistanceServiceModels;
 using Serilog;
 
 namespace FivePD.Server.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="FivePD.Server.Interfaces.IAssistanceServiceManagerService" />
 [Obfuscate]
-public class AssistanceServiceManagerService : IAssistanceServiceManagerService
+public class AssistanceServiceManagerService : IAssistanceServiceManagerService, IOnInit
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ITickQueueService _tickQueueService;
@@ -24,7 +25,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     private readonly IRandomService _randomService;
     private readonly IVector3Service _vector3Service;
 
-    private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _assistanceServices = new();
+    private readonly ConcurrentDictionary<Type, AssistanceServiceOptions> _availableServices = new();
+    private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _activeServices = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AssistanceServiceManagerService"/> class.
@@ -52,14 +54,90 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CallAsync<T>(FPlayer requestedBy, Action onCanceled = null)
+    void IOnInit.OnInit()
+    {
+        var config = this._configService.GeneralConfig.AssistanceServices;
+        if (config.Ambulance.Enabled)
+        {
+            this.Register<Ambulance>(new AssistanceServiceOptions
+            {
+                RequestLabel = "Request ambulance",
+                CancelLabel = "Cancel ambulance",
+                SpawnLocations = config.Ambulance.SpawnLocations,
+            });
+        }
+
+        if (config.TowTruck.Enabled)
+        {
+            this.Register<Towing>(new AssistanceServiceOptions
+            {
+                RequestLabel = "Request tow",
+                CancelLabel = "Cancel tow",
+                SpawnLocations = config.TowTruck.SpawnLocations,
+            });
+        }
+    }
+
+    /// <inheritdoc />
+    public void Register<T>(AssistanceServiceOptions options)
         where T : AssistanceService
     {
+        var type = typeof(T);
+        if (this._availableServices.ContainsKey(type))
+        {
+            this._logger.Error(
+                "Can not register assistance service with type \"{Type}\". An assistance service with the same type has been already registered.", type);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(options.RequestLabel))
+        {
+            this._logger.Error("Can not register assistance service with type \"{Type}\". The RequestLabel is null or empty.", type);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(options.CancelLabel))
+        {
+            this._logger.Error("Can not register assistance service with type \"{Type}\". The CancelLabel is null or empty.", type);
+            return;
+        }
+
+        this._availableServices[type] = options;
+    }
+
+    /// <inheritdoc />
+    public List<(Type Type, AssistanceServiceOptions Options)> AvailableServices()
+    {
+        return this._availableServices.Select(x => (x.Key, x.Value)).ToList();
+    }
+
+    /// <inheritdoc />
+    public Task<Guid> CallAsync<T>(FPlayer requestedBy, Action onCanceled = null)
+        where T : AssistanceService
+    {
+        return this.CallAsync(typeof(T), requestedBy, onCanceled);
+    }
+
+    /// <inheritdoc />
+    public async Task<Guid> CallAsync(Type type, FPlayer requestedBy, Action onCanceled = null)
+    {
+        if (!type.IsClass || type.IsAbstract || !type.IsSubclassOf(typeof(AssistanceService)))
+        {
+            this._logger.Error("Failed to call assistance service with type \"{Type}\". This type is not a subclass of \"{Type2}\".", type, typeof(AssistanceService));
+            return Guid.Empty;
+        }
+
+        if (!this._availableServices.TryGetValue(type, out var options))
+        {
+            this._logger.Error("Failed to call assistance service with type \"{Type}\". This type has not been registered.", type);
+            return Guid.Empty;
+        }
+
         try
         {
             var guid = Guid.NewGuid();
 
-            var assistanceService = this.CreateInstance<T>();
+            var assistanceService = this.CreateInstance(type);
             ((IInternalAssistanceService)assistanceService).RequestedBy = requestedBy;
 
             async Task SetRandomLocation()
@@ -75,17 +153,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
             }
             else
             {
-                List<Vector3> locations = new();
-                var type = typeof(T);
-                if (type == typeof(Ambulance))
-                {
-                    locations = this._configService?.GeneralConfig.AssistanceServices.Ambulance.SpawnLocations ?? new List<Vector3>();
-                }
-                else if (type == typeof(Towing))
-                {
-                    locations = this._configService?.GeneralConfig.AssistanceServices.TowTruck.SpawnLocations ?? new List<Vector3>();
-                }
-
+                var locations = options.SpawnLocations ?? new List<Vector3>();
                 if (locations.Count == 0)
                 {
                     await SetRandomLocation();
@@ -93,11 +161,12 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
                 else
                 {
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = locations[this._randomService.Random.Next(0, locations.Count)];
+                    ((IInternalAssistanceService)assistanceService).SpawnHeading = options.SpawnHeading;
                 }
             }
 
             var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, onCanceled, new CancellationTokenSource(), this._logger);
-            this._assistanceServices.TryAdd(guid, assistanceServiceInvoker);
+            this._activeServices.TryAdd(guid, assistanceServiceInvoker);
 #pragma warning disable CS4014
             this._tickQueueService.EnqueueAsync(assistanceServiceInvoker.InvokeAssistanceServiceMethodsAsync);
 #pragma warning restore CS4014
@@ -106,7 +175,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
         }
         catch (Exception e)
         {
-            this._logger.Error("Failed to call assistance service with type \"{Type}\". Exception: {Exception}", typeof(T), e.Message);
+            this._logger.Error("Failed to call assistance service with type \"{Type}\". Exception: {Exception}", type, e.Message);
         }
 
         return Guid.Empty;
@@ -117,7 +186,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
     {
         try
         {
-            this._assistanceServices.TryRemove(guid, out var service);
+            this._activeServices.TryRemove(guid, out var service);
             service?.CancellationTokenSource.Cancel();
             guid = Guid.Empty;
         }
@@ -127,14 +196,17 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService
         }
     }
 
-    private T CreateInstance<T>(Type type = null)
-        where T : AssistanceService
+    private AssistanceService CreateInstance(Type type)
     {
-        type ??= typeof(T);
+        if (type is null)
+        {
+            return null;
+        }
+
         var parameters = type.GetConstructors()[0].GetParameters();
-        return (T)Activator.CreateInstance(
+        return Activator.CreateInstance(
             type,
-            parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray());
+            parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray()) as AssistanceService;
     }
 
     private sealed record AssistanceServiceInvoker
