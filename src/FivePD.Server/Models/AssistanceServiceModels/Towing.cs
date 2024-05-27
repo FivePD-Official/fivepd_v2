@@ -98,7 +98,7 @@ public class Towing : AssistanceService
             var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
             
-            this._driver.Properties.SetMaxDrivingSpeed(currentSpeed);
+            this._driver.Properties.SetDrivingSpeed(currentSpeed);
 
             await Task.Delay(500);
         }
