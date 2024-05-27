@@ -80,6 +80,8 @@ public class Ambulance : AssistanceService
         this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._ambulance.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
+        
+        this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
         while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance)
         {
@@ -92,7 +94,7 @@ public class Ambulance : AssistanceService
             var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
             
-            this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, currentSpeed, (int)FDrivingStyle.Emergency);
+            this._driver.Properties.SetDrivingSpeed(currentSpeed);
 
             await Task.Delay(500);
         }
