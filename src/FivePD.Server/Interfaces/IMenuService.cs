@@ -50,6 +50,38 @@ public interface IMenuService
         where TMenu : Menu;
 
     /// <summary>
+    /// Updated a menu list item's property value.
+    /// </summary>
+    /// <param name="player">The player whose menu item needs to be updated.</param>
+    /// <param name="item">The property's menu list item.</param>
+    /// <param name="property">The property.</param>
+    /// <param name="value">The new value.</param>
+    /// <typeparam name="TMenu">The type of the menu.</typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    public void UpdateMenuListItem<TMenu, TProperty>(
+        FPlayer player,
+        Expression<Func<TMenu, MenuListItem>> item,
+        Expression<Func<MenuListItem, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu;
+
+    /// <summary>
+    /// Updated a menu list item's property value.
+    /// </summary>
+    /// <param name="player">The player whose menu item needs to be updated.</param>
+    /// <param name="item">The menu list item to update.</param>
+    /// <param name="property">The property.</param>
+    /// <param name="value">The new value.</param>
+    /// <typeparam name="TMenu">The type of the menu.</typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    public void UpdateMenuListItem<TMenu, TProperty>(
+        FPlayer player,
+        MenuListItem item,
+        Expression<Func<MenuListItem, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu;
+
+    /// <summary>
     /// Updates a menu list item's option property value.
     /// </summary>
     /// <param name="player">A.</param>

@@ -78,7 +78,15 @@ export class MenuService {
       for (const item of menu.items) {
         if (item.hashcode === res.Hashcode) {
           if (Reflect.has(item, res.Property)) {
-            Reflect.set(item, res.Property, res.Value);
+            if (Array.isArray(res.Value))
+            {
+              const items = res.Value.map(x => new MenuListOption(x.Title, x.Enabled));
+              Reflect.set(item, res.Property, items);
+            }
+            else
+            {
+              Reflect.set(item, res.Property, res.Value);
+            }
           }
           break;
         }

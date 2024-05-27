@@ -204,6 +204,84 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
     }
 
     /// <inheritdoc />
+    public void UpdateMenuListItem<TMenu, TProperty>(
+        FPlayer player,
+        Expression<Func<TMenu, MenuListItem>> item,
+        Expression<Func<MenuListItem, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu
+    {
+        if (value is null)
+        {
+            return;
+        }
+
+        var menuItemMember = (item.Body as MemberExpression)?.Member;
+        var propertyMember = (property.Body as MemberExpression)?.Member;
+        if (menuItemMember is null || propertyMember is null)
+        {
+            return;
+        }
+
+        var menu = player.GetMenu<Menu>(typeof(TMenu));
+        var actualMenuItemMember = this.GetMember(typeof(TMenu), menuItemMember.Name);
+        var actualPropertyMember = this.GetMember(typeof(MenuListItem), propertyMember.Name);
+        if (actualMenuItemMember is null || actualPropertyMember is null)
+        {
+            return;
+        }
+
+        var propertyObj = this.GetValueOfProperty(actualMenuItemMember, menu);
+        if (propertyObj is null)
+        {
+            return;
+        }
+
+        this.SetValueOfProperty(actualPropertyMember, propertyObj, value);
+        player.TriggerEvent(Events.UI.Menu.UpdateMenuItem, new JObject
+        {
+            { "Hashcode", propertyObj.GetHashCode().ToString() },
+            { "Property", propertyMember.Name },
+            { "Value", JToken.FromObject(value) },
+        });
+    }
+
+    /// <inheritdoc />
+    public void UpdateMenuListItem<TMenu, TProperty>(
+        FPlayer player,
+        MenuListItem item,
+        Expression<Func<MenuListItem, TProperty>> property,
+        TProperty value)
+        where TMenu : Menu
+    {
+        if (value is null)
+        {
+            return;
+        }
+
+        var propertyMember = (property.Body as MemberExpression)?.Member;
+        if (propertyMember is null)
+        {
+            return;
+        }
+
+        var menu = player.GetMenu<Menu>(typeof(TMenu));
+        var actualPropertyMember = this.GetMember(typeof(MenuListItem), propertyMember.Name);
+        if (actualPropertyMember is null)
+        {
+            return;
+        }
+
+        this.SetValueOfProperty(actualPropertyMember, item, value);
+        player.TriggerEvent(Events.UI.Menu.UpdateMenuItem, new JObject
+        {
+            { "Hashcode", item.GetHashCode().ToString() },
+            { "Property", propertyMember.Name },
+            { "Value", JToken.FromObject(value) },
+        });
+    }
+
+    /// <inheritdoc />
     public void UpdateMenuListOption<TMenu, TProperty>(
         FPlayer player,
         Expression<Func<TMenu, MenuListItem>> item,

@@ -77,12 +77,10 @@ public sealed class VehicleSelectorMenu : Menu
     {
         var items = new List<MenuItem>();
 
-        var policeVehicles = this._vehicleConfigService.GetAll(VehicleConfigType.Police); // TODO: won't refresh when vehicle configs are modified!
-
         this.VehicleSpawnerItem = new MenuListItem(
             "DUTY_MENU.ITEM.SPAWN_VEHICLE.TITLE",
             "DUTY_MENU.ITEM.SPAWN_VEHICLE.DESCRIPTION",
-            policeVehicles.Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
+            this._vehicleConfigService.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
         this.VehicleSpawnerItem.OnSelect += async (player, index) =>
         {
             var lastVehicle = Cfx.API.GetVehiclePedIsIn(player.GetUnderlyingPlayer().Character.Handle, false);
@@ -91,7 +89,7 @@ public sealed class VehicleSelectorMenu : Menu
                 Cfx.API.DeleteEntity(lastVehicle);
             }
 
-            var policeVehicle = policeVehicles.ElementAt(index);
+            var policeVehicle = this._vehicleConfigService.GetAll(VehicleConfigType.Police).ElementAt(index);
             var spawnedVehicle = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(policeVehicle.Model),
                 player.GetUnderlyingPlayer().Character.Position, player.GetUnderlyingPlayer().Character.Heading);
             Cfx.API.SetPedIntoVehicle(player.GetUnderlyingPlayer().Character.Handle, spawnedVehicle.GetUnderlyingVehicle.Handle, -1);
