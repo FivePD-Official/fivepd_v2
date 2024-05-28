@@ -287,16 +287,13 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 {
                     if (canRunResult)
                     {
-                        Debug.WriteLine($"aCheck1: {canRunResult.ToString()}");
+                        // The following method starts and errors inside.
 #pragma warning disable CS4014
                         this._service.OnCancellationRequestedAsync();
-                        Debug.WriteLine("aCheck2");
 #pragma warning restore CS4014
                     }
 
-                    Debug.WriteLine("aCheck3");
                     this._onCanceled?.Invoke();
-                    Debug.WriteLine("aCheck4");
                 }
                 catch (Exception e)
                 {

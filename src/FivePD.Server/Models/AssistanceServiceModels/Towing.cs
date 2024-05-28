@@ -23,7 +23,7 @@ public class Towing : AssistanceService
     private FPed _driver;
     private FVehicle _towTruck;
     private FVehicle _targetVehicle;
-    
+
     private const float SlowingDistance = 125f;
     private const float MaximumSpeed = 25f;
     private const float MinimumSpeed = 5f;
@@ -57,6 +57,7 @@ public class Towing : AssistanceService
             Debug.WriteLine("Target vehicle is not null. Returning true");
             return Task.FromResult(true);
         }
+
         Debug.WriteLine("Target vehicle is null. Returning false.");
         this._notificationService.ShowNotification(this.RequestedBy, "No vehicle found to tow.");
         return Task.FromResult(false);
@@ -93,26 +94,30 @@ public class Towing : AssistanceService
                 Debug.WriteLine("Cancelling...");
                 return;
             }
-            
+
             var distance = Vector3.Distance(this._towTruck.GetUnderlyingVehicle.Position, this._targetPosition);
             var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-            
+
             this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, currentSpeed, (int)FDrivingStyle.Emergency);
 
             await Task.Delay(500);
         }
+
         Debug.WriteLine("Check1");
         this._driver.Task.ClearAll();
         Debug.WriteLine("Check2");
-        
+
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
+            Debug.WriteLine("UnderlyingVehicle is null!");
+            Debug.WriteLine("Check3");
             cancellationTokenSource.Cancel();
             this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
             Debug.WriteLine("Check3a");
             return;
         }
+
         Debug.WriteLine("Check3b");
         this._driver.Task.DriveTo(
             this._towTruck.GetUnderlyingVehicle,
@@ -121,7 +126,7 @@ public class Towing : AssistanceService
             5f,
             (int)FDrivingStyle.Normal);
         Debug.WriteLine("Check4");
-        
+
         await Task.Delay(2000);
 
         this._cfxService.AttachEntityToEntity(
