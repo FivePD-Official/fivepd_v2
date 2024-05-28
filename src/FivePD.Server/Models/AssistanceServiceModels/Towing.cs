@@ -87,6 +87,8 @@ public class Towing : AssistanceService
         this._driver.Properties.SetIntoVehicle(this._towTruck.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
 
+        this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
+
         while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= SlowingDistance)
         {
             if (cancellationTokenSource.IsCancellationRequested)
@@ -99,35 +101,37 @@ public class Towing : AssistanceService
             var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
 
-            this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, currentSpeed, (int)FDrivingStyle.Emergency);
+            this._driver.Properties.SetMaxDrivingSpeed(currentSpeed);
 
             await Task.Delay(500);
         }
 
-        Debug.WriteLine("Check1");
         this._driver.Task.ClearAll();
-        Debug.WriteLine("Check2");
 
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
-            Debug.WriteLine("UnderlyingVehicle is null!");
-            Debug.WriteLine("Check3");
             cancellationTokenSource.Cancel();
+            Debug.WriteLine("Running cancel1");
             this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
-            Debug.WriteLine("Check3a");
             return;
         }
 
-        Debug.WriteLine("Check3b");
         this._driver.Task.DriveTo(
             this._towTruck.GetUnderlyingVehicle,
             this._targetVehicle.GetUnderlyingVehicle.Position,
             0f,
             5f,
             (int)FDrivingStyle.Normal);
-        Debug.WriteLine("Check4");
 
         await Task.Delay(2000);
+
+        if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
+        {
+            cancellationTokenSource.Cancel();
+            Debug.WriteLine("Running cancel2");
+            this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
+            return;
+        }
 
         this._cfxService.AttachEntityToEntity(
             this._targetVehicle.GetUnderlyingVehicle.NetworkId,
@@ -161,24 +165,35 @@ public class Towing : AssistanceService
 
     private void OnCompletedOrCancelled()
     {
-        if (this._driver is not null)
+        if (this._driver?.GetUnderlyingPed is not null)
         {
+            Debug.WriteLine("DriverCheck1");
             Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
+            Debug.WriteLine("DriverCheck2");
             this._driver.Task.CruiseWithVehicle(this._towTruck.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
+            Debug.WriteLine("DriverCheck3");
             this._driver.Properties.MarkAsNoLongerNeeded();
+            Debug.WriteLine("DriverCheck4");
         }
 
-        if (this._towTruck is not null)
+        if (this._towTruck?.GetUnderlyingVehicle is not null)
         {
+            Debug.WriteLine("TowCheck1");
             this._towTruck.Properties.RemoveBlips();
+            Debug.WriteLine("TowCheck2");
             Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.Handle, 100f);
+            Debug.WriteLine("TowCheck3");
             this._towTruck.Properties.MarkAsNoLongerNeeded();
+            Debug.WriteLine("TowCheck4");
         }
 
-        if (this._targetVehicle is not null)
+        if (this._targetVehicle?.GetUnderlyingVehicle is not null)
         {
+            Debug.WriteLine("TargetCheck1");
             Cfx.API.SetEntityDistanceCullingRadius(this._targetVehicle.GetUnderlyingVehicle.Handle, 100f);
+            Debug.WriteLine("TargetCheck2");
             this._targetVehicle.Properties.MarkAsNoLongerNeeded();
+            Debug.WriteLine("TargetCheck3");
         }
     }
 }
