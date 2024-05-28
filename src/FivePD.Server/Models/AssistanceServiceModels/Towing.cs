@@ -84,8 +84,6 @@ public class Towing : AssistanceService
         this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._towTruck.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
-        
-        this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
         this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
@@ -100,8 +98,6 @@ public class Towing : AssistanceService
             var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
 
-            this._driver.Properties.SetMaxDrivingSpeed(currentSpeed);
-
             this._driver.Properties.SetDrivingSpeed(currentSpeed);
 
             await Task.Delay(500);
@@ -109,16 +105,9 @@ public class Towing : AssistanceService
 
         this._driver.Task.ClearAll();
 
-        if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
-        {
-            cancellationTokenSource.Cancel();
-            this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
-            return;
-        }
-
         this._driver.Task.DriveTo(
             this._towTruck.GetUnderlyingVehicle,
-            this._targetVehicle.GetUnderlyingVehicle.Position,
+            this._targetPosition,
             0f,
             5f,
             (int)FDrivingStyle.Normal);

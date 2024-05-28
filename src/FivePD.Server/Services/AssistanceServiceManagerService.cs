@@ -286,7 +286,6 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 {
                     if (canRunResult)
                     {
-                        // The following method starts and errors inside.
 #pragma warning disable CS4014
                         this._service.OnCancellationRequestedAsync();
 #pragma warning restore CS4014
