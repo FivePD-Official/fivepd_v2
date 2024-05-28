@@ -125,7 +125,10 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     {
         if (!type.IsClass || type.IsAbstract || !type.IsSubclassOf(typeof(AssistanceService)))
         {
-            this._logger.Error("Failed to call assistance service with type \"{Type}\". This type is not a subclass of \"{Type2}\".", type, typeof(AssistanceService));
+            this._logger.Error(
+                "Failed to call assistance service with type \"{Type}\". This type is not a subclass of \"{Type2}\".",
+                type,
+                typeof(AssistanceService));
             return Guid.Empty;
         }
 
