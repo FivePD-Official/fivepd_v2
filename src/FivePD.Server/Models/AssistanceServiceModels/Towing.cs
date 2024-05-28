@@ -54,11 +54,9 @@ public class Towing : AssistanceService
     {
         if (this._targetVehicle is not null)
         {
-            Debug.WriteLine("Target vehicle is not null. Returning true");
             return Task.FromResult(true);
         }
 
-        Debug.WriteLine("Target vehicle is null. Returning false.");
         this._notificationService.ShowNotification(this.RequestedBy, "No vehicle found to tow.");
         return Task.FromResult(false);
     }
@@ -93,7 +91,6 @@ public class Towing : AssistanceService
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
-                Debug.WriteLine("Cancelling...");
                 return;
             }
 
@@ -111,7 +108,6 @@ public class Towing : AssistanceService
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
             cancellationTokenSource.Cancel();
-            Debug.WriteLine("Running cancel1");
             this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
             return;
         }
@@ -128,7 +124,6 @@ public class Towing : AssistanceService
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
             cancellationTokenSource.Cancel();
-            Debug.WriteLine("Running cancel2");
             this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
             return;
         }
@@ -167,33 +162,22 @@ public class Towing : AssistanceService
     {
         if (this._driver?.GetUnderlyingPed is not null)
         {
-            Debug.WriteLine("DriverCheck1");
             Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
-            Debug.WriteLine("DriverCheck2");
             this._driver.Task.CruiseWithVehicle(this._towTruck.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
-            Debug.WriteLine("DriverCheck3");
             this._driver.Properties.MarkAsNoLongerNeeded();
-            Debug.WriteLine("DriverCheck4");
         }
 
         if (this._towTruck?.GetUnderlyingVehicle is not null)
         {
-            Debug.WriteLine("TowCheck1");
             this._towTruck.Properties.RemoveBlips();
-            Debug.WriteLine("TowCheck2");
             Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.Handle, 100f);
-            Debug.WriteLine("TowCheck3");
             this._towTruck.Properties.MarkAsNoLongerNeeded();
-            Debug.WriteLine("TowCheck4");
         }
 
         if (this._targetVehicle?.GetUnderlyingVehicle is not null)
         {
-            Debug.WriteLine("TargetCheck1");
             Cfx.API.SetEntityDistanceCullingRadius(this._targetVehicle.GetUnderlyingVehicle.Handle, 100f);
-            Debug.WriteLine("TargetCheck2");
             this._targetVehicle.Properties.MarkAsNoLongerNeeded();
-            Debug.WriteLine("TargetCheck3");
         }
     }
 }

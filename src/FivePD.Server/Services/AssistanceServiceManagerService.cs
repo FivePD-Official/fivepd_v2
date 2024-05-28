@@ -262,7 +262,6 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 }
 
                 canRunResult = await this._service.CanRunAsync();
-                Debug.WriteLine($"Got canRunResult: {canRunResult.ToString()}");
                 if (!canRunResult)
                 {
                     throw new TaskCanceledException();
