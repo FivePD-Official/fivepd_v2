@@ -84,6 +84,8 @@ public class Towing : AssistanceService
         this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._towTruck.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
+        
+        this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
         this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
@@ -99,6 +101,8 @@ public class Towing : AssistanceService
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
 
             this._driver.Properties.SetMaxDrivingSpeed(currentSpeed);
+
+            this._driver.Properties.SetDrivingSpeed(currentSpeed);
 
             await Task.Delay(500);
         }
