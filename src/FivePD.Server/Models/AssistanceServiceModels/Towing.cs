@@ -128,6 +128,7 @@ public class Towing : AssistanceService
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
             cancellationTokenSource.Cancel();
+            Debug.WriteLine("Running cancel2");
             this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
             return;
         }
