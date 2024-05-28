@@ -54,9 +54,10 @@ public class Towing : AssistanceService
     {
         if (this._targetVehicle is not null)
         {
+            Debug.WriteLine("Target vehicle is not null. Returning true");
             return Task.FromResult(true);
         }
-
+        Debug.WriteLine("Target vehicle is null. Returning false.");
         this._notificationService.ShowNotification(this.RequestedBy, "No vehicle found to tow.");
         return Task.FromResult(false);
     }
@@ -89,6 +90,7 @@ public class Towing : AssistanceService
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
+                Debug.WriteLine("Cancelling...");
                 return;
             }
             
@@ -100,21 +102,25 @@ public class Towing : AssistanceService
 
             await Task.Delay(500);
         }
-        
+        Debug.WriteLine("Check1");
         this._driver.Task.ClearAll();
+        Debug.WriteLine("Check2");
+        
+        if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
+        {
+            cancellationTokenSource.Cancel();
+            this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
+            Debug.WriteLine("Check3a");
+            return;
+        }
+        Debug.WriteLine("Check3b");
         this._driver.Task.DriveTo(
             this._towTruck.GetUnderlyingVehicle,
             this._targetVehicle.GetUnderlyingVehicle.Position,
             0f,
             5f,
             (int)FDrivingStyle.Normal);
-
-        if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
-        {
-            cancellationTokenSource.Cancel();
-            this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
-            return;
-        }
+        Debug.WriteLine("Check4");
         
         await Task.Delay(2000);
 

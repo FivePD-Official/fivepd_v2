@@ -125,7 +125,10 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     {
         if (!type.IsClass || type.IsAbstract || !type.IsSubclassOf(typeof(AssistanceService)))
         {
-            this._logger.Error("Failed to call assistance service with type \"{Type}\". This type is not a subclass of \"{Type2}\".", type, typeof(AssistanceService));
+            this._logger.Error(
+                "Failed to call assistance service with type \"{Type}\". This type is not a subclass of \"{Type2}\".",
+                type,
+                typeof(AssistanceService));
             return Guid.Empty;
         }
 
@@ -259,6 +262,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 }
 
                 canRunResult = await this._service.CanRunAsync();
+                Debug.WriteLine($"Got canRunResult: {canRunResult.ToString()}");
                 if (!canRunResult)
                 {
                     throw new TaskCanceledException();
@@ -283,12 +287,16 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 {
                     if (canRunResult)
                     {
+                        Debug.WriteLine($"aCheck1: {canRunResult.ToString()}");
 #pragma warning disable CS4014
                         this._service.OnCancellationRequestedAsync();
+                        Debug.WriteLine("aCheck2");
 #pragma warning restore CS4014
                     }
 
+                    Debug.WriteLine("aCheck3");
                     this._onCanceled?.Invoke();
+                    Debug.WriteLine("aCheck4");
                 }
                 catch (Exception e)
                 {
