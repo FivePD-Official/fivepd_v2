@@ -13,7 +13,7 @@ export class ModalFormService {
     private readonly modalService: ModalService,
   ) { }
 
-  open<T>(options: ModalFormOptions<T>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T> {
-    return this.modalService.open<T>(ModalFormComponent, {...options} as ModalOptions, extraObjectsToInject);
+  open<T1, T2 = {}>(options: ModalFormOptions<T1, T2>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T1> {
+    return this.modalService.open<T1>(ModalFormComponent, {...options} as ModalOptions, extraObjectsToInject);
   }
 }

@@ -16,17 +16,17 @@ interface ModalSubmitButton {
   submit: ModalButton;
 }
 
-export interface ModalOptions<T = any> {
+export interface ModalOptions<T1 = any, T2 = any> {
   title: string;
   description?: string;
   columns?: number;
   buttons?: ModalCancelButton & ModalSubmitButton;
 }
 
-export interface ModalFormOptions<T> extends Omit<ModalOptions<T>, 'buttons'> {
-  fields?: (entity?: T, additionalData?: any) => FormInputBase<any>[];
-  valueResolver?: ValueResolver<T>;
-  dataResolver?: DataResolver;
+export interface ModalFormOptions<T1, T2 = {}> extends Omit<ModalOptions<T1, T2>, 'buttons'> {
+  fields?: (entity?: T1, additionalData?: T2) => FormInputBase<any>[];
+  valueResolver?: ValueResolver<T1>;
+  dataResolver?: DataResolver<T2>;
   buttons: ModalSubmitButton;
 }
 
