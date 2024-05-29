@@ -368,6 +368,15 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<VehicleConfigService>();
         services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
 
+        services.AddSingleton<LoadoutConfigService>();
+        services.AddSingleton<ILoadoutConfigService>(provider => provider.GetRequiredService<LoadoutConfigService>());
+
+        services.AddSingleton<WeaponService>();
+        services.AddSingleton<IWeaponService>(provider => provider.GetRequiredService<WeaponService>());
+
+        services.AddSingleton<WeaponComponentService>();
+        services.AddSingleton<IWeaponComponentService>(provider => provider.GetRequiredService<WeaponComponentService>());
+
         services.AddSingleton<LocationService>();
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocationService>());
         services.AddSingleton<ILocationService>(provider => provider.GetRequiredService<LocationService>());
