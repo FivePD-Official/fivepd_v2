@@ -1,6 +1,7 @@
-import { FormInputBase } from './form';
-import { ButtonVariants } from './button';
-import { ValueResolver } from '@services/modals/modal-form/modal-form-value-resolver';
+import {FormInputBase} from './form';
+import {ButtonVariants} from './button';
+import {ValueResolver} from '@services/modals/modal-form/modal-form-value-resolver';
+import {DataResolver} from "@services/modals/modal-form/modal-form-data-resolver";
 
 interface ModalButton {
   variant: ButtonVariants;
@@ -23,8 +24,9 @@ export interface ModalOptions<T = any> {
 }
 
 export interface ModalFormOptions<T> extends Omit<ModalOptions<T>, 'buttons'> {
-  fields?: (entity?: T) => FormInputBase<any>[];
+  fields?: (entity?: T, additionalData?: any) => FormInputBase<any>[];
   valueResolver?: ValueResolver<T>;
+  dataResolver?: DataResolver;
   buttons: ModalSubmitButton;
 }
 
