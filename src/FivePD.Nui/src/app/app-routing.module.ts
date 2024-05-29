@@ -65,6 +65,10 @@ const mdtRoutes: Routes = [
         loadComponent: () => import('./pages/mdt/settings/locations/locations.component').then(m => m.LocationsComponent),
       },
       {
+        path: 'loadouts',
+        loadComponent: () => import('./pages/mdt/settings/loadout-settings/loadout-settings.component').then(m => m.LoadoutSettingsComponent),
+      },
+      {
         path: 'departments',
         children: [
           {

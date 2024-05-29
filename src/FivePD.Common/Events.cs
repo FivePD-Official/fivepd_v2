@@ -316,6 +316,49 @@ internal readonly record struct Events
 
             public const string Delete = "fivepd:ui:location:delete";
         }
+
+        public readonly record struct LoadoutConfig
+        {
+            public const string Get = "fivepd:ui:loadoutConfig:get";
+            
+            public const string GetAllPageable = "fivepd:ui:loadoutConfig:getAllPageable";
+
+            public const string Create = "fivepd:ui:loadoutConfig:create";
+
+            public const string Delete = "fivepd:ui:loadoutConfig:delete";
+
+            public const string Edit = "fivepd:ui:loadoutConfig:edit";
+        }
+        
+        public readonly record struct Weapon
+        {
+            public const string Get = "fivepd:ui:weapon:get";
+            
+            public const string GetAllPageable = "fivepd:ui:weapon:getAllPageable";
+            
+            public const string GetAllSimple = "fivepd:ui:weapon:getAllSimple";
+
+            public const string Create = "fivepd:ui:weapon:create";
+
+            public const string Delete = "fivepd:ui:weapon:delete";
+
+            public const string Edit = "fivepd:ui:weapon:edit";
+        }
+        
+        public readonly record struct WeaponComponent
+        {
+            public const string Get = "fivepd:ui:weaponComponent:get";
+            
+            public const string GetAllPageable = "fivepd:ui:weaponComponent:getAllPageable";
+            
+            public const string GetAllSimple = "fivepd:ui:weaponComponent:getAllSimple";
+
+            public const string Create = "fivepd:ui:weaponComponent:create";
+
+            public const string Delete = "fivepd:ui:weaponComponent:delete";
+
+            public const string Edit = "fivepd:ui:weaponComponent:edit";
+        }
     }
 
     public readonly record struct Location

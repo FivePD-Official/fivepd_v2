@@ -176,6 +176,84 @@ namespace FivePD.Server.Migrations
                     b.ToTable("fivepd_incident_history_users");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.LoadoutModels.LoadoutConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_loadout_configs");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.LoadoutModels.LoadoutWeapon", b =>
+                {
+                    b.Property<int>("LoadoutConfigId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeaponId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LoadoutConfigId", "WeaponId");
+
+                    b.HasIndex("WeaponId");
+
+                    b.ToTable("fivepd_loadout_weapon");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.LoadoutModels.Weapon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_weapons");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.LoadoutModels.WeaponComponent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("HashKey")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_weapon_components");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.LoadoutModels.WeaponWeaponComponent", b =>
+                {
+                    b.Property<int>("WeaponId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeaponComponentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("WeaponId", "WeaponComponentId");
+
+                    b.HasIndex("WeaponComponentId");
+
+                    b.ToTable("fivepd_weapon_weaponComponent");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.Location", b =>
                 {
                     b.Property<int>("Id")
@@ -554,6 +632,36 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.LoadoutModels.LoadoutWeapon", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.LoadoutModels.LoadoutConfig", "LoadoutConfig")
+                        .WithMany("LoadoutWeapons")
+                        .HasForeignKey("LoadoutConfigId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FivePD.Server.Models.LoadoutModels.Weapon", "Weapon")
+                        .WithMany("LoadoutWeapons")
+                        .HasForeignKey("WeaponId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.LoadoutModels.WeaponWeaponComponent", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.LoadoutModels.WeaponComponent", "WeaponComponent")
+                        .WithMany("WeaponWeaponComponents")
+                        .HasForeignKey("WeaponComponentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FivePD.Server.Models.LoadoutModels.Weapon", "Weapon")
+                        .WithMany("WeaponWeaponComponents")
+                        .HasForeignKey("WeaponId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Message", b =>
