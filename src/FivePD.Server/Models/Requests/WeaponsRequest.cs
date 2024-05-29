@@ -11,5 +11,6 @@ internal record struct WeaponsRequest()
     public record struct RequestFilters
     {
         public string Name { get; set; }
+        public string Model { get; set; }
     }
 }

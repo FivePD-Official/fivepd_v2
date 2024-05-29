@@ -23,7 +23,7 @@ public class LoadoutConfig
     /// <summary>
     /// Gets or sets the LoadoutWeapon.
     /// </summary>
-    public ICollection<LoadoutWeapon> LoadoutWeapons { get; set; } = new List<LoadoutWeapon>();
+    public IList<LoadoutWeapon> LoadoutWeapons { get; set; } = new List<LoadoutWeapon>();
 
     /// <summary>
     /// Adds a weapon to a loadout.

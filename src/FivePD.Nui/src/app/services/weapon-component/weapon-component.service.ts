@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import {Collation, Id, LoadoutConfig, SimpleUser, SimpleWeaponComponent, WeaponComponent} from '@models';
+import {Collation, Id, LoadoutConfig, SimpleUser, SimpleWeapon, SimpleWeaponComponent, WeaponComponent} from '@models';
 import { CrudApiService } from "@services/api/crud-api/crud-api.service";
 import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
@@ -23,7 +23,7 @@ export class WeaponComponentService extends CrudApiService<WeaponComponent> {
   }
 
   getAllSimple(): Observable<SimpleWeaponComponent[]> {
-    return this.httpClient.post<SimpleWeaponComponent[]>('fivepd:ui:weaponComponent:getAllSimple', {});
+    return this.httpClient.post<SimpleWeaponComponent[]>(this.createUrl('getAllSimple'), {});
   }
 
   create(request: object) {

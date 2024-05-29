@@ -19,7 +19,7 @@ export class WeaponService extends CrudApiService<Weapon> {
   }
 
   getAllSimple(): Observable<SimpleWeapon[]> {
-    return this.httpClient.post<SimpleWeapon[]>('fivepd:ui:weapon:getAllSimple', {});
+    return this.httpClient.post<SimpleWeapon[]>(this.createUrl('getAllSimple'), {});
   }
 
   create(request: object) {

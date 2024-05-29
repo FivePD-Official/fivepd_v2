@@ -56,6 +56,9 @@ public class WeaponService : IWeaponService
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Name),
             weapon => weapon.Name.ToLower().Contains(request.Filters.Name.ToLower()));
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Model),
+            weapon => weapon.Model.ToLower().Contains(request.Filters.Model.ToLower()));
         var page = this._databaseContext.Weapons
             .Include(x => x.WeaponWeaponComponents)
             .AsNoTracking()
@@ -94,7 +97,7 @@ public class WeaponService : IWeaponService
         this._databaseContext.Weapons.Add(weapon);
         this._databaseContext.SaveChanges();
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.CREATE");
     }
 
     [UIEvent(Events.UI.Weapon.Edit)]
@@ -143,7 +146,7 @@ public class WeaponService : IWeaponService
         }
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.Weapon.Delete)]
@@ -160,6 +163,6 @@ public class WeaponService : IWeaponService
 
         this._databaseContext.Weapons.Remove(weapon);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.DELETE");
     }
 }

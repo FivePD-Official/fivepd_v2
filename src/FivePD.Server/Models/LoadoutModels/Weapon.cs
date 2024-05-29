@@ -29,12 +29,12 @@ public class Weapon
     /// <summary>
     /// Gets or sets the Components.
     /// </summary>
-    public ICollection<WeaponWeaponComponent> WeaponWeaponComponents { get; set; } = new List<WeaponWeaponComponent>();
+    public IList<WeaponWeaponComponent> WeaponWeaponComponents { get; set; } = new List<WeaponWeaponComponent>();
 
     /// <summary>
     /// Gets or sets the LoadoutWeapon.
     /// </summary>
-    public ICollection<LoadoutWeapon> LoadoutWeapons { get; set; } = new List<LoadoutWeapon>();
+    public IList<LoadoutWeapon> LoadoutWeapons { get; set; } = new List<LoadoutWeapon>();
 
     /// <summary>
     /// Adds a weapon component to a weapon.

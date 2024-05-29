@@ -11,5 +11,6 @@ internal record struct WeaponComponentsRequest()
     public record struct RequestFilters
     {
         public string Name { get; set; }
+        public string HashKey { get; set; }
     }
 }

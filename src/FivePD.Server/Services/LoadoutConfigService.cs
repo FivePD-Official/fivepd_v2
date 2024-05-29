@@ -55,9 +55,6 @@ public class LoadoutConfigService : ILoadoutConfigService
             return;
         }
 
-        var test = Converter.SerializeObjectWithoutReferenceLoop(loadoutConfig);
-        Debug.WriteLine(test);
-
         networkCallbackDelegate.InvokeWithJson(loadoutConfig);
     }
 
@@ -96,7 +93,7 @@ public class LoadoutConfigService : ILoadoutConfigService
         this._databaseContext.LoadoutConfigs.Add(loadoutConfig);
         this._databaseContext.SaveChanges();
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.CREATE");
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Edit)]
@@ -144,7 +141,7 @@ public class LoadoutConfigService : ILoadoutConfigService
         }
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Delete)]
@@ -161,6 +158,6 @@ public class LoadoutConfigService : ILoadoutConfigService
 
         this._databaseContext.LoadoutConfigs.Remove(loadout);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.DELETE");
     }
 }

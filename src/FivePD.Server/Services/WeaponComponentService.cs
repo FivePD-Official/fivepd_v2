@@ -47,6 +47,9 @@ public class WeaponComponentService : IWeaponComponentService
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Name),
             wc => wc.Name.ToLower().Contains(request.Filters.Name.ToLower()));
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.HashKey),
+            wc => wc.HashKey.ToLower().Contains(request.Filters.HashKey.ToLower()));
         var page = this._databaseContext.WeaponComponents
             .AsNoTracking()
             .Paginate(request.Page, filters);
@@ -74,7 +77,7 @@ public class WeaponComponentService : IWeaponComponentService
         this._databaseContext.WeaponComponents.Add(weaponComponent);
         this._databaseContext.SaveChanges();
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.CREATE");
     }
 
     [UIEvent(Events.UI.WeaponComponent.Edit)]
@@ -93,7 +96,7 @@ public class WeaponComponentService : IWeaponComponentService
         weaponComponent.HashKey = request.HashKey;
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.WeaponComponent.Delete)]
@@ -110,6 +113,6 @@ public class WeaponComponentService : IWeaponComponentService
 
         this._databaseContext.WeaponComponents.Remove(weaponComponent);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.DELETE");
     }
 }

@@ -91,7 +91,6 @@ export class LoadoutWeaponComponentsComponent {
           show: () => true,
           disabled: () => false,
           onClick: weaponComponent => {
-            console.log(weaponComponent)
             this._modalFormService.open({
               title: 'UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.EDIT.TITLE',
               fields: weaponComponent => fields(weaponComponent),
