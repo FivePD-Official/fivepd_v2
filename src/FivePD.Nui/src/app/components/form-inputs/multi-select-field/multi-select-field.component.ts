@@ -50,7 +50,7 @@ export class MultiSelectFieldComponent implements OnInit {
 
     const selectedItems = this.field.items.filter(item => (this.field.value ?? []).includes(item.key));
     for (const item of selectedItems) {
-      this.setSelectedItems(item, false);
+      this.setSelectedItems(item, true);
     }
 
     this.control.valueChanges.subscribe(v => {

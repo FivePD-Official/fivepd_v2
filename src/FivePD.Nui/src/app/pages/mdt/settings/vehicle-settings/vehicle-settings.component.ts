@@ -231,10 +231,9 @@ export class VehicleSettingsComponent {
           show: () => true,
           disabled: () => false,
           onClick: vehicleConfig => {
-            console.log(vehicleConfig)
             this._modalFormService.open({
               title: 'UI.LABEL.VEHICLE_CONFIG.EDIT.TITLE',
-              fields: vehicleConfig => fields(vehicleConfig),
+              fields: updatedVehicleConfig => fields(updatedVehicleConfig),
               valueResolver: new ValueResolver(vehicleConfig, this._vehicleConfigService.get(vehicleConfig.Id)),
               buttons: {
                 submit: {
