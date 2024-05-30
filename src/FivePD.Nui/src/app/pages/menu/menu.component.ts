@@ -115,11 +115,11 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   getMarqueeClass(item: MenuListItem): Record<string, boolean> {
-    if (item.items.length <= item.currentIndex) {
+    if (item.Options.length <= item.currentIndex) {
       return {};
     }
 
-    const className = item.items[item.currentIndex].Title.length > 10 ? 'marquee' : '';
+    const className = item.Options[item.currentIndex].Title.length > 10 ? 'marquee' : '';
 
     return {
       [className]: true,
@@ -157,7 +157,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 
     if (currentItem.type === MenuItemType.List) {
       const item = currentItem as MenuListItem;
-      if (!item.items[item.currentIndex].Enabled) {
+      if (!item.Options[item.currentIndex].Enabled) {
         return;
       }
     }

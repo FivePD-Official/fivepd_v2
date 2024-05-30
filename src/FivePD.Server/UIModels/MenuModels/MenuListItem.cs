@@ -15,7 +15,7 @@ public class MenuListItem : MenuItem, IMenuListItemWithEvents
     /// </summary>
     /// <param name="title">The title of this item.</param>
     /// <param name="description">The description of this item.</param>
-    /// <param name="options">The items of this list.</param>
+    /// <param name="options">The options of this list.</param>
     /// <param name="enabled">The state of this item.</param>
     public MenuListItem(string title, string description, List<MenuListOption> options, bool enabled = true)
         : base(title, description, enabled, MenuItemType.List)
@@ -36,7 +36,7 @@ public class MenuListItem : MenuItem, IMenuListItemWithEvents
     /// <summary>
     /// Gets the items.
     /// </summary>
-    public List<MenuListOption> Options { get; }
+    public List<MenuListOption> Options { get; private set; }
 
     /// <summary>
     /// Gets the index.

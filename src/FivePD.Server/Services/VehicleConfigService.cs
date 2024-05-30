@@ -6,11 +6,14 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
+using FivePD.Server.UIModels;
+using FivePD.Server.UIModels.MenuModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Serilog;
@@ -24,12 +27,14 @@ public class VehicleConfigService : IVehicleConfigService
     private readonly ILogger _logger;
     private readonly DatabaseContext _databaseContext;
     private readonly IMenuService _menuService;
+    private readonly PlayerList _playerList;
 
-    public VehicleConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService)
+    public VehicleConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService, PlayerList playerList)
     {
         this._logger = logger;
         this._databaseContext = databaseContext;
         this._menuService = menuService;
+        this._playerList = playerList;
     }
 
     public List<VehicleConfig<Dictionary<string, object>>> GetAll(VehicleConfigType type)
@@ -111,6 +116,7 @@ public class VehicleConfigService : IVehicleConfigService
         });
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+        this.SendNewMenuItems();
     }
     
     [UIEvent(Events.UI.VehicleConfig.Edit)]
@@ -132,6 +138,7 @@ public class VehicleConfigService : IVehicleConfigService
 
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
+        this.SendNewMenuItems();
     }
 
     [UIEvent(Events.UI.VehicleConfig.Delete)]
@@ -148,5 +155,20 @@ public class VehicleConfigService : IVehicleConfigService
         this._databaseContext.VehicleConfigs.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
+        this.SendNewMenuItems();
+    }
+
+    private void SendNewMenuItems()
+    {
+        var newMenuOptions = this.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList();
+        foreach (var player in this._playerList)
+        {
+            this._menuService.UpdateMenuListItem<VehicleSelectorMenu, List<MenuListOption>>(
+                FPlayer.FromPlayer(player),
+                menu => menu.VehicleSpawnerItem,
+                item => item.Options,
+                newMenuOptions
+            );
+        }
     }
 }
