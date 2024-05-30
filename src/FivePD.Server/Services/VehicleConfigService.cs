@@ -115,18 +115,7 @@ public class VehicleConfigService : IVehicleConfigService
         });
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
-        
-        var newMenuOptions = this.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList();
-        foreach (var ped in this._playerList)
-        {
-            var player = FPlayer.FromNetId(ped.Character.NetworkId);
-            this._menuService.UpdateMenuListItem<VehicleSelectorMenu, List<MenuListOption>>(
-                player,
-                menu => menu.VehicleSpawnerItem,
-                item => item.Options,
-                newMenuOptions
-            );
-        }
+        SendNewMenuItems();
     }
     
     [UIEvent(Events.UI.VehicleConfig.Edit)]
@@ -148,18 +137,7 @@ public class VehicleConfigService : IVehicleConfigService
 
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
-        
-        var newMenuOptions = this.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList();
-        foreach (var ped in this._playerList)
-        {
-            var player = FPlayer.FromNetId(ped.Character.NetworkId);
-            this._menuService.UpdateMenuListItem<VehicleSelectorMenu, List<MenuListOption>>(
-                player,
-                menu => menu.VehicleSpawnerItem,
-                item => item.Options,
-                newMenuOptions
-            );
-        }
+        SendNewMenuItems();
     }
 
     [UIEvent(Events.UI.VehicleConfig.Delete)]
@@ -176,13 +154,16 @@ public class VehicleConfigService : IVehicleConfigService
         this._databaseContext.VehicleConfigs.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
-        
+        SendNewMenuItems();
+    }
+
+    private void SendNewMenuItems()
+    {
         var newMenuOptions = this.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList();
-        foreach (var ped in this._playerList)
+        foreach (var player in this._playerList)
         {
-            var player = FPlayer.FromNetId(ped.Character.NetworkId);
             this._menuService.UpdateMenuListItem<VehicleSelectorMenu, List<MenuListOption>>(
-                player,
+                FPlayer.FromPlayer(player),
                 menu => menu.VehicleSpawnerItem,
                 item => item.Options,
                 newMenuOptions
