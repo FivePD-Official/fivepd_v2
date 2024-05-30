@@ -160,7 +160,7 @@ public class VehicleConfigService : IVehicleConfigService
 
     private void SendNewMenuItems()
     {
-        var newMenuOptions = new List<MenuListOption>(this.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
+        var newMenuOptions = this.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList();
         foreach (var player in this._playerList)
         {
             this._menuService.UpdateMenuListItem<VehicleSelectorMenu, List<MenuListOption>>(

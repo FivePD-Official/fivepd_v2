@@ -99,7 +99,7 @@ export class MenuService {
       for (const item of menu.items) {
         if (item.hashcode === res.Hashcode) {
           const list = item as MenuListItem;
-          const option = list.items[res.Index]
+          const option = list.Options[res.Index]
           if (Reflect.has(option, res.Property)) {
             Reflect.set(option, res.Property, res.Value);
           }
@@ -151,7 +151,7 @@ export class MenuService {
       }
       case MenuItemType.List: {
         _item = new MenuListItem(item.Title, item.Description, item.Enabled, item.Hashcode);
-        (_item as MenuListItem).items = item.Items!.map(x => new MenuListOption(x.Title, x.Enabled));
+        (_item as MenuListItem).Options = item.Items!.map(x => new MenuListOption(x.Title, x.Enabled));
         break;
       }
       case MenuItemType.Toggle: {
