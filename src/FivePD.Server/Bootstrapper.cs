@@ -107,6 +107,18 @@ internal class Bootstrapper : BaseScript
             },
             false);
 
+        // Notify all players that bootstrapping is complete.
+        this._phases.Add(
+            () =>
+            {
+                var playerList = this._provider.GetService<PlayerList>();
+                foreach (var player in playerList)
+                {
+                    player.TriggerEvent(Events.Lifecycle.ServerBootstrapped);
+                }
+            },
+            false);
+
         // Begin running phases.
         this.Tick += this.RunNextPhaseAsync;
     }

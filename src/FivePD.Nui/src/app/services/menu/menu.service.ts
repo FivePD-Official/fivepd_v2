@@ -36,10 +36,6 @@ export class MenuService {
   }
 
   load(): void {
-    if (this._menus.length) {
-      return;
-    }
-
     this._http.post<GetAllMenusResponse>('fivepd:menu:getAll', {}).subscribe(menus => {
       this.createMenus(menus);
     });

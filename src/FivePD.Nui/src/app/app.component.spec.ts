@@ -56,7 +56,7 @@ describe('AppComponent', () => {
     windowEventListener = TestBed.inject(MockWindowEventListener);
     localizationService = TestBed.inject(LocalizationService);
 
-    onLoadSpy = jest.spyOn(component, 'onLoad');
+    onLoadSpy = jest.spyOn(component, 'setFont');
     localizationLoadSpy = jest.spyOn(localizationService, 'load');
 
     fixture.detectChanges();

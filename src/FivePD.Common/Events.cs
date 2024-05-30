@@ -11,6 +11,8 @@ internal readonly record struct Events
 {
     public readonly record struct Lifecycle
     {
+        public const string ServerBootstrapped = "fivepd:lifecycle:serverBootstrapped";
+
         public const string Stop = "fivepd:lifecycle:stop";
     }
 
