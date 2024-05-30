@@ -23,7 +23,6 @@ describe('AppComponent', () => {
   let windowEventListener: MockWindowEventListener;
   let localizationService: LocalizationService;
 
-  let onLoadSpy: SpyInstance;
   let localizationLoadSpy: SpyInstance;
 
   beforeEach(async () => {
@@ -56,7 +55,6 @@ describe('AppComponent', () => {
     windowEventListener = TestBed.inject(MockWindowEventListener);
     localizationService = TestBed.inject(LocalizationService);
 
-    onLoadSpy = jest.spyOn(component, 'onLoad');
     localizationLoadSpy = jest.spyOn(localizationService, 'load');
 
     fixture.detectChanges();
@@ -71,10 +69,6 @@ describe('AppComponent', () => {
     it('should render the "main-container" with a "router-outlet" in it', () => {
       expect(fixtureHelper.findElement(".main-container")).toBeTruthy();
       expect(fixtureHelper.findElement(".main-container router-outlet")).toBeTruthy();
-    });
-
-    it('component.onLoad should be called', () => {
-      expect(onLoadSpy).toHaveBeenCalled();
     });
 
     it('should call localizationService.load', () => {

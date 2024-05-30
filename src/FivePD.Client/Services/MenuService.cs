@@ -37,18 +37,23 @@ internal class MenuService : IMenuService, IOnInit
     }
 
     /// <inheritdoc />
-    public void OnInit()
+    void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
-        {
-            var response = JsonConvert.DeserializeObject<MenuDTO.GetAllMenu>(data);
-            this.RegisterMenuKeybinds(response);
-        });
-
+        this.RegisterMenus();
         this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
         this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuListOption] += new Action<string>(data => this._uiService.SendMessage(data));
         this._eventHandlerDictionary[Events.UI.Menu.AddMenuItem] += new Action<string>(this.AddMenuItem);
         this._eventHandlerDictionary[Events.UI.Menu.RemoveMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
+    }
+
+    /// <inheritdoc/>
+    public void RegisterMenus()
+    {
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
+        {
+            var response = JsonConvert.DeserializeObject<MenuDTO.GetAllMenu>(data);
+            this.RegisterMenuKeybinds(response, true);
+        });
     }
 
     private void AddMenuItem(string serializedData)
@@ -58,9 +63,9 @@ internal class MenuService : IMenuService, IOnInit
         this.RegisterItemActions(data.Item);
     }
 
-    private void RegisterMenuKeybinds(MenuDTO.GetAllMenu response)
+    private void RegisterMenuKeybinds(MenuDTO.GetAllMenu response, bool @override = false)
     {
-        if (this._registeredMenus)
+        if (!@override && this._registeredMenus)
         {
             return;
         }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
 import { WindowService } from '@services/window/window.service';
 import { LocalizationService } from '@services/localization/localization.service';
@@ -20,31 +20,49 @@ import { AudioService } from "@services/audio/audio.service";
 })
 export class AppComponent implements OnInit {
 
-  calculatedContainerMargin: string = '';
+  private readonly _windowService = inject(WindowService);
+  private readonly _eventService = inject(EventService);
+  private readonly _localizationService = inject(LocalizationService);
+  private readonly _router = inject(Router);
+  private readonly _store = inject<Store<GlobalState>>(Store);
+  private readonly _menuService = inject(MenuService);
+  private readonly _configService = inject(ConfigService);
+  private readonly _soundService = inject(AudioService);
 
-  constructor(
-    private readonly _window: WindowService, // do not remove OR refactor so event used in it are subscribed here
-    private readonly _event: EventService,
-    private readonly _localization: LocalizationService,
-    private readonly _router: Router,
-    private readonly _store: Store<GlobalState>,
-    private readonly _menu: MenuService,
-    private readonly _configService: ConfigService,
-    private readonly _modalService: ModalService,
-    private readonly _userService: UserService,
-    private readonly _soundService: AudioService,
-  ) {
-  }
+  private calculatedContainerMargin: string = '';
 
   ngOnInit(): void {
-    this.onLoad();
+    this.setFont();
+    this._menuService.load();
+    this._localizationService.load();
+    this._windowService.listenToEvents();
+    this._soundService.listenToEvents();
+
     this._router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       filter(event => event.url !== '/' && event.url.startsWith('/mdt'))
     ).subscribe(event => {
       this._store.dispatch(AppActions.setMDTPath({path: event.url.split('/')}));
     });
-    window.addEventListener('message', event => this._event.next(event.data));
+
+    window.addEventListener('message', event => this._eventService.next(event.data));
+
+    this._eventService.onEvent('fivepd:lifecycle:serverBootstrapped').subscribe(() => {
+      this._menuService.load();
+    });
+
+    this._configService.getSafeZoneSize().subscribe(safeZoneSize => {
+      const safeZone = safeZoneSize * 0.5;
+      const tbMargin = window.screen.height * safeZone;
+      const lrMargin = window.screen.width * safeZone;
+      const mainContainer = document.querySelector('.main-container') as HTMLDivElement;
+      if (!mainContainer) {
+        return;
+      }
+
+      this.calculatedContainerMargin = `${tbMargin}px ${lrMargin}px`;
+      mainContainer.style.inset = this.calculatedContainerMargin;
+    });
 
     this._store.select('app', 'windowMaximized').subscribe(windowMaximized => {
       const mainContainer = document.querySelector('.main-container') as HTMLDivElement;
@@ -62,11 +80,9 @@ export class AppComponent implements OnInit {
 
       enableAnimations();
     });
-
-    this._soundService.listenToEvents();
   }
 
-  disableAnimations() {
+  private disableAnimations() {
     const css = document.createElement('style');
     css.appendChild(
       document.createTextNode(`*{-webkit-transition:none!important;-moz-transition:none!important;-o-transition:none!important;-ms-transition:none!important;transition:none!important}`)
@@ -82,7 +98,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  onLoad(): void {
+  private setFont(): void {
     document.body.style.display = 'none';
 
     const style = document.createElement('style');
@@ -96,21 +112,5 @@ export class AppComponent implements OnInit {
       }
     `));
     document.head.appendChild(style);
-
-    this._localization.load();
-    this._menu.load();
-
-    this._configService.getSafeZoneSize().subscribe(safeZoneSize => {
-      const safeZone = safeZoneSize * 0.5;
-      const tbMargin = window.screen.height * safeZone;
-      const lrMargin = window.screen.width * safeZone;
-      const mainContainer = document.querySelector('.main-container') as HTMLDivElement;
-      if (!mainContainer) {
-        return;
-      }
-
-      this.calculatedContainerMargin = `${tbMargin}px ${lrMargin}px`;
-      mainContainer.style.inset = this.calculatedContainerMargin;
-    });
   }
 }

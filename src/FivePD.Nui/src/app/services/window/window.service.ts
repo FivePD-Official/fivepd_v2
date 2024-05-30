@@ -1,7 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { EventService } from '@services/event/event.service';
-import { BaseNuiEvent, InformationUpdateDTO, MenuShowEvent, TimerBarEvent } from '@models';
+import {
+  BaseNuiEvent,
+  InformationUpdateDTO,
+  MenuShowEvent,
+  OnAudioPlaySound,
+  OnAudioSpeak,
+  TimerBarEvent
+} from '@models';
 import { Router } from '@angular/router';
 import { UserService } from '@services/user/user.service';
 import { Store } from '@ngrx/store';
@@ -14,46 +21,52 @@ import { UserActions } from "@store/user.actions";
 })
 export class WindowService {
 
-  visible: boolean = false; // TODO: this is only needed because of the close event spam
-  previousMdtPath: string[] = ['mdt', 'dashboard'];
+  private readonly _httpClient = inject(HttpClient);
+  private readonly _eventService = inject(EventService);
+  private readonly _router = inject(Router);
+  private readonly _userService = inject(UserService);
+  private readonly _store = inject<Store<GlobalState>>(Store);
 
-  visibleMdt$ = new BehaviorSubject(false);
-  showInformation = new BehaviorSubject(false);
-  showWelcomeModal = new BehaviorSubject(false);
-  showMenu = new BehaviorSubject(false);
+  private _listening = false;
+  private previousMdtPath: string[] = ['mdt', 'dashboard'];
 
-  constructor(
-    private readonly _http: HttpClient,
-    private readonly _event: EventService,
-    private readonly _router: Router,
-    private readonly _userService: UserService,
-    private readonly _store: Store<GlobalState>,
-  ) {
-    this._event.onEvent<TimerBarEvent>('webpackInvalid').subscribe(() => this.close());
-    this._event.onEvent<TimerBarEvent>('webpackOk').subscribe(() => this.close());
+  readonly visibleMdt$ = new BehaviorSubject(false);
+  readonly showInformation = new BehaviorSubject(false);
+  readonly showWelcomeModal = new BehaviorSubject(false);
+  readonly showMenu = new BehaviorSubject(false);
+
+  listenToEvents(): void {
+    if (this._listening) {
+      return;
+    }
+
+    this._listening = true;
+
+    this._eventService.onEvent<TimerBarEvent>('webpackInvalid').subscribe(() => this.close());
+    this._eventService.onEvent<TimerBarEvent>('webpackOk').subscribe(() => this.close());
     window.addEventListener('keydown', event => {
       if (event.code === 'Escape') {
         this.close();
       }
     });
 
-    this._event.onEvent<BaseNuiEvent>('fivepd:ui:close').subscribe(() => this.close()) // TODO: investigate why this subscription spams after the first close event
-    this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').subscribe(() => {
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:ui:close').subscribe(() => this.close());
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:mdt').subscribe(() => {
       this._userService.refreshData();
       this.onMdtOpen();
     });
-    this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:information').subscribe(() => {
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:information').subscribe(() => {
       this.onInformationOpen();
     });
-    this._event.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
+    this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
       this._store.dispatch(UserActions.setInformation({information}));
     });
-    this._event.onEvent<BaseNuiEvent>('fivepd:ui:view:welcomeModal').subscribe(() => {
+    this._eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:welcomeModal').subscribe(() => {
       this.onWelcomeModalOpen();
     });
-    this._event.onEvent<MenuShowEvent>('fivepd:ui:view:menu').subscribe(() => this.onMenuOpen());
-    this._event.onEvent<MenuShowEvent>('fivepd:ui:view:radialMenu').subscribe(res => this.onRadialMenuOpen(res));
-    this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onTimerBarEvent(res));
+    this._eventService.onEvent<MenuShowEvent>('fivepd:ui:view:menu').subscribe(() => this.onMenuOpen());
+    this._eventService.onEvent<MenuShowEvent>('fivepd:ui:view:radialMenu').subscribe(res => this.onRadialMenuOpen(res));
+    this._eventService.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onTimerBarEvent(res));
 
     this._store.subscribe(state => {
       this.previousMdtPath = state.app.previousMdtPath;
@@ -61,7 +74,6 @@ export class WindowService {
   }
 
   show(): void {
-    this.visible = true;
     this.visibleMdt$.next(true);
     document.body.style.display = 'block';
   }
@@ -76,7 +88,7 @@ export class WindowService {
   }
 
   triggerCloseEvent(): void {
-    this._http.post('fivepd:ui:close', {}).subscribe();
+    this._httpClient.post('fivepd:ui:close', {}).subscribe();
   }
 
   closeMDT(): void {

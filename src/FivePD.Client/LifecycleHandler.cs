@@ -1,6 +1,8 @@
 ﻿using FivePD.Client.Injection;
 using FivePD.Client.Interfaces;
+using FivePD.Common;
 using FivePD.Common.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace FivePD.Client;
 
@@ -9,6 +11,18 @@ namespace FivePD.Client;
 internal static class LifecycleHandler
 {
     public static bool IsStopped { get; private set; }
+
+    public static void ServerBootstrapped()
+    {
+        var uiManagerService = ServiceLocator.Resolve<IUIManagerService>();
+        uiManagerService.SendMessage(new JObject
+        {
+            { "Event", Events.Lifecycle.ServerBootstrapped },
+        });
+
+        var menuService = ServiceLocator.Resolve<IMenuService>();
+        menuService.RegisterMenus();
+    }
 
     public static void OnStopped()
     {
