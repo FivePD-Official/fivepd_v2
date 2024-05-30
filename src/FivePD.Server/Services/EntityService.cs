@@ -38,7 +38,7 @@ public class EntityService : IEntityService
     }
 
     /// <inheritdoc />
-    public async Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading)
+    public async Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading, bool clearArea = false)
     {
         var handle = Cfx.API.CreatePed(26, model, location.X, location.Y, location.Z, heading, true, false);
 
@@ -50,11 +50,17 @@ public class EntityService : IEntityService
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
-        return FPed.FromPed(new Ped(handle));
+        var fPed = FPed.FromPed(new Ped(handle));
+        if (clearArea)
+        {
+            this.ClearEntitiesWithinRadiusOfEntity(fPed.GetUnderlyingPed);
+        }
+
+        return fPed;
     }
 
     /// <inheritdoc />
-    public async Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading)
+    public async Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading, bool clearArea = false)
     {
         // TODO: clear area
         var handle = Cfx.API.CreateVehicle(model, location.X, location.Y, location.Z, heading, true, false);
@@ -66,11 +72,17 @@ public class EntityService : IEntityService
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
-        return FVehicle.FromVehicle(new Vehicle(handle));
+        var fVehicle = FVehicle.FromVehicle(new Vehicle(handle));
+        if (clearArea)
+        {
+            this.ClearEntitiesWithinRadiusOfEntity(fVehicle.GetUnderlyingVehicle);
+        }
+
+        return fVehicle;
     }
 
     /// <inheritdoc />
-    public async Task<Prop> SpawnPropAsync(int model, Vector3 location)
+    public async Task<Prop> SpawnPropAsync(int model, Vector3 location, bool clearArea = false)
     {
         var handle = Cfx.API.CreateObject(model, location.X, location.Y, location.Z, true, false, false);
 
@@ -81,7 +93,13 @@ public class EntityService : IEntityService
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
-        return new Prop(handle);
+        var prop = new Prop(handle);
+        if (clearArea)
+        {
+            this.ClearEntitiesWithinRadiusOfEntity(prop);
+        }
+
+        return prop;
     }
 
     /// <inheritdoc />
@@ -94,7 +112,8 @@ public class EntityService : IEntityService
 
         foreach (var id in pedIds)
         {
-            Debug.WriteLine($"{Convert.ToInt32(id)} - {Cfx.API.DoesEntityExist(Convert.ToInt32(id))} - net id: {Cfx.API.NetworkGetNetworkIdFromEntity(Convert.ToInt32(id))}");
+            Debug.WriteLine(
+                $"{Convert.ToInt32(id)} - {Cfx.API.DoesEntityExist(Convert.ToInt32(id))} - net id: {Cfx.API.NetworkGetNetworkIdFromEntity(Convert.ToInt32(id))}");
         }
 
         return pedIds
@@ -210,5 +229,19 @@ public class EntityService : IEntityService
         }
 
         return null;
+    }
+
+    /// <inheritdoc />
+    public void ClearEntitiesWithinRadiusOfEntity(Entity entity, float radius = 5f)
+    {
+        foreach (var ped in this.GetPedsInRangeOfEntity(entity, radius).Where(ped => !Cfx.API.IsPedAPlayer(ped.Handle)))
+        {
+            Cfx.API.DeleteEntity(ped.Handle);
+        }
+
+        foreach (var vehicle in this.GetVehiclesInRangeOfEntity(entity, radius))
+        {
+            Cfx.API.DeleteEntity(vehicle.Handle);
+        }
     }
 }

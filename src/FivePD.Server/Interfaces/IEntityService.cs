@@ -19,8 +19,9 @@ public interface IEntityService
     /// <param name="model">A ped model for the ped to use.</param>
     /// <param name="location">A location where the ped will spawn.</param>
     /// <param name="heading">The heading the ped will use.</param>
+    /// <param name="clearArea">A boolean value representing whether the area should be cleared.</param>
     /// <returns>The spawned ped.</returns>
-    Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading);
+    Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading, bool clearArea = false);
 
     /// <summary>
     /// Spawns a vehicle directly on the server.
@@ -28,16 +29,18 @@ public interface IEntityService
     /// <param name="model">A ped model for the ped to use.</param>
     /// <param name="location">A location where the ped will spawn.</param>
     /// <param name="heading">The heading the ped will use.</param>
+    /// <param name="clearArea">A boolean value representing whether the area should be cleared.</param>
     /// <returns>The spawned vehicle.</returns>
-    Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading);
+    Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading, bool clearArea = false);
 
     /// <summary>
     /// Spawns a prop (object) via RPC natives.
     /// </summary>
     /// <param name="model">A model for the prop to use.</param>
     /// <param name="location">A location where the prop will spawn.</param>
+    /// <param name="clearArea">A boolean value representing whether the area should be cleared.</param>
     /// <returns>The spawned prop.</returns>
-    Task<Prop> SpawnPropAsync(int model, Vector3 location);
+    Task<Prop> SpawnPropAsync(int model, Vector3 location, bool clearArea = false);
 
     /// <summary>
     /// Gets all peds.
@@ -124,4 +127,11 @@ public interface IEntityService
     /// <returns>The closest entity.</returns>
     public Task<T> GetClosestEntityToPlayerAsync<T>(Player player)
         where T : FEntity;
+
+    /// <summary>
+    /// Deletes all vehicles and peds within the specified radius of the specified entity.
+    /// </summary>
+    /// <param name="entity">The specified entity to use.</param>
+    /// <param name="radius">The specified radius to use.</param>
+    public void ClearEntitiesWithinRadiusOfEntity(Entity entity, float radius = 5f);
 }
