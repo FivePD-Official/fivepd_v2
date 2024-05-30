@@ -44,32 +44,44 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   populateForm(): void {
-    const {fields, valueResolver} = this.modalRef.options as ModalFormOptions<any>;
+    const { fields, valueResolver, dataResolver } = this.modalRef.options as ModalFormOptions<any>;
     if (!fields) {
       return;
     }
 
-    this.fields = fields(undefined);
+    let entity: any;
+    let additionalData: any;
 
     if (valueResolver) {
-      valueResolver.value
-        .pipe(
-          takeUntil(this.destroy$),
-          map(v => fields(v)),
-          switchMap(fields => {
-            const observables = this.getPredefinedAttributeObservables(fields);
-            return zip(of(fields), forkJoin(observables))
-          }),
-        )
-        .subscribe(([fields]) => {
-          this.fields = [...fields];
-        });
-    } else {
-      const observables = this.getPredefinedAttributeObservables(this.fields);
-      zip(of(this.fields), forkJoin(observables)).subscribe(([fields]) => {
-        this.fields = [...fields];
+      valueResolver.value.pipe(
+        takeUntil(this.destroy$),
+        tap(val => entity = val),
+        switchMap(() => {
+          if (dataResolver) {
+            return dataResolver.value;
+          } else {
+            return of(undefined);
+          }
+        }),
+        takeUntil(this.destroy$),
+      ).subscribe(val => {
+        additionalData = val;
+        this.updateFields(fields, entity, additionalData);
       });
+    } else if (dataResolver) {
+      dataResolver.value.pipe(
+        takeUntil(this.destroy$),
+      ).subscribe(val => {
+        additionalData = val;
+        this.updateFields(fields, entity, additionalData);
+      });
+    } else {
+      this.updateFields(fields, undefined, undefined);
     }
+  }
+
+  private updateFields(fieldsFunction: (entity?: any, additionalData?: any) => FormInputBase<any>[], entity?: any, additionalData?: any): void {
+    this.fields = fieldsFunction(entity, additionalData);
   }
 
   submit(event?: FormSubmitEvent): void {

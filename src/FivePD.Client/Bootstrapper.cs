@@ -11,7 +11,6 @@ using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Services;
 using FivePD.Common;
 using FivePD.Common.Utilities;
-using Cfx = CitizenFX.Core.Native;
 
 #pragma warning disable S3241
 #pragma warning disable CS4014
@@ -332,6 +331,24 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<VehicleConfigService>()
             .As<IVehicleConfigService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
+        services
+            .RegisterType<LoadoutConfigService>()
+            .As<ILoadoutConfigService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
+        services
+            .RegisterType<WeaponService>()
+            .As<IWeaponService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
+        services
+            .RegisterType<WeaponComponentService>()
+            .As<IWeaponComponentService>()
             .As<IOnInit>()
             .IsSingleton();
 

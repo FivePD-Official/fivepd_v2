@@ -23,7 +23,7 @@ public class Towing : AssistanceService
     private FPed _driver;
     private FVehicle _towTruck;
     private FVehicle _targetVehicle;
-    
+
     private const float SlowingDistance = 125f;
     private const float MaximumSpeed = 25f;
     private const float MinimumSpeed = 5f;
@@ -84,7 +84,7 @@ public class Towing : AssistanceService
         this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._towTruck.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
-        
+
         this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
         while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= SlowingDistance)
@@ -93,23 +93,26 @@ public class Towing : AssistanceService
             {
                 return;
             }
-            
+
             var distance = Vector3.Distance(this._towTruck.GetUnderlyingVehicle.Position, this._targetPosition);
             var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-            
+
             this._driver.Properties.SetDrivingSpeed(currentSpeed);
 
             await Task.Delay(500);
         }
-        
+
         this._driver.Task.ClearAll();
+
         this._driver.Task.DriveTo(
             this._towTruck.GetUnderlyingVehicle,
-            this._targetVehicle.GetUnderlyingVehicle.Position,
+            this._targetPosition,
             0f,
             5f,
             (int)FDrivingStyle.Normal);
+
+        await Task.Delay(2000);
 
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
@@ -117,8 +120,6 @@ public class Towing : AssistanceService
             this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
             return;
         }
-        
-        await Task.Delay(2000);
 
         this._cfxService.AttachEntityToEntity(
             this._targetVehicle.GetUnderlyingVehicle.NetworkId,
@@ -152,21 +153,21 @@ public class Towing : AssistanceService
 
     private void OnCompletedOrCancelled()
     {
-        if (this._driver is not null)
+        if (this._driver?.GetUnderlyingPed is not null)
         {
             Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
             this._driver.Task.CruiseWithVehicle(this._towTruck.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
             this._driver.Properties.MarkAsNoLongerNeeded();
         }
 
-        if (this._towTruck is not null)
+        if (this._towTruck?.GetUnderlyingVehicle is not null)
         {
             this._towTruck.Properties.RemoveBlips();
             Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.Handle, 100f);
             this._towTruck.Properties.MarkAsNoLongerNeeded();
         }
 
-        if (this._targetVehicle is not null)
+        if (this._targetVehicle?.GetUnderlyingVehicle is not null)
         {
             Cfx.API.SetEntityDistanceCullingRadius(this._targetVehicle.GetUnderlyingVehicle.Handle, 100f);
             this._targetVehicle.Properties.MarkAsNoLongerNeeded();

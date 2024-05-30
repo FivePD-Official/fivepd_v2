@@ -1,0 +1,12 @@
+﻿using System.Collections.Generic;
+
+namespace FivePD.Server.Models.Requests;
+
+#pragma warning disable
+
+internal record struct AddWeaponRequest
+{
+    public string Name { get; set; }
+    public string Model { get; set; }
+    public List<int> WeaponComponentIds { get; set; }
+}

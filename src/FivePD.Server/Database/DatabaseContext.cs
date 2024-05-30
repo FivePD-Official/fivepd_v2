@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Common.ConfigModels;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Models.LoadoutModels;
+using FivePD.Server.Models.LoadoutModels.JoinTables;
 using FivePD.Server.Models.VariableData;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
@@ -133,6 +132,21 @@ public class DatabaseContext : DbContext
     /// Gets or sets the table containing the vehicle configs.
     /// </summary>
     public DbSet<VehicleConfig<Dictionary<string, object>>> VehicleConfigs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing loadout configs.
+    /// </summary>
+    public DbSet<LoadoutConfig> LoadoutConfigs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing weapons.
+    /// </summary>
+    public DbSet<Weapon> Weapons { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing weapon components.
+    /// </summary>
+    public DbSet<WeaponComponent> WeaponComponents { get; set; }
 
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -292,5 +306,33 @@ public class DatabaseContext : DbContext
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
+
+        // LoadoutConfig-to-Weapon Many-to-Many Join Table:
+        modelBuilder.Entity<LoadoutWeapon>()
+            .HasKey(lw => new { lw.LoadoutConfigId, lw.WeaponId });
+
+        modelBuilder.Entity<LoadoutWeapon>()
+            .HasOne(pt => pt.LoadoutConfig)
+            .WithMany(p => p.LoadoutWeapons)
+            .HasForeignKey(pt => pt.LoadoutConfigId);
+
+        modelBuilder.Entity<LoadoutWeapon>()
+            .HasOne(pt => pt.Weapon)
+            .WithMany(t => t.LoadoutWeapons)
+            .HasForeignKey(pt => pt.WeaponId);
+
+        // Weapon-to-WeaponComponent Many-to-Many Join Table:
+        modelBuilder.Entity<WeaponWeaponComponent>()
+            .HasKey(wwc => new { wwc.WeaponId, wwc.WeaponComponentId });
+
+        modelBuilder.Entity<WeaponWeaponComponent>()
+            .HasOne(pt => pt.Weapon)
+            .WithMany(p => p.WeaponWeaponComponents)
+            .HasForeignKey(pt => pt.WeaponId);
+
+        modelBuilder.Entity<WeaponWeaponComponent>()
+            .HasOne(pt => pt.WeaponComponent)
+            .WithMany(t => t.WeaponWeaponComponents)
+            .HasForeignKey(pt => pt.WeaponComponentId);
     }
 }

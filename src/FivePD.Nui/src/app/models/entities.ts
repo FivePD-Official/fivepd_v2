@@ -31,6 +31,10 @@ export interface User extends WithId {
 
 export type SimpleUser = Pick<User, 'Id' | 'Name'>;
 
+export type SimpleWeapon = Pick<Weapon, 'Id' | 'Name'>
+
+export type SimpleWeaponComponent = Pick<WeaponComponent, 'Id' | 'Name'>
+
 export interface DepartmentAreaCoordinate extends WithId {
   X: number;
   Y: number;
@@ -72,6 +76,28 @@ export interface VehicleConfig extends WithId {
   Livery: number;
   Extras: number[];
   Options: Record<string, any>;
+  // Department: User["DepartmentId"]; TODO
+  // Division: Division["Name"]; TODO
+}
+
+export interface LoadoutConfig extends WithId {
+  Name: string;
+  WeaponIds: number[];
+  // Department: User["DepartmentId"]; TODO
+  // Division: Division["Name"]; TODO
+}
+
+export interface Weapon extends WithId {
+  Name: string;
+  Model: string;
+  WeaponComponentIds: number[];
+  // Department: User["DepartmentId"]; TODO
+  // Division: Division["Name"]; TODO
+}
+
+export interface WeaponComponent extends WithId {
+  Name: string;
+  HashKey: string;
   // Department: User["DepartmentId"]; TODO
   // Division: Division["Name"]; TODO
 }

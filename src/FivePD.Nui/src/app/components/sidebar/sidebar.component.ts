@@ -131,6 +131,12 @@ export class SidebarComponent {
           icon: IconType.MapPin,
           show: () => this.userService.userHasRole(UserRole.Admin),
         },
+        {
+          title: 'UI.LABEL.LOADOUT.PLURAL',
+          path: () => '/mdt/settings/loadouts',
+          icon: IconType.Briefcase,
+          show: () => this.userService.userHasRole(UserRole.Admin),
+        },
       ]
     },
     {

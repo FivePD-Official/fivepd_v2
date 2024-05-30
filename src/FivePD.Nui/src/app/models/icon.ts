@@ -29,4 +29,5 @@
   Megaphone = 'Megaphone',
   AtSymbol = 'AtSymbol',
   MapPin = 'MapPin',
+  Briefcase = 'Briefcase',
 }

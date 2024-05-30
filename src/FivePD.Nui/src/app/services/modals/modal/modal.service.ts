@@ -1,10 +1,10 @@
-import { ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type } from '@angular/core';
-import { ActionResponse, ModalFormOptions, ModalOptions } from '@models';
-import { filter, MonoTypeOperatorFunction, tap } from 'rxjs';
-import { EXTRA_OBJECTS_TO_INJECT } from '../../../components/modal/extra-objects-token';
-import { ModalInjector } from '@services/modals/modal/modal-injector';
-import { ModalComponent } from '../../../components/modal/modal.component';
-import { ModalRef } from '@services/modals/modal/modal-ref';
+import {ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type} from '@angular/core';
+import {ActionResponse, ModalFormOptions, ModalOptions} from '@models';
+import {filter, MonoTypeOperatorFunction, tap} from 'rxjs';
+import {EXTRA_OBJECTS_TO_INJECT} from '../../../components/modal/extra-objects-token';
+import {ModalInjector} from '@services/modals/modal/modal-injector';
+import {ModalComponent} from '../../../components/modal/modal.component';
+import {ModalRef} from '@services/modals/modal/modal-ref';
 
 @Injectable({
   providedIn: 'root'
@@ -87,6 +87,18 @@ export class ModalService {
     const valueResolver = (modalRef.options as ModalFormOptions<T>).valueResolver;
     if (valueResolver) {
       valueResolver.updating
+        .subscribe(updating => {
+          if (updating) {
+            modalRef.startLoading('Updating...');
+          } else {
+            modalRef.stopLoading();
+          }
+        });
+    }
+
+    const dataResolver = (modalRef.options as ModalFormOptions<T>).dataResolver;
+    if (dataResolver) {
+      dataResolver.updating
         .subscribe(updating => {
           if (updating) {
             modalRef.startLoading('Updating...');
