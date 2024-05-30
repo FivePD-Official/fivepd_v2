@@ -36,7 +36,7 @@ public class MenuListItem : MenuItem, IMenuListItemWithEvents
     /// <summary>
     /// Gets the items.
     /// </summary>
-    public List<MenuListOption> Options { get; }
+    public List<MenuListOption> Options { get; private set; }
 
     /// <summary>
     /// Gets the index.

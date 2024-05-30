@@ -29,11 +29,12 @@ public class VehicleConfigService : IVehicleConfigService
     private readonly IMenuService _menuService;
     private readonly PlayerList _playerList;
 
-    public VehicleConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService)
+    public VehicleConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService, PlayerList playerList)
     {
         this._logger = logger;
         this._databaseContext = databaseContext;
         this._menuService = menuService;
+        this._playerList = playerList;
     }
 
     public List<VehicleConfig<Dictionary<string, object>>> GetAll(VehicleConfigType type)
@@ -115,7 +116,7 @@ public class VehicleConfigService : IVehicleConfigService
         });
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
-        SendNewMenuItems();
+        this.SendNewMenuItems();
     }
     
     [UIEvent(Events.UI.VehicleConfig.Edit)]
@@ -137,7 +138,7 @@ public class VehicleConfigService : IVehicleConfigService
 
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
-        SendNewMenuItems();
+        this.SendNewMenuItems();
     }
 
     [UIEvent(Events.UI.VehicleConfig.Delete)]
@@ -154,12 +155,12 @@ public class VehicleConfigService : IVehicleConfigService
         this._databaseContext.VehicleConfigs.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
-        SendNewMenuItems();
+        this.SendNewMenuItems();
     }
 
     private void SendNewMenuItems()
     {
-        var newMenuOptions = this.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList();
+        var newMenuOptions = new List<MenuListOption>(this.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
         foreach (var player in this._playerList)
         {
             this._menuService.UpdateMenuListItem<VehicleSelectorMenu, List<MenuListOption>>(
