@@ -18,7 +18,6 @@ internal class MenuService : IMenuService, IOnInit
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
     private readonly IUIManagerService _uiService;
-    private bool _registeredMenus;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MenuService"/> class.
@@ -39,21 +38,15 @@ internal class MenuService : IMenuService, IOnInit
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
-        this.RegisterMenus();
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
+        {
+            var response = JsonConvert.DeserializeObject<MenuDTO.GetAllMenu>(data);
+            this.RegisterMenuKeybinds(response);
+        });
         this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
         this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuListOption] += new Action<string>(data => this._uiService.SendMessage(data));
         this._eventHandlerDictionary[Events.UI.Menu.AddMenuItem] += new Action<string>(this.AddMenuItem);
         this._eventHandlerDictionary[Events.UI.Menu.RemoveMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
-    }
-
-    /// <inheritdoc/>
-    public void RegisterMenus()
-    {
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
-        {
-            var response = JsonConvert.DeserializeObject<MenuDTO.GetAllMenu>(data);
-            this.RegisterMenuKeybinds(response, true);
-        });
     }
 
     private void AddMenuItem(string serializedData)
@@ -63,15 +56,8 @@ internal class MenuService : IMenuService, IOnInit
         this.RegisterItemActions(data.Item);
     }
 
-    private void RegisterMenuKeybinds(MenuDTO.GetAllMenu response, bool @override = false)
+    private void RegisterMenuKeybinds(MenuDTO.GetAllMenu response)
     {
-        if (!@override && this._registeredMenus)
-        {
-            return;
-        }
-
-        this._registeredMenus = true;
-
         foreach (var menu in response.Menus)
         {
             void OnPress()

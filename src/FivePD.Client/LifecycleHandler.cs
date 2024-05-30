@@ -19,9 +19,6 @@ internal static class LifecycleHandler
         {
             { "Event", Events.Lifecycle.ServerBootstrapped },
         });
-
-        var menuService = ServiceLocator.Resolve<IMenuService>();
-        menuService.RegisterMenus();
     }
 
     public static void OnStopped()

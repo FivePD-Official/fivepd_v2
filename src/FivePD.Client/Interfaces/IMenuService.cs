@@ -5,8 +5,4 @@
 /// </summary>
 internal interface IMenuService
 {
-    /// <summary>
-    /// Registers all menus from the server.
-    /// </summary>
-    public void RegisterMenus();
 }
