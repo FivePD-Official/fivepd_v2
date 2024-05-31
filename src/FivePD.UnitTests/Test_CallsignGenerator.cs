@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using FivePD.Common.DTO;
+using FivePD.Server;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
-using FivePD.Server.Tests.Helpers;
 using FivePD.Server.Utilities;
+using FivePD.UnitTests.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace FivePD.Server.Tests;
-
 #pragma warning disable
 
+namespace FivePD.UnitTests;
+
 [TestFixture]
-internal class CallsignGeneratorTests
+internal class Test_CallsignGenerator
 {
     private const string RandomLetterWithSeed0 = "S";
 
@@ -34,7 +34,7 @@ internal class CallsignGeneratorTests
     [Test]
     public void Generate_Dynamic_Callsign()
     {
-        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
+        var callsignGenerator = new TestCallsignGenerator(new List<CallsignFormatItem>
         {
             new()
             {
@@ -52,7 +52,7 @@ internal class CallsignGeneratorTests
     [Test]
     public void Generate_Static_Callsign()
     {
-        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
+        var callsignGenerator = new TestCallsignGenerator(new List<CallsignFormatItem>
         {
             new()
             {
@@ -73,7 +73,7 @@ internal class CallsignGeneratorTests
     public void Generate_Dynamic_And_Static_Callsign()
     {
         // var callsignGenerator = new CallsignGenerator("*LL*NN");
-        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
+        var callsignGenerator = new TestCallsignGenerator(new List<CallsignFormatItem>
         {
             new()
             {
@@ -102,7 +102,7 @@ internal class CallsignGeneratorTests
     public void Generate_Dynamic_Callsign_With_W()
     {
         // var callsignGenerator = new CallsignGenerator("N-W-NN");
-        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
+        var callsignGenerator = new TestCallsignGenerator(new List<CallsignFormatItem>
         {
             new()
             {

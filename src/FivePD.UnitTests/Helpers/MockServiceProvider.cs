@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FivePD.Server.Tests.Helpers;
+#pragma warning disable
+
+namespace FivePD.UnitTests.Helpers;
 
 internal class MockServiceProvider : IServiceProvider
 {
@@ -11,7 +13,7 @@ internal class MockServiceProvider : IServiceProvider
     {
         this._mockServices.Add(typeof(T), service);
     }
-    
+
     public object GetService(Type serviceType)
     {
         return this._mockServices[serviceType];

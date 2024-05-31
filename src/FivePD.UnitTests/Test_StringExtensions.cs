@@ -2,9 +2,9 @@
 using FivePD.Common.Extensions;
 using NUnit.Framework;
 
-namespace FivePD.Server.Tests;
-
 #pragma warning disable
+
+namespace FivePD.UnitTests;
 
 [TestFixture]
 internal class Test_StringExtensions
