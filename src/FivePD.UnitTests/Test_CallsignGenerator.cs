@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using FivePD.Common.DTO;
+using FivePD.Server;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
-using FivePD.Server.Tests.Helpers;
 using FivePD.Server.Utilities;
+using FivePD.UnitTests.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace FivePD.Server.Tests;
-
 #pragma warning disable
 
+namespace FivePD.UnitTests;
+
 [TestFixture]
-internal class CallsignGeneratorTests
+internal class Test_CallsignGenerator
 {
     private const string RandomLetterWithSeed0 = "S";
 
