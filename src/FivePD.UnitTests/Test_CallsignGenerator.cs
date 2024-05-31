@@ -34,7 +34,7 @@ internal class Test_CallsignGenerator
     [Test]
     public void Generate_Dynamic_Callsign()
     {
-        var callsignGenerator = new TestCallsignGenerator(new List<CallsignFormatItem>
+        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
         {
             new()
             {
@@ -52,7 +52,7 @@ internal class Test_CallsignGenerator
     [Test]
     public void Generate_Static_Callsign()
     {
-        var callsignGenerator = new TestCallsignGenerator(new List<CallsignFormatItem>
+        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
         {
             new()
             {
@@ -73,7 +73,7 @@ internal class Test_CallsignGenerator
     public void Generate_Dynamic_And_Static_Callsign()
     {
         // var callsignGenerator = new CallsignGenerator("*LL*NN");
-        var callsignGenerator = new TestCallsignGenerator(new List<CallsignFormatItem>
+        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
         {
             new()
             {
@@ -102,7 +102,7 @@ internal class Test_CallsignGenerator
     public void Generate_Dynamic_Callsign_With_W()
     {
         // var callsignGenerator = new CallsignGenerator("N-W-NN");
-        var callsignGenerator = new TestCallsignGenerator(new List<CallsignFormatItem>
+        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
         {
             new()
             {
