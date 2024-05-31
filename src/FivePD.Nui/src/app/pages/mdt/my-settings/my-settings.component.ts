@@ -60,13 +60,14 @@ export class MySettingsComponent implements OnInit {
       this.loadAvailableLocales(),
       user.DepartmentId ? this._departmentService.getDepartment(user.DepartmentId) : of(undefined),
     ).subscribe(([generalConfig, availableLocalizations, department]) => {
+      console.log(availableLocalizations)
       this.department = department;
       this.generalConfig = generalConfig;
 
       const fields = [...this.userDetailsFields];
 
-      const defaultLanguageIndex = Object.keys(this.availableLocalizations).findIndex(locale => locale === generalConfig.config.DefaultLanguage);
-      const preferredLanguageIndex = Object.keys(this.availableLocalizations).findIndex(locale => locale === user.PreferredLanguage);
+      const defaultLanguageIndex = Object.keys(availableLocalizations).findIndex(locale => locale === generalConfig.config.DefaultLanguage);
+      const preferredLanguageIndex = Object.keys(availableLocalizations).findIndex(locale => locale === user.PreferredLanguage);
       fields.push(new SingleSelectField({
         key: 'PreferredLanguage',
         value: preferredLanguageIndex !== -1 ? preferredLanguageIndex : defaultLanguageIndex,
@@ -77,7 +78,7 @@ export class MySettingsComponent implements OnInit {
         defaultItemLabel: this._localizationService.translate('UI.LABEL.LANGUAGE.SINGULAR'),
         variant: 'secondary',
         size: 'normal',
-        items: Object.values(this.availableLocalizations).map((title, index) => ({
+        items: Object.values(availableLocalizations).map((title, index) => ({
           key: index,
           label: title,
         })),

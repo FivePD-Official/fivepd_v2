@@ -27,6 +27,7 @@ export interface User extends WithId {
   Xp: number;
   FixedRank: boolean;
   PreferredLanguage: string;
+  AccessFivePD: boolean;
 }
 
 export type SimpleUser = Pick<User, 'Id' | 'Name'>;

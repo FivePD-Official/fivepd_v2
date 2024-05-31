@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Common.Enums;
 
@@ -16,6 +14,11 @@ public class User
     /// Gets or sets the identifier.
     /// </summary>
     public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this player has access to use FivePD or not.
+    /// </summary>
+    public bool AccessFivePD { get; set; }
 
     /// <summary>
     /// Gets or sets the preferred language of the user.

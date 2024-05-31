@@ -15,6 +15,19 @@ internal readonly record struct Events
 
         public const string Stop = "fivepd:lifecycle:stop";
     }
+    
+    public readonly record struct AccessControl
+    {
+        public const string HasAccess = "fivepd:accessControl:hasAccess";
+
+        public const string GiveAccess = "fivepd:accessControl:give";
+
+        public const string RemoveAccess = "fivepd:accessControl:remove";
+        
+        public const string GiveAccessUI = "fivepd:accessControl:giveUI";
+
+        public const string RemoveAccessUI = "fivepd:accessControl:removeUI";
+    }
 
     public readonly record struct Vector3
     {

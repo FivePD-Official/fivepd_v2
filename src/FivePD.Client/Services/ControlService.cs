@@ -176,7 +176,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
             $"+{id}",
             new Action(() =>
             {
-                if (LifecycleHandler.IsStopped)
+                if (LifecycleHandler.Stopped)
                 {
                     return;
                 }
