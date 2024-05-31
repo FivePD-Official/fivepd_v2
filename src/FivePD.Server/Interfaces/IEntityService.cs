@@ -73,6 +73,14 @@ public interface IEntityService
     public FPed GetClosestFPedToEntity(Entity entity, float range = 15f);
 
     /// <summary>
+    /// Gets all peds in range of the specified position.
+    /// </summary>
+    /// <param name="pos">The position to use.</param>
+    /// <param name="range">The range to use.</param>
+    /// <returns>The peds.</returns>
+    public List<Ped> GetPedsInRangeOfPosition(Vector3 pos, float range = 15f);
+
+    /// <summary>
     /// Gets all peds in range of the specified entity.
     /// </summary>
     /// <param name="entity">The entity to use.</param>
@@ -111,11 +119,19 @@ public interface IEntityService
     public FVehicle GetClosestFVehicleToEntity(Entity entity, float range = 15f);
 
     /// <summary>
+    /// Gets all vehicles in range of the specified position.
+    /// </summary>
+    /// <param name="pos">The position to use.</param>
+    /// <param name="range">The range to use.</param>
+    /// <returns>The vehicles.</returns>
+    public List<Vehicle> GetVehiclesInRangeOfPosition(Vector3 pos, float range = 15f);
+
+    /// <summary>
     /// Gets all vehicles in range of the specified entity.
     /// </summary>
     /// <param name="entity">The entity to use.</param>
     /// <param name="range">The range to use.</param>
-    /// <returns>The peds.</returns>
+    /// <returns>The vehicles.</returns>
     public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float range = 15f);
 
     /// <summary>
@@ -131,7 +147,7 @@ public interface IEntityService
     /// <summary>
     /// Deletes all vehicles and peds within the specified radius of the specified entity.
     /// </summary>
-    /// <param name="entity">The specified entity to use.</param>
-    /// <param name="radius">The specified radius to use.</param>
-    public void ClearEntitiesWithinRadiusOfEntity(Entity entity, float radius = 5f);
+    /// <param name="pos">The position to use.</param>
+    /// <param name="radius">The radius to use.</param>
+    public void ClearArea(Vector3 pos, float radius = 5f);
 }

@@ -50,13 +50,12 @@ public class EntityService : IEntityService
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
-        var fPed = FPed.FromPed(new Ped(handle));
         if (clearArea)
         {
-            this.ClearEntitiesWithinRadiusOfEntity(fPed.GetUnderlyingPed);
+            this.ClearArea(location);
         }
 
-        return fPed;
+        return FPed.FromPed(new Ped(handle));
     }
 
     /// <inheritdoc />
@@ -70,15 +69,13 @@ public class EntityService : IEntityService
             await BaseScript.Delay(100);
         }
 
-        Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
-
-        var fVehicle = FVehicle.FromVehicle(new Vehicle(handle));
         if (clearArea)
         {
-            this.ClearEntitiesWithinRadiusOfEntity(fVehicle.GetUnderlyingVehicle);
+            this.ClearArea(location);
         }
 
-        return fVehicle;
+        Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
+        return FVehicle.FromVehicle(new Vehicle(handle));
     }
 
     /// <inheritdoc />
@@ -93,13 +90,12 @@ public class EntityService : IEntityService
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
-        var prop = new Prop(handle);
         if (clearArea)
         {
-            this.ClearEntitiesWithinRadiusOfEntity(prop);
+            this.ClearArea(location);
         }
 
-        return prop;
+        return new Prop(handle);
     }
 
     /// <inheritdoc />
@@ -146,10 +142,16 @@ public class EntityService : IEntityService
     }
 
     /// <inheritdoc />
-    public List<Ped> GetPedsInRangeOfEntity(Entity entity, float range = 15f)
+    public List<Ped> GetPedsInRangeOfPosition(Vector3 pos, float range = 15f)
     {
         return this.GetAllPeds()
-            .Where(x => x.Position.DistanceToSquared(entity.Position) <= range).ToList();
+            .Where(x => x.Position.DistanceToSquared(pos) <= range).ToList();
+    }
+
+    /// <inheritdoc />
+    public List<Ped> GetPedsInRangeOfEntity(Entity entity, float range = 15f)
+    {
+        return this.GetPedsInRangeOfPosition(entity.Position, range);
     }
 
     /// <inheritdoc />
@@ -190,10 +192,16 @@ public class EntityService : IEntityService
     }
 
     /// <inheritdoc />
-    public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float range = 15f)
+    public List<Vehicle> GetVehiclesInRangeOfPosition(Vector3 pos, float range = 15f)
     {
         return this.GetAllVehicles()
-            .Where(x => Math.Sqrt(x.Position.DistanceToSquared(entity.Position)) <= range).ToList();
+            .Where(x => Math.Sqrt(x.Position.DistanceToSquared(pos)) <= range).ToList();
+    }
+
+    /// <inheritdoc />
+    public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float range = 15f)
+    {
+        return this.GetVehiclesInRangeOfPosition(entity.Position, range);
     }
 
     /// <inheritdoc />
@@ -232,14 +240,14 @@ public class EntityService : IEntityService
     }
 
     /// <inheritdoc />
-    public void ClearEntitiesWithinRadiusOfEntity(Entity entity, float radius = 5f)
+    public void ClearArea(Vector3 pos, float radius = 5f)
     {
-        foreach (var ped in this.GetPedsInRangeOfEntity(entity, radius).Where(ped => !Cfx.API.IsPedAPlayer(ped.Handle)))
+        foreach (var ped in this.GetPedsInRangeOfPosition(pos, radius).Where(ped => !Cfx.API.IsPedAPlayer(ped.Handle)))
         {
             Cfx.API.DeleteEntity(ped.Handle);
         }
 
-        foreach (var vehicle in this.GetVehiclesInRangeOfEntity(entity, radius))
+        foreach (var vehicle in this.GetVehiclesInRangeOfPosition(pos, radius))
         {
             Cfx.API.DeleteEntity(vehicle.Handle);
         }
