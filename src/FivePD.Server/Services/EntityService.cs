@@ -40,6 +40,11 @@ public class EntityService : IEntityService
     /// <inheritdoc />
     public async Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading, bool clearArea = false)
     {
+        if (clearArea)
+        {
+            this.ClearArea(location);
+        }
+
         var handle = Cfx.API.CreatePed(26, model, location.X, location.Y, location.Z, heading, true, false);
 
         while (!Cfx.API.DoesEntityExist(handle))
@@ -50,28 +55,22 @@ public class EntityService : IEntityService
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
 
-        if (clearArea)
-        {
-            this.ClearArea(location);
-        }
-
         return FPed.FromPed(new Ped(handle));
     }
 
     /// <inheritdoc />
     public async Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading, bool clearArea = false)
     {
-        // TODO: clear area
+        if (clearArea)
+        {
+            this.ClearArea(location);
+        }
+
         var handle = Cfx.API.CreateVehicle(model, location.X, location.Y, location.Z, heading, true, false);
 
         while (!Cfx.API.DoesEntityExist(handle))
         {
             await BaseScript.Delay(100);
-        }
-
-        if (clearArea)
-        {
-            this.ClearArea(location);
         }
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
@@ -81,6 +80,11 @@ public class EntityService : IEntityService
     /// <inheritdoc />
     public async Task<Prop> SpawnPropAsync(int model, Vector3 location, bool clearArea = false)
     {
+        if (clearArea)
+        {
+            this.ClearArea(location);
+        }
+
         var handle = Cfx.API.CreateObject(model, location.X, location.Y, location.Z, true, false, false);
 
         while (!Cfx.API.DoesEntityExist(handle))
@@ -89,11 +93,6 @@ public class EntityService : IEntityService
         }
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
-
-        if (clearArea)
-        {
-            this.ClearArea(location);
-        }
 
         return new Prop(handle);
     }
