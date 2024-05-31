@@ -18,15 +18,15 @@ internal readonly record struct Events
     
     public readonly record struct AccessControl
     {
-        public const string IsAllowed = "fivepd:accessControl:isAllowed";
+        public const string HasAccess = "fivepd:accessControl:hasAccess";
 
-        public const string Allow = "fivepd:accessControl:allow";
+        public const string GiveAccess = "fivepd:accessControl:give";
 
-        public const string Disallow = "fivepd:accessControl:disallow";
+        public const string RemoveAccess = "fivepd:accessControl:remove";
         
-        public const string AllowUI = "fivepd:accessControl:allowUI";
+        public const string GiveAccessUI = "fivepd:accessControl:giveUI";
 
-        public const string DisallowUI = "fivepd:accessControl:disallowUI";
+        public const string RemoveAccessUI = "fivepd:accessControl:removeUI";
     }
 
     public readonly record struct Vector3

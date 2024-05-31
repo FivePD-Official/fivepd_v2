@@ -14,14 +14,19 @@ using FivePD.Server.Models.Requests;
 
 namespace FivePD.Server.Services;
 
-#pragma warning disable
-
+/// <inheritdoc cref="FivePD.Server.Interfaces.IAccessControlService" />
 public class AccessControlService : IAccessControlService, IOnInit
 {
     private readonly DatabaseContext _databaseContext;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IPlayerHandlerService _playerHandlerService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AccessControlService"/> class.
+    /// </summary>
+    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    /// <param name="playerHandlerService">The <see cref="PlayerHandlerService"/> to use.</param>
     public AccessControlService(
         DatabaseContext databaseContext,
         EventHandlerDictionary eventHandlerDictionary,
@@ -32,34 +37,20 @@ public class AccessControlService : IAccessControlService, IOnInit
         this._playerHandlerService = playerHandlerService;
     }
 
+    /// <inheritdoc/>
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.AccessControl.IsAllowed] += new Action<Player, NetworkCallbackDelegate>(this.OnIsAllowed);
+        this._eventHandlerDictionary[Events.AccessControl.HasAccess] += new Action<Player, NetworkCallbackDelegate>(this.HasAccess);
     }
 
-    private void OnIsAllowed([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var user = this._playerHandlerService.FindUserOfPlayer(player);
-        if (user is null)
-        {
-            networkCallbackDelegate.Invoke(true);
-            return;
-        }
-
-        networkCallbackDelegate.Invoke(this.IsAllowed(user));
-    }
-
-    public bool IsAllowed(User user)
-    {
-        return user is null || user.AccessFivePD;
-    }
-
-    public void Allow(User user)
+    /// <inheritdoc />
+    public void GiveAccess(User user)
     {
         this.ToggleAccess(user, true);
     }
 
-    public void Disallow(User user)
+    /// <inheritdoc />
+    public void RemoveAccess(User user)
     {
         this.ToggleAccess(user, false);
     }
@@ -75,10 +66,22 @@ public class AccessControlService : IAccessControlService, IOnInit
         this._databaseContext.SaveChanges();
 
         var player = this._playerHandlerService.FindPlayerOfUser(user);
-        player?.TriggerEvent(access ? Events.AccessControl.Allow : Events.AccessControl.Disallow);
+        player?.TriggerEvent(access ? Events.AccessControl.GiveAccess : Events.AccessControl.RemoveAccess);
     }
 
-    [UIEvent(Events.AccessControl.AllowUI)]
+    private void HasAccess([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var user = this._playerHandlerService.FindUserOfPlayer(player);
+        if (user is null)
+        {
+            networkCallbackDelegate.Invoke(true);
+            return;
+        }
+
+        networkCallbackDelegate.Invoke(user.AccessFivePD);
+    }
+
+    [UIEvent(Events.AccessControl.GiveAccessUI)]
     private void AllowUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
@@ -89,18 +92,18 @@ public class AccessControlService : IAccessControlService, IOnInit
             return;
         }
 
-        this.Allow(user);
+        this.GiveAccess(user);
         networkCallbackDelegate.InvokeWithResponse(
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.ACCESS_CONTROL.SUCCESS.GIVE_ACCESS",
             new Dictionary<string, string>
             {
-                { "name", user.Name }
+                { "name", user.Name },
             });
     }
 
-    [UIEvent(Events.AccessControl.DisallowUI)]
+    [UIEvent(Events.AccessControl.RemoveAccessUI)]
     private void DisallowUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
@@ -111,14 +114,14 @@ public class AccessControlService : IAccessControlService, IOnInit
             return;
         }
 
-        this.Disallow(user);
+        this.RemoveAccess(user);
         networkCallbackDelegate.InvokeWithResponse(
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.ACCESS_CONTROL.SUCCESS.REMOVE_ACCESS",
             new Dictionary<string, string>
             {
-                { "name", user.Name }
+                { "name", user.Name },
             });
     }
 }

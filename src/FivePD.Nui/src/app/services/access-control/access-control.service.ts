@@ -11,13 +11,13 @@ export class AccessControlService {
   private readonly _httpClient = inject(HttpClient);
 
   allow(id: Id) {
-    return this._httpClient.post('fivepd:accessControl:allowUI', {
+    return this._httpClient.post('fivepd:accessControl:giveUI', {
       id: parseId(id),
     });
   }
 
   disallow(id: Id) {
-    return this._httpClient.post('fivepd:accessControl:disallowUI', {
+    return this._httpClient.post('fivepd:accessControl:removeUI', {
       id: parseId(id),
     });
   }

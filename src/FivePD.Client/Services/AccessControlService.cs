@@ -19,7 +19,7 @@ internal class AccessControlService : IAccessControlService, IOnInit
     
     public void OnInit()
     {
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.AllowUI);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.DisallowUI);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.GiveAccessUI);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.RemoveAccessUI);
     }
 }

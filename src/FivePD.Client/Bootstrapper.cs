@@ -50,13 +50,13 @@ internal class Bootstrapper : BaseScript
 
         this.EventHandlers[Events.Lifecycle.ServerBootstrapped] += LifecycleHandler.ServerBootstrapped;
 
-        this.EventHandlers[Events.AccessControl.Allow] += this.AccessAllowed;
-        this.EventHandlers[Events.AccessControl.Disallow] +=
+        this.EventHandlers[Events.AccessControl.GiveAccess] += this.AccessAllowed;
+        this.EventHandlers[Events.AccessControl.RemoveAccess] +=
             () => LifecycleHandler.Stop("Your access has been removed from using FivePD. Stopping FivePD.");
 
         this.RunBootstrap();
 
-        TriggerServerEvent(Events.AccessControl.IsAllowed, new Action<bool>(allowed =>
+        TriggerServerEvent(Events.AccessControl.HasAccess, new Action<bool>(allowed =>
         {
             if (allowed)
             {
