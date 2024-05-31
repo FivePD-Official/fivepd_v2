@@ -30,6 +30,6 @@ internal static class DynamicExtensions
             currentObj = currentObj[item];
         }
 
-        return (string)currentObj;
+        return currentObj as string ?? string.Empty;
     }
 }

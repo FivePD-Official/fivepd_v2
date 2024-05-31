@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
+using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
@@ -117,7 +118,9 @@ public class Towing : AssistanceService
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
             cancellationTokenSource.Cancel();
-            this._notificationService.ShowNotification(this.RequestedBy, "ERROR: The vehicle has moved or is missing!");
+            this._notificationService.ShowNotification(
+                this.RequestedBy,
+                new GtaStyleText().Yellow("Towing has been canceled. The target vehicle has moved or is missing.").Build());
             return;
         }
 
