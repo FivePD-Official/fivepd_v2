@@ -11,6 +11,7 @@ using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Services;
 using FivePD.Common;
 using FivePD.Common.Utilities;
+using CfxUI = CitizenFX.Core.UI;
 
 #pragma warning disable S3241
 #pragma warning disable CS4014
@@ -40,14 +41,47 @@ internal class Bootstrapper : BaseScript
     /// </summary>
     public Bootstrapper()
     {
-        TriggerServerEvent(Events.Player.OnConnected);
-        this.EventHandlers[Events.Lifecycle.Stop] += new Action(LifecycleHandler.OnStopped);
-        this.EventHandlers[Events.Lifecycle.ServerBootstrapped] += new Action(LifecycleHandler.ServerBootstrapped);
-
-        // Initialize the logger.
         this._bootstrapLogger = new LoggerService();
 
+        TriggerServerEvent(Events.Player.OnConnected);
+
+        this.EventHandlers[Events.Lifecycle.Stop] += () =>
+            LifecycleHandler.Stop("An error occured or the FivePD resource has been stopped on the server. Stopping FivePD.");
+
+        this.EventHandlers[Events.Lifecycle.ServerBootstrapped] += LifecycleHandler.ServerBootstrapped;
+
+        this.EventHandlers[Events.AccessControl.Allow] += this.AccessAllowed;
+        this.EventHandlers[Events.AccessControl.Disallow] +=
+            () => LifecycleHandler.Stop("Your access has been removed from using FivePD. Stopping FivePD.");
+
+        this.RunBootstrap();
+
+        TriggerServerEvent(Events.AccessControl.IsAllowed, new Action<bool>(allowed =>
+        {
+            if (allowed)
+            {
+                return;
+            }
+
+            LifecycleHandler.Stop("You do not have access to use FivePD. Stopping FivePD.");
+        }));
+    }
+
+    private void AccessAllowed()
+    {
+        CfxUI.Screen.ShowNotification(new GtaStyleText()
+            .Blue("[FivePD]")
+            .NewLine()
+            .Green("You have been given access to use FivePD.")
+            .Build());
+        this.RunBootstrap();
+    }
+
+    private void RunBootstrap()
+    {
         this._bootstrapLogger.Info("Starting FivePD...");
+
+        this._phases.Clear();
 
         // Enqueue service location phase.
         this._phases.Add(this.PerformServiceLocationPhase, false);
@@ -374,6 +408,12 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<SceneManagementService>()
             .As<ISceneManagementService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
+        services
+            .RegisterType<AccessControlService>()
+            .As<IAccessControlService>()
             .As<IOnInit>()
             .IsSingleton();
 

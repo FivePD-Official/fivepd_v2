@@ -298,6 +298,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             var user = new User
             {
                 FirstLogin = true,
+                AccessFivePD = true,
                 Name = player.Name,
                 IdentifierLicense = player.Identifiers["license"] ?? string.Empty,
                 IdentifierDiscord = player.Identifiers["discord"] ?? string.Empty,

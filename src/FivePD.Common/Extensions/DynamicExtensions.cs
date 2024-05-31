@@ -1,4 +1,6 @@
-﻿namespace FivePD.Common.Extensions;
+﻿using System;
+
+namespace FivePD.Common.Extensions;
 
 /// <summary>
 /// Contains extension methods for dynamic objects.
@@ -30,6 +32,13 @@ internal static class DynamicExtensions
             currentObj = currentObj[item];
         }
 
-        return currentObj as string ?? string.Empty;
+        try
+        {
+            return (string)currentObj;
+        }
+        catch (Exception)
+        {
+            return path;
+        }
     }
 }

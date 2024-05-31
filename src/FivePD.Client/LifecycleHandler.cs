@@ -10,32 +10,35 @@ namespace FivePD.Client;
 
 internal static class LifecycleHandler
 {
-    public static bool IsStopped { get; private set; }
+    public static bool Stopped { get; private set; }
 
     public static void ServerBootstrapped()
     {
         var uiManagerService = ServiceLocator.Resolve<IUIManagerService>();
-        uiManagerService.SendMessage(new JObject
+        uiManagerService?.SendMessage(new JObject
         {
             { "Event", Events.Lifecycle.ServerBootstrapped },
         });
     }
 
-    public static void OnStopped()
+    public static void Stop(string message)
     {
-        if (IsStopped)
+        if (Stopped)
         {
             return;
         }
 
-        var notificationService = ServiceLocator.Resolve<INotificationService>();
-        notificationService.ShowNotification(new GtaStyleText()
-            .Blue("[FivePD]")
-            .NewLine()
-            .Red("An error occurred on the server. Stopping FivePD."));
+        if (!string.IsNullOrEmpty(message))
+        {
+            var notificationService = ServiceLocator.Resolve<INotificationService>();
+            notificationService.ShowNotification(new GtaStyleText()
+                .Blue("[FivePD]")
+                .NewLine()
+                .Red(message));
+        }
 
         ServiceLocator.Dispose();
 
-        IsStopped = true;
+        Stopped = true;
     }
 }
