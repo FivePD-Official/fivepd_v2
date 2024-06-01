@@ -9,6 +9,7 @@ Database:
 DefaultLanguage: en-US
 
 Features:
+  AutoEnableFivePDAccess: true
   DiscordRichPresence: true
   DutyNotification: true
   DisableWantedLevel: true
