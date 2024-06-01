@@ -111,15 +111,6 @@ export class AppComponent implements OnInit {
         font-style: normal;
       }
     `));
-    style.appendChild(document.createTextNode(`\
-      @font-face {
-        font-family: 'Sora';
-        src: url('../assets/Sora-Variable.woff2') format('woff2');
-        font-weight: 300 900;
-        font-display: block;
-        font-style: normal;
-      }
-    `));
     document.head.appendChild(style);
   }
 }

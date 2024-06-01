@@ -24,7 +24,6 @@ import {
   VehicleDatabaseIdComponent
 } from "./pages/mdt/vehicle-database/vehicle-database-id/vehicle-database-id.component";
 import { SettingsComponent } from "./pages/mdt/settings/settings.component";
-import { DummyComponent } from "../test-helpers/dummy-component";
 
 const mdtRoutes: Routes = [
   {
