@@ -1,9 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PageHeaderComponent } from "../../../../components/page-header/page-header.component";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from "../../../../components/grid/grid.component";
-import { Collation, Column, Page, User } from "@models";
+import { Collation, Column, User } from "@models";
 import { BehaviorSubject, filter, switchMap } from "rxjs";
 import { UserRole, UserService } from "@services/user/user.service";
 import { LocalizationService } from "@services/localization/localization.service";
@@ -12,7 +11,7 @@ import { AccessControlService } from "@services/access-control/access-control.se
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, PageHeaderComponent, TranslatePipe, GridComponent],
+  imports: [CommonModule, TranslatePipe, GridComponent],
   templateUrl: './users.component.html',
 })
 export class UsersComponent {

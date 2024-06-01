@@ -1,5 +1,3 @@
-<app-page-header [title]="'UI.LABEL.USER.PLURAL' | translate"/>
-
 <app-grid [columns]="columns"
           [data]="users$ | async"
           (onCollationChange)="collation$.next($event)"/>

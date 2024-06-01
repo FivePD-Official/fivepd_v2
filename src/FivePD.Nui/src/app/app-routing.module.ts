@@ -23,6 +23,8 @@ import {
 import {
   VehicleDatabaseIdComponent
 } from "./pages/mdt/vehicle-database/vehicle-database-id/vehicle-database-id.component";
+import { SettingsComponent } from "./pages/mdt/settings/settings.component";
+import { DummyComponent } from "../test-helpers/dummy-component";
 
 const mdtRoutes: Routes = [
   {
@@ -43,6 +45,7 @@ const mdtRoutes: Routes = [
   },
   {
     path: 'settings',
+    component: SettingsComponent,
     children: [
       {
         path: 'users',
@@ -54,7 +57,16 @@ const mdtRoutes: Routes = [
       },
       {
         path: 'callouts',
-        loadComponent: () => import('./pages/mdt/settings/callouts/callouts.component').then(m => m.CalloutsComponent),
+        children: [
+          {
+            path: ':id',
+            component: CalloutDetailsComponent,
+          },
+          {
+            path: '',
+            loadComponent: () => import('./pages/mdt/settings/callouts/callouts.component').then(m => m.CalloutsComponent),
+          }
+        ]
       },
       {
         path: 'vehicles',
@@ -87,15 +99,6 @@ const mdtRoutes: Routes = [
             loadComponent: () => import('./pages/mdt/settings/departments/departments.component').then(m => m.DepartmentsComponent),
           },
         ]
-      },
-      {
-        path: 'callout-details',
-        children: [
-          {
-            path: ':id',
-            component: CalloutDetailsComponent,
-          },
-        ],
       },
     ]
   },

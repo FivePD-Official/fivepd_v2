@@ -21,7 +21,6 @@ import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confir
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from '../../../../components/grid/grid.component';
 import { ContainerComponent } from '../../../../components/container/container.component';
-import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import {
   SingleSelectFieldComponent
 } from "../../../../components/form-inputs/single-select-field/single-select-field.component";
@@ -127,7 +126,7 @@ function mapTowTruckFields(value: ModalResponse['value']): ModalResponse['value'
   selector: 'app-vehicle-settings',
   templateUrl: './vehicle-settings.component.html',
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe]
+  imports: [ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe]
 })
 export class VehicleSettingsComponent {
 

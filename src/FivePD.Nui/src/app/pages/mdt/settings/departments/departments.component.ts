@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GridComponent } from "../../../../components/grid/grid.component";
-import { PageHeaderComponent } from "../../../../components/page-header/page-header.component";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { Button, Collation, Column, Department, GeneralConfig } from "@models";
 import { BehaviorSubject, filter, map, switchMap } from "rxjs";
@@ -19,7 +18,7 @@ import {
 @Component({
   selector: 'app-departments',
   standalone: true,
-  imports: [CommonModule, GridComponent, PageHeaderComponent, TranslatePipe],
+  imports: [CommonModule, GridComponent, TranslatePipe],
   templateUrl: './departments.component.html',
 })
 export class DepartmentsComponent implements OnInit {

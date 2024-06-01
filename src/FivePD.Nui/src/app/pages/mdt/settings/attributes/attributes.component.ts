@@ -1,11 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Button, Collation, Column, VariableDataAttribute, Page, SingleSelectField } from "@models";
+import { Button, Collation, Column, Page, SingleSelectField, VariableDataAttribute } from "@models";
 import { CoreSetId } from "@enums";
 import { AttributeGridOptions } from "../_service/attribute-grid-options";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from '../../../../components/grid/grid.component';
 import { ContainerComponent } from '../../../../components/container/container.component';
-import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import {
   SingleSelectFieldComponent
 } from "../../../../components/form-inputs/single-select-field/single-select-field.component";
@@ -16,7 +15,7 @@ import { VariableDataService } from "@services/variable-data/variable-data.servi
   selector: 'app-attributes',
   templateUrl: './attributes.component.html',
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent]
+  imports: [ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent]
 })
 export class AttributesComponent implements OnInit {
 

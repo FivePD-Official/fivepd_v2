@@ -8,7 +8,7 @@ import { DispatchService } from "@services/dispatch/dispatch.service";
 import { ConfigService } from "@services/config/config.service";
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IconComponent } from '../icon/icon.component';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { RouteOrDivider, Routes, RouteWithChildren, RouteWithoutChildren } from "../../models/sidebar";
 import { SidebarActions } from "@store/sidebar.actions";
@@ -92,52 +92,11 @@ export class SidebarComponent {
     },
     {
       title: 'UI.LABEL.GLOBAL_SETTINGS',
+      path: () => '/mdt/settings',
       icon: IconType.Cog,
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
-      children: [
-        {
-          title: 'UI.LABEL.USER.PLURAL',
-          path: () => `/mdt/settings/users`,
-          icon: IconType.Users,
-          show: () => this.userService.userHasRole(UserRole.Admin),
-        },
-        {
-          title: 'UI.LABEL.DEPARTMENT.PLURAL',
-          path: () => `/mdt/settings/departments`,
-          icon: IconType.Building2,
-          show: () => true,
-        },
-        {
-          title: 'UI.LABEL.CALLOUT.PLURAL',
-          path: () => `/mdt/settings/callouts`,
-          icon: IconType.Megaphone,
-          show: () => this.userService.userHasRole(UserRole.Admin),
-        },
-        {
-          title: 'UI.LABEL.ATTRIBUTE.PLURAL',
-          path: () => `/mdt/settings/attributes`,
-          icon: IconType.AtSymbol,
-          show: () => this.userService.userHasRole(UserRole.Admin),
-        },
-        {
-          title: 'UI.LABEL.VEHICLE.PLURAL',
-          path: () => '/mdt/settings/vehicles',
-          icon: IconType.Truck,
-          show: () => this.userService.userIsDepartmentManagerOrAdmin(),
-        },
-        {
-          title: 'UI.LABEL.LOCATION.PLURAL',
-          path: () => '/mdt/settings/locations',
-          icon: IconType.MapPin,
-          show: () => this.userService.userHasRole(UserRole.Admin),
-        },
-        {
-          title: 'UI.LABEL.LOADOUT.PLURAL',
-          path: () => '/mdt/settings/loadouts',
-          icon: IconType.Briefcase,
-          show: () => this.userService.userHasRole(UserRole.Admin),
-        },
-      ]
+      onClick: () => void this.router.navigate(['mdt', 'settings', 'users']),
+      linkActive: () => this.router.url.startsWith('/mdt/settings'),
     },
     {
       title: 'UI.LABEL.DEVELOPER_TOOLS.TITLE',
@@ -153,6 +112,7 @@ export class SidebarComponent {
     private readonly _store: Store<GlobalState>,
     private readonly _dispatchService: DispatchService,
     private readonly _configService: ConfigService,
+    private readonly router: Router,
   ) {
     _store.dispatch(SidebarActions.setRoutes({routes: this.defaultRoutes}));
     _store.pipe(takeUntilDestroyed()).subscribe(state => {
