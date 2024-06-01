@@ -20,7 +20,7 @@ internal class DepartmentResponse : Department
         this.CallsignFormat = department.CallsignFormat;
         this.MaxUsers = department.MaxUsers;
         this.Divisions = department.Divisions;
-        this.Ranks = new List<Rank>();
+        this.DepartmentRanks = new List<DepartmentRank>();
         this.Users = new List<User>();
 
         this.UserCount = department.Users.Count();

@@ -22,6 +22,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FivePD.Server.Services;
 
+#pragma warning disable
+
 /// <inheritdoc />
 [Obfuscate]
 public class DepartmentService : IDepartmentService
@@ -118,7 +120,7 @@ public class DepartmentService : IDepartmentService
     {
         return this._databaseContext.Departments
             .IncludeIf(options.IncludeDivisions, dept => dept.Divisions)
-            .IncludeIf(options.IncludeRanks, dept => dept.Ranks)
+            .IncludeIf(options.IncludeRanks, dept => dept.DepartmentRanks)
             .IncludeIf(options.IncludeUsers, dept => dept.Users);
     }
 
@@ -127,7 +129,7 @@ public class DepartmentService : IDepartmentService
     {
         return this._databaseContext.Departments
             .IncludeIf(options.IncludeDivisions, dept => dept.Divisions)
-            .IncludeIf(options.IncludeRanks, dept => dept.Ranks)
+            .IncludeIf(options.IncludeRanks, dept => dept.DepartmentRanks)
             .IncludeIf(options.IncludeUsers, dept => dept.Users)
             .FirstOrDefault(department => department.Id == id);
     }
@@ -240,7 +242,8 @@ public class DepartmentService : IDepartmentService
         var department = this._databaseContext.Departments
             .AsNoTracking()
             .Include(dept => dept.Divisions)
-            .Include(dept => dept.Ranks)
+            .Include(dept => dept.DepartmentRanks)
+            .ThenInclude(x => x.Rank)
             .FirstOrDefault(dept => dept.Id == request.Id);
         networkCallbackDelegate.InvokeWithJson(department);
     }
@@ -257,31 +260,6 @@ public class DepartmentService : IDepartmentService
             department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
 
         var page = this._databaseContext.Users.AsNoTracking().Paginate(departmentUsersRequest.Page, filters);
-        networkCallbackDelegate.InvokeWithJson(page);
-    }
-
-    [UIEvent(Events.UI.Department.GetRank)]
-    private void GetDepartmentRankForNui(ExpandoObject requestString, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var request = requestString.ConvertTo<IdRequest>();
-        var rank = this._databaseContext.Ranks
-            .AsNoTracking()
-            .FirstOrDefault(rank => rank.Id == request.Id);
-        networkCallbackDelegate.InvokeWithJson(rank);
-    }
-
-    [UIEvent(Events.UI.Department.GetRanks)]
-    private void GetDepartmentRanksForNui(ExpandoObject departmentRanksRequestString, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var departmentRanksRequest = departmentRanksRequestString.ConvertTo<DepartmentRanksRequest>();
-
-        var filters = new Filters<Rank>();
-        filters.Add(true, rank => rank.Department.Id == departmentRanksRequest.DepartmentId);
-        filters.Add(
-            !string.IsNullOrEmpty(departmentRanksRequest.Filters.Name),
-            department => department.Name.ToLower().Contains(departmentRanksRequest.Filters.Name.ToLower()));
-
-        var page = this._databaseContext.Ranks.AsNoTracking().Paginate(departmentRanksRequest.Page, filters);
         networkCallbackDelegate.InvokeWithJson(page);
     }
 
@@ -456,124 +434,13 @@ public class DepartmentService : IDepartmentService
             });
     }
 
-    [UIEvent(Events.UI.Department.DeleteRank)]
-    private void DeleteRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var request = expandoObject.ConvertTo<IdRequest>();
-        var rankToDelete = this._databaseContext.Ranks
-            .Include(rank => rank.Users)
-            .Include(rank => rank.Department)
-            .FirstOrDefault(rank => rank.Id == request.Id);
-        if (rankToDelete is null)
-        {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
-            return;
-        }
-
-        var rankToDeleteName = rankToDelete.Name;
-        foreach (var user in rankToDelete.Users)
-        {
-            user.RankId = null;
-        }
-
-        if (rankToDelete.Department.DefaultRankId == rankToDelete.Id)
-        {
-            rankToDelete.Department.DefaultRankId = null;
-        }
-
-        this._databaseContext.Ranks.Remove(rankToDelete);
-        this._databaseContext.SaveChanges();
-        this.RankDeleted?.Invoke(this, rankToDelete);
-        networkCallbackDelegate.InvokeWithResponse(
-            true,
-            "UI.LABEL.SUCCESS.DELETE",
-            "UI.LABEL.RANK.SUCCESS.DELETE",
-            new Dictionary<string, string>
-            {
-                { "rank", rankToDeleteName },
-            });
-    }
-
-    [UIEvent(Events.UI.Department.EditRank)]
-    private void EditRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var editRankRequest = expandoObject.ConvertTo<EditRankRequest>();
-        var rankToEdit = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == editRankRequest.RankId);
-        if (rankToEdit is null)
-        {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
-            return;
-        }
-
-        var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank =>
-            rank.Name == editRankRequest.Name && rank.Department.Id == editRankRequest.DepartmentId && rank.Id != rankToEdit.Id);
-        if (rankExistsWithName != null)
-        {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
-            return;
-        }
-
-        var rankToEditOldName = rankToEdit.Name;
-        rankToEdit.Name = editRankRequest.Name;
-        rankToEdit.Permission = editRankRequest.Permission;
-        rankToEdit.RequiredXp = editRankRequest.RequiredXp;
-        this._databaseContext.SaveChanges();
-        this.RankUpdated?.Invoke(this, rankToEdit);
-        networkCallbackDelegate.InvokeWithResponse(
-            true,
-            "UI.LABEL.SUCCESS.EDIT",
-            "UI.LABEL.RANK.SUCCESS.EDIT",
-            new Dictionary<string, string>
-            {
-                { "rank", rankToEditOldName },
-            });
-    }
-
-    [UIEvent(Events.UI.Department.CreateRank)]
-    private void CreateRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
-    {
-        var createRankRequest = expandoObject.ConvertTo<CreateRankRequest>();
-        var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank =>
-            rank.Name == createRankRequest.Name && rank.Department.Id == createRankRequest.DepartmentId);
-        if (rankExistsWithName != null)
-        {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
-            return;
-        }
-
-        var department = this._databaseContext.Departments.FirstOrDefault(department =>
-            department.Id == createRankRequest.DepartmentId);
-        if (department is null)
-        {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
-            return;
-        }
-
-        var createdRankEntry = this._databaseContext.Ranks.Add(new Rank
-        {
-            Department = department,
-            Name = createRankRequest.Name,
-            Permission = createRankRequest.Permission,
-            RequiredXp = createRankRequest.RequiredXp,
-        });
-        this._databaseContext.SaveChanges();
-        this.RankCreated?.Invoke(this, createdRankEntry.Entity);
-        networkCallbackDelegate.InvokeWithResponse(
-            true,
-            "UI.LABEL.SUCCESS.CREATE",
-            "UI.LABEL.RANK.SUCCESS.CREATE",
-            new Dictionary<string, string>
-            {
-                { "rank", createRankRequest.Name },
-            });
-    }
-
     [UIEvent(Events.UI.Department.Edit)]
     private void EditDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var editDepartmentRequest = expandoObject.ConvertTo<EditDepartmentRequest>();
-        var department = this._databaseContext.Departments.FirstOrDefault(department =>
-            department.Id == editDepartmentRequest.DepartmentId);
+        var request = expandoObject.ConvertTo<EditDepartmentRequest>();
+        var department = this._databaseContext.Departments
+            .Include(department => department.Users)
+            .FirstOrDefault(department => department.Id == request.DepartmentId);
         if (department is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -581,7 +448,7 @@ public class DepartmentService : IDepartmentService
         }
 
         var departmentExistsWithName = this._databaseContext.Departments.AsNoTracking().FirstOrDefault(dept =>
-            dept.Id != editDepartmentRequest.DepartmentId && dept.Name == editDepartmentRequest.Name);
+            dept.Id != request.DepartmentId && dept.Name == request.Name);
         if (departmentExistsWithName != null)
         {
             networkCallbackDelegate.InvokeWithResponse(
@@ -591,9 +458,9 @@ public class DepartmentService : IDepartmentService
             return;
         }
 
-        if (editDepartmentRequest.DefaultRankId != -1)
+        if (request.DefaultRankId != -1)
         {
-            var defaultRank = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == editDepartmentRequest.DefaultRankId);
+            var defaultRank = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.DefaultRankId);
             if (defaultRank is null)
             {
                 networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -602,12 +469,24 @@ public class DepartmentService : IDepartmentService
         }
 
         var departmentOldName = department.Name;
-        department.Name = editDepartmentRequest.Name;
-        department.Callsign = string.IsNullOrEmpty(editDepartmentRequest.Callsign)
-            ? editDepartmentRequest.Name.ToAcronym()
-            : editDepartmentRequest.Callsign;
-        department.MaxUsers = editDepartmentRequest.MaxUsers;
-        department.DefaultRankId = editDepartmentRequest.DefaultRankId == -1 ? (int?)null : editDepartmentRequest.DefaultRankId;
+        department.Name = request.Name;
+        department.Callsign = string.IsNullOrEmpty(request.Callsign)
+            ? request.Name.ToAcronym()
+            : request.Callsign;
+        department.MaxUsers = request.MaxUsers;
+        department.DefaultRankId = request.DefaultRankId == -1 ? (int?)null : request.DefaultRankId;
+
+        var oldUseGlobalRanks = department.UseGlobalRanks;
+        department.UseGlobalRanks = request.UseGlobalRanks;
+
+        if (oldUseGlobalRanks != request.UseGlobalRanks)
+        {
+            foreach (var user in department.Users)
+            {
+                user.RankId = null;
+            }
+        }
+
         this._databaseContext.SaveChanges();
         this.DepartmentUpdated?.Invoke(this, department);
         networkCallbackDelegate.InvokeWithResponse(

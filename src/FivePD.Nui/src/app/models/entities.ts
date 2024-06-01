@@ -53,14 +53,21 @@ export interface CallsignFormatItem {
   Value?: string;
 }
 
+export interface DepartmentRank {
+  DepartmentId: number;
+  Rank: Rank;
+  RankId: number;
+}
+
 export interface Department extends WithId {
   Name: string;
   Callsign: string;
   CallsignFormat: CallsignFormatItem[];
+  UseGlobalRanks: boolean;
   MaxUsers: number;
   Users?: User[];
   Divisions?: Division[];
-  Ranks?: Rank[];
+  DepartmentRanks?: DepartmentRank[];
   UserCount?: number;
   DefaultRank?: Rank;
   DefaultRankId?: number;
@@ -134,6 +141,7 @@ export interface Division extends WithId {
 export interface Rank extends WithId {
   Name: string;
   RequiredXp: number;
+  Global: boolean;
   Permission: {
     Kick: boolean;
     SetRank: boolean;

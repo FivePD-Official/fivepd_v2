@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { PageHeaderComponent } from "../../../components/page-header/page-header.component";
 import { RouteOrDivider, Routes, RouteWithoutChildren } from "../../../models/sidebar";
 import { IconType } from "@models";
@@ -31,6 +31,12 @@ export class SettingsComponent {
       path: () => `/mdt/settings/departments`,
       icon: IconType.Building2,
       show: () => true,
+    },
+    {
+      title: 'Ranks',
+      path: () => '/mdt/settings/ranks',
+      icon: IconType.Star,
+      show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
       title: 'UI.LABEL.CALLOUT.PLURAL',

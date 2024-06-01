@@ -175,10 +175,6 @@ public class DatabaseContext : DbContext
                 .WithOne(division => division.Department)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            type.HasMany(department => department.Ranks)
-                .WithOne(user => user.Department)
-                .OnDelete(DeleteBehavior.Cascade);
-
             type.HasOne(department => department.DefaultRank);
 
             type.Property(t => t.CallsignFormat)
@@ -187,6 +183,19 @@ public class DatabaseContext : DbContext
                     v => JsonConvert.DeserializeObject<List<CallsignFormatItem>>(
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        });
+
+        modelBuilder.Entity<DepartmentRank>(type =>
+        {
+            type.HasKey(bc => new { bc.RankId, bc.DepartmentId });
+
+            type.HasOne(bc => bc.Rank)
+                .WithMany(b => b.DepartmentRanks)
+                .HasForeignKey(bc => bc.RankId);
+
+            type.HasOne(bc => bc.Department)
+                .WithMany(c => c.DepartmentRanks)
+                .HasForeignKey(bc => bc.DepartmentId);
         });
 
         modelBuilder.Entity<CalloutDetailsDepartment>(type =>

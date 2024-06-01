@@ -111,8 +111,6 @@ export class MultiSelectFieldComponent implements OnInit {
         }
       }
 
-      console.log('set', value)
-
       const valueIndex2 = this.dropdownSelectedItems.findIndex(x => x.key === item.key);
       if (valueIndex2 > -1) {
         this.dropdownSelectedItems.splice(valueIndex2, 1);

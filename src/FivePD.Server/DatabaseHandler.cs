@@ -92,6 +92,7 @@ internal static class DatabaseHandler
             Name = "Los Santos Police Department",
             Callsign = "LSPD",
             MaxUsers = 0,
+            UseGlobalRanks = true,
             CallsignFormat = new List<CallsignFormatItem>
             {
                 new()
@@ -113,49 +114,61 @@ internal static class DatabaseHandler
                     Type = CallsignFormatItemType.RandomNumber,
                 },
             },
-            Ranks = new List<Rank>
-            {
-                new()
-                {
-                    Name = "Officer I",
-                    RequiredXp = 0,
-                    Permission = new Rank.Permissions
-                    {
-                        Kick = false,
-                        SetRank = false,
-                        SetDivision = false,
-                        DepartmentManager = false,
-                    },
-                },
-                new()
-                {
-                    Name = "Officer II",
-                    RequiredXp = 0,
-                    Permission = new Rank.Permissions
-                    {
-                        Kick = false,
-                        SetRank = false,
-                        SetDivision = false,
-                        DepartmentManager = false,
-                    },
-                },
-                new()
-                {
-                    Name = "Sergeant",
-                    RequiredXp = 0,
-                    Permission = new Rank.Permissions
-                    {
-                        Kick = false,
-                        SetRank = false,
-                        SetDivision = false,
-                        DepartmentManager = false,
-                    },
-                },
-            },
         };
         _databaseContext.Departments.Add(department);
         _databaseContext.SaveChanges();
         _logger?.Information("Created sample department.");
+    }
+
+    private static void SeedSampleRanks()
+    {
+        if (_databaseContext.Ranks.Any())
+        {
+            return;
+        }
+
+        _databaseContext.Ranks.AddRange(
+            new()
+            {
+                Name = "Officer I",
+                RequiredXp = 0,
+                Global = true,
+                Permission = new Rank.Permissions
+                {
+                    Kick = false,
+                    SetRank = false,
+                    SetDivision = false,
+                    DepartmentManager = false,
+                },
+            },
+            new()
+            {
+                Name = "Officer II",
+                RequiredXp = 0,
+                Global = true,
+                Permission = new Rank.Permissions
+                {
+                    Kick = false,
+                    SetRank = false,
+                    SetDivision = false,
+                    DepartmentManager = false,
+                },
+            },
+            new()
+            {
+                Name = "Sergeant",
+                RequiredXp = 0,
+                Global = true,
+                Permission = new Rank.Permissions
+                {
+                    Kick = false,
+                    SetRank = false,
+                    SetDivision = false,
+                    DepartmentManager = false,
+                },
+            });
+        _databaseContext.SaveChanges();
+        _logger?.Information("Created sample ranks.");
     }
 
     private static void SeedVehicleConfigs()

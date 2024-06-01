@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FivePD.Server.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,6 +41,19 @@ namespace FivePD.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_fivepd_incident_histories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "fivepd_loadout_configs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_fivepd_loadout_configs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -105,6 +118,34 @@ namespace FivePD.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_fivepd_vehicle_configs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "fivepd_weapon_components",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    HashKey = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_fivepd_weapon_components", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "fivepd_weapons",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Model = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_fivepd_weapons", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -179,6 +220,54 @@ namespace FivePD.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "fivepd_loadout_weapon",
+                columns: table => new
+                {
+                    LoadoutConfigId = table.Column<int>(nullable: false),
+                    WeaponId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_fivepd_loadout_weapon", x => new { x.LoadoutConfigId, x.WeaponId });
+                    table.ForeignKey(
+                        name: "FK_fivepd_loadout_weapon_fivepd_loadout_configs_LoadoutConfigId",
+                        column: x => x.LoadoutConfigId,
+                        principalTable: "fivepd_loadout_configs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_fivepd_loadout_weapon_fivepd_weapons_WeaponId",
+                        column: x => x.WeaponId,
+                        principalTable: "fivepd_weapons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "fivepd_weapon_weaponComponent",
+                columns: table => new
+                {
+                    WeaponId = table.Column<int>(nullable: false),
+                    WeaponComponentId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_fivepd_weapon_weaponComponent", x => new { x.WeaponId, x.WeaponComponentId });
+                    table.ForeignKey(
+                        name: "FK_fivepd_weapon_weaponComponent_fivepd_weapon_components_Weapo~",
+                        column: x => x.WeaponComponentId,
+                        principalTable: "fivepd_weapon_components",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_fivepd_weapon_weaponComponent_fivepd_weapons_WeaponId",
+                        column: x => x.WeaponId,
+                        principalTable: "fivepd_weapons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "fivepd_variable_data_values",
                 columns: table => new
                 {
@@ -239,6 +328,18 @@ namespace FivePD.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "fivepd_department_rank",
+                columns: table => new
+                {
+                    DepartmentId = table.Column<int>(nullable: false),
+                    RankId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_fivepd_department_rank", x => new { x.RankId, x.DepartmentId });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "fivepd_divisions",
                 columns: table => new
                 {
@@ -258,13 +359,14 @@ namespace FivePD.Server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Global = table.Column<bool>(nullable: false),
                     RequiredXp = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    DepartmentId = table.Column<int>(nullable: true),
                     Permission_Kick = table.Column<bool>(nullable: true),
                     Permission_SetRank = table.Column<bool>(nullable: true),
                     Permission_SetDivision = table.Column<bool>(nullable: true),
-                    Permission_DepartmentManager = table.Column<bool>(nullable: true)
+                    Permission_DepartmentManager = table.Column<bool>(nullable: true),
+                    DepartmentId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -279,6 +381,7 @@ namespace FivePD.Server.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     Callsign = table.Column<string>(nullable: true),
+                    UseGlobalRanks = table.Column<bool>(nullable: false),
                     CallsignFormat = table.Column<string>(nullable: true),
                     MaxUsers = table.Column<int>(nullable: false),
                     DefaultRankId = table.Column<int>(nullable: true)
@@ -300,6 +403,7 @@ namespace FivePD.Server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AccessFivePD = table.Column<bool>(nullable: false),
                     PreferredLanguage = table.Column<string>(nullable: true),
                     FirstLogin = table.Column<bool>(nullable: false),
                     DismissedWelcomeMessage = table.Column<bool>(nullable: false),
@@ -401,6 +505,11 @@ namespace FivePD.Server.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_fivepd_department_rank_DepartmentId",
+                table: "fivepd_department_rank",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_fivepd_departments_DefaultRankId",
                 table: "fivepd_departments",
                 column: "DefaultRankId");
@@ -419,6 +528,11 @@ namespace FivePD.Server.Migrations
                 name: "IX_fivepd_incident_history_users_UserId",
                 table: "fivepd_incident_history_users",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_fivepd_loadout_weapon_WeaponId",
+                table: "fivepd_loadout_weapon",
+                column: "WeaponId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_fivepd_messages_UserId",
@@ -470,6 +584,11 @@ namespace FivePD.Server.Migrations
                 table: "fivepd_variable_data_values",
                 column: "EntityId");
 
+            migrationBuilder.CreateIndex(
+                name: "IX_fivepd_weapon_weaponComponent_WeaponComponentId",
+                table: "fivepd_weapon_weaponComponent",
+                column: "WeaponComponentId");
+
             migrationBuilder.AddForeignKey(
                 name: "FK_fivepd_callout_details_departments_fivepd_departments_Depart~",
                 table: "fivepd_callout_details_departments",
@@ -487,6 +606,22 @@ namespace FivePD.Server.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_fivepd_department_rank_fivepd_departments_DepartmentId",
+                table: "fivepd_department_rank",
+                column: "DepartmentId",
+                principalTable: "fivepd_departments",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_fivepd_department_rank_fivepd_ranks_RankId",
+                table: "fivepd_department_rank",
+                column: "RankId",
+                principalTable: "fivepd_ranks",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_fivepd_divisions_fivepd_departments_DepartmentId",
                 table: "fivepd_divisions",
                 column: "DepartmentId",
@@ -500,7 +635,7 @@ namespace FivePD.Server.Migrations
                 column: "DepartmentId",
                 principalTable: "fivepd_departments",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -516,7 +651,13 @@ namespace FivePD.Server.Migrations
                 name: "fivepd_department_area_coordinates");
 
             migrationBuilder.DropTable(
+                name: "fivepd_department_rank");
+
+            migrationBuilder.DropTable(
                 name: "fivepd_incident_history_users");
+
+            migrationBuilder.DropTable(
+                name: "fivepd_loadout_weapon");
 
             migrationBuilder.DropTable(
                 name: "fivepd_locations");
@@ -534,10 +675,16 @@ namespace FivePD.Server.Migrations
                 name: "fivepd_vehicle_configs");
 
             migrationBuilder.DropTable(
+                name: "fivepd_weapon_weaponComponent");
+
+            migrationBuilder.DropTable(
                 name: "fivepd_callout_details");
 
             migrationBuilder.DropTable(
                 name: "fivepd_incident_histories");
+
+            migrationBuilder.DropTable(
+                name: "fivepd_loadout_configs");
 
             migrationBuilder.DropTable(
                 name: "fivepd_users");
@@ -550,6 +697,12 @@ namespace FivePD.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "fivepd_variable_data_entities");
+
+            migrationBuilder.DropTable(
+                name: "fivepd_weapon_components");
+
+            migrationBuilder.DropTable(
+                name: "fivepd_weapons");
 
             migrationBuilder.DropTable(
                 name: "fivepd_divisions");
