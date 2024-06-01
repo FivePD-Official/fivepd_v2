@@ -30,4 +30,5 @@
   AtSymbol = 'AtSymbol',
   MapPin = 'MapPin',
   Briefcase = 'Briefcase',
+  Star = 'Star',
 }

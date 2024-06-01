@@ -1,0 +1,4 @@
+<app-grid [columns]="columns"
+          [buttons]="buttons"
+          [data]="ranks$ | async"
+          (onCollationChange)="collation$.next($event)"/>

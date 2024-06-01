@@ -411,6 +411,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IAccessControlService>(provider => provider.GetRequiredService<AccessControlService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AccessControlService>());
 
+        services.AddSingleton<RankService>();
+        services.AddSingleton<IRankService>(provider => provider.GetRequiredService<RankService>());
+
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);

@@ -47,12 +47,14 @@
                   (onCollationChange)="onDivisionsCollationChange($event)"
                   (onCellAction)="getDivisions()"/>
       </app-container>
-      <app-grid [title]="'UI.LABEL.RANK.PLURAL' | translate"
-                [buttons]="ranksButtons"
-                [data]="ranks"
-                [columns]="ranksColumns"
-                (onCollationChange)="onRanksCollationChange($event)"
-                (onCellAction)="getRanks()"/>
+      @if (!department.UseGlobalRanks) {
+        <app-grid [title]="'UI.LABEL.RANK.PLURAL' | translate"
+                  [buttons]="ranksButtons"
+                  [data]="departmentRanksPage"
+                  [columns]="ranksColumns"
+                  (onCollationChange)="onRanksCollationChange($event)"
+                  (onCellAction)="getRanks()"/>
+      }
     </app-container>
   }
 
@@ -60,18 +62,20 @@
 
   @if (department) {
     <app-container [columns]="2">
-      <app-grid [title]="'UI.LABEL.RANK.PLURAL' | translate"
-                [buttons]="ranksButtons"
-                [data]="ranks"
-                [columns]="ranksColumns"
-                (onCollationChange)="onRanksCollationChange($event)"
-                (onCellAction)="getRanks()"/>
       <app-grid [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
                 [buttons]="divisionsButtons"
                 [data]="divisions"
                 [columns]="divisionsColumns"
                 (onCollationChange)="onDivisionsCollationChange($event)"
                 (onCellAction)="getDivisions()"/>
+      @if (!department.UseGlobalRanks) {
+        <app-grid [title]="'UI.LABEL.RANK.PLURAL' | translate"
+                  [buttons]="ranksButtons"
+                  [data]="departmentRanksPage"
+                  [columns]="ranksColumns"
+                  (onCollationChange)="onRanksCollationChange($event)"
+                  (onCellAction)="getRanks()"/>
+      }
     </app-container>
   }
 

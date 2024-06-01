@@ -417,6 +417,12 @@ internal class Bootstrapper : BaseScript
             .As<IOnInit>()
             .IsSingleton();
 
+        services
+            .RegisterType<RankService>()
+            .As<IRankService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);

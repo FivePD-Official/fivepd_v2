@@ -148,11 +148,22 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             .Entry(user)
             .Reference(x => x.Rank)
             .Load();
-        this._databaseContext
-            .Entry(user.Department)
-            .Collection(x => x.Ranks)
-            .Load();
-        var ranks = user.Department.Ranks.OrderBy(x => x.RequiredXp).ToList();
+
+        List<Rank> ranksToUse;
+        if (user.Department.UseGlobalRanks)
+        {
+            ranksToUse = this._databaseContext.Ranks.Where(x => x.Global).ToList();
+        }
+        else
+        {
+            this._databaseContext
+                .Entry(user.Department)
+                .Collection(x => x.DepartmentRanks)
+                .Load();
+            ranksToUse = user.Department.DepartmentRanks.Select(x => x.Rank).ToList();
+        }
+
+        var ranks = ranksToUse.OrderBy(x => x.RequiredXp).ToList();
         var currentRankRequiredXp = user.Rank?.RequiredXp ?? user.Xp;
         var nextRank = ranks.FirstOrDefault(x => x.RequiredXp > currentRankRequiredXp);
         if (nextRank is null)
@@ -197,11 +208,22 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             .Entry(user)
             .Reference(x => x.Rank)
             .Load();
-        this._databaseContext
-            .Entry(user.Department)
-            .Collection(x => x.Ranks)
-            .Load();
-        var ranks = user.Department.Ranks.OrderBy(x => x.RequiredXp).ToList();
+
+        List<Rank> ranksToUse;
+        if (user.Department.UseGlobalRanks)
+        {
+            ranksToUse = this._databaseContext.Ranks.Where(x => x.Global).ToList();
+        }
+        else
+        {
+            this._databaseContext
+                .Entry(user.Department)
+                .Collection(x => x.DepartmentRanks)
+                .Load();
+            ranksToUse = user.Department.DepartmentRanks.Select(x => x.Rank).ToList();
+        }
+
+        var ranks = ranksToUse.OrderBy(x => x.RequiredXp).ToList();
         var currentRankRequiredXp = user.Rank?.RequiredXp ?? user.Xp;
         var previousRank = ranks.LastOrDefault(x => x.RequiredXp < currentRankRequiredXp);
         if (previousRank is null)

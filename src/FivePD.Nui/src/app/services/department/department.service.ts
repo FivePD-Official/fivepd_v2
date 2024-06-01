@@ -82,20 +82,6 @@ export class DepartmentService {
     });
   }
 
-  createRank(rank: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:department:createRank', rank);
-  }
-
-  editRank(rank: object): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:department:editRank', rank);
-  }
-
-  deleteRank(id: number): Observable<ActionResponse> {
-    return this._http.post<ActionResponse>('fivepd:department:deleteRank', {
-      Id: id,
-    });
-  }
-
   createDivision(division: object): Observable<ActionResponse> {
     return this._http.post<ActionResponse>('fivepd:department:createDivision', division);
   }
@@ -113,19 +99,6 @@ export class DepartmentService {
   getDepartmentUsers(id: number, collation?: Collation): Observable<Page<User>> {
     return this._http.post<Page<User>>('fivepd:department:getUsers', {
       DepartmentId: id,
-      ...collation
-    });
-  }
-
-  getRank(rankId: number): Observable<Rank> {
-    return this._http.post<Rank>('fivepd:department:getRank', {
-      Id: rankId,
-    });
-  }
-
-  getRanks(departmentId: number, collation?: Collation): Observable<Page<Rank>> {
-    return this._http.post<Page<Rank>>('fivepd:department:getRanks', {
-      DepartmentId: departmentId,
       ...collation
     });
   }

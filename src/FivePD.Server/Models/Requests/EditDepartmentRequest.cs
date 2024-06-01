@@ -13,4 +13,6 @@ internal record struct EditDepartmentRequest()
     public int MaxUsers { get; set; }
 
     public int DefaultRankId { get; set; }
+    
+    public bool UseGlobalRanks { get; set; }   
 }

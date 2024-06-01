@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FivePD.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240531182029_access_control")]
-    partial class access_control
+    [Migration("20240601181538_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -79,6 +79,9 @@ namespace FivePD.Server.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<bool>("UseGlobalRanks")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DefaultRankId");
@@ -106,6 +109,21 @@ namespace FivePD.Server.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.ToTable("fivepd_department_area_coordinates");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.DepartmentRank", b =>
+                {
+                    b.Property<int>("RankId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RankId", "DepartmentId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("fivepd_department_rank");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.Division", b =>
@@ -380,6 +398,9 @@ namespace FivePD.Server.Migrations
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Global")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -620,6 +641,21 @@ namespace FivePD.Server.Migrations
                         .HasForeignKey("DepartmentId");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.DepartmentRank", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.Department", "Department")
+                        .WithMany("DepartmentRanks")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FivePD.Server.Models.Rank", "Rank")
+                        .WithMany("DepartmentRanks")
+                        .HasForeignKey("RankId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.Division", b =>
                 {
                     b.HasOne("FivePD.Server.Models.Department", "Department")
@@ -688,10 +724,9 @@ namespace FivePD.Server.Migrations
 
             modelBuilder.Entity("FivePD.Server.Models.Rank", b =>
                 {
-                    b.HasOne("FivePD.Server.Models.Department", "Department")
+                    b.HasOne("FivePD.Server.Models.Department", null)
                         .WithMany("Ranks")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DepartmentId");
 
                     b.OwnsOne("FivePD.Server.Models.Rank+Permissions", "Permission", b1 =>
                         {
