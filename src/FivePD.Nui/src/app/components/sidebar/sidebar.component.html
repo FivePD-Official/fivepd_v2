@@ -48,7 +48,7 @@
   </div>
 
   <div class="w-full flex flex-col gap-2 px-5">
-    @if (true || config?.dispatchTypeManual() && userService.userHasRole(UserRole.Dispatcher)) {
+    @if (config?.dispatchTypeManual() && userService.userHasRole(UserRole.Dispatcher)) {
       <button class="relative w-full h-[50px] border-none cursor-pointer flex flex-row items-center justify-center
                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg
                    before:bg-zinc-800 hover:before:bg-zinc-700"
@@ -79,22 +79,43 @@
 </aside>
 
 <ng-template #link let-route="route">
-  <a class="group decoration-0"
-     [routerLink]="route.path()"
-     routerLinkActive="active"
-     [routerLinkActiveOptions]="{ exact: false }">
-    <div class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
-                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
-                    before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
-      <div app-icon
-           [name]="route.icon"
-           class="w-[50px] h-full flex flex-center justify-center"
-           className="h-[25px] text-zinc-400 group-[.active]:text-white">
+  @if (route.onClick && route.linkActive) {
+    <button class="group decoration-0 w-full"
+            type="button"
+            (click)="route.onClick()"
+    [ngClass]="{'active': route.linkActive()}">
+      <div class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
+                      before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
+                      before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
+        <div app-icon
+             [name]="route.icon"
+             class="w-[50px] h-full flex flex-center justify-center"
+             className="h-[25px] text-zinc-400 group-[.active]:text-white">
+        </div>
+        <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
+           [ngClass]="{ 'hidden': isSidebarCollapsed }">
+          {{ route.title | translate }}
+        </p>
       </div>
-      <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
-         [ngClass]="{ 'hidden': isSidebarCollapsed }">
-        {{ route.title | translate }}
-      </p>
-    </div>
-  </a>
+    </button>
+  } @else {
+    <a class="group decoration-0"
+       [routerLink]="route.path()"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: false }">
+      <div class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
+                      before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
+                      before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
+        <div app-icon
+             [name]="route.icon"
+             class="w-[50px] h-full flex flex-center justify-center"
+             className="h-[25px] text-zinc-400 group-[.active]:text-white">
+        </div>
+        <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap"
+           [ngClass]="{ 'hidden': isSidebarCollapsed }">
+          {{ route.title | translate }}
+        </p>
+      </div>
+    </a>
+  }
 </ng-template>

@@ -1,6 +1,6 @@
 ﻿import { IconType } from "./icon";
 
-export interface RouteWithChildren {
+export interface RouteWithChildren extends RouteWithOnClick {
   title: string;
   path?: never;
   icon: IconType;
@@ -9,7 +9,7 @@ export interface RouteWithChildren {
   open?: boolean;
 }
 
-export interface RouteWithoutChildren {
+export interface RouteWithoutChildren extends RouteWithOnClick {
   title: string;
   path: () => string;
   icon: IconType;
@@ -17,6 +17,10 @@ export interface RouteWithoutChildren {
   children?: never;
 }
 
+export interface RouteWithOnClick {
+  onClick?: () => void;
+  linkActive?: () => boolean;
+}
 
 export type RouteOrDivider = RouteWithChildren | RouteWithoutChildren | { divider: true; };
 

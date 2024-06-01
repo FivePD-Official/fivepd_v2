@@ -1,5 +1,3 @@
-<app-page-header [title]="'UI.LABEL.CALLOUT.PLURAL' | translate"/>
-
 <app-grid [columns]="columns"
           [data]="calloutDetails$ | async"
           (onCollationChange)="collation$.next($event)"/>

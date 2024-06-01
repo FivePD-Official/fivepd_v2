@@ -1,4 +1,4 @@
-﻿import {Component, inject} from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import {
   Button,
   Collation,
@@ -9,32 +9,31 @@ import {
   SimpleWeapon,
   TextField
 } from "@models";
-import {BehaviorSubject, filter, map, switchMap} from "rxjs";
-import {UserRole, UserService} from "@services/user/user.service";
-import {ModalService} from "@services/modals/modal/modal.service";
-import {ModalFormService} from "@services/modals/modal-form/modal-form.service";
-import {ModalConfirmService} from "@services/modals/modal-confirm/modal-confirm.service";
-import {TranslatePipe} from "../../../../pipes/translate.pipe";
-import {GridComponent} from '../../../../components/grid/grid.component';
-import {ContainerComponent} from '../../../../components/container/container.component';
-import {PageHeaderComponent} from '../../../../components/page-header/page-header.component';
+import { BehaviorSubject, filter, map, switchMap } from "rxjs";
+import { UserRole, UserService } from "@services/user/user.service";
+import { ModalService } from "@services/modals/modal/modal.service";
+import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
+import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
+import { TranslatePipe } from "../../../../pipes/translate.pipe";
+import { GridComponent } from '../../../../components/grid/grid.component';
+import { ContainerComponent } from '../../../../components/container/container.component';
 import {
   SingleSelectFieldComponent
 } from "../../../../components/form-inputs/single-select-field/single-select-field.component";
-import {AsyncPipe} from "@angular/common";
-import {ValueResolver} from "@services/modals/modal-form/modal-form-value-resolver";
-import {LocalizationService} from "@services/localization/localization.service";
-import {LoadoutConfigService} from "@services/loadout-config/loadout-config.service";
-import {LoadoutWeaponsComponent} from "./weapon/loadout-weapons.component";
-import {LoadoutWeaponComponentsComponent} from "./weapon-components/loadout-weapon-components.component";
-import {DataResolver} from "@services/modals/modal-form/modal-form-data-resolver";
-import {WeaponService} from "@services/weapon/weapon.service";
+import { AsyncPipe } from "@angular/common";
+import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
+import { LocalizationService } from "@services/localization/localization.service";
+import { LoadoutConfigService } from "@services/loadout-config/loadout-config.service";
+import { LoadoutWeaponsComponent } from "./weapon/loadout-weapons.component";
+import { LoadoutWeaponComponentsComponent } from "./weapon-components/loadout-weapon-components.component";
+import { DataResolver } from "@services/modals/modal-form/modal-form-data-resolver";
+import { WeaponService } from "@services/weapon/weapon.service";
 
 @Component({
   selector: 'app-loadout-settings',
   templateUrl: './loadout-settings.component.html',
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe, LoadoutWeaponsComponent, LoadoutWeaponComponentsComponent]
+  imports: [ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe, LoadoutWeaponsComponent, LoadoutWeaponComponentsComponent]
 })
 export class LoadoutSettingsComponent {
 

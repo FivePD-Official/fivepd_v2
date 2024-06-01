@@ -2,8 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GridComponent } from "../../../../components/grid/grid.component";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
-import { PageHeaderComponent } from "../../../../components/page-header/page-header.component";
-import { CalloutDetails, Collation, Column, Page } from "@models";
+import { CalloutDetails, Collation, Column } from "@models";
 import { Router } from "@angular/router";
 import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
 import { UserRole, UserService } from "@services/user/user.service";
@@ -13,7 +12,7 @@ import { LocalizationService } from "@services/localization/localization.service
 @Component({
   selector: 'app-callouts',
   standalone: true,
-  imports: [CommonModule, GridComponent, TranslatePipe, PageHeaderComponent],
+  imports: [CommonModule, GridComponent, TranslatePipe],
   templateUrl: './callouts.component.html',
 })
 export class CalloutsComponent {
@@ -49,7 +48,7 @@ export class CalloutsComponent {
           type: 'button',
           label: 'UI.ACTION.EDIT',
           show: () => this._userService.userHasRole(UserRole.Admin),
-          onClick: item => this._router.navigate(['mdt', 'settings', 'callout-details', item.Id]),
+          onClick: item => this._router.navigate(['mdt', 'settings', 'callouts', item.Id]),
         },
       ],
     })

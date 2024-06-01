@@ -1,6 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PageHeaderComponent } from "../../../../components/page-header/page-header.component";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from "../../../../components/grid/grid.component";
 import { UserService } from "@services/user/user.service";
@@ -18,7 +17,7 @@ import { collationWithAdditionalFilters } from "../../../../helpers/request";
 @Component({
   selector: 'app-locations',
   standalone: true,
-  imports: [CommonModule, PageHeaderComponent, TranslatePipe, GridComponent],
+  imports: [CommonModule, TranslatePipe, GridComponent],
   templateUrl: './locations.component.html',
 })
 export class LocationsComponent implements OnInit {

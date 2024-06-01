@@ -1,0 +1,38 @@
+<app-page-header title="Global settings"/>
+
+<div class="w-full grid grid-rows-1 grid-cols-[15fr_85fr] gap-8">
+
+  <div class="w-full">
+    <div class="w-full border border-color p-2 rounded-lg sticky top-4">
+      @for (route of routes; track route) {
+        @if (isRoute(route) && route.show()) {
+          <a class="group decoration-0"
+             [routerLink]="route.path()"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: false }">
+            <div class="relative flex flex-row items-center w-full h-[50px] mb-3 decoration-0
+                    before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
+                    before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
+              <div app-icon
+                   [name]="route.icon"
+                   class="w-[50px] h-full flex flex-center justify-center"
+                   className="h-[25px] text-zinc-400 group-[.active]:text-white">
+              </div>
+              <p class="text-zinc-400 group-[.active]:text-zinc-100 whitespace-nowrap">
+                {{ route.title | translate }}
+              </p>
+            </div>
+          </a>
+        } @else if (isDivider(route)) {
+          <div class="h-[1px] w-full my-4 bg-zinc-700"></div>
+        }
+      }
+    </div>
+
+  </div>
+
+  <div class="w-full">
+    <router-outlet/>
+  </div>
+
+</div>

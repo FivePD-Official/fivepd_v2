@@ -1,5 +1,3 @@
-<app-page-header [title]="'UI.LABEL.LOCATION.PLURAL' | translate"/>
-
 @if (generalConfig?.mdtAccessOnlySpecificLocations() || generalConfig?.mdtAccessOnlyVehicleAndSpecificLocations()) {
   <app-grid [title]="'UI.LABEL.LOCATION.TYPE.MDT.TITLE.PLURAL' | translate"
             [data]="mdtAccessPointsPage$ | async"
