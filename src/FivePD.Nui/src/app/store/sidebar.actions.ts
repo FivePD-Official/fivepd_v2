@@ -1,5 +1,5 @@
 ﻿import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { Routes, RouteWithChildren } from "../models/sidebar";
+import { Routes, RouteWithChildren } from "@models";
 
 export const SidebarActions = createActionGroup({
   source: 'sidebar',

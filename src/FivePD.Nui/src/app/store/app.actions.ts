@@ -1,7 +1,6 @@
 ﻿import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { CoordinateWithDate } from '@store/app.reducer';
 import { PedHistory } from "@models";
-import { Routes } from "../models/sidebar";
 
 export const AppActions = createActionGroup({
   source: 'app',

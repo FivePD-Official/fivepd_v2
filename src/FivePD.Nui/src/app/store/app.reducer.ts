@@ -3,7 +3,6 @@ import { createReducer, on } from '@ngrx/store';
 import {
   AppActions,
 } from '@store/app.actions';
-import { Routes } from "../models/sidebar";
 
 export interface WithDate {
   date: Date;

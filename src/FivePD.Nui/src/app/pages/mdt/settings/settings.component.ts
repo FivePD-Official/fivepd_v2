@@ -2,11 +2,11 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { PageHeaderComponent } from "../../../components/page-header/page-header.component";
-import { RouteOrDivider, Routes, RouteWithoutChildren } from "../../../models/sidebar";
-import { IconType } from "@models";
+import { IconType, Routes } from "@models";
 import { UserRole, UserService } from "@services/user/user.service";
 import { IconComponent } from "../../../components/icon/icon.component";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
+import { RouteHelper } from "../../_service/route-helper";
 
 @Component({
   selector: 'app-settings',
@@ -18,6 +18,7 @@ import { TranslatePipe } from "../../../pipes/translate.pipe";
 export class SettingsComponent {
 
   private readonly userService = inject(UserService);
+  protected readonly routeHelper = inject(RouteHelper);
 
   readonly routes: Routes = [
     {
@@ -69,12 +70,4 @@ export class SettingsComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
   ];
-
-  isRoute(route: RouteOrDivider): route is RouteWithoutChildren {
-    return !('divider' in route);
-  }
-
-  isDivider(route: RouteOrDivider): route is RouteWithoutChildren {
-    return !this.isRoute(route);
-  }
 }
