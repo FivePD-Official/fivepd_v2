@@ -1,5 +1,5 @@
 ﻿import { createReducer, on } from '@ngrx/store';
-import { Routes } from "../models/sidebar";
+import { Routes } from "@models";
 import { SidebarActions } from "@store/sidebar.actions";
 
 export interface SidebarStateModel {

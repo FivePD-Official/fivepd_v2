@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { GlobalState } from '@store';
-import { GeneralConfig, IconType, User } from '@models';
+import { GeneralConfig, IconType, Routes, User } from '@models';
 import { Store } from '@ngrx/store';
 import { UserRole, UserService } from '@services/user/user.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -10,8 +10,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IconComponent } from '../icon/icon.component';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
-import { RouteOrDivider, Routes, RouteWithChildren, RouteWithoutChildren } from "../../models/sidebar";
 import { SidebarActions } from "@store/sidebar.actions";
+import { RouteHelper } from "../../pages/_service/route-helper";
 
 @Component({
   selector: 'app-sidebar',
@@ -92,7 +92,6 @@ export class SidebarComponent {
     },
     {
       title: 'UI.LABEL.GLOBAL_SETTINGS',
-      path: () => '/mdt/settings',
       icon: IconType.Cog,
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
       onClick: () => void this.router.navigate(['mdt', 'settings', 'users']),
@@ -113,6 +112,7 @@ export class SidebarComponent {
     private readonly _dispatchService: DispatchService,
     private readonly _configService: ConfigService,
     private readonly router: Router,
+    protected readonly routeHelper: RouteHelper
   ) {
     _store.dispatch(SidebarActions.setRoutes({routes: this.defaultRoutes}));
     _store.pipe(takeUntilDestroyed()).subscribe(state => {
@@ -124,22 +124,6 @@ export class SidebarComponent {
     this._configService.getGeneralConfig().pipe(takeUntilDestroyed()).subscribe(config => {
       this.config = config;
     });
-  }
-
-  isRoute(route: RouteOrDivider): route is RouteWithoutChildren {
-    return !('divider' in route);
-  }
-
-  isDivider(route: RouteOrDivider): route is RouteWithoutChildren {
-    return !this.isRoute(route);
-  }
-
-  hasChildren(route: RouteOrDivider): route is RouteWithChildren {
-    return 'children' in route;
-  }
-
-  toggleRoute(route: RouteWithChildren): void {
-    this._store.dispatch(SidebarActions.toggleRoute({route}));
   }
 
   toggleSidebarCollapse(): void {
