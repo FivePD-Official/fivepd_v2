@@ -82,18 +82,6 @@ export class AppComponent implements OnInit {
     });
 
     this._feedbackService.collectErrors();
-
-    // function asd() {
-    //   throw new Error('test error 2')
-    // }
-    //
-    // setTimeout(() => {
-    //   throw new Error('test error 1')
-    // }, 5000);
-    //
-    // setTimeout(() => {
-    //   asd()
-    // }, 5000);
   }
 
   private disableAnimations() {

@@ -25,12 +25,6 @@ export class FeedbackService {
 
     const _console = console as any;
 
-    // _console.stdlog = console.log.bind(console);
-    // console.log = (...args) => {
-    //   this.logs.push({type: 'log', args: Array.from(args)});
-    //   _console.stdlog.apply(console, args);
-    // }
-
     _console.stdlog = console.log.bind(console);
 
     console.error = (...args) => {

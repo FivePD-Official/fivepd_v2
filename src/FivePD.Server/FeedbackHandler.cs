@@ -14,18 +14,21 @@ namespace FivePD.Server;
 
 public static class FeedbackHandler
 {
+    private static HttpClient _httpClient;
+
     public static async Task SendFeedback(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
+        _httpClient ??= new HttpClient(new HttpClientHandler
+        {
+            ClientCertificateOptions = ClientCertificateOption.Manual,
+            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+        }, false);
+
         try
         {
             dynamic obj = expandoObject;
 
             ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;
-            using var client = new HttpClient(new HttpClientHandler
-            {
-                ClientCertificateOptions = ClientCertificateOption.Manual,
-                ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-            });
 
             var sb = new StringBuilder();
             sb.Append($"\n**{obj.Name}**\n");
@@ -38,10 +41,17 @@ public static class FeedbackHandler
             var contentObject = new { content = sb.ToString() };
             var jsonContent = JsonConvert.SerializeObject(contentObject);
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(
+            var response = await _httpClient.PostAsync(
                 "https://discord.com/api/webhooks/1247121240578199574/mn3VqaRbQE1vitFLtT48R09aKdfIlXEhn8LMKhMDoU8RmIEoInf5ykAwcKgNnFr16Qv3",
                 httpContent);
-            networkCallbackDelegate.InvokeWithResponse(true, "Successful send", "Your feedback has been successfully sent. Thanks!");
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                networkCallbackDelegate.InvokeWithResponse(true, "Successful send", "Your feedback has been successfully sent. Thanks!");
+            }
+            else
+            {
+                networkCallbackDelegate.InvokeWithUnexpectedError();
+            }
         }
         catch (Exception e)
         {
