@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -21,6 +25,7 @@ using FivePD.Server.Services.Callouts;
 using FivePD.Server.Services.TrafficStopServices;
 using FivePD.Server.Services.VariableData;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
 
@@ -116,6 +121,15 @@ internal class Bootstrapper : BaseScript
                 {
                     player.TriggerEvent(Events.Lifecycle.ServerBootstrapped);
                 }
+            },
+            false);
+
+        // Register the feedback handler.
+        this._phases.Add(
+            () =>
+            {
+                var eventHandlerDictionary = this._provider.GetService<EventHandlerDictionary>();
+                eventHandlerDictionary[Events.Feedback.Send] += FeedbackHandler.SendFeedback;
             },
             false);
 

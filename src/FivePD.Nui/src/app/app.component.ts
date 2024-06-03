@@ -9,9 +9,8 @@ import { GlobalState } from '@store';
 import { AppActions } from '@store/app.actions';
 import { MenuService } from '@services/menu/menu.service';
 import { ConfigService } from "@services/config/config.service";
-import { ModalService } from "@services/modals/modal/modal.service";
-import { UserService } from "@services/user/user.service";
 import { AudioService } from "@services/audio/audio.service";
+import { FeedbackService } from "@services/feedback/feedback.service";
 
 @Component({
   selector: 'app-root',
@@ -28,6 +27,7 @@ export class AppComponent implements OnInit {
   private readonly _menuService = inject(MenuService);
   private readonly _configService = inject(ConfigService);
   private readonly _soundService = inject(AudioService);
+  private readonly _feedbackService = inject(FeedbackService);
 
   private calculatedContainerMargin: string = '';
 
@@ -80,6 +80,20 @@ export class AppComponent implements OnInit {
 
       enableAnimations();
     });
+
+    this._feedbackService.collectErrors();
+
+    // function asd() {
+    //   throw new Error('test error 2')
+    // }
+    //
+    // setTimeout(() => {
+    //   throw new Error('test error 1')
+    // }, 5000);
+    //
+    // setTimeout(() => {
+    //   asd()
+    // }, 5000);
   }
 
   private disableAnimations() {
