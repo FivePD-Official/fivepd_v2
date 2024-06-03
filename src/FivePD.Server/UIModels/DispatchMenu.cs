@@ -63,7 +63,7 @@ public sealed class DispatchMenu : Menu
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOnDuty))
             {
-                actions.Add(async player => { player.DutyStatus.Value = FDutyStatus.OnDuty; });
+                actions.Add(async player => {if (player.Department != null) { player.DutyStatus.Value = FDutyStatus.OnDuty; }});
             }
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOffDuty))
