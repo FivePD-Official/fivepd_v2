@@ -58,8 +58,4 @@ export class HeaderComponent implements OnInit {
   toggleMaximizedWindow(): void {
     this._store.dispatch(AppActions.setWindowMaximized({maximized: !this.windowMaximized}));
   }
-
-  collectFeedback(): void {
-    this.feedbackService.collectFeedback();
-  }
 }
