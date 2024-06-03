@@ -68,7 +68,7 @@ public sealed class DispatchMenu : Menu
                     if (player.Department != null)
                     {
                         player.DutyStatus.Value = FDutyStatus.OnDuty;
-                        this.DutyNotification(player, "You have been set On Duty");
+                        this.DutyNotification(player, "UI.MENU.DISPATCH.ON_DUTY.NOTIFICATION");
                     }
                 });
             }
@@ -80,7 +80,7 @@ public sealed class DispatchMenu : Menu
                     if (player.Department != null)
                     {
                         player.DutyStatus.Value = FDutyStatus.OffDuty;
-                        this.DutyNotification(player, "You have been set Off Duty");
+                        this.DutyNotification(player, "UI.MENU.DISPATCH.OFF_DUTY.NOTIFICATION");
                     }
                 });
             }
