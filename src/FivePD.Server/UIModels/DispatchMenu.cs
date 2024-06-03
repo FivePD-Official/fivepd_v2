@@ -63,12 +63,26 @@ public sealed class DispatchMenu : Menu
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOnDuty))
             {
-                actions.Add(async player => { player.DutyStatus.Value = FDutyStatus.OnDuty; });
+                actions.Add(async player =>
+                {
+                    if (player.Department is not null)
+                    {
+                        player.DutyStatus.Value = FDutyStatus.OnDuty;
+                        this.DutyNotification(player, "UI.MENU.DISPATCH.ON_DUTY.NOTIFICATION");
+                    }
+                });
             }
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerOffDuty))
             {
-                actions.Add(async player => { player.DutyStatus.Value = FDutyStatus.OffDuty; });
+                actions.Add(async player =>
+                {
+                    if (player.Department is not null)
+                    {
+                        player.DutyStatus.Value = FDutyStatus.OffDuty;
+                        this.DutyNotification(player, "UI.MENU.DISPATCH.OFF_DUTY.NOTIFICATION");
+                    }
+                });
             }
 
             if (item.OnSelect.Contains(DispatchActionOnSelectKeys.SetPlayerCanReceiveCallouts))
@@ -292,5 +306,13 @@ public sealed class DispatchMenu : Menu
             "LABEL.DISPATCH",
             "License plate check",
             text.Build());
+    }
+
+    private async Task DutyNotification(FPlayer player, string message)
+    {
+        this._notificationService.ShowNotification(
+            player,
+            message
+            );
     }
 }
