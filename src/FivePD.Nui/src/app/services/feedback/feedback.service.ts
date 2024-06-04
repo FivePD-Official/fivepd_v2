@@ -10,7 +10,7 @@ import { ModalService } from "@services/modals/modal/modal.service";
 })
 export class FeedbackService {
 
-  readonly enabled = true;
+  readonly enabled = false;
 
   private readonly errors: any[] = [];
 
