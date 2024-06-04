@@ -16,6 +16,11 @@ internal readonly record struct Events
         public const string Stop = "fivepd:lifecycle:stop";
     }
 
+    public readonly record struct Feedback
+    {
+        public const string Send = "fivepd:feedback:send";
+    }
+
     public readonly record struct AccessControl
     {
         public const string HasAccess = "fivepd:accessControl:hasAccess";
