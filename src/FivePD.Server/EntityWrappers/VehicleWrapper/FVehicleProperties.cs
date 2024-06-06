@@ -27,10 +27,21 @@ public sealed class FVehicleProperties
     }
 
     /// <summary>
+    /// Gets the Speed.
+    /// </summary>
+    public Task<float> Speed => this.GetPropertyFloatAsync(FVehiclePropertiesDTO.Events.Speed);
+
+    /// <summary>
+    /// Sets the "Speed" property of the vehicle.
+    /// </summary>
+    /// <param name="speed">The speed.</param>
+    public void SetSpeed(float speed) => this.SetProperty(FVehiclePropertiesDTO.Events.Speed, speed);
+
+    /// <summary>
     /// Sets the "BlockPermanentEvents" property of the ped.
     /// </summary>
     /// <param name="value">true to block permanent events; otherwise, false.</param>
-    public void IsSirenActive(bool value) => this.SetPropertyBool(FVehiclePropertiesDTO.Events.IsSirenActive, value);
+    public void IsSirenActive(bool value) => this.SetProperty(FVehiclePropertiesDTO.Events.IsSirenActive, value);
 
     /// <summary>
     /// Invokes the "MarkAsNoLongerNeeded" method on the ped.
@@ -45,7 +56,7 @@ public sealed class FVehicleProperties
     /// <param name="text">The text to display on the blip. If <see langword="null"/>, the blip will not have any text.</param>
     public void CreateBlip(FBlipSprite sprite, FBlipColor color, string text)
     {
-        this.SetPropertyString(FVehiclePropertiesDTO.Events.CreateBlip, JsonConvert.SerializeObject(new FVehiclePropertiesDTO.CreateBlipRequest
+        this.SetProperty(FVehiclePropertiesDTO.Events.CreateBlip, JsonConvert.SerializeObject(new FVehiclePropertiesDTO.CreateBlipRequest
         {
             Sprite = sprite,
             Color = color,
@@ -58,7 +69,7 @@ public sealed class FVehicleProperties
     /// </summary>
     public void RemoveBlips()
     {
-        this.SetPropertyString(FVehiclePropertiesDTO.Events.RemoveBlips, string.Empty);
+        this.SetProperty(FVehiclePropertiesDTO.Events.RemoveBlips, string.Empty);
     }
 
     private async Task<bool> GetPropertyBoolAsync(string property)
@@ -67,12 +78,13 @@ public sealed class FVehicleProperties
         return bool.Parse(value);
     }
 
-    private void SetPropertyString(string property, string value)
+    private async Task<float> GetPropertyFloatAsync(string property)
     {
-        this._eventService.TriggerEventWithoutCallback(this._fVehicle.Owner, Events.Vehicle.SetProperty, this._fVehicle.NetworkId, property, value);
+        var value = await this._eventService.TriggerEventAsync(this._fVehicle.Owner, Events.Vehicle.GetProperty, this._fVehicle.NetworkId, property);
+        return float.Parse(value);
     }
 
-    private void SetPropertyBool(string property, bool value)
+    private void SetProperty<T>(string property, T value)
     {
         this._eventService.TriggerEventWithoutCallback(this._fVehicle.Owner, Events.Vehicle.SetProperty, this._fVehicle.NetworkId, property, value.ToString());
     }

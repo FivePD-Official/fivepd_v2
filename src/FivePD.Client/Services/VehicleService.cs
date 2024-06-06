@@ -37,8 +37,8 @@ internal class VehicleService : IVehicleService, IOnInit
     /// <inheritdoc/>
     public void OnInit()
     {
-        this._eventHandlerDictionary[Events.Vehicle.GetProperty] += new Action<string, int, string>(this.GetPedProperty);
-        this._eventHandlerDictionary[Events.Vehicle.SetProperty] += new Action<int, string, string>(this.SetPedProperty);
+        this._eventHandlerDictionary[Events.Vehicle.GetProperty] += new Action<string, int, string>(this.GetProperty);
+        this._eventHandlerDictionary[Events.Vehicle.SetProperty] += new Action<int, string, string>(this.SetProperty);
         this._eventHandlerDictionary[Events.Vehicle.InvokeMethod] += new Action<string>(this.InvokeMethod);
         this._eventHandlerDictionary[Events.Vehicle.SetCosmetics] += new Action<string>(this.SetCosmetics);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Vehicle.Get);
@@ -71,7 +71,7 @@ internal class VehicleService : IVehicleService, IOnInit
         return fVehicle;
     }
 
-    private async void GetPedProperty(string eventCallbackId, int networkId, string property)
+    private async void GetProperty(string eventCallbackId, int networkId, string property)
     {
         var vehicle = await this.FindVehicleAsync(networkId);
         if (vehicle is null)
@@ -82,13 +82,14 @@ internal class VehicleService : IVehicleService, IOnInit
 
         object value = property switch
         {
+            FVehiclePropertiesDTO.Events.Speed => vehicle.Speed,
             _ => string.Empty,
         };
 
         BaseScript.TriggerServerEvent(Events.Generic.Callback, eventCallbackId, value.ToString());
     }
 
-    private async void SetPedProperty(int networkId, string property, string value)
+    private async void SetProperty(int networkId, string property, string value)
     {
         var vehicle = await this.FindVehicleAsync(networkId);
         if (vehicle is null)
@@ -114,6 +115,12 @@ internal class VehicleService : IVehicleService, IOnInit
             case FVehiclePropertiesDTO.Events.RemoveBlips:
             {
                 vehicle.RemoveBlips();
+                break;
+            }
+
+            case FVehiclePropertiesDTO.Events.Speed:
+            {
+                vehicle.Speed = float.Parse(value);
                 break;
             }
         }

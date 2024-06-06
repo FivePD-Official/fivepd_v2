@@ -43,5 +43,7 @@ internal sealed record FVehiclePropertiesDTO
         public const string RemoveBlips = "RemoveBlips";
 
         public const string MarkAsNoLongerNeeded = "MarkAsNoLongerNeeded";
+
+        public const string Speed = "Speed";
     }
 }
