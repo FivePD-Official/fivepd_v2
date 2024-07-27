@@ -1,7 +1,13 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.EntityWrappers.PedWrapper;
+using FivePD.Server.EntityWrappers.VehicleWrapper;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Models.AssistanceServiceModels;
 
@@ -73,6 +79,52 @@ public abstract class AssistanceService : IInternalAssistanceService
     /// </summary>
     /// <returns>A Task.</returns>
     public abstract Task OnCompletedAsync();
+
+    /// <summary>
+    /// Called to relinquish the script control of entities.
+    /// </summary>
+    /// <param name="entities">The dictionary of entities to be relinquished, the FEntity is for <see cref="FPed"/> or <see cref="FVehicle"/>,
+    /// the bool is to show which <see cref="FPed"/> is the driver.</param>
+    protected void ClearEntities(Dictionary<FEntity, bool> entities)
+    {
+        FPed driver = null;
+        FVehicle vehicle = null;
+
+        foreach (var entity in entities)
+        {
+            if (entity.Key.Type == "FPed")
+            {
+                var castEntity = (FPed)entity.Key;
+                Cfx.API.SetEntityDistanceCullingRadius(castEntity.GetUnderlyingPed.Handle, 100f);
+                castEntity.Properties.MarkAsNoLongerNeeded();
+                if (entity.Value)
+                {
+                    driver = castEntity;
+                }
+            }
+            else if (entity.Key.Type == "FVehicle")
+            {
+                var castEntity = (FVehicle)entity.Key;
+                castEntity.Properties.RemoveBlips();
+                castEntity.Properties.IsSirenActive(false);
+                Cfx.API.SetEntityDistanceCullingRadius(castEntity.GetUnderlyingVehicle.Handle, 100f);
+                vehicle = castEntity;
+            }
+        }
+
+        this.DriveOff(vehicle, driver);
+    }
+
+    /// <summary>
+    /// Used to task the vehicle to drive off.
+    /// </summary>
+    private void DriveOff(FVehicle vehicle, FPed driver)
+    {
+        if (vehicle is not null && driver is not null)
+        {
+            driver?.Task.CruiseWithVehicle(vehicle.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
+        }
+    }
 }
 
 /// <summary>

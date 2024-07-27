@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Common.Utilities;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
@@ -147,31 +148,21 @@ public class Ambulance : AssistanceService
 
     public override Task OnCancellationRequestedAsync()
     {
-        this.OnCompletedOrCancelled();
+        this.ClearEntities(new Dictionary<FEntity, bool>()
+        {
+            { this._driver, true },
+            { this._ambulance, false }
+        });
         return Task.FromResult(0);
     }
 
     public override Task OnCompletedAsync()
     {
-        this.OnCompletedOrCancelled();
+        this.ClearEntities(new Dictionary<FEntity, bool>()
+        {
+            { this._driver, true },
+            { this._ambulance, false }
+        });
         return Task.FromResult(0);
-    }
-
-    private void OnCompletedOrCancelled()
-    {
-        if (this._driver is not null)
-        {
-            Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
-            this._driver.Properties.MarkAsNoLongerNeeded();
-        }
-
-        if (this._ambulance is not null)
-        {
-            this._ambulance.Properties.IsSirenActive(false);
-            this._ambulance.Properties.RemoveBlips();
-            this._driver?.Task.CruiseWithVehicle(this._ambulance.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
-            Cfx.API.SetEntityDistanceCullingRadius(this._ambulance.GetUnderlyingVehicle.Handle, 100f);
-            this._ambulance.Properties.MarkAsNoLongerNeeded();
-        }
     }
 }
