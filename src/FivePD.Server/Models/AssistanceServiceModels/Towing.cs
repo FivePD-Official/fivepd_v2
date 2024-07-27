@@ -147,20 +147,20 @@ public class Towing : AssistanceService
 
     public override Task OnCancellationRequestedAsync()
     {
-        this.ClearEntities(new Dictionary<FEntity, bool>()
+        this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
-            { this._driver, true },
-            { this._towTruck, false }
+            { this._driver, this._towTruck },
+            { this._towTruck, null }
         });
         return Task.FromResult(0);
     }
 
     public override Task OnCompletedAsync()
     {
-        this.ClearEntities(new Dictionary<FEntity, bool>()
+        this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
-            { this._driver, true },
-            { this._towTruck, false }
+            { this._driver, this._towTruck },
+            { this._towTruck, null }
         });
         return Task.FromResult(0);
     }

@@ -36,7 +36,6 @@ public class FPed : FEntity, IFStatefulContainer
         this.Licenses = fPedBuilder.Licenses;
         this.AlcoholLevel = fPedBuilder.AlcoholLevel;
         this.Drugs = fPedBuilder.Drugs;
-        this.Type = "FPed";
 
         this.Create();
     }
@@ -58,7 +57,6 @@ public class FPed : FEntity, IFStatefulContainer
         this.Licenses = new();
         this.AlcoholLevel = fPed.AlcoholLevel;
         this.Drugs = new();
-        this.Type = "FPed";
 
         this.Create();
     }

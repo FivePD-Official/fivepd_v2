@@ -148,20 +148,20 @@ public class Ambulance : AssistanceService
 
     public override Task OnCancellationRequestedAsync()
     {
-        this.ClearEntities(new Dictionary<FEntity, bool>()
+        this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
-            { this._driver, true },
-            { this._ambulance, false }
+            { this._driver, this._ambulance },
+            { this._ambulance, null }
         });
         return Task.FromResult(0);
     }
 
     public override Task OnCompletedAsync()
     {
-        this.ClearEntities(new Dictionary<FEntity, bool>()
+        this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
-            { this._driver, true },
-            { this._ambulance, false }
+            { this._driver, this._ambulance },
+            { this._ambulance, null }
         });
         return Task.FromResult(0);
     }

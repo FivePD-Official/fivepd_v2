@@ -34,7 +34,6 @@ public class FVehicle : FEntity, IFStatefulContainer
 
         this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.Stopped, false);
         this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.HasGeneratedData, false);
-        this.Type = "FVehicle";
     }
 
     /// <summary>

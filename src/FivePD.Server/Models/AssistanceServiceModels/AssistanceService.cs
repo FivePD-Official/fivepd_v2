@@ -83,46 +83,30 @@ public abstract class AssistanceService : IInternalAssistanceService
     /// <summary>
     /// Called to relinquish the script control of entities.
     /// </summary>
-    /// <param name="entities">The dictionary of entities to be relinquished, the FEntity is for <see cref="FPed"/> or <see cref="FVehicle"/>,
-    /// the bool is to show which <see cref="FPed"/> is the driver.</param>
-    protected void ClearEntities(Dictionary<FEntity, bool> entities)
+    /// <param name="entities">The dictionary of entities to be relinquished, put the <see cref="FEntity"/> as the key, put the <see cref="FVehicle"/>
+    /// as the value if that is the driver otherwise put null.</param>
+    protected void ClearEntities(Dictionary<FEntity, FEntity> entities)
     {
-        FPed driver = null;
-        FVehicle vehicle = null;
-
         foreach (var entity in entities)
         {
-            if (entity.Key.Type == "FPed")
+            if (entity.Key.GetType() == typeof(FPed))
             {
                 var castEntity = (FPed)entity.Key;
                 Cfx.API.SetEntityDistanceCullingRadius(castEntity.GetUnderlyingPed.Handle, 100f);
                 castEntity.Properties.MarkAsNoLongerNeeded();
-                if (entity.Value)
+                if (entity.Value is not null)
                 {
-                    driver = castEntity;
+                    var castVehicle = (FVehicle)entity.Value;
+                    castEntity?.Task.CruiseWithVehicle(castVehicle.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
                 }
             }
-            else if (entity.Key.Type == "FVehicle")
+            else if (entity.Key.GetType() == typeof(FVehicle))
             {
                 var castEntity = (FVehicle)entity.Key;
                 castEntity.Properties.RemoveBlips();
                 castEntity.Properties.IsSirenActive(false);
                 Cfx.API.SetEntityDistanceCullingRadius(castEntity.GetUnderlyingVehicle.Handle, 100f);
-                vehicle = castEntity;
             }
-        }
-
-        this.DriveOff(vehicle, driver);
-    }
-
-    /// <summary>
-    /// Used to task the vehicle to drive off.
-    /// </summary>
-    private void DriveOff(FVehicle vehicle, FPed driver)
-    {
-        if (vehicle is not null && driver is not null)
-        {
-            driver?.Task.CruiseWithVehicle(vehicle.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
         }
     }
 }
