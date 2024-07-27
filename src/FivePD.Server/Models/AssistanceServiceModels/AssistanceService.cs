@@ -1,7 +1,13 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.EntityWrappers.PedWrapper;
+using FivePD.Server.EntityWrappers.VehicleWrapper;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Models.AssistanceServiceModels;
 
@@ -73,6 +79,36 @@ public abstract class AssistanceService : IInternalAssistanceService
     /// </summary>
     /// <returns>A Task.</returns>
     public abstract Task OnCompletedAsync();
+
+    /// <summary>
+    /// Called to relinquish the script control of entities.
+    /// </summary>
+    /// <param name="entities">The dictionary of entities to be relinquished, put the <see cref="FEntity"/> as the key, put the <see cref="FVehicle"/>
+    /// as the value if that is the driver otherwise put null.</param>
+    protected void ClearEntities(Dictionary<FEntity, FEntity> entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (entity.Key.GetType() == typeof(FPed))
+            {
+                var castEntity = (FPed)entity.Key;
+                Cfx.API.SetEntityDistanceCullingRadius(castEntity.GetUnderlyingPed.Handle, 100f);
+                castEntity.Properties.MarkAsNoLongerNeeded();
+                if (entity.Value is not null)
+                {
+                    var castVehicle = (FVehicle)entity.Value;
+                    castEntity?.Task.CruiseWithVehicle(castVehicle.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
+                }
+            }
+            else if (entity.Key.GetType() == typeof(FVehicle))
+            {
+                var castEntity = (FVehicle)entity.Key;
+                castEntity.Properties.RemoveBlips();
+                castEntity.Properties.IsSirenActive(false);
+                Cfx.API.SetEntityDistanceCullingRadius(castEntity.GetUnderlyingVehicle.Handle, 100f);
+            }
+        }
+    }
 }
 
 /// <summary>
