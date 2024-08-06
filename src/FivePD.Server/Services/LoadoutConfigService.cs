@@ -5,11 +5,14 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.LoadoutModels;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
+using FivePD.Server.UIModels;
+using FivePD.Server.UIModels.MenuModels;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -22,17 +25,24 @@ public class LoadoutConfigService : ILoadoutConfigService
     private readonly ILogger _logger;
     private readonly DatabaseContext _databaseContext;
     private readonly IMenuService _menuService;
+    private readonly PlayerList _playerList;
 
-    public LoadoutConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService)
+    public LoadoutConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService, PlayerList playerList)
     {
         this._logger = logger;
         this._databaseContext = databaseContext;
         this._menuService = menuService;
+        this._playerList = playerList;
     }
 
     public List<LoadoutConfig> GetAll()
     {
-        return this._databaseContext.LoadoutConfigs.ToList();
+        return this._databaseContext.LoadoutConfigs
+            .Include(x => x.LoadoutWeapons)
+            .ThenInclude(x => x.Weapon)
+            .ThenInclude(x => x.WeaponWeaponComponents)
+            .ThenInclude(x => x.WeaponComponent)
+            .ToList();
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Get)]
@@ -94,6 +104,7 @@ public class LoadoutConfigService : ILoadoutConfigService
         this._databaseContext.SaveChanges();
 
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.CREATE");
+        this.SendNewMenuItems();
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Edit)]
@@ -142,6 +153,7 @@ public class LoadoutConfigService : ILoadoutConfigService
 
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.EDIT");
+        this.SendNewMenuItems();
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Delete)]
@@ -159,5 +171,20 @@ public class LoadoutConfigService : ILoadoutConfigService
         this._databaseContext.LoadoutConfigs.Remove(loadout);
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.DELETE");
+        this.SendNewMenuItems();
+    }
+    
+    private void SendNewMenuItems()
+    {
+        var newMenuOptions = this.GetAll().Select(loadout => new MenuListOption(loadout.Name)).ToList();
+        foreach (var player in this._playerList)
+        {
+            this._menuService.UpdateMenuListItem<LoadoutSelectorMenu, List<MenuListOption>>(
+                FPlayer.FromPlayer(player),
+                menu => menu.LoadoutItem,
+                item => item.Options,
+                newMenuOptions
+            );
+        }
     }
 }

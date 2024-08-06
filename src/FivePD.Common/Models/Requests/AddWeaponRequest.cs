@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FivePD.Server.Models.Requests;
-
+namespace FivePD.Common.Models.Requests;
 #pragma warning disable
 
 internal record struct AddWeaponRequest

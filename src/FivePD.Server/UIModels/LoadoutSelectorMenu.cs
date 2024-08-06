@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using FivePD.Common;
 using FivePD.Common.Enums;
@@ -20,19 +21,15 @@ namespace FivePD.Server.UIModels;
 public sealed class LoadoutSelectorMenu : Menu
 {
     private readonly IConfigService _configService;
-    private readonly IVehicleConfigService _vehicleConfigService;
+    private readonly ILoadoutConfigService _loadoutConfigService;
     private readonly ILocationService _locationService;
-
     private MenuListItem _changeLanguageListItem;
 
-    public LoadoutSelectorMenu(
-        IConfigService configService,
-        IVehicleConfigService vehicleConfigService,
-        ILocationService locationService)
+    public LoadoutSelectorMenu(IConfigService configService, ILoadoutConfigService loadoutConfigService, ILocationService locationService)
         : base(Controls.LoadoutSelectorMenu.Id, Controls.LoadoutSelectorMenu.Title, Controls.LoadoutSelectorMenu.Key)
     {
         this._configService = configService;
-        this._vehicleConfigService = vehicleConfigService;
+        this._loadoutConfigService = loadoutConfigService;
         this._locationService = locationService;
     }
 
@@ -74,19 +71,20 @@ public sealed class LoadoutSelectorMenu : Menu
         this.LoadoutItem = new MenuListItem(
             "DUTY_MENU.ITEM.GET_LOADOUT.TITLE",
             "DUTY_MENU.ITEM.GET_LOADOUT.DESCRIPTION",
-            this._configService.LoadoutsConfig.Select(x => new MenuListOption(x.Title)).ToList());
+            this._loadoutConfigService.GetAll().Select(loadout => new MenuListOption(loadout.Name)).ToList());
         this.LoadoutItem.OnSelect += async (player, index) =>
         {
             var playerPed = FPed.FromFPlayer(player);
-            var loadout = this._configService.LoadoutsConfig.ElementAt(index);
-            foreach (var weaponItem in loadout.Weapons)
+            var loadout = this._loadoutConfigService.GetAll().ElementAt(index);
+            foreach (var weapon in loadout.LoadoutWeapons)
             {
-                var weaponHash = (FWeaponHash)Cfx.API.GetHashKey(weaponItem.Key);
-                playerPed.Weapons.Give(weaponHash, weaponItem.Ammunition, false, true);
+                Debug.WriteLine(weapon.Weapon.Model);
+                var weaponHash = (FWeaponHash)Cfx.API.GetHashKey(weapon.Weapon.Model);
+                playerPed.Weapons.Give(weaponHash, 100, true, true);
 
-                foreach (var componentKey in weaponItem.ComponentKeys)
+                foreach (var componentKey in weapon.Weapon.WeaponWeaponComponents)
                 {
-                    playerPed.Weapons.AddComponentToWeapon(weaponHash, (uint)Cfx.API.GetHashKey(componentKey));
+                    playerPed.Weapons.AddComponentToWeapon(weaponHash, (uint)Cfx.API.GetHashKey(componentKey.WeaponComponent.HashKey));
                 }
             }
         };

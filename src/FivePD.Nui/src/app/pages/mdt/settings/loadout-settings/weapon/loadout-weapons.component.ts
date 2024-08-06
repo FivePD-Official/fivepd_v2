@@ -2,8 +2,7 @@
 import {
   Button,
   Collation,
-  Column,
-  ModalResponse,
+  Column, ModalResponse,
   MultiSelectField,
   SimpleWeaponComponent,
   TextField,
@@ -213,7 +212,7 @@ export class LoadoutWeaponsComponent {
         .pipe(
           filter(res => res.success),
           map(res => mapBeforeRequest ? {...res, value: mapBeforeRequest(res.value)} : res),
-          switchMap(res => this._weaponService.create({
+          switchMap(res => this._weaponService.isWeaponValid({
             ...res.value,
           })),
           this._modalService.handleResponse(),
