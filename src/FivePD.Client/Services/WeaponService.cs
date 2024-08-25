@@ -34,18 +34,48 @@ internal class WeaponService : IWeaponService, IOnInit
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Weapon.Get);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Weapon.GetAllPageable);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Weapon.GetAllSimple);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Weapon.Create);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Weapon.Delete);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Weapon.Edit);
         this._eventHandlerDictionary.AddUIEvent(
-            Events.UI.Weapon.IsWeaponValid,
-            new Action<ExpandoObject, CallbackDelegate>(this.IsWeaponValid));
+            Events.UI.Weapon.Create,
+            new Action<ExpandoObject, CallbackDelegate>(this.CreateWeapon));
+        this._eventHandlerDictionary.AddUIEvent(
+            Events.UI.Weapon.Edit,
+            new Action<ExpandoObject, CallbackDelegate>(this.EditWeapon));
     }
 
-    private void IsWeaponValid(ExpandoObject request, CallbackDelegate callbackDelegate)
+    private void CreateWeapon(ExpandoObject request, CallbackDelegate callbackDelegate)
     {
         var body = JsonConvert.DeserializeObject<AddWeaponRequest>(JsonConvert.SerializeObject(request));
-        var modelNameAsHash = (uint)Cfx.API.GetHashKey(body.Model);
+
+        var isValid = this.CheckWeaponAndComponentValidity(body.Model, body.WeaponComponentHashes);
+
+        if (!string.IsNullOrEmpty(isValid))
+        {
+            callbackDelegate.Invoke(isValid);
+            return;
+        }
+        
+        BaseScript.TriggerServerEvent(Events.UI.Weapon.Create, body, new Action<string>(data => { callbackDelegate.Invoke(data); }));
+    }
+    
+    private void EditWeapon(ExpandoObject request, CallbackDelegate callbackDelegate)
+    {
+        var body = JsonConvert.DeserializeObject<EditWeaponRequest>(JsonConvert.SerializeObject(request));
+
+        var isValid = this.CheckWeaponAndComponentValidity(body.Model, body.WeaponComponentHashes);
+
+        if (!string.IsNullOrEmpty(isValid))
+        {
+            callbackDelegate.Invoke(isValid);
+            return;
+        }
+        
+        BaseScript.TriggerServerEvent(Events.UI.Weapon.Edit, body, new Action<string>(data => { callbackDelegate.Invoke(data); }));
+    }
+
+    public string CheckWeaponAndComponentValidity(string weaponModelName, List<string> componentHashes)
+    {
+        var modelNameAsHash = (uint)Cfx.API.GetHashKey(weaponModelName);
         var isValid = Cfx.API.IsWeaponValid(modelNameAsHash);
         
         if (!isValid)
@@ -55,22 +85,31 @@ internal class WeaponService : IWeaponService, IOnInit
                 Status = false,
                 Title = "UI.ERROR.WEAPON.HASH_NOT_VALID.TITLE",
                 Description = "UI.ERROR.WEAPON.HASH_NOT_VALID.DESCRIPTION",
-                Params = new Dictionary<string, string>(){{"model", body.Model}}
+                Params = new Dictionary<string, string>(){{"model", weaponModelName}}
             };
             
-            callbackDelegate.Invoke(JsonConvert.SerializeObject(response));
-            return;
+            return JsonConvert.SerializeObject(response);
+        }
+
+        foreach (var componentHash in componentHashes)
+        {
+            var componentAsHash = (uint)Cfx.API.GetHashKey(componentHash);
+            var isComponentValid = Cfx.API.DoesWeaponTakeWeaponComponent(modelNameAsHash, componentAsHash);
+
+            if (!isComponentValid)
+            {
+                var response = new
+                {
+                    Status = false,
+                    Title = "UI.ERROR.WEAPON_COMPONENT.HASH_NOT_VALID.TITLE",
+                    Description = "UI.ERROR.WEAPON_COMPONENT.HASH_NOT_VALID.DESCRIPTION",
+                    Params = new Dictionary<string, string>(){{"model", componentHash}}
+                };
+            
+                return JsonConvert.SerializeObject(response);
+            }
         }
         
-        // Loop the components and call DoesWeaponTakeWeaponComponent
-        // Passing in the wep hash from 48 and hashing the component
-        // Capture a list of invalid components
-        // Report to frontend
-        // foreach (var VARIABLE in body.)
-        // {
-        //     
-        // }
-        
-        BaseScript.TriggerServerEvent(Events.UI.Weapon.Create, body, new Action<string>(data => { callbackDelegate.Invoke(data); }));
+        return string.Empty;
     }
 }

@@ -7,5 +7,5 @@ internal record struct AddWeaponRequest
 {
     public string Name { get; set; }
     public string Model { get; set; }
-    public List<int> WeaponComponentIds { get; set; }
+    public List<string> WeaponComponentHashes { get; set; }
 }

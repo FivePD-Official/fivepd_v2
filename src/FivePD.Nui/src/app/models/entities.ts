@@ -34,7 +34,7 @@ export type SimpleUser = Pick<User, 'Id' | 'Name'>;
 
 export type SimpleWeapon = Pick<Weapon, 'Id' | 'Name'>
 
-export type SimpleWeaponComponent = Pick<WeaponComponent, 'Id' | 'Name'>
+export type SimpleWeaponComponent = Pick<WeaponComponent, 'HashKey' | 'Name'>
 
 export interface DepartmentAreaCoordinate extends WithId {
   X: number;
@@ -100,7 +100,7 @@ export interface Weapon extends WithId {
   Name: string;
   Model: string;
   WeaponWeaponComponents: [];
-  WeaponComponentIds: number[];
+  WeaponComponentHashes: [];
   // Department: User["DepartmentId"]; TODO
   // Division: Division["Name"]; TODO
 }

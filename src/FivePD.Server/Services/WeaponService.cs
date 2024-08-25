@@ -85,9 +85,9 @@ public class WeaponService : IWeaponService
 
         var weapon = new Weapon() { Name = request.Name, Model = request.Model };
 
-        foreach (var weaponComponentId in request.WeaponComponentIds)
+        foreach (var weaponComponentHashKey in request.WeaponComponentHashes)
         {
-            var component = this._databaseContext.WeaponComponents.FirstOrDefault(x => x.Id == weaponComponentId);
+            var component = this._databaseContext.WeaponComponents.FirstOrDefault(x => x.HashKey == weaponComponentHashKey);
 
             if (component is not null)
             {
@@ -116,13 +116,13 @@ public class WeaponService : IWeaponService
         weapon.Name = request.Name;
         weapon.Model = request.Model;
 
-        var existingWeaponComponents = weapon.WeaponWeaponComponents.Select(x => x.WeaponComponentId).ToList();
-        var weaponComponentsToAdd = request.WeaponComponentIds.Except(existingWeaponComponents).ToList();
-        var weaponComponentsToRemove = weapon.WeaponWeaponComponents.Where(x => !request.WeaponComponentIds.Contains(x.WeaponComponentId)).ToList();
+        var existingWeaponComponents = weapon.WeaponWeaponComponents.Select(x => x.WeaponComponent.HashKey).ToList();
+        var weaponComponentsToAdd = request.WeaponComponentHashes.Except(existingWeaponComponents).ToList();
+        var weaponComponentsToRemove = weapon.WeaponWeaponComponents.Where(x => !request.WeaponComponentHashes.Contains(x.WeaponComponent.HashKey)).ToList();
 
-        foreach (var weaponComponentId in weaponComponentsToAdd)
+        foreach (var weaponComponentHash in weaponComponentsToAdd)
         {
-            var weaponComponent = this._databaseContext.WeaponComponents.Find(weaponComponentId);
+            var weaponComponent = this._databaseContext.WeaponComponents.FirstOrDefault(x => x.HashKey == weaponComponentHash);
 
             if (weaponComponent is null)
             {
