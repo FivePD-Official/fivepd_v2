@@ -43,8 +43,6 @@ internal class Bootstrapper : BaseScript
     {
         this._bootstrapLogger = new LoggerService();
 
-        TriggerServerEvent(Events.Player.OnConnected);
-
         this.EventHandlers[Events.Lifecycle.Stop] += () =>
             LifecycleHandler.Stop("An error occured or the FivePD resource has been stopped on the server. Stopping FivePD.");
 
@@ -57,16 +55,6 @@ internal class Bootstrapper : BaseScript
         this.EventHandlers.AddUIToServerEvent(Events.Feedback.Send);
 
         this.RunBootstrap();
-
-        TriggerServerEvent(Events.AccessControl.HasAccess, new Action<bool>(allowed =>
-        {
-            if (allowed)
-            {
-                return;
-            }
-
-            LifecycleHandler.Stop("You do not have access to use FivePD. Stopping FivePD.");
-        }));
     }
 
     private void AccessAllowed()
