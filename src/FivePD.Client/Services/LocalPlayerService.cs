@@ -86,6 +86,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     /// <inheritdoc/>
     public void OnInit()
     {
+        BaseScript.TriggerServerEvent(Events.Player.OnConnected);
         this._tickService.OnTick += this.OnTickAsync;
         this._eventHandlerDictionary[Events.Player.UpdateUnitAvailability] += new Action<int>(availability => this.ListenForAvailabilityStatusChanges((FUnitAvailability)availability));
         this._eventHandlerDictionary[Events.Player.UpdateUnitStatus] += new Action<string>(this.ListenForStatusChanges);

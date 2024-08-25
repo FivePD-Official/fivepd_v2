@@ -1,4 +1,5 @@
-﻿using CitizenFX.Core;
+﻿using System;
+using CitizenFX.Core;
 using FivePD.Client.Extensions;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
@@ -19,6 +20,16 @@ internal class AccessControlService : IAccessControlService, IOnInit
     
     public void OnInit()
     {
+        BaseScript.TriggerServerEvent(Events.AccessControl.HasAccess, new Action<bool>(allowed =>
+        {
+            if (allowed)
+            {
+                return;
+            }
+
+            LifecycleHandler.Stop("You do not have access to use FivePD. Stopping FivePD.");
+        }));
+        
         this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.GiveAccessUI);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.RemoveAccessUI);
     }
