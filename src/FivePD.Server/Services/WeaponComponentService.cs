@@ -64,6 +64,7 @@ public class WeaponComponentService : IWeaponComponentService
         {
             Id = x.Id,
             Name = x.Name,
+            HashKey = x.HashKey
         }));
     }
 

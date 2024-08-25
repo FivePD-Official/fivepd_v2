@@ -372,6 +372,8 @@ internal readonly record struct Events
             public const string Delete = "fivepd:ui:weapon:delete";
 
             public const string Edit = "fivepd:ui:weapon:edit";
+
+            public const string IsWeaponValid = "fivepd:ui:weapon:isWeaponValid";
         }
 
         public readonly record struct WeaponComponent

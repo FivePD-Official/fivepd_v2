@@ -1,6 +1,6 @@
-﻿import { Injectable } from '@angular/core';
-import {Collation, Id, LoadoutConfig, SimpleWeapon, SimpleWeaponComponent, Weapon} from '@models';
-import { CrudApiService } from "@services/api/crud-api/crud-api.service";
+﻿import {Injectable} from '@angular/core';
+import {ActionResponse, Collation, Id, SimpleWeapon, Weapon} from '@models';
+import {CrudApiService} from "@services/api/crud-api/crud-api.service";
 import {Observable} from "rxjs";
 
 @Injectable({
@@ -32,5 +32,9 @@ export class WeaponService extends CrudApiService<Weapon> {
 
   delete(id: Id) {
     return this._delete('delete', id);
+  }
+
+  isWeaponValid(request: object): Observable<ActionResponse> {
+    return this.httpClient.post<ActionResponse>('fivepd:ui:weapon:isWeaponValid', request);
   }
 }
