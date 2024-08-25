@@ -83,6 +83,7 @@ export interface VehicleConfig extends WithId {
 
 export interface LoadoutConfig extends WithId {
   Name: string;
+  LoadoutWeapons: [];
   WeaponIds: number[];
   // Department: User["DepartmentId"]; TODO
   // Division: Division["Name"]; TODO
@@ -91,6 +92,7 @@ export interface LoadoutConfig extends WithId {
 export interface Weapon extends WithId {
   Name: string;
   Model: string;
+  WeaponWeaponComponents: [];
   WeaponComponentIds: number[];
   // Department: User["DepartmentId"]; TODO
   // Division: Division["Name"]; TODO

@@ -66,10 +66,10 @@ internal class WeaponService : IWeaponService, IOnInit
         // Passing in the wep hash from 48 and hashing the component
         // Capture a list of invalid components
         // Report to frontend
-        foreach (var VARIABLE in body.)
-        {
-            
-        }
+        // foreach (var VARIABLE in body.)
+        // {
+        //     
+        // }
         
         BaseScript.TriggerServerEvent(Events.UI.Weapon.Create, body, new Action<string>(data => { callbackDelegate.Invoke(data); }));
     }

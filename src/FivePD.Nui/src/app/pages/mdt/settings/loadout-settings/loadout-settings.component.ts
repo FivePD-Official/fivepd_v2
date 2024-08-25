@@ -54,6 +54,10 @@ export class LoadoutSettingsComponent {
       label: 'UI.LABEL.SEARCH_BY.NAME',
     }
   });
+  readonly weaponCountColumn = new Column<LoadoutConfig>({
+    header: 'UI.LABEL.LOADOUT_CONFIG.COLUMN.WEAPON.COUNT.SINGULAR',
+    valueResolver: item => item.LoadoutWeapons.length.toString(),
+  });
 
   readonly loadoutConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly loadoutConfigPage$ = this.loadoutConfigCollation$.pipe(
@@ -66,6 +70,7 @@ export class LoadoutSettingsComponent {
   ];
   readonly loadoutConfigColumns: Column<LoadoutConfig>[] = [
     this.nameColumn,
+    this.weaponCountColumn,
     this.createActionsColumn(() => this.loadoutConfigCollation$.next(this.loadoutConfigCollation$.value)),
   ];
 

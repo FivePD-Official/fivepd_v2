@@ -2,7 +2,7 @@
 import {
   Button,
   Collation,
-  Column, ModalResponse,
+  Column, LoadoutConfig, ModalResponse,
   MultiSelectField,
   SimpleWeaponComponent,
   TextField,
@@ -65,10 +65,15 @@ export class LoadoutWeaponsComponent {
       label: 'UI.LABEL.SEARCH_BY.MODEL',
     }
   });
+  readonly attachmentCountColumn = new Column<Weapon>({
+    header: 'UI.LABEL.LOADOUT_CONFIG.WEAPON.COLUMN.ATTACHMENT.COUNT.SINGULAR',
+    valueResolver: item => item.WeaponWeaponComponents.length.toString(),
+  });
 
   readonly weaponColumns: Column<Weapon>[] = [
     this.nameColumn,
     this.modelColumn,
+    this.attachmentCountColumn,
     this.createActionsColumn(() => this.weaponCollation$.next(this.weaponCollation$.value)),
   ];
 

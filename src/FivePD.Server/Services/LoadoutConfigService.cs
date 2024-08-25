@@ -77,6 +77,7 @@ public class LoadoutConfigService : ILoadoutConfigService
             !string.IsNullOrEmpty(request.Filters.Name),
             loadoutConfig => loadoutConfig.Name.ToLower().Contains(request.Filters.Name.ToLower()));
         var page = this._databaseContext.LoadoutConfigs
+            .Include(x => x.LoadoutWeapons)
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
