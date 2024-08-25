@@ -107,13 +107,13 @@ export class LoadoutWeaponsComponent {
                     value: weapon?.Model,
                   }),
                   new MultiSelectField({
-                    key: 'WeaponComponentIds',
+                    key: 'WeaponComponentHashes',
                     label: 'UI.LABEL.WEAPON_COMPONENT.PLURAL',
                     defaultItemLabel: '',
                     addDefaultItem: false,
-                    value: weapon?.WeaponComponentIds,
+                    value: weapon?.WeaponComponentHashes,
                     items: weaponComponents.map(wc => ({
-                      key: wc.Id,
+                      key: wc.HashKey,
                       label: wc.Name,
                     })),
                     size: "normal",
@@ -191,12 +191,12 @@ export class LoadoutWeaponsComponent {
               required: true,
             }),
             new MultiSelectField({
-              key: 'WeaponComponentIds',
+              key: 'WeaponComponentHashes',
               label: 'UI.LABEL.WEAPON_COMPONENT.PLURAL',
               defaultItemLabel: '',
               addDefaultItem: false,
               items: weaponComponents.map(wc => ({
-                key: wc.Id,
+                key: wc.HashKey,
                 label: wc.Name,
               })),
               size: "normal",
@@ -217,7 +217,7 @@ export class LoadoutWeaponsComponent {
         .pipe(
           filter(res => res.success),
           map(res => mapBeforeRequest ? {...res, value: mapBeforeRequest(res.value)} : res),
-          switchMap(res => this._weaponService.isWeaponValid({
+          switchMap(res => this._weaponService.create({
             ...res.value,
           })),
           this._modalService.handleResponse(),

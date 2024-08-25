@@ -90,6 +90,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\WeaponCollectionDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Requests\AddWeaponRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Requests\EditWeaponRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SpeedZone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Vector3WithHeading.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateBagKeys.cs" />
