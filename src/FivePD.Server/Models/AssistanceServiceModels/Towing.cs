@@ -1,8 +1,10 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Common.Utilities;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
@@ -145,36 +147,21 @@ public class Towing : AssistanceService
 
     public override Task OnCancellationRequestedAsync()
     {
-        this.OnCompletedOrCancelled();
+        this.ClearEntities(new Dictionary<FEntity, FEntity>()
+        {
+            { this._driver, this._towTruck },
+            { this._towTruck, null }
+        });
         return Task.FromResult(0);
     }
 
     public override Task OnCompletedAsync()
     {
-        this.OnCompletedOrCancelled();
+        this.ClearEntities(new Dictionary<FEntity, FEntity>()
+        {
+            { this._driver, this._towTruck },
+            { this._towTruck, null }
+        });
         return Task.FromResult(0);
-    }
-
-    private void OnCompletedOrCancelled()
-    {
-        if (this._driver?.GetUnderlyingPed is not null)
-        {
-            Cfx.API.SetEntityDistanceCullingRadius(this._driver.GetUnderlyingPed.Handle, 100f);
-            this._driver.Task.CruiseWithVehicle(this._towTruck.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
-            this._driver.Properties.MarkAsNoLongerNeeded();
-        }
-
-        if (this._towTruck?.GetUnderlyingVehicle is not null)
-        {
-            this._towTruck.Properties.RemoveBlips();
-            Cfx.API.SetEntityDistanceCullingRadius(this._towTruck.GetUnderlyingVehicle.Handle, 100f);
-            this._towTruck.Properties.MarkAsNoLongerNeeded();
-        }
-
-        if (this._targetVehicle?.GetUnderlyingVehicle is not null)
-        {
-            Cfx.API.SetEntityDistanceCullingRadius(this._targetVehicle.GetUnderlyingVehicle.Handle, 100f);
-            this._targetVehicle.Properties.MarkAsNoLongerNeeded();
-        }
     }
 }

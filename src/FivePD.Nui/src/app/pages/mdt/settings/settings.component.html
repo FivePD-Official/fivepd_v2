@@ -5,7 +5,7 @@
   <div class="w-full">
     <div class="w-full border border-color p-2 rounded-lg sticky top-4">
       @for (route of routes; track route) {
-        @if (isRoute(route) && route.show()) {
+        @if (routeHelper.isRoute(route) && route.show()) {
           <a class="group decoration-0"
              [routerLink]="route.path()"
              routerLinkActive="active"
@@ -23,7 +23,7 @@
               </p>
             </div>
           </a>
-        } @else if (isDivider(route)) {
+        } @else if (routeHelper.isDivider(route)) {
           <div class="h-[1px] w-full my-4 bg-zinc-700"></div>
         }
       }

@@ -1,8 +1,8 @@
 .table-row
-  @apply grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2 rounded-lg hover:[&:not(.table-header):not(.table-filter)]:bg-zinc-700/40
+  @apply flex flex-row gap-2 rounded-lg hover:[&:not(.table-header):not(.table-filter)]:bg-zinc-700/40
 
   .table-cell
-    @apply flex flex-row items-center min-h-[45px] py-1 pl-2.5 pr-5 [&:not(:last-of-type)]:border-r border-zinc-600
+    @apply w-full flex-grow flex-shrink-0 basis-[200px] flex flex-row items-center min-h-[45px] py-1 pl-2.5 pr-5 [&:not(:last-of-type)]:border-r border-zinc-600
     &.numeric
       p
         @apply tabular-nums

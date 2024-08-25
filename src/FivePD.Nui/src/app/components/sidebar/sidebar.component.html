@@ -2,12 +2,12 @@
   <div class="w-full max-h-[80%] overflow-hidden">
     <div class="h-full overflow-x-auto px-5">
       @for (route of routes; track route) {
-        @if (isRoute(route) && !hasChildren(route) && route.show()) {
+        @if (routeHelper.isRoute(route) && !routeHelper.hasChildren(route) && route.show()) {
           <ng-container [ngTemplateOutlet]="link" [ngTemplateOutletContext]="{route:route}"/>
-        } @else if (hasChildren(route) && route.show()) {
+        } @else if (routeHelper.hasChildren(route) && route.show()) {
           <div class="group decoration-0 w-full">
             <button type="button"
-                    (click)="toggleRoute(route)"
+                    (click)="routeHelper.toggleRoute(route)"
                     class="relative flex flex-row items-center justify-between w-full h-[50px] mb-3 decoration-0
                     before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg before:bg-zinc-600
                     before:opacity-0 hover:before:opacity-20 group-[.active]:before:opacity-20">
@@ -40,7 +40,7 @@
               </div>
             }
           </div>
-        } @else if (isDivider(route)) {
+        } @else if (routeHelper.isDivider(route)) {
           <div class="h-[1px] w-full my-4 bg-zinc-700"></div>
         }
       }

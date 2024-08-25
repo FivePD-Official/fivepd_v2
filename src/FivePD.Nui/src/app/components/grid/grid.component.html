@@ -5,7 +5,7 @@
     @if (buttons) {
       <div class="flex flex-row items-center justify-between gap-2">
         <ng-content/>
-        @for (button of buttons;track button) {
+        @for (button of buttons; track button) {
           <app-button [variant]="button.variant || 'secondary'"
                       [link]="button.link"
                       [label]="button.label | translate"
@@ -21,38 +21,41 @@
   </div>
 
   <div class="bg-zinc-800 rounded-lg py-5 px-2.5">
-    <div class="table-row table-header">
-      @for (column of formattedColumns;track column) {
-        <div class="table-cell">
-          <p>{{ column.header | translate }}</p>
+    <div class="overflow-y-hidden">
+      <div class="w-full overflow-x-visible mb-2">
+
+        <div class="table-row table-header">
+          @for (column of formattedColumns; track column) {
+            <div class="table-cell">
+              <p>{{ column.header | translate }}</p>
+            </div>
+          }
         </div>
-      }
-    </div>
 
-    @if (isAnyColumnFilterable) {
-      <form class="table-row table-filter">
-        @for (column of formattedColumns;track column) {
-          <div
-            class="table-cell">
-            @if (column.filter?.dropdown) {
-              <app-single-select-field [field]="getFilterSingleSelectInput(column)"
-                              (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
-            } @else if (column.filter) {
-              <app-text-field [field]="getFilterInput(column)"
-                              (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
+        @if (isAnyColumnFilterable) {
+          <form class="table-row table-filter">
+            @for (column of formattedColumns; track column) {
+              <div
+                class="table-cell">
+                @if (column.filter?.dropdown) {
+                  <app-single-select-field [field]="getFilterSingleSelectInput(column)"
+                                           (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
+                } @else if (column.filter) {
+                  <app-text-field [field]="getFilterInput(column)"
+                                  (onChange)="onFilterFormChange(column.accessorKey, $event)"/>
+                }
+              </div>
             }
-          </div>
+          </form>
         }
-      </form>
-    }
 
-    @for (row of formattedRows;track row) {
-      <div class="table-row"
-           [ngClass]="{'cursor-pointer': !!rowLinkResolver}"
-           (click)="onRowClick(row)">
-        @for (item of row;track item) {
-          <div class="table-cell" [ngClass]="{'table-cell--badge': item.badge !== undefined}">
-            <div [ngClass]="{
+        @for (row of formattedRows; track row) {
+          <div class="table-row"
+               [ngClass]="{'cursor-pointer': !!rowLinkResolver}"
+               (click)="onRowClick(row)">
+            @for (item of row; track item) {
+              <div class="table-cell" [ngClass]="{'table-cell--badge': item.badge !== undefined}">
+                <div [ngClass]="{
               'px-2 py-0.5 rounded-md font-medium flex flex-col items-center': item.badge !== undefined,
               'bg-zinc-600/30 text-zinc-400': item.badge === 'gray',
               'bg-red-600/20 text-red-500': item.badge === 'red',
@@ -60,74 +63,76 @@
               'bg-amber-600/20 text-amber-500': item.badge === 'amber',
               'bg-primary/10 text-primary': item.badge === 'blue'
             }">
-              @if (item.link && !item.actions && !item.value) {
-                <p>-</p>
-              }
-              @if (item.link && !item.actions && item.value) {
-                <a
-                  [routerLink]="item.link"
-                  class="group flex flex-row items-center text-zinc-300 hover:text-white">
-                  {{ item.value }}
-                  <div app-icon name="Link" className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
-                </a>
-              }
-              @if (!item.link && !item.actions) {
-                @if (item.cellAction) {
-                  <button type="button"
-                          class="flex flex-row items-center gap-2 group"
-                          (click)="item.cellAction.onClick(item.originalItem)">
+                  @if (item.link && !item.actions && !item.value) {
+                    <p>-</p>
+                  }
+                  @if (item.link && !item.actions && item.value) {
+                    <a
+                      [routerLink]="item.link"
+                      class="group flex flex-row items-center text-zinc-300 hover:text-white">
+                      {{ item.value }}
+                      <div app-icon name="Link" className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
+                    </a>
+                  }
+                  @if (!item.link && !item.actions) {
+                    @if (item.cellAction) {
+                      <button type="button"
+                              class="flex flex-row items-center gap-2 group"
+                              (click)="item.cellAction.onClick(item.originalItem)">
 
-                    <p>{{ item.value }}</p>
-                    <div app-icon [name]="item.cellAction.icon"
-                         className="h-[20px] text-zinc-400 group-hover:text-white"></div>
-                  </button>
+                        <p>{{ item.value }}</p>
+                        <div app-icon [name]="item.cellAction.icon"
+                             className="h-[20px] text-zinc-400 group-hover:text-white"></div>
+                      </button>
 
-                } @else {
-                  <p>{{ item.value }}</p>
-                }
-              }
-            </div>
-            @if (!item.link && item.actions) {
-              <div class="table-cell-actions">
-                @for (action of item.actions;track action) {
-                  @if (action !== undefined) {
-                    @if (action.type === 'button' && (action.show ? action.show(item.originalItem) : true)) {
-                      <app-button variant="tertiary-bg"
-                                  size="sm"
-                                  [disabled]="action.disabled ? action.disabled(item.originalItem) : false"
-                                  [label]="action.label  | translate"
-                                  (onClick)="tableCellActionButtonClick(action, item)"/>
-                    }
-                    @if (action.type === 'singleSelect' && (action.show ? action.show(item.originalItem) : true)) {
-                      <app-single-select-field [field]="getSingleSelectField(action, item)"
-                                              (onChange)="onTableCellActionSelect(action, item, $event)"/>
-                    }
-                    @if (action.type === 'multiSelect' && (action.show ? action.show(item.originalItem) : true)) {
-                      <app-multi-select-field [field]="getMultiSelectField(action, item)"
-                                               (onChange)="onTableCellActionSelect(action, item, $event)"/>
-                    }
-                    @if (action.type === 'checkbox' && (action.show ? action.show(item.originalItem) : true)) {
-<!--                      <app-dynamic-form-input [field]="getCheckboxField(action, item)"-->
-<!--                                              (onChange)="onTableCellActionCheckbox(action, item, $event)"/>-->
+                    } @else {
+                      <p>{{ item.value }}</p>
                     }
                   }
+                </div>
+                @if (!item.link && item.actions) {
+                  <div class="table-cell-actions">
+                    @for (action of item.actions; track action) {
+                      @if (action !== undefined) {
+                        @if (action.type === 'button' && (action.show ? action.show(item.originalItem) : true)) {
+                          <app-button variant="tertiary-bg"
+                                      size="sm"
+                                      [disabled]="action.disabled ? action.disabled(item.originalItem) : false"
+                                      [label]="action.label  | translate"
+                                      (onClick)="tableCellActionButtonClick(action, item)"/>
+                        }
+                        @if (action.type === 'singleSelect' && (action.show ? action.show(item.originalItem) : true)) {
+                          <app-single-select-field [field]="getSingleSelectField(action, item)"
+                                                   (onChange)="onTableCellActionSelect(action, item, $event)"/>
+                        }
+                        @if (action.type === 'multiSelect' && (action.show ? action.show(item.originalItem) : true)) {
+                          <app-multi-select-field [field]="getMultiSelectField(action, item)"
+                                                  (onChange)="onTableCellActionSelect(action, item, $event)"/>
+                        }
+                        @if (action.type === 'checkbox' && (action.show ? action.show(item.originalItem) : true)) {
+                          <!--                      <app-dynamic-form-input [field]="getCheckboxField(action, item)"-->
+                            <!--                                              (onChange)="onTableCellActionCheckbox(action, item, $event)"/>-->
+                        }
+                      }
+                    }
+                  </div>
                 }
               </div>
             }
           </div>
+        } @empty {
+          <p class="text-zinc-400 block pt-2.5 pl-2.5">
+            {{ 'UI.LABEL.NO_RESULTS' | translate }}
+          </p>
         }
+
       </div>
-    } @empty {
-      <p class="text-zinc-400 block pt-2.5 pl-2.5">
-        {{ 'UI.LABEL.NO_RESULTS' | translate }}
-      </p>
-    }
+    </div>
 
     @if (showPagination) {
       <app-pagination [collation]="collation"
                       [data]="data"
                       (onPageChange)="onPageChange($event)"/>
     }
-
   </div>
 </div>

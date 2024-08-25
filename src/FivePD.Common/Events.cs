@@ -15,7 +15,12 @@ internal readonly record struct Events
 
         public const string Stop = "fivepd:lifecycle:stop";
     }
-    
+
+    public readonly record struct Feedback
+    {
+        public const string Send = "fivepd:feedback:send";
+    }
+
     public readonly record struct AccessControl
     {
         public const string HasAccess = "fivepd:accessControl:hasAccess";
@@ -23,7 +28,7 @@ internal readonly record struct Events
         public const string GiveAccess = "fivepd:accessControl:give";
 
         public const string RemoveAccess = "fivepd:accessControl:remove";
-        
+
         public const string GiveAccessUI = "fivepd:accessControl:giveUI";
 
         public const string RemoveAccessUI = "fivepd:accessControl:removeUI";
@@ -139,6 +144,25 @@ internal readonly record struct Events
         public const string RadialMenuControl = "fivepd:radialMenu:control";
     }
 
+    public readonly record struct Rank
+    {
+        public const string Get = "fivepd:rank:get";
+
+        public const string GetAllGlobal = "fivepd:rank:getAllGlobal";
+
+        public const string GetAllPageable = "fivepd:rank:getAllPageable";
+
+        public const string Create = "fivepd:rank:create";
+
+        public const string CreateGlobal = "fivepd:rank:createGlobal";
+
+        public const string Edit = "fivepd:rank:edit";
+
+        public const string EditGlobal = "fivepd:rank:editGlobal";
+
+        public const string Delete = "fivepd:rank:delete";
+    }
+
     public readonly record struct UI
     {
         public readonly record struct Player
@@ -170,10 +194,6 @@ internal readonly record struct Events
 
             public const string GetUsers = "fivepd:department:getUsers";
 
-            public const string GetRank = "fivepd:department:getRank";
-
-            public const string GetRanks = "fivepd:department:getRanks";
-
             public const string GetDivision = "fivepd:department:getDivision";
 
             public const string GetDivisions = "fivepd:department:getDivisions";
@@ -197,12 +217,6 @@ internal readonly record struct Events
             public const string EditDivision = "fivepd:department:renameDivision";
 
             public const string CreateDivision = "fivepd:department:createDivision";
-
-            public const string DeleteRank = "fivepd:department:deleteRank";
-
-            public const string EditRank = "fivepd:department:editRank";
-
-            public const string CreateRank = "fivepd:department:createRank";
 
             public const string GetAllSimpleWithArea = "fivepd:department:getAllSimpleWithArea";
 
@@ -335,7 +349,7 @@ internal readonly record struct Events
         public readonly record struct LoadoutConfig
         {
             public const string Get = "fivepd:ui:loadoutConfig:get";
-            
+
             public const string GetAllPageable = "fivepd:ui:loadoutConfig:getAllPageable";
 
             public const string Create = "fivepd:ui:loadoutConfig:create";
@@ -344,13 +358,13 @@ internal readonly record struct Events
 
             public const string Edit = "fivepd:ui:loadoutConfig:edit";
         }
-        
+
         public readonly record struct Weapon
         {
             public const string Get = "fivepd:ui:weapon:get";
-            
+
             public const string GetAllPageable = "fivepd:ui:weapon:getAllPageable";
-            
+
             public const string GetAllSimple = "fivepd:ui:weapon:getAllSimple";
 
             public const string Create = "fivepd:ui:weapon:create";
@@ -361,13 +375,13 @@ internal readonly record struct Events
 
             public const string IsWeaponValid = "fivepd:ui:weapon:isWeaponValid";
         }
-        
+
         public readonly record struct WeaponComponent
         {
             public const string Get = "fivepd:ui:weaponComponent:get";
-            
+
             public const string GetAllPageable = "fivepd:ui:weaponComponent:getAllPageable";
-            
+
             public const string GetAllSimple = "fivepd:ui:weaponComponent:getAllSimple";
 
             public const string Create = "fivepd:ui:weaponComponent:create";

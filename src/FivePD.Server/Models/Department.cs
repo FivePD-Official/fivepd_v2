@@ -26,6 +26,11 @@ public class Department
     public string Callsign { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this department uses global or custom ranks.
+    /// </summary>
+    public bool UseGlobalRanks { get; set; }
+
+    /// <summary>
     /// Gets or sets the callsign format.
     /// </summary>
     public List<CallsignFormatItem> CallsignFormat { get; set; }
@@ -57,11 +62,6 @@ public class Department
     public IList<Division> Divisions { get; set; }
 
     /// <summary>
-    /// Gets or sets the ranks of this department.
-    /// </summary>
-    public IList<Rank> Ranks { get; set; }
-
-    /// <summary>
     /// Gets or sets the callout details of this department.
     /// </summary>
     public IList<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
@@ -70,6 +70,11 @@ public class Department
     /// Gets or sets the area coordinates of this department.
     /// </summary>
     public IList<DepartmentAreaCoordinate> AreaCoordinates { get; set; }
+
+    /// <summary>
+    /// Gets or sets the DepartmentRanks.
+    /// </summary>
+    public IList<DepartmentRank> DepartmentRanks { get; set; }
 
     /// <summary>
     /// Initializes a new instance of <see cref="DepartmentResponse"/>.

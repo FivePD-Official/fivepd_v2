@@ -54,6 +54,8 @@ internal class Bootstrapper : BaseScript
         this.EventHandlers[Events.AccessControl.RemoveAccess] +=
             () => LifecycleHandler.Stop("Your access has been removed from using FivePD. Stopping FivePD.");
 
+        this.EventHandlers.AddUIToServerEvent(Events.Feedback.Send);
+
         this.RunBootstrap();
 
         TriggerServerEvent(Events.AccessControl.HasAccess, new Action<bool>(allowed =>
@@ -414,6 +416,12 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<AccessControlService>()
             .As<IAccessControlService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
+        services
+            .RegisterType<RankService>()
+            .As<IRankService>()
             .As<IOnInit>()
             .IsSingleton();
 

@@ -99,6 +99,10 @@ const mdtRoutes: Routes = [
           },
         ]
       },
+      {
+        path: 'ranks',
+        loadComponent: () => import('./pages/mdt/settings/ranks/ranks.component').then(m => m.RanksComponent),
+      },
     ]
   },
   {
