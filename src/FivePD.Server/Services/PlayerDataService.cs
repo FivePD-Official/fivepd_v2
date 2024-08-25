@@ -86,12 +86,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, NetworkCallbackDelegate>(this.GetDismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.DismissedWelcomeModal] += new Action<Player>(this.DismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.GetRole] += new Action<Player, NetworkCallbackDelegate>(this.GetRole);
-
-        foreach (var player in this._playerList)
-        {
-            this.CreatePlayerData(player);
-            this.SubscribeToOnDutyStatusChange(player);
-        }
     }
 
     /// <inheritdoc/>
