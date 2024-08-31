@@ -110,6 +110,8 @@
   "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION": "A rank with this name already exists.",
   "UI.ERROR.TRY_AGAIN": "Please try again later.",
   "UI.ERROR.UNEXPECTED": "Unexpected error",
+  "UI.ERROR.USER.CALLSIGN.EDIT.DESCRIPTION": "The given callsign is already in use in your department.",
+  "UI.ERROR.USER.CALLSIGN.EDIT.TITLE": "Taken callsign",
   "UI.ERROR.WEAPON_COMPONENT.HASH_NOT_VALID.DESCRIPTION": "The attachment model '{{model}}' is not valid.",
   "UI.ERROR.WEAPON_COMPONENT.HASH_NOT_VALID.TITLE": "Invalid attachment",
   "UI.ERROR.WEAPON.HASH_NOT_VALID.DESCRIPTION": "The weapon model '{{model}}' is not valid.",

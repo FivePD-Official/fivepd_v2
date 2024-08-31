@@ -595,7 +595,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
             if (user.Department.Users.Any(x => x.Callsign == callsign))
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.USER.CALLSIGN.EDIT.TITLE", "UI.ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
                 return;
             }
 

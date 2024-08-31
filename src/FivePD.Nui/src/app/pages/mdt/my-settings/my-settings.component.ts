@@ -110,7 +110,6 @@ export class MySettingsComponent implements OnInit {
   }
 
   tryEditCallsign(): void {
-    console.log(this.user?.User)
     this._modalService.open(CallsignEditorComponent, {
         title: 'UI.ACTION.EDIT_CALLSIGN'
       }, new Map()
