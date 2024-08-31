@@ -11,4 +11,5 @@ public enum CallsignFormatItemType
     FixedCharacter,
     RandomLetter,
     RandomNumber,
+    Word,
 }

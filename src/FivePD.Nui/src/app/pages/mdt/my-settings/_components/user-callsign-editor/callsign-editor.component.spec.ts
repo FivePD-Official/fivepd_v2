@@ -6,7 +6,7 @@ import { ModalRef } from "@services/modals/modal/modal-ref";
 import {
   CALLSIGN_FORMAT_ITEMS
 } from "../../../departments/departments-view/_components/department-callsign-format-editor/token";
-import { CALLSIGN } from "./token";
+import { CALLSIGN_FORMAT_VALUES } from "./token";
 
 describe('UserCallsignEditorComponent', () => {
   let component: CallsignEditorComponent;
@@ -26,7 +26,7 @@ describe('UserCallsignEditorComponent', () => {
           .build()
       ],
       providers: [
-        {provide: CALLSIGN, useValue: ''},
+        {provide: CALLSIGN_FORMAT_VALUES, useValue: ''},
         {provide: CALLSIGN_FORMAT_ITEMS, useValue: []},
         {provide: ModalRef, useValue: modalRef},
       ]

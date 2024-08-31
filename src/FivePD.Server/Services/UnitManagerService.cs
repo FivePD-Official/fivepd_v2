@@ -91,7 +91,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
             }
             else
             {
-                this.CreateUnit(playerDetails.Callsign, args.Player);
+                this.CreateUnit(string.Join(string.Empty, playerDetails.Callsign), args.Player);
             }
         };
     }

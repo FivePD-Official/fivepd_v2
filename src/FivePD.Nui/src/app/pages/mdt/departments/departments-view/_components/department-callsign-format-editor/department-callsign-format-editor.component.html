@@ -3,19 +3,23 @@
   <ul>
     <li class="mb-4">
       <p class="text-sm font-medium text-zinc-400">Dash</p>
-      <p class="text-zinc-200">A dash will be inserted into the callsign at the given position.</p>
+      <p class="text-zinc-200">A dash will be inserted into the callsign at the given position. Users will be unable to modify it.</p>
     </li>
     <li class="mb-4">
       <p class="text-sm font-medium text-zinc-400">Fixed character</p>
-      <p class="text-zinc-200">The given character will be inserted into the callsign at the given position.</p>
+      <p class="text-zinc-200">The given character will be inserted into the callsign at the given position. Users will be unable to modify it.</p>
     </li>
     <li class="mb-4">
       <p class="text-sm font-medium text-zinc-400">Random letter</p>
-      <p class="text-zinc-200">A random letter will be inserted into the callsign at the given position.</p>
+      <p class="text-zinc-200">A random letter will be inserted into the callsign at the given position. Users will be able to modify it.</p>
     </li>
     <li class="mb-4">
       <p class="text-sm font-medium text-zinc-400">Random number</p>
-      <p class="text-zinc-200">A random number will be inserted into the callsign at the given position.</p>
+      <p class="text-zinc-200">A random number will be inserted into the callsign at the given position. Users will be able to modify it.</p>
+    </li>
+    <li class="mb-4">
+      <p class="text-sm font-medium text-zinc-400">Word</p>
+      <p class="text-zinc-200">An unlimited length of text, which users can modify. By default the text "PLACEHOLDER" will be inserted into this position</p>
     </li>
   </ul>
 
@@ -32,6 +36,9 @@
                 variant="secondary"/>
     <app-button (onClick)="add(CallsignFormatItemType.RandomLetter)"
                 label="Add random letter"
+                variant="secondary"/>
+    <app-button (onClick)="add(CallsignFormatItemType.Word)"
+                label="Add word"
                 variant="secondary"/>
   </div>
 
@@ -60,6 +67,11 @@
             @case (CallsignFormatItemType.RandomLetter) {
               <p class="font-bold text-xl text-zinc-200">
                 A-Z
+              </p>
+            }
+            @case (CallsignFormatItemType.Word) {
+              <p class="font-bold text-xl text-zinc-200">
+                Word
               </p>
             }
           }

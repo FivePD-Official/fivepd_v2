@@ -46,7 +46,7 @@ import {
 } from "./_components/department-callsign-format-editor/department-callsign-format-editor.component";
 import { CALLSIGN_FORMAT_ITEMS } from "./_components/department-callsign-format-editor/token";
 import { CallsignEditorComponent } from "../../my-settings/_components/user-callsign-editor/callsign-editor.component";
-import { CALLSIGN } from "../../my-settings/_components/user-callsign-editor/token";
+import { CALLSIGN_FORMAT_VALUES } from "../../my-settings/_components/user-callsign-editor/token";
 import { RankPageCollationFilters, RankService } from "@services/rank/rank.service";
 import { FormattedRank, RankOptions } from "../../../_service/rank-options";
 
@@ -328,22 +328,22 @@ export class DepartmentsViewComponent implements OnInit {
         accessorKey: 'Callsign',
         cellAction: {
           icon: IconType.Pencil,
-          onClick: item => {
+          onClick: user => {
             let updatedCallsign = '';
             this._modalService.open(CallsignEditorComponent, {
                 title: 'Edit callsign',
               }, new Map()
                 .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
-                .set(CALLSIGN, item.Callsign)
+                .set(CALLSIGN_FORMAT_VALUES, user.CallsignFormat.Values)
             ).result
               .pipe(
                 filter((res) => res.success),
-                switchMap((res) => this.userService.updateUserDetails({Id: item.Id, Callsign: res.value['Callsign']})),
+                switchMap((res) => this.userService.updateUserDetails({Id: user.Id, CallsignFormatValues: res.value['CallsignFormatValues']})),
                 this._modalService.handleResponse(),
               ).subscribe(res => {
               if (res.Status) {
-                item.Callsign = updatedCallsign;
-                if (this.user?.User.Id === item.Id) {
+                user.Callsign = updatedCallsign;
+                if (this.user?.User.Id === user.Id) {
                   this._userService.refreshData();
                 }
               }
