@@ -8,8 +8,7 @@ import { ModalRef } from "@services/modals/modal/modal-ref";
 import {
   CALLSIGN_FORMAT_ITEMS
 } from "../../../departments/departments-view/_components/department-callsign-format-editor/token";
-import { CALLSIGN } from "./token";
-import { LocalizationService } from "@services/localization/localization.service";
+import { CALLSIGN_FORMAT_VALUES } from "./token";
 
 @Component({
   selector: 'app-user-callsign-editor',
@@ -19,32 +18,34 @@ import { LocalizationService } from "@services/localization/localization.service
 })
 export class CallsignEditorComponent implements OnInit {
 
-  private readonly _localizationService = inject(LocalizationService);
+  protected readonly positions = inject(CALLSIGN_FORMAT_ITEMS);
+  protected readonly errors: boolean[] = [];
+
   private readonly _modalRef = inject(ModalRef);
-  protected readonly _positions = inject(CALLSIGN_FORMAT_ITEMS);
-  private readonly _callsign = inject(CALLSIGN);
+  private readonly _values = inject(CALLSIGN_FORMAT_VALUES);
 
   ngOnInit(): void {
-    if (!this._positions) {
+    if (!this.positions) {
       return;
     }
 
-    for (let i = 0; i < this._callsign.length; i++) {
-      this._positions[i].Value = this._callsign[i];
+    for (let i = 0; i < this.positions.length; i++) {
+      this.positions[i].Value = this._values[i];
+      this.errors.push(false);
     }
   }
 
   get valid() {
-    return this._positions.every(x => x.Value);
+    return this.positions.every(x => x.Value);
   }
 
   getItemTypeLabel(type: CallsignFormatItemType): string {
     if (type === CallsignFormatItemType.Dash) {
-      return '-';
+      return '';
     }
 
     if (type === CallsignFormatItemType.FixedCharacter) {
-      return this._localizationService.translate('UI.LABEL.ANY');
+      return '';
     }
 
     if (type === CallsignFormatItemType.RandomLetter) {
@@ -55,11 +56,25 @@ export class CallsignEditorComponent implements OnInit {
       return '0-9';
     }
 
+    if (type === CallsignFormatItemType.Word) {
+      return 'Any';
+    }
+
     return '';
   }
 
   onCharacterChange(index: number, event: any) {
-    this._positions[index].Value = event.target.value.toString().toUpperCase();
+    const value = event.target.value.toString().toUpperCase();
+    this.positions[index].Value = value;
+
+    const position = this.positions[index];
+    if (position.Type === CallsignFormatItemType.RandomLetter) {
+      this.errors[index] = !/^[A-Z]+$/.test(value);
+    } else if (position.Type === CallsignFormatItemType.RandomNumber) {
+      this.errors[index] = !/^[0-9]+$/.test(value);
+    } else if (position.Type === CallsignFormatItemType.Word) {
+      this.errors[index] = !/^[A-Z0-9-]+$/.test(value);
+    }
   }
 
   submit() {
@@ -71,7 +86,7 @@ export class CallsignEditorComponent implements OnInit {
       this._modalRef.close({
         success: true,
         value: {
-          Callsign: this._positions.map(x => x.Value).join(''),
+          CallsignFormatValues: this.positions.map(x => x.Value),
         },
       });
     }

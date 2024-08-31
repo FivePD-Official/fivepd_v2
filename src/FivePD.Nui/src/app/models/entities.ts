@@ -11,6 +11,10 @@ export interface WithStringId {
   Id: string;
 }
 
+export interface UserCallsignFormat extends WithId {
+  Values: string[];
+}
+
 export interface User extends WithId {
   FirstLogin: boolean;
   DismissedWelcomeMessage: boolean;
@@ -18,6 +22,7 @@ export interface User extends WithId {
   License: string;
   Role: number;
   Callsign: string;
+  CallsignFormat: UserCallsignFormat;
   Department?: Department;
   Division?: Division;
   Rank?: Rank;
@@ -46,6 +51,7 @@ export enum CallsignFormatItemType {
   FixedCharacter,
   RandomLetter,
   RandomNumber,
+  Word,
 }
 
 export interface CallsignFormatItem {

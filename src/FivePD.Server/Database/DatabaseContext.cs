@@ -49,6 +49,11 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users { get; set; }
 
     /// <summary>
+    /// Gets or sets the user callsigns table.
+    /// </summary>
+    public DbSet<UserCallsignFormat> UserCallsigns { get; set; }
+
+    /// <summary>
     /// Gets or sets departments table.
     /// </summary>
     public DbSet<Department> Departments { get; set; }
@@ -217,9 +222,21 @@ public class DatabaseContext : DbContext
 
             type.HasOne(user => user.Division);
 
+            type.HasOne(user => user.CallsignFormat);
+
             type.HasMany(user => user.Messages)
                 .WithOne(message => message.User)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<UserCallsignFormat>(type =>
+        {
+            type.Property(t => t.Values)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<string>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
         modelBuilder.Entity<Rank>()

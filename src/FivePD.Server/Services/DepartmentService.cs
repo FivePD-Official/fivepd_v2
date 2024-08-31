@@ -259,7 +259,7 @@ public class DepartmentService : IDepartmentService
             !string.IsNullOrEmpty(departmentUsersRequest.Filters.Name),
             department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
 
-        var page = this._databaseContext.Users.AsNoTracking().Paginate(departmentUsersRequest.Page, filters);
+        var page = this._databaseContext.Users.AsNoTracking().Include(x => x.CallsignFormat).Paginate(departmentUsersRequest.Page, filters);
         networkCallbackDelegate.InvokeWithJson(page);
     }
 
@@ -505,6 +505,7 @@ public class DepartmentService : IDepartmentService
         var request = expandoObject.ConvertTo<EditDepartmentCallsignFormatRequest>();
         var department = this._databaseContext.Departments
             .Include(x => x.Users)
+            .ThenInclude(u => u.CallsignFormat)
             .FirstOrDefault(department => department.Id == request.DepartmentId);
         if (department is null)
         {
@@ -516,14 +517,28 @@ public class DepartmentService : IDepartmentService
 
         foreach (var user in department.Users)
         {
+            var callsignGenerator = new CallsignGenerator(department.CallsignFormat);
             string callsign;
             do
             {
-                callsign = new CallsignGenerator(department.CallsignFormat).GenerateCallsign();
+                callsign = callsignGenerator.GenerateCallsign().BuildCallsign();
             }
             while (department.Users.Any(x => x.Callsign == callsign));
 
             user.Callsign = callsign;
+            if (user.CallsignFormat is not null)
+            {
+                user.CallsignFormat.Values = callsignGenerator.GetGeneratedItemValues();
+            }
+            else
+            {
+                var entry = this._databaseContext.UserCallsigns.Add(new UserCallsignFormat
+                {
+                    Values = callsignGenerator.GetGeneratedItemValues(),
+                });
+                this._databaseContext.SaveChanges();
+                user.UserCallsignFormatId = entry.Entity.Id;
+            }
         }
 
         this._databaseContext.SaveChanges();
@@ -597,6 +612,7 @@ public class DepartmentService : IDepartmentService
         var request = expandoObject.ConvertTo<IdRequest>();
         var department = this._databaseContext.Departments
             .Include(department => department.Users)
+            .ThenInclude(u => u.CallsignFormat)
             .FirstOrDefault(department => department.Id == request.Id);
 
         if (department is null)
@@ -614,18 +630,34 @@ public class DepartmentService : IDepartmentService
                 user.RankId = department.DefaultRankId;
             }
 
-            var callsignMatchesWithFormat = !string.IsNullOrEmpty(user.Callsign) && new Regex("^[A-Z0-9-*]+").IsMatch(user.Callsign);
-            if (string.IsNullOrEmpty(user.Callsign) || !callsignMatchesWithFormat)
+            var callsign = string.Join(string.Empty, user.Callsign);
+            var callsignMatchesWithFormat = !string.IsNullOrEmpty(callsign) && new Regex("^[A-Z0-9-]+$").IsMatch(callsign);
+            if (string.IsNullOrEmpty(callsign) || !callsignMatchesWithFormat)
             {
-                string callsign;
+                var callsignGenerator = new CallsignGenerator(department.CallsignFormat);
+                string newCallsign;
                 do
                 {
-                    callsign = new CallsignGenerator(department.CallsignFormat).GenerateCallsign();
+                    newCallsign = callsignGenerator.GenerateCallsign().BuildCallsign();
                 }
-                while (department.Users.Any(x => x.Callsign == callsign));
+                while (department.Users.Any(x => x.Callsign == newCallsign));
 
                 user = this._playerDataService.FindUserByLicense(player);
-                user.Callsign = callsign;
+                user.Callsign = newCallsign;
+
+                if (user.CallsignFormat is not null)
+                {
+                    user.CallsignFormat.Values = callsignGenerator.GetGeneratedItemValues();
+                }
+                else
+                {
+                    var entry = this._databaseContext.UserCallsigns.Add(new UserCallsignFormat
+                    {
+                        Values = callsignGenerator.GetGeneratedItemValues(),
+                    });
+                    this._databaseContext.SaveChanges();
+                    user.UserCallsignFormatId = entry.Entity.Id;
+                }
             }
 
             this._databaseContext.SaveChanges();

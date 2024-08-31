@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
@@ -356,6 +357,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             .Include(user => user.Department)
             .Include(user => user.Division)
             .Include(user => user.Rank)
+            .Include(user => user.CallsignFormat)
             .WhereAnyIdMatches(player)
             .FirstOrDefault();
 
@@ -570,16 +572,47 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private void UpdatePlayerDetailsUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<UpdatePlayerDetailsRequest>();
-        var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == request.Id);
+        var user = this._databaseContext.Users
+            .Include(x => x.CallsignFormat)
+            .Include(x => x.Department)
+            .ThenInclude(department => department.Users)
+            .FirstOrDefault(user => user.Id == request.Id);
         if (user is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
 
-        if (request.Callsign is not null)
+        if (request.CallsignFormatValues is not null && request.CallsignFormatValues.Count > 0)
         {
-            user.Callsign = request.Callsign;
+            var callsign = string.Join(string.Empty, request.CallsignFormatValues);
+            var callsignMatchesWithFormat = !string.IsNullOrEmpty(callsign) && new Regex("^[A-Z0-9-]+$").IsMatch(callsign);
+            if (!callsignMatchesWithFormat)
+            {
+                networkCallbackDelegate.InvokeWithUnexpectedError();
+                return;
+            }
+
+            if (user.Department.Users.Any(x => x.Callsign == callsign))
+            {
+                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.USER.CALLSIGN.EDIT.TITLE", "UI.ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
+                return;
+            }
+
+            user.Callsign = callsign;
+            if (user.CallsignFormat is not null)
+            {
+                user.CallsignFormat.Values = request.CallsignFormatValues;
+            }
+            else
+            {
+                var entry = this._databaseContext.UserCallsigns.Add(new UserCallsignFormat
+                {
+                    Values = request.CallsignFormatValues,
+                });
+                this._databaseContext.SaveChanges();
+                user.UserCallsignFormatId = entry.Entity.Id;
+            }
         }
 
         if (request.PreferredLanguage is not null)

@@ -19,7 +19,7 @@ import { ConfigService } from "@services/config/config.service";
 import { ButtonComponent } from "../../../components/button/button.component";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { CallsignEditorComponent } from "./_components/user-callsign-editor/callsign-editor.component";
-import { CALLSIGN } from "./_components/user-callsign-editor/token";
+import { CALLSIGN_FORMAT_VALUES } from "./_components/user-callsign-editor/token";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import {
@@ -60,7 +60,6 @@ export class MySettingsComponent implements OnInit {
       this.loadAvailableLocales(),
       user.DepartmentId ? this._departmentService.getDepartment(user.DepartmentId) : of(undefined),
     ).subscribe(([generalConfig, availableLocalizations, department]) => {
-      console.log(availableLocalizations)
       this.department = department;
       this.generalConfig = generalConfig;
 
@@ -115,13 +114,13 @@ export class MySettingsComponent implements OnInit {
         title: 'UI.ACTION.EDIT_CALLSIGN'
       }, new Map()
         .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
-        .set(CALLSIGN, this.user?.User?.Callsign)
+        .set(CALLSIGN_FORMAT_VALUES, this.user?.User?.CallsignFormat.Values)
     ).result
       .pipe(
         filter(res => res.success),
         switchMap(res => this._userService.updateUserDetails({
           Id: this.user?.User?.Id,
-          Callsign: res.value['Callsign']
+          CallsignFormatValues: res.value['CallsignFormatValues']
         })),
         this._modalService.handleResponse()
       )

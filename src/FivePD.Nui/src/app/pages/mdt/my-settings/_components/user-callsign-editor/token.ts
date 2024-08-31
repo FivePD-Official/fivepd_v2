@@ -1,4 +1,3 @@
-﻿import { PlayerDetailsDTO, User } from "@models";
-import { InjectionToken } from "@angular/core";
+﻿import { InjectionToken } from "@angular/core";
 
-export const CALLSIGN = new InjectionToken<string>('Callsign');
+export const CALLSIGN_FORMAT_VALUES = new InjectionToken<string[]>('Callsign format values');

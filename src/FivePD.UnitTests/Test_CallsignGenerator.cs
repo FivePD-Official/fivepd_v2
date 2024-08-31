@@ -45,10 +45,10 @@ internal class Test_CallsignGenerator
                 Type = CallsignFormatItemType.RandomNumber,
             },
         });
-        var callsign = callsignGenerator.GenerateCallsign();
-        Assert.That(callsign, Is.EqualTo($"{RandomLetterWithSeed0}8"));
+        var callsign = callsignGenerator.GenerateCallsign().GetGeneratedItemValues();
+        Assert.That(callsign, Is.EqualTo(new List<string> { RandomLetterWithSeed0, "8" }));
     }
-    
+
     [Test]
     public void Generate_Static_Callsign()
     {
@@ -65,14 +65,13 @@ internal class Test_CallsignGenerator
                 Value = "N",
             },
         });
-        var callsign = callsignGenerator.GenerateCallsign();
-        Assert.That(callsign, Is.EqualTo("LN"));
+        var callsign = callsignGenerator.GenerateCallsign().GetGeneratedItemValues();
+        Assert.That(callsign, Is.EqualTo(new List<string> { "L", "N" }));
     }
-    
+
     [Test]
     public void Generate_Dynamic_And_Static_Callsign()
     {
-        // var callsignGenerator = new CallsignGenerator("*LL*NN");
         var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
         {
             new()
@@ -94,14 +93,13 @@ internal class Test_CallsignGenerator
                 Type = CallsignFormatItemType.RandomNumber,
             },
         });
-        var callsign = callsignGenerator.GenerateCallsign();
-        Assert.That(callsign, Is.EqualTo($"L{RandomLetterWithSeed0}N8"));
+        var callsign = callsignGenerator.GenerateCallsign().GetGeneratedItemValues();
+        Assert.That(callsign, Is.EqualTo(new List<string> { "L", RandomLetterWithSeed0, "N", "8" }));
     }
 
     [Test]
     public void Generate_Dynamic_Callsign_With_W()
     {
-        // var callsignGenerator = new CallsignGenerator("N-W-NN");
         var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
         {
             new()
@@ -129,7 +127,39 @@ internal class Test_CallsignGenerator
                 Type = CallsignFormatItemType.RandomNumber,
             },
         });
-        var callsign = callsignGenerator.GenerateCallsign();
-        Assert.That(callsign, Is.EqualTo("7-V-75"));
+        var callsign = callsignGenerator.GenerateCallsign().GetGeneratedItemValues();
+        Assert.That(callsign, Is.EqualTo(new List<string> { "7", "-", "V", "-", "7", "5" }));
+    }
+
+    [Test]
+    public void Word_Type_Should_Return_The_Word_PLACEHOLDER()
+    {
+        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
+        {
+            new()
+            {
+                Type = CallsignFormatItemType.Word,
+            },
+        });
+        var callsign = callsignGenerator.GenerateCallsign().GetGeneratedItemValues();
+        Assert.That(callsign, Is.EqualTo(new List<string> { "PLACEHOLDER" }));
+    }
+    
+    [Test]
+    public void BuildCallsign_Should_Return_The_String_Representation_Of_The_Callsign_Values()
+    {
+        var callsignGenerator = new CallsignGenerator(new List<CallsignFormatItem>
+        {
+            new()
+            {
+                Type = CallsignFormatItemType.RandomLetter,
+            },
+            new()
+            {
+                Type = CallsignFormatItemType.RandomNumber,
+            },
+        });
+        var callsign = callsignGenerator.GenerateCallsign().BuildCallsign();
+        Assert.That(callsign, Is.EqualTo($"{RandomLetterWithSeed0}8"));
     }
 }

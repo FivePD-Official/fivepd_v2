@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 
 namespace FivePD.Server.Utilities;
-
-using System.Text;
 
 #pragma warning disable
 
@@ -18,24 +17,37 @@ public class CallsignGenerator
         this._format = format;
     }
 
-    public string GenerateCallsign()
+    public List<CallsignFormatItem> GeneratedItems { get; private set; }
+
+    public CallsignGenerator GenerateCallsign()
     {
-        var callsignBuilder = new StringBuilder();
-        foreach (var item in this._format)
-        {
-            var generatedChar = item.Type switch
+        this.GeneratedItems = this._format.Select(item => new CallsignFormatItem
             {
-                CallsignFormatItemType.Dash => '-',
-                CallsignFormatItemType.FixedCharacter => item.Value[0],
-                CallsignFormatItemType.RandomLetter => this.GetRandomLetter(),
-                CallsignFormatItemType.RandomNumber => this.GetRandomNumber(),
-                _ => item.Value[0],
-            };
+                Type = item.Type,
+                Value = item.Type == CallsignFormatItemType.Word
+                    ? "PLACEHOLDER"
+                    : item.Type switch
+                    {
+                        CallsignFormatItemType.Dash => "-",
+                        CallsignFormatItemType.FixedCharacter => item.Value[0].ToString(),
+                        CallsignFormatItemType.RandomLetter => this.GetRandomLetter().ToString(),
+                        CallsignFormatItemType.RandomNumber => this.GetRandomNumber().ToString(),
+                        _ => item.Value[0].ToString(),
+                    }
+            })
+            .ToList();
 
-            callsignBuilder.Append(generatedChar);
-        }
+        return this;
+    }
 
-        return callsignBuilder.ToString();
+    public List<string> GetGeneratedItemValues()
+    {
+        return this.GeneratedItems.Select(x => x.Value).ToList();
+    }
+
+    public string BuildCallsign()
+    {
+        return string.Join(string.Empty, this.GetGeneratedItemValues());
     }
 
     private char GetRandomLetter()

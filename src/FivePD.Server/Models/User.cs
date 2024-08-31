@@ -81,6 +81,16 @@ public class User
     public string Callsign { get; set; }
 
     /// <summary>
+    /// Gets or sets the id of the user callsign.
+    /// </summary>
+    public int? UserCallsignFormatId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user callsign.
+    /// </summary>
+    public UserCallsignFormat CallsignFormat { get; set; }
+
+    /// <summary>
     /// Gets or sets the id of the department.
     /// </summary>
     public int? DepartmentId { get; set; }

@@ -392,9 +392,6 @@ namespace FivePD.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Global")
                         .HasColumnType("tinyint(1)");
 
@@ -405,8 +402,6 @@ namespace FivePD.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
 
                     b.ToTable("fivepd_ranks");
                 });
@@ -465,6 +460,9 @@ namespace FivePD.Server.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserCallsignFormatId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Xp")
                         .HasColumnType("int");
 
@@ -476,7 +474,23 @@ namespace FivePD.Server.Migrations
 
                     b.HasIndex("RankId");
 
+                    b.HasIndex("UserCallsignFormatId");
+
                     b.ToTable("fivepd_users");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.UserCallsignFormat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Values")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_user_callsigns");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataAttribute", b =>
@@ -721,10 +735,6 @@ namespace FivePD.Server.Migrations
 
             modelBuilder.Entity("FivePD.Server.Models.Rank", b =>
                 {
-                    b.HasOne("FivePD.Server.Models.Department", null)
-                        .WithMany("Ranks")
-                        .HasForeignKey("DepartmentId");
-
                     b.OwnsOne("FivePD.Server.Models.Rank+Permissions", "Permission", b1 =>
                         {
                             b1.Property<int>("RankId")
@@ -765,6 +775,10 @@ namespace FivePD.Server.Migrations
                     b.HasOne("FivePD.Server.Models.Rank", "Rank")
                         .WithMany("Users")
                         .HasForeignKey("RankId");
+
+                    b.HasOne("FivePD.Server.Models.UserCallsignFormat", "CallsignFormat")
+                        .WithMany()
+                        .HasForeignKey("UserCallsignFormatId");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.VariableData.VariableDataAttribute", b =>
