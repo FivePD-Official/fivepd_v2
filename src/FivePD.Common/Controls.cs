@@ -22,7 +22,9 @@ internal sealed record Controls
 
     public static readonly Control TryAlertVehicle = new("fivepd::tryAlertVehicleAsync", "LSHIFT", "Try to alert a vehicle", 1000);
 
-    public static readonly Control ConfirmAction = new("fivepd::confirmAction", "F1", "Confirms an action");
+    public static readonly Control ConfirmationAccept = new("fivepd::confirmationAccept", "F1", "Confirms an action");
+
+    public static readonly Control ConfirmationDeny = new("fivepd::confirmationDeny", "F2", "Denies an action");
 
     public static readonly Control OpenMDT = new("fivepd::openMDT", "B", "Open MDT");
 

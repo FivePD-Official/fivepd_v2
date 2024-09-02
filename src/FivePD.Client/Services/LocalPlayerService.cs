@@ -134,15 +134,21 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
 
     private Task OnTickAsync()
     {
+        this.DisableWantedLevel();
+        return Task.FromResult(0);
+    }
+
+    private void DisableWantedLevel()
+    {
         if (!this._generalConfig.Features.DisableWantedLevel)
         {
-            return Task.FromResult(0);
+            return;
         }
 
         if (!this._generalConfig.Features.DisableWantedLevelAllTime &&
             (this._generalConfig.Features.DisableWantedLevelAllTime || this.Player.DutyStatus.Value != FDutyStatus.OnDuty))
         {
-            return Task.FromResult(0);
+            return;
         }
 
         Game.Player.WantedLevel = 0;
@@ -151,8 +157,6 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
         Cfx.API.SetDispatchCopsForPlayer(Game.Player.Handle, false);
         Cfx.API.SetPlayerWantedLevel(Game.Player.Handle, 0, false);
         Cfx.API.SetPlayerWantedLevelNow(Game.Player.Handle, false);
-
-        return Task.FromResult(0);
     }
 
 #pragma warning disable S3241

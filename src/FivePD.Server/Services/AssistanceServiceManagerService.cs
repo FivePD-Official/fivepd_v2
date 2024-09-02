@@ -76,6 +76,16 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 SpawnLocations = config.TowTruck.SpawnLocations,
             });
         }
+
+        if (config.RideShare.Enabled)
+        {
+            this.Register<RideShare>(new AssistanceServiceOptions
+            {
+                RequestLabel = "Request ride share",
+                CancelLabel = "Cancel ride share",
+                SpawnLocations = config.RideShare.SpawnLocations,
+            });
+        }
     }
 
     /// <inheritdoc />
@@ -254,7 +264,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                     throw new TaskCanceledException();
                 }
 
-                await this._service.SetupAsync();
+                await this._service.SetupAsync(this.CancellationTokenSource);
 
                 if (this.CancellationTokenSource.Token.IsCancellationRequested)
                 {

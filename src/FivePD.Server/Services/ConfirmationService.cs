@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.DTO;
@@ -65,5 +66,32 @@ public class ConfirmationService : IConfirmationService
         {
             this.TriggerConfirmation(player, properties, callback, timeoutInMs);
         }
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> TriggerConfirmationAsync(
+        Player player,
+        ConfirmationProperties properties,
+        int timeoutInMs = 5000)
+    {
+        var result = await this._eventService.TriggerEventStrictAsync(
+            player,
+            Events.Generic.Action,
+            JsonConvert.SerializeObject(new ConfirmationDTO
+            {
+                TimeoutInMs = timeoutInMs,
+                Properties = properties,
+            }));
+
+        return bool.Parse(result);
+    }
+
+    /// <inheritdoc/>
+    public Task<bool> TriggerConfirmationAsync(
+        FPlayer player,
+        ConfirmationProperties properties,
+        int timeoutInMs = 5000)
+    {
+        return this.TriggerConfirmationAsync(player.GetUnderlyingPlayer(), properties, timeoutInMs);
     }
 }

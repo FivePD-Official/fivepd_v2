@@ -7,4 +7,5 @@ public enum VehicleConfigType
     Police,
     Ambulance,
     TowTruck,
+    RideShare
 }
