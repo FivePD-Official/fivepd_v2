@@ -25,6 +25,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     private readonly IConfigService _configService;
     private readonly ITickService _tickService;
     private readonly IUIManagerService _uiManagerService;
+    private readonly IControlService _controlService;
 
     private GeneralConfig _generalConfig = new()
     {
@@ -45,18 +46,21 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
+    /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
     public LocalPlayerService(
         EventHandlerDictionary eventHandlerDictionary,
         ILocalizationService localizationService,
         IConfigService configService,
         ITickService tickService,
-        IUIManagerService uiManagerService)
+        IUIManagerService uiManagerService,
+        IControlService controlService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._localizationService = localizationService;
         this._configService = configService;
         this._tickService = tickService;
         this._uiManagerService = uiManagerService;
+        this._controlService = controlService;
 
 #pragma warning disable CS4014
         this.GetGeneralConfigAsync();
@@ -101,10 +105,17 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Player.UpdateDetails);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.User.GetAllSimple);
 
-        BaseScript.TriggerServerEvent(Events.Player.GetRole, new Action<int>(role =>
-        {
-            this.Role = role;
-        }));
+        this._controlService.RegisterMomentaryKeybind(
+            Controls.MomentaryTest.Id,
+            Controls.MomentaryTest.Key,
+            Controls.MomentaryTest.Title,
+            Controls.MomentaryTest.TimeToHoldInMs,
+            () =>
+            {
+                Debug.WriteLine($"pressed");
+            });
+
+        BaseScript.TriggerServerEvent(Events.Player.GetRole, new Action<int>(role => { this.Role = role; }));
     }
 
     /// <inheritdoc/>

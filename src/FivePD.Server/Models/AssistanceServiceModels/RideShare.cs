@@ -116,7 +116,6 @@ public class RideShare : AssistanceService
 
         while (this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) > 60f)
         {
-            Debug.WriteLine($"aa: {this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._target)}");
             if (cancellationTokenSource.IsCancellationRequested)
             {
                 return;
@@ -140,7 +139,7 @@ public class RideShare : AssistanceService
                 "Ride share",
                 "Subject",
                 "The cab has arrived. You have 60 seconds to get in and selection a location.");
-            
+
             var eventName = $"rideshare:waypoint:selected::{this._waypointId}";
 
             void SetTarget(string serializedWaypoint)
@@ -179,6 +178,7 @@ public class RideShare : AssistanceService
 
                 await Task.Delay(500);
             }
+
             await Task.Delay(1000);
 
             this._notificationService.ShowNotificationWithTexture(
@@ -198,23 +198,33 @@ public class RideShare : AssistanceService
 
     public override Task OnCancellationRequestedAsync()
     {
-        this.ClearEntities(new Dictionary<FEntity, FEntity>
+        var a = new Dictionary<FEntity, FEntity>
         {
             { this._driver, this._vehicle },
             { this._vehicle, null },
-            // { this._closestPed, null },
-        });
+        };
+        if (this._closestPed is not null)
+        {
+            a[this._closestPed] = null;
+        }
+
+        this.ClearEntities(a);
         return Task.FromResult(0);
     }
 
     public override Task OnCompletedAsync()
     {
-        this.ClearEntities(new Dictionary<FEntity, FEntity>
+        var a = new Dictionary<FEntity, FEntity>
         {
             { this._driver, this._vehicle },
             { this._vehicle, null },
-            // { this._closestPed, null },
-        });
+        };
+        if (this._closestPed is not null)
+        {
+            a[this._closestPed] = null;
+        }
+
+        this.ClearEntities(a);
         return Task.FromResult(0);
     }
 }

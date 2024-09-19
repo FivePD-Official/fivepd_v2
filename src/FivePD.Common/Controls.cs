@@ -18,6 +18,8 @@ internal sealed record Controls
     public static readonly Control SceneManagerMenu = new("fivepd::sceneManagerMenu", "F9", "UI.MENU.SCENE_MANAGER.TITLE");
 
     // Other
+    public static readonly Control MomentaryTest = new("fivepd::momentaryTest", "F", "Momentary test", 1000);
+
     public static readonly Control TryAlertEntity = new("fivepd::tryAlertEntityAsync", "E", "Try to alert entity", 1000);
 
     public static readonly Control TryAlertVehicle = new("fivepd::tryAlertVehicleAsync", "LSHIFT", "Try to alert a vehicle", 1000);
