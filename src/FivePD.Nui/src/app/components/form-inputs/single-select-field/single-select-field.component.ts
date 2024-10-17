@@ -12,11 +12,12 @@ import {
   dropdownSelectedItemVariantsHoverReadonly
 } from "../_helpers/dropdown";
 import { createDefaultFormGroup } from "../_helpers/field";
+import { DropdownRectHelperDirective } from "../../../directives/dropdown-rect-helper.directive";
 
 @Component({
   selector: 'app-single-select-field',
   standalone: true,
-  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe, ClickOutsideDirective],
+  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe, ClickOutsideDirective, DropdownRectHelperDirective],
   templateUrl: './single-select-field.component.html',
   styleUrl: './single-select-field.component.sass'
 })

@@ -18,7 +18,7 @@
       @apply h-[20px] ml-3 text-zinc-300
 
   .dropdown-items
-    @apply relative hidden flex-col items-center w-full drop-shadow-md z-50 max-h-[200px] overflow-x-hidden bg-zinc-700 rounded-bl-md rounded-br-md py-2
+    @apply relative hidden flex-col items-center w-full drop-shadow-md z-50 max-h-[200px] overflow-x-hidden bg-zinc-700 rounded-bl-md rounded-br-md py-2 transition-none
     ::-webkit-scrollbar-thumb
       @apply bg-zinc-800
 
@@ -37,4 +37,4 @@
         @apply rotate-180
 
     .dropdown-items
-      @apply absolute flex
+      @apply fixed flex

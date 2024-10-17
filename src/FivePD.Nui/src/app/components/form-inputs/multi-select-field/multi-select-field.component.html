@@ -21,7 +21,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
       </svg>
     </div>
-    <div class="dropdown-items">
+    <div class="dropdown-items" appDropdownRectHelperDirective>
       <div class="dropdown-items--inner">
         @for (item of dropdownFilteredItems;track item) {
           <button type="button" class="item" (click)="onDropdownSelect(item)">
