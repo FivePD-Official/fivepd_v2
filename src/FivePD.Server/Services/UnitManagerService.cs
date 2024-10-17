@@ -22,7 +22,7 @@ namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IUnitManagerService" />
 [Obfuscate]
-public class UnitManagerService : IUnitManagerService, IOnInit
+public class UnitManagerService : IUnitManagerService, IInternalUnitManagerService, IOnInit
 {
     private readonly INotificationService _notificationService;
     private readonly IConfirmationService _confirmationService;
@@ -91,13 +91,13 @@ public class UnitManagerService : IUnitManagerService, IOnInit
             }
             else
             {
-                this.CreateUnit(string.Join(string.Empty, playerDetails.Callsign), args.Player);
+                ((IInternalUnitManagerService)this).CreateUnit(string.Join(string.Empty, playerDetails.Callsign), args.Player);
             }
         };
     }
 
     /// <inheritdoc/>
-    public Unit CreateUnit(string callsign, FPlayer player)
+    Unit IInternalUnitManagerService.CreateUnit(string callsign, FPlayer player)
     {
         if (this._unitService.Units.FirstOrDefault(x => x.Callsign == callsign) is not null)
         {
@@ -116,7 +116,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
     }
 
     /// <inheritdoc/>
-    public Unit CreateUnit(string callsign, IEnumerable<FPlayer> players)
+    Unit IInternalUnitManagerService.CreateUnit(string callsign, IEnumerable<FPlayer> players)
     {
         if (this._unitService.Units.FirstOrDefault(x => x.Callsign == callsign) is not null)
         {
