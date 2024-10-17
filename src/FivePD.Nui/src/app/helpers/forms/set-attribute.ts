@@ -88,6 +88,7 @@ export function createAttributesFormFields(localizationService: LocalizationServ
       variant: 'secondary',
       defaultItemLabel: localizationService.translate('UI.LABEL.CUSTOM'),
       items: [
+        {key: CoreAttributes.SubmitDate, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.SUBMIT_DATE')},
         {key: CoreAttributes.UserId, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.USER_ID')},
         {key: CoreAttributes.UserIds, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.USER_IDS')},
         {

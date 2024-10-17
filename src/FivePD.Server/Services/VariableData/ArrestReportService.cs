@@ -24,7 +24,7 @@ public class ArrestReportService : VariableDataRepository<ArrestReportSet>
         {
             new CoreAttributes.UserId(new CoreAttributes.Options { Hidden = true }),
             new CoreAttributes.SubmitDate(new CoreAttributes.Options { Hidden = true }),
-            new CoreAttributes.PedHistoryIds(new CoreAttributes.Options { Hidden = true, Required = true }),
+            new CoreAttributes.PedHistoryIds(new CoreAttributes.Options { Required = true }),
             new()
             {
                 Name = "ArrestDate",

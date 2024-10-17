@@ -159,6 +159,7 @@
   "UI.LABEL.ATTRIBUTE.TYPES.PED_HISTORY_IDS": "Ped history identifiers",
   "UI.LABEL.ATTRIBUTE.TYPES.USER_ID": "User identifier",
   "UI.LABEL.ATTRIBUTE.TYPES.USER_IDS": "User identifiers",
+  "UI.LABEL.ATTRIBUTE.TYPES.SUBMIT_DATE": "Submit date",
   "UI.LABEL.AUDIO": "Any letter",
   "UI.LABEL.AVAILABILITY.SINGULAR": "Availability",
   "UI.LABEL.AVAILABLE_CHARACTERS": "Available characters",

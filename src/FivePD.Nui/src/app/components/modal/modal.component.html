@@ -1,7 +1,7 @@
 <div
   class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col items-center justify-center animate-fadeIn">
   <div #modalContainer
-       class="py-4 rounded-lg bg-zinc-800 animate-modal w-max max-h-[70vh] overflow-hidden"
+       class="main-modal-container py-4 rounded-lg bg-zinc-800 animate-modal w-max max-h-[70vh] overflow-hidden"
        [ngClass]="{
         'min-w-[500px]': (modalRef.options.columns || 1) === 1,
         'min-w-[30vw] max-w-[60vw]': (modalRef.options.columns || 1) > 1
