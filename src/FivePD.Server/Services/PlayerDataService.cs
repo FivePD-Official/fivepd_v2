@@ -322,6 +322,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 IdentifierSteam = player.Identifiers["steam"] ?? string.Empty,
                 IdentifierXbl = player.Identifiers["xbl"] ?? string.Empty,
                 IdentifierLive = player.Identifiers["live"] ?? string.Empty,
+                AudioVolume = 0.1,
             };
             if (userCount == 0)
             {
@@ -619,6 +620,11 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         {
             user.PreferredLanguage = request.PreferredLanguage;
             player.TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationService.GetLocalization(request.PreferredLanguage));
+        }
+
+        if (request.AudioVolume is not null)
+        {
+            user.AudioVolume = request.AudioVolume ?? 0;
         }
 
         this._databaseContext.SaveChanges();

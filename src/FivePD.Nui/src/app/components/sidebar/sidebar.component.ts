@@ -85,7 +85,7 @@ export class SidebarComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.MY_SETTINGS',
+      title: 'UI.LABEL.MY_SETTINGS.TITLE',
       path: () => `/mdt/my-settings`,
       icon: IconType.User,
       show: () => true,

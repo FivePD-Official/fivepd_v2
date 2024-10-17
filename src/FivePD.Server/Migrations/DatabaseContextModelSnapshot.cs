@@ -415,6 +415,9 @@ namespace FivePD.Server.Migrations
                     b.Property<bool>("AccessFivePD")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<double>("AudioVolume")
+                        .HasColumnType("double");
+
                     b.Property<string>("Callsign")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 

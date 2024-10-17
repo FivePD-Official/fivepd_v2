@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Common.Enums;
+using FivePD.Server.Interfaces;
 
 namespace FivePD.Server.Models;
 
@@ -69,6 +70,11 @@ public class User
     /// Gets or sets the experience points.
     /// </summary>
     public int Xp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the volume of the audio, played via the <see cref="IAudioService"/>.
+    /// </summary>
+    public double AudioVolume { get; set; }
 
     /// <summary>
     /// Gets or sets the role of the user.
