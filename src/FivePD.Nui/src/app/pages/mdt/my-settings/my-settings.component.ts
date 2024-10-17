@@ -5,7 +5,7 @@ import {
   Department,
   FormInputBase,
   FormSubmitEvent,
-  GeneralConfig,
+  GeneralConfig, NumberField,
   PlayerDetailsDTO,
   SingleSelectField, User
 } from "@models";
@@ -25,6 +25,7 @@ import { GlobalState } from "@store";
 import {
   CALLSIGN_FORMAT_ITEMS
 } from "../departments/departments-view/_components/department-callsign-format-editor/token";
+import { Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-my-settings',
@@ -81,6 +82,19 @@ export class MySettingsComponent implements OnInit {
           key: index,
           label: title,
         })),
+      }));
+
+      fields.push(new NumberField({
+        key: 'AudioVolume',
+        value: user.AudioVolume,
+        label: 'UI.LABEL.MY_SETTINGS.AUDIO_VOLUME.TITLE',
+        required: true,
+        helpLabel: 'UI.LABEL.MY_SETTINGS.AUDIO_VOLUME.HELP_LABEL',
+        validators: [Validators.min(0), Validators.max(1)],
+        options: {
+          min: 0,
+          max: 1,
+        }
       }));
 
       this.userDetailsFields = fields;

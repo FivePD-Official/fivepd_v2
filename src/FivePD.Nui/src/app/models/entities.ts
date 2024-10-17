@@ -29,6 +29,7 @@ export interface User extends WithId {
   DepartmentId?: number;
   DivisionId?: number;
   RankId?: number;
+  AudioVolume: number;
   Xp: number;
   FixedRank: boolean;
   PreferredLanguage: string;

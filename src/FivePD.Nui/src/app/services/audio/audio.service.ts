@@ -1,7 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { EventService } from "@services/event/event.service";
-import { OnAudioSpeak, OnAudioPlaySound } from "@models";
+import { OnAudioPlaySound, OnAudioSpeak } from "@models";
 import { Howl } from 'howler';
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,14 @@ export class AudioService {
   private _listening = false;
   private readonly _eventService = inject(EventService);
 
+  private _audioVolume = 0;
+
+  constructor(private readonly _store: Store<GlobalState>) {
+    _store.select('user', 'details').subscribe(user => {
+      this._audioVolume = user?.User?.AudioVolume ?? 0;
+    });
+  }
+
   listenToEvents(): void {
     if (this._listening) {
       return;
@@ -18,14 +28,14 @@ export class AudioService {
 
     this._listening = true;
 
-    this._eventService.onEvent<OnAudioSpeak>('fivepd:audio:playSound').subscribe(this.onPlaySound);
-    this._eventService.onEvent<OnAudioPlaySound>('fivepd:audio:speak').subscribe(this.onSpeak);
+    this._eventService.onEvent<OnAudioSpeak>('fivepd:audio:playSound').subscribe(e => this.onPlaySound(e));
+    this._eventService.onEvent<OnAudioPlaySound>('fivepd:audio:speak').subscribe(e => this.onSpeak(e));
   }
 
   onPlaySound(event: OnAudioSpeak): void {
     const sound = new Howl({
       src: [`./assets/sounds/${event.Sound}`],
-      volume: 0.5,
+      volume: this._audioVolume
     });
 
     sound.play();

@@ -11,4 +11,6 @@ internal record struct UpdatePlayerDetailsRequest
     public List<string>? CallsignFormatValues { get; set; }
 
     public string? PreferredLanguage { get; set; }
+    
+    public double? AudioVolume { get; set; }
 }
