@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AudioService } from "@services/audio/audio.service";
 import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
+import { TestHelperModule } from "../../../test-helpers/test-helper.module";
 
 describe('AudioService', () => {
   let service: AudioService;
@@ -8,7 +9,11 @@ describe('AudioService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        TestHelperModule.builder()
+          .withTranslatePipe()
+          .withLocalizationService()
+          .withStore()
+          .build()
       ]
     });
     service = TestBed.inject(AudioService);
