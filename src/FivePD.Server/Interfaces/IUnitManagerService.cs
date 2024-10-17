@@ -31,22 +31,6 @@ public interface IUnitManagerService
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
 
     /// <summary>
-    /// Creates a unit with the specified callsign and player.
-    /// </summary>
-    /// <param name="callsign">The callsign of the player.</param>
-    /// <param name="player">A player to add by default.</param>
-    /// <returns>The created unit.</returns>
-    public Unit CreateUnit(string callsign, FPlayer player);
-
-    /// <summary>
-    /// Creates a unit with the specified callsign and player.
-    /// </summary>
-    /// <param name="callsign">The callsign of the player.</param>
-    /// <param name="players">The players to add by default.</param>
-    /// <returns>The created unit.</returns>
-    public Unit CreateUnit(string callsign, IEnumerable<FPlayer> players);
-
-    /// <summary>
     /// Gets the unit of the specified player.
     /// </summary>
     /// <param name="player">A player.</param>
@@ -77,4 +61,23 @@ public interface IUnitManagerService
     /// </summary>
     /// <param name="unit">The unit.</param>
     public void DisablePanicMode(Unit unit);
+}
+
+internal interface IInternalUnitManagerService
+{
+    /// <summary>
+    /// Creates a unit with the specified callsign and player.
+    /// </summary>
+    /// <param name="callsign">The callsign of the player.</param>
+    /// <param name="player">A player to add by default.</param>
+    /// <returns>The created unit.</returns>
+    public Unit CreateUnit(string callsign, FPlayer player);
+
+    /// <summary>
+    /// Creates a unit with the specified callsign and player.
+    /// </summary>
+    /// <param name="callsign">The callsign of the player.</param>
+    /// <param name="players">The players to add by default.</param>
+    /// <returns>The created unit.</returns>
+    public Unit CreateUnit(string callsign, IEnumerable<FPlayer> players);
 }
