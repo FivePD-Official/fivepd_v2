@@ -39,6 +39,10 @@ export class LocalizationService {
 
   translate(path: string, params: Record<string, string> = {}, boldParams: boolean = true): string {
     const translation = getKeyFromObjectPath(this._localization, path, path);
+    for (const [key, value] of Object.entries(params ?? {})) {
+      params[key] = this.translate(value, {}, false);
+    }
+
     return replaceParams(translation, params, boldParams);
   }
 

@@ -292,14 +292,13 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                 unitPlayer,
                 new ConfirmationProperties
                 {
-                    Notification = new ConfirmationProperties.NotificationProperties
+                    Title = "FivePD",
+                    Message = "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
+                    MessageParams = new Dictionary<string, string>
                     {
-                        Content = "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
-                        ContentParams = new Dictionary<string, string>
-                        {
-                            ["name"] = player.Name,
-                        },
+                        ["name"] = player.Name,
                     },
+                    PlayAudio = AudioFiles.BoopBoop,
                 },
                 response =>
                 {

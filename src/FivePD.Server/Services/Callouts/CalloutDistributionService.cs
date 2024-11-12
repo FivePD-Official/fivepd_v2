@@ -6,7 +6,6 @@ using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Extensions;
 using FivePD.Common.Models;
-using FivePD.Common.Utilities;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
@@ -223,20 +222,17 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                 unit,
                 new ConfirmationProperties
                 {
-                    Notification = new ConfirmationProperties.NotificationProperties
+                    Title = "LABEL.DISPATCH.911_CALLOUT",
+                    Message = "LABEL.CALLOUT.CONTENT",
+                    MessageParams = new Dictionary<string, string>
                     {
-                        Texture = "CHAR_CALL911",
-                        Sender = "LABEL.DISPATCH",
-                        Subject = "LABEL.CALLOUT.TITLE", // TODO: check if this is new GtaStyleText().Yellow("LABEL.CALLOUT.TITLE").Build() and the title value is "Callout" without color, the text is correctly translated on the client
-                        Content = "LABEL.CALLOUT.CONTENT",
-                        ContentParams = new Dictionary<string, string>
-                        {
-                            ["title"] = new GtaStyleText()
-                                .Append(internalCallout.Callout.Title)
-                                .NewLine()
-                                .Build(),
-                            ["priority"] = internalCallout.Callout.Priority.GetLabelKey(),
-                        },
+                        ["title"] = internalCallout.Callout.Title,
+                        ["priority"] = internalCallout.Callout.Priority.GetLabelKey(),
+                    },
+                    PlayAudio = AudioFiles.BoopBoop,
+                    Keys = new Dictionary<string, string>
+                    {
+                        { "F1", "Accept" },
                     },
                 },
                 response =>

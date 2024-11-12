@@ -34,9 +34,9 @@ internal class AudioService : IAudioService, IOnInit
     }
 
     /// <inheritdoc />
-    public void Play(Sound sound)
+    public void Play(AudioFiles audioFiles)
     {
-        this.Play(sound.GetDescription());
+        this.Play(audioFiles.GetDescription());
     }
 
     /// <inheritdoc />

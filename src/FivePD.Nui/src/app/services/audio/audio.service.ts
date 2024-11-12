@@ -28,13 +28,13 @@ export class AudioService {
 
     this._listening = true;
 
-    this._eventService.onEvent<OnAudioSpeak>('fivepd:audio:playSound').subscribe(e => this.onPlaySound(e));
+    this._eventService.onEvent<OnAudioSpeak>('fivepd:audio:playSound').subscribe(e => this.playSound(e.Sound));
     this._eventService.onEvent<OnAudioPlaySound>('fivepd:audio:speak').subscribe(e => this.onSpeak(e));
   }
 
-  onPlaySound(event: OnAudioSpeak): void {
+  playSound(soundSrc: string): void {
     const sound = new Howl({
-      src: [`./assets/sounds/${event.Sound}`],
+      src: [`./assets/sounds/${soundSrc}`],
       volume: this._audioVolume
     });
 

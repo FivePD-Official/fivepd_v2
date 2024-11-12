@@ -16,7 +16,7 @@ internal static class FPlayerExtensions
     /// </summary>
     /// <param name="player">The player to trigger the specified event for.</param>
     /// <param name="eventName">The event's name.</param>
-    /// <param name="data">The data to send..</param>
+    /// <param name="data">The data to send.</param>
     public static void TriggerEvent(this FPlayer player, string eventName, JObject data)
     {
         data["Event"] = eventName;
