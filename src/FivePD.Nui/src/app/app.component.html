@@ -1,6 +1,11 @@
 <div class="main-container">
-  <router-outlet />
+  <router-outlet/>
   <!--  <TimerBar />-->
-  <app-game-notification-wrapper />
+  <div class="absolute bottom-0 right-0 flex flex-col items-end gap-4">
+    <app-game-notification-wrapper/>
+    @if (_windowService.showInformation | async) {
+      <app-information/>
+    }
+  </div>
 </div>
 <!--<RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menu-id="currentMenuId" />-->

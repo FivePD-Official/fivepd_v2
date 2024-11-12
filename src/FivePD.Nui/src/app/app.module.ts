@@ -34,6 +34,7 @@ import { VariableDataService } from "@services/variable-data/variable-data.servi
 import {
     GameNotificationWrapperComponent
 } from "./components/game-notification-wrapper/game-notification-wrapper.component";
+import { InformationComponent } from "./pages/information/information.component";
 
 @NgModule({
   declarations: [AppComponent],
@@ -60,6 +61,7 @@ import {
             sidebar: sidebarReducer,
         }),
         GameNotificationWrapperComponent,
+        InformationComponent,
     ],
   providers: [
     CalloutService,

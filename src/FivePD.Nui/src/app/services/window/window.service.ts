@@ -1,20 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { EventService } from '@services/event/event.service';
-import {
-  BaseNuiEvent,
-  InformationUpdateDTO,
-  MenuShowEvent,
-  OnAudioPlaySound,
-  OnAudioSpeak,
-  TimerBarEvent
-} from '@models';
+import { BaseNuiEvent, MenuShowEvent, TimerBarEvent } from '@models';
 import { Router } from '@angular/router';
 import { UserService } from '@services/user/user.service';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { BehaviorSubject } from "rxjs";
-import { UserActions } from "@store/user.actions";
 
 @Injectable({
   providedIn: 'root'
@@ -57,9 +49,6 @@ export class WindowService {
     });
     this._eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:information').subscribe(() => {
       this.onInformationOpen();
-    });
-    this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
-      this._store.dispatch(UserActions.setInformation({information}));
     });
     this._eventService.onEvent<BaseNuiEvent>('fivepd:ui:view:welcomeModal').subscribe(() => {
       this.onWelcomeModalOpen();
