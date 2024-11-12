@@ -298,6 +298,10 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                     {
                         ["name"] = player.Name,
                     },
+                    Keys = new Dictionary<string, string>
+                    {
+                        { "F1", "Accept" },
+                    },
                     PlayAudio = AudioFiles.BoopBoop,
                 },
                 response =>

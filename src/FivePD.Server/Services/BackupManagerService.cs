@@ -73,6 +73,10 @@ public class BackupManagerService : IBackupManagerService
                     ["unitCallsign"] = unit.Callsign,
                     ["priority"] = priority.GetLabelKey()
                 },
+                Keys = new Dictionary<string, string>
+                {
+                    { "F1", "Accept" },
+                },
                 PlayAudio = AudioFiles.BoopBoop,
             }, res =>
             {
