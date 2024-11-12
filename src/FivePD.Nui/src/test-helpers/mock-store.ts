@@ -36,7 +36,6 @@ const defaultState: GlobalStateModel = {
   },
   user: {
     details: {} as any,
-    information: {} as any,
   }
 };
 

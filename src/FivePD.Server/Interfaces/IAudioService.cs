@@ -12,8 +12,8 @@ public interface IAudioService
     /// Plays a sound.
     /// </summary>
     /// <param name="player">The player to play the sound for.</param>
-    /// <param name="sound">The sound effect's name to play.</param>
-    public void Play(FPlayer player, Sound sound);
+    /// <param name="audioFiles">The sound effect's name to play.</param>
+    public void Play(FPlayer player, AudioFiles audioFiles);
 
     /// <summary>
     /// Plays a sound.

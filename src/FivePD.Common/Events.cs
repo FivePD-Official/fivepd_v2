@@ -438,6 +438,11 @@ internal readonly record struct Events
 
         public const string ShowNotificationWithTexture = "fivepd:notification:showNotificationWithTexture";
     }
+    
+    public readonly record struct GameNotification
+    {
+        public const string Notify = "fivepd:gameNotification:notify";
+    }
 
     public readonly record struct Marker
     {

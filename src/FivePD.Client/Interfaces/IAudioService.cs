@@ -10,8 +10,8 @@ internal interface IAudioService
     /// <summary>
     /// Plays a sound.
     /// </summary>
-    /// <param name="sound">The sound effect's name to play.</param>
-    public void Play(Sound sound);
+    /// <param name="audioFiles">The sound effect's name to play.</param>
+    public void Play(AudioFiles audioFiles);
 
     /// <summary>
     /// Plays a sound.

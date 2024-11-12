@@ -31,32 +31,38 @@ import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { VehicleService } from "@services/vehicle/vehicle.service";
 import { sidebarReducer } from "@store/sidebar.reducer";
 import { VariableDataService } from "@services/variable-data/variable-data.service";
+import {
+    GameNotificationWrapperComponent
+} from "./components/game-notification-wrapper/game-notification-wrapper.component";
+import { InformationComponent } from "./pages/information/information.component";
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    FormsModule,
-    TippyModule.forRoot({
-      defaultVariation: 'custom',
-      variations: {
-        custom: {
-          ...tooltipVariation,
-          theme: 'custom',
-          arrow: false,
-          animation: false,
-        }
-      }
-    }),
-    StoreModule.forRoot({
-      app: appReducer,
-      user: userReducer,
-      sidebar: sidebarReducer,
-    }),
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        ReactiveFormsModule,
+        FormsModule,
+        TippyModule.forRoot({
+            defaultVariation: 'custom',
+            variations: {
+                custom: {
+                    ...tooltipVariation,
+                    theme: 'custom',
+                    arrow: false,
+                    animation: false,
+                }
+            }
+        }),
+        StoreModule.forRoot({
+            app: appReducer,
+            user: userReducer,
+            sidebar: sidebarReducer,
+        }),
+        GameNotificationWrapperComponent,
+        InformationComponent,
+    ],
   providers: [
     CalloutService,
     CalloutDetailsService,

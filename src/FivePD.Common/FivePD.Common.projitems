@@ -39,7 +39,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\IncidentDTOs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\CommonDispatcherUnitDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\DispatcherCalloutDTO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DTO\ConfirmationDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\ControlsDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\FVehiclePropertiesDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\InformationUpdateDTO.cs" />
@@ -66,7 +65,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\MenuItemType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums\Sound.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\AudioFiles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\UserRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
@@ -82,6 +81,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\FStateBagObservable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FStateBagObservableSubscription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFPed.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\GameNotificationOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IFStatefulContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommonFVehicle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\FPedPropertiesDTO.cs" />

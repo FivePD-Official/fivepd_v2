@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Services;
 using FivePD.Server.UIModels.MenuModels;
 
 namespace FivePD.Server.UIModels;
@@ -24,6 +26,7 @@ public sealed class DispatchMenu : Menu
     private readonly IEntityService _entityService;
     private readonly INotificationService _notificationService;
     private readonly IUnitManagerService _unitManagerService;
+    private readonly IGameNotificationService _gameNotificationService;
 
     public DispatchMenu(
         IIncidentService incidentService,
@@ -31,7 +34,8 @@ public sealed class DispatchMenu : Menu
         IBackupManagerService backupManagerService,
         IEntityService entityService,
         INotificationService notificationService,
-        IUnitManagerService unitManagerService)
+        IUnitManagerService unitManagerService,
+        IGameNotificationService gameNotificationService)
         : base(Controls.DispatchMenu.Id, Controls.DispatchMenu.Title, Controls.DispatchMenu.Key)
     {
         this._incidentService = incidentService;
@@ -40,6 +44,7 @@ public sealed class DispatchMenu : Menu
         this._entityService = entityService;
         this._notificationService = notificationService;
         this._unitManagerService = unitManagerService;
+        this._gameNotificationService = gameNotificationService;
     }
 
     protected override List<MenuItem> CreateItems()
@@ -310,9 +315,11 @@ public sealed class DispatchMenu : Menu
 
     private async Task DutyNotification(FPlayer player, string message)
     {
-        this._notificationService.ShowNotification(
-            player,
-            message
-            );
+        this._gameNotificationService.Notify(player, new GameNotificationOptions
+        {
+            Title = "FivePD",
+            Message = message,
+            PlayAudio = AudioFiles.GameNotification,
+        });
     }
 }

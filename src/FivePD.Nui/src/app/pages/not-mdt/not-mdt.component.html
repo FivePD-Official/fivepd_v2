@@ -1,9 +1,6 @@
 @if (menu) {
   <app-menu [menu]="menu"/>
 }
-@if (windowService.showInformation | async) {
-  <app-information/>
-}
 @if (windowService.showWelcomeModal | async) {
   <app-welcome-modal/>
 }

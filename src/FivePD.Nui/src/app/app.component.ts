@@ -11,6 +11,7 @@ import { MenuService } from '@services/menu/menu.service';
 import { ConfigService } from "@services/config/config.service";
 import { AudioService } from "@services/audio/audio.service";
 import { FeedbackService } from "@services/feedback/feedback.service";
+import { BaseNuiEvent } from "@models";
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ import { FeedbackService } from "@services/feedback/feedback.service";
 })
 export class AppComponent implements OnInit {
 
-  private readonly _windowService = inject(WindowService);
+  protected readonly _windowService = inject(WindowService);
   private readonly _eventService = inject(EventService);
   private readonly _localizationService = inject(LocalizationService);
   private readonly _router = inject(Router);

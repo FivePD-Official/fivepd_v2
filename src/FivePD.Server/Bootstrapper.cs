@@ -297,6 +297,7 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<UnitManagerService>();
         services.AddSingleton<IUnitManagerService>(provider => provider.GetRequiredService<UnitManagerService>());
+        services.AddSingleton<IInternalUnitManagerService>(provider => provider.GetRequiredService<UnitManagerService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UnitManagerService>());
 
         services.AddSingleton<UnitService>();
@@ -427,6 +428,9 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<RankService>();
         services.AddSingleton<IRankService>(provider => provider.GetRequiredService<RankService>());
+
+        services.AddSingleton<GameNotificationService>();
+        services.AddSingleton<IGameNotificationService>(provider => provider.GetRequiredService<GameNotificationService>());
 
         this._provider = services.BuildServiceProvider();
 

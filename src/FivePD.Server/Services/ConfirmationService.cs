@@ -30,40 +30,33 @@ public class ConfirmationService : IConfirmationService
     public void TriggerConfirmation(
         Player player,
         ConfirmationProperties properties,
-        Action<bool> callback,
-        int timeoutInMs = 5000)
+        Action<bool> callback)
     {
         this._eventService.TriggerEventStrict(
             player,
             Events.Generic.Action,
             response => callback.Invoke(bool.Parse(response)),
-            JsonConvert.SerializeObject(new ConfirmationDTO
-            {
-                TimeoutInMs = timeoutInMs,
-                Properties = properties,
-            }));
+            JsonConvert.SerializeObject(properties));
     }
 
     /// <inheritdoc/>
     public void TriggerConfirmation(
         FPlayer player,
         ConfirmationProperties properties,
-        Action<bool> callback,
-        int timeoutInMs = 5000)
+        Action<bool> callback)
     {
-        this.TriggerConfirmation(player.GetUnderlyingPlayer(), properties, callback, timeoutInMs);
+        this.TriggerConfirmation(player.GetUnderlyingPlayer(), properties, callback);
     }
 
     /// <inheritdoc/>
     public void TriggerConfirmation(
         Unit unit,
         ConfirmationProperties properties,
-        Action<bool> callback,
-        int timeoutInMs = 5000)
+        Action<bool> callback)
     {
         foreach (var player in unit.Players)
         {
-            this.TriggerConfirmation(player, properties, callback, timeoutInMs);
+            this.TriggerConfirmation(player, properties, callback);
         }
     }
 }

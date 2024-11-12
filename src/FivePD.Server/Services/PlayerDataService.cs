@@ -262,8 +262,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     {
         var fPlayer = FPlayer.FromNetId(player.Handle);
 
-        this._audioService.Play(fPlayer, Sound.Beep);
-
         this._notificationService.ShowNotificationWithTexture(
             this._playerList.Where(p => p.Handle != player.Handle),
             "CHAR_CALL911",

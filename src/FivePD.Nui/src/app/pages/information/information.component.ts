@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { EventService } from "@services/event/event.service";
-import { InformationUpdateDTO } from "@models";
+import { BaseNuiEvent, InformationUpdateDTO } from "@models";
 import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { UserActions } from "@store/user.actions";
 
 @Component({
   selector: 'app-information',
@@ -25,8 +26,8 @@ export class InformationComponent {
 
   constructor(private readonly _eventService: EventService,
               private readonly _store: Store<GlobalState>) {
-    _store.select('user', 'information').subscribe(information => {
-      this.information = information
+    this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
+      this.information = information;
     });
   }
 

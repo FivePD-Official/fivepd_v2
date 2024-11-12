@@ -10,6 +10,7 @@ using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Client.Services;
 using FivePD.Common;
+using FivePD.Common.Models;
 using FivePD.Common.Utilities;
 using CfxUI = CitizenFX.Core.UI;
 
@@ -410,6 +411,12 @@ internal class Bootstrapper : BaseScript
         services
             .RegisterType<RankService>()
             .As<IRankService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
+        services
+            .RegisterType<GameNotificationService>()
+            .As<IGameNotificationService>()
             .As<IOnInit>()
             .IsSingleton();
 

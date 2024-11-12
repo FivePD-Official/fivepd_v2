@@ -66,18 +66,18 @@ public class BackupManagerService : IBackupManagerService
         {
             this._confirmationService.TriggerConfirmation(unit, new ConfirmationProperties
             {
-                Notification = new ConfirmationProperties.NotificationProperties
+                Title = "LABEL.DISPATCH.TITLE",
+                Message = "LABEL.BACKUP.CONTENT",
+                MessageParams = new Dictionary<string, string>
                 {
-                    Texture = "CHAR_CALL911",
-                    Sender = "LABEL.DISPATCH",
-                    Subject = "LABEL.BACKUP.TITLE",
-                    Content = "LABEL.BACKUP.CONTENT",
-                    ContentParams = new Dictionary<string, string>
-                    {
-                        ["unitCallsign"] = unit.Callsign,
-                        ["priority"] = priority.GetLabelKey()
-                    },
-                }
+                    ["unitCallsign"] = unit.Callsign,
+                    ["priority"] = priority.GetLabelKey()
+                },
+                Keys = new Dictionary<string, string>
+                {
+                    { "F1", "Accept" },
+                },
+                PlayAudio = AudioFiles.BoopBoop,
             }, res =>
             {
                 if (!res)

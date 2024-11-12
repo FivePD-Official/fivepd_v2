@@ -10,9 +10,9 @@ namespace FivePD.Server.Services;
 public class AudioService : IAudioService
 {
     /// <inheritdoc />
-    public void Play(FPlayer player, Sound sound)
+    public void Play(FPlayer player, AudioFiles audioFiles)
     {
-        this.Play(player, sound.GetDescription());
+        this.Play(player, audioFiles.GetDescription());
     }
 
     /// <inheritdoc />
