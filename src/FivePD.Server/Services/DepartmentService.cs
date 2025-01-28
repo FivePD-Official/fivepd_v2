@@ -61,15 +61,6 @@ public class DepartmentService : IDepartmentService
     public event EventHandler<PlayerDepartmentChangeEventArgs> PlayerLeftDepartment;
 
     /// <inheritdoc />
-    public event EventHandler<Rank> RankCreated;
-
-    /// <inheritdoc />
-    public event EventHandler<Rank> RankUpdated;
-
-    /// <inheritdoc />
-    public event EventHandler<Rank> RankDeleted;
-
-    /// <inheritdoc />
     public event EventHandler<Division> DivisionCreated;
 
     /// <inheritdoc />

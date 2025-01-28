@@ -29,21 +29,6 @@ public interface IDepartmentService
     public event EventHandler<Department> DepartmentDeleted;
 
     /// <summary>
-    /// Fires when a rank has been created.
-    /// </summary>
-    public event EventHandler<Rank> RankCreated;
-
-    /// <summary>
-    /// Fires when a rank has been edited.
-    /// </summary>
-    public event EventHandler<Rank> RankUpdated;
-
-    /// <summary>
-    /// Fires when a rank has been deleted.
-    /// </summary>
-    public event EventHandler<Rank> RankDeleted;
-
-    /// <summary>
     /// Fires when a division has been created.
     /// </summary>
     public event EventHandler<Division> DivisionCreated;
