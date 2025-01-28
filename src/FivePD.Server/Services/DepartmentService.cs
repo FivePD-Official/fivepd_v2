@@ -82,7 +82,7 @@ public class DepartmentService : IDepartmentService
             throw new ArgumentException("The name of the department can't be null or empty");
         }
 
-        var departmentExists = this._databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name);
+        var departmentExists = this._databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name && d.Id != department.Id);
         if (departmentExists is not null)
         {
             throw new DepartmentExistsWithNameException();
@@ -118,6 +118,12 @@ public class DepartmentService : IDepartmentService
             throw new ArgumentException("The name of the department can't be null or empty");
         }
         
+        var departmentExists = this._databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name && d.Id != department.Id);
+        if (departmentExists is not null)
+        {
+            throw new DepartmentExistsWithNameException();
+        }
+        
         departmentEntity.Name = department.Name;
         departmentEntity.DepartmentRanks = department.DepartmentRanks;
         departmentEntity.Divisions = department.Divisions;
@@ -140,6 +146,74 @@ public class DepartmentService : IDepartmentService
     {
         this._databaseContext.Departments.Remove(department);
         this._databaseContext.SaveChanges();
+        this.DepartmentDeleted?.Invoke(this, department);
+    }
+    
+     /// <inheritdoc />
+    public Division CreateDivision(Division division)
+    {
+        if (division is null)
+        {
+            return null;
+        }
+
+        if (string.IsNullOrEmpty(division.Name))
+        {
+            return null;
+        }
+
+        var divisionExists = this._databaseContext.Divisions.FirstOrDefault(d => d.Name == division.Name);
+        if (divisionExists is not null)
+        {
+            throw new DivisionExistsWithNameException();
+        }
+
+        var divisionEntry = this._databaseContext.Divisions.Add(division);
+        this._databaseContext.SaveChanges();
+        this.DivisionCreated?.Invoke(this, divisionEntry.Entity);
+        return divisionEntry.Entity;
+    }
+
+    /// <inheritdoc />
+    public Division UpdateDivision(Division division)
+    {
+        if (division is null)
+        {
+            return null;
+        }
+        
+        var divisionEntity = this._databaseContext.Divisions.FirstOrDefault(d => d.Name == division.Name);
+        if (divisionEntity is null)
+        {
+            return null;
+        }
+        
+        if (string.IsNullOrEmpty(division.Name))
+        {
+            throw new ArgumentException("The name of the division can't be null or empty");
+        }
+        
+        var divisionExists = this._databaseContext.Divisions.FirstOrDefault(d => d.Name == division.Name && d.Id != division.Id);
+        if (divisionExists is not null)
+        {
+            throw new DivisionExistsWithNameException();
+        }
+        
+        divisionEntity.Name = division.Name;
+        divisionEntity.Users = division.Users;
+        divisionEntity.Department = division.Department;
+
+        this._databaseContext.SaveChanges();
+        this.DivisionUpdated?.Invoke(this, divisionEntity);
+        return divisionEntity;
+    }
+
+    /// <inheritdoc />
+    public void DeleteDivision(Division division)
+    {
+        this._databaseContext.Divisions.Remove(division);
+        this._databaseContext.SaveChanges();
+        this.DivisionDeleted?.Invoke(this, division);
     }
 
     /// <inheritdoc />

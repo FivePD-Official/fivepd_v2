@@ -72,10 +72,30 @@ public interface IDepartmentService
     public Department UpdateDepartment(Department department);
 
     /// <summary>
-    /// Removes a <see cref="Department"/> from the 'departments' table.
+    /// Deletes a <see cref="Department"/> from the 'departments' table.
     /// </summary>
     /// <param name="department">The department to remove.</param>
     public void DeleteDepartment(Department department);
+
+    /// <summary>
+    /// Inserts a <see cref="Division"/> into the 'divisions' table.
+    /// </summary>
+    /// <param name="division">The division to insert.</param>
+    /// <returns>The created division object with change tracking.</returns>
+    public Division CreateDivision(Division division);
+
+    /// <summary>
+    /// Updates the given division.
+    /// </summary>
+    /// <param name="division">The division to update.</param>
+    /// <returns>The updated division object with change tracking.</returns>
+    public Division UpdateDivision(Division division);
+
+    /// <summary>
+    /// Deletes a <see cref="Division"/> from the 'departments' table.
+    /// </summary>
+    /// <param name="division">The department to remove.</param>
+    public void DeleteDivision(Division division);
 
     /// <summary>
     /// Selects and returns all departments.
