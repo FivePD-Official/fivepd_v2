@@ -63,10 +63,19 @@ public interface IDepartmentService
     public Department CreateDepartment(Department department);
 
     /// <summary>
+    /// Updates the given department.
+    /// </summary>
+    /// <param name="department">The department to update.</param>
+    /// <exception cref="ArgumentException">The provided department or its name is null.</exception>
+    /// <exception cref="DepartmentExistsWithNameException">A department already exists with the same name.</exception>
+    /// <returns>The updated department object with change tracking.</returns>
+    public Department UpdateDepartment(Department department);
+
+    /// <summary>
     /// Removes a <see cref="Department"/> from the 'departments' table.
     /// </summary>
     /// <param name="department">The department to remove.</param>
-    public void RemoveDepartment(Department department);
+    public void DeleteDepartment(Department department);
 
     /// <summary>
     /// Selects and returns all departments.

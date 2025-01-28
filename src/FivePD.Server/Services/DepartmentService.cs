@@ -100,7 +100,43 @@ public class DepartmentService : IDepartmentService
     }
 
     /// <inheritdoc />
-    public void RemoveDepartment(Department department)
+    public Department UpdateDepartment(Department department)
+    {
+        if (department is null)
+        {
+            throw new ArgumentException("The provided department is null");
+        }
+        
+        var departmentEntity = this._databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name);
+        if (departmentEntity is null)
+        {
+            throw new ArgumentException("The provided department does not exist");
+        }
+        
+        if (string.IsNullOrEmpty(department.Name))
+        {
+            throw new ArgumentException("The name of the department can't be null or empty");
+        }
+        
+        departmentEntity.Name = department.Name;
+        departmentEntity.DepartmentRanks = department.DepartmentRanks;
+        departmentEntity.Divisions = department.Divisions;
+        departmentEntity.Callsign = department.Callsign;
+        departmentEntity.CalloutDetailsDepartments = department.CalloutDetailsDepartments;
+        departmentEntity.AreaCoordinates = department.AreaCoordinates;
+        departmentEntity.Users = department.Users;
+        departmentEntity.CallsignFormat = department.CallsignFormat;
+        departmentEntity.DefaultRank = department.DefaultRank;
+        departmentEntity.MaxUsers = department.MaxUsers;
+        departmentEntity.UseGlobalRanks = department.UseGlobalRanks;
+
+        this._databaseContext.SaveChanges();
+        this.DepartmentUpdated?.Invoke(this, departmentEntity);
+        return departmentEntity;
+    }
+
+    /// <inheritdoc />
+    public void DeleteDepartment(Department department)
     {
         this._databaseContext.Departments.Remove(department);
         this._databaseContext.SaveChanges();
