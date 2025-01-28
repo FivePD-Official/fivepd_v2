@@ -26,7 +26,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Initializes a new instance of the <see cref="FPlayer"/> class.
     /// </summary>
     /// <param name="netId">The network identifier that corresponds to the player.</param>
-    public FPlayer(string netId)
+    private FPlayer(string netId)
     {
         this.NetId = netId;
 
