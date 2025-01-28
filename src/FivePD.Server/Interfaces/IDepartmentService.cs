@@ -116,6 +116,20 @@ public interface IDepartmentService
     public void RemovePlayerFromDepartment(Player player);
 
     /// <summary>
+    /// The given player will be removed from their department.
+    /// </summary>
+    /// <param name="player">The user to update.</param>
+    /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+    public void RemovePlayerFromDepartment(FPlayer player);
+
+    /// <summary>
+    /// Gets the department of the given player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The department of the player.</returns>
+    public Department GetPlayerDepartment(Player player);
+
+    /// <summary>
     /// Gets the department of the given player.
     /// </summary>
     /// <param name="player">The player.</param>

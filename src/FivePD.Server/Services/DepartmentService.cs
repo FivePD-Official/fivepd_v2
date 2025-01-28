@@ -175,6 +175,18 @@ public class DepartmentService : IDepartmentService
     }
 
     /// <inheritdoc />
+    public void RemovePlayerFromDepartment(FPlayer player)
+    {
+        this.RemovePlayerFromDepartment(this._playerDataService.FindUserByLicense(player.GetUnderlyingPlayer()));
+    }
+
+    /// <inheritdoc />
+    public Department GetPlayerDepartment(Player player)
+    {
+        return this.GetPlayerDepartment(FPlayer.FromPlayer(player));
+    }
+
+    /// <inheritdoc />
     public Department GetPlayerDepartment(FPlayer player)
     {
         var user = player.User;
