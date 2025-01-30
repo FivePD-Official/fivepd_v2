@@ -4,7 +4,6 @@ import { GameNotificationOptions } from "../../models/game-notification";
 import { delay, mergeMap, of, switchMap, takeUntil, tap, timer } from "rxjs";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { AudioService } from "@services/audio/audio.service";
-import { AudioFiles } from "@services/audio/constants";
 import { LocalizationService } from "@services/localization/localization.service";
 import { DomSanitizer } from "@angular/platform-browser";
 
@@ -64,7 +63,7 @@ export class GameNotificationWrapperComponent implements OnInit {
     });
 
     if (notification.PlayAudio) {
-      this._audioService.playSound(Object.values(AudioFiles)[notification.PlayAudio as any]);
+      this._audioService.playSound(notification.PlayAudio);
     }
   }
 

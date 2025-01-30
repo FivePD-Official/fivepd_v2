@@ -4,6 +4,7 @@ import { OnAudioPlaySound, OnAudioSpeak } from "@models";
 import { Howl } from 'howler';
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,7 @@ export class AudioService {
 
   playSound(soundSrc: string): void {
     const sound = new Howl({
-      src: [`./assets/sounds/${soundSrc}`],
+      src: [environment.production ? 'TODO' : `http://localhost:3000/audio/${soundSrc}`],
       volume: this._audioVolume
     });
 

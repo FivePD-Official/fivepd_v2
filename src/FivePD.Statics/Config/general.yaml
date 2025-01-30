@@ -20,6 +20,14 @@ Features:
 
 # DateFormat: MM-dd-yyyy TODO: not implemented yet
 
+Audio:
+  # file names should be relative to the "fivepd/Audio" directory
+  # TODO (later?): separate keys for operations
+  Files:
+    SingleBeep: "single_beep.mp3"
+    DoubleBeep: "double_beep.mp3"
+    Notification: "notification.mp3"
+
 Unit:
   MaxMembers: 0 # 0 = unlimited, 1+ = limited
   Join: FREE # FREE = anyone can join, REQUEST = players have to request to join

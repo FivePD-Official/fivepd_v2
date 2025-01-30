@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using FivePD.Common.ConfigModels.GeneralConfigs;
+﻿using FivePD.Common.ConfigModels.GeneralConfigs;
 
 namespace FivePD.Common.ConfigModels;
 
@@ -27,6 +26,8 @@ public sealed record GeneralConfig : IInternalGeneralConfig
     }
 
     public string DefaultLanguage { get; init; } = string.Empty;
+    
+    public AudioConfig Audio { get; init; } = new();
 
     public UnitConfig Unit { get; init; } = new();
 

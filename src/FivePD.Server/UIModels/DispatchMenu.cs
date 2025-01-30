@@ -11,7 +11,6 @@ using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
-using FivePD.Server.Services;
 using FivePD.Server.UIModels.MenuModels;
 
 namespace FivePD.Server.UIModels;
@@ -319,7 +318,7 @@ public sealed class DispatchMenu : Menu
         {
             Title = "FivePD",
             Message = message,
-            PlayAudio = AudioFiles.GameNotification,
+            PlayAudio = this._configService.GeneralConfig.Audio.Files.SingleBeep,
         });
     }
 }

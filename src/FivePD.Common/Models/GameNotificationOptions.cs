@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
 
 namespace FivePD.Common.Models;
@@ -52,5 +53,5 @@ public record GameNotificationOptions
     /// <summary>
     /// Gets a value indicating whether a sound should be played when this notification appears.
     /// </summary>
-    public AudioFiles? PlayAudio { get; init; }
+    public string PlayAudio { get; init; }
 }

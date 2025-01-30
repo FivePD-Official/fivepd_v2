@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
 using FivePD.Common.Extensions;
 using FivePD.Common.Models;
@@ -77,7 +78,7 @@ public class BackupManagerService : IBackupManagerService
                 {
                     { "F1", "Accept" },
                 },
-                PlayAudio = AudioFiles.BoopBoop,
+                PlayAudio = this._configService.GeneralConfig.Audio.Files.SingleBeep,
             }, res =>
             {
                 if (!res)

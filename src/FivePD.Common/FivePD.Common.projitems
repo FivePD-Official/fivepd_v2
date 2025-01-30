@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\AlcoholConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\AssistanceServicesConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\AudioConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\CalloutConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DatabaseConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\FeatureFlagsConfig.cs" />
@@ -65,7 +66,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FVehicleWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\FWeaponHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\MenuItemType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enums\AudioFiles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\UserRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\EmptyConfigException.cs" />
