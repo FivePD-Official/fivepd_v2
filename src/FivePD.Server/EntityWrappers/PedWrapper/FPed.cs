@@ -27,6 +27,7 @@ public class FPed : FEntity, IFStatefulContainer
     {
         this.NetworkId = fPedBuilder.NetworkId;
 
+        this.OwningVehicleId = fPedBuilder.OwningVehicleId;
         this.Birthdate = fPedBuilder.Birthdate;
         this.Firstname = fPedBuilder.Firstname;
         this.Lastname = fPedBuilder.Lastname;
@@ -48,6 +49,7 @@ public class FPed : FEntity, IFStatefulContainer
     {
         this.NetworkId = fPed.NetworkId;
 
+        this.OwningVehicleId = fPed.OwningVehicleId;
         this.Birthdate = fPed.Birthdate;
         this.Firstname = fPed.Firstname;
         this.Lastname = fPed.Lastname;
@@ -120,6 +122,11 @@ public class FPed : FEntity, IFStatefulContainer
     /// Gets the entity's network identifier.
     /// </summary>
     public int NetworkId { get; }
+
+    /// <summary>
+    /// Gets the id of the vehicle the ped is owning.
+    /// </summary>
+    public int OwningVehicleId { get; }
 
     /// <summary>
     /// Gets the gender of the ped.

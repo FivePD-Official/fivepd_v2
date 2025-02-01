@@ -6,6 +6,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Server.Attributes;
+using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
@@ -24,6 +25,7 @@ public class VehicleService : IVehicleService, IOnInit
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
     private readonly IPedService _pedService;
+    private readonly DatabaseContext _databaseContext;
 
     private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new();
 
@@ -33,11 +35,17 @@ public class VehicleService : IVehicleService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
     /// <param name="pedService">The <see cref="IPedService" /> to use.</param>
-    public VehicleService(EventHandlerDictionary eventHandlerDictionary, IConfigService configService, IPedService pedService)
+    /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
+    public VehicleService(
+        EventHandlerDictionary eventHandlerDictionary,
+        IConfigService configService,
+        IPedService pedService,
+        DatabaseContext databaseContext)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._pedService = pedService;
+        this._databaseContext = databaseContext;
     }
 
     /// <inheritdoc/>
@@ -55,7 +63,12 @@ public class VehicleService : IVehicleService, IOnInit
             return vehicle;
         }
 
-        vehicle = FVehicle.FromNetId(networkId);
+        vehicle = FVehicle.FromNetId(networkId); // TODO: this should not exist, it's an empty instance from the builder (??)
+        if (vehicle is null)
+        {
+            return null;
+        }
+
         this._vehicles[networkId] = vehicle;
 
         return vehicle;
@@ -63,6 +76,7 @@ public class VehicleService : IVehicleService, IOnInit
 
     private void GenerateVehicle(string serializedFVehicleBuilder)
     {
+        Debug.WriteLine($"GenerateVehicle - {serializedFVehicleBuilder}");
         var fVehicleBuilderDto = JsonConvert.DeserializeObject<CommonFVehicleBuilder>(serializedFVehicleBuilder);
         if (fVehicleBuilderDto is null || this._vehicles.ContainsKey(fVehicleBuilderDto.NetworkId))
         {
@@ -72,6 +86,7 @@ public class VehicleService : IVehicleService, IOnInit
         var fVehicle = new FVehicleBuilder(fVehicleBuilderDto)
             .WithItems(this._configService.Items)
             .WithRandomDocuments(this._configService.GeneralConfig.Vehicles.Documents)
+            .WithPedHistory(this._pedService.TryGetPed(fVehicleBuilderDto.OwnerNetworkId).GetPedHistory())
             .Build();
 
         Debug.WriteLine($"Generated data for vehicle with net ID of {fVehicle.NetworkId} - License plate: {fVehicle.LicensePlate}");
@@ -117,7 +132,7 @@ public class VehicleService : IVehicleService, IOnInit
             Items = values
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(x => x.ToDto(this._pedService.TryGetPed(x.OwnerNetworkId).GetPedHistory()))
+                .Select(vehicle => vehicle.ToDto(this._databaseContext.PedHistories.FirstOrDefault(pedHistory => pedHistory.Id == vehicle.PedHistoryId)))
                 .ToList(),
         };
         var pageCount = (int)Math.Ceiling((double)page.ItemCount / pageSize);

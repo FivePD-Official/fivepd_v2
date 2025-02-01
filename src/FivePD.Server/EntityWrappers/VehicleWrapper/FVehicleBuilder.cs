@@ -25,9 +25,20 @@ public class FVehicleBuilder : CommonFVehicleBuilder
     }
 
     /// <summary>
+    /// Gets the PedHistory id.
+    /// </summary>
+    public int PedHistoryId { get; set; }
+
+    /// <summary>
     /// Gets the documents of the vehicle.
     /// </summary>
     public List<VehicleDocument> Documents { get; } = new();
+
+    public FVehicleBuilder WithPedHistory(PedHistory pedHistory)
+    {
+        this.PedHistoryId = pedHistory?.Id ?? 0;
+        return this;
+    }
     
     public FVehicleBuilder WithItems(IEnumerable<Item> items)
     {

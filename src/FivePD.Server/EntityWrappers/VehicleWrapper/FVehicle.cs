@@ -29,6 +29,7 @@ public class FVehicle : FEntity, IFStatefulContainer
         this.Color = builder.Color;
         this.Brand = builder.Brand;
         this.Items = builder.Items;
+        this.PedHistoryId = builder.PedHistoryId;
         this.OwnerNetworkId = builder.OwnerNetworkId;
         this.Documents = builder.Documents;
 
@@ -40,6 +41,11 @@ public class FVehicle : FEntity, IFStatefulContainer
     /// Gets the vehicle's network identifier.
     /// </summary>
     public int NetworkId { get; }
+
+    /// <summary>
+    /// Gets the PedHistory id.
+    /// </summary>
+    public int PedHistoryId { get; }
 
     /// <summary>
     /// Gets the network identifier of the vehicle's owner ped.

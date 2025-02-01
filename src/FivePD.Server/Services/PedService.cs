@@ -33,7 +33,6 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private readonly DatabaseContext _databaseContext;
     private readonly IRandomService _randomService;
     private readonly ITickQueueService _tickQueueService;
-    private readonly IVariableDataService _variableDataService;
 
     private readonly ConcurrentDictionary<int, FPed> _peds = new();
     private Guid _checkPedsId;
@@ -46,21 +45,18 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
-    /// <param name="variableDataService">The <see cref="IVariableDataService" /> to use.</param>
     public PedService(
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
         DatabaseContext databaseContext,
         IRandomService randomService,
-        ITickQueueService tickQueueService,
-        IVariableDataService variableDataService)
+        ITickQueueService tickQueueService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._databaseContext = databaseContext;
         this._randomService = randomService;
         this._tickQueueService = tickQueueService;
-        this._variableDataService = variableDataService;
     }
 
     /// <inheritdoc/>
@@ -129,6 +125,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             if (pedHistory is not null)
             {
                 fPed = fPedBuilder
+                    .WithOwningVehicleId(pedHistory.OwningVehicleId)
                     .WithFirstname(pedHistory.Firstname)
                     .WithLastname(pedHistory.Lastname)
                     .WithBirthdate(pedHistory.Birthdate)
@@ -148,6 +145,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         if (fPed is null)
         {
             fPed = fPedBuilder
+                .WithOwningVehicleId(commonFPedBuilder.OwningVehicleId)
                 .WithFirstname(commonFPedBuilder.Gender == FGender.Female ? this._configService.FemaleFirstnames : this._configService.MaleFirstnames)
                 .WithLastname(this._configService.Lastnames)
                 .WithBirthdate()
@@ -165,6 +163,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 .Build();
             var entry = this._databaseContext.PedHistories.Add(new PedHistory
             {
+                OwningVehicleId = fPed.OwningVehicleId,
                 Firstname = fPed.Firstname,
                 Lastname = fPed.Lastname,
                 Birthdate = fPed.Birthdate,
@@ -180,7 +179,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         }
 
         Debug.WriteLine($"Generated data for ped with net ID of {fPed.NetworkId} - Name: {fPed.Firstname} {fPed.Lastname}");
-
+        
         fPed.HasGeneratedData.Value = true;
         this._peds[fPed.NetworkId] = fPed;
     }
