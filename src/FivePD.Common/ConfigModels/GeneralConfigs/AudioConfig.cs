@@ -11,9 +11,9 @@ public sealed record AudioFiles
 {
     public string DutyNotification { get; init; }
 
-    public string SingleBeep { get; init; }
+    public string UnitJoinRequest { get; init; }
 
-    public string DoubleBeep { get; init; }
-
-    public string Notification { get; init; }
+    public string BackupRequested { get; init; }
+    
+    public string CalloutDispatched { get; init; }
 }

@@ -302,7 +302,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                     {
                         { "F1", "Accept" },
                     },
-                    PlayAudio = this._configService.GeneralConfig.Audio.Files.SingleBeep,
+                    PlayAudio = this._configService.GeneralConfig.Audio.Files.UnitJoinRequest,
                 },
                 response =>
                 {

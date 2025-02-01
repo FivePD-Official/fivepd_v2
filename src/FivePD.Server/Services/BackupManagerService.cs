@@ -78,7 +78,7 @@ public class BackupManagerService : IBackupManagerService
                 {
                     { "F1", "Accept" },
                 },
-                PlayAudio = this._configService.GeneralConfig.Audio.Files.SingleBeep,
+                PlayAudio = this._configService.GeneralConfig.Audio.Files.BackupRequested,
             }, res =>
             {
                 if (!res)

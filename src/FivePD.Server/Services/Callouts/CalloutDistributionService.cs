@@ -229,7 +229,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                         ["title"] = internalCallout.Callout.Title,
                         ["priority"] = internalCallout.Callout.Priority.GetLabelKey(),
                     },
-                    PlayAudio = this._configService.GeneralConfig.Audio.Files.SingleBeep,
+                    PlayAudio = this._configService.GeneralConfig.Audio.Files.CalloutDispatched,
                     Keys = new Dictionary<string, string>
                     {
                         { "F1", "Accept" },
