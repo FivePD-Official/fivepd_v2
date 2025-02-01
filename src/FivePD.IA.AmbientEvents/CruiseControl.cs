@@ -30,7 +30,7 @@ public class CruiseControl : IExtension
     public Task OnStartedAsync()
     {
         this._controlService.RegisterKeybind("fivepd::cruiseControl::toggle", "K", "Toggle cruise control", player => this.OnKeyPress(player));
-        this._intervalId = this._tickQueueService.EnqueueInterval(this.OnTick, 500);
+        this._intervalId = this._tickQueueService.EnqueueInterval(this.OnTick, 100);
 
         return Task.CompletedTask;
     }

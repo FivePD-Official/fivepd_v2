@@ -9,6 +9,8 @@ public sealed record AudioConfig
 
 public sealed record AudioFiles
 {
+    public string DutyNotification { get; init; }
+
     public string SingleBeep { get; init; }
 
     public string DoubleBeep { get; init; }

@@ -12,6 +12,7 @@ import { ConfigService } from "@services/config/config.service";
 import { AudioService } from "@services/audio/audio.service";
 import { FeedbackService } from "@services/feedback/feedback.service";
 import { BaseNuiEvent } from "@models";
+import { UserService } from "@services/user/user.service";
 
 @Component({
   selector: 'app-root',
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit {
   private readonly _configService = inject(ConfigService);
   private readonly _soundService = inject(AudioService);
   private readonly _feedbackService = inject(FeedbackService);
+  private readonly _userService = inject(UserService);
 
   private calculatedContainerMargin: string = '';
 
@@ -50,6 +52,7 @@ export class AppComponent implements OnInit {
 
     this._eventService.onEvent('fivepd:lifecycle:serverBootstrapped').subscribe(() => {
       this._menuService.load();
+      this._userService.refreshData();
     });
 
     this._configService.getSafeZoneSize().subscribe(safeZoneSize => {

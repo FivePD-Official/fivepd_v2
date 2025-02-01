@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { EventService } from "@services/event/event.service";
 import { OnAudioPlaySound, OnAudioSpeak } from "@models";
-import { Howl } from 'howler';
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { environment } from "../../../environments/environment";
@@ -18,6 +17,7 @@ export class AudioService {
 
   constructor(private readonly _store: Store<GlobalState>) {
     _store.select('user', 'details').subscribe(user => {
+      console.log(user);
       this._audioVolume = user?.User?.AudioVolume ?? 0;
     });
   }
@@ -34,12 +34,17 @@ export class AudioService {
   }
 
   playSound(soundSrc: string): void {
-    const sound = new Howl({
-      src: [environment.production ? 'TODO' : `http://localhost:3000/audio/${soundSrc}`],
-      volume: this._audioVolume
+    const url = environment.production ? 'TODO' : `http://localhost:3000/audio/${soundSrc}`;
+    const audio = new Audio(url);
+    audio.volume = this._audioVolume;
+    void audio.play();
+    audio.addEventListener("canplaythrough", () => {
+      audio.play().catch(() => {
+        window.addEventListener('click', () => {
+          void audio.play();
+        }, {once: true});
+      });
     });
-
-    sound.play();
   }
 
   onSpeak(event: OnAudioPlaySound): void {

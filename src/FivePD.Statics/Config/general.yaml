@@ -24,6 +24,7 @@ Audio:
   # file names should be relative to the "fivepd/Audio" directory
   # TODO (later?): separate keys for operations
   Files:
+    DutyNotification: "notification.mp3"
     SingleBeep: "single_beep.mp3"
     DoubleBeep: "double_beep.mp3"
     Notification: "notification.mp3"

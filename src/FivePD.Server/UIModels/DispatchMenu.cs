@@ -318,7 +318,7 @@ public sealed class DispatchMenu : Menu
         {
             Title = "FivePD",
             Message = message,
-            PlayAudio = this._configService.GeneralConfig.Audio.Files.SingleBeep,
+            PlayAudio = this._configService.GeneralConfig.Audio.Files.DutyNotification,
         });
     }
 }
