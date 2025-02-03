@@ -20,8 +20,11 @@ public sealed class FPedProperties
     private readonly FPed _fPed;
     private readonly IEventService _eventService;
 
-    private FGender _gender;
-    private bool _fetchedGender;
+#pragma warning disable S125
+
+    // private FGender _gender;
+    // private bool _fetchedGender;
+#pragma warning restore S125
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FPedProperties"/> class.
@@ -31,7 +34,6 @@ public sealed class FPedProperties
     {
         this._fPed = fPed;
         this._eventService = ServiceLocator.GetService<IEventService>();
-        this._gender = this._fPed.Gender;
     }
 
     /// <summary>
@@ -79,24 +81,29 @@ public sealed class FPedProperties
     /// </summary>
     public Task<float> FatalInjuryHealthThreshold => this.GetPropertyFloatAsync(FPedPropertiesDTO.Events.FatalInjuryHealthThreshold);
 
+    // TODO: might remove
+#pragma warning disable CS1587
+#pragma warning disable S125
     /// <summary>
     /// Gets the gender.
     /// </summary>
     /// <returns>A task.</returns>
-    public async Task<FGender> Gender()
-    {
-        if (this._fetchedGender)
-        {
-            return this._gender;
-        }
-
-        var gender = (FGender)await this.GetPropertyIntAsync(FPedPropertiesDTO.Events.Gender);
-        this._gender = gender;
-        this._fPed.Gender = gender;
-        this._fetchedGender = true;
-
-        return gender;
-    }
+    // public async Task<FGender> Gender()
+    // {
+    //     if (this._fetchedGender)
+    //     {
+    //         return this._gender;
+    //     }
+    //
+    //     var gender = (FGender)await this.GetPropertyIntAsync(FPedPropertiesDTO.Events.Gender);
+    //     this._gender = gender;
+    //     this._fPed.Gender = gender;
+    //     this._fetchedGender = true;
+    //
+    //     return gender;
+    // }
+#pragma warning restore CS1587
+#pragma warning restore S125
 
     /// <summary>
     /// Gets the CurrentVehicle.

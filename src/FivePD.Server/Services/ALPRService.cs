@@ -36,18 +36,24 @@ public class AlprService : IAlprService, IOnInit
     /// <inheritdoc/>
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.ALPR.Check] += Check;
+        this._eventHandlerDictionary[Events.ALPR.Check] += this.CheckVehicle;
     }
 
     private (bool Valid, string Label) GetVehicleDocumentStatus(FVehicle fVehicle, VehicleDocumentType vehicleDocumentType)
     {
-        var hasDocument = fVehicle.HasDocument(vehicleDocumentType);
+        var vehicleHistory = this._vehicleStorageService.GetVehicleHistory(this._vehicleStorageService.TryGetVehicle(fVehicle.NetworkId));
+        if (vehicleHistory is null)
+        {
+            return (false, "LABEL.UNKNOWN");
+        }
+
+        var hasDocument = vehicleHistory.HasDocument(vehicleDocumentType);
         if (!hasDocument)
         {
             return (false, "LABEL.NONE");
         }
 
-        var document = fVehicle.GetDocument(vehicleDocumentType);
+        var document = vehicleHistory.GetDocument(vehicleDocumentType);
         if (document.Status == VehicleDocumentStatus.Valid)
         {
             return (true, "LABEL.VALID");
@@ -63,15 +69,21 @@ public class AlprService : IAlprService, IOnInit
             });
     }
 
-    private void Check([FromSource] Player source, int netId)
+    private void CheckVehicle([FromSource] Player source, int vehicleNetworkId)
     {
-        var fVehicle = this._vehicleStorageService.TryGetVehicle(netId);
+        var fVehicle = this._vehicleStorageService.TryGetVehicle(vehicleNetworkId);
         if (fVehicle is null)
         {
             return;
         }
 
-        var ownerPed = this._pedStorageService.TryGetPed(fVehicle.OwnerNetworkId);
+        var vehicleHistory = this._vehicleStorageService.GetVehicleHistory(fVehicle);
+        if (vehicleHistory is null)
+        {
+            return;
+        }
+
+        var ownerPed = this._pedStorageService.GetPedHistory(this._pedStorageService.TryGetPed(fVehicle.OwnerNetworkId));
         if (ownerPed is null)
         {
             return;
@@ -81,7 +93,8 @@ public class AlprService : IAlprService, IOnInit
         var registrationStatus = this.GetVehicleDocumentStatus(fVehicle, VehicleDocumentType.Registration);
         var pedDrivingLicense = ownerPed.GetLicense(PedLicenseType.Driving);
 
-        var a = ownerPed.Warrants.Count <= 0 && insuranceStatus.Valid && registrationStatus.Valid && pedDrivingLicense is not null && pedDrivingLicense.Status == PedLicenseStatus.Valid;
+        var a = ownerPed.Warrants.Count <= 0 && insuranceStatus.Valid && registrationStatus.Valid && pedDrivingLicense is not null &&
+                pedDrivingLicense.Status == PedLicenseStatus.Valid;
         Debug.WriteLine($"a: {a} -- {insuranceStatus.Valid} - {registrationStatus.Valid} - {pedDrivingLicense?.Status}");
 
         if (a)
@@ -100,11 +113,11 @@ public class AlprService : IAlprService, IOnInit
         var content = new GtaStyleText()
             .Blue($"[ALPR]")
             .NewLine()
-            .Yellow("Vehicle brand: ").White(fVehicle.Brand)
+            .Yellow("Vehicle brand: ").White(vehicleHistory.Brand)
             .NewLine()
-            .Yellow("Vehicle color: ").White(fVehicle.Color)
+            .Yellow("Vehicle color: ").White(vehicleHistory.Color)
             .NewLine()
-            .Yellow("License plate: ").White(fVehicle.LicensePlate)
+            .Yellow("License plate: ").White(vehicleHistory.LicensePlate)
             .NewLine()
             .Yellow("Registered owner: ").White($"{ownerPed.Firstname} {ownerPed.Lastname}")
             .NewLine()
@@ -115,12 +128,13 @@ public class AlprService : IAlprService, IOnInit
             .Yellow($"Owner driving license: {pedDrivingLicenseStatusLabel}")
             .Build();
 
-        var dTO = JsonConvert.SerializeObject(new CheckNotificationDTO
-        {
-            WantedStatus = ownerPed.Warrants.Count > 0,
-            NotificationContent = content,
-        });
-
-        BaseScript.TriggerClientEvent(source, Events.ALPR.Notify, dTO);
+        BaseScript.TriggerClientEvent(
+            source,
+            Events.ALPR.Notify,
+            JsonConvert.SerializeObject(new CheckNotificationDTO
+            {
+                WantedStatus = ownerPed.Warrants.Count > 0,
+                NotificationContent = content,
+            }));
     }
 }

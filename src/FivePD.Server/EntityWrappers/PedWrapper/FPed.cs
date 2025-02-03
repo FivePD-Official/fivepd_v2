@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
-using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Database;
@@ -28,15 +25,6 @@ public class FPed : FEntity, IFStatefulContainer
         this.NetworkId = fPedBuilder.NetworkId;
 
         this.OwningVehicleId = fPedBuilder.OwningVehicleNetworkId;
-        this.Birthdate = fPedBuilder.Birthdate;
-        this.Firstname = fPedBuilder.Firstname;
-        this.Lastname = fPedBuilder.Lastname;
-        this.Gender = fPedBuilder.Gender;
-        this.Items = fPedBuilder.Items;
-        this.Warrants = fPedBuilder.Warrants;
-        this.Licenses = fPedBuilder.Licenses;
-        this.AlcoholLevel = fPedBuilder.AlcoholLevel;
-        this.Drugs = fPedBuilder.Drugs;
 
         this.Create();
     }
@@ -50,15 +38,6 @@ public class FPed : FEntity, IFStatefulContainer
         this.NetworkId = fPed.NetworkId;
 
         this.OwningVehicleId = fPed.OwningVehicleId;
-        this.Birthdate = fPed.Birthdate;
-        this.Firstname = fPed.Firstname;
-        this.Lastname = fPed.Lastname;
-        this.Gender = fPed.Gender;
-        this.Items = fPed.Items;
-        this.Warrants = fPed.Warrants;
-        this.Licenses = new();
-        this.AlcoholLevel = fPed.AlcoholLevel;
-        this.Drugs = new();
 
         this.Create();
     }
@@ -129,51 +108,6 @@ public class FPed : FEntity, IFStatefulContainer
     public int OwningVehicleId { get; }
 
     /// <summary>
-    /// Gets the gender of the ped.
-    /// </summary>
-    public FGender Gender { get; internal set; }
-
-    /// <summary>
-    /// Gets the firstname of the ped.
-    /// </summary>
-    public string Firstname { get; }
-
-    /// <summary>
-    /// Gets the lastname of the ped.
-    /// </summary>
-    public string Lastname { get; }
-
-    /// <summary>
-    /// Gets the birthdate of the ped.
-    /// </summary>
-    public DateTime Birthdate { get; }
-
-    /// <summary>
-    /// Gets the items of the ped.
-    /// </summary>
-    public List<Item> Items { get; }
-
-    /// <summary>
-    /// Gets the warrants of the ped.
-    /// </summary>
-    public List<string> Warrants { get; }
-
-    /// <summary>
-    /// Gets the licenses of the ped.
-    /// </summary>
-    public List<PedLicense> Licenses { get; }
-
-    /// <summary>
-    /// Gets the alcohol level of the ped.
-    /// </summary>
-    public double AlcoholLevel { get; }
-
-    /// <summary>
-    /// Gets the drugs of the ped.
-    /// </summary>
-    public List<Drug> Drugs { get; }
-
-    /// <summary>
     /// Created an <see cref="FPed"/> wrapper from the specified <see cref="FPlayer"/>.
     /// </summary>
     /// <param name="player">The <see cref="FPlayer"/> instance to use.</param>
@@ -214,12 +148,6 @@ public class FPed : FEntity, IFStatefulContainer
         this.State?.Enter();
     }
 
-    /// <summary>
-    /// Gets the <see cref="PedHistory"/> of the ped.
-    /// </summary>
-    /// <returns>The PedHistory.</returns>
-    public PedHistory GetPedHistory() => ServiceLocator.GetService<DatabaseContext>()?.PedHistories.FirstOrDefault(x => x.Id == this.PedHistoryId);
-
     /// <inheritdoc />
     public string GetStateKey()
     {
@@ -231,26 +159,6 @@ public class FPed : FEntity, IFStatefulContainer
     {
         return this.GetUnderlyingPed?.State;
     }
-
-    /// <summary>
-    /// Checks if the ped has a license.
-    /// </summary>
-    /// <param name="pedLicenseType">The license type to check.</param>
-    /// <returns>True if the ped has the license, false otherwise.</returns>
-    public bool HasLicense(PedLicenseType pedLicenseType) => this.Licenses.Exists(x => x.Type == pedLicenseType);
-
-    /// <summary>
-    /// Gets the license of the specified type.
-    /// </summary>
-    /// <param name="pedLicenseType">The license type to get.</param>
-    /// <returns>The license.</returns>
-    public PedLicense GetLicense(PedLicenseType pedLicenseType) => this.Licenses.FirstOrDefault(x => x.Type == pedLicenseType);
-
-    /// <summary>
-    /// Gets a value indicating whether the ped's alcohol level is over the legal limit.
-    /// </summary>
-    /// <returns>True if the ped's alcohol level is over the legal limit, false otherwise.</returns>
-    public bool AlcoholOverLegalLimit() => this.AlcoholLevel > ServiceLocator.GetService<IConfigService>().GeneralConfig.Peds.Alcohol.LegalLimit;
 
 #pragma warning disable
     private void Create()

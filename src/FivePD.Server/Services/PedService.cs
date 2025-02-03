@@ -164,15 +164,15 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 .Build();
             var entry = this._databaseContext.PedHistories.Add(new PedHistory
             {
-                Firstname = fPed.Firstname,
-                Lastname = fPed.Lastname,
-                Birthdate = fPed.Birthdate,
-                Gender = fPed.Gender,
-                Items = fPed.Items,
-                Warrants = fPed.Warrants,
-                Licenses = fPed.Licenses,
-                AlcoholLevel = fPed.AlcoholLevel,
-                Drugs = fPed.Drugs,
+                Firstname = fPedBuilder.Firstname,
+                Lastname = fPedBuilder.Lastname,
+                Birthdate = fPedBuilder.Birthdate,
+                Gender = fPedBuilder.Gender,
+                Items = fPedBuilder.Items,
+                Warrants = fPedBuilder.Warrants,
+                Licenses = fPedBuilder.Licenses,
+                AlcoholLevel = fPedBuilder.AlcoholLevel,
+                Drugs = fPedBuilder.Drugs,
                 VehicleHistoryId = vehicleHistory?.Id ?? 0,
             });
             this._databaseContext.SaveChanges();
@@ -186,7 +186,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             fPed.PedHistoryId = entry.Entity.Id;
         }
 
-        Debug.WriteLine($"Generated data for ped with net ID of {fPed.NetworkId} - Name: {fPed.Firstname} {fPed.Lastname}");
+        Debug.WriteLine($"Generated data for ped with net ID of {fPed.NetworkId} - Name: {fPedBuilder.Firstname} {fPedBuilder.Lastname}");
 
         fPed.HasGeneratedData.Value = true;
         this._pedStorageService.InternalPeds[fPed.NetworkId] = fPed;

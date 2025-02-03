@@ -25,12 +25,7 @@ public class FVehicle : FEntity, IFStatefulContainer
         this.Properties = new(this);
 
         this.NetworkId = builder.NetworkId;
-        this.LicensePlate = builder.LicensePlate;
-        this.Color = builder.Color;
-        this.Brand = builder.Brand;
-        this.Items = builder.Items;
         this.OwnerNetworkId = builder.OwnerNetworkId;
-        this.Documents = builder.Documents;
 
         this.Stopped = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.Stopped, false);
         this.HasGeneratedData = new FStateBagObservable<bool>(this, StateBagKeys.Vehicle.HasGeneratedData, false);
@@ -50,31 +45,6 @@ public class FVehicle : FEntity, IFStatefulContainer
     /// Gets the network identifier of the vehicle's owner ped.
     /// </summary>
     public int OwnerNetworkId { get; }
-
-    /// <summary>
-    /// Gets the vehicle's license plate.
-    /// </summary>
-    public string LicensePlate { get; }
-
-    /// <summary>
-    /// Gets the vehicle's color.
-    /// </summary>
-    public string Color { get; }
-
-    /// <summary>
-    /// Gets the vehicle's brand.
-    /// </summary>
-    public string Brand { get; }
-
-    /// <summary>
-    /// Gets the items of the vehicle.
-    /// </summary>
-    public List<Item> Items { get; }
-
-    /// <summary>
-    /// Gets the documents of the vehicle.
-    /// </summary>
-    public List<VehicleDocument> Documents { get; }
 
     /// <summary>
     /// Gets the vehicle's observable with a value indicating if the vehicle has been stopped.
@@ -120,20 +90,6 @@ public class FVehicle : FEntity, IFStatefulContainer
     {
         return new FVehicle(new FVehicleBuilder(new CommonFVehicleBuilder(networkId)));
     }
-
-    /// <summary>
-    /// Checks if the vehicle has a document.
-    /// </summary>
-    /// <param name="vehicleDocumentType">The document type to check.</param>
-    /// <returns>True if the vehicle has the document, false otherwise.</returns>
-    public bool HasDocument(VehicleDocumentType vehicleDocumentType) => this.Documents.Exists(x => x.Type == vehicleDocumentType);
-
-    /// <summary>
-    /// Gets the document of the specified type.
-    /// </summary>
-    /// <param name="vehicleDocumentType">The document type to get.</param>
-    /// <returns>The license.</returns>
-    public VehicleDocument GetDocument(VehicleDocumentType vehicleDocumentType) => this.Documents.FirstOrDefault(x => x.Type == vehicleDocumentType);
 
     /// <inheritdoc />
     public string GetStateKey()

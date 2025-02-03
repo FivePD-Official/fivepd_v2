@@ -1,7 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Linq;
+using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Models;
 
 namespace FivePD.Server.Services;
 
@@ -11,9 +14,16 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
 {
     private readonly ConcurrentDictionary<int, FPed> _peds = new();
 
+    private readonly DatabaseContext _databaseContext;
+
     public ReadOnlyDictionary<int, FPed> Peds => new(this._peds);
 
     ConcurrentDictionary<int, FPed> IInternalPedStorageService.InternalPeds => this._peds;
+
+    public PedStorageService(DatabaseContext databaseContext)
+    {
+        this._databaseContext = databaseContext;
+    }
 
     /// <inheritdoc/>
     public FPed TryGetPed(int networkId)
@@ -28,5 +38,11 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
         this._peds[networkId] = ped;
 
         return ped;
+    }
+
+    /// <inheritdoc/>
+    public PedHistory GetPedHistory(FPed ped)
+    {
+        return ped is null ? null : this._databaseContext.PedHistories.FirstOrDefault(x => x.Id == ped.PedHistoryId);
     }
 }

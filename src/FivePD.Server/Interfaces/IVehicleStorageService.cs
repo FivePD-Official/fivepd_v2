@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
+using FivePD.Server.Models;
 
 namespace FivePD.Server.Interfaces;
 
@@ -17,6 +18,13 @@ public interface IVehicleStorageService
     /// <param name="networkId">The vehicle's network ID.</param>
     /// <returns>The vehicle or null.</returns>
     public FVehicle TryGetVehicle(int networkId);
+    
+    /// <summary>
+    /// Gets the <see cref="VehicleHistory"/> of the given <see cref="FVehicle"/>.
+    /// </summary>
+    /// <param name="vehicle">The vehicle.</param>
+    /// <returns>The VehicleHistory of the vehicle.</returns>
+    public VehicleHistory GetVehicleHistory(FVehicle vehicle);
 }
 
 internal interface IInternalVehicleStorageService
