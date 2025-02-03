@@ -31,7 +31,7 @@ public class FPedBuilder : CommonFPedBuilder
     public FPedBuilder(CommonFPedBuilder fPedBuilder)
         : base(fPedBuilder.NetworkId)
     {
-        this.OwningVehicleId = fPedBuilder.NetworkId;
+        this.OwningVehicleNetworkId = fPedBuilder.NetworkId;
         this.Birthdate = fPedBuilder.Birthdate;
         this.Firstname = fPedBuilder.Firstname;
         this.Lastname = fPedBuilder.Lastname;
@@ -53,11 +53,11 @@ public class FPedBuilder : CommonFPedBuilder
     /// <summary>
     /// Sets the id of the vehicle the ped is owning.
     /// </summary>
-    /// <param name="vehicleId">The id of th vehicle..</param>
+    /// <param name="vehicleNetworkId">The id of th vehicle.</param>
     /// <returns>The <see cref="FPedBuilder"/> instance.</returns>
-    public FPedBuilder WithOwningVehicleId(int vehicleId)
+    public FPedBuilder WithOwningVehicleNetworkId(int vehicleNetworkId)
     {
-        this.OwningVehicleId = vehicleId;
+        this.OwningVehicleNetworkId = vehicleNetworkId;
         return this;
     }
 

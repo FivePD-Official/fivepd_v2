@@ -32,7 +32,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     private readonly IInternalIncidentHistoryService _incidentHistoryService;
     private readonly IProgressionSystemService _progressionSystemService;
     private readonly IConfigService _configService;
-    private readonly IVehicleService _vehicleService;
+    private readonly IVehicleStorageService _vehicleStorageService;
 
     private readonly List<TrafficStop> _trafficStops = new();
 
@@ -45,19 +45,19 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     /// <param name="progressionSystemService">The <see cref="IProgressionSystemService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="incidentHistoryService">The <see cref="IIncidentHistoryService"/> to use.</param>
-    /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
+    /// <param name="vehicleStorageService">The <see cref="IVehicleStorageService"/> to use.</param>
     public IncidentService(
         ILogger logger,
         IProgressionSystemService progressionSystemService,
         IConfigService configService,
         IIncidentHistoryService incidentHistoryService,
-        IVehicleService vehicleService)
+        IVehicleStorageService vehicleStorageService)
     {
         this._logger = logger;
         this._incidentHistoryService = (IInternalIncidentHistoryService)incidentHistoryService;
         this._progressionSystemService = progressionSystemService;
         this._configService = configService;
-        this._vehicleService = vehicleService;
+        this._vehicleStorageService = vehicleStorageService;
     }
 
     /// <inheritdoc/>
@@ -202,7 +202,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             case FIncidentType.TrafficStop:
                 xpToAdd = this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.TrafficStopCompleted;
                 this._trafficStops.RemoveAll(x => x.Id == incident.Id);
-                var fVehicle = this._vehicleService.TryGetVehicle(((TrafficStop)incident).Vehicle.NetworkId);
+                var fVehicle = this._vehicleStorageService.TryGetVehicle(((TrafficStop)incident).Vehicle.NetworkId);
                 if (fVehicle is not null)
                 {
                     fVehicle.Stopped.Value = false;

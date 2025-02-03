@@ -222,6 +222,7 @@ export interface PedHistory extends WithId {
   Birthdate: string;
   Warrants: string[];
   Licenses: PedLicense[];
+  VehicleHistory?: VehicleHistory;
 }
 
 export enum PedLicenseStatus {
@@ -287,16 +288,12 @@ export interface VehicleDocument {
   IssueDate: string;
 }
 
-export interface FVehicle extends WithId {
-  NetworkId: number;
+export interface VehicleHistory extends WithId {
   LicensePlate: string;
   Color: string;
   Brand: string;
   Documents: VehicleDocument[];
-}
-
-export interface FVehicleDTO extends FVehicle {
-  Owner?: PedHistory;
+  PedHistory?: PedHistory;
 }
 
 export interface SpeedZone {

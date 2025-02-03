@@ -103,6 +103,7 @@ internal class AlprService : IAlprService, IOnInit
             this._taskGuid = this._tickService.EnqueueInterval(
                 () =>
                 {
+                    // TODO ALPR: filter player's vehicle and other police vehicles (or on the server?)
                     var nearbyVehicles = World.GetAllVehicles()
                         .Where(x => World.GetDistance(x.Position, Game.PlayerPed.Position) <= 20f)
                         .ToList();
@@ -134,9 +135,9 @@ internal class AlprService : IAlprService, IOnInit
         }
     }
 
-    private async void Asd(Vehicle nearbyVehicle)
+    private async void Asd(Vehicle nearbyVehicle) // TODO ALPR: rename
     {
-        await BaseScript.Delay(4000);
+        await BaseScript.Delay(4000); // TODO ALPR: this is not needed
         BaseScript.TriggerServerEvent(Events.ALPR.Check, nearbyVehicle.NetworkId);
     }
 }

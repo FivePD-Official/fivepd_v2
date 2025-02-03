@@ -22,12 +22,12 @@
             <p>{{ 'LABEL.BRAND.SINGULAR' | translate }}</p>
             <p>{{ vehicle.Brand }}</p>
           </li>
-          @if (vehicle.Owner) {
+          @if (vehicle.PedHistory) {
             <li>
               <p>{{ 'LABEL.OWNER.SINGULAR' | translate }}</p>
-              <a [routerLink]="'/mdt/citizen-database/' + vehicle.Owner.Id"
+              <a [routerLink]="'/mdt/citizen-database/' + vehicle.PedHistory.Id"
                  class="group flex flex-row items-center text-zinc-300 hover:text-white">
-                {{ vehicle.Owner.Firstname }} {{ vehicle.Owner.Lastname }}
+                {{ vehicle.PedHistory.Firstname }} {{ vehicle.PedHistory.Lastname }}
                 <div app-icon name="Link"
                      className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
               </a>

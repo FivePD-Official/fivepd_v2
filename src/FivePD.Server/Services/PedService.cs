@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
@@ -13,7 +11,6 @@ using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
-using FivePD.Server.Interfaces.VariableData;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
@@ -28,30 +25,37 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class PedService : IPedService, IOnInit, IOnDestroy
 {
+    private readonly IInternalPedStorageService _pedStorageService;
+    private readonly IVehicleStorageService _vehicleStorageService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
     private readonly DatabaseContext _databaseContext;
     private readonly IRandomService _randomService;
     private readonly ITickQueueService _tickQueueService;
 
-    private readonly ConcurrentDictionary<int, FPed> _peds = new();
     private Guid _checkPedsId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PedService"/> class.
     /// </summary>
+    /// <param name="pedStorageService">The <see cref="IPedStorageService" /> to use.</param>
+    /// <param name="vehicleStorageService">The <see cref="IVehicleStorageService" /> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
     public PedService(
+        IPedStorageService pedStorageService,
+        IVehicleStorageService vehicleStorageService,
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
         DatabaseContext databaseContext,
         IRandomService randomService,
         ITickQueueService tickQueueService)
     {
+        this._pedStorageService = (IInternalPedStorageService)pedStorageService;
+        this._vehicleStorageService = vehicleStorageService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._databaseContext = databaseContext;
@@ -72,32 +76,18 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         this._tickQueueService.DequeueInterval(this._checkPedsId);
     }
 
-    /// <inheritdoc/>
-    public FPed TryGetPed(int networkId)
-    {
-        var found = this._peds.TryGetValue(networkId, out var ped);
-        if (found)
-        {
-            return ped;
-        }
-
-        ped = FPed.FromNetId(networkId);
-        this._peds[networkId] = ped;
-
-        return ped;
-    }
 #pragma warning disable
     // TODO: public void UpdatePedHistory(FPed fPed) -> copy fields of FPed to its PedHistory and save 
 #pragma warning restore
 
     private void CheckPeds()
     {
-        foreach (var keyValuePair in this._peds)
+        foreach (var keyValuePair in this._pedStorageService.InternalPeds)
         {
             var underlyingPed = keyValuePair.Value.GetUnderlyingPed;
             if (underlyingPed is null || !Cfx.API.DoesEntityExist(underlyingPed.Handle))
             {
-                this._peds.TryRemove(keyValuePair.Key, out _);
+                this._pedStorageService.InternalPeds.TryRemove(keyValuePair.Key, out _);
             }
         }
     }
@@ -107,12 +97,17 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private void GeneratePed(string serializedFPedBuilder)
     {
         var commonFPedBuilder = JsonConvert.DeserializeObject<CommonFPedBuilder>(serializedFPedBuilder);
-        if (commonFPedBuilder is null || this._peds.ContainsKey(commonFPedBuilder.NetworkId))
+        if (commonFPedBuilder is null || this._pedStorageService.InternalPeds.ContainsKey(commonFPedBuilder.NetworkId))
         {
             return;
         }
 
         var fPedBuilder = new FPedBuilder(commonFPedBuilder);
+
+        var owningFVehicle = this._vehicleStorageService.TryGetVehicle(commonFPedBuilder.OwningVehicleNetworkId);
+        var vehicleHistory = owningFVehicle is null
+            ? null
+            : this._databaseContext.VehicleHistories.FirstOrDefault(x => x.Id == owningFVehicle.VehicleHistoryId);
 
         FPed fPed = null;
         if (this._configService.GeneralConfig.Peds.ChanceToReuseData != 0 &&
@@ -125,7 +120,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             if (pedHistory is not null)
             {
                 fPed = fPedBuilder
-                    .WithOwningVehicleId(pedHistory.OwningVehicleId)
+                    .WithOwningVehicleNetworkId(commonFPedBuilder.OwningVehicleNetworkId)
                     .WithFirstname(pedHistory.Firstname)
                     .WithLastname(pedHistory.Lastname)
                     .WithBirthdate(pedHistory.Birthdate)
@@ -139,13 +134,19 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                     .WithAlcoholLevel(pedHistory.AlcoholLevel)
                     .WithDrugs(pedHistory.Drugs)
                     .Build();
+
+                if (vehicleHistory is not null)
+                {
+                    vehicleHistory.PedHistoryId = pedHistory.Id;
+                    this._databaseContext.SaveChanges();
+                }
             }
         }
 
         if (fPed is null)
         {
             fPed = fPedBuilder
-                .WithOwningVehicleId(commonFPedBuilder.OwningVehicleId)
+                .WithOwningVehicleNetworkId(commonFPedBuilder.OwningVehicleNetworkId)
                 .WithFirstname(commonFPedBuilder.Gender == FGender.Female ? this._configService.FemaleFirstnames : this._configService.MaleFirstnames)
                 .WithLastname(this._configService.Lastnames)
                 .WithBirthdate()
@@ -163,7 +164,6 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 .Build();
             var entry = this._databaseContext.PedHistories.Add(new PedHistory
             {
-                OwningVehicleId = fPed.OwningVehicleId,
                 Firstname = fPed.Firstname,
                 Lastname = fPed.Lastname,
                 Birthdate = fPed.Birthdate,
@@ -173,15 +173,23 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 Licenses = fPed.Licenses,
                 AlcoholLevel = fPed.AlcoholLevel,
                 Drugs = fPed.Drugs,
+                VehicleHistoryId = vehicleHistory?.Id ?? 0,
             });
             this._databaseContext.SaveChanges();
+
+            if (vehicleHistory is not null)
+            {
+                vehicleHistory.PedHistoryId = entry.Entity.Id;
+                this._databaseContext.SaveChanges();
+            }
+
             fPed.PedHistoryId = entry.Entity.Id;
         }
 
         Debug.WriteLine($"Generated data for ped with net ID of {fPed.NetworkId} - Name: {fPed.Firstname} {fPed.Lastname}");
-        
+
         fPed.HasGeneratedData.Value = true;
-        this._peds[fPed.NetworkId] = fPed;
+        this._pedStorageService.InternalPeds[fPed.NetworkId] = fPed;
     }
 
     [UIEvent(Events.PedHistory.GetAllPageable)]

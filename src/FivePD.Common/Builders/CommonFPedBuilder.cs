@@ -34,7 +34,7 @@ public class CommonFPedBuilder
     /// <summary>
     /// Gets or sets the id of the vehicle the ped is owning.
     /// </summary>
-    public int OwningVehicleId { get; protected set; }
+    public int OwningVehicleNetworkId { get; protected set; }
 
     /// <summary>
     /// Gets or sets the gender of the ped.
@@ -90,7 +90,7 @@ public class CommonFPedBuilder
     /// <returns>The <see cref="CommonFPedBuilder"/> instance.</returns>
     public CommonFPedBuilder WithOwningVehicle(int vehicleId)
     {
-        this.OwningVehicleId = vehicleId;
+        this.OwningVehicleNetworkId = vehicleId;
         return this;
     }
 }

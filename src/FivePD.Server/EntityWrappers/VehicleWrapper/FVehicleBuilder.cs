@@ -25,21 +25,32 @@ public class FVehicleBuilder : CommonFVehicleBuilder
     }
 
     /// <summary>
+    /// Gets the VehicleHistory id.
+    /// </summary>
+    public int VehicleHistoryId { get; internal set; }
+
+    /// <summary>
     /// Gets the PedHistory id.
     /// </summary>
-    public int PedHistoryId { get; set; }
+    public int OwnerPedHistoryId { get; internal set; }
 
     /// <summary>
     /// Gets the documents of the vehicle.
     /// </summary>
     public List<VehicleDocument> Documents { get; } = new();
 
-    public FVehicleBuilder WithPedHistory(PedHistory pedHistory)
+    public FVehicleBuilder WithVehicleHistory(VehicleHistory vehicleHistory)
     {
-        this.PedHistoryId = pedHistory?.Id ?? 0;
+        this.VehicleHistoryId = vehicleHistory.Id;
         return this;
     }
-    
+
+    public FVehicleBuilder WithPedHistory(PedHistory pedHistory)
+    {
+        this.OwnerPedHistoryId = pedHistory?.Id ?? 0;
+        return this;
+    }
+
     public FVehicleBuilder WithItems(IEnumerable<Item> items)
     {
         this.Items = items
@@ -49,7 +60,7 @@ public class FVehicleBuilder : CommonFVehicleBuilder
             .ToList();
         return this;
     }
-    
+
     public FVehicleBuilder WithDocument(VehicleDocument document)
     {
         this.Documents.Add(document);
@@ -70,7 +81,7 @@ public class FVehicleBuilder : CommonFVehicleBuilder
 
         return this;
     }
-    
+
     public FVehicleBuilder WithRandomDocuments(VehicleDocumentsConfig vehicleDocumentsConfig)
     {
         var documents = new List<VehicleDocument>();
@@ -108,7 +119,7 @@ public class FVehicleBuilder : CommonFVehicleBuilder
 
         return this;
     }
-    
+
     public FVehicle Build()
     {
         return new FVehicle(this);

@@ -20,7 +20,12 @@ public class PedHistory
     /// <summary>
     /// Gets or sets the identifier of the vehicle the ped is owning.
     /// </summary>
-    public int OwningVehicleId { get; set; }
+    public int? VehicleHistoryId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the vehicle the ped is owning.
+    /// </summary>
+    public VehicleHistory VehicleHistory { get; set; }
 
     /// <summary>
     /// Gets or sets the gender.

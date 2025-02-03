@@ -19,7 +19,7 @@ public class CommonFPed : CommonFEntity
     public CommonFPed(CommonFPedBuilder builder)
         : base(builder.NetworkId)
     {
-        this.OwningVehicleId = builder.OwningVehicleId;
+        this.OwningVehicleId = builder.OwningVehicleNetworkId;
         this.Gender = builder.Gender;
         this.Firstname = builder.Firstname;
         this.Lastname = builder.Lastname;

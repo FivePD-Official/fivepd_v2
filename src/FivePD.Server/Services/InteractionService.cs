@@ -18,11 +18,9 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class InteractionService : IInteractionService, IInternalInteractionService, IOnInit
 {
-    private readonly IPedService _pedService;
-    private readonly IVehicleService _vehicleService;
-    private readonly IControlService _controlService;
+    private readonly IPedStorageService _pedStorageService;
+    private readonly IVehicleStorageService _vehicleStorageService;
     private readonly IEventService _eventService;
-    private readonly ITickQueueService _tickQueueService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ICfxService _cfxService;
     private readonly ITrafficStopService _trafficStopService;
@@ -30,27 +28,22 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
     /// <summary>
     /// Initializes a new instance of the <see cref="InteractionService"/> class.
     /// </summary>
-    /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
-    /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
-    /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
+    /// <param name="pedStorageService">The <see cref="IPedService"/> to use.</param>
+    /// <param name="vehicleStorageService">The <see cref="IVehicleStorageService"/> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="cfxService">The <see cref="ICfxService"/> to use.</param>
     /// <param name="trafficStopService">The <see cref="ITrafficStopService"/> to use.</param>
     public InteractionService(
-        IPedService pedService,
-        IVehicleService vehicleService,
-        IControlService controlService,
+        IPedStorageService pedStorageService,
+        IVehicleStorageService vehicleStorageService,
         IEventService eventService,
-        ITickQueueService tickQueueService,
         EventHandlerDictionary eventHandlerDictionary,
         ICfxService cfxService,
         ITrafficStopService trafficStopService)
     {
-        this._pedService = pedService;
-        this._vehicleService = vehicleService;
-        this._controlService = controlService;
+        this._pedStorageService = pedStorageService;
+        this._vehicleStorageService = vehicleStorageService;
         this._eventService = eventService;
-        this._tickQueueService = tickQueueService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._cfxService = cfxService;
         this._trafficStopService = trafficStopService;
@@ -65,7 +58,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
 
     private async void OnPedAlerted([FromSource] Player player, int pedNetworkId)
     {
-        var ped = this._pedService.TryGetPed(pedNetworkId);
+        var ped = this._pedStorageService.TryGetPed(pedNetworkId);
         if (ped is null)
         {
             return;
@@ -97,7 +90,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
             return;
         }
 
-        var fVehicle = this._vehicleService.TryGetVehicle(request.VehicleNetworkId);
+        var fVehicle = this._vehicleStorageService.TryGetVehicle(request.VehicleNetworkId);
         if (fVehicle is null || fVehicle.Stopped.Value)
         {
             return;
@@ -108,7 +101,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
 
         foreach (var pedNetworkId in request.OccupantNetworkIds)
         {
-            var ped = this._pedService.TryGetPed(pedNetworkId);
+            var ped = this._pedStorageService.TryGetPed(pedNetworkId);
             if (ped?.GetUnderlyingPed is null)
             {
                 continue;
@@ -120,7 +113,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
             ped.Properties.SetBlockPermanentEvents(true);
         }
 
-        var driverPed = this._pedService.TryGetPed(request.DriverPedNetworkId);
+        var driverPed = this._pedStorageService.TryGetPed(request.DriverPedNetworkId);
         if (driverPed is null || !driverPed.Properties.IsInVehicle)
         {
             return;

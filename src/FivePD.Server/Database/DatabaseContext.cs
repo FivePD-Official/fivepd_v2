@@ -114,6 +114,16 @@ public class DatabaseContext : DbContext
     public DbSet<PedLicense> PedLicenses { get; set; }
 
     /// <summary>
+    /// Gets or sets the table containing the vehicle histories.
+    /// </summary>
+    public DbSet<VehicleHistory> VehicleHistories { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing the vehicle documents.
+    /// </summary>
+    public DbSet<VehicleDocument> VehicleDocuments { get; set; }
+
+    /// <summary>
     /// Gets or sets the table containing the messages.
     /// </summary>
     public DbSet<Message> Messages { get; set; }
@@ -290,6 +300,10 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<PedHistory>(type =>
         {
+            type.HasOne(t => t.VehicleHistory)
+                .WithOne(e => e.PedHistory)
+                .HasForeignKey<VehicleHistory>(v => v.PedHistoryId);
+
             type.Property(t => t.Items)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
@@ -314,6 +328,20 @@ public class DatabaseContext : DbContext
                     v => JsonConvert.DeserializeObject<List<Drug>>(
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        });
+
+        modelBuilder.Entity<VehicleHistory>(type =>
+        {
+            type.Property(t => t.Items)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<Item>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+            type.HasMany(vehicleHistory => vehicleHistory.Documents)
+                .WithOne(document => document.VehicleHistory)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<VehicleConfig<Dictionary<string, object>>>(type =>

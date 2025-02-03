@@ -8,10 +8,4 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 public interface IVehicleService
 {
-    /// <summary>
-    /// Tries to get a <see cref="FVehicle"/> by its network ID.
-    /// </summary>
-    /// <param name="networkId">The vehicle's network ID.</param>
-    /// <returns>The vehicle or null.</returns>
-    public FVehicle TryGetVehicle(int networkId);
 }

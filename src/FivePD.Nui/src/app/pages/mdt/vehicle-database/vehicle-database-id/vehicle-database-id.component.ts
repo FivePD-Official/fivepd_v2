@@ -2,12 +2,12 @@ import { Component, inject } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { map, switchMap, tap } from "rxjs";
+import { map, Observable, switchMap, tap } from "rxjs";
 import { VehicleService } from "@services/vehicle/vehicle.service";
 import { PageHeaderComponent } from "../../../../components/page-header/page-header.component";
 import { ContainerComponent } from "../../../../components/container/container.component";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
-import { PedLicenseStatus, VehicleDocumentStatus, VehicleDocumentType } from "@models";
+import { PedLicenseStatus, VehicleDocumentStatus, VehicleDocumentType, VehicleHistory } from "@models";
 import { IconComponent } from "../../../../components/icon/icon.component";
 
 @Component({
@@ -28,8 +28,7 @@ export class VehicleDatabaseIdComponent {
   readonly vehicle$ = this._activatedRoute.params.pipe(
     takeUntilDestroyed(),
     map(params => parseInt(params['id'])),
-    switchMap(id => this._vehicleService.get(id)),
-    tap(x => console.log(x)),
+    switchMap(id => this._vehicleService.get(id) as Observable<VehicleHistory>),
   );
 
   licenseTypeI18nKey(licenseType: VehicleDocumentType): string {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
@@ -11,40 +10,45 @@ using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
-using FivePD.Server.Models.DTO;
+using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
+
+#pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IVehicleService" />
 [Obfuscate]
 public class VehicleService : IVehicleService, IOnInit
 {
+    private readonly IInternalVehicleStorageService _vehicleStorageService;
+    private readonly IPedStorageService _pedStorageService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
-    private readonly IPedService _pedService;
     private readonly DatabaseContext _databaseContext;
-
-    private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleService"/> class.
     /// </summary>
+    /// <param name="vehicleStorageService">The <see cref="IVehicleStorageService" /> to use.</param>
+    /// <param name="pedService">The <see cref="IPedStorageService" /> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
-    /// <param name="pedService">The <see cref="IPedService" /> to use.</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
     public VehicleService(
+        IVehicleStorageService vehicleStorageService,
+        IPedStorageService pedStorageService,
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
-        IPedService pedService,
         DatabaseContext databaseContext)
     {
+        this._vehicleStorageService = (IInternalVehicleStorageService)vehicleStorageService;
+        this._pedStorageService = pedStorageService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
-        this._pedService = pedService;
         this._databaseContext = databaseContext;
     }
 
@@ -54,89 +58,82 @@ public class VehicleService : IVehicleService, IOnInit
         this._eventHandlerDictionary[Events.Vehicle.Generate] += new Action<string>(this.GenerateVehicle);
     }
 
-    /// <inheritdoc/>
-    public FVehicle TryGetVehicle(int networkId)
-    {
-        var found = this._vehicles.TryGetValue(networkId, out var vehicle);
-        if (found)
-        {
-            return vehicle;
-        }
-
-        vehicle = FVehicle.FromNetId(networkId); // TODO: this should not exist, it's an empty instance from the builder (??)
-        if (vehicle is null)
-        {
-            return null;
-        }
-
-        this._vehicles[networkId] = vehicle;
-
-        return vehicle;
-    }
-
     private void GenerateVehicle(string serializedFVehicleBuilder)
     {
         Debug.WriteLine($"GenerateVehicle - {serializedFVehicleBuilder}");
         var fVehicleBuilderDto = JsonConvert.DeserializeObject<CommonFVehicleBuilder>(serializedFVehicleBuilder);
-        if (fVehicleBuilderDto is null || this._vehicles.ContainsKey(fVehicleBuilderDto.NetworkId))
+        if (fVehicleBuilderDto is null || this._vehicleStorageService.InternalVehicles.ContainsKey(fVehicleBuilderDto.NetworkId))
         {
             return;
         }
 
-        var fVehicle = new FVehicleBuilder(fVehicleBuilderDto)
+        var ownerFPed = this._pedStorageService.TryGetPed(fVehicleBuilderDto.OwnerNetworkId);
+        var pedHistory = ownerFPed is null ? null : this._databaseContext.PedHistories.FirstOrDefault(x => x.Id == ownerFPed.PedHistoryId);
+        var fVehicleBuilder = new FVehicleBuilder(fVehicleBuilderDto)
             .WithItems(this._configService.Items)
             .WithRandomDocuments(this._configService.GeneralConfig.Vehicles.Documents)
-            .WithPedHistory(this._pedService.TryGetPed(fVehicleBuilderDto.OwnerNetworkId).GetPedHistory())
+            .WithPedHistory(pedHistory);
+
+        var entry = this._databaseContext.VehicleHistories.Add(new VehicleHistory
+        {
+            Items = fVehicleBuilder.Items,
+            LicensePlate = fVehicleBuilder.LicensePlate,
+            Documents = fVehicleBuilder.Documents,
+            Brand = fVehicleBuilder.Brand,
+            Color = fVehicleBuilder.Color,
+            PedHistoryId = pedHistory?.Id ?? 0
+        });
+        this._databaseContext.SaveChanges();
+
+        if (pedHistory is not null)
+        {
+            pedHistory.VehicleHistoryId = entry.Entity.Id;
+            this._databaseContext.SaveChanges();
+        }
+
+        var fVehicle = fVehicleBuilder
+            .WithVehicleHistory(entry.Entity)
             .Build();
 
-        Debug.WriteLine($"Generated data for vehicle with net ID of {fVehicle.NetworkId} - License plate: {fVehicle.LicensePlate}");
+        Debug.WriteLine($"Generated data for vehicle with net ID of {fVehicleBuilder.NetworkId} - License plate: {fVehicleBuilder.LicensePlate}");
 
         fVehicle.HasGeneratedData.Value = true;
-        this._vehicles[fVehicle.NetworkId] = fVehicle;
+        this._vehicleStorageService.InternalVehicles[fVehicle.NetworkId] = fVehicle;
     }
 
     [UIEvent(Events.Vehicle.Get)]
     private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
-        var fVehicle = this.TryGetVehicle(request.Id);
-        if (fVehicle is null)
-        {
-            networkCallbackDelegate.InvokeWithJson(null);
-            return;
-        }
+        var vehicleHistory = this._databaseContext.VehicleHistories
+            .AsNoTracking()
+            .Include(x => x.PedHistory)
+            .Include(x => x.Documents)
+            .FirstOrDefault(x => x.Id == request.Id);
 
-        networkCallbackDelegate.InvokeWithJson(fVehicle.ToDto(this._pedService.TryGetPed(fVehicle.OwnerNetworkId).GetPedHistory()));
+        networkCallbackDelegate.InvokeWithJson(vehicleHistory);
     }
 
     [UIEvent(Events.Vehicle.GetAllPageable)]
     private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var request = expandoObject.ConvertTo<VehicleGetAllPageableRequest>();
-        var pageNumber = request.Page < 1 ? 1 : request.Page;
+        var request = expandoObject.ConvertTo<VehicleHistoryGetAllRequest>();
 
-        var values = this._vehicles.Values.AsQueryable();
-        var filters = new Filters<FVehicle>();
+        var filters = new Filters<VehicleHistory>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.LicensePlate),
-            vehicle => vehicle.LicensePlate.ToUpper().Contains(request.Filters.LicensePlate.ToUpper()));
+            pedHistory => pedHistory.LicensePlate.ToLower().Contains(request.Filters.LicensePlate.ToLower()));
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Color),
+            pedHistory => pedHistory.Color.ToLower().Contains(request.Filters.Color.ToLower()));
+        filters.Add(
+            !string.IsNullOrEmpty(request.Filters.Brand),
+            pedHistory => pedHistory.Brand.ToLower().Contains(request.Filters.Brand.ToLower()));
 
-        values = filters.Get().Aggregate(values, (current, filter) => current.Where(x => filter.Expression.Compile().Invoke(x)));
-
-        const int pageSize = QueryableExtensions.DefaultPageSize;
-        var page = new Page<FVehicleDTO>
-        {
-            CurrentPage = pageNumber,
-            PageSize = pageSize,
-            ItemCount = this._vehicles.Count,
-            Items = values
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .Select(vehicle => vehicle.ToDto(this._databaseContext.PedHistories.FirstOrDefault(pedHistory => pedHistory.Id == vehicle.PedHistoryId)))
-                .ToList(),
-        };
-        var pageCount = (int)Math.Ceiling((double)page.ItemCount / pageSize);
-        page.PageCount = pageCount == 0 ? 1 : pageCount;
+        var page = this._databaseContext.VehicleHistories
+            .AsNoTracking()
+            .Include(x => x.PedHistory)
+            .Paginate(request.Page, filters);
 
         networkCallbackDelegate.InvokeWithJson(page);
     }

@@ -351,6 +351,9 @@ namespace FivePD.Server.Migrations
                     b.Property<string>("Lastname")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int?>("VehicleHistoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Warrants")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -626,6 +629,62 @@ namespace FivePD.Server.Migrations
                     b.ToTable("fivepd_vehicle_configs");
                 });
 
+            modelBuilder.Entity("FivePD.Server.Models.VehicleDocument", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VehicleHistoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleHistoryId");
+
+                    b.ToTable("fivepd_vehicle_documents");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VehicleHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Brand")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Items")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("LicensePlate")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int?>("PedHistoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedHistoryId")
+                        .IsUnique();
+
+                    b.ToTable("fivepd_vehicle_histories");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
                 {
                     b.HasOne("FivePD.Server.Models.CalloutDetails", "CalloutDetails")
@@ -808,6 +867,20 @@ namespace FivePD.Server.Migrations
                         .WithMany("Values")
                         .HasForeignKey("EntityId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VehicleDocument", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.VehicleHistory", "VehicleHistory")
+                        .WithMany("Documents")
+                        .HasForeignKey("VehicleHistoryId");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VehicleHistory", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.PedHistory", "PedHistory")
+                        .WithOne("VehicleHistory")
+                        .HasForeignKey("FivePD.Server.Models.VehicleHistory", "PedHistoryId");
                 });
 #pragma warning restore 612, 618
         }

@@ -29,7 +29,6 @@ public class FVehicle : FEntity, IFStatefulContainer
         this.Color = builder.Color;
         this.Brand = builder.Brand;
         this.Items = builder.Items;
-        this.PedHistoryId = builder.PedHistoryId;
         this.OwnerNetworkId = builder.OwnerNetworkId;
         this.Documents = builder.Documents;
 
@@ -45,7 +44,7 @@ public class FVehicle : FEntity, IFStatefulContainer
     /// <summary>
     /// Gets the PedHistory id.
     /// </summary>
-    public int PedHistoryId { get; }
+    public int VehicleHistoryId { get; internal set; }
 
     /// <summary>
     /// Gets the network identifier of the vehicle's owner ped.
@@ -147,19 +146,4 @@ public class FVehicle : FEntity, IFStatefulContainer
     {
         return this.GetUnderlyingVehicle?.State;
     }
-
-    #pragma warning disable
-    internal FVehicleDTO ToDto(PedHistory owner)
-    {
-        return new()
-        {
-            Id = this.NetworkId,
-            LicensePlate = this.LicensePlate,
-            Color = this.Color,
-            Brand = this.Brand,
-            Owner = owner,
-            Documents = this.Documents,
-        };
-    }
-    #pragma warning restore
 }

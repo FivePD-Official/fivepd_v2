@@ -65,7 +65,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the player's FPed.
     /// </summary>
     /// <returns>User.</returns>
-    public FPed FPed => ServiceLocator.GetService<IPedService>().TryGetPed(this.GetUnderlyingPlayer().Character.NetworkId);
+    public FPed FPed => ServiceLocator.GetService<IPedStorageService>().TryGetPed(this.GetUnderlyingPlayer().Character.NetworkId);
 
     /// <summary>
     /// Gets the player's duty status observable.

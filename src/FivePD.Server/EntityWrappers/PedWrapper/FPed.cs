@@ -27,7 +27,7 @@ public class FPed : FEntity, IFStatefulContainer
     {
         this.NetworkId = fPedBuilder.NetworkId;
 
-        this.OwningVehicleId = fPedBuilder.OwningVehicleId;
+        this.OwningVehicleId = fPedBuilder.OwningVehicleNetworkId;
         this.Birthdate = fPedBuilder.Birthdate;
         this.Firstname = fPedBuilder.Firstname;
         this.Lastname = fPedBuilder.Lastname;
