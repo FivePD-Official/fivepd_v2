@@ -39,7 +39,7 @@ public class FPedBuilder : CommonFPedBuilder
         this.Items = fPedBuilder.Items;
         this.Warrants = fPedBuilder.Warrants;
     }
-    
+
     // <summary>
     /// Gets the PedHistory id.
     /// </summary>
@@ -54,7 +54,7 @@ public class FPedBuilder : CommonFPedBuilder
     /// Gets the drugs of the ped.
     /// </summary>
     public List<Drug> Drugs { get; private set; } = new();
-    
+
     public FPedBuilder WithPedData(PedData pedData)
     {
         this.PedDataId = pedData.Id;
@@ -170,7 +170,6 @@ public class FPedBuilder : CommonFPedBuilder
 
         if (options.IncludeAll)
         {
-
             this.Warrants.AddRange(options.Warrants);
             return this;
         }
@@ -258,7 +257,7 @@ public class FPedBuilder : CommonFPedBuilder
         this.Drugs.AddRange(drugs ?? new List<Drug>());
         return this;
     }
-    
+
     public FPedBuilder WithDrugs(List<DrugConfig> drugsConfig)
     {
         this.Drugs ??= new();
@@ -299,11 +298,19 @@ public class FPedBuilder : CommonFPedBuilder
             }
 
             var now = DateTime.Now;
-            var issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year);
             var expired = Random.Next(0, 101) < config.Value.ChanceForExpired;
-            var expirationDate = expired
-                ? issueDate.AddYears(-Random.Next(1, 3))
-                : issueDate.AddYears(Random.Next(1, 11));
+            DateTime issueDate;
+            DateTime expirationDate;
+            if (expired)
+            {
+                issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year - 1);
+                expirationDate = issueDate.AddYears(Random.Next(1, Math.Max(Random.Next(1, 6), DateTime.Now.Year - issueDate.Year)));
+            }
+            else
+            {
+                issueDate = DateGenerator.GetRandomDate(now.Year - 5, now.Year);
+                expirationDate = issueDate.AddYears(Random.Next(Math.Min(DateTime.Now.Year - issueDate.Year, 10), 11));
+            }
 
             licenses.Add(new PedLicense
             {

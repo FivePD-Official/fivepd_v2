@@ -277,8 +277,8 @@ export enum VehicleDocumentStatus {
 }
 
 export enum VehicleDocumentType {
-  Insurance,
   Registration,
+  Insurance,
 }
 
 export interface VehicleDocument {
