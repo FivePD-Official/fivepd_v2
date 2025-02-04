@@ -19,7 +19,6 @@
     text = text.replace(regex, (match, key, variable) => {
       if (params[key] !== undefined) {
         const replacement = params[key];
-        // console.log('key var replacement', {key, variable, replacement})
         if (variable !== undefined && params[`${key}(${variable})`] !== undefined) {
           const variableValue = params[`${key}(${variable})`];
           const fullReplacement = `${replacement} ${variableValue}`;
