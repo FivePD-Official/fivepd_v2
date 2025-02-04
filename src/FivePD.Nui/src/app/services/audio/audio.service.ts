@@ -34,7 +34,7 @@ export class AudioService {
   }
 
   playSound(soundSrc: string): void {
-    const url = environment.production ? 'TODO' : `http://localhost:3000/audio/${soundSrc}`;
+    const url = environment.production ? '../../Audio' : `http://localhost:3000/audio/${soundSrc}`;
     const audio = new Audio(url);
     audio.volume = this._audioVolume;
     void audio.play();

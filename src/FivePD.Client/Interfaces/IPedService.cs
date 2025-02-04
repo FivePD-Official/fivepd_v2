@@ -19,6 +19,7 @@ internal interface IPedService
     /// Generates a ped's <see cref="CommonFPed"/> object.
     /// </summary>
     /// <param name="ped">The ped that's data need to be generated and stored on the server.</param>
+    /// <param name="owningVehicleId">The id of the vehicle the ped is owning.</param>
     /// <returns>The <see cref="FPed"/> object.</returns>
-    public FPed GeneratePed(Ped ped);
+    public FPed GeneratePed(Ped ped, int owningVehicleId = 0);
 }

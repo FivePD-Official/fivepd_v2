@@ -1,5 +1,5 @@
 ﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run FXServer" type="RunNativeExe" factoryName="Native Executable">
+  <configuration default="false" name="Start FXServer" type="RunNativeExe" factoryName="Native Executable">
     <option name="EXE_PATH" value="$PROJECT_DIR$/dev/FXServer/FXServer.exe" />
     <option name="PROGRAM_PARAMETERS" value="+exec server.cfg +set onesync on" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/dev/FXServer-Data" />

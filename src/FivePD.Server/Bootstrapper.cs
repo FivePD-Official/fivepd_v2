@@ -339,6 +339,14 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IInternalInteractionService>(provider => provider.GetRequiredService<InteractionService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<InteractionService>());
 
+        services.AddSingleton<PedStorageService>();
+        services.AddSingleton<IPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
+        services.AddSingleton<IInternalPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
+
+        services.AddSingleton<VehicleStorageService>();
+        services.AddSingleton<IVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
+        services.AddSingleton<IInternalVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
+
         services.AddSingleton<PedService>();
         services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedService>());

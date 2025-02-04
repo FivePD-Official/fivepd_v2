@@ -21,7 +21,7 @@ public sealed class FPedTasks
     /// Initializes a new instance of the <see cref="FPedTasks"/> class.
     /// </summary>
     /// <param name="fPed">The <see cref="FPed"/> to use.</param>
-    public FPedTasks(FPed fPed)
+    internal FPedTasks(FPed fPed)
     {
         this._fPed = fPed;
         this._eventService = ServiceLocator.GetService<IEventService>();

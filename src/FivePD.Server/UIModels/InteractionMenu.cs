@@ -23,13 +23,15 @@ public sealed class InteractionMenu : Menu
     private readonly ICfxService _cfxService;
     private readonly IConfigService _configService;
     private readonly IInternalInteractionService _interactionService;
+    private readonly IPedStorageService _pedStorageService;
 
     public InteractionMenu(
         INotificationService notificationService,
         IEntityService entityService,
         ICfxService cfxService,
         IConfigService configService,
-        IInteractionService interactionService)
+        IInteractionService interactionService,
+        IPedStorageService pedStorageService)
         : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key)
     {
         this._notificationService = notificationService;
@@ -37,6 +39,7 @@ public sealed class InteractionMenu : Menu
         this._cfxService = cfxService;
         this._configService = configService;
         this._interactionService = (IInternalInteractionService)interactionService;
+        this._pedStorageService = pedStorageService;
     }
 
     internal MenuButtonItem SearchPed { get; private set; }
@@ -54,7 +57,7 @@ public sealed class InteractionMenu : Menu
     internal MenuButtonItem StepOutOfVehicle { get; private set; }
 
     internal MenuListItem Movement { get; private set; }
-    
+
     public override bool CanOpen(FPlayer player)
     {
         var config = this._configService.GeneralConfig.Menu.Interaction;
@@ -123,7 +126,14 @@ public sealed class InteractionMenu : Menu
                 default: return;
             }
 
-            var license = fPed.GetLicense(licenseType);
+            var pedData = this._pedStorageService.GetPedData(fPed);
+            if (pedData is null)
+            {
+                this._notificationService.ShowNotification(player, $"UI.ERROR.UNEXPECTED");
+                return;
+            }
+
+            var license = pedData.GetLicense(licenseType);
             if (license is null)
             {
                 this._notificationService.ShowNotification(player, $"no {licenseTypeLabel}");
@@ -133,7 +143,7 @@ public sealed class InteractionMenu : Menu
             var text = new GtaStyleText()
                 .Blue($"[{licenseTypeLabel}]")
                 .NewLine()
-                .White(fPed.Firstname + " " + fPed.Lastname)
+                .White(pedData.Firstname + " " + pedData.Lastname)
                 .NewLine()
                 .White($"Issue date: {license.IssueDate:MM-dd-yyyy}")
                 .NewLine()
@@ -174,23 +184,30 @@ public sealed class InteractionMenu : Menu
             fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
             // playerPed.Task.PlayAnimation("anim@gangops@morgue@table@", "player_search");
 
+            var pedData = this._pedStorageService.GetPedData(fPed);
+            if (pedData is null)
+            {
+                this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
+                return;
+            }
+
             var itemList = new GtaStyleText()
                 .Blue("Items: ")
                 .Reset();
-            if (fPed.Items.Count > 0)
+            if (pedData.Items.Count > 0)
             {
-                for (var i = 0; i < fPed.Items.Count; i++)
+                for (var i = 0; i < pedData.Items.Count; i++)
                 {
-                    if (fPed.Items[i].Illegal)
+                    if (pedData.Items[i].Illegal)
                     {
-                        itemList.Red(fPed.Items[i].Title);
+                        itemList.Red(pedData.Items[i].Title);
                     }
                     else
                     {
-                        itemList.Append(fPed.Items[i].Title);
+                        itemList.Append(pedData.Items[i].Title);
                     }
 
-                    if (i < fPed.Items.Count - 1)
+                    if (i < pedData.Items.Count - 1)
                     {
                         itemList.Append(", ");
                     }
@@ -220,10 +237,17 @@ public sealed class InteractionMenu : Menu
                 fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
             }
 
+            var pedData = this._pedStorageService.GetPedData(fPed);
+            if (pedData is null)
+            {
+                this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
+                return;
+            }
+
             var text = new GtaStyleText()
                 .Blue("Drug swab test")
                 .NewLine()
-                .White(fPed.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(", ", fPed.Drugs.Select(x => x.Name))}");
+                .White(pedData.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(", ", pedData.Drugs.Select(x => x.Name))}");
             this._notificationService.ShowNotification(player, text.Build());
         };
         items.Add(this.DrugSwabTest);
@@ -242,19 +266,26 @@ public sealed class InteractionMenu : Menu
                 fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
             }
 
+            var pedData = this._pedStorageService.GetPedData(fPed);
+            if (pedData is null)
+            {
+                this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
+                return;
+            }
+
             var text = new GtaStyleText()
                 .Blue("Breathalyzer test")
                 .NewLine()
                 .White($"Legal limit: {this._configService.GeneralConfig.Peds.Alcohol.LegalLimit:0.00}")
                 .NewLine()
                 .White("Result: ");
-            if (fPed.AlcoholOverLegalLimit())
+            if (pedData.AlcoholOverLegalLimit())
             {
-                text.Red(fPed.AlcoholLevel.ToString("0.00"));
+                text.Red(pedData.AlcoholLevel.ToString("0.00"));
             }
             else
             {
-                text.White(fPed.AlcoholLevel.ToString("0.00"));
+                text.White(pedData.AlcoholLevel.ToString("0.00"));
             }
 
             this._notificationService.ShowNotification(player, text.Build());

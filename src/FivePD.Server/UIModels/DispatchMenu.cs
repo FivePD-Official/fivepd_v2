@@ -26,6 +26,8 @@ public sealed class DispatchMenu : Menu
     private readonly INotificationService _notificationService;
     private readonly IUnitManagerService _unitManagerService;
     private readonly IGameNotificationService _gameNotificationService;
+    private readonly IPedStorageService _pedStorageService;
+    private readonly IVehicleStorageService _vehicleStorageService;
 
     public DispatchMenu(
         IIncidentService incidentService,
@@ -34,7 +36,9 @@ public sealed class DispatchMenu : Menu
         IEntityService entityService,
         INotificationService notificationService,
         IUnitManagerService unitManagerService,
-        IGameNotificationService gameNotificationService)
+        IGameNotificationService gameNotificationService,
+        IPedStorageService pedStorageService,
+        IVehicleStorageService vehicleStorageService)
         : base(Controls.DispatchMenu.Id, Controls.DispatchMenu.Title, Controls.DispatchMenu.Key)
     {
         this._incidentService = incidentService;
@@ -44,6 +48,8 @@ public sealed class DispatchMenu : Menu
         this._notificationService = notificationService;
         this._unitManagerService = unitManagerService;
         this._gameNotificationService = gameNotificationService;
+        this._pedStorageService = pedStorageService;
+        this._vehicleStorageService = vehicleStorageService;
     }
 
     protected override List<MenuItem> CreateItems()
@@ -194,15 +200,24 @@ public sealed class DispatchMenu : Menu
         var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
         if (fPed is null)
         {
+            this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
             return;
         }
 
         if (!fPed.HasGeneratedData.Value)
         {
+            this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
             return;
         }
 
-        var license = fPed.GetLicense(PedLicenseType.Driving);
+        var pedData = this._pedStorageService.GetPedData(fPed);
+        if (pedData is null)
+        {
+            this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
+            return;
+        }
+
+        var license = pedData.GetLicense(PedLicenseType.Driving);
         if (license is null)
         {
             this._notificationService.ShowNotification(player, "no driving license");
@@ -210,16 +225,16 @@ public sealed class DispatchMenu : Menu
         }
 
         var text = new GtaStyleText()
-            .Append(fPed.Firstname + " " + fPed.Lastname)
+            .Append(pedData.Firstname + " " + pedData.Lastname)
             .NewLine();
 
-        if (fPed.Warrants.Count == 0)
+        if (pedData.Warrants.Count == 0)
         {
             text.Append("No warrants");
         }
         else
         {
-            text.Red($"{fPed.Warrants.Count} warrant(s)");
+            text.Red($"{pedData.Warrants.Count} warrant(s)");
         }
 
         this._notificationService.ShowNotificationWithTexture(
@@ -252,19 +267,28 @@ public sealed class DispatchMenu : Menu
         var fVehicle = await this._entityService.GetClosestEntityToPlayerAsync<FVehicle>(player.GetUnderlyingPlayer());
         if (fVehicle is null)
         {
+            this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
             return;
         }
 
         if (!fVehicle.HasGeneratedData.Value)
         {
+            this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
+            return;
+        }
+
+        var vehicleData = this._vehicleStorageService.GetVehicleData(fVehicle);
+        if (vehicleData is null)
+        {
+            this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
             return;
         }
 
         var text = new GtaStyleText()
-            .Append(fVehicle.LicensePlate)
+            .Append(vehicleData.LicensePlate)
             .NewLine();
 
-        var registration = fVehicle.GetDocument(VehicleDocumentType.Registration);
+        var registration = vehicleData.GetDocument(VehicleDocumentType.Registration);
         if (registration is not null)
         {
             text.Append("Registration: ");
@@ -284,7 +308,7 @@ public sealed class DispatchMenu : Menu
             }
         }
 
-        var insurance = fVehicle.GetDocument(VehicleDocumentType.Insurance);
+        var insurance = vehicleData.GetDocument(VehicleDocumentType.Insurance);
         if (insurance is not null)
         {
             text.Append("Insurance: ");
@@ -304,6 +328,7 @@ public sealed class DispatchMenu : Menu
             }
         }
 
+        // TODO: replace with GameNotificationService
         this._notificationService.ShowNotificationWithTexture(
             player,
             "CHAR_CALL911",

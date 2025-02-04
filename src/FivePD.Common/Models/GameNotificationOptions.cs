@@ -26,6 +26,11 @@ public record GameNotificationOptions
     public string Title { get; init; }
 
     /// <summary>
+    /// Gets the parameters to be replaced in the title on the client.
+    /// </summary>
+    public Dictionary<string, string> TitleParams { get; init; }
+
+    /// <summary>
     /// Gets the message of the notification.
     /// </summary>
     public string Message { get; init; }

@@ -20,7 +20,7 @@ public sealed class FVehicleProperties
     /// Initializes a new instance of the <see cref="FVehicleProperties"/> class.
     /// </summary>
     /// <param name="fVehicle">The <see cref="FVehicle"/> to use.</param>
-    public FVehicleProperties(FVehicle fVehicle)
+    internal FVehicleProperties(FVehicle fVehicle)
     {
         this._fVehicle = fVehicle;
         this._eventService = ServiceLocator.GetService<IEventService>();

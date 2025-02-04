@@ -106,12 +106,22 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the ped histories.
     /// </summary>
-    public DbSet<PedHistory> PedHistories { get; set; }
+    public DbSet<PedData> PedData { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the ped licenses.
     /// </summary>
     public DbSet<PedLicense> PedLicenses { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing the vehicle histories.
+    /// </summary>
+    public DbSet<VehicleData> VehicleData { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing the vehicle documents.
+    /// </summary>
+    public DbSet<VehicleDocument> VehicleDocuments { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the messages.
@@ -288,8 +298,13 @@ public class DatabaseContext : DbContext
             .WithOne(user => user.IncidentHistory)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<PedHistory>(type =>
+        modelBuilder.Entity<PedData>(type =>
         {
+            type.HasOne(t => t.VehicleData)
+                .WithOne(e => e.PedData)
+                .HasForeignKey<VehicleData>(v => v.PedDataId)
+                .IsRequired(false);
+
             type.Property(t => t.Items)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
@@ -305,7 +320,7 @@ public class DatabaseContext : DbContext
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
             type.HasMany(pedHistory => pedHistory.Licenses)
-                .WithOne(license => license.PedHistory)
+                .WithOne(license => license.PedData)
                 .OnDelete(DeleteBehavior.Cascade);
 
             type.Property(t => t.Drugs)
@@ -314,6 +329,20 @@ public class DatabaseContext : DbContext
                     v => JsonConvert.DeserializeObject<List<Drug>>(
                         v,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        });
+
+        modelBuilder.Entity<VehicleData>(type =>
+        {
+            type.Property(t => t.Items)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<Item>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+            type.HasMany(vehicleHistory => vehicleHistory.Documents)
+                .WithOne(document => document.VehicleData)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<VehicleConfig<Dictionary<string, object>>>(type =>

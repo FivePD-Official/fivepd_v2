@@ -19,7 +19,7 @@ internal record struct FVehicleDTO
 
     public string Brand { get; init; }
 
-    public PedHistory Owner { get; init; }
+    public PedData Owner { get; init; }
     
     public List<VehicleDocument> Documents { get; init; }
 }

@@ -8,10 +8,4 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 public interface IPedService
 {
-    /// <summary>
-    /// Tries to get a <see cref="FPed"/> by its network ID.
-    /// </summary>
-    /// <param name="networkId">The ped's network ID.</param>
-    /// <returns>The ped or null.</returns>
-    public FPed TryGetPed(int networkId);
 }

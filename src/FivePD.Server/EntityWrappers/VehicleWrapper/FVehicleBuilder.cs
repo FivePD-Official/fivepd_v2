@@ -25,10 +25,32 @@ public class FVehicleBuilder : CommonFVehicleBuilder
     }
 
     /// <summary>
+    /// Gets the VehicleHistory id.
+    /// </summary>
+    public int VehicleDataId { get; internal set; }
+
+    /// <summary>
+    /// Gets the PedHistory id.
+    /// </summary>
+    public int OwnerPedHistoryId { get; internal set; }
+
+    /// <summary>
     /// Gets the documents of the vehicle.
     /// </summary>
     public List<VehicleDocument> Documents { get; } = new();
-    
+
+    public FVehicleBuilder WithVehicleData(VehicleData vehicleData)
+    {
+        this.VehicleDataId = vehicleData.Id;
+        return this;
+    }
+
+    public FVehicleBuilder WithPedHistory(PedData pedData)
+    {
+        this.OwnerPedHistoryId = pedData?.Id ?? 0;
+        return this;
+    }
+
     public FVehicleBuilder WithItems(IEnumerable<Item> items)
     {
         this.Items = items
@@ -38,7 +60,7 @@ public class FVehicleBuilder : CommonFVehicleBuilder
             .ToList();
         return this;
     }
-    
+
     public FVehicleBuilder WithDocument(VehicleDocument document)
     {
         this.Documents.Add(document);
@@ -59,15 +81,15 @@ public class FVehicleBuilder : CommonFVehicleBuilder
 
         return this;
     }
-    
+
     public FVehicleBuilder WithRandomDocuments(VehicleDocumentsConfig vehicleDocumentsConfig)
     {
         var documents = new List<VehicleDocument>();
 
         var documentConfigs = new Dictionary<VehicleDocumentType, VehicleDocumentsConfig.VehicleDocumentConfig>
         {
-            [VehicleDocumentType.Insurance] = vehicleDocumentsConfig.Insurance,
             [VehicleDocumentType.Registration] = vehicleDocumentsConfig.Registration,
+            [VehicleDocumentType.Insurance] = vehicleDocumentsConfig.Insurance,
         };
 
         foreach (var config in documentConfigs)
@@ -78,11 +100,19 @@ public class FVehicleBuilder : CommonFVehicleBuilder
             }
 
             var now = DateTime.Now;
-            var issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year);
             var expired = Random.Next(0, 101) < config.Value.ChanceForExpired;
-            var expirationDate = expired
-                ? issueDate.AddYears(-Random.Next(1, 3))
-                : issueDate.AddYears(Random.Next(1, 11));
+            DateTime issueDate;
+            DateTime expirationDate;
+            if (expired)
+            {
+                issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year - 1);
+                expirationDate = issueDate.AddYears(Random.Next(1, Math.Max(Random.Next(1, 6), DateTime.Now.Year - issueDate.Year)));
+            }
+            else
+            {
+                issueDate = DateGenerator.GetRandomDate(now.Year - 5, now.Year);
+                expirationDate = issueDate.AddYears(Random.Next(Math.Min(DateTime.Now.Year - issueDate.Year, 10), 11));
+            }
 
             documents.Add(new VehicleDocument
             {
@@ -97,7 +127,7 @@ public class FVehicleBuilder : CommonFVehicleBuilder
 
         return this;
     }
-    
+
     public FVehicle Build()
     {
         return new FVehicle(this);

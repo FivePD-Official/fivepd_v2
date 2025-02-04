@@ -21,7 +21,7 @@ public class FWeaponCollection
     /// Initializes a new instance of the <see cref="FWeaponCollection"/> class.
     /// </summary>
     /// <param name="fPed">The <see cref="FPed"/> to use.</param>
-    public FWeaponCollection(FPed fPed)
+    internal FWeaponCollection(FPed fPed)
     {
         this._fPed = fPed;
         this._eventService = ServiceLocator.GetService<IEventService>();

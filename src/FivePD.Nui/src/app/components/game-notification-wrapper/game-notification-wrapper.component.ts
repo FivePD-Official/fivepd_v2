@@ -32,8 +32,6 @@ export class GameNotificationWrapperComponent implements OnInit {
 
   protected notifications: GameNotification[] = [];
 
-  protected readonly ObjectEntries = Object.entries;
-
   ngOnInit(): void {
     this._eventService.onEvent<GameNotificationOptions>('fivepd:gameNotification:notify')
       .pipe(
@@ -49,8 +47,14 @@ export class GameNotificationWrapperComponent implements OnInit {
       .subscribe();
   }
 
+  getTitle(notification: GameNotificationOptions) {
+    const title = this._localizationService.translate(notification.Title, notification.TitleParams, false);
+    return title;
+  }
+
   getMessage(notification: GameNotificationOptions) {
     const message = this._localizationService.translate(notification.Message, notification.MessageParams, false);
+    console.log('MESSAGE: ', message)
     return this._domSanitizer.bypassSecurityTrustHtml(message);
   }
 

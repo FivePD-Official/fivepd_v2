@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Collation, FVehicleDTO, Id } from "@models";
+import { Collation, Id, VehicleData } from "@models";
 import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class VehicleService extends BaseApiService<FVehicleDTO> {
+export class VehicleService extends BaseApiService<VehicleData> {
 
   override baseUrl = 'fivepd:vehicle';
 

@@ -27,6 +27,7 @@ Audio:
     BackupRequested: "single_beep.mp3"
     CalloutDispatched: "double_beep.mp3"
     UnitJoinRequest: "mic_click.mp3"
+    AlprToggle: "notification.mp3"
 
 Unit:
   MaxMembers: 0 # 0 = unlimited, 1+ = limited

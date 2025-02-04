@@ -54,9 +54,11 @@ internal class VehicleService : IVehicleService, IOnInit
             return fVehicle;
         }
 
+        Debug.WriteLine($"GenerateVehicle - occupants len: {vehicle.Occupants.Length} - driver net id: {vehicle.Driver.NetworkId}");
         foreach (var ped in vehicle.Occupants)
         {
             this._pedService.GeneratePed(ped);
+            Debug.WriteLine($"occupant net id: {ped.NetworkId}");
         }
 
         var fVehicleBuilder = new CommonFVehicleBuilder(vehicle.NetworkId)

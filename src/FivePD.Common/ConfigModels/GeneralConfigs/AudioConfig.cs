@@ -16,4 +16,6 @@ public sealed record AudioFiles
     public string BackupRequested { get; init; }
     
     public string CalloutDispatched { get; init; }
+
+    public string AlprToggle { get; init; }
 }

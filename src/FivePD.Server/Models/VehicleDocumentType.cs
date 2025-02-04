@@ -1,4 +1,4 @@
-﻿namespace FivePD.Server.EntityWrappers.VehicleWrapper;
+﻿namespace FivePD.Server.Models;
 
 #pragma warning disable
 

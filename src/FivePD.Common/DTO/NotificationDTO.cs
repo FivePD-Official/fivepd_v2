@@ -13,15 +13,11 @@ internal sealed record NotificationDTO
         public required bool WithBeep { get; init; }
 
         public required int Duration { get; init; }
-
-        public required Dictionary<string, string> ContentParams { get; init; }
     }
 
     public record struct ShowNotification
     {
         public required string Content { get; init; }
-
-        public required Dictionary<string, string> ContentParams { get; init; }
     }
 
     public record struct ShowNotificationWithTexture
@@ -33,7 +29,5 @@ internal sealed record NotificationDTO
         public required string Subject { get; init; }
 
         public required string Content { get; init; }
-
-        public required Dictionary<string, string> ContentParams { get; init; }
     }
 }

@@ -18,23 +18,23 @@ namespace FivePD.Server.Services;
 public class EntityService : IEntityService
 {
     private readonly IEventService _eventService;
-    private readonly IPedService _pedService;
-    private readonly IVehicleService _vehicleService;
+    private readonly IPedStorageService _pedStorageService;
+    private readonly IVehicleStorageService _vehicleStorageService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EntityService"/> class.
     /// </summary>
     /// <param name="eventService">The <see cref="IEventService"/> to use.</param>
-    /// <param name="pedService">The <see cref="IPedService"/> to use.</param>
-    /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
+    /// <param name="pedStorageService">The <see cref="IPedService"/> to use.</param>
+    /// <param name="vehicleStorageService">The <see cref="IVehicleService"/> to use.</param>
     public EntityService(
         IEventService eventService,
-        IPedService pedService,
-        IVehicleService vehicleService)
+        IPedStorageService pedStorageService,
+        IVehicleStorageService vehicleStorageService)
     {
         this._eventService = eventService;
-        this._pedService = pedService;
-        this._vehicleService = vehicleService;
+        this._pedStorageService = pedStorageService;
+        this._vehicleStorageService = vehicleStorageService;
     }
 
     /// <inheritdoc />
@@ -121,7 +121,7 @@ public class EntityService : IEntityService
     public List<FPed> GetAllFPeds()
     {
         return this.GetAllPeds()
-            .Select(x => this._pedService.TryGetPed(x.NetworkId))
+            .Select(x => this._pedStorageService.TryGetPed(x.NetworkId))
             .ToList();
     }
 
@@ -137,7 +137,7 @@ public class EntityService : IEntityService
     public FPed GetClosestFPedToEntity(Entity entity, float range = 15f)
     {
         var ped = this.GetClosestPedToEntity(entity, range);
-        return ped is null ? null : this._pedService.TryGetPed(ped.NetworkId);
+        return ped is null ? null : this._pedStorageService.TryGetPed(ped.NetworkId);
     }
 
     /// <inheritdoc />
@@ -171,7 +171,7 @@ public class EntityService : IEntityService
     public List<FVehicle> GetAllFVehicles()
     {
         return this.GetAllVehicles()
-            .Select(x => this._vehicleService.TryGetVehicle(x.NetworkId))
+            .Select(x => this._vehicleStorageService.TryGetVehicle(x.NetworkId))
             .ToList();
     }
 
@@ -187,7 +187,7 @@ public class EntityService : IEntityService
     public FVehicle GetClosestFVehicleToEntity(Entity entity, float range = 15f)
     {
         var vehicle = this.GetClosestVehicleToEntity(entity, range);
-        return vehicle is null ? null : this._vehicleService.TryGetVehicle(vehicle.NetworkId);
+        return vehicle is null ? null : this._vehicleStorageService.TryGetVehicle(vehicle.NetworkId);
     }
 
     /// <inheritdoc />
@@ -225,13 +225,13 @@ public class EntityService : IEntityService
 
         if (typeof(T) == typeof(FPed))
         {
-            var fPed = this._pedService.TryGetPed(int.Parse(networkId));
+            var fPed = this._pedStorageService.TryGetPed(int.Parse(networkId));
             return fPed as T;
         }
 
         if (typeof(T) == typeof(FVehicle))
         {
-            var fVehicle = this._vehicleService.TryGetVehicle(int.Parse(networkId));
+            var fVehicle = this._vehicleStorageService.TryGetVehicle(int.Parse(networkId));
             return fVehicle as T;
         }
 
