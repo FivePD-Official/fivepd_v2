@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
-using FivePD.Common.Utilities;
+using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
@@ -30,12 +30,11 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly DatabaseContext _databaseContext;
     private readonly PlayerList _playerList;
-    private readonly INotificationService _notificationService;
+    private readonly IGameNotificationService _notificationService;
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
     private readonly ILocalizationService _localizationService;
     private readonly IPlayerHandlerService _playerHandlerService;
-    private readonly IAudioService _audioService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -43,22 +42,20 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
-    /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
+    /// <param name="notificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
-    /// <param name="audioService">The <see cref="IAudioService"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         DatabaseContext databaseContext,
         PlayerList playerList,
-        INotificationService notificationService,
+        IGameNotificationService notificationService,
         IConfigService configService,
         ILogger logger,
         ILocalizationService localizationService,
-        IPlayerHandlerService playerHandlerService,
-        IAudioService audioService)
+        IPlayerHandlerService playerHandlerService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._databaseContext = databaseContext;
@@ -68,7 +65,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._logger = logger;
         this._localizationService = localizationService;
         this._playerHandlerService = playerHandlerService;
-        this._audioService = audioService;
     }
 
     /// <inheritdoc/>
@@ -261,23 +257,31 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private void OnPlayerDutyStatusChanged(Player player, FDutyStatus status)
     {
         var fPlayer = FPlayer.FromNetId(player.Handle);
+        if (fPlayer is null)
+        {
+            return;
+        }
 
-        this._notificationService.ShowNotificationWithTexture(
-            this._playerList.Where(p => p.Handle != player.Handle),
-            "CHAR_CALL911",
-            "LABEL.DISPATCH",
-            new GtaStyleText().Yellow("LABEL.STATUS").Build(),
-            "PLAYER_STATUS.CHANGE",
-            new Dictionary<string, string>
-            {
-                ["name"] = player.Name,
-                ["status"] = status switch
+        foreach (var p in this._playerList.Where(p => p.Handle != player.Handle))
+        {
+            this._notificationService.Notify(
+                p,
+                new GameNotificationOptions
                 {
-                    FDutyStatus.OffDuty => "PLAYER_STATUS.OFF_DUTY.GENERIC",
-                    FDutyStatus.OnDuty => "PLAYER_STATUS.ON_DUTY.GENERIC",
-                    _ => "Unknown",
-                },
-            });
+                    Title = "LABEL.DISPATCH",
+                    Message = "PLAYER_STATUS.CHANGE",
+                    MessageParams = new Dictionary<string, string>
+                    {
+                        ["name"] = player.Name,
+                        ["status"] = status switch
+                        {
+                            FDutyStatus.OffDuty => "PLAYER_STATUS.OFF_DUTY.GENERIC",
+                            FDutyStatus.OnDuty => "PLAYER_STATUS.ON_DUTY.GENERIC",
+                            _ => "Unknown",
+                        },
+                    },
+                });
+        }
 
         this.PlayerDutyStatusChanged?.Invoke(
             this,

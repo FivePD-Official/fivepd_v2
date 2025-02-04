@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
+using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -20,6 +22,7 @@ public class AlprService : IAlprService, IOnInit
     private readonly IPedStorageService _pedStorageService;
     private readonly IGameNotificationService _gameNotificationService;
     private readonly IConfigService _configService;
+    private readonly DatabaseContext _databaseContext;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AlprService"/> class.
@@ -29,18 +32,21 @@ public class AlprService : IAlprService, IOnInit
     /// <param name="pedStorageService">The <see cref="IPedService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
+    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     public AlprService(
         EventHandlerDictionary eventHandlerDictionary,
         IVehicleStorageService vehicleStorageService,
         IPedStorageService pedStorageService,
         IGameNotificationService gameNotificationService,
-        IConfigService configService)
+        IConfigService configService,
+        DatabaseContext databaseContext)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._vehicleStorageService = vehicleStorageService;
         this._pedStorageService = pedStorageService;
         this._gameNotificationService = gameNotificationService;
         this._configService = configService;
+        this._databaseContext = databaseContext;
     }
 
     /// <inheritdoc/>
@@ -72,6 +78,7 @@ public class AlprService : IAlprService, IOnInit
         return (false,
             document.Status switch
             {
+                VehicleDocumentStatus.Valid => "LABEL.VALID",
                 VehicleDocumentStatus.Expired => "LABEL.EXPIRED",
                 VehicleDocumentStatus.Suspended => "LABEL.SUSPENDED",
                 VehicleDocumentStatus.Revoked => "LABEL.REVOKED",
@@ -100,65 +107,53 @@ public class AlprService : IAlprService, IOnInit
             return;
         }
 
+        this._databaseContext.Entry(ownerPed)
+            .Collection(x => x.Licenses)
+            .Load();
+
         var insuranceStatus = this.GetVehicleDocumentStatus(fVehicle, VehicleDocumentType.Insurance);
         var registrationStatus = this.GetVehicleDocumentStatus(fVehicle, VehicleDocumentType.Registration);
         var pedDrivingLicense = ownerPed.GetLicense(PedLicenseType.Driving);
 
-        var a = ownerPed.Warrants.Count <= 0 && insuranceStatus.Valid && registrationStatus.Valid && pedDrivingLicense is not null &&
-                pedDrivingLicense.Status == PedLicenseStatus.Valid;
-        Debug.WriteLine($"a: {a} -- {vehicleData.LicensePlate} -- {insuranceStatus.Valid} - {registrationStatus.Valid} - {pedDrivingLicense?.Status}");
-
-        if (a)
+        if (ownerPed.Warrants.Count <= 0 && insuranceStatus.Valid && registrationStatus.Valid && pedDrivingLicense is not null &&
+            pedDrivingLicense.Status == PedLicenseStatus.Valid)
         {
             return;
         }
 
         var pedDrivingLicenseStatusLabel = pedDrivingLicense?.Status switch
         {
+            PedLicenseStatus.Valid => "LABEL.VALID",
             PedLicenseStatus.Expired => "LABEL.EXPIRED",
             PedLicenseStatus.Suspended => "LABEL.SUSPENDED",
             PedLicenseStatus.Revoked => "LABEL.REVOKED",
             _ => "LABEL.UNKNOWN",
         };
 
-        // TODO: fix translation both in dotnet and in js
-        return;
-
-        var message = new StringBuilder()
-            .Append("[ALPR]")
-            .Append("{{NEW_LINE}}")
-            .Append("ALPR.NOTIFICATION.CONTENT.VEHICLE_BRAND")
-            .Append("{{NEW_LINE}}")
-            .Append("ALPR.NOTIFICATION.CONTENT.VEHICLE_COLOR")
-            .Append("{{NEW_LINE}}")
-            .Append("ALPR.NOTIFICATION.CONTENT.LICENSE_PLATE")
-            .Append("{{NEW_LINE}}")
-            .Append("ALPR.NOTIFICATION.CONTENT.REGISTERED_OWNER")
-            .Append("{{NEW_LINE}}")
-            .Append("ALPR.NOTIFICATION.CONTENT.INSURANCE")
-            .Append("{{NEW_LINE}}")
-            .Append("ALPR.NOTIFICATION.CONTENT.REGISTRATION")
-            .Append("{{NEW_LINE}}")
-            .Append("ALPR.NOTIFICATION.CONTENT.OWNER_DRIVING_LICENSE")
-            .ToString();
-
-        var asd = $"[ALPR]{{NEW_LINE}}{{BRAND(brand)}}";
-
-        Debug.WriteLine($"NOTIFY ALPR - {vehicleData.LicensePlate}");
         this._gameNotificationService.Notify(source, new GameNotificationOptions
         {
-            Title = "[ALPR]",
-            Message = asd,
+            Title = "[{{ALPR}}]",
+            TitleParams = new Dictionary<string, string>
+            {
+                ["ALPR"] = "UI.ALPR.TITLE",
+            },
+            Message = "{{BRAND(x)}}{{NEW_LINE}}{{COLOR(x)}}{{NEW_LINE}}{{LICENSE_PLATE(x)}}{{NEW_LINE}}{{REGISTERED_OWNER(x)}}{{NEW_LINE}}{{INSURANCE(x)}}{{NEW_LINE}}{{REGISTRATION(x)}}{{NEW_LINE}}{{OWNER_DRIVING_LICENSE(x)}}",
             MessageParams = new Dictionary<string, string>
             {
-                ["BRAND"] = "ALPR.NOTIFICATION.CONTENT.VEHICLE_BRAND",
-                ["brand"] = vehicleData.Brand,
-                ["color"] = vehicleData.Color,
-                ["license_plate"] = vehicleData.LicensePlate,
-                ["registered_owner"] = $"{ownerPed.Firstname} {ownerPed.Lastname}",
-                ["insurance"] = insuranceStatus.Label,
-                ["registration"] = registrationStatus.Label,
-                ["owner_driving_license"] = pedDrivingLicenseStatusLabel,
+                ["BRAND"] = "UI.ALPR.NOTIFICATION.CONTENT.VEHICLE_BRAND",
+                ["BRAND(x)"] = vehicleData.Brand,
+                ["COLOR"] = "UI.ALPR.NOTIFICATION.CONTENT.VEHICLE_COLOR",
+                ["COLOR(x)"] = vehicleData.Color,
+                ["LICENSE_PLATE"] = "UI.ALPR.NOTIFICATION.CONTENT.LICENSE_PLATE",
+                ["LICENSE_PLATE(x)"] = vehicleData.LicensePlate,
+                ["REGISTERED_OWNER"] = "UI.ALPR.NOTIFICATION.CONTENT.REGISTERED_OWNER",
+                ["REGISTERED_OWNER(x)"] = $"{ownerPed.Firstname} {ownerPed.Lastname}",
+                ["INSURANCE"] = "UI.ALPR.NOTIFICATION.CONTENT.INSURANCE",
+                ["INSURANCE(x)"] = insuranceStatus.Label,
+                ["REGISTRATION"] = "UI.ALPR.NOTIFICATION.CONTENT.REGISTRATION",
+                ["REGISTRATION(x)"] = registrationStatus.Label,
+                ["OWNER_DRIVING_LICENSE"] = "UI.ALPR.NOTIFICATION.CONTENT.OWNER_DRIVING_LICENSE",
+                ["OWNER_DRIVING_LICENSE(x)"] = pedDrivingLicenseStatusLabel,
             },
             PlayAudio = this._configService.GeneralConfig.Audio.Files.AlprToggle,
         });
