@@ -76,10 +76,6 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         this._tickQueueService.DequeueInterval(this._checkPedsId);
     }
 
-#pragma warning disable
-    // TODO: public void UpdatePedHistory(FPed fPed) -> copy fields of FPed to its PedHistory and save 
-#pragma warning restore
-
     private void CheckPeds()
     {
         foreach (var keyValuePair in this._pedStorageService.InternalPeds)

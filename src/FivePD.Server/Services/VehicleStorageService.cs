@@ -27,21 +27,7 @@ public class VehicleStorageService : IVehicleStorageService, IInternalVehicleSto
 
     public FVehicle TryGetVehicle(int networkId)
     {
-        var found = this._vehicles.TryGetValue(networkId, out var vehicle);
-        if (found)
-        {
-            return vehicle;
-        }
-
-        vehicle = FVehicle.FromNetId(networkId); // TODO: this should not exist, it's an empty instance from the builder (??) same in PedService
-        if (vehicle is null)
-        {
-            return null;
-        }
-
-        this._vehicles[networkId] = vehicle;
-
-        return vehicle;
+        return this._vehicles.TryGetValue(networkId, out var vehicle) ? vehicle : null;
     }
     
     public VehicleData GetVehicleData(FVehicle vehicle)
