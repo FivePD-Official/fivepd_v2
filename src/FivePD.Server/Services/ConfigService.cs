@@ -86,11 +86,7 @@ public class ConfigService : IConfigService, IOnInit
             _ => "An error occured while parsing the {{path}} file, the default values will be used. Make sure that the JSON or YAML formatting is correct.",
         };
 
-        this._logger.Warning(exceptionMessage.ReplaceParams(
-            new Dictionary<string, string>
-            {
-                { "path", $"\"{path}\"" },
-            }));
+        this._logger.Warning(exceptionMessage.Replace("{{path}}", path));
 
         return file.Item1;
     }

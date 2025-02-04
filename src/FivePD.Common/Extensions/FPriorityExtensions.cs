@@ -24,42 +24,4 @@ public static class FPriorityExtensions
             _ => string.Empty,
         };
     }
-
-    /// <summary>
-    /// Returns a <see cref="GtaStyleText"/> starting with the matching color code of the given priority.
-    /// </summary>
-    /// <param name="priority">The priority.</param>
-    /// <returns>A colored text.</returns>
-    public static GtaStyleText GetLabelColor(this FPriority priority)
-    {
-        var text = new GtaStyleText();
-        switch (priority)
-        {
-            case FPriority.Code1:
-            {
-                text.Blue();
-                break;
-            }
-
-            case FPriority.Code2:
-            {
-                text.Yellow();
-                break;
-            }
-
-            case FPriority.Code3:
-            {
-                text.Orange();
-                break;
-            }
-
-            case FPriority.Code99:
-            {
-                text.Red();
-                break;
-            }
-        }
-
-        return text;
-    }
 }

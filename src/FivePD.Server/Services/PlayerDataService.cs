@@ -264,6 +264,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
         foreach (var p in this._playerList.Where(p => p.Handle != player.Handle))
         {
+            // TODO: replace with gamenotificationservice
             this._notificationService.Notify(
                 p,
                 new GameNotificationOptions
