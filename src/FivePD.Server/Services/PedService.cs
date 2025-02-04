@@ -105,39 +105,40 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         var fPedBuilder = new FPedBuilder(commonFPedBuilder);
 
         var owningFVehicle = this._vehicleStorageService.TryGetVehicle(commonFPedBuilder.OwningVehicleNetworkId);
-        var vehicleHistory = owningFVehicle is null
+        var vehicleData = owningFVehicle is null
             ? null
-            : this._databaseContext.VehicleHistories.FirstOrDefault(x => x.Id == owningFVehicle.VehicleHistoryId);
+            : this._databaseContext.VehicleData.FirstOrDefault(x => x.Id == owningFVehicle.VehicleDataId);
 
         FPed fPed = null;
         if (this._configService.GeneralConfig.Peds.ChanceToReuseData != 0 &&
             this._randomService.GetRandomChance <= this._configService.GeneralConfig.Peds.ChanceToReuseData)
         {
-            var pedHistory = this._databaseContext.PedHistories
+            var pedData = this._databaseContext.PedData
                 .OrderBy(_ => Guid.NewGuid())
                 .Include(pedHistory => pedHistory.Licenses)
                 .FirstOrDefault(ped => ped.Gender == commonFPedBuilder.Gender);
-            if (pedHistory is not null)
+            if (pedData is not null)
             {
                 fPed = fPedBuilder
                     .WithOwningVehicleNetworkId(commonFPedBuilder.OwningVehicleNetworkId)
-                    .WithFirstname(pedHistory.Firstname)
-                    .WithLastname(pedHistory.Lastname)
-                    .WithBirthdate(pedHistory.Birthdate)
-                    .WithItems(pedHistory.Items, true)
+                    .WithFirstname(pedData.Firstname)
+                    .WithLastname(pedData.Lastname)
+                    .WithBirthdate(pedData.Birthdate)
+                    .WithItems(pedData.Items, true)
                     .WithWarrants(new FPedBuilder.WithWarrantsOptions
                     {
-                        Warrants = pedHistory.Warrants,
+                        Warrants = pedData.Warrants,
                         IncludeAll = true,
                     })
-                    .WithLicenses(pedHistory.Licenses)
-                    .WithAlcoholLevel(pedHistory.AlcoholLevel)
-                    .WithDrugs(pedHistory.Drugs)
+                    .WithLicenses(pedData.Licenses)
+                    .WithAlcoholLevel(pedData.AlcoholLevel)
+                    .WithDrugs(pedData.Drugs)
+                    .WithPedData(pedData)
                     .Build();
-
-                if (vehicleHistory is not null)
+        
+                if (vehicleData is not null)
                 {
-                    vehicleHistory.PedHistoryId = pedHistory.Id;
+                    vehicleData.PedDataId = pedData.Id;
                     this._databaseContext.SaveChanges();
                 }
             }
@@ -145,7 +146,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
 
         if (fPed is null)
         {
-            fPed = fPedBuilder
+            fPedBuilder
                 .WithOwningVehicleNetworkId(commonFPedBuilder.OwningVehicleNetworkId)
                 .WithFirstname(commonFPedBuilder.Gender == FGender.Female ? this._configService.FemaleFirstnames : this._configService.MaleFirstnames)
                 .WithLastname(this._configService.Lastnames)
@@ -160,9 +161,8 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 })
                 .WithRandomLicenses(this._configService.GeneralConfig.Peds.Licenses)
                 .WithAlcoholLevel(this._configService.GeneralConfig.Peds.Alcohol)
-                .WithDrugs(this._configService.GeneralConfig.Peds.Drugs)
-                .Build();
-            var entry = this._databaseContext.PedHistories.Add(new PedData
+                .WithDrugs(this._configService.GeneralConfig.Peds.Drugs);
+            var entry = this._databaseContext.PedData.Add(new PedData
             {
                 Firstname = fPedBuilder.Firstname,
                 Lastname = fPedBuilder.Lastname,
@@ -173,17 +173,21 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 Licenses = fPedBuilder.Licenses,
                 AlcoholLevel = fPedBuilder.AlcoholLevel,
                 Drugs = fPedBuilder.Drugs,
-                VehicleHistoryId = vehicleHistory?.Id ?? 0,
+                VehicleDataId = vehicleData?.Id ?? 0,
             });
             this._databaseContext.SaveChanges();
 
-            if (vehicleHistory is not null)
+            if (vehicleData is not null)
             {
-                vehicleHistory.PedHistoryId = entry.Entity.Id;
+                vehicleData.PedDataId = entry.Entity.Id;
                 this._databaseContext.SaveChanges();
             }
 
-            fPed.PedHistoryId = entry.Entity.Id;
+            fPed = fPedBuilder
+                .WithPedData(entry.Entity)
+                .Build();
+
+            fPed.PedDataId = entry.Entity.Id;
         }
 
         Debug.WriteLine($"Generated data for ped with net ID of {fPed.NetworkId} - Name: {fPedBuilder.Firstname} {fPedBuilder.Lastname}");
@@ -208,7 +212,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             request.Filters.Gender != -1,
             pedHistory => pedHistory.Gender == (FGender)request.Filters.Gender);
 
-        var page = this._databaseContext.PedHistories
+        var page = this._databaseContext.PedData
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
@@ -219,7 +223,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
-        var pedHistory = this._databaseContext.PedHistories
+        var pedHistory = this._databaseContext.PedData
             .AsNoTracking()
             .Include(pedHistory => pedHistory.Licenses)
             .FirstOrDefault(x => x.Id == request.Id);
@@ -229,7 +233,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     [UIEvent(Events.PedHistory.GetAllSimple)]
     private void GetAllSimpleUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        var simplePedHistories = this._databaseContext.PedHistories
+        var simplePedHistories = this._databaseContext.PedData
             .AsNoTracking()
             .Select(x => new SimplePedHistoryDTO
             {

@@ -11,7 +11,7 @@ import {
   VariableDataEntityWrapper,
   MappedVariableDataEntity,
   Page,
-  VariableDataAttribute, Department, User, IncidentHistory, PedHistory
+  VariableDataAttribute, Department, User, IncidentHistory, PedData
 } from '@models';
 import {map, Observable, switchMap, tap} from 'rxjs';
 import {SetId} from '@enums';
@@ -215,7 +215,7 @@ export class VariableDataService {
 
       if (attr.Name === 'PedHistoryIds' && entityWrapper.entity['PedHistories']) {
         entityValue.value = entityWrapper.entity['PedHistoryIds'].map((id: number) => {
-          const pedHistory = (entityWrapper.entity['PedHistories'] as PedHistory[]).find(x => x.Id === id);
+          const pedHistory = (entityWrapper.entity['PedHistories'] as PedData[]).find(x => x.Id === id);
           return {
             label: pedHistory ? pedHistory.Firstname + ' ' + pedHistory.Lastname : 'Unknown',
             link: ['mdt', 'citizen-database', id],

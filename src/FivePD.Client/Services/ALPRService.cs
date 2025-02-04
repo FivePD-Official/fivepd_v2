@@ -73,15 +73,6 @@ internal class AlprService : IAlprService, IOnInit
     public void OnInit()
     {
         this._controlService.RegisterKeybind(Controls.ToggleAlpr.Id, Controls.ToggleAlpr.Key, Controls.ToggleAlpr.Title, this.OnToggle);
-
-        this._eventHandlerDictionary[Events.ALPR.Notify] += new Action<string>(seralized =>
-        {
-            var obj = JsonConvert.DeserializeObject<CheckNotificationDTO>(seralized);
-            if (obj.WantedStatus)
-            {
-                this._notificationService.ShowNotification(obj.NotificationContent);
-            }
-        });
     }
 
 #pragma warning disable S3241
@@ -103,22 +94,21 @@ internal class AlprService : IAlprService, IOnInit
             this._taskGuid = this._tickService.EnqueueInterval(
                 () =>
                 {
-                    // TODO ALPR: filter player's vehicle and other police vehicles (or on the server?)
                     var nearbyVehicles = World.GetAllVehicles()
-                        .Where(x => World.GetDistance(x.Position, Game.PlayerPed.Position) <= 20f)
+                        .Where(x => x.NetworkId != Game.PlayerPed.CurrentVehicle.NetworkId)
+                        .Where(x => World.GetDistance(x.Position, Game.PlayerPed.Position) <= 40f) // TODO: check distance. in v1 it was 30f
                         .ToList();
                     foreach (var nearbyVehicle in nearbyVehicles)
                     {
                         this._vehicleService.GenerateVehicle(nearbyVehicle);
-                        // BaseScript.TriggerServerEvent(Events.ALPR.Check, nearbyVehicle.NetworkId);
-                        this.Asd(nearbyVehicle);
+                        BaseScript.TriggerServerEvent(Events.ALPR.Check, nearbyVehicle.NetworkId);
                     }
                 },
                 5000);
             this._gameNotificationService.Notify(new GameNotificationOptions
             {
                 Title = "FivePD",
-                Message = "ALPR has been enabled.",
+                Message = "ALPR.ENABLED",
                 PlayAudio = this._generalConfig.Audio.Files.AlprToggle,
             });
         }
@@ -129,15 +119,9 @@ internal class AlprService : IAlprService, IOnInit
             this._gameNotificationService.Notify(new GameNotificationOptions
             {
                 Title = "FivePD",
-                Message = "ALPR has been disabled.",
+                Message = "ALPR.DISABLED",
                 PlayAudio = this._generalConfig.Audio.Files.AlprToggle,
             });
         }
-    }
-
-    private async void Asd(Vehicle nearbyVehicle) // TODO ALPR: rename
-    {
-        await BaseScript.Delay(4000); // TODO ALPR: this is not needed
-        BaseScript.TriggerServerEvent(Events.ALPR.Check, nearbyVehicle.NetworkId);
     }
 }

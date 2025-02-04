@@ -18,6 +18,7 @@ public class FVehicle : FEntity, IFStatefulContainer
     {
         this.Properties = new(this);
 
+        this.VehicleDataId = builder.VehicleDataId;
         this.NetworkId = builder.NetworkId;
         this.OwnerNetworkId = builder.OwnerNetworkId;
 
@@ -33,7 +34,7 @@ public class FVehicle : FEntity, IFStatefulContainer
     /// <summary>
     /// Gets the PedHistory id.
     /// </summary>
-    public int VehicleHistoryId { get; internal set; }
+    public int VehicleDataId { get; internal set; }
 
     /// <summary>
     /// Gets the network identifier of the vehicle's owner ped.

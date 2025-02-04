@@ -1,4 +1,5 @@
-﻿using CitizenFX.Core;
+﻿using System.Collections.Immutable;
+using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Enums;
@@ -18,8 +19,8 @@ public class FPed : FEntity, IFStatefulContainer
     /// <param name="fPedBuilder">The FPedBuilder to use.</param>
     public FPed(FPedBuilder fPedBuilder)
     {
+        this.PedDataId = fPedBuilder.PedDataId;
         this.NetworkId = fPedBuilder.NetworkId;
-
         this.OwningVehicleId = fPedBuilder.OwningVehicleNetworkId;
 
         this.Create();
@@ -91,7 +92,7 @@ public class FPed : FEntity, IFStatefulContainer
     /// <summary>
     /// Gets the ped's PedHistory id.
     /// </summary>
-    public int PedHistoryId { get; internal set; }
+    public int PedDataId { get; internal set; }
 
     /// <summary>
     /// Gets the entity's network identifier.

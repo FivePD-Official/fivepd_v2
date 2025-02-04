@@ -22,7 +22,7 @@ public class PedData
     /// <summary>
     /// Gets or sets the identifier of the vehicle the ped is owning.
     /// </summary>
-    public int? VehicleHistoryId { get; set; }
+    public int? VehicleDataId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the vehicle the ped is owning.

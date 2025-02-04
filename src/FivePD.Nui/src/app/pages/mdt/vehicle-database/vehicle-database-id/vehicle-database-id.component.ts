@@ -7,7 +7,7 @@ import { VehicleService } from "@services/vehicle/vehicle.service";
 import { PageHeaderComponent } from "../../../../components/page-header/page-header.component";
 import { ContainerComponent } from "../../../../components/container/container.component";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
-import { PedLicenseStatus, VehicleDocumentStatus, VehicleDocumentType, VehicleHistory } from "@models";
+import { PedLicenseStatus, VehicleDocumentStatus, VehicleDocumentType, VehicleData } from "@models";
 import { IconComponent } from "../../../../components/icon/icon.component";
 
 @Component({
@@ -28,7 +28,7 @@ export class VehicleDatabaseIdComponent {
   readonly vehicle$ = this._activatedRoute.params.pipe(
     takeUntilDestroyed(),
     map(params => parseInt(params['id'])),
-    switchMap(id => this._vehicleService.get(id) as Observable<VehicleHistory>),
+    switchMap(id => this._vehicleService.get(id) as Observable<VehicleData>),
   );
 
   licenseTypeI18nKey(licenseType: VehicleDocumentType): string {

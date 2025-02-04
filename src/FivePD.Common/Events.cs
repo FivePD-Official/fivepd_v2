@@ -101,7 +101,6 @@ internal readonly record struct Events
     public readonly record struct ALPR
     {
         public const string Check = "fivepd:alpr:check";
-        public const string Notify = "fivepd:alpr:notify";
     }
 
     public readonly record struct Localization

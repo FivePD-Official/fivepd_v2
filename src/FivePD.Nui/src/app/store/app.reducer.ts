@@ -1,4 +1,4 @@
-﻿import { Page, PedHistory, Vector3 } from '@models';
+﻿import { Page, PedData, Vector3 } from '@models';
 import { createReducer, on } from '@ngrx/store';
 import {
   AppActions,
@@ -20,7 +20,7 @@ export interface AppStateModel {
   dispatchMode: boolean;
   dispatchModeMapZoom: number;
   windowMaximized: boolean;
-  recentlyViewedPeds: PedHistory[];
+  recentlyViewedPeds: PedData[];
 }
 
 const devToolsDefaultState: DevToolsState = {

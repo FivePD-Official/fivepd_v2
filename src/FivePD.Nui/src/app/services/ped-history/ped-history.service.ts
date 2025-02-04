@@ -1,14 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { Collation, Id, Page, PedHistory, SimplePedHistory } from "@models";
+import { Collation, Id, Page, PedData, SimplePedHistory } from "@models";
 import { parseId } from "../../helpers/parse-id";
 import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class PedHistoryService extends BaseApiService<PedHistory> {
+export class PedHistoryService extends BaseApiService<PedData> {
 
   override baseUrl = 'fivepd:pedHistory';
 

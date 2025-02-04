@@ -19,7 +19,7 @@ public class VehicleData
     /// <summary>
     /// Gets or sets the identifier of the owner ped history.
     /// </summary>
-    public int? PedHistoryId { get; set; }
+    public int? PedDataId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the vehicle the ped is owning.

@@ -215,14 +215,14 @@ export interface IncidentHistoryUser {
 
 export type SimpleIncidentHistory = Pick<IncidentHistory, 'Id' | 'Title' | 'GeneratedAt'>;
 
-export interface PedHistory extends WithId {
+export interface PedData extends WithId {
   Gender: FGender;
   Firstname: string;
   Lastname: string;
   Birthdate: string;
   Warrants: string[];
   Licenses: PedLicense[];
-  VehicleHistory?: VehicleHistory;
+  VehicleData?: VehicleData;
 }
 
 export enum PedLicenseStatus {
@@ -239,7 +239,7 @@ export interface PedLicense extends WithStringId {
   Status: PedLicenseStatus;
 }
 
-export type SimplePedHistory = Pick<PedHistory, 'Id' | 'Firstname' | 'Lastname' | 'Birthdate' | 'Gender'>
+export type SimplePedHistory = Pick<PedData, 'Id' | 'Firstname' | 'Lastname' | 'Birthdate' | 'Gender'>
 
 export interface Message {
   Id: number;
@@ -288,12 +288,12 @@ export interface VehicleDocument {
   IssueDate: string;
 }
 
-export interface VehicleHistory extends WithId {
+export interface VehicleData extends WithId {
   LicensePlate: string;
   Color: string;
   Brand: string;
   Documents: VehicleDocument[];
-  PedHistory?: PedHistory;
+  PedData?: PedData;
 }
 
 export interface SpeedZone {

@@ -27,7 +27,7 @@ public class FVehicleBuilder : CommonFVehicleBuilder
     /// <summary>
     /// Gets the VehicleHistory id.
     /// </summary>
-    public int VehicleHistoryId { get; internal set; }
+    public int VehicleDataId { get; internal set; }
 
     /// <summary>
     /// Gets the PedHistory id.
@@ -39,9 +39,9 @@ public class FVehicleBuilder : CommonFVehicleBuilder
     /// </summary>
     public List<VehicleDocument> Documents { get; } = new();
 
-    public FVehicleBuilder WithVehicleHistory(VehicleData vehicleData)
+    public FVehicleBuilder WithVehicleData(VehicleData vehicleData)
     {
-        this.VehicleHistoryId = vehicleData.Id;
+        this.VehicleDataId = vehicleData.Id;
         return this;
     }
 
@@ -88,8 +88,8 @@ public class FVehicleBuilder : CommonFVehicleBuilder
 
         var documentConfigs = new Dictionary<VehicleDocumentType, VehicleDocumentsConfig.VehicleDocumentConfig>
         {
-            [VehicleDocumentType.Insurance] = vehicleDocumentsConfig.Insurance,
             [VehicleDocumentType.Registration] = vehicleDocumentsConfig.Registration,
+            [VehicleDocumentType.Insurance] = vehicleDocumentsConfig.Insurance,
         };
 
         foreach (var config in documentConfigs)
@@ -101,14 +101,14 @@ public class FVehicleBuilder : CommonFVehicleBuilder
 
             var now = DateTime.Now;
             var issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year);
-            var expired = Random.Next(0, 101) < config.Value.ChanceForExpired;
+            var expired = Random.Next(0, 101) < config.Value.ChanceForExpired; // incorrect: could be 2022 and still valid
             var expirationDate = expired
                 ? issueDate.AddYears(-Random.Next(1, 3))
                 : issueDate.AddYears(Random.Next(1, 11));
 
             documents.Add(new VehicleDocument
             {
-                Type = config.Key,
+                Type = config.Key, // wrong type
                 IssueDate = issueDate,
                 ExpirationDate = expirationDate,
                 Status = expired ? VehicleDocumentStatus.Expired : VehicleDocumentStatus.Valid,

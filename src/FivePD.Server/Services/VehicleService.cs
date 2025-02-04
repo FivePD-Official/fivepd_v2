@@ -68,31 +68,31 @@ public class VehicleService : IVehicleService, IOnInit
         }
 
         var ownerFPed = this._pedStorageService.TryGetPed(fVehicleBuilderDto.OwnerNetworkId);
-        var pedHistory = ownerFPed is null ? null : this._databaseContext.PedHistories.FirstOrDefault(x => x.Id == ownerFPed.PedHistoryId);
+        var pedData = ownerFPed is null ? null : this._databaseContext.PedData.FirstOrDefault(x => x.Id == ownerFPed.PedDataId);
         var fVehicleBuilder = new FVehicleBuilder(fVehicleBuilderDto)
             .WithItems(this._configService.Items)
             .WithRandomDocuments(this._configService.GeneralConfig.Vehicles.Documents)
-            .WithPedHistory(pedHistory);
+            .WithPedHistory(pedData);
 
-        var entry = this._databaseContext.VehicleHistories.Add(new VehicleData
+        var entry = this._databaseContext.VehicleData.Add(new VehicleData
         {
             Items = fVehicleBuilder.Items,
             LicensePlate = fVehicleBuilder.LicensePlate,
             Documents = fVehicleBuilder.Documents,
             Brand = fVehicleBuilder.Brand,
             Color = fVehicleBuilder.Color,
-            PedHistoryId = pedHistory?.Id ?? 0
+            PedDataId = pedData?.Id ?? 0
         });
         this._databaseContext.SaveChanges();
 
-        if (pedHistory is not null)
+        if (pedData is not null)
         {
-            pedHistory.VehicleHistoryId = entry.Entity.Id;
+            pedData.VehicleDataId = entry.Entity.Id;
             this._databaseContext.SaveChanges();
         }
 
         var fVehicle = fVehicleBuilder
-            .WithVehicleHistory(entry.Entity)
+            .WithVehicleData(entry.Entity)
             .Build();
 
         Debug.WriteLine($"Generated data for vehicle with net ID of {fVehicleBuilder.NetworkId} - License plate: {fVehicleBuilder.LicensePlate}");
@@ -105,7 +105,7 @@ public class VehicleService : IVehicleService, IOnInit
     private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
-        var vehicleHistory = this._databaseContext.VehicleHistories
+        var vehicleHistory = this._databaseContext.VehicleData
             .AsNoTracking()
             .Include(x => x.PedData)
             .Include(x => x.Documents)
@@ -130,7 +130,7 @@ public class VehicleService : IVehicleService, IOnInit
             !string.IsNullOrEmpty(request.Filters.Brand),
             pedHistory => pedHistory.Brand.ToLower().Contains(request.Filters.Brand.ToLower()));
 
-        var page = this._databaseContext.VehicleHistories
+        var page = this._databaseContext.VehicleData
             .AsNoTracking()
             .Include(x => x.PedData)
             .Paginate(request.Page, filters);

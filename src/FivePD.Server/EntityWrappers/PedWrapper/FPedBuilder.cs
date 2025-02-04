@@ -39,6 +39,11 @@ public class FPedBuilder : CommonFPedBuilder
         this.Items = fPedBuilder.Items;
         this.Warrants = fPedBuilder.Warrants;
     }
+    
+    // <summary>
+    /// Gets the PedHistory id.
+    /// </summary>
+    public int PedDataId { get; internal set; }
 
     /// <summary>
     /// Gets the licenses of the ped.
@@ -50,6 +55,12 @@ public class FPedBuilder : CommonFPedBuilder
     /// </summary>
     public List<Drug> Drugs { get; private set; } = new();
     
+    public FPedBuilder WithPedData(PedData pedData)
+    {
+        this.PedDataId = pedData.Id;
+        return this;
+    }
+
     /// <summary>
     /// Sets the id of the vehicle the ped is owning.
     /// </summary>

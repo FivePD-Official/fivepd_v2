@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Collation, Column, FormInputBase, PedHistory, SingleSelectField, TextField } from '@models';
+import { Collation, Column, FormInputBase, PedData, SingleSelectField, TextField } from '@models';
 import { formatDate } from "@helpers";
 import { CoreSetId, FGender } from "@enums";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
@@ -60,7 +60,7 @@ export class CitizenDatabaseIndexComponent implements OnInit {
       variant: 'secondary',
     }),
   ];
-  readonly citizensColumns: Column<PedHistory>[] = [
+  readonly citizensColumns: Column<PedData>[] = [
     new Column({
       header: 'LABEL.FIRSTNAME',
       accessorKey: 'Firstname',
@@ -92,7 +92,7 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     ).subscribe();
   }
 
-  rowLinkResolver(item: PedHistory): string {
+  rowLinkResolver(item: PedData): string {
     return `/mdt/citizen-database/${item.Id}`;
   }
 

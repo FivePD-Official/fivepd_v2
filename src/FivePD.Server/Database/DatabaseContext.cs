@@ -106,7 +106,7 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the ped histories.
     /// </summary>
-    public DbSet<PedData> PedHistories { get; set; }
+    public DbSet<PedData> PedData { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the ped licenses.
@@ -116,7 +116,7 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the vehicle histories.
     /// </summary>
-    public DbSet<VehicleData> VehicleHistories { get; set; }
+    public DbSet<VehicleData> VehicleData { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the vehicle documents.
@@ -302,7 +302,8 @@ public class DatabaseContext : DbContext
         {
             type.HasOne(t => t.VehicleData)
                 .WithOne(e => e.PedData)
-                .HasForeignKey<VehicleData>(v => v.PedHistoryId);
+                .HasForeignKey<VehicleData>(v => v.PedDataId)
+                .IsRequired(false);
 
             type.Property(t => t.Items)
                 .HasConversion(

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Collation, Column, FormInputBase, TextField, VehicleHistory } from "@models";
+import { Collation, Column, FormInputBase, TextField, VehicleData } from "@models";
 import { BehaviorSubject, switchMap, tap } from "rxjs";
 import { VehicleService } from "@services/vehicle/vehicle.service";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
@@ -32,7 +32,7 @@ export class VehicleDatabaseIndexComponent {
       placeholder: '',
     }),
   ];
-  readonly columns: Column<VehicleHistory>[] = [
+  readonly columns: Column<VehicleData>[] = [
     new Column({
       header: 'LABEL.LICENSE_PLATE.SINGULAR',
       accessorKey: 'LicensePlate',
@@ -51,11 +51,11 @@ export class VehicleDatabaseIndexComponent {
     new Column({
       header: 'LABEL.OWNER_NAME',
       show: () => true,
-      valueResolver: item => item.PedHistory ? `${item.PedHistory.Firstname} ${item.PedHistory.Lastname}` : '-',
+      valueResolver: item => item.PedData ? `${item.PedData.Firstname} ${item.PedData.Lastname}` : '-',
     })
   ];
 
-  rowLinkResolver(item: VehicleHistory): string {
+  rowLinkResolver(item: VehicleData): string {
     return `/mdt/vehicle-database/${item.Id}`;
   }
 }
