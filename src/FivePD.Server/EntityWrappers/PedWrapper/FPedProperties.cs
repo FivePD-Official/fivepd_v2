@@ -30,7 +30,7 @@ public sealed class FPedProperties
     /// Initializes a new instance of the <see cref="FPedProperties"/> class.
     /// </summary>
     /// <param name="fPed">The <see cref="FPed"/> to use.</param>
-    public FPedProperties(FPed fPed)
+    internal FPedProperties(FPed fPed)
     {
         this._fPed = fPed;
         this._eventService = ServiceLocator.GetService<IEventService>();
