@@ -1,13 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CitizenFX.Core;
+﻿using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
-using FivePD.Common.ConfigModels;
 using FivePD.Common.Models;
-using FivePD.Server.EntityWrappers.PedWrapper;
-using FivePD.Server.Models;
-using FivePD.Server.Models.DTO;
 
 namespace FivePD.Server.EntityWrappers.VehicleWrapper;
 

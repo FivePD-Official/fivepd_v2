@@ -106,7 +106,7 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the ped histories.
     /// </summary>
-    public DbSet<PedHistory> PedHistories { get; set; }
+    public DbSet<PedData> PedHistories { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the ped licenses.
@@ -116,7 +116,7 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the vehicle histories.
     /// </summary>
-    public DbSet<VehicleHistory> VehicleHistories { get; set; }
+    public DbSet<VehicleData> VehicleHistories { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the vehicle documents.
@@ -298,11 +298,11 @@ public class DatabaseContext : DbContext
             .WithOne(user => user.IncidentHistory)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<PedHistory>(type =>
+        modelBuilder.Entity<PedData>(type =>
         {
-            type.HasOne(t => t.VehicleHistory)
-                .WithOne(e => e.PedHistory)
-                .HasForeignKey<VehicleHistory>(v => v.PedHistoryId);
+            type.HasOne(t => t.VehicleData)
+                .WithOne(e => e.PedData)
+                .HasForeignKey<VehicleData>(v => v.PedHistoryId);
 
             type.Property(t => t.Items)
                 .HasConversion(
@@ -319,7 +319,7 @@ public class DatabaseContext : DbContext
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
             type.HasMany(pedHistory => pedHistory.Licenses)
-                .WithOne(license => license.PedHistory)
+                .WithOne(license => license.PedData)
                 .OnDelete(DeleteBehavior.Cascade);
 
             type.Property(t => t.Drugs)
@@ -330,7 +330,7 @@ public class DatabaseContext : DbContext
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         });
 
-        modelBuilder.Entity<VehicleHistory>(type =>
+        modelBuilder.Entity<VehicleData>(type =>
         {
             type.Property(t => t.Items)
                 .HasConversion(
@@ -340,7 +340,7 @@ public class DatabaseContext : DbContext
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
             type.HasMany(vehicleHistory => vehicleHistory.Documents)
-                .WithOne(document => document.VehicleHistory)
+                .WithOne(document => document.VehicleData)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

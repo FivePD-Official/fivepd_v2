@@ -41,19 +41,19 @@ public class AlprService : IAlprService, IOnInit
 
     private (bool Valid, string Label) GetVehicleDocumentStatus(FVehicle fVehicle, VehicleDocumentType vehicleDocumentType)
     {
-        var vehicleHistory = this._vehicleStorageService.GetVehicleHistory(this._vehicleStorageService.TryGetVehicle(fVehicle.NetworkId));
-        if (vehicleHistory is null)
+        var vehicleData = this._vehicleStorageService.GetVehicleData(this._vehicleStorageService.TryGetVehicle(fVehicle.NetworkId));
+        if (vehicleData is null)
         {
             return (false, "LABEL.UNKNOWN");
         }
 
-        var hasDocument = vehicleHistory.HasDocument(vehicleDocumentType);
+        var hasDocument = vehicleData.HasDocument(vehicleDocumentType);
         if (!hasDocument)
         {
             return (false, "LABEL.NONE");
         }
 
-        var document = vehicleHistory.GetDocument(vehicleDocumentType);
+        var document = vehicleData.GetDocument(vehicleDocumentType);
         if (document.Status == VehicleDocumentStatus.Valid)
         {
             return (true, "LABEL.VALID");
@@ -77,13 +77,13 @@ public class AlprService : IAlprService, IOnInit
             return;
         }
 
-        var vehicleHistory = this._vehicleStorageService.GetVehicleHistory(fVehicle);
-        if (vehicleHistory is null)
+        var vehicleData = this._vehicleStorageService.GetVehicleData(fVehicle);
+        if (vehicleData is null)
         {
             return;
         }
 
-        var ownerPed = this._pedStorageService.GetPedHistory(this._pedStorageService.TryGetPed(fVehicle.OwnerNetworkId));
+        var ownerPed = this._pedStorageService.GetPedData(this._pedStorageService.TryGetPed(fVehicle.OwnerNetworkId));
         if (ownerPed is null)
         {
             return;
@@ -113,11 +113,11 @@ public class AlprService : IAlprService, IOnInit
         var content = new GtaStyleText()
             .Blue($"[ALPR]")
             .NewLine()
-            .Yellow("Vehicle brand: ").White(vehicleHistory.Brand)
+            .Yellow("Vehicle brand: ").White(vehicleData.Brand)
             .NewLine()
-            .Yellow("Vehicle color: ").White(vehicleHistory.Color)
+            .Yellow("Vehicle color: ").White(vehicleData.Color)
             .NewLine()
-            .Yellow("License plate: ").White(vehicleHistory.LicensePlate)
+            .Yellow("License plate: ").White(vehicleData.LicensePlate)
             .NewLine()
             .Yellow("Registered owner: ").White($"{ownerPed.Firstname} {ownerPed.Lastname}")
             .NewLine()

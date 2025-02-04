@@ -44,7 +44,7 @@ public class VehicleStorageService : IVehicleStorageService, IInternalVehicleSto
         return vehicle;
     }
     
-    public VehicleHistory GetVehicleHistory(FVehicle vehicle)
+    public VehicleData GetVehicleData(FVehicle vehicle)
     {
         return vehicle is null ? null : this._databaseContext.VehicleHistories.FirstOrDefault(x => x.Id == vehicle.VehicleHistoryId);
     }

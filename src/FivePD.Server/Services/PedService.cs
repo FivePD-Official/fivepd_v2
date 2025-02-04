@@ -162,7 +162,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 .WithAlcoholLevel(this._configService.GeneralConfig.Peds.Alcohol)
                 .WithDrugs(this._configService.GeneralConfig.Peds.Drugs)
                 .Build();
-            var entry = this._databaseContext.PedHistories.Add(new PedHistory
+            var entry = this._databaseContext.PedHistories.Add(new PedData
             {
                 Firstname = fPedBuilder.Firstname,
                 Lastname = fPedBuilder.Lastname,
@@ -197,7 +197,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     {
         var request = expandoObject.ConvertTo<PedHistoryGetAllRequest>();
 
-        var filters = new Filters<PedHistory>();
+        var filters = new Filters<PedData>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Firstname),
             pedHistory => pedHistory.Firstname.ToLower().Contains(request.Filters.Firstname.ToLower()));

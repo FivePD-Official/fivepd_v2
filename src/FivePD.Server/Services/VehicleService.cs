@@ -74,7 +74,7 @@ public class VehicleService : IVehicleService, IOnInit
             .WithRandomDocuments(this._configService.GeneralConfig.Vehicles.Documents)
             .WithPedHistory(pedHistory);
 
-        var entry = this._databaseContext.VehicleHistories.Add(new VehicleHistory
+        var entry = this._databaseContext.VehicleHistories.Add(new VehicleData
         {
             Items = fVehicleBuilder.Items,
             LicensePlate = fVehicleBuilder.LicensePlate,
@@ -107,7 +107,7 @@ public class VehicleService : IVehicleService, IOnInit
         var request = expandoObject.ConvertTo<IdRequest>();
         var vehicleHistory = this._databaseContext.VehicleHistories
             .AsNoTracking()
-            .Include(x => x.PedHistory)
+            .Include(x => x.PedData)
             .Include(x => x.Documents)
             .FirstOrDefault(x => x.Id == request.Id);
 
@@ -119,7 +119,7 @@ public class VehicleService : IVehicleService, IOnInit
     {
         var request = expandoObject.ConvertTo<VehicleHistoryGetAllRequest>();
 
-        var filters = new Filters<VehicleHistory>();
+        var filters = new Filters<VehicleData>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.LicensePlate),
             pedHistory => pedHistory.LicensePlate.ToLower().Contains(request.Filters.LicensePlate.ToLower()));
@@ -132,7 +132,7 @@ public class VehicleService : IVehicleService, IOnInit
 
         var page = this._databaseContext.VehicleHistories
             .AsNoTracking()
-            .Include(x => x.PedHistory)
+            .Include(x => x.PedData)
             .Paginate(request.Page, filters);
 
         networkCallbackDelegate.InvokeWithJson(page);

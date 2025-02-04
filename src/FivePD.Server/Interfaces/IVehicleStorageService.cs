@@ -20,11 +20,11 @@ public interface IVehicleStorageService
     public FVehicle TryGetVehicle(int networkId);
     
     /// <summary>
-    /// Gets the <see cref="VehicleHistory"/> of the given <see cref="FVehicle"/>.
+    /// Gets the <see cref="VehicleData"/> of the given <see cref="FVehicle"/>.
     /// </summary>
     /// <param name="vehicle">The vehicle.</param>
     /// <returns>The VehicleHistory of the vehicle.</returns>
-    public VehicleHistory GetVehicleHistory(FVehicle vehicle);
+    public VehicleData GetVehicleData(FVehicle vehicle);
 }
 
 internal interface IInternalVehicleStorageService

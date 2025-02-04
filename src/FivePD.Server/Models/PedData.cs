@@ -11,8 +11,8 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a ped history.
 /// </summary>
-[Table("fivepd_ped_histories")]
-public class PedHistory
+[Table("fivepd_ped_data")]
+public class PedData
 {
     /// <summary>
     /// Gets or sets the identifier.
@@ -27,7 +27,7 @@ public class PedHistory
     /// <summary>
     /// Gets or sets the identifier of the vehicle the ped is owning.
     /// </summary>
-    public VehicleHistory VehicleHistory { get; set; }
+    public VehicleData VehicleData { get; set; }
 
     /// <summary>
     /// Gets or sets the gender.

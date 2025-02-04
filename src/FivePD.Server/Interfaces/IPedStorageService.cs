@@ -19,11 +19,11 @@ public interface IPedStorageService
     public FPed TryGetPed(int networkId);
 
     /// <summary>
-    /// Gets the <see cref="PedHistory"/> of the given <see cref="FPed"/>.
+    /// Gets the <see cref="PedData"/> of the given <see cref="FPed"/>.
     /// </summary>
     /// <param name="ped">The ped.</param>
     /// <returns>The PedHistory of the ped.</returns>
-    public PedHistory GetPedHistory(FPed ped);
+    public PedData GetPedData(FPed ped);
 }
 
 internal interface IInternalPedStorageService

@@ -1,13 +1,9 @@
-﻿using System.Linq;
-using CitizenFX.Core;
+﻿using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
-using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper.States;
-using FivePD.Server.Interfaces;
-using FivePD.Server.Models;
 
 namespace FivePD.Server.EntityWrappers.PedWrapper;
 

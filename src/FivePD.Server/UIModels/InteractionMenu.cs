@@ -126,14 +126,14 @@ public sealed class InteractionMenu : Menu
                 default: return;
             }
 
-            var pedHistory = this._pedStorageService.GetPedHistory(fPed);
-            if (pedHistory is null)
+            var pedData = this._pedStorageService.GetPedData(fPed);
+            if (pedData is null)
             {
                 this._notificationService.ShowNotification(player, $"UI.ERROR.UNEXPECTED");
                 return;
             }
 
-            var license = pedHistory.GetLicense(licenseType);
+            var license = pedData.GetLicense(licenseType);
             if (license is null)
             {
                 this._notificationService.ShowNotification(player, $"no {licenseTypeLabel}");
@@ -143,7 +143,7 @@ public sealed class InteractionMenu : Menu
             var text = new GtaStyleText()
                 .Blue($"[{licenseTypeLabel}]")
                 .NewLine()
-                .White(pedHistory.Firstname + " " + pedHistory.Lastname)
+                .White(pedData.Firstname + " " + pedData.Lastname)
                 .NewLine()
                 .White($"Issue date: {license.IssueDate:MM-dd-yyyy}")
                 .NewLine()
@@ -184,8 +184,8 @@ public sealed class InteractionMenu : Menu
             fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
             // playerPed.Task.PlayAnimation("anim@gangops@morgue@table@", "player_search");
 
-            var pedHistory = this._pedStorageService.GetPedHistory(fPed);
-            if (pedHistory is null)
+            var pedData = this._pedStorageService.GetPedData(fPed);
+            if (pedData is null)
             {
                 this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
                 return;
@@ -194,20 +194,20 @@ public sealed class InteractionMenu : Menu
             var itemList = new GtaStyleText()
                 .Blue("Items: ")
                 .Reset();
-            if (pedHistory.Items.Count > 0)
+            if (pedData.Items.Count > 0)
             {
-                for (var i = 0; i < pedHistory.Items.Count; i++)
+                for (var i = 0; i < pedData.Items.Count; i++)
                 {
-                    if (pedHistory.Items[i].Illegal)
+                    if (pedData.Items[i].Illegal)
                     {
-                        itemList.Red(pedHistory.Items[i].Title);
+                        itemList.Red(pedData.Items[i].Title);
                     }
                     else
                     {
-                        itemList.Append(pedHistory.Items[i].Title);
+                        itemList.Append(pedData.Items[i].Title);
                     }
 
-                    if (i < pedHistory.Items.Count - 1)
+                    if (i < pedData.Items.Count - 1)
                     {
                         itemList.Append(", ");
                     }
@@ -237,8 +237,8 @@ public sealed class InteractionMenu : Menu
                 fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
             }
 
-            var pedHistory = this._pedStorageService.GetPedHistory(fPed);
-            if (pedHistory is null)
+            var pedData = this._pedStorageService.GetPedData(fPed);
+            if (pedData is null)
             {
                 this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
                 return;
@@ -247,7 +247,7 @@ public sealed class InteractionMenu : Menu
             var text = new GtaStyleText()
                 .Blue("Drug swab test")
                 .NewLine()
-                .White(pedHistory.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(", ", pedHistory.Drugs.Select(x => x.Name))}");
+                .White(pedData.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(", ", pedData.Drugs.Select(x => x.Name))}");
             this._notificationService.ShowNotification(player, text.Build());
         };
         items.Add(this.DrugSwabTest);
@@ -266,8 +266,8 @@ public sealed class InteractionMenu : Menu
                 fPed.Task.TurnTo(player.GetUnderlyingPlayer().Character);
             }
 
-            var pedHistory = this._pedStorageService.GetPedHistory(fPed);
-            if (pedHistory is null)
+            var pedData = this._pedStorageService.GetPedData(fPed);
+            if (pedData is null)
             {
                 this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
                 return;
@@ -279,13 +279,13 @@ public sealed class InteractionMenu : Menu
                 .White($"Legal limit: {this._configService.GeneralConfig.Peds.Alcohol.LegalLimit:0.00}")
                 .NewLine()
                 .White("Result: ");
-            if (pedHistory.AlcoholOverLegalLimit())
+            if (pedData.AlcoholOverLegalLimit())
             {
-                text.Red(pedHistory.AlcoholLevel.ToString("0.00"));
+                text.Red(pedData.AlcoholLevel.ToString("0.00"));
             }
             else
             {
-                text.White(pedHistory.AlcoholLevel.ToString("0.00"));
+                text.White(pedData.AlcoholLevel.ToString("0.00"));
             }
 
             this._notificationService.ShowNotification(player, text.Build());

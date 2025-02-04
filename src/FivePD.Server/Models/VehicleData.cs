@@ -8,8 +8,8 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a vehicle history.
 /// </summary>
-[Table("fivepd_vehicle_histories")]
-public class VehicleHistory
+[Table("fivepd_vehicle_data")]
+public class VehicleData
 {
     /// <summary>
     /// Gets or sets the identifier.
@@ -24,7 +24,7 @@ public class VehicleHistory
     /// <summary>
     /// Gets or sets the identifier of the vehicle the ped is owning.
     /// </summary>
-    public PedHistory PedHistory { get; set; }
+    public PedData PedData { get; set; }
 
     /// <summary>
     /// Gets or sets the vehicle's license plate.

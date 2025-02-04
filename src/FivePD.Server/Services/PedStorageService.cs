@@ -41,7 +41,7 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
     }
 
     /// <inheritdoc/>
-    public PedHistory GetPedHistory(FPed ped)
+    public PedData GetPedData(FPed ped)
     {
         return ped is null ? null : this._databaseContext.PedHistories.FirstOrDefault(x => x.Id == ped.PedHistoryId);
     }

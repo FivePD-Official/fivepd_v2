@@ -39,15 +39,15 @@ public class FVehicleBuilder : CommonFVehicleBuilder
     /// </summary>
     public List<VehicleDocument> Documents { get; } = new();
 
-    public FVehicleBuilder WithVehicleHistory(VehicleHistory vehicleHistory)
+    public FVehicleBuilder WithVehicleHistory(VehicleData vehicleData)
     {
-        this.VehicleHistoryId = vehicleHistory.Id;
+        this.VehicleHistoryId = vehicleData.Id;
         return this;
     }
 
-    public FVehicleBuilder WithPedHistory(PedHistory pedHistory)
+    public FVehicleBuilder WithPedHistory(PedData pedData)
     {
-        this.OwnerPedHistoryId = pedHistory?.Id ?? 0;
+        this.OwnerPedHistoryId = pedData?.Id ?? 0;
         return this;
     }
 

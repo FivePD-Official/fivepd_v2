@@ -17,7 +17,7 @@ public class VehicleDocument
     /// <summary>
     /// Gets or sets the entity which this value belongs to.
     /// </summary>
-    public VehicleHistory VehicleHistory { get; set; }
+    public VehicleData VehicleData { get; set; }
 
     public VehicleDocumentStatus Status { get; set; }
 

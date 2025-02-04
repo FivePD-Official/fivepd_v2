@@ -210,14 +210,14 @@ public sealed class DispatchMenu : Menu
             return;
         }
 
-        var pedHistory = this._pedStorageService.GetPedHistory(fPed);
-        if (pedHistory is null)
+        var pedData = this._pedStorageService.GetPedData(fPed);
+        if (pedData is null)
         {
             this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
             return;
         }
 
-        var license = pedHistory.GetLicense(PedLicenseType.Driving);
+        var license = pedData.GetLicense(PedLicenseType.Driving);
         if (license is null)
         {
             this._notificationService.ShowNotification(player, "no driving license");
@@ -225,16 +225,16 @@ public sealed class DispatchMenu : Menu
         }
 
         var text = new GtaStyleText()
-            .Append(pedHistory.Firstname + " " + pedHistory.Lastname)
+            .Append(pedData.Firstname + " " + pedData.Lastname)
             .NewLine();
 
-        if (pedHistory.Warrants.Count == 0)
+        if (pedData.Warrants.Count == 0)
         {
             text.Append("No warrants");
         }
         else
         {
-            text.Red($"{pedHistory.Warrants.Count} warrant(s)");
+            text.Red($"{pedData.Warrants.Count} warrant(s)");
         }
 
         this._notificationService.ShowNotificationWithTexture(
@@ -277,18 +277,18 @@ public sealed class DispatchMenu : Menu
             return;
         }
 
-        var vehicleHistory = this._vehicleStorageService.GetVehicleHistory(fVehicle);
-        if (vehicleHistory is null)
+        var vehicleData = this._vehicleStorageService.GetVehicleData(fVehicle);
+        if (vehicleData is null)
         {
             this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
             return;
         }
 
         var text = new GtaStyleText()
-            .Append(vehicleHistory.LicensePlate)
+            .Append(vehicleData.LicensePlate)
             .NewLine();
 
-        var registration = vehicleHistory.GetDocument(VehicleDocumentType.Registration);
+        var registration = vehicleData.GetDocument(VehicleDocumentType.Registration);
         if (registration is not null)
         {
             text.Append("Registration: ");
@@ -308,7 +308,7 @@ public sealed class DispatchMenu : Menu
             }
         }
 
-        var insurance = vehicleHistory.GetDocument(VehicleDocumentType.Insurance);
+        var insurance = vehicleData.GetDocument(VehicleDocumentType.Insurance);
         if (insurance is not null)
         {
             text.Append("Insurance: ");
