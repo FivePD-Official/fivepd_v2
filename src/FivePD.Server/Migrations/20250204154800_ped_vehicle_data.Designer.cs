@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FivePD.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250203152835_vehicle_history2")]
-    partial class vehicle_history2
+    [Migration("20250204154800_ped_vehicle_data")]
+    partial class ped_vehicle_data
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -327,7 +327,7 @@ namespace FivePD.Server.Migrations
                     b.ToTable("fivepd_messages");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.PedHistory", b =>
+            modelBuilder.Entity("FivePD.Server.Models.PedData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -354,7 +354,7 @@ namespace FivePD.Server.Migrations
                     b.Property<string>("Lastname")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int?>("VehicleHistoryId")
+                    b.Property<int?>("VehicleDataId")
                         .HasColumnType("int");
 
                     b.Property<string>("Warrants")
@@ -362,7 +362,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("fivepd_ped_histories");
+                    b.ToTable("fivepd_ped_data");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.PedLicense", b =>
@@ -376,7 +376,7 @@ namespace FivePD.Server.Migrations
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("PedHistoryId")
+                    b.Property<int?>("PedDataId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -387,7 +387,7 @@ namespace FivePD.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PedHistoryId");
+                    b.HasIndex("PedDataId");
 
                     b.ToTable("fivepd_ped_licenses");
                 });
@@ -632,34 +632,7 @@ namespace FivePD.Server.Migrations
                     b.ToTable("fivepd_vehicle_configs");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.VehicleDocument", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                    b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VehicleHistoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VehicleHistoryId");
-
-                    b.ToTable("fivepd_vehicle_documents");
-                });
-
-            modelBuilder.Entity("FivePD.Server.Models.VehicleHistory", b =>
+            modelBuilder.Entity("FivePD.Server.Models.VehicleData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -677,15 +650,42 @@ namespace FivePD.Server.Migrations
                     b.Property<string>("LicensePlate")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int?>("PedHistoryId")
+                    b.Property<int?>("PedDataId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PedHistoryId")
+                    b.HasIndex("PedDataId")
                         .IsUnique();
 
-                    b.ToTable("fivepd_vehicle_histories");
+                    b.ToTable("fivepd_vehicle_data");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.VehicleDocument", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VehicleDataId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleDataId");
+
+                    b.ToTable("fivepd_vehicle_documents");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>
@@ -792,9 +792,9 @@ namespace FivePD.Server.Migrations
 
             modelBuilder.Entity("FivePD.Server.Models.PedLicense", b =>
                 {
-                    b.HasOne("FivePD.Server.Models.PedHistory", "PedHistory")
+                    b.HasOne("FivePD.Server.Models.PedData", "PedData")
                         .WithMany("Licenses")
-                        .HasForeignKey("PedHistoryId")
+                        .HasForeignKey("PedDataId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -872,19 +872,19 @@ namespace FivePD.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.VehicleDocument", b =>
+            modelBuilder.Entity("FivePD.Server.Models.VehicleData", b =>
                 {
-                    b.HasOne("FivePD.Server.Models.VehicleHistory", "VehicleHistory")
-                        .WithMany("Asd")
-                        .HasForeignKey("VehicleHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("FivePD.Server.Models.PedData", "PedData")
+                        .WithOne("VehicleData")
+                        .HasForeignKey("FivePD.Server.Models.VehicleData", "PedDataId");
                 });
 
-            modelBuilder.Entity("FivePD.Server.Models.VehicleHistory", b =>
+            modelBuilder.Entity("FivePD.Server.Models.VehicleDocument", b =>
                 {
-                    b.HasOne("FivePD.Server.Models.PedHistory", "PedHistory")
-                        .WithOne("VehicleHistory")
-                        .HasForeignKey("FivePD.Server.Models.VehicleHistory", "PedHistoryId");
+                    b.HasOne("FivePD.Server.Models.VehicleData", "VehicleData")
+                        .WithMany("Documents")
+                        .HasForeignKey("VehicleDataId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
