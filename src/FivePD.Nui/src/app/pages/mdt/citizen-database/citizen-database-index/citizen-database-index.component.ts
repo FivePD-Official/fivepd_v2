@@ -11,7 +11,7 @@ import { GridComponent } from '../../../../components/grid/grid.component';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { DynamicFormComponent } from '../../../../components/dynamic-form/dynamic-form.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
-import { BehaviorSubject, map, switchMap, zip } from "rxjs";
+import { BehaviorSubject, map, Observable, switchMap, zip } from "rxjs";
 import { LocalizationService } from "@services/localization/localization.service";
 import { VariableDataService } from "@services/variable-data/variable-data.service";
 
@@ -34,7 +34,7 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     switchMap(collation => this._pedHistoryService.getPage(collation)),
   );
 
-  readonly recentlyViewedPeds = this._store.select('app', 'recentlyViewedPeds');
+  readonly recentlyViewedPeds: Observable<PedData[]> = this._store.select('app', 'recentlyViewedPeds');
   readonly recentlyViewedPedsCount = this.recentlyViewedPeds.pipe(map(x => x.length));
 
   readonly formFields: FormInputBase<any>[] = [

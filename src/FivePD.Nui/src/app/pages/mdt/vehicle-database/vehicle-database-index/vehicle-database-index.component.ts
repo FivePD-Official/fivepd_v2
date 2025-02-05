@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Collation, Column, FormInputBase, TextField, VehicleData } from "@models";
-import { BehaviorSubject, map, switchMap, tap } from "rxjs";
+import { BehaviorSubject, map, Observable, switchMap } from "rxjs";
 import { VehicleService } from "@services/vehicle/vehicle.service";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { DynamicFormComponent } from "../../../../components/dynamic-form/dynamic-form.component";
@@ -15,7 +15,7 @@ import { RouterLink } from "@angular/router";
 @Component({
   selector: 'app-vehicle-database-index',
   standalone: true,
-  imports: [AsyncPipe, TranslatePipe, DynamicFormComponent, PageHeaderComponent, GridComponent, DatePipe, RouterLink],
+  imports: [AsyncPipe, TranslatePipe, DynamicFormComponent, PageHeaderComponent, GridComponent, RouterLink],
   templateUrl: './vehicle-database-index.component.html',
   styleUrl: './vehicle-database-index.component.sass'
 })
@@ -24,7 +24,7 @@ export class VehicleDatabaseIndexComponent {
   private readonly _vehicleService = inject(VehicleService);
   private readonly _store = inject<Store<GlobalState>>(Store<GlobalState>);
 
-  readonly recentlyViewedVehicles = this._store.select('app', 'recentlyViewedVehicles');
+  readonly recentlyViewedVehicles: Observable<VehicleData[]> = this._store.select('app', 'recentlyViewedVehicles');
   readonly recentlyViewedVehiclesCount = this.recentlyViewedVehicles.pipe(map(x => x.length));
 
   readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});

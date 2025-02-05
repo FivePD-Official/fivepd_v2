@@ -47,7 +47,7 @@
                 <p>{{ 'Owning vehicle' | translate }}</p>
                 <a [routerLink]="'/mdt/vehicle-database/' + ped.VehicleData.Id"
                    class="group flex flex-row items-center text-zinc-300 hover:text-white">
-                  {{ ped.VehicleData?.LicensePlate }}
+                  {{ ped.VehicleData.LicensePlate }}
                   <div app-icon name="Link"
                        className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
                 </a>
