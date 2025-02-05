@@ -6,11 +6,7 @@ using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.ConfigModels;
-using FivePD.Common.ConfigModels.GeneralConfigs;
-using FivePD.Common.DTO;
-using FivePD.Common.Enums;
 using FivePD.Common.Models;
-using Newtonsoft.Json;
 
 namespace FivePD.Client.Services;
 
@@ -19,9 +15,7 @@ namespace FivePD.Client.Services;
 /// <inheritdoc cref="FivePD.Client.Interfaces.IAlprService" />
 internal class AlprService : IAlprService, IOnInit
 {
-    private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
-    private readonly INotificationService _notificationService;
     private readonly IGameNotificationService _gameNotificationService;
     private readonly ITickService _tickService;
     private readonly IVehicleService _vehicleService;
@@ -40,25 +34,19 @@ internal class AlprService : IAlprService, IOnInit
     /// <summary>
     /// Initializes a new instance of the <see cref="AlprService"/> class.
     /// </summary>
-    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
-    /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     /// <param name="vehicleService">The <see cref="IVehicleService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     public AlprService(
-        EventHandlerDictionary eventHandlerDictionary,
         IControlService controlService,
-        INotificationService notificationService,
         IGameNotificationService gameNotificationService,
         ITickService tickService,
         IVehicleService vehicleService,
         IConfigService configService)
     {
-        this._eventHandlerDictionary = eventHandlerDictionary;
         this._controlService = controlService;
-        this._notificationService = notificationService;
         this._gameNotificationService = gameNotificationService;
         this._tickService = tickService;
         this._vehicleService = vehicleService;

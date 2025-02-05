@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
