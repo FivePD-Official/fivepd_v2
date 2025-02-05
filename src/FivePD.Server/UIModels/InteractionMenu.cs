@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Models;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
@@ -10,6 +12,7 @@ using FivePD.Server.EntityWrappers.PedWrapper.States;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
+using Microsoft.Extensions.Primitives;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.UIModels;
@@ -18,7 +21,7 @@ namespace FivePD.Server.UIModels;
 
 public sealed class InteractionMenu : Menu
 {
-    private readonly INotificationService _notificationService;
+    private readonly IGameNotificationService _gameNotificationService;
     private readonly IEntityService _entityService;
     private readonly ICfxService _cfxService;
     private readonly IConfigService _configService;
@@ -26,7 +29,7 @@ public sealed class InteractionMenu : Menu
     private readonly IPedStorageService _pedStorageService;
 
     public InteractionMenu(
-        INotificationService notificationService,
+        IGameNotificationService gameNotificationService,
         IEntityService entityService,
         ICfxService cfxService,
         IConfigService configService,
@@ -34,7 +37,7 @@ public sealed class InteractionMenu : Menu
         IPedStorageService pedStorageService)
         : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key)
     {
-        this._notificationService = notificationService;
+        this._gameNotificationService = gameNotificationService;
         this._entityService = entityService;
         this._cfxService = cfxService;
         this._configService = configService;
@@ -129,35 +132,47 @@ public sealed class InteractionMenu : Menu
             var pedData = this._pedStorageService.GetPedData(fPed);
             if (pedData is null)
             {
-                this._notificationService.ShowNotification(player, $"UI.ERROR.UNEXPECTED");
+                this._gameNotificationService.Notify(
+                    player,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "UI.ERROR.UNEXPECTED",
+                    });
                 return;
             }
 
             var license = pedData.GetLicense(licenseType);
             if (license is null)
             {
-                this._notificationService.ShowNotification(player, $"no {licenseTypeLabel}");
+                this._gameNotificationService.Notify(
+                    player,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = $"No {licenseTypeLabel} available.",
+                    });
                 return;
             }
 
-            var text = new GtaStyleText()
-                .Blue($"[{licenseTypeLabel}]")
-                .NewLine()
-                .White(pedData.Firstname + " " + pedData.Lastname)
-                .NewLine()
-                .White($"Issue date: {license.IssueDate:MM-dd-yyyy}")
-                .NewLine()
+            var text = new StringBuilder()
+                .Append($"[{licenseTypeLabel}]")
+                .Append("{{NEW_LINE}}")
+                .Append(pedData.Firstname + " " + pedData.Lastname)
+                .Append("{{NEW_LINE}}")
+                .Append($"Issue date: {license.IssueDate:MM-dd-yyyy}")
+                .Append("{{NEW_LINE}}")
                 .Append($"Expiration date: {license.ExpirationDate:MM-dd-yyyy}")
-                .NewLine()
-                .White("Status: ");
+                .Append("{{NEW_LINE}}")
+                .Append("Status: ");
 
             if (license.Status == PedLicenseStatus.Valid)
             {
-                text.Green("Valid");
+                text.Append("Valid");
             }
             else
             {
-                text.Yellow(license.Status switch
+                text.Append(license.Status switch
                 {
                     PedLicenseStatus.Expired => "Expired",
                     PedLicenseStatus.Suspended => "Suspended",
@@ -166,7 +181,13 @@ public sealed class InteractionMenu : Menu
                 });
             }
 
-            this._notificationService.ShowNotification(player, text.Build());
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = text.ToString(),
+                });
         };
         items.Add(this.AskForLicense);
 
@@ -187,20 +208,24 @@ public sealed class InteractionMenu : Menu
             var pedData = this._pedStorageService.GetPedData(fPed);
             if (pedData is null)
             {
-                this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
+                this._gameNotificationService.Notify(
+                    player,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "UI.ERROR.UNEXPECTED",
+                    });
                 return;
             }
 
-            var itemList = new GtaStyleText()
-                .Blue("Items: ")
-                .Reset();
+            var itemList = new StringBuilder().Append("Items: ");
             if (pedData.Items.Count > 0)
             {
                 for (var i = 0; i < pedData.Items.Count; i++)
                 {
                     if (pedData.Items[i].Illegal)
                     {
-                        itemList.Red(pedData.Items[i].Title);
+                        itemList.Append(pedData.Items[i].Title);
                     }
                     else
                     {
@@ -219,7 +244,13 @@ public sealed class InteractionMenu : Menu
             }
 
             // playerPed.Task.ClearAnimation("random@domestic", "kneeling_base");
-            this._notificationService.ShowNotification(player, itemList.Build());
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = itemList.ToString(),
+                });
         };
         items.Add(this.SearchPed);
 
@@ -240,15 +271,27 @@ public sealed class InteractionMenu : Menu
             var pedData = this._pedStorageService.GetPedData(fPed);
             if (pedData is null)
             {
-                this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
+                this._gameNotificationService.Notify(
+                    player,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "UI.ERROR.UNEXPECTED",
+                    });
                 return;
             }
 
-            var text = new GtaStyleText()
-                .Blue("Drug swab test")
-                .NewLine()
-                .White(pedData.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(", ", pedData.Drugs.Select(x => x.Name))}");
-            this._notificationService.ShowNotification(player, text.Build());
+            var text = new StringBuilder()
+                .Append("Drug swab test")
+                .Append("{{NEW_LINE}}")
+                .Append(pedData.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(", ", pedData.Drugs.Select(x => x.Name))}");
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = text.ToString(),
+                });
         };
         items.Add(this.DrugSwabTest);
 
@@ -269,26 +312,38 @@ public sealed class InteractionMenu : Menu
             var pedData = this._pedStorageService.GetPedData(fPed);
             if (pedData is null)
             {
-                this._notificationService.ShowNotification(player, "UI.ERROR.UNEXPECTED");
+                this._gameNotificationService.Notify(
+                    player,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "UI.ERROR.UNEXPECTED",
+                    });
                 return;
             }
 
-            var text = new GtaStyleText()
-                .Blue("Breathalyzer test")
-                .NewLine()
-                .White($"Legal limit: {this._configService.GeneralConfig.Peds.Alcohol.LegalLimit:0.00}")
-                .NewLine()
-                .White("Result: ");
+            var text = new StringBuilder()
+                .Append("Breathalyzer test")
+                .Append("{{NEW_LINE}}")
+                .Append($"Legal limit: {this._configService.GeneralConfig.Peds.Alcohol.LegalLimit:0.00}")
+                .Append("{{NEW_LINE}}")
+                .Append("Result: ");
             if (pedData.AlcoholOverLegalLimit())
             {
-                text.Red(pedData.AlcoholLevel.ToString("0.00"));
+                text.Append(pedData.AlcoholLevel.ToString("0.00"));
             }
             else
             {
-                text.White(pedData.AlcoholLevel.ToString("0.00"));
+                text.Append(pedData.AlcoholLevel.ToString("0.00"));
             }
 
-            this._notificationService.ShowNotification(player, text.Build());
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = text.ToString(),
+                });
         };
         items.Add(this.BreathalyzerTest);
 
@@ -344,14 +399,26 @@ public sealed class InteractionMenu : Menu
             if (fPed.Detained.Value)
             {
                 fPed.Detained.Value = false;
-                this._notificationService.ShowNotification(player,
-                    "The ped is being released."); // TODO: add a custom tooltip in the UI? the native is hidden by the menu
+                // TODO: add a custom tooltip in the UI? the native is hidden by the menu
+                this._gameNotificationService.Notify(
+                    player,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "The ped is being released.",
+                    });
                 this._cfxService.SetEnableHandcuffs(fPed.GetUnderlyingPed.NetworkId, false);
             }
             else
             {
                 fPed.Detained.Value = true;
-                this._notificationService.ShowNotification(player, "The ped is being detained.");
+                this._gameNotificationService.Notify(
+                    player,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "The ped is being detained.",
+                    });
                 this._cfxService.SetEnableHandcuffs(fPed.GetUnderlyingPed.NetworkId, true);
             }
         };
@@ -366,7 +433,13 @@ public sealed class InteractionMenu : Menu
                 return;
             }
 
-            this._notificationService.ShowNotification(player, "The ped has been let go.");
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "The ped has been let go.",
+                });
 
             fPed.Stopped.Value = false;
             Cfx.API.SetEntityDistanceCullingRadius(fPed.GetUnderlyingPed.Handle, 500f);
