@@ -9,6 +9,9 @@ import { ContainerComponent } from "../../../../components/container/container.c
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { PedLicenseStatus, VehicleDocumentStatus, VehicleDocumentType, VehicleData } from "@models";
 import { IconComponent } from "../../../../components/icon/icon.component";
+import { Store } from "@ngrx/store";
+import { GlobalState } from "@store";
+import { AppActions } from "@store/app.actions";
 
 @Component({
   selector: 'app-vehicle-database-id',
@@ -21,6 +24,7 @@ export class VehicleDatabaseIdComponent {
 
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _vehicleService = inject(VehicleService);
+  private readonly _store = inject<Store<GlobalState>>(Store<GlobalState>);
 
   protected readonly VehicleDocumentStatus = VehicleDocumentStatus;
 
@@ -28,6 +32,7 @@ export class VehicleDatabaseIdComponent {
     takeUntilDestroyed(),
     map(params => parseInt(params['id'])),
     switchMap(id => this._vehicleService.get(id)),
+    tap(vehicleData => this._store.dispatch(AppActions.addVehicleToRecentlyViewed({vehicle: vehicleData}))),
   );
 
   licenseTypeI18nKey(licenseType: VehicleDocumentType): string {

@@ -1,6 +1,6 @@
 ﻿import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { CoordinateWithDate } from '@store/app.reducer';
-import { PedData } from "@models";
+import { PedData, VehicleData } from "@models";
 
 export const AppActions = createActionGroup({
   source: 'app',
@@ -12,5 +12,6 @@ export const AppActions = createActionGroup({
     'Dispatch mode map zoom': props<{ zoom: number }>(),
     'Set window maximized': props<{ maximized: boolean }>(),
     'Add ped to recently viewed': props<{ ped: PedData }>(),
+    'Add vehicle to recently viewed': props<{ vehicle: VehicleData }>(),
   },
 });
