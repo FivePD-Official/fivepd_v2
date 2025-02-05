@@ -22,13 +22,22 @@ export class VehicleDatabaseIndexComponent {
   readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly vehicles$ = this.collation$.pipe(
     switchMap(collation => this._vehicleService.getPage(collation)),
-    tap(x => console.log(x))
   );
 
   readonly formFields: FormInputBase<any>[] = [
     new TextField({
       key: 'LicensePlate',
       label: 'LABEL.LICENSE_PLATE.SINGULAR',
+      placeholder: '',
+    }),
+    new TextField({
+      key: 'Brand',
+      label: 'LABEL.BRAND.SINGULAR',
+      placeholder: '',
+    }),
+    new TextField({
+      key: 'Color',
+      label: 'LABEL.COLOR.SINGULAR',
       placeholder: '',
     }),
   ];

@@ -48,11 +48,16 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   formattedRows: FormattedRow<T>[] = [];
 
   filter$ = new Subject();
-  collation: Collation = {
+
+  readonly defaultCollation: Collation = {
     Page: 1,
     Filters: {},
     Sorting: {},
   };
+  _collation: Collation = this.defaultCollation;
+  @Input() set collation(value: Collation<any> | null) {
+    this._collation = value ?? this.defaultCollation;
+  }
 
   @Output() onCellAction = new EventEmitter();
   @Output() onCollationChange = new EventEmitter<Collation>();
@@ -63,7 +68,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     this.filter$.pipe(
       debounceTime(500)
-    ).subscribe(() => this.onCollationChange.emit(this.collation));
+    ).subscribe(() => this.onCollationChange.emit(this._collation));
   }
 
   ngOnDestroy(): void {
@@ -212,7 +217,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    const filterCopy = {...this.collation.Filters};
+    const filterCopy = {...this._collation.Filters};
     if (filterCopy.hasOwnProperty(accessorKey)) {
       if (typeof value === 'string' || typeof value === 'number') {
         if (value) {
@@ -227,13 +232,13 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       }
     }
 
-    this.collation.Filters = filterCopy;
+    this._collation.Filters = filterCopy;
     this.filter$.next(undefined);
   }
 
   onPageChange(page: number): void {
-    this.collation.Page = page;
-    this.onCollationChange.emit(this.collation);
+    this._collation.Page = page;
+    this.onCollationChange.emit(this._collation);
   }
 
   tableCellActionButtonClick(action: TableCellAction<T>, item: FormattedRowItem<T>): void {

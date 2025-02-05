@@ -10,9 +10,9 @@
                       [showSubmitButton]="true"/>
   </div>
 
-  <app-grid
-    [columns]="columns"
-    [data]="vehicles$ | async"
-    [rowLinkResolver]="rowLinkResolver"
-    (onCollationChange)="collation$.next($event)"/>
+  <app-grid [columns]="columns"
+            [data]="vehicles$ | async"
+            [rowLinkResolver]="rowLinkResolver"
+            [collation]="collation$ | async"
+            (onCollationChange)="collation$.next($event)"/>
 </div>

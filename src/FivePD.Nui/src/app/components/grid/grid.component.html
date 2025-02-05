@@ -130,7 +130,7 @@
     </div>
 
     @if (showPagination) {
-      <app-pagination [collation]="collation"
+      <app-pagination [collation]="_collation"
                       [data]="data"
                       (onPageChange)="onPageChange($event)"/>
     }
