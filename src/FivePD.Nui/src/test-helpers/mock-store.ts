@@ -23,6 +23,7 @@ const defaultState: GlobalStateModel = {
     dispatchMode: false,
     dispatchModeMapZoom: 0,
     recentlyViewedPeds: [],
+    recentlyViewedVehicles: [],
     windowMaximized: false,
     devTools: {
       coordinates: {
