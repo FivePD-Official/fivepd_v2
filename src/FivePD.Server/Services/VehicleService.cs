@@ -60,7 +60,6 @@ public class VehicleService : IVehicleService, IOnInit
 
     private void GenerateVehicle(string serializedFVehicleBuilder)
     {
-        Debug.WriteLine($"GenerateVehicle - {serializedFVehicleBuilder}");
         var fVehicleBuilderDto = JsonConvert.DeserializeObject<CommonFVehicleBuilder>(serializedFVehicleBuilder);
         if (fVehicleBuilderDto is null || this._vehicleStorageService.InternalVehicles.ContainsKey(fVehicleBuilderDto.NetworkId))
         {
@@ -81,7 +80,7 @@ public class VehicleService : IVehicleService, IOnInit
             Documents = fVehicleBuilder.Documents,
             Brand = fVehicleBuilder.Brand,
             Color = fVehicleBuilder.Color,
-            PedDataId = pedData?.Id ?? 0
+            PedDataId = pedData?.Id
         });
         this._databaseContext.SaveChanges();
 

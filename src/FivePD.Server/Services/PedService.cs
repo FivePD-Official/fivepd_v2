@@ -169,7 +169,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 Licenses = fPedBuilder.Licenses,
                 AlcoholLevel = fPedBuilder.AlcoholLevel,
                 Drugs = fPedBuilder.Drugs,
-                VehicleDataId = vehicleData?.Id ?? 0,
+                VehicleDataId = vehicleData?.Id,
             });
             this._databaseContext.SaveChanges();
 
