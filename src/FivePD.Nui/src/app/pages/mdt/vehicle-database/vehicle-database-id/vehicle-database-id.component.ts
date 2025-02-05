@@ -22,13 +22,12 @@ export class VehicleDatabaseIdComponent {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _vehicleService = inject(VehicleService);
 
-  protected readonly PedLicenseStatus = PedLicenseStatus;
   protected readonly VehicleDocumentStatus = VehicleDocumentStatus;
 
-  readonly vehicle$ = this._activatedRoute.params.pipe(
+  readonly vehicle$: Observable<VehicleData> = this._activatedRoute.params.pipe(
     takeUntilDestroyed(),
     map(params => parseInt(params['id'])),
-    switchMap(id => this._vehicleService.get(id) as Observable<VehicleData>),
+    switchMap(id => this._vehicleService.get(id)),
   );
 
   licenseTypeI18nKey(licenseType: VehicleDocumentType): string {

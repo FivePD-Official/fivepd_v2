@@ -131,7 +131,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                     .WithDrugs(pedData.Drugs)
                     .WithPedData(pedData)
                     .Build();
-        
+
                 if (vehicleData is not null)
                 {
                     vehicleData.PedDataId = pedData.Id;
@@ -219,11 +219,12 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
-        var pedHistory = this._databaseContext.PedData
+        var pedData = this._databaseContext.PedData
             .AsNoTracking()
-            .Include(pedHistory => pedHistory.Licenses)
+            .Include(x => x.VehicleData)
+            .Include(x => x.Licenses)
             .FirstOrDefault(x => x.Id == request.Id);
-        networkCallbackDelegate.InvokeWithJson(pedHistory);
+        networkCallbackDelegate.InvokeWithJson(pedData);
     }
 
     [UIEvent(Events.PedHistory.GetAllSimple)]

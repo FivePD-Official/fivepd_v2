@@ -104,13 +104,13 @@ public class VehicleService : IVehicleService, IOnInit
     private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<IdRequest>();
-        var vehicleHistory = this._databaseContext.VehicleData
+        var vehicleData = this._databaseContext.VehicleData
             .AsNoTracking()
             .Include(x => x.PedData)
             .Include(x => x.Documents)
             .FirstOrDefault(x => x.Id == request.Id);
 
-        networkCallbackDelegate.InvokeWithJson(vehicleHistory);
+        networkCallbackDelegate.InvokeWithJson(vehicleData);
     }
 
     [UIEvent(Events.Vehicle.GetAllPageable)]

@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PedLicense, PedLicenseStatus } from "@models";
-import { BehaviorSubject, combineLatest, filter, map, of, switchMap, tap } from "rxjs";
+import { PedData, PedLicense, PedLicenseStatus } from "@models";
+import { BehaviorSubject, combineLatest, filter, map, Observable, of, switchMap, tap } from "rxjs";
 import { CoreSetId, FGender, PedLicenseType, SetId } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
@@ -14,7 +14,6 @@ import { ContainerComponent } from '../../../../components/container/container.c
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
 import { mapAttributesToFields } from "@helpers";
-import { ButtonComponent } from "../../../../components/button/button.component";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { EntityViewComponent } from "./_components/entity-view.component";
@@ -26,7 +25,7 @@ import { VariableDataService } from "@services/variable-data/variable-data.servi
   templateUrl: './citizen-database-id.component.html',
   styleUrls: ['./citizen-database-id.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, ButtonComponent, EntityViewComponent, AsyncPipe]
+  imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, EntityViewComponent, AsyncPipe, RouterLink]
 })
 export class CitizenDatabaseIdComponent {
 
@@ -42,7 +41,7 @@ export class CitizenDatabaseIdComponent {
   protected readonly PedLicenseStatus = PedLicenseStatus;
 
   readonly id$ = new BehaviorSubject<number>(0);
-  readonly pedHistory$ = this._activatedRoute.params
+  readonly ped$: Observable<PedData> = this._activatedRoute.params
     .pipe(
       takeUntilDestroyed(),
       map(params => parseId(params['id'])),
