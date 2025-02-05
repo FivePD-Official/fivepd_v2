@@ -340,7 +340,7 @@ namespace FivePD.Server.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Firstname")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
@@ -349,7 +349,7 @@ namespace FivePD.Server.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Lastname")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int?>("VehicleDataId")
                         .HasColumnType("int");
@@ -358,6 +358,12 @@ namespace FivePD.Server.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Birthdate");
+
+                    b.HasIndex("Firstname");
+
+                    b.HasIndex("Lastname");
 
                     b.ToTable("fivepd_ped_data");
                 });
@@ -636,21 +642,27 @@ namespace FivePD.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Brand")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Color")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Items")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("LicensePlate")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int?>("PedDataId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Brand");
+
+                    b.HasIndex("Color");
+
+                    b.HasIndex("LicensePlate");
 
                     b.HasIndex("PedDataId")
                         .IsUnique();

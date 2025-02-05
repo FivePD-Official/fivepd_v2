@@ -300,6 +300,10 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<PedData>(type =>
         {
+            type.HasIndex(t => t.Firstname);
+            type.HasIndex(t => t.Lastname);
+            type.HasIndex(t => t.Birthdate);
+
             type.HasOne(t => t.VehicleData)
                 .WithOne(e => e.PedData)
                 .HasForeignKey<VehicleData>(v => v.PedDataId)
@@ -333,6 +337,10 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<VehicleData>(type =>
         {
+            type.HasIndex(t => t.LicensePlate);
+            type.HasIndex(t => t.Brand);
+            type.HasIndex(t => t.Color);
+
             type.Property(t => t.Items)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
