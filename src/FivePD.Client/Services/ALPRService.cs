@@ -108,7 +108,7 @@ internal class AlprService : IAlprService, IOnInit
             this._gameNotificationService.Notify(new GameNotificationOptions
             {
                 Title = "FivePD",
-                Message = "ALPR.ENABLED",
+                Message = "UI.ALPR.ENABLED",
                 PlayAudio = this._generalConfig.Audio.Files.AlprToggle,
             });
         }
@@ -119,7 +119,7 @@ internal class AlprService : IAlprService, IOnInit
             this._gameNotificationService.Notify(new GameNotificationOptions
             {
                 Title = "FivePD",
-                Message = "ALPR.DISABLED",
+                Message = "UI.ALPR.DISABLED",
                 PlayAudio = this._generalConfig.Audio.Files.AlprToggle,
             });
         }
