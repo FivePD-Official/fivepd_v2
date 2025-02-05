@@ -456,6 +456,8 @@ internal readonly record struct Events
 
         public const string OnCompleted = "fivepd:incident:onCompleted";
 
+        public const string Get = "fivepd:incident:get";
+
         public const string GetAllActive = "fivepd:incident:getAllActive";
 
         public const string SelfAssign = "fivepd:incident:selfAssign";

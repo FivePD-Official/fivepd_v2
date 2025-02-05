@@ -16,9 +16,9 @@ export abstract class BaseApiService<T> {
 
   public abstract getPage(collation?: Collation): Observable<Page<T>>;
 
-  protected _get<K = T>(eventId: string, id: Id) {
+  protected _get<K = T>(eventId: string, id: Id, parseToNumber = true) {
     return this.httpClient.post<K>(this.createUrl(eventId), {
-      Id: parseId(id),
+      Id: parseToNumber ? parseId(id) : id,
     });
   }
 

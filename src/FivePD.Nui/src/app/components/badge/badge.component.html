@@ -1,0 +1,10 @@
+<div class="px-2 py-0.5 rounded-md font-medium flex flex-col items-center w-min"
+     [ngClass]="{
+      'bg-zinc-600/30 text-zinc-400': variant === 'gray',
+      'bg-red-600/20 text-red-500': variant === 'red',
+      'bg-green-600/20 text-green-500': variant === 'green',
+      'bg-amber-600/20 text-amber-500': variant === 'amber',
+      'bg-primary/10 text-primary': variant === 'blue'
+}">
+  {{ label }}
+</div>

@@ -53,11 +53,28 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
             new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this._currentIncident)); }));
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Incident.SelfAssign);
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(
+            Events.Incident.Get,
+            serverResponse =>
+            {
+                var incident = JsonConvert.DeserializeObject<IncidentDTOs.IncidentToClientDTO>(serverResponse);
+                var mappedIncident = new IncidentDTOs.IncidentToUIDTO
+                {
+                    Id = incident.Id,
+                    Type = incident.Type,
+                    Title = incident.Title,
+                    Description = incident.Description,
+                    Units = incident.Units,
+                    Address = incident.Location.GetStreetName(),
+                };
+
+                return JsonConvert.SerializeObject(mappedIncident);
+            });
+        this._eventHandlerDictionary.AddUIToServerEventOverrideData(
             Events.Incident.GetAllActive,
             serverResponse =>
             {
-                var callouts = JsonConvert.DeserializeObject<Page<IncidentDTOs.IncidentToClientDTO>>(serverResponse);
-                var newCallouts = callouts.Items.Select(callout => new IncidentDTOs.IncidentToUIDTO
+                var page = JsonConvert.DeserializeObject<Page<IncidentDTOs.IncidentToClientDTO>>(serverResponse);
+                var mappedIncidents = page.Items.Select(callout => new IncidentDTOs.IncidentToUIDTO
                     {
                         Id = callout.Id,
                         Type = callout.Type,
@@ -69,11 +86,11 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
                     .ToList();
                 var newPage = new Page<IncidentDTOs.IncidentToUIDTO>
                 {
-                    Items = newCallouts,
+                    Items = mappedIncidents,
                     CurrentPage = 1,
-                    ItemCount = newCallouts.Count,
+                    ItemCount = mappedIncidents.Count,
                     PageCount = 1,
-                    PageSize = newCallouts.Count,
+                    PageSize = mappedIncidents.Count,
                 };
 
                 return JsonConvert.SerializeObject(newPage);

@@ -232,6 +232,56 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             }
         }
     }
+    
+    [UIEvent(Events.Incident.Get)]
+    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<StringIdRequest>();
+        if (!Guid.TryParse(request.Id, out var id))
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        var found = false;
+        IncidentDTOs.IncidentToClientDTO incident = default;
+        var callout = this._callouts.FirstOrDefault(x => x.Callout.Id == id);
+        if (callout is not null)
+        {
+            found = true;
+            incident = new IncidentDTOs.IncidentToClientDTO
+            {
+                Id = callout.Callout.Id.ToString(),
+                Type = FIncidentType.Callout,
+                Title = callout.Callout.Title,
+                Description = callout.Callout.Description,
+                Location = callout.Callout.Location,
+                Units = callout.Callout.Units.Select(p => p.Callsign).ToList(),
+            };
+        }
+        
+        var trafficStops = this._trafficStops.FirstOrDefault(x => x.Id == id);
+        if (trafficStops is not null)
+        {
+            found = true;
+            incident =  new IncidentDTOs.IncidentToClientDTO
+            {
+                Id = trafficStops.Id.ToString(),
+                Type = FIncidentType.TrafficStop,
+                Title = trafficStops.Title,
+                Description = trafficStops.Description,
+                Location = trafficStops.Location,
+                Units = trafficStops.Units.Select(p => p.Callsign).ToList(),
+            };
+        }
+
+        if (!found)
+        {
+            return;
+        }
+
+        networkCallbackDelegate.InvokeWithJson(incident);
+    }
 
     [UIEvent(Events.Incident.GetAllActive)]
     private void GetAllActiveUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)

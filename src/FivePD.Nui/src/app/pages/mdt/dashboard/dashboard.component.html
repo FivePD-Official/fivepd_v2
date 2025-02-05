@@ -79,7 +79,9 @@
   <app-grid [title]="'UI.LABEL.ACTIVE_INCIDENT.PLURAL' | translate"
             [data]="incidents"
             [columns]="incidentsColumnDef"
-            [showPagination]="false"/>
+            [showPagination]="false"
+            [rowsClickable]="true"
+            (rowClick)="incidentsOnRowClick($event)"/>
 
   <app-grid [title]="'UI.LABEL.UNIT.PLURAL' | translate"
             [data]="units"

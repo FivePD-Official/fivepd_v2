@@ -11,7 +11,7 @@ export class IncidentService extends BaseApiService<IncidentDTO> {
   override baseUrl = 'fivepd:incident';
 
   get(id: Id) {
-    return this._get('NOT_IMPLEMENTED', id); // TODO
+    return this._get('get', id, false);
   }
 
   getPage() {

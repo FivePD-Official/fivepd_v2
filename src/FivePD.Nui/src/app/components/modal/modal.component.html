@@ -1,10 +1,17 @@
 <div
-  class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col items-center justify-center animate-fadeIn">
+  #modalBackdrop
+  class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col animate-fadeIn justify-center"
+  [ngClass]="{
+    'items-center': position === 'center',
+    'items-end': position === 'side'
+  }">
   <div #modalContainer
-       class="main-modal-container py-4 rounded-lg bg-zinc-800 animate-modal w-max max-h-[70vh] overflow-hidden"
+       class="main-modal-container py-4 rounded-lg bg-zinc-800 overflow-hidden"
        [ngClass]="{
-        'min-w-[500px]': (modalRef.options.columns || 1) === 1,
-        'min-w-[30vw] max-w-[60vw]': (modalRef.options.columns || 1) > 1
+        'min-w-[500px]': position === 'side' ? false : (modalRef.options.columns || 1) === 1,
+        'min-w-[30vw] max-w-[60vw]': position === 'side' ? false : (modalRef.options.columns || 1) > 1,
+        'animate-modalCenter w-max max-h-[70vh]': position === 'center',
+        'animate-modalSide h-[calc(100%-40px)] w-3/12 mr-[20px]': position === 'side'
        }">
     <div class="h-full overflow-x-auto px-6">
       <div class="mb-6">

@@ -27,14 +27,17 @@ import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { GridComponent } from '../../../components/grid/grid.component';
 import { ContainerComponent } from '../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
-import { TextFieldComponent } from "../../../components/form-inputs/text-field/text-field.component";
+import {
+  INCIDENT,
+  IncidentDetailsModalComponent
+} from "./incidents/incident-details-modal/incident-details-modal.component";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, TextFieldComponent]
+  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe]
 })
 export class DashboardComponent implements OnInit {
 
@@ -221,6 +224,16 @@ export class DashboardComponent implements OnInit {
     this._departmentService.getAllPageable(this.departmentsCollation).subscribe(res => {
       this.departments = res;
     });
+  }
+
+  incidentsOnRowClick(incident: IncidentDTO) {
+    this._modalService.openFromSide(IncidentDetailsModalComponent,
+      {
+        title: incident.Title,
+      },
+      new Map().set(INCIDENT, incident))
+      .result
+      .subscribe();
   }
 
   private getGeneralConfig(): void {

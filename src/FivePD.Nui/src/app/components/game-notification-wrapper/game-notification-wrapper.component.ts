@@ -54,7 +54,6 @@ export class GameNotificationWrapperComponent implements OnInit {
 
   getMessage(notification: GameNotificationOptions) {
     const message = this._localizationService.translate(notification.Message, notification.MessageParams, false);
-    console.log('MESSAGE: ', message)
     return this._domSanitizer.bypassSecurityTrustHtml(message);
   }
 

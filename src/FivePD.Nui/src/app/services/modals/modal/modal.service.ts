@@ -1,10 +1,10 @@
-import {ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type} from '@angular/core';
-import {ActionResponse, ModalFormOptions, ModalOptions} from '@models';
-import {filter, MonoTypeOperatorFunction, tap} from 'rxjs';
-import {EXTRA_OBJECTS_TO_INJECT} from '../../../components/modal/extra-objects-token';
-import {ModalInjector} from '@services/modals/modal/modal-injector';
-import {ModalComponent} from '../../../components/modal/modal.component';
-import {ModalRef} from '@services/modals/modal/modal-ref';
+import { ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Injectable, Type } from '@angular/core';
+import { ActionResponse, ModalFormOptions, ModalOptions } from '@models';
+import { filter, MonoTypeOperatorFunction, tap } from 'rxjs';
+import { EXTRA_OBJECTS_TO_INJECT } from '../../../components/modal/extra-objects-token';
+import { ModalInjector } from '@services/modals/modal/modal-injector';
+import { ModalComponent, ModalPosition } from '../../../components/modal/modal.component';
+import { ModalRef } from '@services/modals/modal/modal-ref';
 
 @Injectable({
   providedIn: 'root'
@@ -20,19 +20,11 @@ export class ModalService {
   }
 
   public open<T>(componentType: Type<any>, options: ModalOptions<T>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T> {
-    const modifiedOptions = {...options};
-    if (options.buttons?.submit) {
-      modifiedOptions.buttons!.cancel = {variant: 'secondary', label: 'UI.ACTION.CANCEL'};
-    }
-    const modalRef = this.appendModalComponentToMainView<T>({
-      ...modifiedOptions,
-    }, extraObjectsToInject);
+    return this.openModal<T>('center', componentType, options, extraObjectsToInject);
+  }
 
-    const modalComponent = modalRef.modalComponentRef.instance;
-    modalComponent.childComponentType = componentType;
-    this.modalRef = modalRef;
-
-    return modalRef;
+  public openFromSide<T>(componentType: Type<any>, options: ModalOptions<T>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T> {
+    return this.openModal<T>('side', componentType, options, extraObjectsToInject);
   }
 
   public close<T>(): MonoTypeOperatorFunction<T> {
@@ -60,6 +52,20 @@ export class ModalService {
         })
       )
     }
+  }
+
+  private openModal<T>(position: ModalPosition, componentType: Type<any>, options: ModalOptions<T>, extraObjectsToInject: Map<any, any> = new Map<any, any>()): ModalRef<T> {
+    const modifiedOptions = {...options};
+    const modalRef = this.appendModalComponentToMainView<T>({
+      ...modifiedOptions,
+    }, extraObjectsToInject);
+
+    const modalComponent = modalRef.modalComponentRef.instance;
+    modalComponent.childComponentType = componentType;
+    modalComponent.position = position;
+    this.modalRef = modalRef;
+
+    return modalRef;
   }
 
   private appendModalComponentToMainView<T>(options: ModalOptions, extraObjectsToInject: Map<any, any>): ModalRef<T> {

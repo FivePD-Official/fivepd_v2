@@ -1,6 +1,5 @@
 import {ActionResponse, DropdownItem, IconType} from '@models';
-
-export type BadgeVariants = 'gray' | 'red' | 'green' | 'amber' | 'blue';
+import { BadgeVariants } from '../components/badge/badge.component';
 
 export interface ColumnOptions<T> {
   header: string;

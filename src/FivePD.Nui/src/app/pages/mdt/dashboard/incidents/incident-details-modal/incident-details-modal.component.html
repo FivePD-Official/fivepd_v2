@@ -1,0 +1,23 @@
+@if (incident$ | async; as incident) {
+
+  <div class="flex flex-col gap-6">
+    <app-badge [label]="incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop'"
+               [variant]="incident.Type === FIncidentType.Callout ? 'amber' : 'blue'"/>
+
+    <div class="flex flex-col gap-1">
+      <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
+      <p class="text-white text-lg">{{ incident.Description }}</p>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+      <p class="text-white text-lg">{{ incident.Address }}</p>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.UNIT.PLURAL' | translate }}</p>
+      <p class="text-white text-lg">{{ incident.Units.join(',') }}</p>
+    </div>
+  </div>
+}
+
