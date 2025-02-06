@@ -31,6 +31,7 @@ import {
   INCIDENT,
   IncidentDetailsModalComponent
 } from "./incidents/incident-details-modal/incident-details-modal.component";
+import { filter } from "rxjs";
 
 @Component({
   selector: 'app-dashboard',
@@ -167,12 +168,31 @@ export class DashboardComponent implements OnInit {
       actions: [
         {
           type: 'button',
+          label: 'Details',
+          show: () => true,
+          onClick: incident => {
+            this._modalService.openFromSide(IncidentDetailsModalComponent,
+              {
+                title: incident.Title,
+              },
+              new Map().set(INCIDENT, incident))
+              .result
+              .pipe(
+                filter(res => res.success),
+              )
+              .subscribe(() => {
+                this.getIncidents();
+              });
+          }
+        },
+        {
+          type: 'button',
           label: 'Self-assign',
           show: incident => !!this.user?.UnitCallsign && incident.Units.every(x => x !== this.user?.UnitCallsign),
           onClick: incident => {
             this._incidentService.selfAssign(incident).subscribe(res => {
               if (res.Status) {
-                incident.Units.push(this.user!.UnitCallsign!);
+                this.getIncidents();
               }
             });
           }
@@ -224,16 +244,6 @@ export class DashboardComponent implements OnInit {
     this._departmentService.getAllPageable(this.departmentsCollation).subscribe(res => {
       this.departments = res;
     });
-  }
-
-  incidentsOnRowClick(incident: IncidentDTO) {
-    this._modalService.openFromSide(IncidentDetailsModalComponent,
-      {
-        title: incident.Title,
-      },
-      new Map().set(INCIDENT, incident))
-      .result
-      .subscribe();
   }
 
   private getGeneralConfig(): void {

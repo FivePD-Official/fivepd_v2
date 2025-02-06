@@ -16,17 +16,17 @@ export abstract class BaseApiService<T> {
 
   public abstract getPage(collation?: Collation): Observable<Page<T>>;
 
-  protected _get<K = T>(eventId: string, id: Id, parseToNumber = true) {
+  protected _get<K = T>(eventId: string, id: Id, parseToNumber = true): Observable<K> {
     return this.httpClient.post<K>(this.createUrl(eventId), {
       Id: parseToNumber ? parseId(id) : id,
     });
   }
 
-  protected _getPage<K = Page<T>>(eventId: string, collation?: Collation) {
+  protected _getPage<K = Page<T>>(eventId: string, collation?: Collation): Observable<K> {
     return this.httpClient.post<K>(this.createUrl(eventId), collation ?? {});
   }
 
-  protected createUrl(eventId: string) {
+  protected createUrl(eventId: string): string {
     return `${this.baseUrl}:${eventId}`;
   }
 }

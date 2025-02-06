@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PedData, PedLicense, PedLicenseStatus } from "@models";
-import { BehaviorSubject, combineLatest, filter, map, Observable, of, switchMap, tap } from "rxjs";
+import { PedLicense, PedLicenseStatus } from "@models";
+import { BehaviorSubject, combineLatest, filter, map, of, switchMap, tap } from "rxjs";
 import { CoreSetId, FGender, PedLicenseType, SetId } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
@@ -41,7 +41,7 @@ export class CitizenDatabaseIdComponent {
   protected readonly PedLicenseStatus = PedLicenseStatus;
 
   readonly id$ = new BehaviorSubject<number>(0);
-  readonly ped$: Observable<PedData> = this._activatedRoute.params
+  readonly ped$ = this._activatedRoute.params
     .pipe(
       takeUntilDestroyed(),
       map(params => parseId(params['id'])),

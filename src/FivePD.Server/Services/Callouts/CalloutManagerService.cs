@@ -12,6 +12,7 @@ using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.QueryHelpers;
+using Microsoft.Extensions.Configuration;
 
 namespace FivePD.Server.Services.Callouts;
 
@@ -19,13 +20,12 @@ namespace FivePD.Server.Services.Callouts;
 [Obfuscate]
 public class CalloutManagerService : ICalloutManagerService, IOnInit
 {
-    private const int AutoDispatchCalloutTimeoutInMs = 10000;
-
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickQueueService _tickQueueService;
     private readonly IInternalDispatchService _dispatchService;
     private readonly IInternalIncidentService _incidentService;
     private readonly IAddonMetadataService _addonMetadataService;
+    private readonly IConfigService _configService;
 
     private readonly int _maxCalloutTimeout;
 
@@ -51,10 +51,11 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
         this._dispatchService = (IInternalDispatchService)dispatchService;
         this._incidentService = (IInternalIncidentService)incidentService;
         this._addonMetadataService = addonMetadataService;
+        this._configService = configService;
 
         this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto()
-            ? AutoDispatchCalloutTimeoutInMs
-            : configService.GeneralConfig.Callout.DispatchTimeoutInMs;
+            ? configService.GeneralConfig.Callout.RemovalCriteria.Timeout.Auto
+            : configService.GeneralConfig.Callout.RemovalCriteria.Timeout.Manual;
     }
 
     /// <inheritdoc />
@@ -64,8 +65,15 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);
     }
 
+#pragma warning disable
+
     private void CheckCallouts()
     {
+        if (!this._configService.GeneralConfig.Callout.RemovalCriteria.Enabled)
+        {
+            return;
+        }
+
         var calloutsToRemove = this._incidentService.InternalCallouts
             .Where(x => x.Timer.ElapsedMilliseconds >= this._maxCalloutTimeout && x.Callout.Units.Count == 0)
             .ToList();

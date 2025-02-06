@@ -67,7 +67,7 @@
               </li>
               <li>
                 <p>{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
-                <p>{{ assignedIncident!.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}</p>
+                <p>{{ (assignedIncident!.Incident.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate }}</p>
               </li>
             </div>
           </ul>
@@ -79,9 +79,7 @@
   <app-grid [title]="'UI.LABEL.ACTIVE_INCIDENT.PLURAL' | translate"
             [data]="incidents"
             [columns]="incidentsColumnDef"
-            [showPagination]="false"
-            [rowsClickable]="true"
-            (rowClick)="incidentsOnRowClick($event)"/>
+            [showPagination]="false"/>
 
   <app-grid [title]="'UI.LABEL.UNIT.PLURAL' | translate"
             [data]="units"

@@ -287,7 +287,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     private void GetAllActiveUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var activeCallouts = this._callouts
-            .Where(x => x.Callout.Units.Count > 0)
+            // .Where(x => x.Callout.Units.Count > 0)
             .Select(x => new IncidentDTOs.IncidentToClientDTO
             {
                 Id = x.Callout.Id.ToString(),
