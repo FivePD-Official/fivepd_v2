@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
@@ -6,7 +7,6 @@ using FivePD.Common;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
-using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
@@ -104,7 +104,11 @@ public class MessageService : IMessageService
             new GameNotificationOptions
             {
                 Title = "FivePD",
-                Message = $"You've received a new message from ~b~{message.Sender}",
+                Message = "UI.LABEL.MESSAGES.RECEIVED",
+                MessageParams = new Dictionary<string, string>
+                {
+                    ["sender"] = message.Sender,
+                },
             });
     }
 
@@ -167,7 +171,7 @@ public class MessageService : IMessageService
                 this.Send(user, request.Subject, request.Content, sender.Name);
             }
 
-            networkCallbackDelegate.InvokeWithResponse(true, "ok", "ok");
+            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.SEND", "UI.LABEL.MESSAGES.SUCCESS.SEND");
         }
         catch (Exception e)
         {
