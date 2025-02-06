@@ -292,6 +292,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             {
                 Id = x.Callout.Id.ToString(),
                 Type = FIncidentType.Callout,
+                Priority = x.Callout.Priority,
                 Title = x.Callout.Title,
                 Description = x.Callout.Description,
                 Location = x.Callout.Location,
@@ -303,6 +304,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             {
                 Id = x.Id.ToString(),
                 Type = FIncidentType.TrafficStop,
+                Priority = x.Priority,
                 Title = x.Title,
                 Description = x.Description,
                 Location = x.Location,

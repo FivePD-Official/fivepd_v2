@@ -14,6 +14,8 @@ public sealed record IncidentDTOs
 
         public FIncidentType Type { get; init; }
 
+        public FPriority Priority { get; init; }
+
         public string Title { get; init; }
 
         public string Description { get; init; }
@@ -28,6 +30,8 @@ public sealed record IncidentDTOs
         public string Id { get; init; }
         
         public FIncidentType Type { get; init; }
+
+        public FPriority Priority { get; init; }
 
         public string Title { get; init; }
 

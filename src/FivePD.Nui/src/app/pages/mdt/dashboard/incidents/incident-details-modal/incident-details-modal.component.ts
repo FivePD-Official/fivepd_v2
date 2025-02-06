@@ -11,6 +11,7 @@ import { BehaviorSubject, combineLatest, map, of, shareReplay, switchMap } from 
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ButtonComponent } from "../../../../../components/button/button.component";
 import { ModalRef } from "@services/modals/modal/modal-ref";
+import { getPriorityBadgeColor, getPriorityLabel } from "../../../../../helpers/fpriority-helpers";
 
 export const INCIDENT = new InjectionToken<IncidentDTO>('Incident');
 
@@ -54,4 +55,7 @@ export class IncidentDetailsModalComponent {
       }
     });
   }
+
+  protected readonly getPriorityLabel = getPriorityLabel;
+  protected readonly getPriorityBadgeColor = getPriorityBadgeColor;
 }

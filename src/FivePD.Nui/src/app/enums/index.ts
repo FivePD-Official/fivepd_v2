@@ -35,10 +35,11 @@ export enum FUnitAvailability {
   NotReceiving,
 }
 
-export enum FIncidentPriority {
+export enum FPriority {
   Code1,
   Code2,
   Code3,
+  Code99,
 }
 
 export enum FIncidentType {

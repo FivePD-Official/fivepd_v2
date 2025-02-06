@@ -1,5 +1,5 @@
 ﻿import { User, Vector3 } from "./entities";
-import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from "@enums";
+import { FDutyStatus, FPriority, FIncidentType, FUnitAvailability } from "@enums";
 import { MenuListOption } from "./menu/MenuListItem";
 import { MenuItem } from "./menu/MenuItem";
 
@@ -119,7 +119,7 @@ interface ClientIncident {
   Type: FIncidentType;
   Title: string;
   Description: string;
-  Priority: FIncidentPriority;
+  Priority: FPriority;
   ActivityRadius: number;
   Location: {
     X: number;
@@ -136,6 +136,7 @@ export interface IncidentWrapper {
 export interface IncidentDTO {
   Id: string;
   Type: FIncidentType;
+  Priority: FPriority;
   Title: string;
   Description: string;
   Address: string;
@@ -157,7 +158,7 @@ export interface InformationUpdateDTO extends BaseNuiEvent {
       Type: FIncidentType;
       Title: string;
       Description: string;
-      Priority: FIncidentPriority;
+      Priority: FPriority;
       ActivityRadius: number;
       Location: Vector3;
     };
@@ -174,7 +175,7 @@ export interface SimpleCallout {
   Id: string;
   Title: string;
   Description: string;
-  Priority: FIncidentPriority;
+  Priority: FPriority;
   ActivityRadius: number;
   Location: Vector3;
   GeneratedAt: string;

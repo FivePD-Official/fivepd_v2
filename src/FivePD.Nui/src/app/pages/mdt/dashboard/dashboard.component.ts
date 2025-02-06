@@ -21,7 +21,7 @@ import { ModalService } from '@services/modals/modal/modal.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
-import { FDutyStatus, FIncidentPriority, FIncidentType } from "@enums";
+import { FDutyStatus, FIncidentType, FPriority } from "@enums";
 import { IncidentService } from "@services/incident/incident.service";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { GridComponent } from '../../../components/grid/grid.component';
@@ -32,6 +32,7 @@ import {
   IncidentDetailsModalComponent
 } from "./incidents/incident-details-modal/incident-details-modal.component";
 import { filter } from "rxjs";
+import { getPriorityBadgeColor, getPriorityLabel } from "../../../helpers/fpriority-helpers";
 
 @Component({
   selector: 'app-dashboard',
@@ -160,8 +161,12 @@ export class DashboardComponent implements OnInit {
     }),
     new Column({
       header: 'UI.LABEL.TYPE.SINGULAR',
-      valueResolver: item => item.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop',
-      badgeResolver: item => item.Type === FIncidentType.Callout ? 'amber' : 'blue',
+      valueResolver: item => this._localization.translate(item.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR'),
+    }),
+    new Column({
+      header: 'LABEL.PRIORITY.SINGULAR',
+      valueResolver: item => this._localization.translate(getPriorityLabel(item.Priority)),
+      badgeResolver: item => getPriorityBadgeColor(item.Priority),
     }),
     new Column({
       header: 'UI.LABEL.ACTION.PLURAL',
@@ -228,16 +233,7 @@ export class DashboardComponent implements OnInit {
       return '';
     }
 
-    switch (this.assignedIncident.Incident.Priority) {
-      case FIncidentPriority.Code1:
-        return 'LABEL.PRIORITY.CODE1';
-      case FIncidentPriority.Code2:
-        return 'LABEL.PRIORITY.CODE2';
-      case FIncidentPriority.Code3:
-        return 'LABEL.PRIORITY.CODE3';
-    }
-
-    return '-';
+    return getPriorityLabel(this.assignedIncident.Incident.Priority);
   }
 
   getDepartments(): void {

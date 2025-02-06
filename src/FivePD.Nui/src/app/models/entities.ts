@@ -1,5 +1,5 @@
 import {VariableDataAttribute} from './loose-data';
-import {FGender, FIncidentPriority, FIncidentType, PedLicenseType} from "@enums";
+import {FGender, FPriority, FIncidentType, PedLicenseType} from "@enums";
 
 export type Id = string | number;
 
@@ -201,7 +201,7 @@ export interface IncidentHistory {
   Title: string;
   Description: string;
   Location: string;
-  Priority: FIncidentPriority;
+  Priority: FPriority;
   Type: FIncidentType,
   GeneratedAt: string;
   Users: IncidentHistoryUser[];

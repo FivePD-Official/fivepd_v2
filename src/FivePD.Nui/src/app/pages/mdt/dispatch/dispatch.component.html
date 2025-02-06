@@ -16,24 +16,24 @@
               <span class="relative flex h-3 w-3">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                       [ngClass]="{
-                        'bg-red-400': callout.Callout.Priority === FIncidentPriority.Code3,
-                        'bg-yellow-400': callout.Callout.Priority === FIncidentPriority.Code2,
-                        'bg-primary': callout.Callout.Priority === FIncidentPriority.Code1
+                        'bg-red-400': callout.Callout.Priority === FPriority.Code3,
+                        'bg-yellow-400': callout.Callout.Priority === FPriority.Code2,
+                        'bg-primary': callout.Callout.Priority === FPriority.Code1
                       }">
                 </span>
                 <span class="relative inline-flex rounded-full h-3 w-3"
                       [ngClass]="{
-                        'bg-red-500': callout.Callout.Priority === FIncidentPriority.Code3,
-                        'bg-yellow-500': callout.Callout.Priority === FIncidentPriority.Code2,
-                        'bg-primary': callout.Callout.Priority === FIncidentPriority.Code1
+                        'bg-red-500': callout.Callout.Priority === FPriority.Code3,
+                        'bg-yellow-500': callout.Callout.Priority === FPriority.Code2,
+                        'bg-primary': callout.Callout.Priority === FPriority.Code1
                       }">
                 </span>
               </span>
                 <p class="text-sm font-bold"
                    [ngClass]="{
-                  'text-red-500': callout.Callout.Priority === FIncidentPriority.Code3,
-                  'text-yellow-500': callout.Callout.Priority === FIncidentPriority.Code2,
-                  'text-primary': callout.Callout.Priority === FIncidentPriority.Code1
+                  'text-red-500': callout.Callout.Priority === FPriority.Code3,
+                  'text-yellow-500': callout.Callout.Priority === FPriority.Code2,
+                  'text-primary': callout.Callout.Priority === FPriority.Code1
                 }">
                   {{ getPriorityLabel(callout) | translate }}
                 </p>
@@ -79,17 +79,17 @@
               <span class="relative flex h-3 w-3">
                 <span class="relative inline-flex rounded-full h-3 w-3"
                       [ngClass]="{
-                        'bg-red-500': callout.Callout.Priority === FIncidentPriority.Code3,
-                        'bg-yellow-500': callout.Callout.Priority === FIncidentPriority.Code2,
-                        'bg-primary': callout.Callout.Priority === FIncidentPriority.Code1
+                        'bg-red-500': callout.Callout.Priority === FPriority.Code3,
+                        'bg-yellow-500': callout.Callout.Priority === FPriority.Code2,
+                        'bg-primary': callout.Callout.Priority === FPriority.Code1
                       }">
                 </span>
               </span>
                 <p class="text-sm font-bold"
                    [ngClass]="{
-                  'text-red-500': callout.Callout.Priority === FIncidentPriority.Code3,
-                  'text-yellow-500': callout.Callout.Priority === FIncidentPriority.Code2,
-                  'text-primary': callout.Callout.Priority === FIncidentPriority.Code1
+                  'text-red-500': callout.Callout.Priority === FPriority.Code3,
+                  'text-yellow-500': callout.Callout.Priority === FPriority.Code2,
+                  'text-primary': callout.Callout.Priority === FPriority.Code1
                 }">
                   {{ getPriorityLabel(callout) | translate }}
                 </p>

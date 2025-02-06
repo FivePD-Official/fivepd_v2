@@ -14,7 +14,7 @@ import {
   Transformation
 } from 'leaflet';
 import { DispatcherCalloutDTOClientWrapper } from "../../../models/callout";
-import { FIncidentPriority, FUnitAvailability } from "@enums";
+import { FPriority, FUnitAvailability } from "@enums";
 import { Callout, DispatchService } from "@services/dispatch/dispatch.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Store } from "@ngrx/store";
@@ -28,6 +28,7 @@ import { AppActions } from "@store/app.actions";
 import {
   MultiSelectFieldComponent
 } from "../../../components/form-inputs/multi-select-field/multi-select-field.component";
+import { getPriorityLabel } from "../../../helpers/fpriority-helpers";
 
 type MarkerIconProperties = {
   readonly size: [number, number];
@@ -179,14 +180,7 @@ export class DispatchComponent implements OnInit {
   }
 
   getPriorityLabel(callout: DispatcherCalloutDTOClientWrapper): string {
-    switch (callout.Callout.Priority) {
-      case FIncidentPriority.Code1:
-        return 'LABEL.PRIORITY.CODE1';
-      case FIncidentPriority.Code2:
-        return 'LABEL.PRIORITY.CODE2';
-      case FIncidentPriority.Code3:
-        return 'LABEL.PRIORITY.CODE3';
-    }
+    return getPriorityLabel(callout.Callout.Priority);
   }
 
   jumpToMarker(callout: DispatcherCalloutDTOClientWrapper): void {
@@ -255,15 +249,15 @@ export class DispatchComponent implements OnInit {
     const existingMarker = this.calloutMarkers.get(callout.Callout.Id);
     if (!existingMarker) {
       const {X, Y} = callout.Callout.Location;
-      let icon: MarkerIconName;
+      let icon!: MarkerIconName;
       switch (callout.Callout.Priority) {
-        case FIncidentPriority.Code1:
+        case FPriority.Code1:
           icon = 'code1';
           break;
-        case FIncidentPriority.Code2:
+        case FPriority.Code2:
           icon = 'code2';
           break;
-        case FIncidentPriority.Code3:
+        case FPriority.Code3:
           icon = 'code3';
           break;
       }
@@ -287,5 +281,5 @@ export class DispatchComponent implements OnInit {
   }
 
   protected readonly FUnitAvailability = FUnitAvailability;
-  protected readonly FIncidentPriority = FIncidentPriority;
+  protected readonly FPriority = FPriority;
 }

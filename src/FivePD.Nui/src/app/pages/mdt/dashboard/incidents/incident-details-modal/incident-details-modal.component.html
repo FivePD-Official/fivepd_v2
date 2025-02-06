@@ -2,9 +2,16 @@
 
   <div class="flex flex-col">
     <div class="flex flex-col gap-6">
-      <app-badge
-        [label]="(incident.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate"
-        [variant]="incident.Type === FIncidentType.Callout ? 'amber' : 'blue'"/>
+
+      <div class="w-full flex flex-row items-center justify-between">
+        <p class="text-zinc-200 font-medium">
+          {{ (incident.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate }}
+        </p>
+
+        <app-badge
+          [label]="getPriorityLabel(incident.Priority) | translate"
+          [variant]="getPriorityBadgeColor(incident.Priority)"/>
+      </div>
 
       <div class="flex flex-col gap-1">
         <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
