@@ -75,14 +75,15 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
             serverResponse =>
             {
                 var page = JsonConvert.DeserializeObject<Page<IncidentDTOs.IncidentToClientDTO>>(serverResponse);
-                var mappedIncidents = page.Items.Select(callout => new IncidentDTOs.IncidentToUIDTO
+                var mappedIncidents = page.Items.Select(incident => new IncidentDTOs.IncidentToUIDTO
                     {
-                        Id = callout.Id,
-                        Type = callout.Type,
-                        Title = callout.Title,
-                        Description = callout.Description,
-                        Units = callout.Units,
-                        Address = callout.Location.GetStreetName(),
+                        Id = incident.Id,
+                        Type = incident.Type,
+                        Priority = incident.Priority,
+                        Title = incident.Title,
+                        Description = incident.Description,
+                        Units = incident.Units,
+                        Address = incident.Location.GetStreetName(),
                     })
                     .ToList();
                 var newPage = new Page<IncidentDTOs.IncidentToUIDTO>
