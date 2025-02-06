@@ -33,9 +33,14 @@
       <p class="text-zinc-200 font-medium text-lg">{{ 'UI.LABEL.ACTION.PLURAL' | translate }}</p>
       <div class="flex flex-row gap-4">
         @if (showSelfAssignButton$ | async) {
-          <app-button label="Self-assign"
+          <app-button [label]="'UI.LABEL.INCIDENT.SELF_ASSIGN.TITLE' | translate"
                       variant="tertiary-bg"
                       (onClick)="onSelfAssignClick()"/>
+        }
+        @if (showCompleteButton$ | async) {
+          <app-button [label]="'UI.LABEL.INCIDENT.COMPLETE.TITLE' | translate"
+                      variant="tertiary-bg"
+                      (onClick)="onCompleteClick()"/>
         }
       </div>
     </div>

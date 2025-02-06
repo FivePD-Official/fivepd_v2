@@ -46,12 +46,25 @@ export class IncidentDetailsModalComponent {
       return !!user?.UnitCallsign && incident.Units.every(x => x !== user?.UnitCallsign);
     }),
   );
+  readonly showCompleteButton$ = combineLatest([this.incident$, this.user$]).pipe(
+    map(([incident, user]) => {
+      return !!user?.UnitCallsign && incident.Units.some(x => x === user?.UnitCallsign);
+    }),
+  );
 
   onSelfAssignClick(): void {
     this.incidentService.selfAssign(this.incident).subscribe(res => {
       if (res.Status) {
         this.refetch$.next(null);
-        this.modalRef.close({value: {}, success: true});
+        this.modalRef.close({value: {close: false}, success: true});
+      }
+    });
+  }
+
+  onCompleteClick(): void {
+    this.incidentService.complete(this.incident).subscribe(res => {
+      if (res.Status) {
+        this.modalRef.close({value: {close: true}, success: true});
       }
     });
   }

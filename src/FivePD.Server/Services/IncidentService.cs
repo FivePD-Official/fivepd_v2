@@ -99,15 +99,8 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         this._incidentHistoryService.AddUnitToIncidentHistory(incident, incidentType, unit);
 
         // Remove the unit from the previous incident
-        if (unit.Callout is not null)
-        {
-            ((IInternalIncident)unit.InternalCallout).Units.Remove(unit);
-        }
-
-        if (unit.TrafficStop is not null)
-        {
-            ((IInternalIncident)unit.TrafficStop).Units.Remove(unit);
-        }
+        ((IInternalIncident)unit.InternalCallout)?.Units.Remove(unit);
+        ((IInternalIncident)unit.TrafficStop)?.Units.Remove(unit);
 
         // Add the unit to the new incident
         ((IInternalIncident)incident).Units.Add(unit);
@@ -167,6 +160,27 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
         var trafficStop = player.Unit?.TrafficStop;
         return trafficStop;
+    }
+
+    /// <inheritdoc />
+    public IIncident GetById(Guid id)
+    {
+        IIncident incident = null;
+        var callout = this._callouts.FirstOrDefault(x => x.Callout.Id == id);
+        if (callout is not null)
+        {
+            incident = callout.Callout;
+        }
+        else
+        {
+            var trafficStop = this._trafficStops.FirstOrDefault(x => x.Id == id);
+            if (trafficStop is not null)
+            {
+                incident = trafficStop;
+            }
+        }
+
+        return incident;
     }
 
     /// <inheritdoc />
@@ -232,7 +246,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             }
         }
     }
-    
+
     [UIEvent(Events.Incident.Get)]
     private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -259,12 +273,12 @@ public class IncidentService : IIncidentService, IInternalIncidentService
                 Units = callout.Callout.Units.Select(p => p.Callsign).ToList(),
             };
         }
-        
+
         var trafficStops = this._trafficStops.FirstOrDefault(x => x.Id == id);
         if (trafficStops is not null)
         {
             found = true;
-            incident =  new IncidentDTOs.IncidentToClientDTO
+            incident = new IncidentDTOs.IncidentToClientDTO
             {
                 Id = trafficStops.Id.ToString(),
                 Type = FIncidentType.TrafficStop,
@@ -277,6 +291,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
         if (!found)
         {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
 
@@ -328,22 +343,13 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     private void SelfAssignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<StringIdRequest>();
-
-        IIncident incident = null;
-        var callout = this._callouts.FirstOrDefault(x => x.Callout.Id == Guid.Parse(request.Id));
-        if (callout is not null)
+        if (!Guid.TryParse(request.Id, out var id))
         {
-            incident = callout.Callout;
-        }
-        else
-        {
-            var trafficStop = this._trafficStops.FirstOrDefault(x => x.Id == Guid.Parse(request.Id));
-            if (trafficStop is not null)
-            {
-                incident = trafficStop;
-            }
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
         }
 
+        var incident = this.GetById(id);
         if (incident is null)
         {
             networkCallbackDelegate.InvokeWithUnexpectedError();
@@ -358,5 +364,26 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
         var assignedToCallout = ((IInternalIncidentService)this).AssignUnitToIncident(fPlayer.Unit, incident);
         networkCallbackDelegate.InvokeWithResponse(assignedToCallout, "UI.LABEL.SUCCESS.SELF_ASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
+    }
+    
+    [UIEvent(Events.Incident.Complete, true)]
+    private void CompleteUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<StringIdRequest>();
+        if (!Guid.TryParse(request.Id, out var id))
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        var incident = this.GetById(id);
+        if (incident is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+        
+        this.CompleteIncident(incident);
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE", "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION");
     }
 }

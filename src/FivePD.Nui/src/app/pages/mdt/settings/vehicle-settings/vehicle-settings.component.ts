@@ -78,7 +78,6 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
 }
 
 function createTowTruckFields(localizationService: LocalizationService, vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
-  console.log('A', vehicleConfig)
   const towedVehiclePositionOffset = vehicleConfig?.Options['TowedVehiclePositionOffset'];
 
   return [

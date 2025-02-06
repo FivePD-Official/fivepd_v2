@@ -36,6 +36,13 @@ public interface IIncidentService
     public IIncident GetCurrentIncidentOfPlayer(FPlayer player);
 
     /// <summary>
+    /// Retrieves the incident with the specified identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the incident to retrieve.</param>
+    /// <returns>The incident associated with the specified identifier.</returns>
+    public IIncident GetById(Guid id);
+
+    /// <summary>
     /// Completes the incident of the specified player.
     /// </summary>
     /// <param name="player">The player to complete the incident of.</param>

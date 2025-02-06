@@ -31,7 +31,7 @@ import {
   INCIDENT,
   IncidentDetailsModalComponent
 } from "./incidents/incident-details-modal/incident-details-modal.component";
-import { filter } from "rxjs";
+import { filter, map, of, switchMap, tap } from "rxjs";
 import { getPriorityBadgeColor, getPriorityLabel } from "../../../helpers/fpriority-helpers";
 
 @Component({
@@ -173,7 +173,7 @@ export class DashboardComponent implements OnInit {
       actions: [
         {
           type: 'button',
-          label: 'Details',
+          label: this._localization.translate('UI.LABEL.DETAILS'),
           show: () => true,
           onClick: incident => {
             this._modalService.openFromSide(IncidentDetailsModalComponent,
@@ -184,6 +184,7 @@ export class DashboardComponent implements OnInit {
               .result
               .pipe(
                 filter(res => res.success),
+                switchMap(res => res.value['close'] ? of(res).pipe(this._modalService.close()) : of(res)),
               )
               .subscribe(() => {
                 this.getIncidents();
@@ -192,7 +193,7 @@ export class DashboardComponent implements OnInit {
         },
         {
           type: 'button',
-          label: 'Self-assign',
+          label: this._localization.translate('UI.LABEL.INCIDENT.SELF_ASSIGN.TITLE'),
           show: incident => !!this.user?.UnitCallsign && incident.Units.every(x => x !== this.user?.UnitCallsign),
           onClick: incident => {
             this._incidentService.selfAssign(incident).subscribe(res => {

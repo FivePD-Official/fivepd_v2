@@ -29,4 +29,10 @@ export class IncidentService extends BaseApiService<IncidentDTO> {
     });
   }
 
+  complete(incident: IncidentDTO): Observable<ActionResponse> {
+    return this.httpClient.post<ActionResponse>(this.createUrl('complete'), {
+      Id: incident.Id,
+    });
+  }
+
 }

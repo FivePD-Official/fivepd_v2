@@ -52,6 +52,7 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
             Events.Incident.GetAssigned,
             new Action<ExpandoObject, CallbackDelegate>((_, cb) => { cb.Invoke(JsonConvert.SerializeObject(this._currentIncident)); }));
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Incident.SelfAssign);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Incident.Complete);
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(
             Events.Incident.Get,
             serverResponse =>

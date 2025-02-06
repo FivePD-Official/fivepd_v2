@@ -250,7 +250,6 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   }
 
   onTableCellActionSelect(action: any, item: FormattedRowItem<T>, selectedItemKey: any): void {
-    console.log(action, item, selectedItemKey)
     if ('onSelect' in action) {
       action.onSelect(item.originalItem, selectedItemKey);
     } else {

@@ -17,7 +17,6 @@ export class AudioService {
 
   constructor(private readonly _store: Store<GlobalState>) {
     _store.select('user', 'details').subscribe(user => {
-      console.log(user);
       this._audioVolume = user?.User?.AudioVolume ?? 0;
     });
   }

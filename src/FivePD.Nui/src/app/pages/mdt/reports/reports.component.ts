@@ -140,7 +140,6 @@ export class ReportsComponent implements OnInit {
               label: this._localization.translate('UI.ACTION.VIEW'),
               show: () => true,
               onClick: entity => {
-                console.log(entity)
                 this._modal.open(ModalEntityViewComponent, {
                   title: 'UI.LABEL.ARREST_REPORT.SINGULAR',
                   columns: 2,
