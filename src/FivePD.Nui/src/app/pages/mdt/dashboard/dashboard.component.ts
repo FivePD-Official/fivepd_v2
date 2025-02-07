@@ -1,15 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  Collation,
-  Column,
-  Department,
-  GeneralConfig,
-  IncidentDTO,
-  IncidentWrapper,
-  Page,
-  PlayerDetailsDTO,
-  UnitDTO
-} from '@models';
+import { Component, inject } from '@angular/core';
+import { Column, Department, GeneralConfig, IncidentDTO, PlayerDetailsDTO, UnitDTO } from '@models';
 import { DepartmentService } from '@services/department/department.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { UserService } from '@services/user/user.service';
@@ -18,10 +8,9 @@ import { ModalConfirmService } from '@services/modals/modal-confirm/modal-confir
 import { GlobalState } from '@store';
 import { ModalFormService } from '@services/modals/modal-form/modal-form.service';
 import { ModalService } from '@services/modals/modal/modal.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UnitService } from "@services/unit/unit.service";
 import { ConfigService } from "@services/config/config.service";
-import { FDutyStatus, FIncidentType, FPriority } from "@enums";
+import { FDutyStatus, FIncidentType } from "@enums";
 import { IncidentService } from "@services/incident/incident.service";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { GridComponent } from '../../../components/grid/grid.component';
@@ -31,28 +20,45 @@ import {
   INCIDENT,
   IncidentDetailsModalComponent
 } from "./incidents/incident-details-modal/incident-details-modal.component";
-import { filter, map, of, switchMap, tap } from "rxjs";
+import { BehaviorSubject, filter, map, of, shareReplay, switchMap, tap } from "rxjs";
 import { getPriorityBadgeColor, getPriorityLabel } from "../../../helpers/fpriority-helpers";
+import { AsyncPipe } from "@angular/common";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe]
+  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, AsyncPipe]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
+
+  readonly _departmentService = inject(DepartmentService);
+  readonly _localization = inject(LocalizationService);
+  readonly _modalService = inject(ModalService);
+  readonly _modalFormService = inject(ModalFormService);
+  readonly _modalConfirmService = inject(ModalConfirmService);
+  readonly _userService = inject(UserService);
+  readonly _store = inject<Store<GlobalState>>(Store);
+  readonly _unitService = inject(UnitService);
+  readonly _configService = inject(ConfigService);
+  readonly _incidentService = inject(IncidentService);
 
   generalConfig?: GeneralConfig;
   user?: PlayerDetailsDTO;
-  assignedIncident?: IncidentWrapper;
 
-  departments?: Page<Department>;
-  departmentsCollation: Collation = {
-    Page: 1,
-    Filters: {},
-  };
-  departmentsColumnDef: Column<Department>[] = [
+  readonly generalConfig$ = this._configService.getGeneralConfig().subscribe(res => this.generalConfig = res);
+  readonly user$ = this._store.pipe(
+    takeUntilDestroyed(),
+    tap(state => this.user = state.user.details),
+  ).subscribe();
+
+  readonly departmentsCollation$ = new BehaviorSubject({Page: 1, Filters: {}});
+  readonly departments$ = this.departmentsCollation$.pipe(
+    switchMap(collation => this._departmentService.getAllPageable(collation)),
+  );
+  readonly departmentsColumnDef: Column<Department>[] = [
     new Column<Department>({
       header: 'UI.LABEL.NAME.SINGULAR',
       accessorKey: 'Name',
@@ -78,8 +84,11 @@ export class DashboardComponent implements OnInit {
     return `/mdt/departments/${item.Id}`;
   }
 
-  units?: Page<UnitDTO>;
-  unitsColumnDef: Column<UnitDTO>[] = [
+  readonly unitsRefetch$ = new BehaviorSubject<null>(null);
+  readonly units$ = this.unitsRefetch$.pipe(
+    switchMap(() => this._unitService.getPage()),
+  );
+  readonly unitsColumnDef: Column<UnitDTO>[] = [
     new Column<UnitDTO>({
       header: 'UI.LABEL.CALLSIGN.TITLE',
       accessorKey: 'Callsign',
@@ -106,7 +115,7 @@ export class DashboardComponent implements OnInit {
           onClick: unit => {
             this._unitService.join(unit).subscribe(res => {
               if (res.Status) {
-                this.getUnits();
+                this.unitsRefetch$.next(null);
               }
             });
           }
@@ -132,7 +141,7 @@ export class DashboardComponent implements OnInit {
           onClick: unit => {
             this._unitService.leave(unit).subscribe(res => {
               if (res.Status) {
-                this.getUnits();
+                this.unitsRefetch$.next(null);
               }
             });
           }
@@ -141,8 +150,11 @@ export class DashboardComponent implements OnInit {
     }),
   ];
 
-  incidents?: Page<IncidentDTO>;
-  incidentsColumnDef: Column<IncidentDTO>[] = [
+  readonly incidentsRefetch$ = new BehaviorSubject<null>(null);
+  readonly incidents$ = this.incidentsRefetch$.pipe(
+    switchMap(() => this._incidentService.getPage()),
+  );
+  readonly incidentsColumnDef: Column<IncidentDTO>[] = [
     new Column({
       header: 'UI.LABEL.TITLE.SINGULAR',
       accessorKey: 'Title',
@@ -187,7 +199,7 @@ export class DashboardComponent implements OnInit {
                 switchMap(res => res.value['close'] ? of(res).pipe(this._modalService.close()) : of(res)),
               )
               .subscribe(() => {
-                this.getIncidents();
+                this.incidentsRefetch$.next(null);
               });
           }
         },
@@ -198,7 +210,7 @@ export class DashboardComponent implements OnInit {
           onClick: incident => {
             this._incidentService.selfAssign(incident).subscribe(res => {
               if (res.Status) {
-                this.getIncidents();
+                this.incidentsRefetch$.next(null);
               }
             });
           }
@@ -207,77 +219,14 @@ export class DashboardComponent implements OnInit {
     }),
   ];
 
-  constructor(
-    private readonly _departmentService: DepartmentService,
-    private readonly _localization: LocalizationService,
-    private readonly _modalService: ModalService,
-    private readonly _modalFormService: ModalFormService,
-    private readonly _modalConfirmService: ModalConfirmService,
-    private readonly _userService: UserService,
-    private readonly _store: Store<GlobalState>,
-    private readonly _unitService: UnitService,
-    private readonly _configService: ConfigService,
-    private readonly _incidentService: IncidentService,
-  ) {
-    _store.pipe(takeUntilDestroyed()).subscribe(state => {
-      this.user = state.user.details;
-    });
-  }
-
-  ngOnInit(): void {
-    this.getGeneralConfig();
-    this.load();
-  }
-
-  get priorityLabel(): string {
-    if (!this.assignedIncident) {
-      return '';
-    }
-
-    return getPriorityLabel(this.assignedIncident.Incident.Priority);
-  }
-
-  getDepartments(): void {
-    this._departmentService.getAllPageable(this.departmentsCollation).subscribe(res => {
-      this.departments = res;
-    });
-  }
-
-  private getGeneralConfig(): void {
-    this._configService.getGeneralConfig().subscribe(res => {
-      this.generalConfig = res;
-    });
-  }
-
-  private getUnits(): void {
-    this._unitService.getPage().subscribe(res => {
-      this.units = res;
-    });
-  }
-
-  private getIncidents(): void {
-    this._incidentService.getPage().subscribe(res => {
-      this.incidents = res;
-    });
-  }
-
-  private getAssignedIncident(): void {
-    this._incidentService.getAssignedIncident().subscribe(res => {
-      this.assignedIncident = res;
-    });
-  }
-
-  private load(): void {
-    this.getDepartments();
-    this.getUnits();
-    this.getIncidents();
-    this.getAssignedIncident();
-  }
-
-  onDepartmentsCollationChange(collation: Collation): void {
-    this.departmentsCollation = collation;
-    this.getDepartments();
-  }
+  readonly assignedIncidentRefetch$ = new BehaviorSubject<null>(null);
+  readonly assignedIncident$ = this.assignedIncidentRefetch$.pipe(
+    switchMap(() => this._incidentService.getAssignedIncident()),
+    shareReplay(),
+  );
+  readonly priorityLabel$ = this.assignedIncident$.pipe(
+    map(incident => getPriorityLabel(incident.Incident.Priority)),
+  );
 
   protected readonly FIncidentType = FIncidentType;
 }
