@@ -143,6 +143,49 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         return true;
     }
 
+    /// <inheritdoc/>
+    bool IInternalIncidentService.UnassignUnitFromIncident(Unit unit, IIncident incident)
+    {
+        if (unit is null || incident is null)
+        {
+            this._logger.Warning("IncidentService.AssignUnitToIncident: unit or incident is null");
+            return false;
+        }
+
+        var type = incident.GetType();
+        if (!type.IsSubclassOf(typeof(Callout)) && type != typeof(TrafficStop))
+        {
+            return false;
+        }
+
+        if (!incident.Units.Contains(unit))
+        {
+            return false;
+        }
+
+        var incidentType = type.IsSubclassOf(typeof(Callout)) ? FIncidentType.Callout : FIncidentType.TrafficStop;
+
+        // Remove the unit from the previous incident
+        ((IInternalIncident)unit.InternalCallout)?.Units.Remove(unit);
+        ((IInternalIncident)unit.TrafficStop)?.Units.Remove(unit);
+
+        unit.TrafficStop = null;
+        unit.Callout = null;
+        unit.InternalCallout = null;
+
+        if (incidentType == FIncidentType.Callout)
+        {
+            unit.Availability.Value = FUnitAvailability.Receiving;
+        }
+
+        foreach (var player in unit.Players)
+        {
+            player.GetUnderlyingPlayer().TriggerEvent(Events.Incident.OnAssigned, JsonConvert.SerializeObject(null));
+        }
+
+        return true;
+    }
+
     /// <inheritdoc />
     public IIncident GetCurrentIncidentOfPlayer(FPlayer player)
     {
@@ -362,10 +405,37 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             return;
         }
 
-        var assignedToCallout = ((IInternalIncidentService)this).AssignUnitToIncident(fPlayer.Unit, incident);
-        networkCallbackDelegate.InvokeWithResponse(assignedToCallout, "UI.LABEL.SUCCESS.SELF_ASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
+        var assignUnitToIncident = ((IInternalIncidentService)this).AssignUnitToIncident(fPlayer.Unit, incident);
+        networkCallbackDelegate.InvokeWithResponse(assignUnitToIncident, "UI.LABEL.SUCCESS.SELF_ASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
     }
     
+    [UIEvent(Events.Incident.SelfUnassign, true)]
+    private void SelfUnassignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<StringIdRequest>();
+        if (!Guid.TryParse(request.Id, out var id))
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        var incident = this.GetById(id);
+        if (incident is null)
+        {
+            networkCallbackDelegate.InvokeWithUnexpectedError();
+            return;
+        }
+
+        var fPlayer = FPlayer.FromPlayer(player);
+        if (fPlayer.Unit is null)
+        {
+            return;
+        }
+
+        var unassignUnitFromIncident = ((IInternalIncidentService)this).UnassignUnitFromIncident(fPlayer.Unit, incident);
+        networkCallbackDelegate.InvokeWithResponse(unassignUnitFromIncident, "UI.LABEL.SUCCESS.SELF_UNASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN");
+    }
+
     [UIEvent(Events.Incident.Complete, true)]
     private void CompleteUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -382,7 +452,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
-        
+
         this.CompleteIncident(incident);
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE", "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION");
     }

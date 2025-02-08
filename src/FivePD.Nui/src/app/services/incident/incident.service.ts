@@ -29,6 +29,12 @@ export class IncidentService extends BaseApiService<IncidentDTO> {
     });
   }
 
+  selfUnassign(incident: IncidentDTO): Observable<ActionResponse> {
+    return this.httpClient.post<ActionResponse>(this.createUrl('selfUnassign'), {
+      Id: incident.Id,
+    });
+  }
+
   complete(incident: IncidentDTO): Observable<ActionResponse> {
     return this.httpClient.post<ActionResponse>(this.createUrl('complete'), {
       Id: incident.Id,

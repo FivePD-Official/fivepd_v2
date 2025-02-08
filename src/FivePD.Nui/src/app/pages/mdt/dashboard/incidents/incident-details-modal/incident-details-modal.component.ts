@@ -41,12 +41,7 @@ export class IncidentDetailsModalComponent {
   );
   readonly user$ = this.store.select('user', 'details').pipe(takeUntilDestroyed());
 
-  readonly showSelfAssignButton$ = combineLatest([this.incident$, this.user$]).pipe(
-    map(([incident, user]) => {
-      return !!user?.UnitCallsign && incident.Units.every(x => x !== user?.UnitCallsign);
-    }),
-  );
-  readonly showCompleteButton$ = combineLatest([this.incident$, this.user$]).pipe(
+  readonly isUnitAssignedToIncident$ = combineLatest([this.incident$, this.user$]).pipe(
     map(([incident, user]) => {
       return !!user?.UnitCallsign && incident.Units.some(x => x === user?.UnitCallsign);
     }),
@@ -57,6 +52,15 @@ export class IncidentDetailsModalComponent {
       if (res.Status) {
         this.refetch$.next(null);
         this.modalRef.close({value: {close: false}, success: true});
+      }
+    });
+  }
+
+  onSelfUnassignClick(): void {
+    this.incidentService.selfUnassign(this.incident).subscribe(res => {
+      if (res.Status) {
+        this.refetch$.next(null);
+        this.modalRef.close({value: {close: true}, success: true});
       }
     });
   }

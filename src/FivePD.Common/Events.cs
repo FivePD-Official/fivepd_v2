@@ -462,6 +462,8 @@ internal readonly record struct Events
 
         public const string SelfAssign = "fivepd:incident:selfAssign";
 
+        public const string SelfUnassign = "fivepd:incident:selfUnassign";
+
         public const string GetAssigned = "fivepd:incident:getAssigned";
 
         public const string Complete = "fivepd:incident:complete";
