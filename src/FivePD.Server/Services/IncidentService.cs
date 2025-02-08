@@ -296,7 +296,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         var request = expandoObject.ConvertTo<StringIdRequest>();
         if (!Guid.TryParse(request.Id, out var id))
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            networkCallbackDelegate.InvokeWithJson(null);
             return;
         }
 
@@ -334,7 +334,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
         if (!found)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            networkCallbackDelegate.InvokeWithJson(null);
             return;
         }
 

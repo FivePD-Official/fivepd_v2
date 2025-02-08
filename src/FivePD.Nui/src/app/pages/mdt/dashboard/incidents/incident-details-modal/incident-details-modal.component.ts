@@ -7,11 +7,13 @@ import { FIncidentType } from "@enums";
 import { BadgeComponent } from "../../../../../components/badge/badge.component";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
-import { BehaviorSubject, combineLatest, map, of, shareReplay, switchMap } from "rxjs";
+import { BehaviorSubject, combineLatest, map, of, shareReplay, switchMap, tap } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ButtonComponent } from "../../../../../components/button/button.component";
 import { ModalRef } from "@services/modals/modal/modal-ref";
 import { getPriorityBadgeColor, getPriorityLabel } from "../../../../../helpers/fpriority-helpers";
+import { NotificationService } from "@services/notification/notification.service";
+import { LocalizationService } from "@services/localization/localization.service";
 
 export const INCIDENT = new InjectionToken<IncidentDTO>('Incident');
 
@@ -34,10 +36,26 @@ export class IncidentDetailsModalComponent {
   readonly incidentService = inject(IncidentService);
   readonly store = inject<Store<GlobalState>>(Store);
   readonly modalRef = inject(ModalRef);
+  readonly localizationService = inject(LocalizationService);
+  readonly notificationService = inject(NotificationService);
 
   readonly refetch$ = new BehaviorSubject<null>(null);
   readonly incident$ = combineLatest([of(this.incident), this.refetch$]).pipe(
-    switchMap(() => this.incidentService.get(this.incident.Id).pipe(shareReplay())),
+    switchMap(() => this.incidentService.get(this.incident.Id)),
+    tap(incident => console.log(incident)),
+    tap(incident => {
+      if (incident) {
+        return;
+      }
+
+      this.modalRef.close({value: {close: true}, success: true});
+      this.notificationService.show({
+        type: 'error',
+        title: this.localizationService.translate('UI.LABEL.INCIDENT.ERROR.UNAVAILABLE.TITLE'),
+        description: this.localizationService.translate('UI.LABEL.INCIDENT.ERROR.UNAVAILABLE.DESCRIPTION'),
+      });
+    }),
+    shareReplay(),
   );
   readonly user$ = this.store.select('user', 'details').pipe(takeUntilDestroyed());
 

@@ -58,6 +58,11 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
             Events.Incident.Get,
             serverResponse =>
             {
+                if (serverResponse == "null")
+                {
+                    return "null";
+                }
+
                 var incident = JsonConvert.DeserializeObject<IncidentDTOs.IncidentToClientDTO>(serverResponse);
                 var mappedIncident = new IncidentDTOs.IncidentToUIDTO
                 {

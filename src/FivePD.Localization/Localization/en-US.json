@@ -267,6 +267,8 @@
   "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION": "Incident has been successfully completed.",
   "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE": "Successful completion",
   "UI.LABEL.INCIDENT.COMPLETE.TITLE": "Complete / Code 4",
+  "UI.LABEL.INCIDENT.ERROR.UNAVAILABLE.DESCRIPTION": "The selected incident is no longer available.",
+  "UI.LABEL.INCIDENT.ERROR.UNAVAILABLE.TITLE": "Incident is not available",
   "UI.LABEL.INCIDENT.PLURAL": "Incidents",
   "UI.LABEL.INCIDENT.SELF_ASSIGN.TITLE": "Self-assign",
   "UI.LABEL.INCIDENT.SELF_UNASSIGN.TITLE": "Self-unassign (TODO: better name for this)",
