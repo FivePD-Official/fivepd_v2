@@ -76,7 +76,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     List<TrafficStop> IInternalIncidentService.InternalTrafficStops => this._trafficStops;
 
     /// <inheritdoc/>
-    bool IInternalIncidentService.AssignUnitToIncident(Unit unit, IIncident incident)
+    public bool AssignUnitToIncident(Unit unit, IIncident incident)
     {
         if (unit is null || incident is null)
         {
@@ -144,7 +144,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     }
 
     /// <inheritdoc/>
-    bool IInternalIncidentService.UnassignUnitFromIncident(Unit unit, IIncident incident)
+    public bool UnassignUnitFromIncident(Unit unit, IIncident incident)
     {
         if (unit is null || incident is null)
         {
@@ -405,7 +405,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             return;
         }
 
-        var assignUnitToIncident = ((IInternalIncidentService)this).AssignUnitToIncident(fPlayer.Unit, incident);
+        var assignUnitToIncident = this.AssignUnitToIncident(fPlayer.Unit, incident);
         networkCallbackDelegate.InvokeWithResponse(assignUnitToIncident, "UI.LABEL.SUCCESS.SELF_ASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
     }
     
@@ -432,7 +432,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             return;
         }
 
-        var unassignUnitFromIncident = ((IInternalIncidentService)this).UnassignUnitFromIncident(fPlayer.Unit, incident);
+        var unassignUnitFromIncident = this.UnassignUnitFromIncident(fPlayer.Unit, incident);
         networkCallbackDelegate.InvokeWithResponse(unassignUnitFromIncident, "UI.LABEL.SUCCESS.SELF_UNASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN");
     }
 

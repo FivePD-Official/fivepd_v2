@@ -33,7 +33,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     private readonly IConfirmationService _confirmationService;
     private readonly IUnitService _unitService;
     private readonly PlayerList _playerList;
-    private readonly IInternalIncidentService _incidentService;
+    private readonly IIncidentService _incidentService;
     private readonly DatabaseContext _databaseContext;
 
     /// <summary>
@@ -60,7 +60,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         this._confirmationService = confirmationService;
         this._unitService = unitService;
         this._playerList = playerList;
-        this._incidentService = (IInternalIncidentService)incidentService;
+        this._incidentService = incidentService;
         this._databaseContext = databaseContext;
     }
 
@@ -108,7 +108,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
 
             if (!sentToAnyPlayer)
             {
-                this._incidentService.InternalCallouts.RemoveAll(x => x.Callout == internalCallout.Callout);
+                ((IInternalIncidentService)this._incidentService).InternalCallouts.RemoveAll(x => x.Callout == internalCallout.Callout);
             }
         }
     }
@@ -150,7 +150,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         }
 
         var filteredUnits = this._unitService.Units()
-            .Where(unit => ((IIncidentService)this._incidentService).ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
+            .Where(unit => this._incidentService.ActiveCallouts.All(callout => callout.Units.All(u => u.Callsign != unit.Callsign)))
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
             .ToList();
 

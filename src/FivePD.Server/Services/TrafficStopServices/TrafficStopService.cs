@@ -15,7 +15,7 @@ namespace FivePD.Server.Services.TrafficStopServices;
 public class TrafficStopService : ITrafficStopService
 {
     private readonly ILogger _logger;
-    private readonly IInternalIncidentService _incidentService;
+    private readonly IIncidentService _incidentService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TrafficStopService"/> class.
@@ -27,7 +27,7 @@ public class TrafficStopService : ITrafficStopService
         IIncidentService incidentService)
     {
         this._logger = logger;
-        this._incidentService = (IInternalIncidentService)incidentService;
+        this._incidentService = incidentService;
     }
 
     /// <inheritdoc />
@@ -50,7 +50,7 @@ public class TrafficStopService : ITrafficStopService
             Vehicle = vehicle,
         };
 
-        this._incidentService.InternalTrafficStops.Add(trafficStop);
+        ((IInternalIncidentService)this._incidentService).InternalTrafficStops.Add(trafficStop);
 
         this.AssignUnitToTrafficStop(unit, trafficStop);
 

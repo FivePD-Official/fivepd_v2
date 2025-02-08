@@ -43,6 +43,22 @@ public interface IIncidentService
     public IIncident GetById(Guid id);
 
     /// <summary>
+    /// Assigns the specified unit to the given incident.
+    /// </summary>
+    /// <param name="unit">The unit to assign to the incident.</param>
+    /// <param name="incident">The incident to which the unit should be assigned.</param>
+    /// <returns>A boolean value indicating whether the unit was successfully assigned to the incident.</returns>
+    public bool AssignUnitToIncident(Unit unit, IIncident incident);
+
+    /// <summary>
+    /// Unassigns the specified unit from the given incident.
+    /// </summary>
+    /// <param name="unit">The unit to be unassigned from the incident.</param>
+    /// <param name="incident">The incident from which the unit will be unassigned.</param>
+    /// <returns>A boolean value indicating whether the unit was successfully unassigned from the incident.</returns>
+    public bool UnassignUnitFromIncident(Unit unit, IIncident incident);
+
+    /// <summary>
     /// Completes the incident of the specified player.
     /// </summary>
     /// <param name="player">The player to complete the incident of.</param>
@@ -69,20 +85,4 @@ internal interface IInternalIncidentService
     /// Gets the internal traffic stops.
     /// </summary>
     public List<TrafficStop> InternalTrafficStops { get; }
-
-    /// <summary>
-    /// Assigns the specified unit to the given incident.
-    /// </summary>
-    /// <param name="unit">The unit to assign to the incident.</param>
-    /// <param name="incident">The incident to which the unit should be assigned.</param>
-    /// <returns>A boolean value indicating whether the unit was successfully assigned to the incident.</returns>
-    public bool AssignUnitToIncident(Unit unit, IIncident incident); // TODO: this can be public I think
-
-    /// <summary>
-    /// Unassigns the specified unit from the given incident.
-    /// </summary>
-    /// <param name="unit">The unit to be unassigned from the incident.</param>
-    /// <param name="incident">The incident from which the unit will be unassigned.</param>
-    /// <returns>A boolean value indicating whether the unit was successfully unassigned from the incident.</returns>
-    public bool UnassignUnitFromIncident(Unit unit, IIncident incident); // TODO: this can be public I think
 }

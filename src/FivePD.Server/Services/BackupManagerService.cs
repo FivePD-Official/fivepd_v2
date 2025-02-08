@@ -18,7 +18,7 @@ public class BackupManagerService : IBackupManagerService
 {
     private readonly IConfirmationService _confirmationService;
     private readonly IUnitService _unitService;
-    private readonly IInternalIncidentService _incidentService;
+    private readonly IIncidentService _incidentService;
     private readonly IConfigService _configService;
 
     public BackupManagerService(
@@ -29,7 +29,7 @@ public class BackupManagerService : IBackupManagerService
     {
         this._confirmationService = confirmationService;
         this._unitService = unitService;
-        this._incidentService = (IInternalIncidentService)incidentService;
+        this._incidentService = incidentService;
         this._configService = configService;
     }
 
