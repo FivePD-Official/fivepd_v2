@@ -118,6 +118,7 @@ export class DispatchService {
   }
 
   private onCalloutRemove(calloutId: string): void {
+    console.log('remove', calloutId)
     this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== calloutId)]);
   }
 

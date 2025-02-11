@@ -98,8 +98,8 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
 
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetIncomingCallouts, calloutForDispatcherDtoList =>
         {
-            var callout = JsonConvert.DeserializeObject<List<DispatcherCalloutDTO>>(calloutForDispatcherDtoList);
-            var callouts = callout.Select(x => new DispatcherCalloutDTOClientWrapper(x, x.Location.GetStreetName())).ToList();
+            var callout = JsonConvert.DeserializeObject<List<DispatchModeDTOs.Callout>>(calloutForDispatcherDtoList);
+            var callouts = callout.Select(x => new DispatchModeDTOs.PostCalloutClient(x, x.Location.GetStreetName())).ToList();
             return JsonConvert.SerializeObject(callouts);
         });
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Dispatch.GetUnits);
@@ -111,35 +111,25 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
         this._tickService.DequeueInterval(this._uiPlayerUpdateIntervalId);
     }
 
-    private void OnCalloutReceived(string calloutForDispatcherDto)
+    private void OnCalloutReceived(string request)
     {
-        var callout = JsonConvert.DeserializeObject<DispatcherCalloutDTO>(calloutForDispatcherDto);
-        var wrapper = new DispatcherCalloutDTOClientWrapper(callout, callout.Location.GetStreetName());
+        var callout = JsonConvert.DeserializeObject<DispatchModeDTOs.Callout>(request);
+        var wrapper = new DispatchModeDTOs.PostCalloutClient(callout, callout.Location.GetStreetName());
         this._uiManagerService.SendMessage(JsonConvert.SerializeObject(wrapper));
     }
 
-    private void OnCalloutRemove(string calloutId)
+    private void OnCalloutRemove(string request)
     {
-        this._uiManagerService.SendMessage(new JObject
-        {
-            { "Event", Events.Dispatch.RemoveCalloutFromDispatcher },
-            { "CalloutId", calloutId },
-        });
+        this._uiManagerService.SendMessage(request);
     }
 
-    private void OnUnitCreated(string serializedUnit)
+    private void OnUnitCreated(string request)
     {
-        var unit = JsonConvert.DeserializeObject<CommonDispatcherUnitDTO>(serializedUnit);
-        var wrapper = new CommonDispatcherUnitDTOClientWrapper(unit);
-        this._uiManagerService.SendMessage(JsonConvert.SerializeObject(wrapper));
+        this._uiManagerService.SendMessage(request);
     }
 
-    private void OnUnitRemoved(string unitCallsign)
+    private void OnUnitRemoved(string request)
     {
-        this._uiManagerService.SendMessage(new JObject
-        {
-            { "Event", Events.Dispatch.OnUnitRemoved },
-            { "Callsign", unitCallsign },
-        });
+        this._uiManagerService.SendMessage(request);
     }
 }

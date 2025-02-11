@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Server.API;
@@ -122,7 +123,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
         this._incidentService.InternalCallouts.RemoveAll(x => x.Callout.Id == Guid.Parse(request.Id));
         foreach (var p in this.Dispatchers())
         {
-            p.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, request.Id);
+            p.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, JsonConvert.SerializeObject(new DispatchModeDTOs.RemoveCalloutClient(request.Id)));
         }
     }
 
@@ -130,7 +131,13 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
     {
         foreach (var dispatcher in this.Dispatchers())
         {
-            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitCreated, JsonConvert.SerializeObject(unit.ToCommonDispatcherDTO()));
+            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitCreated, JsonConvert.SerializeObject(new DispatchModeDTOs.Unit
+            {
+                Callsign = unit.Callsign,
+                Players = unit.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
+                Availability = unit.Availability.Value,
+                Status = unit.Status.Value,
+            }));
         }
     }
     
@@ -138,7 +145,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
     {
         foreach (var dispatcher in this.Dispatchers())
         {
-            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitRemoved, unit.Callsign);
+            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitRemoved, new DispatchModeDTOs.RemoveUnitClient(unit.Callsign));
         }
     }
 
@@ -152,7 +159,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
                 continue;
             }
 
-            player.TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, callout.Id.ToString());
+            player.TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher, JsonConvert.SerializeObject(new DispatchModeDTOs.RemoveCalloutClient(callout.Id.ToString())));
         }
     }
 }

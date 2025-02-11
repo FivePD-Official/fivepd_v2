@@ -34,7 +34,7 @@ Unit:
   Join: FREE # FREE = anyone can join, REQUEST = players have to request to join
 
 Callout:
-  DispatchType: AUTO # AUTO = automatic dispatch, MANUAL = manual dispatch
+  DispatchType: MANUAL # AUTO = automatic dispatch, MANUAL = manual dispatch
   MinIntervalInMs: 4000
   MaxIntervalInMs: 5000
   MaxActiveCallouts: 0 # 0 = unlimited, 0+ = limited

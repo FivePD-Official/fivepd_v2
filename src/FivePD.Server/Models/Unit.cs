@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FivePD.Client.DTO;
 using FivePD.Common.DTO;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
@@ -153,21 +154,6 @@ public class Unit
             Availability = this.Availability.Value,
             Status = this.Status.Value,
             AssignedCallout = this.Callout is null ? null : new SimpleCallout(this.InternalCallout),
-        };
-    }
-
-    /// <summary>
-    /// A.
-    /// </summary>
-    /// <returns>B.</returns>
-    internal CommonDispatcherUnitDTO ToCommonDispatcherDTO()
-    {
-        return new CommonDispatcherUnitDTO
-        {
-            Callsign = this.Callsign,
-            Players = this.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
-            Availability = this.Availability.Value,
-            Status = this.Status.Value,
         };
     }
 

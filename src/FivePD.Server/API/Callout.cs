@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Common.Enums;
@@ -98,9 +99,9 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task OnCompleted(); // TODO: Should be invoked when all players are Code 4 or a player has pressed the "End incident" button
 
 #pragma warning disable
-    internal DispatcherCalloutDTO ToCalloutForDispatcherDTO()
+    internal DispatchModeDTOs.Callout ToCalloutForDispatcherDTO()
     {
-        return new DispatcherCalloutDTO
+        return new DispatchModeDTOs.Callout
         {
             Id = this.Id.ToString(),
             Title = this.Title,
