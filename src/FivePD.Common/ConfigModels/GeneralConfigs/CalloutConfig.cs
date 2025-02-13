@@ -28,7 +28,7 @@ public sealed record CalloutConfig
 
     public DynamicDispatchConfig DynamicDispatch { get; init; } = new();
 
-    public RemovalCriteriaConfig RemovalCriteria { get; init; } = new();
+    public AutoRemoveConfig AutoRemove { get; init; } = new();
 
     public sealed record DynamicDispatchConfig
     {
@@ -37,13 +37,13 @@ public sealed record CalloutConfig
         public float Radius { get; init; }
     }
 
-    public sealed record RemovalCriteriaConfig
+    public sealed record AutoRemoveConfig
     {
         public bool Enabled { get; init; }
 
-        public RemovalCriteriaTimeoutConfig Timeout { get; init; }
+        public AutoRemoveTimeoutConfig TimeoutByDispatchType { get; init; }
 
-        public sealed record RemovalCriteriaTimeoutConfig
+        public sealed record AutoRemoveTimeoutConfig
         {
             public int Auto { get; init; }
 

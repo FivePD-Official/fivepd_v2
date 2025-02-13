@@ -141,22 +141,6 @@ public class Unit
         player.UnitCallsign.Value = string.Empty;
     }
 
-    /// <summary>
-    /// A.
-    /// </summary>
-    /// <returns>B.</returns>
-    internal DispatcherUnitDTO ToDispatcherDTO()
-    {
-        return new DispatcherUnitDTO
-        {
-            Callsign = this.Callsign,
-            Players = this.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
-            Availability = this.Availability.Value,
-            Status = this.Status.Value,
-            AssignedCallout = this.Callout is null ? null : new SimpleCallout(this.InternalCallout),
-        };
-    }
-
     private void ListenForAvailabilityChanges(FUnitAvailability availability)
     {
         foreach (var player in this._players)

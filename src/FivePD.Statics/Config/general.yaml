@@ -39,9 +39,9 @@ Callout:
   MaxIntervalInMs: 5000
   MaxActiveCallouts: 0 # 0 = unlimited, 0+ = limited
   AreaBasedDispatch: false # true = callouts will be dispatched to a unit only if the callout is within its department's area, false = callouts will be dispatched to a unit regardless of the callout's location
-  RemovalCriteria: # describes when callouts will be removed from the active callouts list
+  AutoRemove: # describes when callouts will be removed from the active callouts list
     Enabled: true # toggle removal of callouts from the active list
-    Timeout:
+    TimeoutByDispatchType:
       Auto: 10000 # MaxTimeoutInMs, used when DispatchType is AUTO
       Manual: 30000 # MaxTimeoutInMsForDispatchers, used when DispatchType is MANUAL
   DynamicDispatch: # dynamic dispatch is only available when DispatchType is set to AUTO

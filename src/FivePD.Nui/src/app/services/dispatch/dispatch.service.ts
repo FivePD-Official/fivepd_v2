@@ -32,6 +32,7 @@ export class DispatchService {
   readonly activeCallouts$ = new BehaviorSubject<Callout[]>([]);
   readonly units$ = new BehaviorSubject<DispatcherUnitDTO[]>([]);
   readonly players$ = new BehaviorSubject<SimplePlayer[]>([]);
+
   maxTimeout: number = 0;
 
   constructor(
@@ -42,7 +43,14 @@ export class DispatchService {
     private readonly _configService: ConfigService,
   ) {
     _configService.getGeneralConfig().subscribe(config => {
-      this.maxTimeout = Math.round(config.config.Callout.DispatchTimeoutInMs / 1000);
+      this.maxTimeout = Math.round(config.config.Callout.AutoRemove.TimeoutByDispatchType.Manual / 1000);
+
+      if (config.config.Callout.AutoRemove.Enabled) {
+        this.updateCalloutTimeouts();
+        setInterval(() => {
+          this.updateCalloutTimeouts();
+        }, 1000);
+      }
     });
 
     _eventService
@@ -64,11 +72,6 @@ export class DispatchService {
     _eventService
       .onEvent<OnUnitRemoved>('fivepd:dispatch:onUnitRemoved')
       .subscribe(event => this.onUnitRemoved(event.Callsign));
-
-    this.updateCalloutTimeouts();
-    setInterval(() => {
-      this.updateCalloutTimeouts();
-    }, 1000);
   }
 
   getIncomingCallouts(): void {
@@ -118,7 +121,6 @@ export class DispatchService {
   }
 
   private onCalloutRemove(calloutId: string): void {
-    console.log('remove', calloutId)
     this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== calloutId)]);
   }
 
@@ -138,7 +140,7 @@ export class DispatchService {
     const generatedAt = new Date(callout.Callout.GeneratedAt);
     return {
       ...callout,
-      timeout: this.calculateTimeout(callout as Callout),
+      timeout: this.calculateTimeout(generatedAt),
       generatedAt,
       units: [],
     };
@@ -146,13 +148,12 @@ export class DispatchService {
 
   private updateCalloutTimeouts(): void {
     for (const callout of this.incomingCallouts$.value) {
-      const calculatedTimeout = this.calculateTimeout(callout);
+      const calculatedTimeout = this.calculateTimeout(callout.generatedAt);
       callout.timeout = calculatedTimeout < 0 ? 0 : calculatedTimeout;
     }
   }
 
-  private calculateTimeout(callout: Callout): number {
-    const generatedAt = callout.generatedAt ?? new Date(callout.Callout.GeneratedAt);
+  private calculateTimeout(generatedAt: Date): number {
     return this.maxTimeout - Math.round(this.calculateSecondsDifference(generatedAt, new Date()));
   }
 

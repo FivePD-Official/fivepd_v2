@@ -54,8 +54,8 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
         this._configService = configService;
 
         this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto()
-            ? configService.GeneralConfig.Callout.RemovalCriteria.Timeout.Auto
-            : configService.GeneralConfig.Callout.RemovalCriteria.Timeout.Manual;
+            ? configService.GeneralConfig.Callout.AutoRemove.TimeoutByDispatchType.Auto
+            : configService.GeneralConfig.Callout.AutoRemove.TimeoutByDispatchType.Manual;
     }
 
     /// <inheritdoc />
@@ -69,7 +69,7 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
 
     private void CheckCallouts()
     {
-        if (!this._configService.GeneralConfig.Callout.RemovalCriteria.Enabled)
+        if (!this._configService.GeneralConfig.Callout.AutoRemove.Enabled)
         {
             return;
         }

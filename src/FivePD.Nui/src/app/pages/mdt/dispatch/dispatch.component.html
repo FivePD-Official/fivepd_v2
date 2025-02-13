@@ -9,7 +9,7 @@
         </p>
       }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        @for (callout of incomingCallouts;track callout) {
+        @for (callout of incomingCallouts; track callout) {
           <div class="rounded-lg bg-zinc-800 p-4 flex flex-col gap-2">
             <div class="w-full flex flex-row items-center justify-between">
               <div class="flex flex-row items-center gap-4">
@@ -38,7 +38,9 @@
                   {{ getPriorityLabel(callout) | translate }}
                 </p>
               </div>
-              <p class="text-sm font-medium text-zinc-400">Auto-dismiss in: {{ callout.timeout }}s</p>
+              @if (autoRemoveEnabled) {
+                <p class="text-sm font-medium text-zinc-400">Auto-dismiss in: {{ callout.timeout }}s</p>
+              }
             </div>
             <div>
               <p class="text-lg font-medium text-zinc-100">{{ callout.Callout.Title }}</p>
@@ -72,7 +74,7 @@
         </p>
       }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        @for (callout of activeCallouts;track callout) {
+        @for (callout of activeCallouts; track callout) {
           <div class="rounded-lg bg-zinc-800 p-4 flex flex-col gap-2">
             <div class="w-full flex flex-row items-center justify-between">
               <div class="flex flex-row items-center gap-4">
@@ -126,7 +128,7 @@
         </p>
       }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        @for (unit of units;track unit) {
+        @for (unit of units; track unit) {
           <div
             class="rounded-lg bg-zinc-800 hover:bg-zinc-700 p-4 mb-4 flex flex-col gap-2">
             <p class="text-lg font-bold text-zinc-100">{{ unit.Callsign }}</p>

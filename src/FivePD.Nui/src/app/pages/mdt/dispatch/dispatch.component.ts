@@ -29,6 +29,7 @@ import {
   MultiSelectFieldComponent
 } from "../../../components/form-inputs/multi-select-field/multi-select-field.component";
 import { getPriorityLabel } from "../../../helpers/fpriority-helpers";
+import { ConfigService } from "@services/config/config.service";
 
 type MarkerIconProperties = {
   readonly size: [number, number];
@@ -91,10 +92,17 @@ export class DispatchComponent implements OnInit {
 
   // layersControl = L.control.layers({ "Satelite": SateliteStyle,"Atlas": AtlasStyle,"Grid":GridStyle}).addTo(mymap);
 
+  autoRemoveEnabled = false;
+
   constructor(
     public readonly dispatchService: DispatchService,
     private readonly _store: Store<GlobalState>,
+    private readonly _configService: ConfigService,
   ) {
+    _configService.getGeneralConfig().subscribe(config => {
+      this.autoRemoveEnabled = config.config.Callout.AutoRemove.Enabled;
+    });
+
     _store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.defaultZoom = state.app.dispatchModeMapZoom;
     });
