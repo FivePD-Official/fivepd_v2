@@ -96,7 +96,7 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
         this._eventHandlerDictionary[Events.Dispatch.OnUnitCreated] += new Action<string>(this.OnUnitCreated);
         this._eventHandlerDictionary[Events.Dispatch.OnUnitRemoved] += new Action<string>(this.OnUnitRemoved);
 
-        this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetIncomingCallouts, calloutForDispatcherDtoList =>
+        this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetCallouts, calloutForDispatcherDtoList =>
         {
             var callout = JsonConvert.DeserializeObject<List<DispatchModeDTOs.Callout>>(calloutForDispatcherDtoList);
             var callouts = callout.Select(x => new DispatchModeDTOs.PostCalloutClient(x, x.Location.GetStreetName())).ToList();

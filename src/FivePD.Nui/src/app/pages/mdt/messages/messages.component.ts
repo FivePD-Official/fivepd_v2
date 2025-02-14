@@ -100,7 +100,7 @@ export class MessagesComponent implements OnInit {
             required: true,
             size: 'normal',
             variant: 'secondary',
-            items: simpleUsers.map(user => ({
+            items: () => simpleUsers.map(user => ({
               key: user.Id,
               label: user.Name,
             })),

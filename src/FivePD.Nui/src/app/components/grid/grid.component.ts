@@ -117,7 +117,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       key: column.accessorKey,
       label: '',
       defaultItemLabel: column.filter?.label ?? '',
-      items: column.filter?.dropdown ?? [],
+      items: () => column.filter?.dropdown ?? [],
       size: 'small',
       height: 'sm',
       variant: 'secondary',

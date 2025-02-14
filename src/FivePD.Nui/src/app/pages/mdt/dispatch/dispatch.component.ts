@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   CRS,
   extend,
@@ -6,7 +6,7 @@ import {
   latLng,
   latLngBounds,
   layerGroup,
-  map,
+  map as createMap,
   Map as LMap,
   Marker,
   Projection,
@@ -16,13 +16,12 @@ import {
 import { DispatcherCalloutDTOClientWrapper } from "../../../models/callout";
 import { FPriority, FUnitAvailability } from "@enums";
 import { Callout, DispatchService } from "@services/dispatch/dispatch.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
-import { DispatcherUnitDTO, MultiSelectField, SimplePlayer, SingleSelectField } from "@models";
+import { MultiSelectField, SimplePlayer } from "@models";
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { ButtonComponent } from '../../../components/button/button.component';
-import { NgClass } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { ContainerComponent } from '../../../components/container/container.component';
 import { AppActions } from "@store/app.actions";
 import {
@@ -30,6 +29,8 @@ import {
 } from "../../../components/form-inputs/multi-select-field/multi-select-field.component";
 import { getPriorityLabel } from "../../../helpers/fpriority-helpers";
 import { ConfigService } from "@services/config/config.service";
+import { combineLatest, map, takeUntil } from "rxjs";
+import { injectDestroy } from "../../../helpers/destroy-ref";
 
 type MarkerIconProperties = {
   readonly size: [number, number];
@@ -56,9 +57,14 @@ const markerIcons: Record<MarkerIconName, MarkerIconProperties> = {
   templateUrl: './dispatch.component.html',
   styleUrls: ['./dispatch.component.sass'],
   standalone: true,
-  imports: [ContainerComponent, NgClass, ButtonComponent, TranslatePipe, MultiSelectFieldComponent]
+  imports: [ContainerComponent, NgClass, ButtonComponent, TranslatePipe, MultiSelectFieldComponent, AsyncPipe]
 })
 export class DispatchComponent implements OnInit {
+
+  readonly destroy$ = injectDestroy();
+  readonly store = inject<Store<GlobalState>>(Store);
+  readonly dispatchService = inject(DispatchService);
+  readonly configService = inject(ConfigService);
 
   defaultZoom: number = 3;
 
@@ -82,11 +88,8 @@ export class DispatchComponent implements OnInit {
   map?: LMap;
   customCrs: any;
 
-  incomingCallouts: Callout[] = [];
-  activeCallouts: Callout[] = [];
   calloutMarkers: Map<string, Marker> = new Map();
 
-  units: DispatcherUnitDTO[] = [];
   players: SimplePlayer[] = [];
   playerMarkers: Map<number, Marker> = new Map();
 
@@ -94,47 +97,38 @@ export class DispatchComponent implements OnInit {
 
   autoRemoveEnabled = false;
 
-  constructor(
-    public readonly dispatchService: DispatchService,
-    private readonly _store: Store<GlobalState>,
-    private readonly _configService: ConfigService,
-  ) {
-    _configService.getGeneralConfig().subscribe(config => {
+  ngOnInit(): void {
+    this.configService.getGeneralConfig().subscribe(config => {
       this.autoRemoveEnabled = config.config.Callout.AutoRemove.Enabled;
     });
 
-    _store.pipe(takeUntilDestroyed()).subscribe(state => {
+    this.store.pipe(takeUntil(this.destroy$)).subscribe(state => {
       this.defaultZoom = state.app.dispatchModeMapZoom;
     });
 
-    this.dispatchService.incomingCallouts$.pipe(takeUntilDestroyed()).subscribe(callouts => {
-      const calloutsToRemove = this.incomingCallouts
-        .filter(x => !callouts.some(y => y.Callout.Id === x.Callout.Id))
-        .filter(x => !this.activeCallouts.some(y => y.Callout.Id === x.Callout.Id));
-      const calloutsToAdd = callouts.filter(x => !this.incomingCallouts.some(y => y.Callout.Id === x.Callout.Id));
+    combineLatest([
+      this.dispatchService.incomingCallouts$,
+      this.dispatchService.activeCallouts$
+    ]).pipe(
+      takeUntil(this.destroy$),
+      map(([incoming, active]) => ([...incoming, ...active])),
+    ).subscribe(callouts => {
+      const calloutMarkerIds = [...this.calloutMarkers.keys()];
+      const notExistingCalloutIds = calloutMarkerIds.filter(x => callouts.every(y => x !== y.Callout.Id));
+      const newCallouts = callouts.filter(x => calloutMarkerIds.every(y => y !== x.Callout.Id));
 
-      for (const callout of calloutsToRemove) {
-        const marker = this.calloutMarkers.get(callout.Callout.Id);
+      for (const id of notExistingCalloutIds) {
+        const marker = this.calloutMarkers.get(id);
         marker?.remove();
-        this.calloutMarkers.delete(callout.Callout.Id);
+        this.calloutMarkers.delete(id);
       }
 
-      for (const callout of calloutsToAdd) {
+      for (const callout of newCallouts) {
         this.createCalloutMarker(callout);
       }
-
-      this.incomingCallouts = callouts;
     });
 
-    this.dispatchService.activeCallouts$.pipe(takeUntilDestroyed()).subscribe(callouts => {
-      this.activeCallouts = callouts;
-    });
-
-    this.dispatchService.units$.pipe(takeUntilDestroyed()).subscribe(units => {
-      this.units = units;
-    });
-
-    this.dispatchService.players$.pipe(takeUntilDestroyed()).subscribe(players => {
+    this.dispatchService.players$.pipe(takeUntil(this.destroy$)).subscribe(players => {
       const playersToRemove = this.players.filter(x => !players.some(y => y.NetworkId === x.NetworkId));
       for (const player of playersToRemove) {
         const marker = this.playerMarkers.get(player.NetworkId);
@@ -148,10 +142,9 @@ export class DispatchComponent implements OnInit {
 
       this.players = players;
     });
-  }
 
-  ngOnInit(): void {
     this.dispatchService.getIncomingCallouts();
+    this.dispatchService.getActiveCallouts();
     this.dispatchService.getUnits();
 
     this.customCrs = extend({}, CRS.Simple, {
@@ -210,8 +203,8 @@ export class DispatchComponent implements OnInit {
     return new MultiSelectField({
       key: '#',
       defaultItemLabel: 'Assign units',
-      items: this.units
-        .filter(unit => !this.activeCallouts.some(c => c.units.some(u => u === unit.Callsign)))
+      items: () => this.dispatchService.units$.value
+        .filter(unit => !this.dispatchService.activeCallouts$.value.some(c => c.units.some(u => u === unit.Callsign)))
         .map(unit => ({key: unit.Callsign, label: unit.Callsign})),
       size: 'small',
       height: 'base',
@@ -221,7 +214,7 @@ export class DispatchComponent implements OnInit {
   }
 
   onAssignCalloutToUnitsFieldChange(unitCallsigns: any[], callout: Callout): void {
-    this.dispatchService.assignCalloutToUnits(unitCallsigns, callout);
+    this.dispatchService.assignCalloutToUnits(unitCallsigns, callout).subscribe();
   }
 
   join(a: string[]): string {
@@ -232,7 +225,7 @@ export class DispatchComponent implements OnInit {
     const atlasMapSouthWest = latLng([-4034.146341463414, -5631.870330422804]);
     const atlasMapNorthEast = latLng([8380.487804878048, 6648.944755779789]);
     const atlasBounds = latLngBounds(atlasMapSouthWest, atlasMapNorthEast);
-    this.map = map('map', {
+    this.map = createMap('map', {
       crs: this.customCrs,
       minZoom: this.minZoom,
       maxZoom: this.maxZoom,
@@ -249,7 +242,7 @@ export class DispatchComponent implements OnInit {
     });
 
     this.map.on('zoom', e => {
-      this._store.dispatch(AppActions.dispatchModeMapZoom({zoom: e.target['_zoom']}));
+      this.store.dispatch(AppActions.dispatchModeMapZoom({zoom: e.target['_zoom']}));
     });
   }
 

@@ -75,8 +75,14 @@ export class DispatchService {
   }
 
   getIncomingCallouts(): void {
-    this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getIncomingCallouts', {}).subscribe(callouts => {
+    this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getCallouts', {HasUnitsAssigned: false}).subscribe(callouts => {
       this.incomingCallouts$.next(callouts.map(c => this.mapCallout(c)));
+    });
+  }
+
+  getActiveCallouts(): void {
+    this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getCallouts', {HasUnitsAssigned: true}).subscribe(callouts => {
+      this.activeCallouts$.next(callouts.map(c => this.mapCallout(c)));
     });
   }
 

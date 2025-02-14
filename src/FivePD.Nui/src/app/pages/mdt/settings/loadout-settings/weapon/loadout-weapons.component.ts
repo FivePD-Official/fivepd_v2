@@ -112,7 +112,7 @@ export class LoadoutWeaponsComponent {
                     defaultItemLabel: '',
                     addDefaultItem: false,
                     value: weapon?.WeaponComponentHashes,
-                    items: weaponComponents.map(wc => ({
+                    items: () => weaponComponents.map(wc => ({
                       key: wc.HashKey,
                       label: wc.Name,
                     })),
@@ -195,7 +195,7 @@ export class LoadoutWeaponsComponent {
               label: 'UI.LABEL.WEAPON_COMPONENT.PLURAL',
               defaultItemLabel: '',
               addDefaultItem: false,
-              items: weaponComponents.map(wc => ({
+              items: () => weaponComponents.map(wc => ({
                 key: wc.HashKey,
                 label: wc.Name,
               })),

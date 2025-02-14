@@ -66,11 +66,12 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
         this._unitManagerService.OnUnitRemoved += this.OnUnitRemoved;
     }
 
-    [UIEvent(Events.UI.Dispatch.GetIncomingCallouts)]
-    private void GetActiveCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Dispatch.GetCallouts)]
+    private void GetCalloutsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
+        var request = expandoObject.ConvertTo<GetCalloutsDispatcherRequest>();
         networkCallbackDelegate.InvokeWithJson(this._incidentService.InternalCallouts
-            .Where(callout => callout.Callout.Units.Count == 0)
+            .Where(callout => request.HasUnitsAssigned ? callout.Callout.Units.Count > 0 : callout.Callout.Units.Count == 0)
             .Select(x => x.Callout.ToCalloutForDispatcherDTO()).ToList());
     }
 

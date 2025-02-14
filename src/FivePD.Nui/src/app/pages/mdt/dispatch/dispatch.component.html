@@ -3,13 +3,13 @@
   <app-container [columns]="1" [rows]="3">
     <div class="w-full flex flex-col">
       <p class="common-title">Incoming callouts</p>
-      @if (!incomingCallouts.length) {
+      @if (!(dispatchService.incomingCallouts$ | async)!.length) {
         <p class="mt-4 font-medium text-zinc-400">
           There are no incoming callouts at the moment.
         </p>
       }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        @for (callout of incomingCallouts; track callout) {
+        @for (callout of (dispatchService.incomingCallouts$ | async); track callout) {
           <div class="rounded-lg bg-zinc-800 p-4 flex flex-col gap-2">
             <div class="w-full flex flex-row items-center justify-between">
               <div class="flex flex-row items-center gap-4">
@@ -53,8 +53,10 @@
                           variant="tertiary-bg"
                           size="sm"
                           (onClick)="jumpToMarker(callout)"/>
-              <app-multi-select-field [field]="getAssignCalloutToUnitsField(callout)"
-                                      (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
+              @if (dispatchService.units$ | async) {
+                <app-multi-select-field [field]="getAssignCalloutToUnitsField(callout)"
+                                        (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
+              }
               <app-button [fullWidth]="true"
                           label="Dismiss"
                           variant="secondary"
@@ -68,13 +70,13 @@
 
     <div class="w-full flex flex-col">
       <p class="common-title">Active callouts</p>
-      @if (!activeCallouts.length) {
+      @if (!(dispatchService.activeCallouts$ | async)!.length) {
         <p class="mt-4 font-medium text-zinc-400">
           There are no active callouts at the moment.
         </p>
       }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        @for (callout of activeCallouts; track callout) {
+        @for (callout of (dispatchService.activeCallouts$ | async); track callout) {
           <div class="rounded-lg bg-zinc-800 p-4 flex flex-col gap-2">
             <div class="w-full flex flex-row items-center justify-between">
               <div class="flex flex-row items-center gap-4">
@@ -122,13 +124,13 @@
 
     <div class="w-full flex flex-col">
       <p class="common-title">Units</p>
-      @if (!units.length) {
+      @if (!(dispatchService.units$ | async)!.length) {
         <p class="mt-4 font-medium text-zinc-400">
           There are no units available at the moment.
         </p>
       }
       <div class="w-full mt-4 grid grid-cols-2 grid-flow-row gap-4">
-        @for (unit of units; track unit) {
+        @for (unit of (dispatchService.units$ | async); track unit) {
           <div
             class="rounded-lg bg-zinc-800 hover:bg-zinc-700 p-4 mb-4 flex flex-col gap-2">
             <p class="text-lg font-bold text-zinc-100">{{ unit.Callsign }}</p>

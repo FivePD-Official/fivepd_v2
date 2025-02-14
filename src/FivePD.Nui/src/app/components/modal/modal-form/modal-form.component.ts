@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormInputBase, FormSubmitEvent, ModalFormOptions } from '@models';
+import { FormInputBase, FormSubmitEvent, ModalFormOptions, MultiSelectField, SingleSelectField } from '@models';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
 import { forkJoin, map, Observable, of, Subject, switchMap, takeUntil, tap, zip } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
@@ -133,10 +133,10 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
             label: item.Name,
           }));
           if (singleDepartment) {
-            (singleDepartment as any)!.items = mapped;
+            (singleDepartment as SingleSelectField)!.items = () => mapped;
           }
           if (multiDepartment) {
-            (multiDepartment as any)!.items = mapped;
+            (multiDepartment as MultiSelectField)!.items = () => mapped;
           }
         }))
       );
@@ -153,10 +153,10 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
             label: `${item.Title} (${item.GeneratedAt})`,
           }));
           if (singleIncidentHistory) {
-            (singleIncidentHistory as any)!.items = mapped;
+            (singleIncidentHistory as SingleSelectField)!.items = () => mapped;
           }
           if (multiIncidentHistory) {
-            (multiIncidentHistory as any)!.items = mapped;
+            (multiIncidentHistory as MultiSelectField)!.items = () => mapped;
           }
         })),
       );
@@ -173,10 +173,10 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
             label: `${item.Firstname} ${item.Lastname} - ${item.Gender === FGender.Male ? 'Male' : 'Female'} - ${formatDate(new Date(item.Birthdate), 'none')}`,
           }));
           if (singlePedHistory) {
-            (singlePedHistory as any)!.items = mapped;
+            (singlePedHistory as SingleSelectField)!.items = () => mapped;
           }
           if (multiPedHistory) {
-            (multiPedHistory as any)!.items = mapped;
+            (multiPedHistory as MultiSelectField)!.items = () => mapped;
           }
         }))
       );
