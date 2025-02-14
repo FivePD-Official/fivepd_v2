@@ -132,7 +132,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
         foreach (var p in this.Dispatchers())
         {
             p.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher,
-                JsonConvert.SerializeObject(new DispatchModeDTOs.RemoveCalloutClient(request.Id)));
+                JsonConvert.SerializeObject(new DispatcherModeDTOs.RemoveCalloutClient(request.Id)));
         }
     }
 
@@ -140,7 +140,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
     {
         foreach (var dispatcher in this.Dispatchers())
         {
-            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitCreated, JsonConvert.SerializeObject(new DispatchModeDTOs.Unit
+            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitCreated, JsonConvert.SerializeObject(new DispatcherModeDTOs.Unit
             {
                 Callsign = unit.Callsign,
                 Players = unit.Players.Select(player => new SimplePlayerDTO(player.NetId, player.GetUnderlyingPlayer().Name)),
@@ -154,7 +154,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
     {
         foreach (var dispatcher in this.Dispatchers())
         {
-            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitRemoved, new DispatchModeDTOs.RemoveUnitClient(unit.Callsign));
+            dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnUnitRemoved, new DispatcherModeDTOs.RemoveUnitClient(unit.Callsign));
         }
     }
 
@@ -169,7 +169,7 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
             }
 
             player.TriggerEvent(Events.Dispatch.RemoveCalloutFromDispatcher,
-                JsonConvert.SerializeObject(new DispatchModeDTOs.RemoveCalloutClient(callout.Id.ToString())));
+                JsonConvert.SerializeObject(new DispatcherModeDTOs.RemoveCalloutClient(callout.Id.ToString())));
         }
     }
 }

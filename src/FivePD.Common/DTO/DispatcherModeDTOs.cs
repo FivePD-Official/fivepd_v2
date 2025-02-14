@@ -10,7 +10,7 @@ namespace FivePD.Client.DTO;
 
 #pragma warning disable
 
-internal sealed record DispatchModeDTOs
+internal sealed record DispatcherModeDTOs
 {
     internal sealed record Callout
     {

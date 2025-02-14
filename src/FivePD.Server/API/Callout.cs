@@ -99,9 +99,9 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task OnCompleted(); // TODO: Should be invoked when all players are Code 4 or a player has pressed the "End incident" button
 
 #pragma warning disable
-    internal DispatchModeDTOs.Callout ToCalloutForDispatcherDTO()
+    internal DispatcherModeDTOs.Callout ToCalloutForDispatcherDTO()
     {
-        return new DispatchModeDTOs.Callout
+        return new DispatcherModeDTOs.Callout
         {
             Id = this.Id.ToString(),
             Title = this.Title,

@@ -98,8 +98,8 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
 
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetCallouts, calloutForDispatcherDtoList =>
         {
-            var callout = JsonConvert.DeserializeObject<List<DispatchModeDTOs.Callout>>(calloutForDispatcherDtoList);
-            var callouts = callout.Select(x => new DispatchModeDTOs.PostCalloutClient(x, x.Location.GetStreetName())).ToList();
+            var callout = JsonConvert.DeserializeObject<List<DispatcherModeDTOs.Callout>>(calloutForDispatcherDtoList);
+            var callouts = callout.Select(x => new DispatcherModeDTOs.PostCalloutClient(x, x.Location.GetStreetName())).ToList();
             return JsonConvert.SerializeObject(callouts);
         });
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Dispatch.GetUnits);
@@ -113,8 +113,8 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
 
     private void OnCalloutReceived(string request)
     {
-        var callout = JsonConvert.DeserializeObject<DispatchModeDTOs.Callout>(request);
-        var wrapper = new DispatchModeDTOs.PostCalloutClient(callout, callout.Location.GetStreetName());
+        var callout = JsonConvert.DeserializeObject<DispatcherModeDTOs.Callout>(request);
+        var wrapper = new DispatcherModeDTOs.PostCalloutClient(callout, callout.Location.GetStreetName());
         this._uiManagerService.SendMessage(JsonConvert.SerializeObject(wrapper));
     }
 
