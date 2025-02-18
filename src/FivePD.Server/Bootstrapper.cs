@@ -389,8 +389,8 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<CalloutGenerationService>());
         services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<CalloutGenerationService>());
 
-        services.AddSingleton<DispatchService>();
-        services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
+        services.AddSingleton<DispatcherUiService>();
+        services.AddSingleton<IDispatcherUiService>(provider => provider.GetRequiredService<DispatcherUiService>());
 
         services.AddSingleton<DispatcherStorageService>();
         services.AddSingleton<IDispatcherStorageService>(provider => provider.GetRequiredService<DispatcherStorageService>());

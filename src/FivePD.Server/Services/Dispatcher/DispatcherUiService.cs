@@ -20,13 +20,13 @@ namespace FivePD.Server.Services.Dispatcher;
 #pragma warning disable
 
 [Obfuscate]
-public class DispatchService : IDispatchService
+public class DispatcherUiService : IDispatcherUiService
 {
     private readonly IInternalIncidentService _incidentService;
     private readonly ICalloutDistributionService _calloutDistributionService;
     private readonly IUnitService _unitService;
 
-    public DispatchService(
+    public DispatcherUiService(
         IIncidentService incidentService,
         ICalloutDistributionService calloutDistributionService,
         IUnitService unitService)
