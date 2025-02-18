@@ -28,6 +28,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
 
@@ -48,6 +49,7 @@ internal class Bootstrapper : BaseScript
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Bootstrapper" /> class.
+    /// Used as the entrypoint for the Cfx server runtime.
     /// Used as the entrypoint for the Cfx server runtime.
     /// </summary>
     public Bootstrapper()
@@ -389,6 +391,13 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IInternalDispatchService>(provider => provider.GetRequiredService<DispatchService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<DispatchService>());
+
+        services.AddSingleton<DispatcherStorageService>();
+        services.AddSingleton<IDispatcherStorageService>(provider => provider.GetRequiredService<DispatcherStorageService>());
+
+        services.AddSingleton<DispatcherManagerService>();
+        services.AddSingleton<IDispatcherManagerService>(provider => provider.GetRequiredService<DispatcherManagerService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<DispatcherManagerService>());
 
         services.AddSingleton<IncidentHistoryService>();
         services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());

@@ -28,7 +28,6 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
     private readonly IConfirmationService _confirmationService;
     private readonly IConfigService _configService;
     private readonly IInternalUnitService _unitService;
-    private readonly IBackupManagerService _backupManagerService;
     private readonly IPlayerDataService _playerDataService;
     private readonly IPlayerHandlerService _playerHandlerService;
 
@@ -39,7 +38,6 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
-    /// <param name="backupManagerService">The <see cref="IBackupManagerService"/> to use.</param>
     /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     public UnitManagerService(
@@ -47,7 +45,6 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
         IConfirmationService confirmationService,
         IConfigService configService,
         IUnitService unitService,
-        IBackupManagerService backupManagerService,
         IPlayerDataService playerDataService,
         IPlayerHandlerService playerHandlerService)
     {
@@ -55,7 +52,6 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
         this._confirmationService = confirmationService;
         this._configService = configService;
         this._unitService = (IInternalUnitService)unitService;
-        this._backupManagerService = backupManagerService;
         this._playerDataService = playerDataService;
         this._playerHandlerService = playerHandlerService;
 
@@ -78,6 +74,12 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
 
     /// <inheritdoc/>
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
+    
+    /// <inheritdoc/>
+    public event EventHandler<Unit> OnPanicModeEnabled;
+    
+    /// <inheritdoc/>
+    public event EventHandler<Unit> OnPanicModeDisabled;
 
     /// <inheritdoc/>
     void IOnInit.OnInit()
@@ -179,7 +181,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
         }
 
         unit.PanicMode.Value = true;
-        this._backupManagerService.TriggerBackupRequest(unit, FPriority.Code99);
+        this.OnPanicModeEnabled?.Invoke(this, unit);
     }
 
     /// <inheritdoc />
@@ -191,6 +193,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
         }
 
         unit.PanicMode.Value = false;
+        this.OnPanicModeDisabled?.Invoke(this, unit);
     }
 
     /// <inheritdoc />

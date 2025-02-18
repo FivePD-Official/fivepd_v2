@@ -29,6 +29,16 @@ public interface IUnitManagerService
     /// Invoked when a player left a unit.
     /// </summary>
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
+    
+    /// <summary>
+    /// Invoked when a unit has enabled the panic mode.
+    /// </summary>
+    public event EventHandler<Unit> OnPanicModeEnabled;
+    
+    /// <summary>
+    /// Invoked when a unit has disabled the panic mode.
+    /// </summary>
+    public event EventHandler<Unit> OnPanicModeDisabled;
 
     /// <summary>
     /// Gets the unit of the specified player.

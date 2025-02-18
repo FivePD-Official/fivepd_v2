@@ -54,12 +54,26 @@ export class DispatchService {
     });
 
     _eventService
+      .onEvent<void>('fivepd:dispatch:updateRequest')
+      .subscribe(() => {
+        this.getUnits();
+        this.getActiveCallouts();
+      });
+
+    _eventService
       .onEvent<DispatcherCalloutDTOClientWrapper>('fivepd:dispatch:sendCalloutToDispatcher')
-      .subscribe(callout => this.onCalloutReceived(callout));
+      .subscribe(callout => {
+        this.onCalloutReceived(callout);
+        // this.getUnits();
+        // this.getActiveCallouts();
+      });
 
     _eventService
       .onEvent<CalloutRemoveFromDispatcher>('fivepd:dispatch:removeCalloutFromDispatcher')
-      .subscribe(event => this.onCalloutRemove(event.CalloutId));
+      .subscribe(event => {
+        this.onCalloutRemove(event.CalloutId);
+        this.getUnits();
+      });
 
     _eventService
       .onEvent<UpdatePlayersEvent>('fivepd:ui:dispatch:updatePlayers')
@@ -128,6 +142,7 @@ export class DispatchService {
 
   private onCalloutRemove(calloutId: string): void {
     this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== calloutId)]);
+    this.activeCallouts$.next([...this.activeCallouts$.value.filter(x => x.Callout.Id !== calloutId)]);
   }
 
   private onPlayersUpdate(event: UpdatePlayersEvent): void {

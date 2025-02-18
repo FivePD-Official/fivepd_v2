@@ -24,7 +24,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
-/// <inheritdoc />
+/// <inheritdoc cref="FivePD.Server.Interfaces.IIncidentService" />
 [Obfuscate]
 public class IncidentService : IIncidentService, IInternalIncidentService
 {
@@ -33,6 +33,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     private readonly IProgressionSystemService _progressionSystemService;
     private readonly IConfigService _configService;
     private readonly IVehicleStorageService _vehicleStorageService;
+    private readonly IDispatcherManagerService _dispatcherManagerService;
 
     private readonly List<TrafficStop> _trafficStops = new();
 
@@ -46,18 +47,21 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="incidentHistoryService">The <see cref="IIncidentHistoryService"/> to use.</param>
     /// <param name="vehicleStorageService">The <see cref="IVehicleStorageService"/> to use.</param>
+    /// <param name="dispatcherManagerService">The <see cref="IDispatcherManagerService"/> to use.</param>
     public IncidentService(
         ILogger logger,
         IProgressionSystemService progressionSystemService,
         IConfigService configService,
         IIncidentHistoryService incidentHistoryService,
-        IVehicleStorageService vehicleStorageService)
+        IVehicleStorageService vehicleStorageService,
+        IDispatcherManagerService dispatcherManagerService)
     {
         this._logger = logger;
         this._incidentHistoryService = (IInternalIncidentHistoryService)incidentHistoryService;
         this._progressionSystemService = progressionSystemService;
         this._configService = configService;
         this._vehicleStorageService = vehicleStorageService;
+        this._dispatcherManagerService = dispatcherManagerService;
     }
 
     /// <inheritdoc/>
@@ -268,6 +272,8 @@ public class IncidentService : IIncidentService, IInternalIncidentService
                 break;
         }
 
+        this._dispatcherManagerService.RemoveIncidentFromDispatchers(incident);
+
         foreach (var unit in incident.Units)
         {
             unit.Availability.Value = FUnitAvailability.Receiving;
@@ -288,6 +294,12 @@ public class IncidentService : IIncidentService, IInternalIncidentService
                 player.GetUnderlyingPlayer().TriggerEvent(Events.Incident.OnCompleted);
             }
         }
+    }
+
+    public void CompleteIncident(Guid id)
+    {
+        var incident = this.GetById(id);
+        this.CompleteIncident(incident);
     }
 
     [UIEvent(Events.Incident.Get)]
@@ -406,9 +418,14 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         }
 
         var assignUnitToIncident = this.AssignUnitToIncident(fPlayer.Unit, incident);
-        networkCallbackDelegate.InvokeWithResponse(assignUnitToIncident, "UI.LABEL.SUCCESS.SELF_ASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
+        if (assignUnitToIncident)
+        {
+            this._dispatcherManagerService.SendUpdateRequestToDispatchers();
+        }
+
+        networkCallbackDelegate.InvokeWithResponse(assignUnitToIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
     }
-    
+
     [UIEvent(Events.Incident.SelfUnassign, true)]
     private void SelfUnassignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -433,7 +450,12 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         }
 
         var unassignUnitFromIncident = this.UnassignUnitFromIncident(fPlayer.Unit, incident);
-        networkCallbackDelegate.InvokeWithResponse(unassignUnitFromIncident, "UI.LABEL.SUCCESS.SELF_UNASSIGN", "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN");
+        if (unassignUnitFromIncident)
+        {
+            this._dispatcherManagerService.SendUpdateRequestToDispatchers();
+        }
+
+        networkCallbackDelegate.InvokeWithResponse(unassignUnitFromIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.DESCRIPTION");
     }
 
     [UIEvent(Events.Incident.Complete, true)]
@@ -454,6 +476,6 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         }
 
         this.CompleteIncident(incident);
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE", "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION");
+        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE", "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION.DESCRIPTION");
     }
 }

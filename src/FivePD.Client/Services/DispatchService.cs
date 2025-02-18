@@ -53,10 +53,6 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
                         .Where(p => !string.IsNullOrEmpty(FPlayer.FromNetId(p.ServerId).UnitCallsign.Value))
                         .Select(p => new SimplePlayer(p.ServerId, p.Character.Position))
                         .ToList();
-                    var peds = World.GetAllPeds()
-                        .Select(p => new SimplePlayer(p.NetworkId, p.Position))
-                        .ToList();
-                    players.AddRange(peds);
                     this._uiManagerService.SendMessage(new JObject
                     {
                         { "Event", Events.UI.Dispatch.UpdatePlayers },
@@ -95,6 +91,7 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
         this._eventHandlerDictionary[Events.Dispatch.RemoveCalloutFromDispatcher] += new Action<string>(this.OnCalloutRemove);
         this._eventHandlerDictionary[Events.Dispatch.OnUnitCreated] += new Action<string>(this.OnUnitCreated);
         this._eventHandlerDictionary[Events.Dispatch.OnUnitRemoved] += new Action<string>(this.OnUnitRemoved);
+        this._eventHandlerDictionary[Events.Dispatch.UpdateRequest] += new Action<string>(this.OnUpdateRequest);
 
         this._eventHandlerDictionary.AddUIToServerEventOverrideData(Events.UI.Dispatch.GetCallouts, calloutForDispatcherDtoList =>
         {
@@ -129,6 +126,11 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
     }
 
     private void OnUnitRemoved(string request)
+    {
+        this._uiManagerService.SendMessage(request);
+    }
+    
+    private void OnUpdateRequest(string request)
     {
         this._uiManagerService.SendMessage(request);
     }

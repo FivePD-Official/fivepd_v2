@@ -69,6 +69,12 @@ public interface IIncidentService
     /// </summary>
     /// <param name="incident">The incident to complete.</param>
     public void CompleteIncident(IIncident incident);
+
+    /// <summary>
+    /// Completes the specified incident.
+    /// </summary>
+    /// <param name="id">The id of the incident to complete.</param>
+    public void CompleteIncident(Guid id);
 }
 
 /// <summary>

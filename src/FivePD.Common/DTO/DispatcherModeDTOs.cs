@@ -43,4 +43,6 @@ internal sealed record DispatcherModeDTOs
     }
 
     internal sealed record RemoveUnitClient(string UnitCallsign) : RecordWithEventName(Events.Dispatch.OnUnitRemoved);
+
+    internal sealed record UpdateRequest() : RecordWithEventName(Events.Dispatch.UpdateRequest);
 }

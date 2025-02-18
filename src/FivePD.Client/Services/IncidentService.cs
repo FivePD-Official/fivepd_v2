@@ -144,6 +144,12 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
 
     private void OnAssigned(string serializedRequest)
     {
+        if (serializedRequest == "null")
+        {
+            this._localPlayerService.UpdateInformationCallout(null);
+            return;
+        }
+
         var incident = JsonConvert.DeserializeObject<ClientIncidentDTO>(serializedRequest);
         this._currentIncident = new ClientIncidentWithAddressDTO(incident, incident.Location.GetStreetName());
         this._localPlayerService.UpdateInformationCallout(this._currentIncident);

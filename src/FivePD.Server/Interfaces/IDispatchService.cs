@@ -8,10 +8,8 @@ namespace FivePD.Server.Interfaces;
 
 public interface IDispatchService
 {
-    public List<FPlayer> Dispatchers();
 }
 
 internal interface IInternalDispatchService
 {
-    internal void RemoveCalloutFromDispatchers(Callout callout);
 }
