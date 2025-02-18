@@ -3,16 +3,14 @@ using FivePD.Server.EntityWrappers;
 
 namespace FivePD.Server.Interfaces.Dispatcher;
 
-#pragma warning disable
-
 /// <summary>
-/// Service responsible for managing storage and retrieval of dispatcher information.
+/// Provides storage and management functionality for dispatcher-related data.
 /// </summary>
 public interface IDispatcherStorageService
 {
     /// <summary>
-    /// Gets a list of all active dispatchers in the system.
+    /// Gets a list of all active dispatchers.
     /// </summary>
-    /// <returns>A list of FPlayer objects representing active dispatchers.</returns>
+    /// <returns>A list of players currently acting as dispatchers.</returns>
     public List<FPlayer> Dispatchers();
 }
