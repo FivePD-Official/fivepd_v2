@@ -14,6 +14,7 @@ using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
@@ -33,7 +34,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     private readonly IProgressionSystemService _progressionSystemService;
     private readonly IConfigService _configService;
     private readonly IVehicleStorageService _vehicleStorageService;
-    private readonly IDispatcherManagerService _dispatcherManagerService;
+    private readonly IInternalDispatcherManagerService _dispatcherManagerService;
 
     private readonly List<TrafficStop> _trafficStops = new();
 
@@ -61,7 +62,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         this._progressionSystemService = progressionSystemService;
         this._configService = configService;
         this._vehicleStorageService = vehicleStorageService;
-        this._dispatcherManagerService = dispatcherManagerService;
+        this._dispatcherManagerService = (IInternalDispatcherManagerService)dispatcherManagerService;
     }
 
     /// <inheritdoc/>

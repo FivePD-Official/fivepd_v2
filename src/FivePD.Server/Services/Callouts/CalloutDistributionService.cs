@@ -12,6 +12,7 @@ using FivePD.Server.Database;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -32,7 +33,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     private readonly PlayerList _playerList;
     private readonly IIncidentService _incidentService;
     private readonly DatabaseContext _databaseContext;
-    private readonly IDispatcherManagerService _dispatcherManagerService;
+    private readonly IInternalDispatcherManagerService _dispatcherManagerService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
@@ -62,7 +63,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         this._playerList = playerList;
         this._incidentService = incidentService;
         this._databaseContext = databaseContext;
-        this._dispatcherManagerService = dispatcherManagerService;
+        this._dispatcherManagerService = (IInternalDispatcherManagerService)dispatcherManagerService;
     }
 
     /// <inheritdoc/>

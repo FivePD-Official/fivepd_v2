@@ -16,12 +16,14 @@ using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Interfaces.TrafficStopInterfaces;
 using FivePD.Server.Interfaces.VariableData;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
+using FivePD.Server.Services.Dispatcher;
 using FivePD.Server.Services.TrafficStopServices;
 using FivePD.Server.Services.VariableData;
 using Microsoft.Extensions.DependencyInjection;
@@ -389,14 +391,13 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<DispatchService>();
         services.AddSingleton<IDispatchService>(provider => provider.GetRequiredService<DispatchService>());
-        services.AddSingleton<IInternalDispatchService>(provider => provider.GetRequiredService<DispatchService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<DispatchService>());
 
         services.AddSingleton<DispatcherStorageService>();
         services.AddSingleton<IDispatcherStorageService>(provider => provider.GetRequiredService<DispatcherStorageService>());
 
         services.AddSingleton<DispatcherManagerService>();
         services.AddSingleton<IDispatcherManagerService>(provider => provider.GetRequiredService<DispatcherManagerService>());
+        services.AddSingleton<IInternalDispatcherManagerService>(provider => provider.GetRequiredService<DispatcherManagerService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<DispatcherManagerService>());
 
         services.AddSingleton<IncidentHistoryService>();

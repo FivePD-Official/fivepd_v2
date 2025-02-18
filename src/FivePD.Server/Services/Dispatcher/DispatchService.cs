@@ -10,38 +10,30 @@ using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.Dispatcher;
 
 #pragma warning disable
 
 [Obfuscate]
-public class DispatchService : IDispatchService, IInternalDispatchService, IOnInit
+public class DispatchService : IDispatchService
 {
-    private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IInternalIncidentService _incidentService;
     private readonly ICalloutDistributionService _calloutDistributionService;
     private readonly IUnitService _unitService;
 
     public DispatchService(
-        EventHandlerDictionary eventHandlerDictionary,
         IIncidentService incidentService,
         ICalloutDistributionService calloutDistributionService,
         IUnitService unitService)
     {
-        this._eventHandlerDictionary = eventHandlerDictionary;
         this._incidentService = (IInternalIncidentService)incidentService;
         this._calloutDistributionService = calloutDistributionService;
         this._unitService = unitService;
-    }
-
-    void IOnInit.OnInit()
-    {
-        this._eventHandlerDictionary[Events.Dispatch.EnableForPlayer] += new Action<Player>(this.OnEnableForPlayer);
-        this._eventHandlerDictionary[Events.Dispatch.DisableForPlayer] += new Action<Player>(this.OnDisableForPlayer);
     }
 
     [UIEvent(Events.UI.Dispatch.GetCallouts)]
@@ -82,21 +74,18 @@ public class DispatchService : IDispatchService, IInternalDispatchService, IOnIn
             this._calloutDistributionService.AssignUnitToCallout(unit, internalCallout.Callout);
         }
 
-        // foreach (var dispatcher in this.Dispatchers())
-        // {
-        //     dispatcher.GetUnderlyingPlayer().TriggerEvent(Events.Dispatch.OnCalloutAssignedToUnits, JsonConvert.SerializeObject(callout.Callout.ToCalloutForDispatcherDTO()));
-        // }
-
         networkCallbackDelegate.Invoke(null);
     }
 
-    private void OnEnableForPlayer([FromSource] Player player)
+    [UIEvent(Events.Dispatch.EnableForPlayer, true)]
+    private void OnEnableForPlayer([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var fPlayer = FPlayer.FromPlayer(player);
         fPlayer.Dispatcher.Value = true;
     }
 
-    private void OnDisableForPlayer([FromSource] Player player)
+    [UIEvent(Events.Dispatch.DisableForPlayer, true)]
+    private void OnDisableForPlayer([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var fPlayer = FPlayer.FromPlayer(player);
         fPlayer.Dispatcher.Value = false;

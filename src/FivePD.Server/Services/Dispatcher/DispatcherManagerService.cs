@@ -1,19 +1,21 @@
 ﻿using System.Linq;
-using CitizenFX.Core;
 using FivePD.Client.DTO;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Server.API;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using Newtonsoft.Json;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.Dispatcher;
 
 #pragma warning disable
 
-public class DispatcherManagerService : IDispatcherManagerService, IOnInit
+[Obfuscate]
+public class DispatcherManagerService : IDispatcherManagerService, IInternalDispatcherManagerService, IOnInit
 {
     private readonly IDispatcherStorageService _dispatcherStorageService;
     private readonly IUnitManagerService _unitManagerService;
@@ -32,7 +34,7 @@ public class DispatcherManagerService : IDispatcherManagerService, IOnInit
         this._unitManagerService.OnUnitRemoved += this.OnUnitRemoved;
     }
 
-    public void SendIncidentToDispatchers(Callout incident)
+    void IInternalDispatcherManagerService.SendIncidentToDispatchers(Callout incident)
     {
         foreach (var dispatcher in this._dispatcherStorageService.Dispatchers())
         {
@@ -42,7 +44,7 @@ public class DispatcherManagerService : IDispatcherManagerService, IOnInit
         }
     }
 
-    public void RemoveIncidentFromDispatchers(IIncident incident)
+    void IInternalDispatcherManagerService.RemoveIncidentFromDispatchers(IIncident incident)
     {
         foreach (var dispatcher in this._dispatcherStorageService.Dispatchers())
         {
@@ -52,7 +54,7 @@ public class DispatcherManagerService : IDispatcherManagerService, IOnInit
         }
     }
 
-    public void SendUpdateRequestToDispatchers()
+    void IInternalDispatcherManagerService.SendUpdateRequestToDispatchers()
     {
         foreach (var dispatcher in this._dispatcherStorageService.Dispatchers())
         {

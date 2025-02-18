@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
-using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Dispatcher;
 
-namespace FivePD.Server.Services;
+namespace FivePD.Server.Services.Dispatcher;
 
 #pragma warning disable
 
+[Obfuscate]
 public class DispatcherStorageService : IDispatcherStorageService
 {
     private readonly PlayerList _playerList;
