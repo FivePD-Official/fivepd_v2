@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Client.DTO;
@@ -109,6 +110,7 @@ public abstract class Callout : IIncident, IInternalIncident
             Priority = this.Priority,
             Location = this.Location,
             GeneratedAt = this.GeneratedAt,
+            Units = this._units.Select(x => x.Callsign).ToList(),
         };
     }
 

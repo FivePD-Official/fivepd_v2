@@ -53,10 +53,8 @@
                           variant="tertiary-bg"
                           size="sm"
                           (onClick)="jumpToMarker(callout)"/>
-              @if (dispatchService.units$ | async) {
-                <app-multi-select-field [field]="getAssignCalloutToUnitsField(callout)"
-                                        (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
-              }
+              <app-multi-select-field [field]="getAssignCalloutToUnitsField(callout)"
+                                      (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
               <app-button [fullWidth]="true"
                           label="Dismiss"
                           variant="secondary"
@@ -106,7 +104,7 @@
             </div>
             <div class="w-full flex flex-row items-center">
               <p class="text-zinc-300"><span
-                class="font-bold text-zinc-100">Assigned units:</span> {{ join(callout.units) }}</p>
+                class="font-bold text-zinc-100">Assigned units:</span> {{ join(callout.Callout.Units) }}</p>
             </div>
             <div class="w-full grid grid-cols-2 grid-rows-1 gap-2">
               <app-button [fullWidth]="true"

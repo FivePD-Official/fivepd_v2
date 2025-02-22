@@ -25,6 +25,8 @@ internal sealed record DispatcherModeDTOs
         public Vector3 Location { get; init; }
 
         public DateTime GeneratedAt { get; init; }
+        
+        public List<string> Units { get; init; }
     }
 
     internal sealed record PostCalloutClient(Callout Callout, string Address) : RecordWithEventName(Events.Dispatch.SendCalloutToDispatcher);

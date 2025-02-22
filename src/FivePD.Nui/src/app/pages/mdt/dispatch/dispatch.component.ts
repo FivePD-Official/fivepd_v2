@@ -204,7 +204,7 @@ export class DispatchComponent implements OnInit {
       key: '#',
       defaultItemLabel: 'Assign units',
       items: () => this.dispatchService.units$.value
-        .filter(unit => !this.dispatchService.activeCallouts$.value.some(c => c.units.some(u => u === unit.Callsign)))
+        .filter(unit => !this.dispatchService.activeCallouts$.value.some(c => c.Callout.Units.some(u => u === unit.Callsign)))
         .map(unit => ({key: unit.Callsign, label: unit.Callsign})),
       size: 'small',
       height: 'base',

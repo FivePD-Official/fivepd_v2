@@ -9,6 +9,7 @@ export interface DispatcherCalloutDTOClientWrapper {
     Priority: FPriority;
     Location: Vector3;
     GeneratedAt: string;
+    Units: string[];
   };
   Address: string;
 }

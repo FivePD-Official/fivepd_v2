@@ -4,7 +4,7 @@ import { GlobalState } from "@store";
 import { Router } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { CalloutRemoveFromDispatcher, DispatcherCalloutDTOClientWrapper } from "../../models/callout";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
 import { EventService } from "@services/event/event.service";
 import { ConfigService } from "@services/config/config.service";
 import {
@@ -20,7 +20,6 @@ import { AppActions } from "@store/app.actions";
 export type Callout = DispatcherCalloutDTOClientWrapper & {
   timeout: number;
   generatedAt: Date;
-  units: string[];
 }
 
 @Injectable({
@@ -97,6 +96,7 @@ export class DispatchService {
   getActiveCallouts(): void {
     this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getCallouts', {HasUnitsAssigned: true}).subscribe(callouts => {
       this.activeCallouts$.next(callouts.map(c => this.mapCallout(c)));
+      console.log('callouts', callouts)
     });
   }
 
@@ -126,14 +126,18 @@ export class DispatchService {
 
   assignCalloutToUnits(unitCallsigns: string[], callout: Callout) {
     if (!this.activeCallouts$.value.some(x => x.Callout.Id === callout.Callout.Id)) {
-      this.activeCallouts$.next([...this.activeCallouts$.value, {...callout, units: [...unitCallsigns]}]);
       this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== callout.Callout.Id)]);
     }
 
     return this._http.post<void>('fivepd:dispatch:assignCalloutToUnits', {
       UnitCallsigns: unitCallsigns,
       CalloutId: callout.Callout.Id
-    });
+    }).pipe(
+      tap(() => {
+        this.getActiveCallouts();
+        this.getUnits();
+      }),
+    );
   }
 
   private onCalloutReceived(callout: DispatcherCalloutDTOClientWrapper): void {
@@ -163,7 +167,6 @@ export class DispatchService {
       ...callout,
       timeout: this.calculateTimeout(generatedAt),
       generatedAt,
-      units: [],
     };
   }
 
