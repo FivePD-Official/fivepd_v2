@@ -496,6 +496,8 @@ internal readonly record struct Events
         public const string OnUnitRemoved = "fivepd:dispatch:onUnitRemoved";
 
         public const string AssignCalloutToUnits = "fivepd:dispatch:assignCalloutToUnits";
+        
+        public const string UnassignCalloutFromUnits = "fivepd:dispatch:unassignCalloutFromUnits";
 
         public const string UpdateRequest = "fivepd:dispatch:updateRequest";
     }

@@ -75,6 +75,9 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <inheritdoc />
     public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitAssignedToCallout;
 
+    /// <inheritdoc />
+    public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitUnassignedFromCallout;
+
     /// <inheritdoc/>
     void IInternalCalloutDistributionService.DistributeCallout(InternalCallout internalCallout, bool manualTrigger)
     {
@@ -123,6 +126,28 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             callout.OnUnitAssigned(unit);
             this.OnUnitAssignedToCallout?.Invoke(this, new UnitAssignedToCalloutEventArgs(callout, unit));
         }
+
+        this._dispatcherManagerService.SendUpdateRequestToDispatchers();
+
+        return true;
+    }
+
+    /// <inheritdoc />
+    public bool UnassignUnitFromCallout(Unit unit, Callout callout, bool acceptedByUnit = false)
+    {
+        if (unit is null || callout is null)
+        {
+            this._logger.Warning("CalloutDistributionService.AssignUnitToCallout: unit or callout is null");
+            return false;
+        }
+
+        if (!this._incidentService.UnassignUnitFromIncident(unit, callout))
+        {
+            return false;
+        }
+
+        callout.OnUnitUnassigned(unit);
+        this.OnUnitUnassignedFromCallout?.Invoke(this, new UnitAssignedToCalloutEventArgs(callout, unit));
 
         this._dispatcherManagerService.SendUpdateRequestToDispatchers();
 

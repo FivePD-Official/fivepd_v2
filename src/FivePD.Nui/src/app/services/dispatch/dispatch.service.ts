@@ -96,7 +96,6 @@ export class DispatchService {
   getActiveCallouts(): void {
     this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getCallouts', {HasUnitsAssigned: true}).subscribe(callouts => {
       this.activeCallouts$.next(callouts.map(c => this.mapCallout(c)));
-      console.log('callouts', callouts)
     });
   }
 
@@ -125,11 +124,27 @@ export class DispatchService {
   }
 
   assignCalloutToUnits(unitCallsigns: string[], callout: Callout) {
-    if (!this.activeCallouts$.value.some(x => x.Callout.Id === callout.Callout.Id)) {
-      this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== callout.Callout.Id)]);
-    }
+    // if (!this.activeCallouts$.value.some(x => x.Callout.Id === callout.Callout.Id)) {
+    //   this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== callout.Callout.Id)]);
+    // }
 
     return this._http.post<void>('fivepd:dispatch:assignCalloutToUnits', {
+      UnitCallsigns: unitCallsigns,
+      CalloutId: callout.Callout.Id
+    }).pipe(
+      tap(() => {
+        this.getActiveCallouts();
+        this.getUnits();
+      }),
+    );
+  }
+
+  unassignCalloutFromUnits(unitCallsigns: string[], callout: Callout) {
+    // if (!this.activeCallouts$.value.some(x => x.Callout.Id === callout.Callout.Id)) {
+    //   this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== callout.Callout.Id)]);
+    // }
+
+    return this._http.post<void>('fivepd:dispatch:unassignCalloutFromUnits', {
       UnitCallsigns: unitCallsigns,
       CalloutId: callout.Callout.Id
     }).pipe(

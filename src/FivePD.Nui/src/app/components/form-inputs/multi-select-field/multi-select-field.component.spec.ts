@@ -23,11 +23,15 @@ describe('MultiSelectFieldComponent', () => {
     fixture = TestBed.createComponent(MultiSelectFieldComponent);
     component = fixture.componentInstance;
 
-    component.form = new FormGroup([]);
+    component.form = new FormGroup({});
     component.field = new MultiSelectField({
+      key: 'testMultiSelect',
       required: false,
-      defaultItemLabel: "",
-      items: [],
+      defaultItemLabel: "Select options",
+      items: () => [
+        { key: 1, label: 'Option 1' },
+        { key: 2, label: 'Option 2' }
+      ],
       size: 'small',
       variant: 'secondary'
     });

@@ -53,7 +53,7 @@
                           variant="tertiary-bg"
                           size="sm"
                           (onClick)="jumpToMarker(callout)"/>
-              <app-multi-select-field [field]="getAssignCalloutToUnitsField(callout)"
+              <app-multi-select-field [field]="getAssignUnitToCalloutField()"
                                       (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
               <app-button [fullWidth]="true"
                           label="Dismiss"
@@ -112,8 +112,8 @@
                           variant="tertiary-bg"
                           size="sm"
                           (onClick)="jumpToMarker(callout)"/>
-              <app-multi-select-field [field]="getAssignCalloutToUnitsField(callout)"
-                                      (onChange)="onAssignCalloutToUnitsFieldChange($event, callout)"/>
+              <app-multi-select-field [field]="getUnassignUnitFromCalloutField(callout)"
+                                      (onChange)="onUnassignCalloutToUnitsFieldChange($event, callout)"/>
             </div>
           </div>
         }

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import {
   CRS,
   extend,
@@ -59,7 +59,7 @@ const markerIcons: Record<MarkerIconName, MarkerIconProperties> = {
   standalone: true,
   imports: [ContainerComponent, NgClass, ButtonComponent, TranslatePipe, MultiSelectFieldComponent, AsyncPipe]
 })
-export class DispatchComponent implements OnInit {
+export class DispatchComponent implements OnInit, OnDestroy {
 
   readonly destroy$ = injectDestroy();
   readonly store = inject<Store<GlobalState>>(Store);
@@ -106,6 +106,8 @@ export class DispatchComponent implements OnInit {
       this.defaultZoom = state.app.dispatchModeMapZoom;
     });
 
+    this.dispatchService.getUnits();
+
     combineLatest([
       this.dispatchService.incomingCallouts$,
       this.dispatchService.activeCallouts$
@@ -145,7 +147,6 @@ export class DispatchComponent implements OnInit {
 
     this.dispatchService.getIncomingCallouts();
     this.dispatchService.getActiveCallouts();
-    this.dispatchService.getUnits();
 
     this.customCrs = extend({}, CRS.Simple, {
       projection: Projection.LonLat,
@@ -199,7 +200,7 @@ export class DispatchComponent implements OnInit {
     this.dispatchService.dismissCallout(callout).subscribe();
   }
 
-  getAssignCalloutToUnitsField(callout: DispatcherCalloutDTOClientWrapper) {
+  getAssignUnitToCalloutField(): MultiSelectField {
     return new MultiSelectField({
       key: '#',
       defaultItemLabel: 'Assign units',
@@ -213,8 +214,24 @@ export class DispatchComponent implements OnInit {
     });
   }
 
+  getUnassignUnitFromCalloutField(callout: Callout): MultiSelectField {
+    return new MultiSelectField({
+      key: '#',
+      defaultItemLabel: 'Unassign units',
+      items: () => callout.Callout.Units.map(unit => ({key: unit, label: unit})),
+      size: 'small',
+      height: 'base',
+      variant: 'tertiary-bg',
+      required: false,
+    });
+  }
+
   onAssignCalloutToUnitsFieldChange(unitCallsigns: any[], callout: Callout): void {
     this.dispatchService.assignCalloutToUnits(unitCallsigns, callout).subscribe();
+  }
+
+  onUnassignCalloutToUnitsFieldChange(unitCallsigns: any[], callout: Callout): void {
+    this.dispatchService.unassignCalloutFromUnits(unitCallsigns, callout).subscribe();
   }
 
   join(a: string[]): string {

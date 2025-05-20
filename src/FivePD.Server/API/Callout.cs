@@ -80,6 +80,13 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task OnUnitAssigned(Unit unit);
 
     /// <summary>
+    /// Invoked when a dispatcher or an addon unassigns a unit from the callout.
+    /// </summary>
+    /// <param name="unit">The unit that has been unassigned from the callout.</param>
+    /// <returns>A Task.</returns>
+    public abstract Task OnUnitUnassigned(Unit unit);
+
+    /// <summary>
     /// Invoked only when a unit accepts to respond to the callout.
     /// </summary>
     /// <param name="unit">The unit that accepted to respond.</param>

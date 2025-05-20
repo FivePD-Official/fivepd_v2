@@ -101,6 +101,7 @@ internal class DispatchService : IDispatchService, IOnInit, IOnDestroy
         });
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Dispatch.GetUnits);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.Dispatch.AssignCalloutToUnits);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.Dispatch.UnassignCalloutFromUnits);
     }
 
     public void OnDestroy()

@@ -76,6 +76,24 @@ public class DispatcherUiService : IDispatcherUiService
 
         networkCallbackDelegate.Invoke(null);
     }
+    
+    [UIEvent(Events.Dispatch.UnassignCalloutFromUnits)]
+    private void UnassignCalloutFromUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        var request = expandoObject.ConvertTo<AssignCalloutToUnitsRequest>();
+        var internalCallout = this._incidentService.InternalCallouts.FirstOrDefault(x => x.Callout.Id == Guid.Parse(request.CalloutId));
+        if (internalCallout is null)
+        {
+            return;
+        }
+        
+        foreach (var unit in this._unitService.Units().Where(unit => request.UnitCallsigns.Contains(unit.Callsign)))
+        {
+            this._calloutDistributionService.UnassignUnitFromCallout(unit, internalCallout.Callout);
+        }
+        
+        networkCallbackDelegate.Invoke(null);
+    }
 
     [UIEvent(Events.Dispatch.EnableForPlayer, true)]
     private void OnEnableForPlayer([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
