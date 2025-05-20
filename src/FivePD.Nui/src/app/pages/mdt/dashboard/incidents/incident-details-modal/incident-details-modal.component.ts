@@ -42,7 +42,6 @@ export class IncidentDetailsModalComponent {
   readonly refetch$ = new BehaviorSubject<null>(null);
   readonly incident$ = combineLatest([of(this.incident), this.refetch$]).pipe(
     switchMap(() => this.incidentService.get(this.incident.Id)),
-    tap(incident => console.log(incident)),
     tap(incident => {
       if (incident) {
         return;

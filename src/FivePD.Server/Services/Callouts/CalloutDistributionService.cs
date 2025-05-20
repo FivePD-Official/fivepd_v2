@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
-using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Extensions;
 using FivePD.Common.Models;
@@ -10,13 +9,12 @@ using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
-using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
+using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Models;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace FivePD.Server.Services.Callouts;
@@ -35,6 +33,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     private readonly PlayerList _playerList;
     private readonly IIncidentService _incidentService;
     private readonly DatabaseContext _databaseContext;
+    private readonly IInternalDispatcherManagerService _dispatcherManagerService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
@@ -46,6 +45,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dispatcherManagerService">The <see cref="IDispatcherManagerService"/> to use.</param>
     public CalloutDistributionService(
         ILogger logger,
         IConfigService configService,
@@ -53,7 +53,8 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         IUnitService unitService,
         PlayerList playerList,
         IIncidentService incidentService,
-        DatabaseContext databaseContext)
+        DatabaseContext databaseContext,
+        IDispatcherManagerService dispatcherManagerService)
     {
         this._logger = logger;
         this._configService = configService;
@@ -62,6 +63,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         this._playerList = playerList;
         this._incidentService = incidentService;
         this._databaseContext = databaseContext;
+        this._dispatcherManagerService = (IInternalDispatcherManagerService)dispatcherManagerService;
     }
 
     /// <inheritdoc/>
@@ -72,6 +74,9 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
 
     /// <inheritdoc />
     public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitAssignedToCallout;
+
+    /// <inheritdoc />
+    public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitUnassignedFromCallout;
 
     /// <inheritdoc/>
     void IInternalCalloutDistributionService.DistributeCallout(InternalCallout internalCallout, bool manualTrigger)
@@ -93,23 +98,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         }
         else
         {
-            var sentToAnyPlayer = false;
-            foreach (var player in this._playerList)
-            {
-                var fPlayer = FPlayer.FromPlayer(player);
-                if (!fPlayer.Dispatcher.Value)
-                {
-                    continue;
-                }
-
-                sentToAnyPlayer = true;
-                player.TriggerEvent(Events.Dispatch.SendCalloutToDispatcher, JsonConvert.SerializeObject(internalCallout.Callout.ToCalloutForDispatcherDTO()));
-            }
-
-            if (!sentToAnyPlayer)
-            {
-                ((IInternalIncidentService)this._incidentService).InternalCallouts.RemoveAll(x => x.Callout == internalCallout.Callout);
-            }
+            this._dispatcherManagerService.SendIncidentToDispatchers(internalCallout.Callout);
         }
     }
 
@@ -137,6 +126,30 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             callout.OnUnitAssigned(unit);
             this.OnUnitAssignedToCallout?.Invoke(this, new UnitAssignedToCalloutEventArgs(callout, unit));
         }
+
+        this._dispatcherManagerService.SendUpdateRequestToDispatchers();
+
+        return true;
+    }
+
+    /// <inheritdoc />
+    public bool UnassignUnitFromCallout(Unit unit, Callout callout, bool acceptedByUnit = false)
+    {
+        if (unit is null || callout is null)
+        {
+            this._logger.Warning("CalloutDistributionService.AssignUnitToCallout: unit or callout is null");
+            return false;
+        }
+
+        if (!this._incidentService.UnassignUnitFromIncident(unit, callout))
+        {
+            return false;
+        }
+
+        callout.OnUnitUnassigned(unit);
+        this.OnUnitUnassignedFromCallout?.Invoke(this, new UnitAssignedToCalloutEventArgs(callout, unit));
+
+        this._dispatcherManagerService.SendUpdateRequestToDispatchers();
 
         return true;
     }

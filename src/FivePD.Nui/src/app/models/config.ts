@@ -9,8 +9,14 @@
     MinIntervalInMs: number;
     MaxIntervalInMs: number;
     MaxActiveCallouts: number;
-    DispatchTimeoutInMs: number;
     AreaBasedDispatch: boolean;
+    AutoRemove: {
+      Enabled: boolean;
+      TimeoutByDispatchType: {
+        Auto: number;
+        Manual: number;
+      };
+    };
     DynamicDispatch: {
       Enabled: boolean;
       Radius: number;

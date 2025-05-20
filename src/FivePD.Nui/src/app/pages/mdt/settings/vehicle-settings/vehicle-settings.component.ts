@@ -63,7 +63,7 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
       defaultItemLabel: '',
       addDefaultItem: false,
       value: vehicleConfig?.Extras,
-      items: [
+      items: () => [
         ...Array(12).fill(null).map((_, i) => {
           const index = i + 1;
           return {key: index, label: index.toString()};

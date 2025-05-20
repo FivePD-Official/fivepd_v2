@@ -9,7 +9,8 @@ using Serilog.Formatting.Display;
 namespace FivePD.Server;
 
 /// <summary>
-/// Custom <see cref="CitizenFX.Core.Debug.Write(string)"/> wrapper.
+/// Custom Serilog sink that writes log events to CitizenFX's debug output.
+/// Provides color-coded output based on log level.
 /// </summary>
 [Obfuscate]
 internal class CfxDebugSink : ILogEventSink
@@ -33,9 +34,6 @@ internal class CfxDebugSink : ILogEventSink
         this._formatter.Format(logEvent, writer);
         var message = writer.ToString();
 
-        // It's no proper syntax highlighting, but for
-        // now, let's set the entire message's color
-        // based on the log level.
         message = logEvent.Level switch
         {
             LogEventLevel.Verbose => $"^5{message}^0",

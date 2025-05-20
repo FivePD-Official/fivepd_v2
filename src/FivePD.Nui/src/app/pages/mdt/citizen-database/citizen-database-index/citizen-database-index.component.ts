@@ -52,7 +52,7 @@ export class CitizenDatabaseIndexComponent implements OnInit {
       key: 'Gender',
       label: 'LABEL.GENDER.TITLE',
       defaultItemLabel: this._localizationService.translate('UI.LABEL.ALL'),
-      items: [
+      items: () => [
         {key: FGender.Male, label: this._localizationService.translate('LABEL.GENDER.MALE')},
         {key: FGender.Female, label: this._localizationService.translate('LABEL.GENDER.FEMALE')},
       ],

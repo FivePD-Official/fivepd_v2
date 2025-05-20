@@ -2,8 +2,9 @@
 
 namespace FivePD.Server.Attributes;
 
-#pragma warning disable
-
+/// <summary>
+/// Indicates that the marked code element should be obfuscated after build.
+/// </summary>
 [AttributeUsage(AttributeTargets.All)]
 public class ObfuscateAttribute : Attribute
 {

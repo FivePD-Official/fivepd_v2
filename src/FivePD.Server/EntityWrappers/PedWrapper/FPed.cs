@@ -9,14 +9,14 @@ using FivePD.Server.EntityWrappers.PedWrapper.States;
 namespace FivePD.Server.EntityWrappers.PedWrapper;
 
 /// <summary>
-/// Represents a wrapper around a <see cref="CommonFPed"/> to provide additional functionality.
+/// Represents a wrapper around a CitizenFX ped entity, providing additional FivePD-specific functionality.
 /// </summary>
 public class FPed : FEntity, IFStatefulContainer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FPed"/> class.
     /// </summary>
-    /// <param name="fPedBuilder">The FPedBuilder to use.</param>
+    /// <param name="fPedBuilder">The builder containing initial ped configuration.</param>
     public FPed(FPedBuilder fPedBuilder)
     {
         this.PedDataId = fPedBuilder.PedDataId;
@@ -157,7 +157,6 @@ public class FPed : FEntity, IFStatefulContainer
         return this.GetUnderlyingPed?.State;
     }
 
-#pragma warning disable
     private void Create()
     {
         this.Properties = new(this);
@@ -169,5 +168,4 @@ public class FPed : FEntity, IFStatefulContainer
         this.Detained = new FStateBagObservable<bool>(this, StateBagKeys.Ped.Detained, false);
         this.Movement = new FStateBagObservable<FPedMovement>(this, StateBagKeys.Ped.Movement, FPedMovement.None);
     }
-#pragma warning restore
 }

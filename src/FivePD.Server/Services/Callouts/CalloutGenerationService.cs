@@ -60,19 +60,13 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
             this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Start();
 
-        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
-        {
-            this._tickQueueService.OnTick += this.OnTick;
-        }
+        this._tickQueueService.OnTick += this.OnTick;
     }
 
     /// <inheritdoc/>
     void IOnDestroy.OnDestroy()
     {
-        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
-        {
-            this._tickQueueService.OnTick -= this.OnTick;
-        }
+        this._tickQueueService.OnTick -= this.OnTick;
     }
 
     private void OnTick(object sender, EventArgs e)

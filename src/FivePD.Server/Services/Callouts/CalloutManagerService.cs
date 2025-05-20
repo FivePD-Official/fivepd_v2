@@ -11,8 +11,8 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Lifecycle;
+using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
-using Microsoft.Extensions.Configuration;
 
 namespace FivePD.Server.Services.Callouts;
 
@@ -22,7 +22,6 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickQueueService _tickQueueService;
-    private readonly IInternalDispatchService _dispatchService;
     private readonly IInternalIncidentService _incidentService;
     private readonly IAddonMetadataService _addonMetadataService;
     private readonly IConfigService _configService;
@@ -35,33 +34,31 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
-    /// <param name="dispatchService">The <see cref="IDispatchService"/> to use.</param>
     /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickQueueService tickQueueService,
         IConfigService configService,
-        IDispatchService dispatchService,
         IIncidentService incidentService,
         IAddonMetadataService addonMetadataService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickQueueService = tickQueueService;
-        this._dispatchService = (IInternalDispatchService)dispatchService;
         this._incidentService = (IInternalIncidentService)incidentService;
         this._addonMetadataService = addonMetadataService;
         this._configService = configService;
 
         this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto()
-            ? configService.GeneralConfig.Callout.RemovalCriteria.Timeout.Auto
-            : configService.GeneralConfig.Callout.RemovalCriteria.Timeout.Manual;
+            ? configService.GeneralConfig.Callout.AutoRemove.TimeoutByDispatchType.Auto
+            : configService.GeneralConfig.Callout.AutoRemove.TimeoutByDispatchType.Manual;
     }
 
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Callout.OnPlayerEnteredInActivityZone] += new Action<Player, string>(this.OnPlayerEnteredInActivityZone);
+        this._eventHandlerDictionary[Events.Dispatch.DismissCallout] += new Action<Player, ExpandoObject>(this.OnCalloutDismissed);
         this._tickQueueService.EnqueueInterval(this.CheckCallouts, 1000);
     }
 
@@ -69,7 +66,7 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
 
     private void CheckCallouts()
     {
-        if (!this._configService.GeneralConfig.Callout.RemovalCriteria.Enabled)
+        if (!this._configService.GeneralConfig.Callout.AutoRemove.Enabled)
         {
             return;
         }
@@ -80,8 +77,7 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
 
         foreach (var callout in calloutsToRemove)
         {
-            this._dispatchService.RemoveCalloutFromDispatchers(callout.Callout);
-            this._incidentService.InternalCallouts.Remove(callout);
+            ((IIncidentService)this._incidentService).CompleteIncident(callout.Callout.Id);
         }
 
         foreach (var calloutHolder in this._incidentService.InternalCallouts)
@@ -102,6 +98,17 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
         }
 
         callout.Callout.OnPlayerEnteredInActivityZone(FPlayer.FromPlayer(player));
+    }
+    
+    private void OnCalloutDismissed([FromSource] Player player, ExpandoObject expandoObject)
+    {
+        var request = expandoObject.ConvertTo<StringIdRequest>();
+        if (!Guid.TryParse(request.Id, out var id))
+        {
+            return;
+        }
+
+        ((IIncidentService)this._incidentService).CompleteIncident(id);
     }
 
     [UIEvent(Events.UI.Callout.GetAllTypes)]

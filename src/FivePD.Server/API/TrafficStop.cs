@@ -8,10 +8,8 @@ using FivePD.Server.Models;
 
 namespace FivePD.Server.API;
 
-#pragma warning disable VSTHRD200
-
 /// <summary>
-/// Represents a traffic stop.
+/// Represents a traffic stop incident.
 /// </summary>
 public class TrafficStop : IIncident, IInternalIncident
 {
@@ -27,7 +25,7 @@ public class TrafficStop : IIncident, IInternalIncident
     public string Description { get; internal set; }
 
     /// <summary>
-    /// Gets the priority of the callout.
+    /// Gets the priority of the traffic stop.
     /// </summary>
     public FPriority Priority { get; internal set; }
 
@@ -46,9 +44,9 @@ public class TrafficStop : IIncident, IInternalIncident
     public FVehicle Vehicle { get; internal set; }
 
     /// <summary>
-    /// Gets or sets the units.
+    /// Gets or sets the units assigned to this traffic stop.
     /// </summary>
-#pragma warning disable S2292 // ???
+#pragma warning disable S2292
     List<Unit> IInternalIncident.Units
 #pragma warning restore S2292
     {

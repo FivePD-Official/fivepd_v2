@@ -49,7 +49,7 @@ export class MultiSelectFieldComponent implements OnInit {
 
     this.setSelectedItems(undefined);
 
-    const selectedItems = this.field.items.filter(item => (this.field.value ?? []).includes(item.key));
+    const selectedItems = this.field.items().filter(item => (this.field.value ?? []).includes(item.key));
     for (const item of selectedItems) {
       this.setSelectedItems(item, true);
     }
@@ -121,10 +121,10 @@ export class MultiSelectFieldComponent implements OnInit {
 
       this.control?.patchValue(value);
 
-      this.dropdownFilteredItems = this.field.items.filter(item => !this.dropdownSelectedItems.includes(item.key));
+      this.dropdownFilteredItems = this.field.items().filter(item => !this.dropdownSelectedItems.includes(item.key));
       this.updateFormState();
     } else {
-      this.dropdownFilteredItems = this.field.items;
+      this.dropdownFilteredItems = this.field.items();
       this.dropdownSelectedItemLabel = this.field.label;
     }
 

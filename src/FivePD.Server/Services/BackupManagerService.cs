@@ -7,6 +7,7 @@ using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 
 namespace FivePD.Server.Services;
@@ -14,23 +15,35 @@ namespace FivePD.Server.Services;
 #pragma warning disable
 
 [Obfuscate]
-public class BackupManagerService : IBackupManagerService
+public class BackupManagerService : IBackupManagerService, IOnInit
 {
     private readonly IConfirmationService _confirmationService;
     private readonly IUnitService _unitService;
+    private readonly IUnitManagerService _unitManagerService;
     private readonly IIncidentService _incidentService;
     private readonly IConfigService _configService;
 
     public BackupManagerService(
         IConfirmationService confirmationService,
         IUnitService unitService,
+        IUnitManagerService unitManagerService,
         IIncidentService incidentService,
         IConfigService configService)
     {
         this._confirmationService = confirmationService;
         this._unitService = unitService;
+        this._unitManagerService = unitManagerService;
         this._incidentService = incidentService;
         this._configService = configService;
+    }
+
+    /// <inheritdoc/>
+    void IOnInit.OnInit()
+    {
+        this._unitManagerService.OnPanicModeEnabled += (_, unit) =>
+        {
+            this.TriggerBackupRequest(unit, FPriority.Code99);
+        };
     }
 
     public void TriggerBackupRequest(Unit requestingUnit, FPriority priority = FPriority.Code1)

@@ -78,7 +78,7 @@ export class MySettingsComponent implements OnInit {
         defaultItemLabel: this._localizationService.translate('UI.LABEL.LANGUAGE.SINGULAR'),
         variant: 'secondary',
         size: 'normal',
-        items: Object.values(availableLocalizations).map((title, index) => ({
+        items: () => Object.values(availableLocalizations).map((title, index) => ({
           key: index,
           label: title,
         })),

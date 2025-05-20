@@ -30,7 +30,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: singleUser.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: [],
+      items: () => [],
       value: entity ? entity[CoreAttributes.UserId] : undefined,
     }));
   }
@@ -47,7 +47,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: multiUser.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: [],
+      items: () => [],
       value: entity ? (entity[CoreAttributes.UserIds] as any[]) : undefined,
     }));
   }
@@ -64,7 +64,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: singleDepartment.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: [],
+      items: () => [],
       value: entity ? entity[CoreAttributes.DepartmentId] : undefined,
     }));
   }
@@ -81,7 +81,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: multiDepartment.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: [],
+      items: () => [],
       value: entity ? (entity[CoreAttributes.DepartmentIds] as any[]) : undefined,
     }));
   }
@@ -98,7 +98,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: singleIncidentHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: [],
+      items: () => [],
       value: entity ? entity[CoreAttributes.IncidentHistoryId] : undefined,
     }));
   }
@@ -115,7 +115,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: multiIncidentHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: [],
+      items: () => [],
       value: entity ? (entity[CoreAttributes.IncidentHistoryIds] as any[]) : undefined,
     }));
   }
@@ -132,7 +132,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: singlePedHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: [],
+      items: () => [],
       value: entity ? entity[CoreAttributes.PedHistoryId] : undefined,
     }));
   }
@@ -149,7 +149,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: multiPedHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: [],
+      items: () => [],
       value: entity ? (entity[CoreAttributes.PedHistoryIds] as any[]) : undefined,
     }));
   }
