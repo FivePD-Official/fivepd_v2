@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Common;
 using FivePD.Common.Models;
 using FivePD.Server.Interfaces;
@@ -22,26 +23,42 @@ public class Vector3Service : IVector3Service
     }
 
     /// <inheritdoc />
-    public async Task<Vector3> GetRandomLocationAsync(Entity entity)
+    public async Task<Vector3> GetRandomLocationAsync(Entity entity, int offsetMin, int offsetMax)
     {
         if (entity is null)
         {
             return default;
         }
 
-        var serializedResponse = await this._eventService.TriggerEventAsync(null, Events.Vector3.GetRandomOffset, entity.NetworkId);
+        var serializedResponse = await this._eventService.TriggerEventAsync(
+            null,
+            Events.Vector3.GetRandomOffset,
+            JsonConvert.SerializeObject(new RandomOffsetDTO
+            {
+                EntityNetworkId = entity.NetworkId,
+                OffsetMin = offsetMin,
+                OffsetMax = offsetMax,
+            }));
         return JsonConvert.DeserializeObject<Vector3>(serializedResponse);
     }
 
     /// <inheritdoc />
-    public async Task<Vector3WithHeading> GetPointOnRoadSideAsync(Entity entity)
+    public async Task<Vector3WithHeading> GetPointOnRoadSideAsync(Entity entity, int offsetMin, int offsetMax)
     {
         if (entity is null)
         {
             return default;
         }
 
-        var serializedResponse = await this._eventService.TriggerEventAsync(null, Events.Vector3.GetPointOnRoadSide, entity.NetworkId);
+        var serializedResponse = await this._eventService.TriggerEventAsync(
+            null,
+            Events.Vector3.GetPointOnRoadSide,
+            JsonConvert.SerializeObject(new RandomOffsetDTO
+            {
+                EntityNetworkId = entity.NetworkId,
+                OffsetMin = offsetMin,
+                OffsetMax = offsetMax,
+            }));
         return JsonConvert.DeserializeObject<Vector3WithHeading>(serializedResponse);
     }
 }

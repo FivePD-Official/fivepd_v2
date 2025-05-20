@@ -37,6 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\CreateSpeedZoneDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\DispatcherModeDTOs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTO\RandomOffsetDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\RecordWithEventName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\IncidentDTOs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\ControlsDTO.cs" />

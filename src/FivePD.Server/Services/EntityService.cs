@@ -105,12 +105,6 @@ public class EntityService : IEntityService
             return new List<Ped>();
         }
 
-        foreach (var id in pedIds)
-        {
-            Debug.WriteLine(
-                $"{Convert.ToInt32(id)} - {Cfx.API.DoesEntityExist(Convert.ToInt32(id))} - net id: {Cfx.API.NetworkGetNetworkIdFromEntity(Convert.ToInt32(id))}");
-        }
-
         return pedIds
             .Select(Convert.ToInt32)
             .Select(x => new Ped(x))
