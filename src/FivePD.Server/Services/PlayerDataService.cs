@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Builders;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
+using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -35,6 +37,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private readonly ILogger _logger;
     private readonly ILocalizationService _localizationService;
     private readonly IPlayerHandlerService _playerHandlerService;
+    private readonly IInternalPedStorageService _internalPedStorageService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -47,6 +50,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
+    /// <param name="pedStorageService">The <see cref="IPedStorageService"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         DatabaseContext databaseContext,
@@ -55,7 +59,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         IConfigService configService,
         ILogger logger,
         ILocalizationService localizationService,
-        IPlayerHandlerService playerHandlerService)
+        IPlayerHandlerService playerHandlerService,
+        IPedStorageService pedStorageService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._databaseContext = databaseContext;
@@ -65,6 +70,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._logger = logger;
         this._localizationService = localizationService;
         this._playerHandlerService = playerHandlerService;
+        this._internalPedStorageService = (IInternalPedStorageService)pedStorageService;
     }
 
     /// <inheritdoc/>
@@ -240,6 +246,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     {
         this.CreatePlayerData(player);
         this.SubscribeToOnDutyStatusChange(player);
+        this._internalPedStorageService.InternalPeds[player.Character.NetworkId] = new FPed(new FPedBuilder(new CommonFPedBuilder(player.Character.NetworkId)));
     }
 
     private void SubscribeToOnDutyStatusChange(Player player)

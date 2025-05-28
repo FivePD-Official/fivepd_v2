@@ -17,4 +17,13 @@ public interface IRandomService
     /// Gets a random number between 0 and 100. Both inclusive.
     /// </summary>
     public int GetRandomChance { get; }
+
+    /// <summary>
+    /// Gets a random number between the minimum and maximum values.
+    /// Internally uses Random.Next.
+    /// </summary>
+    /// <param name="minValue">The minimum number.</param>
+    /// <param name="maxValue">The maximum number.</param>
+    /// <returns>A number between the specified numbers.</returns>
+    public int Next(int minValue, int maxValue);
 }

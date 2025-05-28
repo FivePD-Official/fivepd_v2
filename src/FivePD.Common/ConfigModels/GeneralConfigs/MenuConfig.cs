@@ -18,6 +18,8 @@ public sealed record MenusConfig
 
     public SceneManagerMenuConfig SceneManager { get; init; } = new();
 
+    public QuestioningMenuConfig Questioning { get; init; } = new();
+
     public record MenuConfig
     {
         public bool Enabled { get; init; } = true;
@@ -79,4 +81,6 @@ public sealed record MenusConfig
             }
         }
     }
+    
+    public sealed record QuestioningMenuConfig : MenuConfig;
 }

@@ -450,6 +450,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<GameNotificationService>();
         services.AddSingleton<IGameNotificationService>(provider => provider.GetRequiredService<GameNotificationService>());
 
+        services.AddSingleton<OllamaService>();
+        services.AddSingleton<IOllamaService>(provider => provider.GetRequiredService<OllamaService>());
+
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);
