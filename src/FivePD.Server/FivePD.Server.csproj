@@ -26,10 +26,10 @@
         <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\scripts\RestartLocalFXServer.ps1</PostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-        <OutputPath>$(SolutionDir)/build-public-pre/Libraries/FivePD.Server</OutputPath>
+        <OutputPath>$(SolutionDir)/build-public/Libraries/FivePD.Server</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <OutputPath>../build-public-pre/Libraries/FivePD.Server</OutputPath>
+        <OutputPath>../build-public/Libraries/FivePD.Server</OutputPath>
     </PropertyGroup>
     <Import Project="..\FivePD.Common\FivePD.Common.projitems" Label="Shared" />
 

@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.ILocationService" />
+[Obfuscate]
 public class LocationService : ILocationService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

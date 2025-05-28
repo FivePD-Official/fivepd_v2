@@ -3,6 +3,6 @@
 /// <summary>
 /// Responsible for handling department related functionality.
 /// </summary>
-public interface IDepartmentService
+internal interface IDepartmentService
 {
 }

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using FivePD.Common.Attributes;
 using FivePD.Common.Enums;
 
 namespace FivePD.Common.DTO;
 
 #pragma warning disable
 
+[Obfuscate]
 internal sealed record FVehiclePropertiesDTO
 {
     public record struct InvokeMethodRequest

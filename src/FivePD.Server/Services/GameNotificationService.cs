@@ -1,6 +1,7 @@
 ﻿using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using Newtonsoft.Json.Linq;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class GameNotificationService : IGameNotificationService
 {
     /// <inheritdoc />

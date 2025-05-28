@@ -1,5 +1,8 @@
-﻿namespace FivePD.Common.DTO.Dispatch;
+﻿using FivePD.Common.Attributes;
+
+namespace FivePD.Common.DTO;
 
 #pragma warning disable
 
-public record RecordWithEventName(string Event);
+[Obfuscate]
+internal record RecordWithEventName(string Event);

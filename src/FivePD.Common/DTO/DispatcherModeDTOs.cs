@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Attributes;
 using FivePD.Common.DTO;
-using FivePD.Common.DTO.Dispatch;
 using FivePD.Common.Enums;
 
 namespace FivePD.Client.DTO;
 
 #pragma warning disable
 
+[Obfuscate]
 internal sealed record DispatcherModeDTOs
 {
     internal sealed record Callout

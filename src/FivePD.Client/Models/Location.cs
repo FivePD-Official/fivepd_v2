@@ -5,7 +5,7 @@ namespace FivePD.Client.Models;
 /// <summary>
 /// Represents a location.
 /// </summary>
-public class Location
+internal class Location
 {
     /// <summary>
     /// Gets or sets the identifier of the location.

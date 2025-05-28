@@ -15,6 +15,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
+[Obfuscate]
 public class WeaponComponentService : IWeaponComponentService
 {
     private readonly DatabaseContext _databaseContext;

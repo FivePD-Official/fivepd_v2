@@ -1,7 +1,10 @@
-﻿#pragma warning disable
+﻿using FivePD.Common.Attributes;
+
+#pragma warning disable
 
 namespace FivePD.Common.DTO;
 
+[Obfuscate]
 internal sealed record ControlsDTO
 {
     public sealed record ClientControlDTO

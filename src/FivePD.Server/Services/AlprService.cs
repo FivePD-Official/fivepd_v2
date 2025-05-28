@@ -2,6 +2,7 @@
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Models;
+using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
@@ -13,6 +14,7 @@ namespace FivePD.Server.Services;
 #pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IAlprService" />
+[Obfuscate]
 public class AlprService : IAlprService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;

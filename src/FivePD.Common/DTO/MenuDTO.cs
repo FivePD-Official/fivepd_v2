@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FivePD.Common.Attributes;
 using FivePD.Common.Enums;
 using Newtonsoft.Json.Linq;
 
@@ -6,6 +7,7 @@ namespace FivePD.Common.DTO;
 
 #pragma warning disable
 
+[Obfuscate]
 internal sealed record MenuDTO
 {
     public sealed record GetAllMenu

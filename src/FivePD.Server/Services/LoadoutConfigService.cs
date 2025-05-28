@@ -20,6 +20,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
+[Obfuscate]
 public class LoadoutConfigService : ILoadoutConfigService
 {
     private readonly ILogger _logger;

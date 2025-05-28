@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Linq;
-using CitizenFX.Core;
+using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
@@ -11,6 +11,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
+[Obfuscate]
 public class PedStorageService : IPedStorageService, IInternalPedStorageService
 {
     private readonly ConcurrentDictionary<int, FPed> _peds = new();

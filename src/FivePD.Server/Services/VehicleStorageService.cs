@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
@@ -10,6 +11,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
+[Obfuscate]
 public class VehicleStorageService : IVehicleStorageService, IInternalVehicleStorageService
 {
     private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new();
