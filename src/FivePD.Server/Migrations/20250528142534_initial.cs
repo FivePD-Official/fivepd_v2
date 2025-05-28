@@ -1,11 +1,10 @@
-﻿using System;
+﻿#pragma warning disable
+using System;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-#pragma warning disable
-
 namespace FivePD.Server.Migrations
 {
-    public partial class ped_vehicle_data : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -636,6 +635,21 @@ namespace FivePD.Server.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_fivepd_ped_data_Birthdate",
+                table: "fivepd_ped_data",
+                column: "Birthdate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_fivepd_ped_data_Firstname",
+                table: "fivepd_ped_data",
+                column: "Firstname");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_fivepd_ped_data_Lastname",
+                table: "fivepd_ped_data",
+                column: "Lastname");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_fivepd_ped_licenses_PedDataId",
                 table: "fivepd_ped_licenses",
                 column: "PedDataId");
@@ -679,6 +693,21 @@ namespace FivePD.Server.Migrations
                 name: "IX_fivepd_variable_data_values_EntityId",
                 table: "fivepd_variable_data_values",
                 column: "EntityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_fivepd_vehicle_data_Brand",
+                table: "fivepd_vehicle_data",
+                column: "Brand");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_fivepd_vehicle_data_Color",
+                table: "fivepd_vehicle_data",
+                column: "Color");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_fivepd_vehicle_data_LicensePlate",
+                table: "fivepd_vehicle_data",
+                column: "LicensePlate");
 
             migrationBuilder.CreateIndex(
                 name: "IX_fivepd_vehicle_data_PedDataId",

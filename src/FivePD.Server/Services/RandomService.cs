@@ -13,4 +13,10 @@ public class RandomService : IRandomService
 
     /// <inheritdoc />
     public int GetRandomChance => this.Random.Next(0, 101);
+
+    /// <inheritdoc />
+    public int Next(int minValue, int maxValue)
+    {
+        return this.Random.Next(minValue, maxValue);
+    }
 }

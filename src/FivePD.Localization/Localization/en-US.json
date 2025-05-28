@@ -489,6 +489,7 @@
   "UI.MENU.DISPATCH.TITLE": "Dispatch Menu",
   "UI.MENU.INTERACTION.TITLE": "Interaction Menu",
   "UI.MENU.LOADOUT.TITLE": "Loadout Selector Menu",
+  "UI.MENU.QUESTIONING.TITLE": "Questioning menu",
   "UI.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.DESCRIPTION": "Creates a speed zone with the specified speed and radius.",
   "UI.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.TITLE": "Create speed zone",
   "UI.MENU.SCENE_MANAGER.SPEED_ZONE.DELETE.DESCRIPTION": "Deletes the speed zone you've created.",

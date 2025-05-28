@@ -93,6 +93,11 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
         {
             this.Register<SceneManagerMenu>();
         }
+
+        if (this._configService.GeneralConfig.Menu.Questioning.Enabled)
+        {
+            this.Register<QuestioningMenu>();
+        }
     }
 
     /// <inheritdoc />
