@@ -3,6 +3,6 @@
 /// <summary>
 /// Responsible for managing unit related functionality.
 /// </summary>
-public interface IUnitService
+internal interface IUnitService
 {
 }

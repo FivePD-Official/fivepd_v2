@@ -3,6 +3,6 @@
 /// <summary>
 /// Responsible for managing the incident histories.
 /// </summary>
-public interface IIncidentHistoryService
+internal interface IIncidentHistoryService
 {
 }

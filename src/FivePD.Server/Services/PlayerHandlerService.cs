@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using CitizenFX.Core;
+using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
@@ -8,6 +9,7 @@ using FivePD.Server.Models;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class PlayerHandlerService : IPlayerHandlerService
 {
     private readonly PlayerList _playerList;

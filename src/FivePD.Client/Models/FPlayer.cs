@@ -13,7 +13,7 @@ namespace FivePD.Client.Models;
 /// The base player class.
 /// Provides a wrapper around game functionality for easier interactions with the framework.
 /// </summary>
-public class FPlayer : IFStatefulContainer
+internal class FPlayer : IFStatefulContainer
 {
     private static readonly List<FPlayer> CachedPlayers = new();
 

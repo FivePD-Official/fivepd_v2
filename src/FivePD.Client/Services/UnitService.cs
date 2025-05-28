@@ -7,7 +7,7 @@ using FivePD.Common;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IUnitService" />
-public class UnitService : IUnitService, IOnInit
+internal class UnitService : IUnitService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 

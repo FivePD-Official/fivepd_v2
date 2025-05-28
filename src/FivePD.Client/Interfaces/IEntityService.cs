@@ -2,6 +2,6 @@
 
 #pragma warning disable
 
-public interface IEntityService
+internal interface IEntityService
 {
 }

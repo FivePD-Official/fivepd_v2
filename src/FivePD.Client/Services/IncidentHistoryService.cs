@@ -7,7 +7,7 @@ using FivePD.Common;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IIncidentHistoryService" />
-public class IncidentHistoryService : IIncidentHistoryService, IOnInit
+internal class IncidentHistoryService : IIncidentHistoryService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 

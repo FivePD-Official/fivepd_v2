@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using FivePD.Common.Attributes;
 
 namespace FivePD.Common.DTO;
 
 #pragma warning disable
 
+[Obfuscate]
 internal sealed record NotificationDTO
 {
     public record struct ShowTooltip

@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using Ollama;
 
@@ -9,6 +10,7 @@ namespace FivePD.Server.Services;
 /// <summary>
 /// Implementation of <see cref="IOllamaService"/> that provides access to the Ollama API.
 /// </summary>
+[Obfuscate]
 public sealed class OllamaService : IOllamaService
 {
     private readonly OllamaApiClient _client;

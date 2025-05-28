@@ -1,10 +1,12 @@
 ﻿using FivePD.Common;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class AudioService : IAudioService
 {
     /// <inheritdoc />
