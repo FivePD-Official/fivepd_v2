@@ -27,6 +27,7 @@ public class Ambulance : AssistanceService
     private readonly IGameNotificationService _gameNotificationService;
     private readonly ICfxService _cfxService;
     private readonly IVehicleConfigService _vehicleConfigService;
+    private readonly IGeneralAssistanceServiceSyncService _syncService;
 
     private FPed _driver;
     private FVehicle _ambulance;
@@ -35,8 +36,7 @@ public class Ambulance : AssistanceService
     private const float MinimumSpeed = 5f;
 
     private Vector3 _target;
-
-    private readonly List<Ped> _pedsToRevive = new();
+    private Entity _currentEntity;
 
     public Ambulance(
         IEntityService entityService,
@@ -44,7 +44,8 @@ public class Ambulance : AssistanceService
         IRandomService randomService,
         IGameNotificationService gameNotificationService,
         ICfxService cfxService,
-        IVehicleConfigService vehicleConfigService)
+        IVehicleConfigService vehicleConfigService,
+        IGeneralAssistanceServiceSyncService syncService)
     {
         this._entityService = entityService;
         this._configService = configService;
@@ -52,6 +53,7 @@ public class Ambulance : AssistanceService
         this._gameNotificationService = gameNotificationService;
         this._cfxService = cfxService;
         this._vehicleConfigService = vehicleConfigService;
+        this._syncService = syncService;
     }
 
     public override async Task SetupAsync()
@@ -106,43 +108,39 @@ public class Ambulance : AssistanceService
 
         await Task.Delay(2000);
 
-        this._pedsToRevive.AddRange(this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, 250f)
-            .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0));
+        var nearbyInjuredPeds = this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, 200f)
+            .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0)
+            .ToList();
 
-        if (this._pedsToRevive.Count == 0)
+        this._syncService.AddEntities(typeof(Ambulance), nearbyInjuredPeds, this._target);
+
+        while (true)
         {
-            this._gameNotificationService.Notify(
-                this.RequestedBy,
-                new GameNotificationOptions
-                {
-                    Title = "FivePD",
-                    Message = "No dead peds in the area",
-                });
-            return;
-        }
+            this._currentEntity = this._syncService.GetFirstEntityOnWhichWorkHasNotStartedYet(
+                typeof(Ambulance),
+                this._target);
 
-        this._driver.Task.LeaveVehicle();
-
-        var tasks = this._pedsToRevive.Select(p => new Func<Task<bool>>(() => this.DoWorkAsync(p))).ToList();
-        var result = (await TaskHelpers.RunSequentiallyAsync(tasks)).ToList();
-
-        this._gameNotificationService.Notify(
-            this.RequestedBy,
-            new GameNotificationOptions
+            if (this._currentEntity is null)
             {
-                Title = "FivePD",
-                Message = new StringBuilder()
-                    .Append($"Total patients: {this._pedsToRevive.Count}")
-                    .Append("{{NEW_LINE}}")
-                    .Append($"Saved: {result.Count(x => x)}")
-                    .Append("{{NEW_LINE}}")
-                    .Append($"Deceased: {result.Count(x => !x)}")
-                    .Append("{{NEW_LINE}}")
-                    .ToString(),
-            });
+                this._gameNotificationService.Notify(
+                    this.RequestedBy,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "No available dead peds in the area to assist.",
+                    });
+                break;
+            }
+
+            if (this._syncService.StartWorkOnEntity(this._currentEntity))
+            {
+                await this.DoWorkAsync(this._currentEntity, cancellationTokenSource);
+                this._syncService.RemoveEntity(this._currentEntity);
+            }
+        }
     }
 
-    private async Task<bool> DoWorkAsync(Ped ped)
+    private async Task DoWorkAsync(Entity ped, CancellationTokenSource cancellationToken)
     {
         this._driver.Task.RunTo(ped.Position);
 
@@ -152,30 +150,56 @@ public class Ambulance : AssistanceService
         if (couldRevive)
         {
             this._cfxService.ResurrectPed(ped.NetworkId);
+            this._gameNotificationService.Notify(
+                this.RequestedBy,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "Patient revived!",
+                });
+        }
+        else
+        {
+            this._gameNotificationService.Notify(
+                this.RequestedBy,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "Patient could not be revived.",
+                });
         }
 
         await Task.Delay(1000);
-
-        return couldRevive;
     }
 
-    public override Task OnCancellationRequestedAsync()
+    public override async Task OnCancellationRequestedAsync()
     {
+        if (this._currentEntity is not null)
+        {
+            this._syncService.RemoveEntity(this._currentEntity);
+        }
+
         this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
             { this._driver, this._ambulance },
             { this._ambulance, null }
         });
-        return Task.FromResult(0);
+        await Task.CompletedTask;
     }
 
-    public override Task OnCompletedAsync()
+    public override async Task OnCompletedAsync()
     {
+        if (this._currentEntity is not null)
+        {
+            this._syncService.RemoveEntity(this._currentEntity);
+        }
+
         this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
             { this._driver, this._ambulance },
             { this._ambulance, null }
         });
-        return Task.FromResult(0);
+
+        await Task.CompletedTask;
     }
 }

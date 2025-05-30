@@ -453,6 +453,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<OllamaService>();
         services.AddSingleton<IOllamaService>(provider => provider.GetRequiredService<OllamaService>());
 
+        services.AddSingleton<GeneralAssistanceServiceSyncService>();
+        services.AddSingleton<IGeneralAssistanceServiceSyncService>(provider => provider.GetRequiredService<GeneralAssistanceServiceSyncService>());
+
         this._provider = services.BuildServiceProvider();
 
         ServiceLocator.SetServiceProvider(this._provider);
