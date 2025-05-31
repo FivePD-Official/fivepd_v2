@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { EventService } from "@services/event/event.service";
 import { InformationUpdateDTO } from "@models";
-import { FDutyStatus, FIncidentPriority, FIncidentType, FUnitAvailability } from "@enums";
+import { FDutyStatus, FIncidentType, FUnitAvailability } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { getPriorityLabel } from "../../helpers/fpriority-helpers";
 
 @Component({
   selector: 'app-information',
@@ -25,8 +26,8 @@ export class InformationComponent {
 
   constructor(private readonly _eventService: EventService,
               private readonly _store: Store<GlobalState>) {
-    _store.select('user', 'information').subscribe(information => {
-      this.information = information
+    this._eventService.onEvent<InformationUpdateDTO>('fivepd:ui:information:update').subscribe(information => {
+      this.information = information;
     });
   }
 
@@ -43,16 +44,7 @@ export class InformationComponent {
       return '';
     }
 
-    switch (this.information.IncidentWrapper.Incident.Priority) {
-      case FIncidentPriority.Code1:
-        return 'LABEL.PRIORITY.CODE1';
-      case FIncidentPriority.Code2:
-        return 'LABEL.PRIORITY.CODE2';
-      case FIncidentPriority.Code3:
-        return 'LABEL.PRIORITY.CODE3';
-    }
-
-    return '-';
+    return getPriorityLabel(this.information.IncidentWrapper.Incident.Priority);
   }
 
   protected readonly FIncidentType = FIncidentType;

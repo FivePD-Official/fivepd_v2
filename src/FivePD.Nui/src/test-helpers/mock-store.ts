@@ -23,6 +23,7 @@ const defaultState: GlobalStateModel = {
     dispatchMode: false,
     dispatchModeMapZoom: 0,
     recentlyViewedPeds: [],
+    recentlyViewedVehicles: [],
     windowMaximized: false,
     devTools: {
       coordinates: {
@@ -36,7 +37,6 @@ const defaultState: GlobalStateModel = {
   },
   user: {
     details: {} as any,
-    information: {} as any,
   }
 };
 

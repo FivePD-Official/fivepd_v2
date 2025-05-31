@@ -1,4 +1,4 @@
-﻿import { FIncidentPriority } from "@enums";
+﻿import { FPriority } from "@enums";
 import { Vector3 } from "./entities";
 
 export interface DispatcherCalloutDTOClientWrapper {
@@ -6,9 +6,10 @@ export interface DispatcherCalloutDTOClientWrapper {
     Id: string;
     Title: string;
     Description: string;
-    Priority: FIncidentPriority;
+    Priority: FPriority;
     Location: Vector3;
     GeneratedAt: string;
+    Units: string[];
   };
   Address: string;
 }

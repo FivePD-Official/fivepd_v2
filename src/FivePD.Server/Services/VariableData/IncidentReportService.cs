@@ -24,7 +24,7 @@ public class IncidentReportService : VariableDataRepository<IncidentReportSet>
         {
             new CoreAttributes.UserId(new CoreAttributes.Options { Hidden = true }),
             new CoreAttributes.SubmitDate(new CoreAttributes.Options { Hidden = true }),
-            new CoreAttributes.IncidentHistoryId(new CoreAttributes.Options { Hidden = true }),
+            new CoreAttributes.IncidentHistoryId(new CoreAttributes.Options { Required = true }),
             new()
             {
                 Name = "Description",

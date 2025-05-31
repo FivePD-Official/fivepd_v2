@@ -25,7 +25,7 @@ export type DropdownHeightVariants = 'base' | 'sm';
 export interface DropdownBaseOptions {
   defaultItemLabel: string;
   addDefaultItem?: boolean;
-  items: DropdownItem[];
+  items: () => DropdownItem[];
   size: 'small' | 'normal';
   height?: DropdownHeightVariants;
   variant: DropdownVariants;
@@ -122,7 +122,7 @@ export class DateField extends FormInputBase<Date> {
 export class SingleSelectField extends FormInputBase<number> {
   defaultItemLabel: string;
   addDefaultItem?: boolean;
-  items: DropdownItem[];
+  items: () => DropdownItem[];
   size: 'small' | 'normal';
   height?: DropdownHeightVariants;
   variant: DropdownVariants;
@@ -141,7 +141,7 @@ export class SingleSelectField extends FormInputBase<number> {
 export class MultiSelectField extends FormInputBase<number[]> {
   defaultItemLabel: string;
   addDefaultItem?: boolean;
-  items: DropdownItem[];
+  items: () => DropdownItem[];
   size: 'small' | 'normal';
   height?: DropdownHeightVariants;
   variant: DropdownVariants;

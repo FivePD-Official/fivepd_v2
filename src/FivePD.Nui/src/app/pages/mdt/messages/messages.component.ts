@@ -10,7 +10,7 @@ import {
   TextareaField,
   TextField
 } from "@models";
-import { FIncidentPriority } from "@enums";
+import { FPriority } from "@enums";
 import { ConfigService } from "@services/config/config.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { UserService } from "@services/user/user.service";
@@ -100,7 +100,7 @@ export class MessagesComponent implements OnInit {
             required: true,
             size: 'normal',
             variant: 'secondary',
-            items: simpleUsers.map(user => ({
+            items: () => simpleUsers.map(user => ({
               key: user.Id,
               label: user.Name,
             })),
@@ -137,6 +137,6 @@ export class MessagesComponent implements OnInit {
       ).subscribe();
   }
 
-  protected readonly FIncidentPriority = FIncidentPriority;
+  protected readonly FIncidentPriority = FPriority;
 }
 

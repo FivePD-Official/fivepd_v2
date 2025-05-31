@@ -1,4 +1,4 @@
-﻿import {AttributeDataType, BadgeVariants, Button, Column, VariableDataAttribute} from "@models";
+﻿import {AttributeDataType, Button, Column, VariableDataAttribute} from "@models";
 import {createAttributesFormFields} from "../../../../helpers/forms/set-attribute";
 import {ValueResolver} from "@services/modals/modal-form/modal-form-value-resolver";
 import {filter, switchMap} from "rxjs";
@@ -9,6 +9,7 @@ import {inject, Injectable} from "@angular/core";
 import {ModalService} from "@services/modals/modal/modal.service";
 import {ModalConfirmService} from "@services/modals/modal-confirm/modal-confirm.service";
 import { VariableDataService } from "@services/variable-data/variable-data.service";
+import { BadgeVariants } from "../../../../components/badge/badge.component";
 
 @Injectable({
   providedIn: 'root'

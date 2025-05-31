@@ -1,8 +1,8 @@
 <app-page-header [title]="'UI.LABEL.CITIZEN_DATABASE.RECORD' | translate"/>
 
-@if (pedHistory$ | async;as pedHistory) {
+@if (ped$ | async; as ped) {
   <app-container [rows]="2">
-    @if (pedHistory.Warrants.length) {
+    @if (ped.Warrants.length) {
       <app-container>
         <div>
           <div class="flex flex-row items-center gap-2">
@@ -12,7 +12,7 @@
             </p>
           </div>
           <div class="mt-2">
-            <p class="text-lg text-zinc-300">{{ join(pedHistory.Warrants) }}</p>
+            <p class="text-lg text-zinc-300">{{ join(ped.Warrants) }}</p>
           </div>
         </div>
       </app-container>
@@ -28,20 +28,31 @@
             class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
             <li>
               <p>{{ 'LABEL.FIRSTNAME' | translate }}</p>
-              <p>{{ pedHistory.Firstname }}</p>
+              <p>{{ ped.Firstname }}</p>
             </li>
             <li>
               <p>{{ 'LABEL.LASTNAME' | translate }}</p>
-              <p>{{ pedHistory.Lastname }}</p>
+              <p>{{ ped.Lastname }}</p>
             </li>
             <li>
               <p>{{ 'LABEL.BIRTHDATE' | translate }}</p>
-              <p>{{ pedHistory.Birthdate | date: 'mediumDate' }}</p>
+              <p>{{ ped.Birthdate | date: 'mediumDate' }}</p>
             </li>
             <li>
               <p>{{ 'LABEL.GENDER.TITLE' | translate }}</p>
-              <p>{{ (pedHistory.Gender === FGender.Male ? 'LABEL.GENDER.MALE' : 'LABEL.GENDER.FEMALE') | translate }}</p>
+              <p>{{ (ped.Gender === FGender.Male ? 'LABEL.GENDER.MALE' : 'LABEL.GENDER.FEMALE') | translate }}</p>
             </li>
+            @if (ped.VehicleData) {
+              <li>
+                <p>{{ 'Owning vehicle' | translate }}</p>
+                <a [routerLink]="'/mdt/vehicle-database/' + ped.VehicleData.Id"
+                   class="group flex flex-row items-center text-zinc-300 hover:text-white">
+                  {{ ped.VehicleData.LicensePlate }}
+                  <div app-icon name="Link"
+                       className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
+                </a>
+              </li>
+            }
           </ul>
         </div>
       </div>
@@ -51,14 +62,14 @@
           {{ 'LABEL.LICENSE.PLURAL' | translate }}
         </p>
         <div class="mt-4 w-full flex flex-row justify-start">
-          @if (!pedHistory.Licenses.length) {
+          @if (!ped.Licenses.length) {
             <p class="relative text-lg font-medium text-zinc-400 text-center">
               {{ 'LABEL.LICENSE.NONE' | translate }}
             </p>
           }
         </div>
         <div class="w-full grid grid-cols-2 grid-flow-row gap-4">
-          @for (license of pedHistory.Licenses;track license) {
+          @for (license of ped.Licenses; track license) {
             <div class="relative flex flex-col w-full rounded-lg bg-zinc-800 p-4">
               <div class="w-full flex flex-row items-center justify-between mb-2.5">
                 <p class="text-zinc-200 text-lg font-bold">{{ licenseTypeI18nKey(license.Type) }}</p>

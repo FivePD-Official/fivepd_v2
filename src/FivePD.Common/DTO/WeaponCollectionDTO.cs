@@ -1,9 +1,11 @@
-﻿using FivePD.Common.Enums;
+﻿using FivePD.Common.Attributes;
+using FivePD.Common.Enums;
 
 namespace FivePD.Common.DTO;
 
 #pragma warning disable
 
+[Obfuscate]
 internal sealed record WeaponCollectionDTO
 {
     public record struct WeaponCollectionRequest

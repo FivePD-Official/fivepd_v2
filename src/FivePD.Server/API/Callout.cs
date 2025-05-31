@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Client.DTO;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Common.Enums;
@@ -78,6 +80,13 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task OnUnitAssigned(Unit unit);
 
     /// <summary>
+    /// Invoked when a dispatcher or an addon unassigns a unit from the callout.
+    /// </summary>
+    /// <param name="unit">The unit that has been unassigned from the callout.</param>
+    /// <returns>A Task.</returns>
+    public abstract Task OnUnitUnassigned(Unit unit);
+
+    /// <summary>
     /// Invoked only when a unit accepts to respond to the callout.
     /// </summary>
     /// <param name="unit">The unit that accepted to respond.</param>
@@ -98,9 +107,9 @@ public abstract class Callout : IIncident, IInternalIncident
     public abstract Task OnCompleted(); // TODO: Should be invoked when all players are Code 4 or a player has pressed the "End incident" button
 
 #pragma warning disable
-    internal DispatcherCalloutDTO ToCalloutForDispatcherDTO()
+    internal DispatcherModeDTOs.Callout ToCalloutForDispatcherDTO()
     {
-        return new DispatcherCalloutDTO
+        return new DispatcherModeDTOs.Callout
         {
             Id = this.Id.ToString(),
             Title = this.Title,
@@ -108,6 +117,7 @@ public abstract class Callout : IIncident, IInternalIncident
             Priority = this.Priority,
             Location = this.Location,
             GeneratedAt = this.GeneratedAt,
+            Units = this._units.Select(x => x.Callsign).ToList(),
         };
     }
 

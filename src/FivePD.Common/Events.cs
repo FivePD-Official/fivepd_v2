@@ -101,7 +101,6 @@ internal readonly record struct Events
     public readonly record struct ALPR
     {
         public const string Check = "fivepd:alpr:check";
-        public const string Notify = "fivepd:alpr:notify";
     }
 
     public readonly record struct Localization
@@ -130,6 +129,8 @@ internal readonly record struct Events
         public const string RadialMenu = "fivepd:ui:view:radialMenu";
 
         public const string TimerBar = "fivepd:ui:view:timer_bar";
+
+        public const string TimerBarProgress = "fivepd:ui:view:timer_bar_progress"; // New event
 
         public const string MenuUp = "fivepd:menu:control_up";
 
@@ -311,7 +312,7 @@ internal readonly record struct Events
 
         public readonly record struct Dispatch
         {
-            public const string GetIncomingCallouts = "fivepd:ui:dispatch:getIncomingCallouts";
+            public const string GetCallouts = "fivepd:ui:dispatch:getCallouts";
 
             public const string GetUnits = "fivepd:ui:dispatch:getUnits";
 
@@ -439,6 +440,11 @@ internal readonly record struct Events
         public const string ShowNotificationWithTexture = "fivepd:notification:showNotificationWithTexture";
     }
 
+    public readonly record struct GameNotification
+    {
+        public const string Notify = "fivepd:gameNotification:notify";
+    }
+
     public readonly record struct Marker
     {
         public const string Add = "fivepd:marker:add";
@@ -452,11 +458,17 @@ internal readonly record struct Events
 
         public const string OnCompleted = "fivepd:incident:onCompleted";
 
+        public const string Get = "fivepd:incident:get";
+
         public const string GetAllActive = "fivepd:incident:getAllActive";
 
         public const string SelfAssign = "fivepd:incident:selfAssign";
 
+        public const string SelfUnassign = "fivepd:incident:selfUnassign";
+
         public const string GetAssigned = "fivepd:incident:getAssigned";
+
+        public const string Complete = "fivepd:incident:complete";
     }
 
     public readonly record struct Callout
@@ -486,6 +498,10 @@ internal readonly record struct Events
         public const string OnUnitRemoved = "fivepd:dispatch:onUnitRemoved";
 
         public const string AssignCalloutToUnits = "fivepd:dispatch:assignCalloutToUnits";
+
+        public const string UnassignCalloutFromUnits = "fivepd:dispatch:unassignCalloutFromUnits";
+
+        public const string UpdateRequest = "fivepd:dispatch:updateRequest";
     }
 
     public readonly record struct IncidentHistory

@@ -488,7 +488,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 
             if (entity.MappedValues.ContainsKey("PedHistoryId"))
             {
-                var value = this._databaseContext.PedHistories.AsNoTracking()
+                var value = this._databaseContext.PedData.AsNoTracking()
                     .FirstOrDefault(pedHistory => pedHistory.Id == (entity.MappedValues["PedHistoryId"] as long? ?? 0));
                 entity.MappedValues["PedHistory"] = value;
             }
@@ -496,7 +496,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             if (entity.MappedValues.ContainsKey("PedHistoryIds"))
             {
                 var ids = (entity.MappedValues["PedHistoryIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-                var value = this._databaseContext.PedHistories.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
+                var value = this._databaseContext.PedData.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
                 entity.MappedValues["PedHistories"] = value;
             }
         }

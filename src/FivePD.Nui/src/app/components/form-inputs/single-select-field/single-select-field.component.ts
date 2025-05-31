@@ -12,11 +12,12 @@ import {
   dropdownSelectedItemVariantsHoverReadonly
 } from "../_helpers/dropdown";
 import { createDefaultFormGroup } from "../_helpers/field";
+import { DropdownRectHelperDirective } from "../../../directives/dropdown-rect-helper.directive";
 
 @Component({
   selector: 'app-single-select-field',
   standalone: true,
-  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe, ClickOutsideDirective],
+  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe, ClickOutsideDirective, DropdownRectHelperDirective],
   templateUrl: './single-select-field.component.html',
   styleUrl: './single-select-field.component.sass'
 })
@@ -42,7 +43,7 @@ export class SingleSelectFieldComponent implements OnInit {
       throw new Error('Form control is undefined.');
     }
 
-    const selectedItem = this.field.items.find(item => item.key === this.field.value);
+    const selectedItem = this.field.items().find(item => item.key === this.field.value);
     this.setSelectedItem(selectedItem);
 
     this.control.valueChanges.subscribe(v => {
@@ -92,7 +93,7 @@ export class SingleSelectFieldComponent implements OnInit {
       this.dropdownSelectedItem = selectedItem;
       this.control?.patchValue(selectedItem.key);
 
-      this.dropdownFilteredItems = this.field.items.filter(item => item.key !== selectedItem.key);
+      this.dropdownFilteredItems = this.field.items().filter(item => item.key !== selectedItem.key);
 
       const addDefaultItem = this.field.addDefaultItem === undefined || this.field.addDefaultItem;
       if (addDefaultItem && selectedItem.key !== -1) {
@@ -102,7 +103,7 @@ export class SingleSelectFieldComponent implements OnInit {
       this.updateFormState();
       this.dropdownSelectedItemLabel = this.dropdownSelectedItem.label;
     } else {
-      this.dropdownFilteredItems = this.field.items;
+      this.dropdownFilteredItems = this.field.items();
       this.dropdownSelectedItemLabel = this.field.defaultItemLabel || this.field.label;
     }
   }

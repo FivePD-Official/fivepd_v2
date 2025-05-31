@@ -22,6 +22,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
+[Obfuscate]
 public class VehicleConfigService : IVehicleConfigService
 {
     private readonly ILogger _logger;

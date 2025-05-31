@@ -14,20 +14,24 @@
           {{ 'UI.LABEL.RECENTLY_VIEWED' | translate }}
         </p>
         @for (ped of recentlyViewedPeds | async; track ped) {
-          <div [routerLink]="'/mdt/citizen-database/' + ped?.Id"
+          <div [routerLink]="'/mdt/citizen-database/' + ped.Id"
                class="bg-zinc-800 rounded-md p-2 hover:cursor-pointer hover:bg-zinc-700">
-            <p class="text-zinc-300 font-medium">{{ ped?.Firstname }} {{ ped?.Lastname }} <span
-              class="text-sm text-zinc-400">({{ (ped?.Gender === FGender.Male ? 'LABEL.GENDER.MALE' : 'LABEL.GENDER.FEMALE') | translate }})</span></p>
-            <p class="text-zinc-400 text-sm">{{ ped?.Birthdate | date: 'mediumDate' }}</p>
+            <p class="text-zinc-300 font-medium">
+              {{ ped.Firstname }} {{ ped.Lastname }}
+              <span class="text-sm text-zinc-400">
+                ({{ (ped.Gender === FGender.Male ? 'LABEL.GENDER.MALE' : 'LABEL.GENDER.FEMALE') | translate }})
+              </span>
+            </p>
+            <p class="text-zinc-400 text-sm">{{ ped.Birthdate | date: 'mediumDate' }}</p>
           </div>
         }
       </div>
     }
   </div>
 
-  <app-grid
-    [columns]="citizensColumns"
-    [data]="citizens$ | async"
-    [rowLinkResolver]="rowLinkResolver"
-    (onCollationChange)="collation$.next($event)"/>
+  <app-grid [columns]="citizensColumns"
+            [data]="citizens$ | async"
+            [rowLinkResolver]="rowLinkResolver"
+            [collation]="collation$ | async"
+            (onCollationChange)="collation$.next($event)"/>
 </div>

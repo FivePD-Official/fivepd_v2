@@ -12,6 +12,8 @@
   ChevronRight = 'ChevronRight',
   ChevronUp = 'ChevronUp',
   ChevronDown = 'ChevronDown',
+  ChevronLeftDouble = 'ChevronLeftDouble',
+  ChevronRightDouble = 'ChevronRightDouble',
   Warning = 'Warning',
   Link = 'Link',
   Report = 'Report',

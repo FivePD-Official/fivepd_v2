@@ -633,7 +633,7 @@ export class DepartmentsViewComponent implements OnInit {
         helpLabel: 'UI.LABEL.DEFAULT_RANK.DESCRIPTION',
         defaultItemLabel: this._localization.translate('UI.LABEL.NO_DEFAULT_RANK'),
         value: this.department?.DefaultRankId ?? -1,
-        items: this.ranksDropdown,
+        items: () => this.ranksDropdown,
         size: 'normal',
         variant: 'secondary'
       }),

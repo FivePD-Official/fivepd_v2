@@ -40,7 +40,7 @@
         {{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}
       </p>
       <div class="grid-item--content">
-        @if (!assignedIncident) {
+        @if (!(assignedIncident$ | async)) {
           <p class="no-data">
             {{ 'UI.LABEL.ACTIVE_INCIDENT.NONE' | translate }}
           </p>
@@ -49,25 +49,25 @@
             <div class="grid grid-rows-[repeat(2,1fr)] grid-cols-1 gap-4">
               <li>
                 <p>{{ 'UI.LABEL.TITLE.SINGULAR' | translate }}</p>
-                <p>{{ assignedIncident!.Incident.Title }}</p>
+                <p>{{ (assignedIncident$ | async)?.Incident?.Title }}</p>
               </li>
               <li>
                 <p>{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
-                <p>{{ assignedIncident!.Incident.Description }}</p>
+                <p>{{ (assignedIncident$ | async)?.Incident?.Description }}</p>
               </li>
             </div>
             <div class="grid grid-rows-1 grid-cols-[repeat(3,1fr)] gap-4">
               <li>
                 <p>{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
-                <p>{{ assignedIncident!.Address }}</p>
+                <p>{{ (assignedIncident$ | async)?.Address }}</p>
               </li>
               <li>
                 <p>{{ 'LABEL.PRIORITY.SINGULAR' | translate }}</p>
-                <p>{{ priorityLabel | translate }}</p>
+                <p>{{ (priorityLabel$ | async)! | translate }}</p>
               </li>
               <li>
                 <p>{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
-                <p>{{ assignedIncident!.Incident.Type === FIncidentType.Callout ? 'Callout' : 'Traffic stop' }}</p>
+                <p>{{ ((assignedIncident$ | async)?.Incident?.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate }}</p>
               </li>
             </div>
           </ul>
@@ -77,20 +77,20 @@
   </app-container>
 
   <app-grid [title]="'UI.LABEL.ACTIVE_INCIDENT.PLURAL' | translate"
-            [data]="incidents"
+            [data]="incidents$ | async"
             [columns]="incidentsColumnDef"
             [showPagination]="false"/>
 
   <app-grid [title]="'UI.LABEL.UNIT.PLURAL' | translate"
-            [data]="units"
+            [data]="units$ | async"
             [columns]="unitsColumnDef"
             [showPagination]="false"/>
 
   <app-grid [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
-            [data]="departments"
+            [data]="departments$ | async"
             [rowLinkResolver]="departmentsRowLinkResolver"
             [columns]="departmentsColumnDef"
-            (onCollationChange)="onDepartmentsCollationChange($event)"
-            (onCellAction)="getDepartments()"/>
+            (onCollationChange)="departmentsCollation$.next($event)"
+            (onCellAction)="departmentsCollation$.next(departmentsCollation$.value)"/>
 
 </app-container>

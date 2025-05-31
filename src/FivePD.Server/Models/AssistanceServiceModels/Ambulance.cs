@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
@@ -22,9 +24,10 @@ public class Ambulance : AssistanceService
     private readonly IEntityService _entityService;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
-    private readonly INotificationService _notificationService;
+    private readonly IGameNotificationService _gameNotificationService;
     private readonly ICfxService _cfxService;
     private readonly IVehicleConfigService _vehicleConfigService;
+    private readonly IGeneralAssistanceServiceSyncService _syncService;
 
     private FPed _driver;
     private FVehicle _ambulance;
@@ -33,23 +36,24 @@ public class Ambulance : AssistanceService
     private const float MinimumSpeed = 5f;
 
     private Vector3 _target;
-
-    private readonly List<Ped> _pedsToRevive = new();
+    private Entity _currentEntity;
 
     public Ambulance(
         IEntityService entityService,
         IConfigService configService,
         IRandomService randomService,
-        INotificationService notificationService,
+        IGameNotificationService gameNotificationService,
         ICfxService cfxService,
-        IVehicleConfigService vehicleConfigService)
+        IVehicleConfigService vehicleConfigService,
+        IGeneralAssistanceServiceSyncService syncService)
     {
         this._entityService = entityService;
         this._configService = configService;
         this._randomService = randomService;
-        this._notificationService = notificationService;
+        this._gameNotificationService = gameNotificationService;
         this._cfxService = cfxService;
         this._vehicleConfigService = vehicleConfigService;
+        this._syncService = syncService;
     }
 
     public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
@@ -74,14 +78,14 @@ public class Ambulance : AssistanceService
 
         this._driver = await this._entityService.SpawnPedAsync((uint)FPedHash.Paramedic01SMM, this.SpawnLocation, 0f, true);
         this._ambulance = await this._entityService.SpawnVehicleAsync((uint)Cfx.API.GetHashKey(serviceVehicle.Model), this.SpawnLocation, this.SpawnHeading);
-        
+
         this._ambulance.Properties.CreateBlip(FBlipSprite.Health, FBlipColor.Red, "Ambulance");
         this._ambulance.Properties.IsSirenActive(true);
 
         this._driver.Properties.SetAlwaysKeepTask(true);
         this._driver.Properties.SetIntoVehicle(this._ambulance.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
-        
+
         this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
         while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance)
@@ -90,11 +94,11 @@ public class Ambulance : AssistanceService
             {
                 return;
             }
-            
+
             var distance = Vector3.Distance(this._ambulance.GetUnderlyingVehicle.Position, this._target);
             var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-            
+
             this._driver.Properties.SetDrivingSpeed(currentSpeed);
 
             await Task.Delay(500);
@@ -104,32 +108,39 @@ public class Ambulance : AssistanceService
 
         await Task.Delay(2000);
 
-        this._pedsToRevive.AddRange(this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, 250f)
-            .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0));
+        var nearbyInjuredPeds = this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, 200f)
+            .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0)
+            .ToList();
 
-        if (this._pedsToRevive.Count == 0)
+        this._syncService.AddEntities(typeof(Ambulance), nearbyInjuredPeds, this._target);
+
+        while (true)
         {
-            this._notificationService.ShowNotification(this.RequestedBy, "No dead peds in the area");
-            return;
+            this._currentEntity = this._syncService.GetFirstEntityOnWhichWorkHasNotStartedYet(
+                typeof(Ambulance),
+                this._target);
+
+            if (this._currentEntity is null)
+            {
+                this._gameNotificationService.Notify(
+                    this.RequestedBy,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "No available dead peds in the area to assist.",
+                    });
+                break;
+            }
+
+            if (this._syncService.StartWorkOnEntity(this._currentEntity))
+            {
+                await this.DoWorkAsync(this._currentEntity, cancellationTokenSource);
+                this._syncService.RemoveEntity(this._currentEntity);
+            }
         }
-
-        this._driver.Task.LeaveVehicle();
-
-        var tasks = this._pedsToRevive.Select(p => new Func<Task<bool>>(() => this.DoWorkAsync(p))).ToList();
-        var result = (await TaskHelpers.RunSequentiallyAsync(tasks)).ToList();
-
-        this._notificationService.ShowNotification(
-            this.RequestedBy,
-            new GtaStyleText()
-                .Blue($"Total patients: {this._pedsToRevive.Count}")
-                .NewLine()
-                .Green($"Saved: {result.Count(x => x)}")
-                .NewLine()
-                .Red($"Deceased: {result.Count(x => !x)}")
-                .Build());
     }
 
-    private async Task<bool> DoWorkAsync(Ped ped)
+    private async Task DoWorkAsync(Entity ped, CancellationTokenSource cancellationToken)
     {
         this._driver.Task.RunTo(ped.Position);
 
@@ -139,30 +150,56 @@ public class Ambulance : AssistanceService
         if (couldRevive)
         {
             this._cfxService.ResurrectPed(ped.NetworkId);
+            this._gameNotificationService.Notify(
+                this.RequestedBy,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "Patient revived!",
+                });
+        }
+        else
+        {
+            this._gameNotificationService.Notify(
+                this.RequestedBy,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "Patient could not be revived.",
+                });
         }
 
         await Task.Delay(1000);
-
-        return couldRevive;
     }
 
-    public override Task OnCancellationRequestedAsync()
+    public override async Task OnCancellationRequestedAsync()
     {
+        if (this._currentEntity is not null)
+        {
+            this._syncService.RemoveEntity(this._currentEntity);
+        }
+
         this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
             { this._driver, this._ambulance },
             { this._ambulance, null }
         });
-        return Task.FromResult(0);
+        await Task.CompletedTask;
     }
 
-    public override Task OnCompletedAsync()
+    public override async Task OnCompletedAsync()
     {
+        if (this._currentEntity is not null)
+        {
+            this._syncService.RemoveEntity(this._currentEntity);
+        }
+
         this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
             { this._driver, this._ambulance },
             { this._ambulance, null }
         });
-        return Task.FromResult(0);
+
+        await Task.CompletedTask;
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Common.Attributes;
 using FivePD.Common.Enums;
 
 namespace FivePD.Common.DTO;
 
 #pragma warning disable
 
+[Obfuscate]
 internal sealed record FPedTasksDTO
 {
     public record struct SetPedTaskRequest

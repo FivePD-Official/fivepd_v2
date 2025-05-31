@@ -11,6 +11,9 @@ import { NavigationEnd, NavigationStart, Router } from "@angular/router";
 import SpyInstance = jest.SpyInstance;
 import { TestHelper } from "../test-helpers/test-helper";
 import { FixtureHelper } from "../test-helpers/fixture-helper";
+import {
+  GameNotificationWrapperComponent
+} from "./components/game-notification-wrapper/game-notification-wrapper.component";
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -30,6 +33,7 @@ describe('AppComponent', () => {
       imports: [
         RouterTestingModule,
         HttpClientTestingModule,
+        GameNotificationWrapperComponent,
         TestHelperModule.builder()
           .withWindowEventListener()
           .withRouter()

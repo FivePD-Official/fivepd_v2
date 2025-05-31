@@ -66,7 +66,7 @@ internal class PedService : IPedService, IOnInit
     }
 
     /// <inheritdoc />
-    public FPed GeneratePed(Ped ped)
+    public FPed GeneratePed(Ped ped, int owningVehicleId = 0)
     {
         if (ped is null)
         {
@@ -77,7 +77,8 @@ internal class PedService : IPedService, IOnInit
         if (!fPed.HasGeneratedData.Value)
         {
             var fPedBuilder = new CommonFPedBuilder(ped.NetworkId)
-                .WithGender((FGender)ped.Gender);
+                .WithGender((FGender)ped.Gender)
+                .WithOwningVehicle(owningVehicleId);
             BaseScript.TriggerServerEvent(Events.Ped.Generate, JsonConvert.SerializeObject(fPedBuilder), 0);
         }
 

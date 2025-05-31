@@ -8,6 +8,11 @@ Database:
 
 DefaultLanguage: en-US
 
+Ollama:
+  Url: "http://localhost:11434/api"
+  Model: "llama3.2:3b"
+  Language: "english"
+
 Features:
   AutoEnableFivePDAccess: true
   DiscordRichPresence: true
@@ -20,6 +25,15 @@ Features:
 
 # DateFormat: MM-dd-yyyy TODO: not implemented yet
 
+Audio:
+  # file names should be relative to the "fivepd/Audio" directory
+  Files:
+    DutyNotification: "notification.mp3"
+    BackupRequested: "single_beep.mp3"
+    CalloutDispatched: "double_beep.mp3"
+    UnitJoinRequest: "mic_click.mp3"
+    AlprToggle: "notification.mp3"
+
 Unit:
   MaxMembers: 0 # 0 = unlimited, 1+ = limited
   Join: FREE # FREE = anyone can join, REQUEST = players have to request to join
@@ -28,9 +42,13 @@ Callout:
   DispatchType: AUTO # AUTO = automatic dispatch, MANUAL = manual dispatch
   MinIntervalInMs: 4000
   MaxIntervalInMs: 5000
-  MaxActiveCallouts: 3 # 0 = unlimited, 0+ = limited
-  DispatchTimeoutInMs: 30000 # dispatchers have 30 seconds to assign a unit to a callout
+  MaxActiveCallouts: 2 # 0 = unlimited, 0+ = limited
   AreaBasedDispatch: false # true = callouts will be dispatched to a unit only if the callout is within its department's area, false = callouts will be dispatched to a unit regardless of the callout's location
+  AutoRemove: # describes when callouts will be removed from the active callouts list
+    Enabled: false # toggle removal of callouts from the active list
+    TimeoutByDispatchType:
+      Auto: 10000 # MaxTimeoutInMs, used when DispatchType is AUTO
+      Manual: 30000 # MaxTimeoutInMsForDispatchers, used when DispatchType is MANUAL
   DynamicDispatch: # dynamic dispatch is only available when DispatchType is set to AUTO
     Enabled: false # true = only units within the specified radius will be dispatched, false = all units
     Radius: 200 # radius measured from callout position
@@ -86,6 +104,7 @@ Menu:
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE
   SceneManager:
     Enabled: true
+    Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE
     SpeedZone:
       Enabled: true
       Speed: [ 0,5,10,20,30,40,50 ]
@@ -109,6 +128,8 @@ Menu:
           Model: prop_barrier_work01c
         - Name: Big barrier
           Model: prop_barrier_work06a
+  Questioning:
+    Enabled: true
 
 Peds:
   ChanceToReuseData: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again
@@ -234,3 +255,118 @@ AssistanceServices:
 
 Messages:
   CanSend: ALL # ALL = everyone can send messages, ADMIN = only admins can send messages
+
+Questioning:
+  UseOllamaResponses: true # true = ollama will provide responses ("Ollama" config should be configured); false = response will be used from the config below
+  Questions:
+    - Id: "have_been_drinking"
+      Text: "Have you been drinking today?"
+      Responses:
+        - Text: "No, officer. I haven't had anything to drink."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: false
+            HasDrugs: false
+          Chance: 100
+        - Text: "Just one beer with lunch, officer. That was hours ago."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: false
+            HasDrugs: false
+          Chance: 50
+        - Text: "I had a few drinks earlier, but I'm fine to drive."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: true
+            HasDrugs: false
+          Chance: 70
+        - Text: "I... I don't want to answer that."
+          Conditions:
+            HasIllegalItems: true
+            IsOverAlcoholLimit: true
+            HasDrugs: true
+          Chance: 100
+    - Id: "where_going"
+      Text: "Where are you headed?"
+      Responses:
+        - Text: "Just heading home from work, officer."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: false
+            HasDrugs: false
+          Chance: 100
+        - Text: "I'm going to meet some friends at the bar."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: true
+            HasDrugs: false
+          Chance: 60
+        - Text: "None of your business, officer."
+          Conditions:
+            HasIllegalItems: true
+            IsOverAlcoholLimit: true
+            HasDrugs: true
+          Chance: 80
+    - Id: "know_why_stopped"
+      Text: "Do you know why I stopped you?"
+      Responses:
+        - Text: "No, officer. Was I speeding?"
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: false
+            HasDrugs: false
+          Chance: 100
+        - Text: "I... I might have been going a little fast back there."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: true
+            HasDrugs: false
+          Chance: 70
+        - Text: "Look, I know I was speeding. Can we just make this quick?"
+          Conditions:
+            HasIllegalItems: true
+            IsOverAlcoholLimit: true
+            HasDrugs: true
+          Chance: 90
+    - Id: "have_weapons"
+      Text: "Do you have any weapons in the vehicle?"
+      Responses:
+        - Text: "No, officer. I don't own any weapons."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: false
+            HasDrugs: false
+          Chance: 100
+        - Text: "I have a registered firearm in the glove box. I have my permit."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: false
+            HasDrugs: false
+          Chance: 30
+        - Text: "I... I don't want to answer that without a lawyer."
+          Conditions:
+            HasIllegalItems: true
+            IsOverAlcoholLimit: true
+            HasDrugs: true
+          Chance: 100
+    - Id: "have_drugs"
+      Text: "Do you have any drugs in the vehicle?"
+      Responses:
+        - Text: "No, officer. I don't use drugs."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: false
+            HasDrugs: false
+          Chance: 100
+        - Text: "I have a medical marijuana card, officer. It's in my wallet."
+          Conditions:
+            HasIllegalItems: false
+            IsOverAlcoholLimit: false
+            HasDrugs: true
+          Chance: 40
+        - Text: "I want to speak to a lawyer before answering any more questions."
+          Conditions:
+            HasIllegalItems: true
+            IsOverAlcoholLimit: true
+            HasDrugs: true
+          Chance: 100

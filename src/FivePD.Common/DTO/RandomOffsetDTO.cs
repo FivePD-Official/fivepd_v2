@@ -1,0 +1,15 @@
+﻿using FivePD.Common.Attributes;
+
+namespace FivePD.Client.DTO;
+
+#pragma warning disable
+
+[Obfuscate]
+internal sealed record RandomOffsetDTO
+{
+    public int EntityNetworkId { get; set; }
+
+    public int OffsetMin { get; set; }
+
+    public int OffsetMax { get; set; }
+}

@@ -1,0 +1,7 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Start everything" type="CompoundRunConfigurationType">
+    <toRun name="Start NUI and audio servers" type="CompoundRunConfigurationType" />
+    <toRun name="Start FXServer" type="RunNativeExe" />
+    <method v="2" />
+  </configuration>
+</component>

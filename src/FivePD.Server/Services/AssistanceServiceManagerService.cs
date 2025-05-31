@@ -157,7 +157,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
 
             async Task SetRandomLocation()
             {
-                var pointOnRoadSide = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character);
+                var pointOnRoadSide = await this._vector3Service.GetPointOnRoadSideAsync(requestedBy.GetUnderlyingPlayer().Character, 800, 1600);
                 ((IInternalAssistanceService)assistanceService).SpawnLocation = pointOnRoadSide.Location;
                 ((IInternalAssistanceService)assistanceService).SpawnHeading = pointOnRoadSide.Heading;
             }

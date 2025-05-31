@@ -13,11 +13,12 @@ import {
 } from "../_helpers/dropdown";
 import { LocalizationService } from "@services/localization/localization.service";
 import { createDefaultFormGroup } from "../_helpers/field";
+import { DropdownRectHelperDirective } from "../../../directives/dropdown-rect-helper.directive";
 
 @Component({
   selector: 'app-multi-select-field',
   standalone: true,
-  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe, ClickOutsideDirective],
+  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe, ClickOutsideDirective, DropdownRectHelperDirective],
   templateUrl: './multi-select-field.component.html',
   styleUrl: './multi-select-field.component.sass'
 })
@@ -48,7 +49,7 @@ export class MultiSelectFieldComponent implements OnInit {
 
     this.setSelectedItems(undefined);
 
-    const selectedItems = this.field.items.filter(item => (this.field.value ?? []).includes(item.key));
+    const selectedItems = this.field.items().filter(item => (this.field.value ?? []).includes(item.key));
     for (const item of selectedItems) {
       this.setSelectedItems(item, true);
     }
@@ -120,10 +121,10 @@ export class MultiSelectFieldComponent implements OnInit {
 
       this.control?.patchValue(value);
 
-      this.dropdownFilteredItems = this.field.items.filter(item => !this.dropdownSelectedItems.includes(item.key));
+      this.dropdownFilteredItems = this.field.items().filter(item => !this.dropdownSelectedItems.includes(item.key));
       this.updateFormState();
     } else {
-      this.dropdownFilteredItems = this.field.items;
+      this.dropdownFilteredItems = this.field.items();
       this.dropdownSelectedItemLabel = this.field.label;
     }
 

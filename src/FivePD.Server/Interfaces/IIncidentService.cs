@@ -36,6 +36,29 @@ public interface IIncidentService
     public IIncident GetCurrentIncidentOfPlayer(FPlayer player);
 
     /// <summary>
+    /// Retrieves the incident with the specified identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the incident to retrieve.</param>
+    /// <returns>The incident associated with the specified identifier.</returns>
+    public IIncident GetById(Guid id);
+
+    /// <summary>
+    /// Assigns the specified unit to the given incident.
+    /// </summary>
+    /// <param name="unit">The unit to assign to the incident.</param>
+    /// <param name="incident">The incident to which the unit should be assigned.</param>
+    /// <returns>A boolean value indicating whether the unit was successfully assigned to the incident.</returns>
+    public bool AssignUnitToIncident(Unit unit, IIncident incident);
+
+    /// <summary>
+    /// Unassigns the specified unit from the given incident.
+    /// </summary>
+    /// <param name="unit">The unit to be unassigned from the incident.</param>
+    /// <param name="incident">The incident from which the unit will be unassigned.</param>
+    /// <returns>A boolean value indicating whether the unit was successfully unassigned from the incident.</returns>
+    public bool UnassignUnitFromIncident(Unit unit, IIncident incident);
+
+    /// <summary>
     /// Completes the incident of the specified player.
     /// </summary>
     /// <param name="player">The player to complete the incident of.</param>
@@ -46,6 +69,12 @@ public interface IIncidentService
     /// </summary>
     /// <param name="incident">The incident to complete.</param>
     public void CompleteIncident(IIncident incident);
+
+    /// <summary>
+    /// Completes the specified incident.
+    /// </summary>
+    /// <param name="id">The id of the incident to complete.</param>
+    public void CompleteIncident(Guid id);
 }
 
 /// <summary>
@@ -62,12 +91,4 @@ internal interface IInternalIncidentService
     /// Gets the internal traffic stops.
     /// </summary>
     public List<TrafficStop> InternalTrafficStops { get; }
-
-    /// <summary>
-    /// Assigns the specified unit to the specified incident.
-    /// </summary>
-    /// <param name="unit">The unit to assign.</param>
-    /// <param name="incident">The incident to assign the unit to.</param>
-    /// <returns><see langword="true"/> if the unit was assigned to the incident; otherwise, <see langword="false"/>.</returns>
-    public bool AssignUnitToIncident(Unit unit, IIncident incident);
 }

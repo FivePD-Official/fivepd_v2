@@ -1,18 +1,22 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Common.Attributes;
 using FivePD.Common.Enums;
 
 namespace FivePD.Common.DTO;
 
 #pragma warning disable
 
-public sealed record IncidentDTOs
+[Obfuscate]
+internal sealed record IncidentDTOs
 {
     public record struct IncidentToClientDTO
     {
         public string Id { get; init; }
 
         public FIncidentType Type { get; init; }
+
+        public FPriority Priority { get; init; }
 
         public string Title { get; init; }
 
@@ -28,6 +32,8 @@ public sealed record IncidentDTOs
         public string Id { get; init; }
         
         public FIncidentType Type { get; init; }
+
+        public FPriority Priority { get; init; }
 
         public string Title { get; init; }
 

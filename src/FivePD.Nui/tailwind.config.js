@@ -14,7 +14,8 @@ module.exports = {
       animation: {
         slideIn: 'slideIn .2s forwards',
         slideOut: 'slideOut .2s forwards',
-        modal: 'modal .2s forwards',
+        modalCenter: 'modalCenter .2s forwards',
+        modalSide: 'modalSide .2s forwards',
         fadeIn: 'fadeIn .2s forwards',
       },
       keyframes: {
@@ -26,7 +27,7 @@ module.exports = {
           '0%': {transform: 'translateX(0)'},
           '100%': {transform: 'translateX(100%)'},
         },
-        modal: {
+        modalCenter: {
           '0%': {
             opacity: 80,
             transform: 'scale(0.95)',
@@ -34,6 +35,14 @@ module.exports = {
           '100%': {
             opacity: 100,
             transform: 'scale(1)',
+          },
+        },
+        modalSide: {
+          '0%': {
+            transform: 'translateX(100%)',
+          },
+          '100%': {
+            transform: 'translateX(0)',
           },
         },
         fadeIn: {

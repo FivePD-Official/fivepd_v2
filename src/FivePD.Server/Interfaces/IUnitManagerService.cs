@@ -29,22 +29,16 @@ public interface IUnitManagerService
     /// Invoked when a player left a unit.
     /// </summary>
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
-
+    
     /// <summary>
-    /// Creates a unit with the specified callsign and player.
+    /// Invoked when a unit has enabled the panic mode.
     /// </summary>
-    /// <param name="callsign">The callsign of the player.</param>
-    /// <param name="player">A player to add by default.</param>
-    /// <returns>The created unit.</returns>
-    public Unit CreateUnit(string callsign, FPlayer player);
-
+    public event EventHandler<Unit> OnPanicModeEnabled;
+    
     /// <summary>
-    /// Creates a unit with the specified callsign and player.
+    /// Invoked when a unit has disabled the panic mode.
     /// </summary>
-    /// <param name="callsign">The callsign of the player.</param>
-    /// <param name="players">The players to add by default.</param>
-    /// <returns>The created unit.</returns>
-    public Unit CreateUnit(string callsign, IEnumerable<FPlayer> players);
+    public event EventHandler<Unit> OnPanicModeDisabled;
 
     /// <summary>
     /// Gets the unit of the specified player.
@@ -77,4 +71,23 @@ public interface IUnitManagerService
     /// </summary>
     /// <param name="unit">The unit.</param>
     public void DisablePanicMode(Unit unit);
+}
+
+internal interface IInternalUnitManagerService
+{
+    /// <summary>
+    /// Creates a unit with the specified callsign and player.
+    /// </summary>
+    /// <param name="callsign">The callsign of the player.</param>
+    /// <param name="player">A player to add by default.</param>
+    /// <returns>The created unit.</returns>
+    public Unit CreateUnit(string callsign, FPlayer player);
+
+    /// <summary>
+    /// Creates a unit with the specified callsign and player.
+    /// </summary>
+    /// <param name="callsign">The callsign of the player.</param>
+    /// <param name="players">The players to add by default.</param>
+    /// <returns>The created unit.</returns>
+    public Unit CreateUnit(string callsign, IEnumerable<FPlayer> players);
 }

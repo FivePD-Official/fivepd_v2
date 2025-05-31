@@ -28,7 +28,7 @@ export class AttributesComponent implements OnInit {
     value: CoreSetId.ArrestReport as any,
     defaultItemLabel: '',
     addDefaultItem: false,
-    items: [
+    items: () => [
       {key: CoreSetId.ArrestReport, label: this._localizationService.translate('UI.LABEL.VARIABLE_DATA_SET.TYPE.ARREST_REPORTS.TITLE')},
       {key: CoreSetId.IncidentReport, label: this._localizationService.translate('UI.LABEL.VARIABLE_DATA_SET.TYPE.INCIDENT_REPORTS.TITLE')},
       {key: CoreSetId.PedTicket, label: this._localizationService.translate('UI.LABEL.VARIABLE_DATA_SET.TYPE.PED_TICKETS.TITLE')},

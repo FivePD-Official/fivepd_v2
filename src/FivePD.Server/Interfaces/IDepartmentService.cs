@@ -29,21 +29,6 @@ public interface IDepartmentService
     public event EventHandler<Department> DepartmentDeleted;
 
     /// <summary>
-    /// Fires when a rank has been created.
-    /// </summary>
-    public event EventHandler<Rank> RankCreated;
-
-    /// <summary>
-    /// Fires when a rank has been edited.
-    /// </summary>
-    public event EventHandler<Rank> RankUpdated;
-
-    /// <summary>
-    /// Fires when a rank has been deleted.
-    /// </summary>
-    public event EventHandler<Rank> RankDeleted;
-
-    /// <summary>
     /// Fires when a division has been created.
     /// </summary>
     public event EventHandler<Division> DivisionCreated;
@@ -78,10 +63,39 @@ public interface IDepartmentService
     public Department CreateDepartment(Department department);
 
     /// <summary>
-    /// Removes a <see cref="Department"/> from the 'departments' table.
+    /// Updates the given department.
+    /// </summary>
+    /// <param name="department">The department to update.</param>
+    /// <exception cref="ArgumentException">The provided department or its name is null.</exception>
+    /// <exception cref="DepartmentExistsWithNameException">A department already exists with the same name.</exception>
+    /// <returns>The updated department object with change tracking.</returns>
+    public Department UpdateDepartment(Department department);
+
+    /// <summary>
+    /// Deletes a <see cref="Department"/> from the 'departments' table.
     /// </summary>
     /// <param name="department">The department to remove.</param>
-    public void RemoveDepartment(Department department);
+    public void DeleteDepartment(Department department);
+
+    /// <summary>
+    /// Inserts a <see cref="Division"/> into the 'divisions' table.
+    /// </summary>
+    /// <param name="division">The division to insert.</param>
+    /// <returns>The created division object with change tracking.</returns>
+    public Division CreateDivision(Division division);
+
+    /// <summary>
+    /// Updates the given division.
+    /// </summary>
+    /// <param name="division">The division to update.</param>
+    /// <returns>The updated division object with change tracking.</returns>
+    public Division UpdateDivision(Division division);
+
+    /// <summary>
+    /// Deletes a <see cref="Division"/> from the 'departments' table.
+    /// </summary>
+    /// <param name="division">The department to remove.</param>
+    public void DeleteDivision(Division division);
 
     /// <summary>
     /// Selects and returns all departments.
@@ -129,6 +143,20 @@ public interface IDepartmentService
     /// <param name="player">The user to update.</param>
     /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
     public void RemovePlayerFromDepartment(Player player);
+
+    /// <summary>
+    /// The given player will be removed from their department.
+    /// </summary>
+    /// <param name="player">The user to update.</param>
+    /// <exception cref="ArgumentException">Any of the provided arguments is null.</exception>
+    public void RemovePlayerFromDepartment(FPlayer player);
+
+    /// <summary>
+    /// Gets the department of the given player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The department of the player.</returns>
+    public Department GetPlayerDepartment(Player player);
 
     /// <summary>
     /// Gets the department of the given player.

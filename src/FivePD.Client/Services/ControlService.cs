@@ -22,7 +22,7 @@ namespace FivePD.Client.Services;
 internal class ControlService : IControlService, IOnInit, IOnDestroy
 {
     private readonly ITickService _tickService;
-    private readonly IUIManagerService _uiService;
+    private readonly IUIManagerService _uiManagerService;
     private readonly List<HoldableKeybind> _actions = new();
     private readonly List<string> _registeredControlIds = new();
 
@@ -30,11 +30,11 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
     /// Initializes a new instance of the <see cref="ControlService"/> class.
     /// </summary>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-    /// <param name="uiService">The <see cref="IUIManagerService"/> to use.</param>
-    public ControlService(ITickService tickService, IUIManagerService uiService)
+    /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
+    public ControlService(ITickService tickService, IUIManagerService uiManagerService)
     {
         this._tickService = tickService;
-        this._uiService = uiService;
+        this._uiManagerService = uiManagerService;
         this.RegisterServerControls();
     }
 
@@ -87,40 +87,41 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
     }
 
     /// <inheritdoc />
-    public void RegisterMomentaryKeybind(string id, string key, string title, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null)
+    public void RegisterMomentaryKeybind(
+        string id,
+        string key,
+        string title,
+        string timerBarTitle,
+        int timeToHoldInMs,
+        Action onPress = null,
+        Action onRelease = null,
+        Func<bool> canInvokeOnPress = null)
     {
-        var holdableKeybind = new HoldableKeybind(onPress, (int)Math.Floor(timeToHoldInMs * 0.05));
-        var isInvokable = canInvokeOnPress?.Invoke() ?? true;
+        var holdableKeybind = new HoldableKeybind(onPress, onRelease, timeToHoldInMs);
 
         void HoldableOnPress()
         {
-            if (!isInvokable)
+            if (!(canInvokeOnPress?.Invoke() ?? true))
             {
                 return;
             }
 
-            Debug.WriteLine("HoldableOnPress");
+            holdableKeybind.Released = false;
+            holdableKeybind.StartTimeMs = Cfx.API.GetGameTimer();
 
-            this._uiService.ShowTimerBar(timeToHoldInMs);
+            this._uiManagerService.ShowTimerBar(timerBarTitle, timeToHoldInMs);
             this._actions.Add(holdableKeybind);
         }
 
         void HoldableOnRelease()
         {
-            if (!isInvokable)
-            {
-                return;
-            }
-
-            Debug.WriteLine("HoldableOnRelease");
-
-            holdableKeybind.ClearTimer();
-            this._uiService.SendMessage(new JObject
+            holdableKeybind.Released = true;
+            this._uiManagerService.SendMessage(new JObject
             {
                 { "Event", Events.UIEvent.TimerBar },
                 { "Show", false },
             });
-            this._actions.Remove(holdableKeybind);
+            holdableKeybind.OnRelease?.Invoke();
         }
 
         this.InternalRegisterKeybind(id, key, title, "KEYBOARD", HoldableOnPress, HoldableOnRelease);
@@ -144,7 +145,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
             BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "release");
         }
 
-        this.RegisterMomentaryKeybind(control.Id, control.Key, control.Title, control.TimeToHoldInMs, OnPress, OnRelease);
+        this.RegisterMomentaryKeybind(control.Id, control.Key, control.Title, control.TimerBarTitle, control.TimeToHoldInMs, OnPress, OnRelease);
     }
 
     private void InternalRegisterKeybind(ControlsDTO.ClientControlDTO control)
@@ -218,51 +219,54 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
         var toBeRemoved = new List<HoldableKeybind>();
         foreach (var item in this._actions)
         {
-            item.IncrementTimer();
-            if (item.Timer == item.TimeToHoldInMs)
+            var elapsedTime = Cfx.API.GetGameTimer() - item.StartTimeMs;
+
+            this._uiManagerService.UpdateTimerBarProgress(elapsedTime, item.TargetHoldDurationMs);
+
+            if (elapsedTime >= item.TargetHoldDurationMs)
             {
-                Debug.WriteLine($"Invoking {item.OnPress.Method.Name} - {item.Timer} - {item.TimeToHoldInMs}");
                 item.OnPress?.Invoke();
+
+                this._uiManagerService.SendMessage(new JObject
+                {
+                    { "Event", Events.UIEvent.TimerBar },
+                    { "Show", false },
+                });
+
+                toBeRemoved.Add(item);
+            }
+
+            if (item.Released)
+            {
                 toBeRemoved.Add(item);
             }
         }
 
         foreach (var item in toBeRemoved)
         {
-            item.ClearTimer();
-            this._uiService.SendMessage(new JObject
-            {
-                { "Event", Events.UIEvent.TimerBar },
-                { "Show", false },
-            });
             this._actions.Remove(item);
         }
 
         return Task.FromResult(0);
     }
 
-    private sealed class HoldableKeybind
+    private sealed record HoldableKeybind
     {
-        public HoldableKeybind(Action onPress, int timeToHoldInMs)
+        public HoldableKeybind(Action onPress, Action onRelease, int targetHoldDurationMs)
         {
             this.OnPress = onPress;
-            this.TimeToHoldInMs = timeToHoldInMs;
+            this.OnRelease = onRelease;
+            this.TargetHoldDurationMs = targetHoldDurationMs;
         }
 
         public Action OnPress { get; }
 
-        public int TimeToHoldInMs { get; }
+        public Action OnRelease { get; }
 
-        public int Timer { get; private set; }
+        public bool Released { get; set; }
 
-        public void IncrementTimer()
-        {
-            this.Timer++;
-        }
+        public int TargetHoldDurationMs { get; }
 
-        public void ClearTimer()
-        {
-            this.Timer = 0;
-        }
+        public int StartTimeMs { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using CitizenFX.Core;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
@@ -37,12 +36,12 @@ internal class NotificationService : INotificationService, IOnInit
         this._eventHandlerDictionary[Events.Notification.ShowTooltip] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowTooltip>(serializedRequest);
-            this.ShowTooltip(this.GetLocalizedContent(request.Content, request.ContentParams), request.WithBeep, request.Duration);
+            this.ShowTooltip(this.GetLocalizedContent(request.Content), request.WithBeep, request.Duration);
         });
         this._eventHandlerDictionary[Events.Notification.ShowNotification] += new Action<string>(serializedRequest =>
         {
             var request = JsonConvert.DeserializeObject<NotificationDTO.ShowNotification>(serializedRequest);
-            this.ShowNotification(this.GetLocalizedContent(request.Content, request.ContentParams));
+            this.ShowNotification(this.GetLocalizedContent(request.Content));
         });
         this._eventHandlerDictionary[Events.Notification.ShowNotificationWithTexture] += new Action<string>(serializedRequest =>
         {
@@ -51,7 +50,7 @@ internal class NotificationService : INotificationService, IOnInit
                 request.Texture,
                 this.GetLocalizedText(request.Sender),
                 this.GetLocalizedText(request.Subject),
-                this.GetLocalizedContent(request.Content, request.ContentParams));
+                this.GetLocalizedContent(request.Content));
         });
     }
 
@@ -98,73 +97,15 @@ internal class NotificationService : INotificationService, IOnInit
         this.ShowNotificationWithTexture(texture, sender, subject, content.Build());
     }
 
-    private string GetLocalizedContent(string content, Dictionary<string, string> contentParams)
+    private string GetLocalizedContent(string content)
     {
-        var localizedContent = this.Get(content);
-        var localizedParams = new Dictionary<string, string>();
-        foreach (var param in contentParams)
-        {
-            var localizedParam = this.Get(param.Value);
-            localizedParams[param.Key] = param.Value == localizedParam ? param.Value : localizedParam;
-        }
-
-        return string.IsNullOrEmpty(localizedContent) ? content : localizedContent.ReplaceParams(localizedParams);
+        var localizedContent = this.GetLocalizedText(content);
+        return string.IsNullOrEmpty(localizedContent) ? content : localizedContent;
     }
 
     private string GetLocalizedText(string text)
     {
-        var localizedText = this.Get(text);
+        var localizedText = this._localizationService.Get(text);
         return string.IsNullOrEmpty(localizedText) ? text : localizedText;
-    }
-
-    private string Get(string text)
-    {
-        var result = new StringBuilder();
-
-        var upper = false;
-        var curr = new StringBuilder();
-        foreach (var c in text)
-        {
-            if (char.IsUpper(c) || c == '.' || c == '_')
-            {
-                upper = true;
-                curr.Append(c);
-                continue;
-            }
-
-            if (upper)
-            {
-                upper = false;
-                var localizedKey = this._localizationService.Get(curr.ToString());
-                if (!string.IsNullOrEmpty(localizedKey))
-                {
-                    result.Append(localizedKey);
-                    result.Append(c);
-                    curr.Clear();
-                }
-                else
-                {
-                    result.Append(curr);
-                    result.Append(c);
-                    curr.Clear();
-                }
-
-                continue;
-            }
-
-            result.Append(c);
-        }
-
-        var localizedKey2 = this._localizationService.Get(curr.ToString());
-        if (!string.IsNullOrEmpty(localizedKey2))
-        {
-            result.Append(localizedKey2);
-        }
-        else
-        {
-            result.Append(curr);
-        }
-
-        return result.ToString();
     }
 }

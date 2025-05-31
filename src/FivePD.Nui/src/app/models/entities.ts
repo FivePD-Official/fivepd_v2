@@ -1,5 +1,5 @@
 import {VariableDataAttribute} from './loose-data';
-import {FGender, FIncidentPriority, FIncidentType, PedLicenseType} from "@enums";
+import {FGender, FPriority, FIncidentType, PedLicenseType} from "@enums";
 
 export type Id = string | number;
 
@@ -29,6 +29,7 @@ export interface User extends WithId {
   DepartmentId?: number;
   DivisionId?: number;
   RankId?: number;
+  AudioVolume: number;
   Xp: number;
   FixedRank: boolean;
   PreferredLanguage: string;
@@ -200,7 +201,7 @@ export interface IncidentHistory {
   Title: string;
   Description: string;
   Location: string;
-  Priority: FIncidentPriority;
+  Priority: FPriority;
   Type: FIncidentType,
   GeneratedAt: string;
   Users: IncidentHistoryUser[];
@@ -214,13 +215,14 @@ export interface IncidentHistoryUser {
 
 export type SimpleIncidentHistory = Pick<IncidentHistory, 'Id' | 'Title' | 'GeneratedAt'>;
 
-export interface PedHistory extends WithId {
+export interface PedData extends WithId {
   Gender: FGender;
   Firstname: string;
   Lastname: string;
   Birthdate: string;
   Warrants: string[];
   Licenses: PedLicense[];
+  VehicleData?: VehicleData;
 }
 
 export enum PedLicenseStatus {
@@ -237,7 +239,7 @@ export interface PedLicense extends WithStringId {
   Status: PedLicenseStatus;
 }
 
-export type SimplePedHistory = Pick<PedHistory, 'Id' | 'Firstname' | 'Lastname' | 'Birthdate' | 'Gender'>
+export type SimplePedHistory = Pick<PedData, 'Id' | 'Firstname' | 'Lastname' | 'Birthdate' | 'Gender'>
 
 export interface Message {
   Id: number;
@@ -275,8 +277,8 @@ export enum VehicleDocumentStatus {
 }
 
 export enum VehicleDocumentType {
-  Insurance,
   Registration,
+  Insurance,
 }
 
 export interface VehicleDocument {
@@ -286,16 +288,12 @@ export interface VehicleDocument {
   IssueDate: string;
 }
 
-export interface FVehicle extends WithId {
-  NetworkId: number;
+export interface VehicleData extends WithId {
   LicensePlate: string;
   Color: string;
   Brand: string;
   Documents: VehicleDocument[];
-}
-
-export interface FVehicleDTO extends FVehicle {
-  Owner?: PedHistory;
+  PedData?: PedData;
 }
 
 export interface SpeedZone {

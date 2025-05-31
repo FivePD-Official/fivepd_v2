@@ -32,6 +32,11 @@ public class CommonFPedBuilder
     public int NetworkId { get; protected set; }
 
     /// <summary>
+    /// Gets or sets the id of the vehicle the ped is owning.
+    /// </summary>
+    public int OwningVehicleNetworkId { get; protected set; }
+
+    /// <summary>
     /// Gets or sets the gender of the ped.
     /// </summary>
     [JsonProperty]
@@ -75,6 +80,17 @@ public class CommonFPedBuilder
     public CommonFPedBuilder WithGender(FGender gender)
     {
         this.Gender = gender;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the id of the vehicle the ped is owning.
+    /// </summary>
+    /// <param name="vehicleId">The id of the vehicle.</param>
+    /// <returns>The <see cref="CommonFPedBuilder"/> instance.</returns>
+    public CommonFPedBuilder WithOwningVehicle(int vehicleId)
+    {
+        this.OwningVehicleNetworkId = vehicleId;
         return this;
     }
 }

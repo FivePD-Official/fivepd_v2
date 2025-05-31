@@ -1,5 +1,26 @@
 <div class="main-container">
-  <router-outlet />
-  <!--  <TimerBar />-->
+  <router-outlet/>
+  <div class="absolute bottom-0 right-0 flex flex-col items-end gap-4">
+
+    @if (_windowService.showInformation | async) {
+      <div class="flex flex-row items-end justify-end gap-6">
+        @if (_windowService.showTimerBar | async) {
+          <app-timer-bar/>
+        }
+        <div class="flex flex-col items-end gap-4">
+          <app-game-notification-wrapper/>
+          <app-information/>
+        </div>
+      </div>
+    } @else {
+      <div class="flex flex-col items-end gap-4">
+        <app-game-notification-wrapper/>
+        @if (_windowService.showTimerBar | async) {
+          <app-timer-bar/>
+        }
+      </div>
+    }
+
+  </div>
 </div>
 <!--<RadialMenu v-if="viewType === NuiEventType.RadialMenu" :menu-id="currentMenuId" />-->

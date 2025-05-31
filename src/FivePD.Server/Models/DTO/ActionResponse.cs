@@ -11,7 +11,7 @@ namespace FivePD.Server.Models.DTO;
 internal record struct ActionResponse()
 {
     /// <summary>
-    /// Gets or sets a value indicating whether the actions has been successful.
+    /// Gets or sets a value indicating whether the actions have been successful.
     /// </summary>
     public bool Status { get; set; }
 

@@ -26,6 +26,11 @@ public interface ICalloutDistributionService
     public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitAssignedToCallout;
 
     /// <summary>
+    /// Invoked when a unit is unassigned from a callout.
+    /// </summary>
+    public event EventHandler<UnitAssignedToCalloutEventArgs> OnUnitUnassignedFromCallout;
+
+    /// <summary>
     /// Assigns a unit to a callout.
     /// </summary>
     /// <param name="unit">The unit.</param>
@@ -33,6 +38,15 @@ public interface ICalloutDistributionService
     /// <param name="acceptedByUnit">true = accepted by a unit; false = assigned by a dispatcher or an addon.</param>
     /// <returns>true if the unit was assigned to the callout; otherwise, false.</returns>
     public bool AssignUnitToCallout(Unit unit, Callout callout, bool acceptedByUnit = false);
+
+    /// <summary>
+    /// Unassigns a unit from a callout.
+    /// </summary>
+    /// <param name="unit">The unit.</param>
+    /// <param name="callout">The callout.</param>
+    /// <param name="acceptedByUnit">true = accepted by a unit; false = assigned by a dispatcher or an addon.</param>
+    /// <returns>true if the unit was assigned to the callout; otherwise, false.</returns>
+    public bool UnassignUnitFromCallout(Unit unit, Callout callout, bool acceptedByUnit = false);
 }
 
 /// <summary>

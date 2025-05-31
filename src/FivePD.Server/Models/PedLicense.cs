@@ -18,7 +18,7 @@ public class PedLicense
     /// <summary>
     /// Gets or sets the entity which this value belongs to.
     /// </summary>
-    public PedHistory PedHistory { get; set; }
+    public PedData PedData { get; set; }
 
     /// <summary>
     /// Gets or sets the type.

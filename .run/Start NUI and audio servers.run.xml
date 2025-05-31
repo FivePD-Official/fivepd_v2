@@ -1,0 +1,7 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Start NUI and audio servers" type="CompoundRunConfigurationType">
+    <toRun name="Start NUI development server" type="js.build_tools.npm" />
+    <toRun name="Start static audio server" type="js.build_tools.npm" />
+    <method v="2" />
+  </configuration>
+</component>

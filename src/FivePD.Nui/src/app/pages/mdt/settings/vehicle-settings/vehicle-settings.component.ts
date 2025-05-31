@@ -63,7 +63,7 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
       defaultItemLabel: '',
       addDefaultItem: false,
       value: vehicleConfig?.Extras,
-      items: [
+      items: () => [
         ...Array(12).fill(null).map((_, i) => {
           const index = i + 1;
           return {key: index, label: index.toString()};
@@ -78,7 +78,6 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
 }
 
 function createTowTruckFields(localizationService: LocalizationService, vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
-  console.log('A', vehicleConfig)
   const towedVehiclePositionOffset = vehicleConfig?.Options['TowedVehiclePositionOffset'];
 
   return [

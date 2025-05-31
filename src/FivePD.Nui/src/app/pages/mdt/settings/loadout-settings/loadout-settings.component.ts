@@ -17,9 +17,6 @@ import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confir
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from '../../../../components/grid/grid.component';
 import { ContainerComponent } from '../../../../components/container/container.component';
-import {
-  SingleSelectFieldComponent
-} from "../../../../components/form-inputs/single-select-field/single-select-field.component";
 import { AsyncPipe } from "@angular/common";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 import { LocalizationService } from "@services/localization/localization.service";
@@ -33,7 +30,7 @@ import { WeaponService } from "@services/weapon/weapon.service";
   selector: 'app-loadout-settings',
   templateUrl: './loadout-settings.component.html',
   standalone: true,
-  imports: [ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe, LoadoutWeaponsComponent, LoadoutWeaponComponentsComponent]
+  imports: [ContainerComponent, GridComponent, TranslatePipe, AsyncPipe, LoadoutWeaponsComponent, LoadoutWeaponComponentsComponent]
 })
 export class LoadoutSettingsComponent {
 
@@ -102,7 +99,7 @@ export class LoadoutSettingsComponent {
                     defaultItemLabel: '',
                     addDefaultItem: false,
                     value: loadoutConfig?.WeaponIds,
-                    items: weapons.map(w => ({
+                    items: () => weapons.map(w => ({
                       key: w.Id,
                       label: w.Name,
                     })),
@@ -179,7 +176,7 @@ export class LoadoutSettingsComponent {
               label: 'UI.LABEL.WEAPON.PLURAL',
               defaultItemLabel: '',
               addDefaultItem: false,
-              items: weapons.map(w => ({
+              items: () => weapons.map(w => ({
                 key: w.Id,
                 label: w.Name,
               })),

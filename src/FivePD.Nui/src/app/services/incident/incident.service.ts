@@ -11,7 +11,7 @@ export class IncidentService extends BaseApiService<IncidentDTO> {
   override baseUrl = 'fivepd:incident';
 
   get(id: Id) {
-    return this._get('NOT_IMPLEMENTED', id); // TODO
+    return this._get('get', id, false);
   }
 
   getPage() {
@@ -25,6 +25,18 @@ export class IncidentService extends BaseApiService<IncidentDTO> {
 
   selfAssign(incident: IncidentDTO): Observable<ActionResponse> {
     return this.httpClient.post<ActionResponse>(this.createUrl('selfAssign'), {
+      Id: incident.Id,
+    });
+  }
+
+  selfUnassign(incident: IncidentDTO): Observable<ActionResponse> {
+    return this.httpClient.post<ActionResponse>(this.createUrl('selfUnassign'), {
+      Id: incident.Id,
+    });
+  }
+
+  complete(incident: IncidentDTO): Observable<ActionResponse> {
+    return this.httpClient.post<ActionResponse>(this.createUrl('complete'), {
       Id: incident.Id,
     });
   }

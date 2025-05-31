@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PedLicense, PedLicenseStatus } from "@models";
@@ -14,7 +14,6 @@ import { ContainerComponent } from '../../../../components/container/container.c
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
 import { mapAttributesToFields } from "@helpers";
-import { ButtonComponent } from "../../../../components/button/button.component";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { EntityViewComponent } from "./_components/entity-view.component";
@@ -26,7 +25,7 @@ import { VariableDataService } from "@services/variable-data/variable-data.servi
   templateUrl: './citizen-database-id.component.html',
   styleUrls: ['./citizen-database-id.component.sass'],
   standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, ButtonComponent, EntityViewComponent, AsyncPipe]
+  imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, EntityViewComponent, AsyncPipe, RouterLink]
 })
 export class CitizenDatabaseIdComponent {
 
@@ -42,7 +41,7 @@ export class CitizenDatabaseIdComponent {
   protected readonly PedLicenseStatus = PedLicenseStatus;
 
   readonly id$ = new BehaviorSubject<number>(0);
-  readonly pedHistory$ = this._activatedRoute.params
+  readonly ped$ = this._activatedRoute.params
     .pipe(
       takeUntilDestroyed(),
       map(params => parseId(params['id'])),

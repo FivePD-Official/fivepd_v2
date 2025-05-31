@@ -15,6 +15,7 @@ using FivePD.Server.Models.Requests;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IAccessControlService" />
+[Obfuscate]
 public class AccessControlService : IAccessControlService, IOnInit
 {
     private readonly DatabaseContext _databaseContext;

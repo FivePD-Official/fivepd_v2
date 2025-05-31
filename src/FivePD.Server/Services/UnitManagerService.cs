@@ -22,40 +22,36 @@ namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IUnitManagerService" />
 [Obfuscate]
-public class UnitManagerService : IUnitManagerService, IOnInit
+public class UnitManagerService : IUnitManagerService, IInternalUnitManagerService, IOnInit
 {
-    private readonly INotificationService _notificationService;
+    private readonly IGameNotificationService _gameNotificationService;
     private readonly IConfirmationService _confirmationService;
     private readonly IConfigService _configService;
     private readonly IInternalUnitService _unitService;
-    private readonly IBackupManagerService _backupManagerService;
     private readonly IPlayerDataService _playerDataService;
     private readonly IPlayerHandlerService _playerHandlerService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UnitManagerService"/> class.
     /// </summary>
-    /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
+    /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
-    /// <param name="backupManagerService">The <see cref="IBackupManagerService"/> to use.</param>
     /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     public UnitManagerService(
-        INotificationService notificationService,
+        IGameNotificationService gameNotificationService,
         IConfirmationService confirmationService,
         IConfigService configService,
         IUnitService unitService,
-        IBackupManagerService backupManagerService,
         IPlayerDataService playerDataService,
         IPlayerHandlerService playerHandlerService)
     {
-        this._notificationService = notificationService;
+        this._gameNotificationService = gameNotificationService;
         this._confirmationService = confirmationService;
         this._configService = configService;
         this._unitService = (IInternalUnitService)unitService;
-        this._backupManagerService = backupManagerService;
         this._playerDataService = playerDataService;
         this._playerHandlerService = playerHandlerService;
 
@@ -78,6 +74,12 @@ public class UnitManagerService : IUnitManagerService, IOnInit
 
     /// <inheritdoc/>
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
+    
+    /// <inheritdoc/>
+    public event EventHandler<Unit> OnPanicModeEnabled;
+    
+    /// <inheritdoc/>
+    public event EventHandler<Unit> OnPanicModeDisabled;
 
     /// <inheritdoc/>
     void IOnInit.OnInit()
@@ -91,13 +93,13 @@ public class UnitManagerService : IUnitManagerService, IOnInit
             }
             else
             {
-                this.CreateUnit(string.Join(string.Empty, playerDetails.Callsign), args.Player);
+                ((IInternalUnitManagerService)this).CreateUnit(string.Join(string.Empty, playerDetails.Callsign), args.Player);
             }
         };
     }
 
     /// <inheritdoc/>
-    public Unit CreateUnit(string callsign, FPlayer player)
+    Unit IInternalUnitManagerService.CreateUnit(string callsign, FPlayer player)
     {
         if (this._unitService.Units.FirstOrDefault(x => x.Callsign == callsign) is not null)
         {
@@ -116,7 +118,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
     }
 
     /// <inheritdoc/>
-    public Unit CreateUnit(string callsign, IEnumerable<FPlayer> players)
+    Unit IInternalUnitManagerService.CreateUnit(string callsign, IEnumerable<FPlayer> players)
     {
         if (this._unitService.Units.FirstOrDefault(x => x.Callsign == callsign) is not null)
         {
@@ -179,7 +181,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
         }
 
         unit.PanicMode.Value = true;
-        this._backupManagerService.TriggerBackupRequest(unit, FPriority.Code99);
+        this.OnPanicModeEnabled?.Invoke(this, unit);
     }
 
     /// <inheritdoc />
@@ -191,6 +193,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
         }
 
         unit.PanicMode.Value = false;
+        this.OnPanicModeDisabled?.Invoke(this, unit);
     }
 
     /// <inheritdoc />
@@ -213,7 +216,8 @@ public class UnitManagerService : IUnitManagerService, IOnInit
     private void GetAllUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var units = this._unitService.Units
-            .Select(unit => new UnitDTO(unit.Callsign, unit.TrafficStop is not null || unit.Callout is not null, unit.Players.Select(p => new SimplePlayerDTO(p.NetId, p.GetUnderlyingPlayer().Name))))
+            .Select(unit => new UnitDTO(unit.Callsign, unit.TrafficStop is not null || unit.Callout is not null,
+                unit.Players.Select(p => new SimplePlayerDTO(p.NetId, p.GetUnderlyingPlayer().Name))))
             .ToList();
         var page = new Page<UnitDTO>
         {
@@ -223,7 +227,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
             PageCount = 1,
             PageSize = units.Count,
         };
-        
+
         networkCallbackDelegate.InvokeWithJson(page);
     }
 
@@ -237,7 +241,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
             networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
-    
+
         if (this._configService.GeneralConfig.Unit.MaxMembers > 0 && unit.Players.Count >= this._configService.GeneralConfig.Unit.MaxMembers)
         {
             networkCallbackDelegate.InvokeWithResponse(
@@ -246,26 +250,40 @@ public class UnitManagerService : IUnitManagerService, IOnInit
                 "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
             return;
         }
-    
+
         var fPlayer = FPlayer.FromNetId(player.Handle);
         this.AddPlayerToUnit(fPlayer, unit);
-    
+
         var playerJoinDictionary = new Dictionary<string, string>
         {
             ["callsign"] = unit.Callsign,
         };
-    
+
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.JOIN", "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
-        this._notificationService.ShowNotification(fPlayer, "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
-        this._notificationService.ShowNotification(
-            unit.Players.Where(p => p.NetId != player.Handle),
-            "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
-            new Dictionary<string, string>
+        this._gameNotificationService.Notify(
+            fPlayer,
+            new GameNotificationOptions
             {
-                ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+                Title = "FivePD",
+                Message = "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN",
+                MessageParams = playerJoinDictionary,
             });
+        foreach (var p in unit.Players.Where(p => p.NetId != player.Handle))
+        {
+            this._gameNotificationService.Notify(
+                p,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
+                    MessageParams = new Dictionary<string, string>
+                    {
+                        ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+                    }
+                });
+        }
     }
-    
+
     [UIEvent(Events.UI.Unit.RequestToJoin, true)]
     private void RequestToJoinUnitUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -276,7 +294,7 @@ public class UnitManagerService : IUnitManagerService, IOnInit
             networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
-    
+
         if (this._configService.GeneralConfig.Unit.MaxMembers > 0 && unit.Players.Count >= this._configService.GeneralConfig.Unit.MaxMembers)
         {
             networkCallbackDelegate.InvokeWithResponse(
@@ -285,21 +303,24 @@ public class UnitManagerService : IUnitManagerService, IOnInit
                 "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
             return;
         }
-    
+
         foreach (var unitPlayer in unit.Players.Where(p => p.NetId != player.Handle))
         {
             this._confirmationService.TriggerConfirmation(
                 unitPlayer,
                 new ConfirmationProperties
                 {
-                    Notification = new ConfirmationProperties.NotificationProperties
+                    Title = "FivePD",
+                    Message = "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
+                    MessageParams = new Dictionary<string, string>
                     {
-                        Content = "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
-                        ContentParams = new Dictionary<string, string>
-                        {
-                            ["name"] = player.Name,
-                        },
+                        ["name"] = player.Name,
                     },
+                    Keys = new Dictionary<string, string>
+                    {
+                        { "F1", "Accept" },
+                    },
+                    PlayAudio = this._configService.GeneralConfig.Audio.Files.UnitJoinRequest,
                 },
                 response =>
                 {
@@ -307,26 +328,39 @@ public class UnitManagerService : IUnitManagerService, IOnInit
                     {
                         return;
                     }
-    
+
                     var fPlayer = FPlayer.FromNetId(player.Handle);
                     this.AddPlayerToUnit(fPlayer, unit);
-    
-                    var playerJoinDictionary = new Dictionary<string, string>
-                    {
-                        ["callsign"] = unit.Callsign,
-                    };
-                    this._notificationService.ShowNotification(fPlayer, "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
-                    this._notificationService.ShowNotification(
-                        unit.Players.Where(p => p.NetId != player.Handle),
-                        "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
-                        new Dictionary<string, string>
+
+                    this._gameNotificationService.Notify(
+                        fPlayer,
+                        new GameNotificationOptions
                         {
-                            ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+                            Title = "FivePD",
+                            Message = "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN",
+                            MessageParams = new Dictionary<string, string>
+                            {
+                                ["callsign"] = unit.Callsign,
+                            },
                         });
+                    foreach (var p in unit.Players.Where(p => p.NetId != player.Handle))
+                    {
+                        this._gameNotificationService.Notify(
+                            p,
+                            new GameNotificationOptions
+                            {
+                                Title = "FivePD",
+                                Message = "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
+                                MessageParams = new Dictionary<string, string>
+                                {
+                                    ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+                                }
+                            });
+                    }
                 });
         }
     }
-    
+
     [UIEvent(Events.UI.Unit.Leave, true)]
     private void LeaveUnitUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -337,23 +371,37 @@ public class UnitManagerService : IUnitManagerService, IOnInit
             networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
-    
+
         var fPlayer = FPlayer.FromNetId(player.Handle);
         this.RemovePlayerFromUnit(fPlayer);
-    
+
         var playerLeaveDictionary = new Dictionary<string, string>
         {
             ["callsign"] = unit.Callsign,
         };
-    
+
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.LEAVE", "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE", playerLeaveDictionary);
-        this._notificationService.ShowNotification(fPlayer, "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE", playerLeaveDictionary);
-        this._notificationService.ShowNotification(
-            unit.Players.Where(p => p.NetId != player.Handle),
-            "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.LEAVE",
-            new Dictionary<string, string>
+        this._gameNotificationService.Notify(
+            fPlayer,
+            new GameNotificationOptions
             {
-                ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+                Title = "FivePD",
+                Message = "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE",
+                MessageParams = playerLeaveDictionary,
             });
+        foreach (var p in unit.Players.Where(p => p.NetId != player.Handle))
+        {
+            this._gameNotificationService.Notify(
+                p,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.LEAVE",
+                    MessageParams = new Dictionary<string, string>
+                    {
+                        ["name"] = fPlayer.GetUnderlyingPlayer().Name,
+                    }
+                });
+        }
     }
 }

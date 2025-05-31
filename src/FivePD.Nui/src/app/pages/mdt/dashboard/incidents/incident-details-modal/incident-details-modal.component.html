@@ -1,0 +1,50 @@
+@if (incident$ | async; as incident) {
+
+  <div class="flex flex-col">
+    <div class="flex flex-col gap-6">
+
+      <div class="w-full flex flex-row items-center justify-between">
+        <p class="text-zinc-200 font-medium">
+          {{ (incident.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate }}
+        </p>
+
+        <app-badge [label]="getPriorityLabel(incident.Priority) | translate"
+                   [variant]="getPriorityBadgeColor(incident.Priority)"/>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
+        <p class="text-white text-lg">{{ incident.Description }}</p>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+        <p class="text-white text-lg">{{ incident.Address }}</p>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.UNIT.PLURAL' | translate }}</p>
+        <p class="text-white text-lg">{{ incident.Units.length ? incident.Units.join(',') : '-' }}</p>
+      </div>
+
+    </div>
+    <div class="mt-10 flex flex-col gap-1">
+      <p class="text-zinc-200 font-medium text-lg">{{ 'UI.LABEL.ACTION.PLURAL' | translate }}</p>
+      <div class="flex flex-row gap-4">
+        @if (isUnitAssignedToIncident$ | async) {
+          <app-button [label]="'UI.LABEL.INCIDENT.SELF_UNASSIGN.TITLE' | translate"
+                      variant="tertiary-bg"
+                      (onClick)="onSelfUnassignClick()"/>
+          <app-button [label]="'UI.LABEL.INCIDENT.COMPLETE.TITLE' | translate"
+                      variant="tertiary-bg"
+                      (onClick)="onCompleteClick()"/>
+        } @else {
+          <app-button [label]="'UI.LABEL.INCIDENT.SELF_ASSIGN.TITLE' | translate"
+                      variant="tertiary-bg"
+                      (onClick)="onSelfAssignClick()"/>
+        }
+      </div>
+    </div>
+  </div>
+}
+

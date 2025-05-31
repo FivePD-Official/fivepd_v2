@@ -20,6 +20,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.ISceneManagementService" />
+[Obfuscate]
 public class SceneManagementService : ISceneManagementService, IInternalSceneManagementService
 {
     private readonly Dictionary<Guid, SpeedZoneWithPlayer> _speedZones = new();

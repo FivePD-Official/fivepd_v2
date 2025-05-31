@@ -5,7 +5,6 @@ import { EventService } from "@services/event/event.service";
 import { WindowService } from "@services/window/window.service";
 import { Router } from "@angular/router";
 import { WelcomeModalComponent } from '../welcome-modal/welcome-modal.component';
-import { InformationComponent } from '../information/information.component';
 import { MenuComponent } from '../menu/menu.component';
 import { AsyncPipe } from '@angular/common';
 
@@ -14,7 +13,7 @@ import { AsyncPipe } from '@angular/common';
   templateUrl: './not-mdt.component.html',
   styleUrls: ['./not-mdt.component.sass'],
   standalone: true,
-  imports: [MenuComponent, InformationComponent, WelcomeModalComponent, AsyncPipe]
+  imports: [MenuComponent, WelcomeModalComponent, AsyncPipe]
 })
 export class NotMdtComponent {
 

@@ -5,10 +5,8 @@ using CitizenFX.Core;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
-using FivePD.Common.DTO;
-using FivePD.Common.Extensions;
+using FivePD.Common.Models;
 using Newtonsoft.Json;
-using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Services;
 
@@ -17,10 +15,9 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ITickService _tickService;
-    private readonly INotificationService _notificationService;
-    private readonly ILocalizationService _localizationService;
     private readonly IControlService _controlService;
     private readonly IUIManagerService _uiManagerService;
+    private readonly IGameNotificationService _gameNotificationService;
 
     private readonly Queue<QueuedConfirmation> _confirmationQueue = new();
     private QueuedConfirmation _currentConfirmation;
@@ -30,24 +27,21 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
-    /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
-    /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
     /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
+    /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     public ConfirmationService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickService tickService,
-        INotificationService notificationService,
-        ILocalizationService localizationService,
         IControlService controlService,
-        IUIManagerService uiManagerService)
+        IUIManagerService uiManagerService,
+        IGameNotificationService gameNotificationService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickService = tickService;
-        this._notificationService = notificationService;
-        this._localizationService = localizationService;
         this._controlService = controlService;
         this._uiManagerService = uiManagerService;
+        this._gameNotificationService = gameNotificationService;
     }
 
     /// <inheritdoc/>
@@ -67,7 +61,7 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
 
     private void OnActionTrigger(string callbackId, string serializedAction)
     {
-        var action = JsonConvert.DeserializeObject<ConfirmationDTO>(serializedAction);
+        var action = JsonConvert.DeserializeObject<ConfirmationProperties>(serializedAction);
         this._confirmationQueue.Enqueue(new QueuedConfirmation(callbackId, action));
     }
 
@@ -136,7 +130,7 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
         }
 
         var elapsed = DateTime.Now.Subtract(this._currentConfirmation.ActionStart).TotalMilliseconds;
-        if (elapsed >= this._currentConfirmation.Confirmation.TimeoutInMs)
+        if (elapsed >= this._currentConfirmation.ConfirmationOptions.Timeout)
         {
             BaseScript.TriggerServerEvent(Events.Generic.Callback, this._currentConfirmation.CallbackId, false);
             this._currentConfirmation = null;
@@ -147,47 +141,10 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
 
     private void DisplayConfirmationNotifications(QueuedConfirmation queuedConfirmation)
     {
-        if (!string.IsNullOrEmpty(queuedConfirmation.Confirmation.Properties.Tooltip))
-        {
-            this._notificationService.ShowTooltip(
-                this._localizationService.Get(queuedConfirmation.Confirmation.Properties.Tooltip),
-                true,
-                queuedConfirmation.Confirmation.TimeoutInMs);
-        }
-
-        var notification = queuedConfirmation.Confirmation.Properties.Notification;
-        if (notification is null)
-        {
-            return;
-        }
-
-        var paramsToReplace = new Dictionary<string, string>();
-        if (notification.ContentParams is not null)
-        {
-            foreach (var item in notification.ContentParams)
-            {
-                paramsToReplace[item.Key] = this._localizationService.Get(item.Value);
-            }
-        }
-
-        paramsToReplace["timeout"] = (queuedConfirmation.Confirmation.TimeoutInMs / 1000).ToString();
-
-        if (string.IsNullOrEmpty(notification.Sender) || string.IsNullOrEmpty(notification.Subject) || string.IsNullOrEmpty(notification.Texture))
-        {
-            this._notificationService.ShowNotification(
-                this._localizationService.Get(notification.Content).ReplaceParams(paramsToReplace));
-        }
-        else
-        {
-            this._notificationService.ShowNotificationWithTexture(
-                this._localizationService.Get(notification.Texture),
-                this._localizationService.Get(notification.Sender),
-                this._localizationService.Get(notification.Subject),
-                this._localizationService.Get(notification.Content).ReplaceParams(paramsToReplace));
-        }
+            this._gameNotificationService.Notify(queuedConfirmation.ConfirmationOptions);
     }
 
-    private sealed record QueuedConfirmation(string CallbackId, ConfirmationDTO Confirmation)
+    private sealed record QueuedConfirmation(string CallbackId, ConfirmationProperties ConfirmationOptions)
     {
         public bool SetActionStart { get; set; }
 

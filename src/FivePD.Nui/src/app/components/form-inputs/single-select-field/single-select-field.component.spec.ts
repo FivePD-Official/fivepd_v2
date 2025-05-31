@@ -23,11 +23,15 @@ describe('SingleSelectFieldComponent', () => {
     fixture = TestBed.createComponent(SingleSelectFieldComponent);
     component = fixture.componentInstance;
 
-    component.form = new FormGroup([]);
+    component.form = new FormGroup({});
     component.field = new SingleSelectField({
+      key: 'testSelect',
       required: false,
-      defaultItemLabel: "",
-      items: [],
+      defaultItemLabel: "Select an option",
+      items: () => [
+        { key: 1, label: 'Option 1' },
+        { key: 2, label: 'Option 2' }
+      ],
       size: 'small',
       variant: 'secondary'
     });

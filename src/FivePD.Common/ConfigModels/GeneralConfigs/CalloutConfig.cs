@@ -1,11 +1,13 @@
-﻿namespace FivePD.Common.ConfigModels.GeneralConfigs;
+﻿using FivePD.Common.DTO;
+
+namespace FivePD.Common.ConfigModels.GeneralConfigs;
 
 #pragma warning disable
 
 public sealed record CalloutConfig
 {
     public string DispatchType { get; init; } = "AUTO";
-    
+
     public bool DispatchTypeAuto()
     {
         return this.DispatchType.ToUpper() == "AUTO";
@@ -23,15 +25,29 @@ public sealed record CalloutConfig
     public int MaxActiveCallouts { get; init; }
 
     public bool AreaBasedDispatch { get; init; }
-    
+
     public DynamicDispatchConfig DynamicDispatch { get; init; } = new();
 
-    public int DispatchTimeoutInMs { get; init; }
+    public AutoRemoveConfig AutoRemove { get; init; } = new();
 
     public sealed record DynamicDispatchConfig
     {
         public bool Enabled { get; init; }
 
         public float Radius { get; init; }
+    }
+
+    public sealed record AutoRemoveConfig
+    {
+        public bool Enabled { get; init; }
+
+        public AutoRemoveTimeoutConfig TimeoutByDispatchType { get; init; }
+
+        public sealed record AutoRemoveTimeoutConfig
+        {
+            public int Auto { get; init; }
+
+            public int Manual { get; init; }
+        }
     }
 }

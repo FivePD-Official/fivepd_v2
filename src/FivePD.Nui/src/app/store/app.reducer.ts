@@ -1,4 +1,4 @@
-﻿import { Page, PedHistory, Vector3 } from '@models';
+﻿import { Page, PedData, Vector3, VehicleData } from '@models';
 import { createReducer, on } from '@ngrx/store';
 import {
   AppActions,
@@ -20,7 +20,8 @@ export interface AppStateModel {
   dispatchMode: boolean;
   dispatchModeMapZoom: number;
   windowMaximized: boolean;
-  recentlyViewedPeds: PedHistory[];
+  recentlyViewedPeds: PedData[];
+  recentlyViewedVehicles: VehicleData[];
 }
 
 const devToolsDefaultState: DevToolsState = {
@@ -40,6 +41,7 @@ const initialState: AppStateModel = {
   dispatchModeMapZoom: 3,
   windowMaximized: false,
   recentlyViewedPeds: [],
+  recentlyViewedVehicles: [],
 };
 
 export const appReducer = createReducer(
@@ -78,5 +80,17 @@ export const appReducer = createReducer(
     }
 
     return {...state, recentlyViewedPeds};
+  }),
+  on(AppActions.addVehicleToRecentlyViewed, (state, {vehicle}) => {
+    if (state.recentlyViewedVehicles.some(x => x.Id === vehicle.Id)) {
+      return state;
+    }
+
+    const recentlyViewedVehicles = [vehicle, ...state.recentlyViewedVehicles];
+    if (recentlyViewedVehicles.length > 5) {
+      recentlyViewedVehicles.pop();
+    }
+
+    return {...state, recentlyViewedVehicles};
   }),
 );

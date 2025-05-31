@@ -7,8 +7,8 @@
 /// </summary>
 public enum FPriority
 {
-    Code1, // blue
-    Code2, // yellow
-    Code3, // orange
-    Code99, // red
+    Code1,
+    Code2,
+    Code3,
+    Code99,
 }

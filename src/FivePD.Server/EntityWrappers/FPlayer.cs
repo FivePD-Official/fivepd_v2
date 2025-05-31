@@ -26,7 +26,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Initializes a new instance of the <see cref="FPlayer"/> class.
     /// </summary>
     /// <param name="netId">The network identifier that corresponds to the player.</param>
-    public FPlayer(string netId)
+    private FPlayer(string netId)
     {
         this.NetId = netId;
 
@@ -65,7 +65,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the player's FPed.
     /// </summary>
     /// <returns>User.</returns>
-    public FPed FPed => ServiceLocator.GetService<IPedService>().TryGetPed(this.GetUnderlyingPlayer().Character.NetworkId);
+    public FPed FPed => ServiceLocator.GetService<IPedStorageService>().TryGetPed(this.GetUnderlyingPlayer().Character.NetworkId);
 
     /// <summary>
     /// Gets the player's duty status observable.

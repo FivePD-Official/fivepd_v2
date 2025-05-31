@@ -1,5 +1,4 @@
-﻿using FivePD.Common.Enums;
-using FivePD.Server.EntityWrappers;
+﻿using FivePD.Server.EntityWrappers;
 
 namespace FivePD.Server.Interfaces;
 
@@ -8,13 +7,6 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 public interface IAudioService
 {
-    /// <summary>
-    /// Plays a sound.
-    /// </summary>
-    /// <param name="player">The player to play the sound for.</param>
-    /// <param name="sound">The sound effect's name to play.</param>
-    public void Play(FPlayer player, Sound sound);
-
     /// <summary>
     /// Plays a sound.
     /// </summary>

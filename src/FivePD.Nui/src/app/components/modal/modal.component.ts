@@ -26,6 +26,8 @@ import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { NgClass } from '@angular/common';
 
+export type ModalPosition = 'center' | 'side';
+
 @Component({
   selector: 'app-modal',
   templateUrl: './modal.component.html',
@@ -36,9 +38,12 @@ import { NgClass } from '@angular/common';
 export class ModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   destroy$ = new Subject<void>();
+
+  position: ModalPosition = 'center';
   componentRef!: ComponentRef<any>;
   childComponentType!: Type<any>;
   dynamicFormComponent?: DynamicFormComponent;
+  @ViewChild('modalBackdrop') modalBackdrop!: ElementRef;
   @ViewChild('modalContainer') modalContainer!: ElementRef;
   @ViewChild('modalContent') modalContent!: ElementRef;
   loader?: ModalLoader;
@@ -63,6 +68,11 @@ export class ModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.loadChildComponent(this.childComponentType);
+    this.modalBackdrop.nativeElement.addEventListener('click', (event: MouseEvent) => {
+      if (event.target === this.modalBackdrop.nativeElement) {
+        this.close();
+      }
+    });
   }
 
   ngOnDestroy(): void {

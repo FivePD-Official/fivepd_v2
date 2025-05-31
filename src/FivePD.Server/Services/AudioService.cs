@@ -1,20 +1,14 @@
 ﻿using FivePD.Common;
-using FivePD.Common.Enums;
-using FivePD.Common.Extensions;
+using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class AudioService : IAudioService
 {
-    /// <inheritdoc />
-    public void Play(FPlayer player, Sound sound)
-    {
-        this.Play(player, sound.GetDescription());
-    }
-
     /// <inheritdoc />
     public void Play(FPlayer player, string soundFileName)
     {

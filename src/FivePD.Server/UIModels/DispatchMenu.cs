@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using FivePD.Common;
 using FivePD.Common.ConfigModels.GeneralConfigs;
 using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
@@ -11,6 +13,7 @@ using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
+using Microsoft.Extensions.Primitives;
 
 namespace FivePD.Server.UIModels;
 
@@ -22,24 +25,30 @@ public sealed class DispatchMenu : Menu
     private readonly IConfigService _configService;
     private readonly IBackupManagerService _backupManagerService;
     private readonly IEntityService _entityService;
-    private readonly INotificationService _notificationService;
     private readonly IUnitManagerService _unitManagerService;
+    private readonly IGameNotificationService _gameNotificationService;
+    private readonly IPedStorageService _pedStorageService;
+    private readonly IVehicleStorageService _vehicleStorageService;
 
     public DispatchMenu(
         IIncidentService incidentService,
         IConfigService configService,
         IBackupManagerService backupManagerService,
         IEntityService entityService,
-        INotificationService notificationService,
-        IUnitManagerService unitManagerService)
+        IUnitManagerService unitManagerService,
+        IGameNotificationService gameNotificationService,
+        IPedStorageService pedStorageService,
+        IVehicleStorageService vehicleStorageService)
         : base(Controls.DispatchMenu.Id, Controls.DispatchMenu.Title, Controls.DispatchMenu.Key)
     {
         this._incidentService = incidentService;
         this._configService = configService;
         this._backupManagerService = backupManagerService;
         this._entityService = entityService;
-        this._notificationService = notificationService;
         this._unitManagerService = unitManagerService;
+        this._gameNotificationService = gameNotificationService;
+        this._pedStorageService = pedStorageService;
+        this._vehicleStorageService = vehicleStorageService;
     }
 
     protected override List<MenuItem> CreateItems()
@@ -190,40 +199,74 @@ public sealed class DispatchMenu : Menu
         var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
         if (fPed is null)
         {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "UI.ERROR.UNEXPECTED",
+                });
             return;
         }
 
         if (!fPed.HasGeneratedData.Value)
         {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "UI.ERROR.UNEXPECTED",
+                });
             return;
         }
 
-        var license = fPed.GetLicense(PedLicenseType.Driving);
+        var pedData = this._pedStorageService.GetPedData(fPed);
+        if (pedData is null)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "UI.ERROR.UNEXPECTED",
+                });
+            return;
+        }
+
+        var license = pedData.GetLicense(PedLicenseType.Driving);
         if (license is null)
         {
-            this._notificationService.ShowNotification(player, "no driving license");
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "No driving license available.",
+                });
             return;
         }
 
-        var text = new GtaStyleText()
-            .Append(fPed.Firstname + " " + fPed.Lastname)
-            .NewLine();
+        var text = new StringBuilder()
+            .Append(pedData.Firstname + " " + pedData.Lastname)
+            .Append("{{NEW_LINE}}");
 
-        if (fPed.Warrants.Count == 0)
+        if (pedData.Warrants.Count == 0)
         {
             text.Append("No warrants");
         }
         else
         {
-            text.Red($"{fPed.Warrants.Count} warrant(s)");
+            text.Append($"{pedData.Warrants.Count} warrant(s)");
         }
 
-        this._notificationService.ShowNotificationWithTexture(
+        this._gameNotificationService.Notify(
             player,
-            "CHAR_CALL911",
-            "LABEL.DISPATCH",
-            "ID Check",
-            text.Build());
+            new GameNotificationOptions
+            {
+                Title = "FivePD - ID check",
+                Message = text.ToString(),
+            });
     }
 
     public override bool CanOpen(FPlayer player)
@@ -248,49 +291,76 @@ public sealed class DispatchMenu : Menu
         var fVehicle = await this._entityService.GetClosestEntityToPlayerAsync<FVehicle>(player.GetUnderlyingPlayer());
         if (fVehicle is null)
         {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "UI.ERROR.UNEXPECTED",
+                });
             return;
         }
 
         if (!fVehicle.HasGeneratedData.Value)
         {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "UI.ERROR.UNEXPECTED",
+                });
             return;
         }
 
-        var text = new GtaStyleText()
-            .Append(fVehicle.LicensePlate)
-            .NewLine();
+        var vehicleData = this._vehicleStorageService.GetVehicleData(fVehicle);
+        if (vehicleData is null)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "UI.ERROR.UNEXPECTED",
+                });
+            return;
+        }
 
-        var registration = fVehicle.GetDocument(VehicleDocumentType.Registration);
+        var text = new StringBuilder()
+            .Append(vehicleData.LicensePlate)
+            .Append("{{NEW_LINE}}");
+
+        var registration = vehicleData.GetDocument(VehicleDocumentType.Registration);
         if (registration is not null)
         {
             text.Append("Registration: ");
             if (registration.Status == VehicleDocumentStatus.Valid)
             {
-                text.Green("Valid").White().NewLine();
+                text.Append("Valid").Append("{{NEW_LINE}}");
             }
             else
             {
-                text.Yellow(registration.Status switch
+                text.Append(registration.Status switch
                 {
                     VehicleDocumentStatus.Expired => "Expired",
                     VehicleDocumentStatus.Suspended => "Suspended",
                     VehicleDocumentStatus.Revoked => "Revoked",
                     _ => "Unknown",
-                }).White().NewLine();
+                }).Append("{{NEW_LINE}}");
             }
         }
 
-        var insurance = fVehicle.GetDocument(VehicleDocumentType.Insurance);
+        var insurance = vehicleData.GetDocument(VehicleDocumentType.Insurance);
         if (insurance is not null)
         {
             text.Append("Insurance: ");
             if (insurance.Status == VehicleDocumentStatus.Valid)
             {
-                text.Green("Valid");
+                text.Append("Valid");
             }
             else
             {
-                text.Yellow(insurance.Status switch
+                text.Append(insurance.Status switch
                 {
                     VehicleDocumentStatus.Expired => "Expired",
                     VehicleDocumentStatus.Suspended => "Suspended",
@@ -300,19 +370,22 @@ public sealed class DispatchMenu : Menu
             }
         }
 
-        this._notificationService.ShowNotificationWithTexture(
+        this._gameNotificationService.Notify(
             player,
-            "CHAR_CALL911",
-            "LABEL.DISPATCH",
-            "License plate check",
-            text.Build());
+            new GameNotificationOptions
+            {
+                Title = "FivePD - License plate check",
+                Message = text.ToString(),
+            });
     }
 
     private async Task DutyNotification(FPlayer player, string message)
     {
-        this._notificationService.ShowNotification(
-            player,
-            message
-            );
+        this._gameNotificationService.Notify(player, new GameNotificationOptions
+        {
+            Title = "FivePD",
+            Message = message,
+            PlayAudio = this._configService.GeneralConfig.Audio.Files.DutyNotification,
+        });
     }
 }

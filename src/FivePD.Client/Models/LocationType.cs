@@ -5,7 +5,7 @@
 /// <summary>
 /// Represents a location type to be used in marker UI.
 /// </summary>
-public enum LocationType
+internal enum LocationType
 {
     MdtAccess,
     JailDropOff,

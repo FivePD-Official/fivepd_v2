@@ -18,6 +18,14 @@ export class PaginationComponent {
 
   @Output() onPageChange = new EventEmitter<number>();
 
+  toFirstPage() {
+    if (this.collation?.Page === 1) {
+      return;
+    }
+
+    this.onPageChange.emit(1);
+  }
+
   toPreviousPage() {
     if (this.collation?.Page === 1) {
       return;
@@ -32,6 +40,14 @@ export class PaginationComponent {
     }
 
     this.onPageChange.emit(++this.collation.Page);
+  }
+
+  toLastPage() {
+    if (this.collation.Page === this.data?.PageCount) {
+      return;
+    }
+
+    this.onPageChange.emit(this.data?.PageCount);
   }
 
   toPage(pageNumber: number) {

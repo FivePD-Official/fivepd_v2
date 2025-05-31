@@ -13,13 +13,17 @@ public interface IVector3Service
     /// Gets a random location offset from the specified entity with heading.
     /// </summary>
     /// <param name="entity">The entity.</param>
+    /// <param name="offsetMin">The minimum offset.</param>
+    /// <param name="offsetMax">The maximum offset.</param>
     /// <returns>A serialized json with location and heading.</returns>
-    public Task<Vector3> GetRandomLocationAsync(Entity entity);
+    public Task<Vector3> GetRandomLocationAsync(Entity entity, int offsetMin, int offsetMax);
 
     /// <summary>
     /// Gets a random location on roadside with heading.
     /// </summary>
     /// <param name="entity">The entity.</param>
+    /// <param name="offsetMin">The minimum offset.</param>
+    /// <param name="offsetMax">The maximum offset.</param>
     /// <returns>A serialized json with location and heading.</returns>
-    public Task<Vector3WithHeading> GetPointOnRoadSideAsync(Entity entity);
+    public Task<Vector3WithHeading> GetPointOnRoadSideAsync(Entity entity, int offsetMin, int offsetMax);
 }

@@ -1,24 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { TimerBarEvent } from '@models';
+import { TimerBarEvent, TimerBarProgressEvent } from '@models';
 import { Subscription } from 'rxjs';
 import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-timer-bar',
   templateUrl: './timer-bar.component.html',
-  styleUrls: ['./timer-bar.component.sass'],
   standalone: true,
   imports: [NgStyle]
 })
-export class TimerBarComponent implements OnInit {
+export class TimerBarComponent implements OnInit, OnDestroy {
 
   showTimerBar: boolean = true;
   title: string = '';
-  timeToHold: number = 0;
-  interval?: number;
   percentage: number = 0;
-  event$?: Subscription;
+  private timerBarEventSubscription?: Subscription;
+  private timerBarProgressSubscription?: Subscription;
+  private hideTimeout: number | undefined;
+  private _timerStartTime: number = 0;
+  private _currentTotalDuration: number = 0;
+  private _lastKnownPercentage: number = 0;
 
   constructor(
     private _event: EventService,
@@ -26,34 +28,62 @@ export class TimerBarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.event$ = this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onEvent(res));
+    this.timerBarEventSubscription = this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onTimerBarEvent(res));
+    this.timerBarProgressSubscription = this._event.onEvent<TimerBarProgressEvent>('fivepd:ui:view:timer_bar_progress').subscribe(res => this.onTimerBarProgress(res));
   }
 
   ngOnDestroy(): void {
-    this.event$?.unsubscribe();
+    this.timerBarEventSubscription?.unsubscribe();
+    this.timerBarProgressSubscription?.unsubscribe();
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
   }
 
-  onEvent(res: TimerBarEvent): void {
-    this.showTimerBar = res.Show;
+  onTimerBarEvent(res: TimerBarEvent): void {
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
 
     if (!res.Show) {
-      this.title = '';
-      this.timeToHold = 0;
-      this.percentage = 0;
-      clearInterval(this.interval);
+      if (this._lastKnownPercentage < 100) {
+        this.title = '';
+        this.showTimerBar = false;
+        this.percentage = 0;
+        return;
+      }
+
+      this.percentage = 100;
+
+      const currentTime = Date.now();
+      const expectedEndTime = this._timerStartTime + this._currentTotalDuration;
+      let delay = expectedEndTime - currentTime;
+
+      delay = Math.max(0, delay);
+
+      this.hideTimeout = setTimeout(() => {
+        this.title = '';
+        this.showTimerBar = false;
+      }, delay * 10) as unknown as number;
       return;
     }
 
+    this.showTimerBar = true;
     this.title = res.Title;
-    this.timeToHold = res.TimeToHold;
+    this.percentage = 0;
+    this._timerStartTime = Date.now();
+  }
 
-    console.log(this.title)
-    console.log(this.timeToHold)
+  onTimerBarProgress(res: { CurrentProgress: number, TotalDuration: number }): void {
+    if (res.TotalDuration === 0) {
+      this.percentage = 0;
+      this._lastKnownPercentage = 0;
+      return;
+    }
 
-    const addToPercentage = 1000 / this.timeToHold;
-    this.interval = setInterval(() => {
-      this.percentage += addToPercentage;
-    }, 1) as unknown as number;
+    this._currentTotalDuration = res.TotalDuration;
+    this.percentage = (res.CurrentProgress / res.TotalDuration) * 100;
+    this._lastKnownPercentage = this.percentage;
   }
 
 }

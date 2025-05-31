@@ -1,4 +1,5 @@
 ﻿export enum CoreAttributes {
+  SubmitDate = 'SubmitDate',
   DepartmentId = 'DepartmentId',
   DepartmentIds = 'DepartmentIds',
   UserId = 'UserId',
@@ -10,6 +11,7 @@
 }
 
 export const coreAttributeNames: string[] = [
+  CoreAttributes.SubmitDate,
   CoreAttributes.UserId,
   CoreAttributes.UserIds,
   CoreAttributes.DepartmentId,

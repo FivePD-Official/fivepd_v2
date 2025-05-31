@@ -1,0 +1,13 @@
+.notification-item
+  opacity: 1
+  transform: translateY(0px)
+  transition: opacity 0.5s ease, transform 0.5s ease
+
+.notification-item.exiting
+  animation: 400ms ease-out forwards exit
+
+@keyframes exit
+  0%
+    opacity: 1
+  100%
+    opacity: 0

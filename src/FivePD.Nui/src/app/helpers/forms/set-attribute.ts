@@ -26,7 +26,7 @@ export function createAttributesFormFields(localizationService: LocalizationServ
       size: 'normal',
       variant: 'secondary',
       defaultItemLabel: localizationService.translate('UI.LABEL.TYPE.SINGULAR'),
-      items: [
+      items: () => [
         {
           key: AttributeDataType.ShortString,
           label: localizationService.translate('UI.LABEL.SHORT_TEXT.SINGULAR')
@@ -87,7 +87,8 @@ export function createAttributesFormFields(localizationService: LocalizationServ
       size: 'normal',
       variant: 'secondary',
       defaultItemLabel: localizationService.translate('UI.LABEL.CUSTOM'),
-      items: [
+      items: () => [
+        {key: CoreAttributes.SubmitDate, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.SUBMIT_DATE')},
         {key: CoreAttributes.UserId, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.USER_ID')},
         {key: CoreAttributes.UserIds, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.USER_IDS')},
         {

@@ -17,12 +17,12 @@ internal sealed record Controls
 
     public static readonly Control SceneManagerMenu = new("fivepd::sceneManagerMenu", "F9", "UI.MENU.SCENE_MANAGER.TITLE");
 
+    public static readonly Control QuestioningMenu = new("fivepd::questioningMenu", "Q", "UI.MENU.QUESTIONING.TITLE");
+
     // Other
-    public static readonly Control MomentaryTest = new("fivepd::momentaryTest", "F", "Momentary test", 1000);
+    public static readonly MomentaryControl TryAlertEntity = new("fivepd::tryAlertEntityAsync", "E", "Try to alert entity", "Alerting ped...", 500);
 
-    public static readonly Control TryAlertEntity = new("fivepd::tryAlertEntityAsync", "E", "Try to alert entity", 1000);
-
-    public static readonly Control TryAlertVehicle = new("fivepd::tryAlertVehicleAsync", "LSHIFT", "Try to alert a vehicle", 1000);
+    public static readonly MomentaryControl TryAlertVehicle = new("fivepd::tryAlertVehicleAsync", "LSHIFT", "Try to alert a vehicle", "Alerting vehicle...", 500);
 
     public static readonly Control ConfirmationAccept = new("fivepd::confirmationAccept", "F1", "Confirms an action");
 
@@ -32,15 +32,21 @@ internal sealed record Controls
 
     public static readonly Control OpenInformation = new("fivepd::openInformation", "I", "Open information panel");
 
-    public static readonly Control ToggleALPR = new Control("fivepd::toggleALPR", "F7", "Toggle ALPR");
+    public static readonly Control ToggleAlpr = new("fivepd::toggleALPR", "F7", "Toggle ALPR");
 
-    public sealed record Control(string Id, string Key, string Title = "", int TimeToHoldInMs = 0)
+    public record Control(string Id, string Key, string Title)
     {
         public string Id { get; private set; } = Id;
 
         public string Key { get; private set; } = Key;
 
         public string Title { get; private set; } = Title;
+
+    }
+
+    public record MomentaryControl(string Id, string Key, string Title, string TimerBarTitle, int TimeToHoldInMs) : Control(Id, Key, Title)
+    {
+        public string TimerBarTitle { get; private set; } = TimerBarTitle;
 
         public int TimeToHoldInMs { get; private set; } = TimeToHoldInMs;
     }

@@ -27,13 +27,14 @@ import { NgClass } from '@angular/common';
 import { TextFieldComponent } from "../form-inputs/text-field/text-field.component";
 import { SingleSelectFieldComponent } from "../form-inputs/single-select-field/single-select-field.component";
 import { MultiSelectFieldComponent } from "../form-inputs/multi-select-field/multi-select-field.component";
+import { BadgeComponent } from "../badge/badge.component";
 
 @Component({
   selector: 'app-grid',
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.sass'],
   standalone: true,
-  imports: [ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe, TextFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent]
+  imports: [ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe, TextFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, BadgeComponent]
 })
 export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 
@@ -44,15 +45,23 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   @Input() showPagination: boolean = true;
   @Input() rowLinkResolver?: (item: T) => string;
 
+  @Input() rowsClickable?: boolean = false;
+  @Output() rowClick = new EventEmitter<T>();
+
   formattedColumns: Column<T>[] = [];
   formattedRows: FormattedRow<T>[] = [];
 
   filter$ = new Subject();
-  collation: Collation = {
+
+  readonly defaultCollation: Collation = {
     Page: 1,
     Filters: {},
     Sorting: {},
   };
+  _collation: Collation = this.defaultCollation;
+  @Input() set collation(value: Collation<any> | null) {
+    this._collation = value ?? this.defaultCollation;
+  }
 
   @Output() onCellAction = new EventEmitter();
   @Output() onCollationChange = new EventEmitter<Collation>();
@@ -63,7 +72,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     this.filter$.pipe(
       debounceTime(500)
-    ).subscribe(() => this.onCollationChange.emit(this.collation));
+    ).subscribe(() => this.onCollationChange.emit(this._collation));
   }
 
   ngOnDestroy(): void {
@@ -108,7 +117,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       key: column.accessorKey,
       label: '',
       defaultItemLabel: column.filter?.label ?? '',
-      items: column.filter?.dropdown ?? [],
+      items: () => column.filter?.dropdown ?? [],
       size: 'small',
       height: 'sm',
       variant: 'secondary',
@@ -212,7 +221,7 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    const filterCopy = {...this.collation.Filters};
+    const filterCopy = {...this._collation.Filters};
     if (filterCopy.hasOwnProperty(accessorKey)) {
       if (typeof value === 'string' || typeof value === 'number') {
         if (value) {
@@ -227,13 +236,13 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
       }
     }
 
-    this.collation.Filters = filterCopy;
+    this._collation.Filters = filterCopy;
     this.filter$.next(undefined);
   }
 
   onPageChange(page: number): void {
-    this.collation.Page = page;
-    this.onCollationChange.emit(this.collation);
+    this._collation.Page = page;
+    this.onCollationChange.emit(this._collation);
   }
 
   tableCellActionButtonClick(action: TableCellAction<T>, item: FormattedRowItem<T>): void {
@@ -241,7 +250,6 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   }
 
   onTableCellActionSelect(action: any, item: FormattedRowItem<T>, selectedItemKey: any): void {
-    console.log(action, item, selectedItemKey)
     if ('onSelect' in action) {
       action.onSelect(item.originalItem, selectedItemKey);
     } else {
@@ -262,6 +270,10 @@ export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
   onRowClick(row: FormattedRowItem<T>[]): void {
     if (this.rowLinkResolver) {
       this._router.navigateByUrl(this.rowLinkResolver(row[0].originalItem));
+    }
+
+    if (this.rowsClickable) {
+      this.rowClick.emit(row[0].originalItem);
     }
   }
 }

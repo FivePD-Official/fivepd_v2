@@ -1,4 +1,4 @@
-﻿using FivePD.Common.Enums;
+﻿using FivePD.Common.ConfigModels.GeneralConfigs;
 
 namespace FivePD.Client.Interfaces;
 
@@ -7,12 +7,6 @@ namespace FivePD.Client.Interfaces;
 /// </summary>
 internal interface IAudioService
 {
-    /// <summary>
-    /// Plays a sound.
-    /// </summary>
-    /// <param name="sound">The sound effect's name to play.</param>
-    public void Play(Sound sound);
-
     /// <summary>
     /// Plays a sound.
     /// </summary>

@@ -1,0 +1,9 @@
+{
+  "name": "static-audio-server",
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

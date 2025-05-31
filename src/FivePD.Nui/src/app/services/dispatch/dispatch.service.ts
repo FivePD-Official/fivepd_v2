@@ -4,7 +4,7 @@ import { GlobalState } from "@store";
 import { Router } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { CalloutRemoveFromDispatcher, DispatcherCalloutDTOClientWrapper } from "../../models/callout";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
 import { EventService } from "@services/event/event.service";
 import { ConfigService } from "@services/config/config.service";
 import {
@@ -20,7 +20,6 @@ import { AppActions } from "@store/app.actions";
 export type Callout = DispatcherCalloutDTOClientWrapper & {
   timeout: number;
   generatedAt: Date;
-  units: string[];
 }
 
 @Injectable({
@@ -32,6 +31,7 @@ export class DispatchService {
   readonly activeCallouts$ = new BehaviorSubject<Callout[]>([]);
   readonly units$ = new BehaviorSubject<DispatcherUnitDTO[]>([]);
   readonly players$ = new BehaviorSubject<SimplePlayer[]>([]);
+
   maxTimeout: number = 0;
 
   constructor(
@@ -42,16 +42,37 @@ export class DispatchService {
     private readonly _configService: ConfigService,
   ) {
     _configService.getGeneralConfig().subscribe(config => {
-      this.maxTimeout = Math.round(config.config.Callout.DispatchTimeoutInMs / 1000);
+      this.maxTimeout = Math.round(config.config.Callout.AutoRemove.TimeoutByDispatchType.Manual / 1000);
+
+      if (config.config.Callout.AutoRemove.Enabled) {
+        this.updateCalloutTimeouts();
+        setInterval(() => {
+          this.updateCalloutTimeouts();
+        }, 1000);
+      }
     });
 
     _eventService
+      .onEvent<void>('fivepd:dispatch:updateRequest')
+      .subscribe(() => {
+        this.getUnits();
+        this.getActiveCallouts();
+      });
+
+    _eventService
       .onEvent<DispatcherCalloutDTOClientWrapper>('fivepd:dispatch:sendCalloutToDispatcher')
-      .subscribe(callout => this.onCalloutReceived(callout));
+      .subscribe(callout => {
+        this.onCalloutReceived(callout);
+        // this.getUnits();
+        // this.getActiveCallouts();
+      });
 
     _eventService
       .onEvent<CalloutRemoveFromDispatcher>('fivepd:dispatch:removeCalloutFromDispatcher')
-      .subscribe(event => this.onCalloutRemove(event.CalloutId));
+      .subscribe(event => {
+        this.onCalloutRemove(event.CalloutId);
+        this.getUnits();
+      });
 
     _eventService
       .onEvent<UpdatePlayersEvent>('fivepd:ui:dispatch:updatePlayers')
@@ -64,16 +85,17 @@ export class DispatchService {
     _eventService
       .onEvent<OnUnitRemoved>('fivepd:dispatch:onUnitRemoved')
       .subscribe(event => this.onUnitRemoved(event.Callsign));
-
-    this.updateCalloutTimeouts();
-    setInterval(() => {
-      this.updateCalloutTimeouts();
-    }, 1000);
   }
 
   getIncomingCallouts(): void {
-    this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getIncomingCallouts', {}).subscribe(callouts => {
+    this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getCallouts', {HasUnitsAssigned: false}).subscribe(callouts => {
       this.incomingCallouts$.next(callouts.map(c => this.mapCallout(c)));
+    });
+  }
+
+  getActiveCallouts(): void {
+    this._http.post<DispatcherCalloutDTOClientWrapper[]>('fivepd:ui:dispatch:getCallouts', {HasUnitsAssigned: true}).subscribe(callouts => {
+      this.activeCallouts$.next(callouts.map(c => this.mapCallout(c)));
     });
   }
 
@@ -102,15 +124,35 @@ export class DispatchService {
   }
 
   assignCalloutToUnits(unitCallsigns: string[], callout: Callout) {
-    if (!this.activeCallouts$.value.some(x => x.Callout.Id === callout.Callout.Id)) {
-      this.activeCallouts$.next([...this.activeCallouts$.value, {...callout, units: [...unitCallsigns]}]);
-      this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== callout.Callout.Id)]);
-    }
+    // if (!this.activeCallouts$.value.some(x => x.Callout.Id === callout.Callout.Id)) {
+    //   this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== callout.Callout.Id)]);
+    // }
 
     return this._http.post<void>('fivepd:dispatch:assignCalloutToUnits', {
       UnitCallsigns: unitCallsigns,
       CalloutId: callout.Callout.Id
-    });
+    }).pipe(
+      tap(() => {
+        this.getActiveCallouts();
+        this.getUnits();
+      }),
+    );
+  }
+
+  unassignCalloutFromUnits(unitCallsigns: string[], callout: Callout) {
+    // if (!this.activeCallouts$.value.some(x => x.Callout.Id === callout.Callout.Id)) {
+    //   this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== callout.Callout.Id)]);
+    // }
+
+    return this._http.post<void>('fivepd:dispatch:unassignCalloutFromUnits', {
+      UnitCallsigns: unitCallsigns,
+      CalloutId: callout.Callout.Id
+    }).pipe(
+      tap(() => {
+        this.getActiveCallouts();
+        this.getUnits();
+      }),
+    );
   }
 
   private onCalloutReceived(callout: DispatcherCalloutDTOClientWrapper): void {
@@ -119,6 +161,7 @@ export class DispatchService {
 
   private onCalloutRemove(calloutId: string): void {
     this.incomingCallouts$.next([...this.incomingCallouts$.value.filter(x => x.Callout.Id !== calloutId)]);
+    this.activeCallouts$.next([...this.activeCallouts$.value.filter(x => x.Callout.Id !== calloutId)]);
   }
 
   private onPlayersUpdate(event: UpdatePlayersEvent): void {
@@ -137,21 +180,19 @@ export class DispatchService {
     const generatedAt = new Date(callout.Callout.GeneratedAt);
     return {
       ...callout,
-      timeout: this.calculateTimeout(callout as Callout),
+      timeout: this.calculateTimeout(generatedAt),
       generatedAt,
-      units: [],
     };
   }
 
   private updateCalloutTimeouts(): void {
     for (const callout of this.incomingCallouts$.value) {
-      const calculatedTimeout = this.calculateTimeout(callout);
+      const calculatedTimeout = this.calculateTimeout(callout.generatedAt);
       callout.timeout = calculatedTimeout < 0 ? 0 : calculatedTimeout;
     }
   }
 
-  private calculateTimeout(callout: Callout): number {
-    const generatedAt = callout.generatedAt ?? new Date(callout.Callout.GeneratedAt);
+  private calculateTimeout(generatedAt: Date): number {
     return this.maxTimeout - Math.round(this.calculateSecondsDifference(generatedAt, new Date()));
   }
 

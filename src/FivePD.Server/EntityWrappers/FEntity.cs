@@ -1,7 +1,7 @@
 ﻿namespace FivePD.Server.EntityWrappers;
 
 /// <summary>
-/// Asd.
+/// Base class for FivePD entity wrappers that provide additional functionality around CitizenFX entities.
 /// </summary>
 public class FEntity
 {

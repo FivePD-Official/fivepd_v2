@@ -31,6 +31,11 @@ import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { VehicleService } from "@services/vehicle/vehicle.service";
 import { sidebarReducer } from "@store/sidebar.reducer";
 import { VariableDataService } from "@services/variable-data/variable-data.service";
+import {
+  GameNotificationWrapperComponent
+} from "./components/game-notification-wrapper/game-notification-wrapper.component";
+import { InformationComponent } from "./pages/information/information.component";
+import { TimerBarComponent } from "./pages/timer-bar/timer-bar.component"; // Import TimerBarComponent
 
 @NgModule({
   declarations: [AppComponent],
@@ -56,6 +61,9 @@ import { VariableDataService } from "@services/variable-data/variable-data.servi
       user: userReducer,
       sidebar: sidebarReducer,
     }),
+    GameNotificationWrapperComponent,
+    InformationComponent,
+    TimerBarComponent,
   ],
   providers: [
     CalloutService,

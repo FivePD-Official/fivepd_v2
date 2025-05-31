@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
@@ -20,7 +21,7 @@ public class Towing : AssistanceService
     private readonly IEntityService _entityService;
     private readonly IRandomService _randomService;
     private readonly ICfxService _cfxService;
-    private readonly INotificationService _notificationService;
+    private readonly IGameNotificationService _gameNotificationService;
     private readonly IVehicleConfigService _vehicleConfigService;
 
     private FPed _driver;
@@ -37,13 +38,13 @@ public class Towing : AssistanceService
         IEntityService entityService,
         IRandomService randomService,
         ICfxService cfxService,
-        INotificationService notificationService,
+        IGameNotificationService gameNotificationService,
         IVehicleConfigService vehicleConfigService)
     {
         this._entityService = entityService;
         this._randomService = randomService;
         this._cfxService = cfxService;
-        this._notificationService = notificationService;
+        this._gameNotificationService = gameNotificationService;
         this._vehicleConfigService = vehicleConfigService;
     }
 
@@ -60,7 +61,13 @@ public class Towing : AssistanceService
             return Task.FromResult(true);
         }
 
-        this._notificationService.ShowNotification(this.RequestedBy, "No vehicle found to tow.");
+        this._gameNotificationService.Notify(
+            this.RequestedBy,
+            new GameNotificationOptions
+            {
+                Title = "FivePD",
+                Message = "No vehicle found to tow.",
+            });
         return Task.FromResult(false);
     }
 
@@ -121,9 +128,13 @@ public class Towing : AssistanceService
         if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
         {
             cancellationTokenSource.Cancel();
-            this._notificationService.ShowNotification(
+            this._gameNotificationService.Notify(
                 this.RequestedBy,
-                new GtaStyleText().Yellow("Towing has been canceled. The target vehicle has moved or is missing.").Build());
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "Towing has been canceled. The target vehicle has moved or is missing.",
+                });
             return;
         }
 

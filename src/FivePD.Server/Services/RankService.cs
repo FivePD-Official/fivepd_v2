@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FivePD.Server.Services;
 
 /// <inheritdoc />
+[Obfuscate]
 public class RankService : IRankService
 {
     private readonly DatabaseContext _databaseContext;
@@ -38,6 +39,50 @@ public class RankService : IRankService
 
     /// <inheritdoc />
     public event EventHandler<Rank> RankDeleted;
+
+    /// <inheritdoc />
+    public Rank CreateRank(Rank rank)
+    {
+        var entityEntry = this._databaseContext.Ranks.Add(rank);
+        this._databaseContext.SaveChanges();
+        this.RankCreated?.Invoke(this, rank);
+        return entityEntry.Entity;
+    }
+
+    /// <inheritdoc />
+    public Rank UpdateRank(Rank rank)
+    {
+        var rankEntity = this._databaseContext.Ranks.FirstOrDefault(x => x.Id == rank.Id);
+        if (rankEntity is null)
+        {
+            return null;
+        }
+
+        rankEntity.Name = rank.Name;
+        rankEntity.DepartmentRanks = rank.DepartmentRanks;
+        rankEntity.Global = rank.Global;
+        rankEntity.RequiredXp = rank.RequiredXp;
+        rankEntity.Permission = rank.Permission;
+        rankEntity.Users = rank.Users;
+
+        this._databaseContext.SaveChanges();
+        this.RankUpdated?.Invoke(this, rank);
+        return rankEntity;
+    }
+
+    /// <inheritdoc />
+    public void DeleteRank(Rank rank)
+    {
+        var rankEntity = this._databaseContext.Ranks.FirstOrDefault(x => x.Id == rank.Id);
+        if (rankEntity is null)
+        {
+            return;
+        }
+
+        this._databaseContext.Ranks.Remove(rankEntity);
+        this._databaseContext.SaveChanges();
+        this.RankDeleted?.Invoke(this, rank);
+    }
 
     [UIEvent(Events.Rank.Get)]
     private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)

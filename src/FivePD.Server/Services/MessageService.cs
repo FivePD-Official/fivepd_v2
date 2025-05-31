@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
-using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
@@ -23,7 +24,7 @@ public class MessageService : IMessageService
     private readonly DatabaseContext _databaseContext;
     private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly IPlayerHandlerService _playerHandlerService;
-    private readonly INotificationService _notificationService;
+    private readonly IGameNotificationService _gameNotificationService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageService"/> class.
@@ -31,17 +32,17 @@ public class MessageService : IMessageService
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
-    /// <param name="notificationService">The <see cref="INotificationService"/> to use.</param>
+    /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     public MessageService(
         DatabaseContext databaseContext,
         IAddonMetadataService addonMetadataService,
         IPlayerHandlerService playerHandlerService,
-        INotificationService notificationService)
+        IGameNotificationService gameNotificationService)
     {
         this._databaseContext = databaseContext;
         this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
         this._playerHandlerService = playerHandlerService;
-        this._notificationService = notificationService;
+        this._gameNotificationService = gameNotificationService;
     }
 
     /// <inheritdoc />
@@ -98,7 +99,17 @@ public class MessageService : IMessageService
             return;
         }
 
-        this._notificationService.ShowNotification(FPlayer.FromPlayer(player), $"You've received a new message from ~b~{message.Sender}");
+        this._gameNotificationService.Notify(
+            player,
+            new GameNotificationOptions
+            {
+                Title = "FivePD",
+                Message = "UI.LABEL.MESSAGES.RECEIVED",
+                MessageParams = new Dictionary<string, string>
+                {
+                    ["sender"] = message.Sender,
+                },
+            });
     }
 
     [UIEvent(Events.Message.Get, true)]
@@ -160,7 +171,7 @@ public class MessageService : IMessageService
                 this.Send(user, request.Subject, request.Content, sender.Name);
             }
 
-            networkCallbackDelegate.InvokeWithResponse(true, "ok", "ok");
+            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.SEND", "UI.LABEL.MESSAGES.SUCCESS.SEND");
         }
         catch (Exception e)
         {

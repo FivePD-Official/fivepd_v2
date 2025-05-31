@@ -3,8 +3,7 @@ using CitizenFX.Core;
 using FivePD.Client.Interfaces;
 using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
-using FivePD.Common.Enums;
-using FivePD.Common.Extensions;
+using FivePD.Common.ConfigModels.GeneralConfigs;
 using Newtonsoft.Json.Linq;
 
 namespace FivePD.Client.Services;
@@ -31,12 +30,6 @@ internal class AudioService : IAudioService, IOnInit
     {
         this._eventHandlerDictionary[Events.Audio.PlaySound] += new Action<string>(this.Play);
         this._eventHandlerDictionary[Events.Audio.Speak] += new Action<string>(this.Speak);
-    }
-
-    /// <inheritdoc />
-    public void Play(Sound sound)
-    {
-        this.Play(sound.GetDescription());
     }
 
     /// <inheritdoc />

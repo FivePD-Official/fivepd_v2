@@ -60,19 +60,13 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
             this._configService.GeneralConfig.Callout.MaxIntervalInMs);
         this._nextCalloutTimer.Start();
 
-        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
-        {
-            this._tickQueueService.OnTick += this.OnTick;
-        }
+        this._tickQueueService.OnTick += this.OnTick;
     }
 
     /// <inheritdoc/>
     void IOnDestroy.OnDestroy()
     {
-        if (this._configService.GeneralConfig.Callout.DispatchTypeAuto())
-        {
-            this._tickQueueService.OnTick -= this.OnTick;
-        }
+        this._tickQueueService.OnTick -= this.OnTick;
     }
 
     private void OnTick(object sender, EventArgs e)
@@ -139,15 +133,6 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
         callout.GeneratedAt = DateTime.Now;
         if (properties.RandomPriority)
         {
-#pragma warning disable
-            // TEST DISPATCH
-            // callout.Priority = this._calloutManagerService.ActiveCallouts.Count switch
-            // {
-            //     0 => FIncidentPriority.Code2,
-            //     1 => FIncidentPriority.Code3,
-            //     _ => FIncidentPriority.Code1
-            // };
-#pragma warning restore
             callout.Priority = (FPriority)this._randomService.Random.Next(0, 3);
         }
         else

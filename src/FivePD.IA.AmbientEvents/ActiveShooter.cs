@@ -65,6 +65,13 @@ public class ActiveShooter : Callout
 
         return Task.CompletedTask;
     }
+    
+    public override Task OnUnitUnassigned(Unit unit)
+    {
+        this._logger.Information($"OnUnitUnassigned - {unit.Callsign}");
+
+        return Task.CompletedTask;
+    }
 
     public override Task OnAccepted(Unit unit)
     {

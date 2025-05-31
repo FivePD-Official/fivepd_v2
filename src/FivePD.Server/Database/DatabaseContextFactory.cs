@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore.Design;
 namespace FivePD.Server.Database;
 
 /// <summary>
-/// Design-time context factory used only for migration generation.
+/// Design-time context factory used for generating database migrations.
+/// Provides a database context with default connection settings.
 /// </summary>
 internal class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
 {
