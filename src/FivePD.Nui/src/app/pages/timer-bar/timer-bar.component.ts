@@ -17,6 +17,10 @@ export class TimerBarComponent implements OnInit, OnDestroy {
   percentage: number = 0;
   private timerBarEventSubscription?: Subscription;
   private timerBarProgressSubscription?: Subscription;
+  private hideTimeout: NodeJS.Timeout | undefined;
+  private _timerStartTime: number = 0;
+  private _currentTotalDuration: number = 0;
+  private _lastKnownPercentage: number = 0;
 
   constructor(
     private _event: EventService,
@@ -31,37 +35,55 @@ export class TimerBarComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.timerBarEventSubscription?.unsubscribe();
     this.timerBarProgressSubscription?.unsubscribe();
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
   }
 
   onTimerBarEvent(res: TimerBarEvent): void {
-    this.showTimerBar = res.Show;
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
 
     if (!res.Show) {
-      this.title = '';
+      if (this._lastKnownPercentage < 100) {
+        this.title = '';
+        this.showTimerBar = false;
+        this.percentage = 0;
+        return;
+      }
+
       this.percentage = 100;
+
+      const currentTime = Date.now();
+      const expectedEndTime = this._timerStartTime + this._currentTotalDuration;
+      let delay = expectedEndTime - currentTime;
+
+      delay = Math.max(0, delay);
+
+      this.hideTimeout = setTimeout(() => {
+        this.title = '';
+        this.showTimerBar = false;
+      }, delay * 10);
       return;
     }
 
+    this.showTimerBar = true;
     this.title = res.Title;
     this.percentage = 0;
+    this._timerStartTime = Date.now();
   }
 
   onTimerBarProgress(res: { CurrentProgress: number, TotalDuration: number }): void {
     if (res.TotalDuration === 0) {
       this.percentage = 0;
+      this._lastKnownPercentage = 0;
       return;
     }
 
+    this._currentTotalDuration = res.TotalDuration;
     this.percentage = (res.CurrentProgress / res.TotalDuration) * 100;
-
-    // Ensure the bar reaches 100% when the timer is logically complete
-    if (this.percentage >= 100) {
-      this.percentage = 100;
-      // Do NOT hide here. Let onTimerBarEvent handle the hide signal.
-      // this.showTimerBar = false; // Removed
-    } else {
-      //this.showTimerBar = true; // Ensure bar is visible during progress
-    }
+    this._lastKnownPercentage = this.percentage;
   }
 
 }

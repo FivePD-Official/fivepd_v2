@@ -43,8 +43,9 @@ internal interface IUIManagerService
     /// <summary>
     /// Displays a timer bar.
     /// </summary>
+    /// <param name="title">The title to display for the timer bar.</param>
     /// <param name="timeToHoldInMs">Determines for how long the key should be pressed to trigger the action.</param>
-    public void ShowTimerBar(int timeToHoldInMs);
+    public void ShowTimerBar(string title, int timeToHoldInMs);
 
     /// <summary>
     /// Updates the progress of the timer bar.

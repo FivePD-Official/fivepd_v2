@@ -17,6 +17,8 @@ internal sealed record ControlsDTO
 
         public string KeyMapper { get; init; }
 
+        public string TimerBarTitle { get; init; }
+
         public int TimeToHoldInMs { get; init; }
     }
 }

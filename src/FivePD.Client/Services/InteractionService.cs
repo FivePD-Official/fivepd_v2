@@ -62,12 +62,15 @@ internal class InteractionService : IInteractionService, IOnInit
             Controls.TryAlertEntity.Id,
             Controls.TryAlertEntity.Key,
             Controls.TryAlertEntity.Title,
+            Controls.TryAlertEntity.TimerBarTitle,
             Controls.TryAlertEntity.TimeToHoldInMs,
             this.TryAlertEntity);
-        this._controlService.RegisterKeybind(
+        this._controlService.RegisterMomentaryKeybind(
             Controls.TryAlertVehicle.Id,
             Controls.TryAlertVehicle.Key,
             Controls.TryAlertVehicle.Title,
+            Controls.TryAlertVehicle.TimerBarTitle,
+            Controls.TryAlertVehicle.TimeToHoldInMs,
             this.TryAlertVehicle);
     }
 

@@ -214,14 +214,14 @@ internal class UIManagerService : IUIManagerService, IOnInit
     }
 
     /// <inheritdoc />
-    public void ShowTimerBar(int timeToHoldInMs)
+    public void ShowTimerBar(string title, int timeToHoldInMs)
     {
         Cfx.API.SetNuiFocus(false, false);
         this.SendMessage(new JObject
         {
             { "Event", Events.UIEvent.TimerBar },
             { "Show", true },
-            { "Title", "test" },
+            { "Title", title },
             { "TimeToHold", timeToHoldInMs },
         });
     }

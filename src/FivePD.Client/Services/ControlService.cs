@@ -25,7 +25,6 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
     private readonly IUIManagerService _uiManagerService;
     private readonly List<HoldableKeybind> _actions = new();
     private readonly List<string> _registeredControlIds = new();
-    private readonly Dictionary<string, int> _releaseCounts = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlService"/> class.
@@ -92,6 +91,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
         string id,
         string key,
         string title,
+        string timerBarTitle,
         int timeToHoldInMs,
         Action onPress = null,
         Action onRelease = null,
@@ -109,7 +109,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
             holdableKeybind.Released = false;
             holdableKeybind.StartTimeMs = Cfx.API.GetGameTimer();
 
-            this._uiManagerService.ShowTimerBar(timeToHoldInMs);
+            this._uiManagerService.ShowTimerBar(timerBarTitle, timeToHoldInMs);
             this._actions.Add(holdableKeybind);
         }
 
@@ -145,7 +145,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
             BaseScript.TriggerServerEvent(Events.Control.Trigger, control.Id, "release");
         }
 
-        this.RegisterMomentaryKeybind(control.Id, control.Key, control.Title, control.TimeToHoldInMs, OnPress, OnRelease);
+        this.RegisterMomentaryKeybind(control.Id, control.Key, control.Title, control.TimerBarTitle, control.TimeToHoldInMs, OnPress, OnRelease);
     }
 
     private void InternalRegisterKeybind(ControlsDTO.ClientControlDTO control)
@@ -172,24 +172,6 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
 
         this._registeredControlIds.Add(id);
 
-        this._releaseCounts[id] = 0;
-
-        void WrappedOnPress()
-        {
-            this._releaseCounts[id] = 0;
-            onPress?.Invoke();
-        }
-
-        void WrappedOnRelease()
-        {
-            this._releaseCounts[id]++;
-            if (this._releaseCounts[id] >= 2)
-            {
-                onRelease?.Invoke();
-                this._releaseCounts[id] = 0;
-            }
-        }
-
         Cfx.API.RegisterKeyMapping($"+{id}", title, keyMapper, key);
         Cfx.API.RegisterCommand(
             $"+{id}",
@@ -201,7 +183,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
                 }
 
                 Cfx.API.CancelEvent();
-                WrappedOnPress();
+                onPress?.Invoke();
             }),
             false);
         Cfx.API.RegisterCommand(
@@ -209,7 +191,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
             new Action(() =>
             {
                 Cfx.API.CancelEvent();
-                WrappedOnRelease();
+                onRelease?.Invoke();
             }),
             false);
     }
