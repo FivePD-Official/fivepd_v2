@@ -26,6 +26,7 @@ export class WindowService {
   readonly showInformation = new BehaviorSubject(false);
   readonly showWelcomeModal = new BehaviorSubject(false);
   readonly showMenu = new BehaviorSubject(false);
+  readonly showTimerBar = new BehaviorSubject(false);
 
   listenToEvents(): void {
     if (this._listening) {
@@ -116,9 +117,14 @@ export class WindowService {
 
   private onTimerBarEvent(res: TimerBarEvent): void {
     if (res.Show) {
+      this.showTimerBar.next(true);
       this.show();
-      this._router.navigate(['timer-bar']);
+      this._router.navigate(['not-mdt']);
     } else {
+      this.showTimerBar.next(false);
+    }
+
+    if (!this.showMenu.value) {
       this.triggerCloseEvent();
     }
   }

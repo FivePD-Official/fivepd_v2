@@ -58,16 +58,22 @@ internal class InteractionService : IInteractionService, IOnInit
     {
         this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
         this._eventHandlerDictionary[Events.Interaction.ToggleFollowPlayer] += new Action<int, bool>(this.ToggleFollowPlayer);
-        this._controlService.RegisterKeybind(
+        this._controlService.RegisterMomentaryKeybind(
             Controls.TryAlertEntity.Id,
             Controls.TryAlertEntity.Key,
             Controls.TryAlertEntity.Title,
-            this.TryAlertEntity);
-        this._controlService.RegisterKeybind(
+            Controls.TryAlertEntity.TimerBarTitle,
+            Controls.TryAlertEntity.TimeToHoldInMs,
+            this.TryAlertEntity,
+            canInvokeOnPress: () => !Game.PlayerPed.IsInVehicle());
+        this._controlService.RegisterMomentaryKeybind(
             Controls.TryAlertVehicle.Id,
             Controls.TryAlertVehicle.Key,
             Controls.TryAlertVehicle.Title,
-            this.TryAlertVehicle);
+            Controls.TryAlertVehicle.TimerBarTitle,
+            Controls.TryAlertVehicle.TimeToHoldInMs,
+            this.TryAlertVehicle,
+            canInvokeOnPress: () => Game.PlayerPed.IsInVehicle());
     }
 
     /// <inheritdoc/>
@@ -223,7 +229,8 @@ internal class InteractionService : IInteractionService, IOnInit
             return;
         }
 
-        if (this._localPlayerService.Information.IncidentWrapper is not null && this._localPlayerService.Information.IncidentWrapper.Incident.Type == FIncidentType.TrafficStop)
+        if (this._localPlayerService.Information.IncidentWrapper is not null &&
+            this._localPlayerService.Information.IncidentWrapper.Incident.Type == FIncidentType.TrafficStop)
         {
             return;
         }

@@ -24,11 +24,12 @@ internal interface IControlService
     /// <param name="id">The id of this keybind.</param>
     /// <param name="key">The key of this keybind.</param>
     /// <param name="title">The description of this keybind.</param>
+    /// <param name="timerBarTitle">The description of this keybinds.</param>
     /// <param name="timeToHoldInMs">Determines for how long the key should be pressed to trigger the action.</param>
     /// <param name="onPress">The method that'll be invoked on press.</param>
     /// <param name="onRelease">The method that'll be invoked on release.</param>
     /// <param name="canInvokeOnPress">The onPress method will only be invoked if this method returns true.</param>
-    public void RegisterMomentaryKeybind(string id, string key, string title, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null);
+    public void RegisterMomentaryKeybind(string id, string key, string title, string timerBarTitle, int timeToHoldInMs, Action onPress = null, Action onRelease = null, Func<bool> canInvokeOnPress = null);
 
     /// <summary>
     /// Registers a method to be ran on keybind press.

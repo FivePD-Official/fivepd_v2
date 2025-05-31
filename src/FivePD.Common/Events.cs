@@ -130,6 +130,8 @@ internal readonly record struct Events
 
         public const string TimerBar = "fivepd:ui:view:timer_bar";
 
+        public const string TimerBarProgress = "fivepd:ui:view:timer_bar_progress"; // New event
+
         public const string MenuUp = "fivepd:menu:control_up";
 
         public const string MenuDown = "fivepd:menu:control_down";
@@ -437,7 +439,7 @@ internal readonly record struct Events
 
         public const string ShowNotificationWithTexture = "fivepd:notification:showNotificationWithTexture";
     }
-    
+
     public readonly record struct GameNotification
     {
         public const string Notify = "fivepd:gameNotification:notify";
@@ -496,7 +498,7 @@ internal readonly record struct Events
         public const string OnUnitRemoved = "fivepd:dispatch:onUnitRemoved";
 
         public const string AssignCalloutToUnits = "fivepd:dispatch:assignCalloutToUnits";
-        
+
         public const string UnassignCalloutFromUnits = "fivepd:dispatch:unassignCalloutFromUnits";
 
         public const string UpdateRequest = "fivepd:dispatch:updateRequest";
