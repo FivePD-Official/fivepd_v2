@@ -225,4 +225,15 @@ internal class UIManagerService : IUIManagerService, IOnInit
             { "TimeToHold", timeToHoldInMs },
         });
     }
+
+    /// <inheritdoc />
+    public void UpdateTimerBarProgress(int currentProgressMs, int totalDurationMs)
+    {
+        this.SendMessage(new JObject
+        {
+            { "Event", Events.UIEvent.TimerBarProgress },
+            { "CurrentProgress", currentProgressMs },
+            { "TotalDuration", totalDurationMs },
+        });
+    }
 }

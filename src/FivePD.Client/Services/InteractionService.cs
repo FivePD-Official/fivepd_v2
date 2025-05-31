@@ -58,10 +58,11 @@ internal class InteractionService : IInteractionService, IOnInit
     {
         this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
         this._eventHandlerDictionary[Events.Interaction.ToggleFollowPlayer] += new Action<int, bool>(this.ToggleFollowPlayer);
-        this._controlService.RegisterKeybind(
+        this._controlService.RegisterMomentaryKeybind(
             Controls.TryAlertEntity.Id,
             Controls.TryAlertEntity.Key,
             Controls.TryAlertEntity.Title,
+            Controls.TryAlertEntity.TimeToHoldInMs,
             this.TryAlertEntity);
         this._controlService.RegisterKeybind(
             Controls.TryAlertVehicle.Id,

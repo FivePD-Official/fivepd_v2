@@ -95,6 +95,11 @@ export interface TimerBarEvent extends BaseNuiEvent {
   TimeToHold: number;
 }
 
+export interface TimerBarProgressEvent extends BaseNuiEvent {
+  CurrentProgress: number;
+  TotalDuration: number;
+}
+
 export interface SimplePlayerDTO {
   NetworkId: string;
   Name: string;

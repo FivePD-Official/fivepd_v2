@@ -1,24 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EventService } from '@services/event/event.service';
-import { TimerBarEvent } from '@models';
+import { TimerBarEvent, TimerBarProgressEvent } from '@models';
 import { Subscription } from 'rxjs';
 import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-timer-bar',
   templateUrl: './timer-bar.component.html',
-  styleUrls: ['./timer-bar.component.sass'],
   standalone: true,
   imports: [NgStyle]
 })
-export class TimerBarComponent implements OnInit {
+export class TimerBarComponent implements OnInit, OnDestroy {
 
   showTimerBar: boolean = true;
   title: string = '';
-  timeToHold: number = 0;
-  interval?: number;
   percentage: number = 0;
-  event$?: Subscription;
+  private timerBarEventSubscription?: Subscription;
+  private timerBarProgressSubscription?: Subscription;
 
   constructor(
     private _event: EventService,
@@ -26,34 +24,44 @@ export class TimerBarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.event$ = this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onEvent(res));
+    this.timerBarEventSubscription = this._event.onEvent<TimerBarEvent>('fivepd:ui:view:timer_bar').subscribe(res => this.onTimerBarEvent(res));
+    this.timerBarProgressSubscription = this._event.onEvent<TimerBarProgressEvent>('fivepd:ui:view:timer_bar_progress').subscribe(res => this.onTimerBarProgress(res));
   }
 
   ngOnDestroy(): void {
-    this.event$?.unsubscribe();
+    this.timerBarEventSubscription?.unsubscribe();
+    this.timerBarProgressSubscription?.unsubscribe();
   }
 
-  onEvent(res: TimerBarEvent): void {
+  onTimerBarEvent(res: TimerBarEvent): void {
     this.showTimerBar = res.Show;
 
     if (!res.Show) {
       this.title = '';
-      this.timeToHold = 0;
-      this.percentage = 0;
-      clearInterval(this.interval);
+      this.percentage = 100;
       return;
     }
 
     this.title = res.Title;
-    this.timeToHold = res.TimeToHold;
+    this.percentage = 0;
+  }
 
-    console.log(this.title)
-    console.log(this.timeToHold)
+  onTimerBarProgress(res: { CurrentProgress: number, TotalDuration: number }): void {
+    if (res.TotalDuration === 0) {
+      this.percentage = 0;
+      return;
+    }
 
-    const addToPercentage = 1000 / this.timeToHold;
-    this.interval = setInterval(() => {
-      this.percentage += addToPercentage;
-    }, 1) as unknown as number;
+    this.percentage = (res.CurrentProgress / res.TotalDuration) * 100;
+
+    // Ensure the bar reaches 100% when the timer is logically complete
+    if (this.percentage >= 100) {
+      this.percentage = 100;
+      // Do NOT hide here. Let onTimerBarEvent handle the hide signal.
+      // this.showTimerBar = false; // Removed
+    } else {
+      //this.showTimerBar = true; // Ensure bar is visible during progress
+    }
   }
 
 }
