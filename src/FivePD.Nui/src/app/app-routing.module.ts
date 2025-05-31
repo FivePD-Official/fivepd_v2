@@ -187,10 +187,6 @@ const routes: Routes = [
     component: RadialMenuComponent
   },
   {
-    path: 'timer-bar',
-    component: TimerBarComponent
-  },
-  {
     path: 'mdt',
     component: MdtComponent,
     children: mdtRoutes,

@@ -64,14 +64,16 @@ internal class InteractionService : IInteractionService, IOnInit
             Controls.TryAlertEntity.Title,
             Controls.TryAlertEntity.TimerBarTitle,
             Controls.TryAlertEntity.TimeToHoldInMs,
-            this.TryAlertEntity);
+            this.TryAlertEntity,
+            canInvokeOnPress: () => !Game.PlayerPed.IsInVehicle());
         this._controlService.RegisterMomentaryKeybind(
             Controls.TryAlertVehicle.Id,
             Controls.TryAlertVehicle.Key,
             Controls.TryAlertVehicle.Title,
             Controls.TryAlertVehicle.TimerBarTitle,
             Controls.TryAlertVehicle.TimeToHoldInMs,
-            this.TryAlertVehicle);
+            this.TryAlertVehicle,
+            canInvokeOnPress: () => Game.PlayerPed.IsInVehicle());
     }
 
     /// <inheritdoc/>
@@ -227,7 +229,8 @@ internal class InteractionService : IInteractionService, IOnInit
             return;
         }
 
-        if (this._localPlayerService.Information.IncidentWrapper is not null && this._localPlayerService.Information.IncidentWrapper.Incident.Type == FIncidentType.TrafficStop)
+        if (this._localPlayerService.Information.IncidentWrapper is not null &&
+            this._localPlayerService.Information.IncidentWrapper.Incident.Type == FIncidentType.TrafficStop)
         {
             return;
         }

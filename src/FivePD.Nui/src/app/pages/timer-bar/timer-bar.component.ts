@@ -17,7 +17,7 @@ export class TimerBarComponent implements OnInit, OnDestroy {
   percentage: number = 0;
   private timerBarEventSubscription?: Subscription;
   private timerBarProgressSubscription?: Subscription;
-  private hideTimeout: NodeJS.Timeout | undefined;
+  private hideTimeout: number | undefined;
   private _timerStartTime: number = 0;
   private _currentTotalDuration: number = 0;
   private _lastKnownPercentage: number = 0;
@@ -64,7 +64,7 @@ export class TimerBarComponent implements OnInit, OnDestroy {
       this.hideTimeout = setTimeout(() => {
         this.title = '';
         this.showTimerBar = false;
-      }, delay * 10);
+      }, delay * 10) as unknown as number;
       return;
     }
 
