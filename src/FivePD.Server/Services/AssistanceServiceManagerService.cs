@@ -26,6 +26,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     private readonly IVector3Service _vector3Service;
 
     private readonly ConcurrentDictionary<Type, AssistanceServiceOptions> _availableServices = new();
+    private readonly List<Type> _registrationOrder = new();
     private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _activeServices = new();
 
     /// <summary>
@@ -115,12 +116,22 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
         this._logger.Information("Registering an assistance service of type \"{Type}\"", type);
 
         this._availableServices[type] = options;
+        this._registrationOrder.Add(type);
     }
 
     /// <inheritdoc />
     public List<(Type Type, AssistanceServiceOptions Options)> AvailableServices()
     {
-        return this._availableServices.Select(x => (x.Key, x.Value)).ToList();
+        var orderedServices = new List<(Type Type, AssistanceServiceOptions Options)>();
+        foreach (var type in this._registrationOrder)
+        {
+            if (this._availableServices.TryGetValue(type, out var options))
+            {
+                orderedServices.Add((type, options));
+            }
+        }
+
+        return orderedServices;
     }
 
     /// <inheritdoc />
