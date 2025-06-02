@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CitizenFX.Core;
 using Cfx = CitizenFX.Core.Native;
 
@@ -185,5 +186,29 @@ internal static class VehicleExtensions
         Cfx.API.GetVehicleColours(vehicle.Handle, ref primary, ref secondary);
 
         return VehicleColors.TryGetValue(primary, out var color) ? color : "Unknown";
+    }
+
+    /// <summary>
+    /// Gets a list of free seats in the vehicle.
+    /// </summary>
+    /// <param name="vehicle">The vehicle to check.</param>
+    /// <returns>A list of free <see cref="VehicleSeat"/> values.</returns>
+    public static IEnumerable<VehicleSeat> GetFreeSeats(this Vehicle vehicle)
+    {
+        var freeSeats = new List<VehicleSeat>();
+        foreach (VehicleSeat seat in Enum.GetValues(typeof(VehicleSeat)))
+        {
+            if (seat == VehicleSeat.Any)
+            {
+                continue;
+            }
+
+            if (vehicle.IsSeatFree(seat))
+            {
+                freeSeats.Add(seat);
+            }
+        }
+
+        return freeSeats;
     }
 }

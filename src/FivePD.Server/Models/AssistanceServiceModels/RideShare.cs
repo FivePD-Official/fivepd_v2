@@ -25,20 +25,22 @@ public class RideShare : AssistanceService
     private readonly IRandomService _randomService;
     private readonly IConfirmationService _confirmationService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly INotificationService _notificationService;
+    private readonly IGameNotificationService _gameNotificationService;
 
     private Vector3 _target = Vector3.Zero;
 
     private FPed _driver;
     private FVehicle _vehicle;
-    private bool _calledForPlayer;
+    private bool _requestedForPlayer;
     private FPed _closestPed;
+    private Vector3 _selectedWaypointToDrive = Vector3.Zero;
 
     private const float SlowingDistance = 125f;
     private const float MaximumSpeed = 30f;
     private const float MinimumSpeed = 5f;
 
     private readonly Guid _waypointId = Guid.NewGuid();
+    private readonly string _waypointSelectedEventName;
 
     public RideShare(
         IEntityService entityService,
@@ -46,30 +48,33 @@ public class RideShare : AssistanceService
         IRandomService randomService,
         IConfirmationService confirmationService,
         EventHandlerDictionary eventHandlerDictionary,
-        INotificationService notificationService)
+        IGameNotificationService gameNotificationService)
     {
         this._entityService = entityService;
         this._vehicleConfigService = vehicleConfigService;
         this._randomService = randomService;
         this._confirmationService = confirmationService;
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._notificationService = notificationService;
+        this._gameNotificationService = gameNotificationService;
+
+        this._waypointSelectedEventName = $"{Common.Events.RideShare.WaypointSelected}{this._waypointId}";
+        this._eventHandlerDictionary[this._waypointSelectedEventName] += this.SetSelectedWaypointToDrive;
     }
 
     public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
-        this._calledForPlayer = await this._confirmationService.TriggerConfirmationAsync(this.RequestedBy, new ConfirmationProperties
+        this._requestedForPlayer = await this._confirmationService.TriggerConfirmationAsync(this.RequestedBy, new ConfirmationProperties
         {
-            Notification = new ConfirmationProperties.NotificationProperties
+            Title = "Ride share",
+            Message = "Who is the ride for?",
+            Keys = new Dictionary<string, string>
             {
-                Sender = "Ride share",
-                Subject = "subject",
-                Content = "F1 - yourself, F2 - closest ped",
-                Texture = "???",
-            },
+                ["F1"] = "You",
+                ["F2"] = "Closest pedestrian",
+            }
         });
 
-        if (this._calledForPlayer)
+        if (this._requestedForPlayer)
         {
             this._target = this.RequestedBy.GetUnderlyingPlayer().Character.Position;
         }
@@ -114,47 +119,31 @@ public class RideShare : AssistanceService
 
         this._driver.Task.DriveTo(this._vehicle.GetUnderlyingVehicle, this._target, 5f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
-        while (this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) > 60f)
+        await TaskHelpers.DelayUntilAsync(
+            () => this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) <= 60f,
+            TimeSpan.FromMinutes(5),
+            TimeSpan.FromMilliseconds(500),
+            cancellationTokenSource);
+
+        if (cancellationTokenSource.IsCancellationRequested)
         {
-            if (cancellationTokenSource.IsCancellationRequested)
-            {
-                return;
-            }
-
-            // var distance = Vector3.Distance(this._vehicle.GetUnderlyingVehicle.Position, this._target);
-            // var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
-            // var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-            //
-            // this._driver.Properties.SetDrivingSpeed(currentSpeed);
-
-            await Task.Delay(500);
+            return;
         }
 
-        var _locationToGo = Vector3.Zero;
-        if (this._calledForPlayer)
+        if (this._requestedForPlayer)
         {
-            this._notificationService.ShowNotificationWithTexture(
+            this._gameNotificationService.Notify(
                 this.RequestedBy.GetUnderlyingPlayer(),
-                "-",
-                "Ride share",
-                "Subject",
-                "The cab has arrived. You have 60 seconds to get in and selection a location.");
-
-            var eventName = $"rideshare:waypoint:selected::{this._waypointId}";
-
-            void SetTarget(string serializedWaypoint)
-            {
-                Debug.WriteLine($"serializedWaypoint: {serializedWaypoint}");
-                _locationToGo = JsonConvert.DeserializeObject<Vector3>(serializedWaypoint);
-                this._eventHandlerDictionary[eventName] -= SetTarget;
-            }
-
-            this._eventHandlerDictionary[eventName] += SetTarget;
+                new GameNotificationOptions
+                {
+                    Title = "Ride share",
+                    Message = "Your ride has arrived. Please enter the vehicle and select your destination within 60 seconds.",
+                });
 
             var waypointSelected = await TaskHelpers.DelayUntilAsync(
-                () => _locationToGo != Vector3.Zero,
+                () => this._selectedWaypointToDrive != Vector3.Zero,
                 TimeSpan.FromSeconds(60),
-                default,
+                TimeSpan.Zero,
                 cancellationTokenSource);
             if (!waypointSelected)
             {
@@ -162,32 +151,29 @@ public class RideShare : AssistanceService
                 return;
             }
 
-            this._driver.Task.DriveTo(this._vehicle.GetUnderlyingVehicle, _locationToGo, 5f, MaximumSpeed, (int)FDrivingStyle.Emergency);
-            while (this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(_locationToGo) > 60f)
-            {
-                if (cancellationTokenSource.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                // var distance = Vector3.Distance(this._vehicle.GetUnderlyingVehicle.Position, this._target);
-                // var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
-                // var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-                //
-                // this._driver.Properties.SetDrivingSpeed(currentSpeed);
-
-                await Task.Delay(500);
-            }
+            this._driver.Task.DriveTo(this._vehicle.GetUnderlyingVehicle, this._selectedWaypointToDrive, 5f, MaximumSpeed, (int)FDrivingStyle.Emergency);
+            await TaskHelpers.DelayUntilAsync(
+                () => this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._selectedWaypointToDrive) <= 60f,
+                TimeSpan.FromMinutes(5),
+                TimeSpan.FromMilliseconds(500),
+                cancellationTokenSource);
 
             await Task.Delay(1000);
 
-            this._notificationService.ShowNotificationWithTexture(
+            this._gameNotificationService.Notify(
                 this.RequestedBy.GetUnderlyingPlayer(),
-                "-",
-                "Ride share",
-                "Subject",
-                "You've arrived to the selected location. The cab will drive away in 5 seconds.");
-            await Task.Delay(5000);
+                new GameNotificationOptions
+                {
+                    Title = "Ride share",
+                    Message = "You have arrived at your destination. The driver will depart shortly.",
+                });
+
+            await Task.Delay(60000);
+            // await TaskHelpers.DelayUntilAsync(
+            //     () => this.RequestedBy.FPed.Properties.IsInVehicle, // this does not seem to work or idk, did not test
+            //     TimeSpan.FromSeconds(60),
+            //     TimeSpan.FromMilliseconds(500),
+            //     cancellationTokenSource);
         }
         else
         {
@@ -198,33 +184,39 @@ public class RideShare : AssistanceService
 
     public override Task OnCancellationRequestedAsync()
     {
-        var a = new Dictionary<FEntity, FEntity>
+        var entitiesToClear = new Dictionary<FEntity, FEntity>
         {
             { this._driver, this._vehicle },
             { this._vehicle, null },
         };
         if (this._closestPed is not null)
         {
-            a[this._closestPed] = null;
+            entitiesToClear[this._closestPed] = null;
         }
 
-        this.ClearEntities(a);
+        this.ClearEntities(entitiesToClear);
         return Task.FromResult(0);
     }
 
     public override Task OnCompletedAsync()
     {
-        var a = new Dictionary<FEntity, FEntity>
+        var entitiesToClear = new Dictionary<FEntity, FEntity>
         {
             { this._driver, this._vehicle },
             { this._vehicle, null },
         };
         if (this._closestPed is not null)
         {
-            a[this._closestPed] = null;
+            entitiesToClear[this._closestPed] = null;
         }
 
-        this.ClearEntities(a);
+        this.ClearEntities(entitiesToClear);
         return Task.FromResult(0);
+    }
+
+    private void SetSelectedWaypointToDrive(string serializedWaypoint)
+    {
+        this._selectedWaypointToDrive = JsonConvert.DeserializeObject<Vector3>(serializedWaypoint);
+        this._eventHandlerDictionary[this._waypointSelectedEventName] -= this.SetSelectedWaypointToDrive;
     }
 }

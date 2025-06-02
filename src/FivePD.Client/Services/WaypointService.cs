@@ -29,7 +29,6 @@ internal class WaypointService : IWaypointService, IOnInit, IOnDestroy
         this._tickService.OnTick -= this.OnTick;
     }
 
-    private Vehicle _lastVehicle;
     private bool _sentWaypoint;
 
     private Task OnTick()
@@ -45,13 +44,6 @@ internal class WaypointService : IWaypointService, IOnInit, IOnDestroy
             return Task.FromResult(0);
         }
 
-        if (this._lastVehicle == vehicle)
-        {
-            return Task.FromResult(0);
-        }
-
-        this._lastVehicle = vehicle;
-
         var state = vehicle.State[StateBagKeys.Vehicle.Miscellaneous.RideShare];
         if (state is null)
         {
@@ -63,7 +55,7 @@ internal class WaypointService : IWaypointService, IOnInit, IOnDestroy
             return Task.FromResult(0);
         }
 
-        var eventName = $"rideshare:waypoint:selected::{eventId}";
+        var eventName = $"{Events.RideShare.WaypointSelected}{eventId}";
         var blipInfoId = Cfx.API.GetFirstBlipInfoId(8);
         if (blipInfoId == 0)
         {
