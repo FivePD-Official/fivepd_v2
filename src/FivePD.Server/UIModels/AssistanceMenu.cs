@@ -20,12 +20,12 @@ public sealed class AssistanceMenu : Menu
     private readonly IMenuService _menuService;
 
     public AssistanceMenu(
-        IAssistanceServiceManagerService assistanceServiceManagerServiceManagerServiceManagerService,
+        IAssistanceServiceManagerService assistanceServiceManagerService,
         IConfigService configService,
         IMenuService menuService)
         : base(Controls.AssistanceMenu.Id, Controls.AssistanceMenu.Title, Controls.AssistanceMenu.Key)
     {
-        this._assistanceServiceManagerService = assistanceServiceManagerServiceManagerServiceManagerService;
+        this._assistanceServiceManagerService = assistanceServiceManagerService;
         this._configService = configService;
         this._menuService = menuService;
     }
