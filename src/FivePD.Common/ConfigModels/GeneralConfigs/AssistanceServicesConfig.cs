@@ -25,7 +25,7 @@ public sealed record AssistanceServicesConfig
     public BaseServiceConfig Coroner { get; init; } = new();
     public BaseServiceConfig Mechanic { get; init; } = new();
     public BaseServiceConfig PrisonTransport { get; init; } = new();
-    public BaseServiceConfig Taxi { get; init; } = new();
+    public BaseServiceConfig RideShare { get; init; } = new();
     public BaseServiceConfig TowTruck { get; init; } = new();
 }
 

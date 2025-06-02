@@ -9,6 +9,7 @@ using FivePD.Client.Interfaces.Lifecycle;
 using FivePD.Common;
 using FivePD.Common.DTO;
 using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -24,6 +25,7 @@ internal class InteractionService : IInteractionService, IOnInit
     private readonly IControlService _controlService;
     private readonly ITickService _tickService;
     private readonly ILocalPlayerService _localPlayerService;
+    private readonly IGameNotificationService _gameNotificationService;
 
     private Ped _currentlyFollowingPed;
 
@@ -37,13 +39,15 @@ internal class InteractionService : IInteractionService, IOnInit
     /// <param name="controlService">The <see cref="IControlService"/> to use.</param>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     /// <param name="localPlayerService">The <see cref="ILocalPlayerService"/> to use.</param>
+    /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     public InteractionService(
         IPedService pedService,
         IVehicleService vehicleService,
         EventHandlerDictionary eventHandlerDictionary,
         IControlService controlService,
         ITickService tickService,
-        ILocalPlayerService localPlayerService)
+        ILocalPlayerService localPlayerService,
+        IGameNotificationService gameNotificationService)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
@@ -51,6 +55,7 @@ internal class InteractionService : IInteractionService, IOnInit
         this._controlService = controlService;
         this._tickService = tickService;
         this._localPlayerService = localPlayerService;
+        this._gameNotificationService = gameNotificationService;
     }
 
     /// <inheritdoc />
@@ -74,6 +79,14 @@ internal class InteractionService : IInteractionService, IOnInit
             Controls.TryAlertVehicle.TimeToHoldInMs,
             this.TryAlertVehicle,
             canInvokeOnPress: () => Game.PlayerPed.IsInVehicle());
+        this._controlService.RegisterMomentaryKeybind(
+            Controls.EnterVehicleAsPassenger.Id,
+            Controls.EnterVehicleAsPassenger.Key,
+            Controls.EnterVehicleAsPassenger.Title,
+            Controls.EnterVehicleAsPassenger.TimerBarTitle,
+            Controls.EnterVehicleAsPassenger.TimeToHoldInMs,
+            this.EnterVehicleAsPassenger,
+            canInvokeOnPress: () => !Game.PlayerPed.IsInVehicle());
     }
 
     /// <inheritdoc/>
@@ -270,6 +283,65 @@ internal class InteractionService : IInteractionService, IOnInit
         {
             return;
         }
+    }
+
+    private void EnterVehicleAsPassenger()
+    {
+        var closestVehicle = World.GetAllVehicles()
+            .OrderBy(x => World.GetDistance(x.Position, Game.PlayerPed.Position))
+            .FirstOrDefault(x =>
+                Cfx.API.NetworkGetEntityIsNetworked(x.Handle) && x.NetworkId != Game.PlayerPed.NetworkId &&
+                x.IsInRangeOf(Game.PlayerPed.Position, BaseInteractionDistance));
+
+        if (closestVehicle is null)
+        {
+            return;
+        }
+
+        var preferredPassengerSeats = new List<VehicleSeat>
+        {
+            VehicleSeat.LeftRear,
+            VehicleSeat.RightRear,
+            VehicleSeat.ExtraSeat1,
+            VehicleSeat.ExtraSeat2,
+            VehicleSeat.ExtraSeat3,
+            VehicleSeat.ExtraSeat4,
+            VehicleSeat.ExtraSeat5,
+            VehicleSeat.ExtraSeat6,
+            VehicleSeat.ExtraSeat7,
+            VehicleSeat.ExtraSeat8,
+            VehicleSeat.ExtraSeat9,
+            VehicleSeat.ExtraSeat10,
+            VehicleSeat.ExtraSeat11,
+            VehicleSeat.ExtraSeat12,
+        };
+
+        var seatToEnter = VehicleSeat.Any;
+        foreach (var seat in preferredPassengerSeats)
+        {
+            if (closestVehicle.IsSeatFree(seat))
+            {
+                seatToEnter = seat;
+                break;
+            }
+        }
+
+        if (seatToEnter == VehicleSeat.Any && closestVehicle.IsSeatFree(VehicleSeat.Passenger))
+        {
+            seatToEnter = VehicleSeat.Passenger;
+        }
+
+        if (seatToEnter != VehicleSeat.Any)
+        {
+            Game.PlayerPed.Task.EnterVehicle(closestVehicle, seatToEnter);
+            return;
+        }
+
+        this._gameNotificationService.Notify(new GameNotificationOptions
+        {
+            Title = "FivePD",
+            Message = "No free passenger seats available in this vehicle.",
+        });
     }
 
     private void ToggleFollowPlayer(int networkId, bool follow)

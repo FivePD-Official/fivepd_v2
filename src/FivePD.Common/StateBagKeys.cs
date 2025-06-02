@@ -30,5 +30,10 @@ internal readonly record struct StateBagKeys
         public const string Stopped = "FivePD:Vehicle:Stopped";
 
         public const string HasGeneratedData = "FivePD:Vehicle:HasGeneratedData";
+
+        public readonly record struct Miscellaneous
+        {
+            public const string RideShare = "FivePD:Vehicle:Miscellaneous:RideShare";
+        }
     }
 }

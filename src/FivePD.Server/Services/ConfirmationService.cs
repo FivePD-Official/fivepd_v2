@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
-using FivePD.Common.DTO;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
@@ -58,5 +58,25 @@ public class ConfirmationService : IConfirmationService
         {
             this.TriggerConfirmation(player, properties, callback);
         }
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> TriggerConfirmationAsync(
+        Player player,
+        ConfirmationProperties properties)
+    {
+        var result = await this._eventService.TriggerEventStrictAsync(
+            player,
+            Events.Generic.Action,
+            JsonConvert.SerializeObject(properties));
+        return bool.Parse(result);
+    }
+
+    /// <inheritdoc/>
+    public Task<bool> TriggerConfirmationAsync(
+        FPlayer player,
+        ConfirmationProperties properties)
+    {
+        return this.TriggerConfirmationAsync(player.GetUnderlyingPlayer(), properties);
     }
 }

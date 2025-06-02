@@ -420,6 +420,13 @@ internal class Bootstrapper : BaseScript
             .As<IOnInit>()
             .IsSingleton();
 
+        services
+            .RegisterType<WaypointService>()
+            .As<IWaypointService>()
+            .As<IOnInit>()
+            .As<IOnDestroy>()
+            .IsSingleton();
+
         this._serviceProvider = services.Build();
 
         ServiceLocator.SetServiceProvider(this._serviceProvider);

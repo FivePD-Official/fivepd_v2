@@ -48,7 +48,7 @@ public class Towing : AssistanceService
         this._vehicleConfigService = vehicleConfigService;
     }
 
-    public override async Task SetupAsync()
+    public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
         this._targetVehicle = this._entityService.GetClosestFVehicleToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
         this._targetPosition = this._targetVehicle?.GetUnderlyingVehicle.Position ?? default;

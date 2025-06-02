@@ -49,7 +49,8 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
     {
         this._eventHandlerDictionary[Events.Generic.Action] += new Action<string, string>(this.OnActionTrigger);
         this._tickService.OnTick += this.OnKeypressAsync;
-        this._controlService.RegisterKeybind(Controls.ConfirmAction.Id, Controls.ConfirmAction.Key, "Confirms an action.", this.OnConfirm);
+        this._controlService.RegisterKeybind(Controls.ConfirmationAccept.Id, Controls.ConfirmationAccept.Key, "Confirms an action.", this.OnAccept);
+        this._controlService.RegisterKeybind(Controls.ConfirmationDeny.Id, Controls.ConfirmationDeny.Key, "Denies an action.", this.OnDeny);
     }
 
     /// <inheritdoc/>
@@ -64,7 +65,7 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
         this._confirmationQueue.Enqueue(new QueuedConfirmation(callbackId, action));
     }
 
-    private void OnConfirm()
+    private void OnAccept()
     {
         if (this._uiManagerService.WelcomeModalOpen)
         {
@@ -79,6 +80,22 @@ internal class ConfirmationService : IConfirmationService, IOnInit, IOnDestroy
         }
 
         BaseScript.TriggerServerEvent(Events.Generic.Callback, this._currentConfirmation.CallbackId, true);
+        this._currentConfirmation = null;
+    }
+
+    private void OnDeny()
+    {
+        if (this._uiManagerService.WelcomeModalOpen)
+        {
+            return;
+        }
+
+        if (this._currentConfirmation is null)
+        {
+            return;
+        }
+
+        BaseScript.TriggerServerEvent(Events.Generic.Callback, this._currentConfirmation.CallbackId, false);
         this._currentConfirmation = null;
     }
 
