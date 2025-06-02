@@ -49,4 +49,16 @@ public static class DefaultVehicleConfigs
             TowedVehiclePositionOffset = new Vector3(1, 1, 1),
         },
     };
+
+    /// <summary>
+    /// Gets the default ambulance vehicle config.
+    /// </summary>
+    public static VehicleConfig<Dictionary<string, object>> RideShare => new()
+    {
+        Type = VehicleConfigType.RideShare,
+        Name = "Taxi",
+        Model = "taxi",
+        Livery = 0,
+        Extras = new List<int>(),
+    };
 }

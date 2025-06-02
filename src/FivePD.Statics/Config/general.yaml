@@ -239,7 +239,7 @@ AssistanceServices:
         Y: -1.5
         Z: 1
   # ----------
-  Taxi:
+  RideShare:
     Enabled: true
     SpawnLocations:
       - X: 0

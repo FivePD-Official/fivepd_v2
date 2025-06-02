@@ -20,11 +20,15 @@ internal sealed record Controls
     public static readonly Control QuestioningMenu = new("fivepd::questioningMenu", "Q", "UI.MENU.QUESTIONING.TITLE");
 
     // Other
+    public static readonly MomentaryControl EnterVehicleAsPassenger = new("fivepd::enterVehicleAsPassenger", "G", "Enter vehicle as passenger", "Entering vehicle as passenger...", 500);
+
     public static readonly MomentaryControl TryAlertEntity = new("fivepd::tryAlertEntityAsync", "E", "Try to alert entity", "Alerting ped...", 500);
 
     public static readonly MomentaryControl TryAlertVehicle = new("fivepd::tryAlertVehicleAsync", "LSHIFT", "Try to alert a vehicle", "Alerting vehicle...", 500);
 
-    public static readonly Control ConfirmAction = new("fivepd::confirmAction", "F1", "Confirms an action");
+    public static readonly Control ConfirmationAccept = new("fivepd::confirmationAccept", "F1", "Confirms an action");
+
+    public static readonly Control ConfirmationDeny = new("fivepd::confirmationDeny", "F2", "Denies an action");
 
     public static readonly Control OpenMDT = new("fivepd::openMDT", "B", "Open MDT");
 

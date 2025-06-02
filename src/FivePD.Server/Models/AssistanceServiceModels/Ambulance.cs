@@ -56,7 +56,7 @@ public class Ambulance : AssistanceService
         this._syncService = syncService;
     }
 
-    public override async Task SetupAsync()
+    public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
         this._target = this.RequestedBy.GetUnderlyingPlayer().Character.Position;
     }

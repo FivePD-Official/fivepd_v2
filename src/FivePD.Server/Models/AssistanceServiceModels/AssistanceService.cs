@@ -49,8 +49,9 @@ public abstract class AssistanceService : IInternalAssistanceService
     /// <summary>
     /// Sets up the assistance service.
     /// </summary>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
     /// <returns>A Task.</returns>
-    public abstract Task SetupAsync();
+    public abstract Task SetupAsync(CancellationTokenSource cancellationTokenSource);
 
     /// <summary>
     /// Determines whether the assistance service can run.
@@ -89,6 +90,11 @@ public abstract class AssistanceService : IInternalAssistanceService
     {
         foreach (var entity in entities)
         {
+            if (entity.Key is null)
+            {
+                continue;
+            }
+
             if (entity.Key.GetType() == typeof(FPed))
             {
                 var castEntity = (FPed)entity.Key;

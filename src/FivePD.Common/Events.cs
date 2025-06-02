@@ -549,6 +549,11 @@ internal readonly record struct Events
         public const string DeleteUI = "fivepd:sceneManagement:deleteUI";
     }
 
+    public readonly record struct RideShare
+    {
+        public const string WaypointSelected = "fivepd:rideshare:waypoint:selected::";
+    }
+
     public readonly record struct Audio
     {
         public const string PlaySound = "fivepd:audio:playSound";
