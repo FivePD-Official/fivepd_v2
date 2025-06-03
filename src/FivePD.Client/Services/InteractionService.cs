@@ -26,6 +26,7 @@ internal class InteractionService : IInteractionService, IOnInit
     private readonly ITickService _tickService;
     private readonly ILocalPlayerService _localPlayerService;
     private readonly IGameNotificationService _gameNotificationService;
+    private readonly IVehicleConfigService _vehicleConfigService;
 
     private Ped _currentlyFollowingPed;
 
@@ -40,6 +41,7 @@ internal class InteractionService : IInteractionService, IOnInit
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     /// <param name="localPlayerService">The <see cref="ILocalPlayerService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
+    /// <param name="vehicleConfigService">The <see cref="IVehicleConfigService"/> to use.</param>
     public InteractionService(
         IPedService pedService,
         IVehicleService vehicleService,
@@ -47,7 +49,8 @@ internal class InteractionService : IInteractionService, IOnInit
         IControlService controlService,
         ITickService tickService,
         ILocalPlayerService localPlayerService,
-        IGameNotificationService gameNotificationService)
+        IGameNotificationService gameNotificationService,
+        IVehicleConfigService vehicleConfigService)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
@@ -56,6 +59,7 @@ internal class InteractionService : IInteractionService, IOnInit
         this._tickService = tickService;
         this._localPlayerService = localPlayerService;
         this._gameNotificationService = gameNotificationService;
+        this._vehicleConfigService = vehicleConfigService;
     }
 
     /// <inheritdoc />
@@ -63,6 +67,7 @@ internal class InteractionService : IInteractionService, IOnInit
     {
         this._eventHandlerDictionary[Events.Interaction.GetTargetedEntity] += new Action<string, string>(this.GetTargetedEntityServer);
         this._eventHandlerDictionary[Events.Interaction.ToggleFollowPlayer] += new Action<int, bool>(this.ToggleFollowPlayer);
+
         this._controlService.RegisterMomentaryKeybind(
             Controls.TryAlertEntity.Id,
             Controls.TryAlertEntity.Key,
@@ -70,7 +75,8 @@ internal class InteractionService : IInteractionService, IOnInit
             Controls.TryAlertEntity.TimerBarTitle,
             Controls.TryAlertEntity.TimeToHoldInMs,
             this.TryAlertEntity,
-            canInvokeOnPress: () => !Game.PlayerPed.IsInVehicle());
+            canInvokeOnPress: () => this._localPlayerService.Player.DutyStatus.Value == FDutyStatus.OnDuty && !Game.PlayerPed.IsInVehicle());
+
         this._controlService.RegisterMomentaryKeybind(
             Controls.TryAlertVehicle.Id,
             Controls.TryAlertVehicle.Key,
@@ -78,7 +84,8 @@ internal class InteractionService : IInteractionService, IOnInit
             Controls.TryAlertVehicle.TimerBarTitle,
             Controls.TryAlertVehicle.TimeToHoldInMs,
             this.TryAlertVehicle,
-            canInvokeOnPress: () => Game.PlayerPed.IsInVehicle());
+            canInvokeOnPress: () => this._localPlayerService.Player.DutyStatus.Value == FDutyStatus.OnDuty && Game.PlayerPed.IsInVehicle() && this._vehicleConfigService.IsPoliceVehicle(Game.PlayerPed.CurrentVehicle));
+
         this._controlService.RegisterMomentaryKeybind(
             Controls.EnterVehicleAsPassenger.Id,
             Controls.EnterVehicleAsPassenger.Key,
