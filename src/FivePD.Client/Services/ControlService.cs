@@ -99,7 +99,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
     {
         var holdableKeybind = new HoldableKeybind(onPress, onRelease, timeToHoldInMs);
 
-        void HoldableOnPress()
+        void MomentaryOnPress()
         {
             if (!(canInvokeOnPress?.Invoke() ?? true))
             {
@@ -113,7 +113,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
             this._actions.Add(holdableKeybind);
         }
 
-        void HoldableOnRelease()
+        void MomentaryOnRelease()
         {
             holdableKeybind.Released = true;
             this._uiManagerService.SendMessage(new JObject
@@ -124,7 +124,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
             holdableKeybind.OnRelease?.Invoke();
         }
 
-        this.InternalRegisterKeybind(id, key, title, "KEYBOARD", HoldableOnPress, HoldableOnRelease);
+        this.InternalRegisterKeybind(id, key, title, "KEYBOARD", MomentaryOnPress, MomentaryOnRelease);
     }
 
     /// <inheritdoc />

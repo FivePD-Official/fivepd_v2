@@ -9,6 +9,7 @@ using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
@@ -20,29 +21,54 @@ using Serilog;
 
 namespace FivePD.Server.Services;
 
-#pragma warning disable
-
+/// <summary>
+/// Service for managing vehicle configurations.
+/// </summary>
 [Obfuscate]
-public class VehicleConfigService : IVehicleConfigService
+public class VehicleConfigService : IVehicleConfigService, IOnInit
 {
     private readonly ILogger _logger;
     private readonly DatabaseContext _databaseContext;
     private readonly IMenuService _menuService;
     private readonly PlayerList _playerList;
+    private readonly EventHandlerDictionary _eventHandlerDictionary;
 
-    public VehicleConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService, PlayerList playerList)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VehicleConfigService"/> class.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="databaseContext">The database context.</param>
+    /// <param name="menuService">The menu service.</param>
+    /// <param name="playerList">The player list.</param>
+    /// <param name="eventHandlerDictionary">The event handler dictionary.</param>
+    public VehicleConfigService(
+        ILogger logger,
+        DatabaseContext databaseContext,
+        IMenuService menuService,
+        PlayerList playerList,
+        EventHandlerDictionary eventHandlerDictionary)
     {
         this._logger = logger;
         this._databaseContext = databaseContext;
         this._menuService = menuService;
         this._playerList = playerList;
+        this._eventHandlerDictionary = eventHandlerDictionary;
     }
 
+    /// <inheritdoc/>
+    void IOnInit.OnInit()
+    {
+        this._eventHandlerDictionary[Events.VehicleConfig.RequestPoliceVehicleModels] +=
+            new Action<Player, NetworkCallbackDelegate>(this.OnRequestPoliceVehicleModels);
+    }
+
+    /// <inheritdoc />
     public List<VehicleConfig<Dictionary<string, object>>> GetAll(VehicleConfigType type)
     {
         return this._databaseContext.VehicleConfigs.Where(x => x.Type == type).ToList();
     }
-    
+
+    /// <inheritdoc />
     public List<VehicleConfig<TOptions>> GetAll<TOptions>(VehicleConfigType type)
     {
         var vehicleConfigs = this._databaseContext.VehicleConfigs.Where(x => x.Type == type).ToList();
@@ -57,7 +83,7 @@ public class VehicleConfigService : IVehicleConfigService
                     Livery = vehicleConfig.Livery,
                     Model = vehicleConfig.Model,
                     Extras = vehicleConfig.Extras,
-                    Options = JsonConvert.DeserializeObject<TOptions>(JsonConvert.SerializeObject(vehicleConfig.Options))
+                    Options = JsonConvert.DeserializeObject<TOptions>(JsonConvert.SerializeObject(vehicleConfig.Options)),
                 })
                 .ToList();
         }
@@ -79,10 +105,10 @@ public class VehicleConfigService : IVehicleConfigService
             networkCallbackDelegate.InvokeWithUnexpectedError();
             return;
         }
-        
+
         networkCallbackDelegate.InvokeWithJson(vehicleConfig);
     }
-    
+
     [UIEvent(Events.UI.VehicleConfig.GetAllPageable)]
     private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -118,8 +144,9 @@ public class VehicleConfigService : IVehicleConfigService
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
         this.SendNewMenuItems();
+        this.SendPoliceVehicleConfigUpdatesToAllClients();
     }
-    
+
     [UIEvent(Events.UI.VehicleConfig.Edit)]
     private void EditVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
@@ -140,6 +167,7 @@ public class VehicleConfigService : IVehicleConfigService
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
         this.SendNewMenuItems();
+        this.SendPoliceVehicleConfigUpdatesToAllClients();
     }
 
     [UIEvent(Events.UI.VehicleConfig.Delete)]
@@ -157,6 +185,7 @@ public class VehicleConfigService : IVehicleConfigService
         this._databaseContext.SaveChanges();
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
         this.SendNewMenuItems();
+        this.SendPoliceVehicleConfigUpdatesToAllClients();
     }
 
     private void SendNewMenuItems()
@@ -168,8 +197,33 @@ public class VehicleConfigService : IVehicleConfigService
                 FPlayer.FromPlayer(player),
                 menu => menu.VehicleSpawnerItem,
                 item => item.Options,
-                newMenuOptions
-            );
+                newMenuOptions);
         }
+    }
+
+    private void OnRequestPoliceVehicleModels([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    {
+        Debug.WriteLine("hhh");
+        var policeVehicleModels = this.GetAllPoliceVehicleModelNames();
+        networkCallbackDelegate.InvokeWithJson(policeVehicleModels);
+    }
+
+    private void SendPoliceVehicleConfigUpdatesToAllClients()
+    {
+        var policeVehicleModels = this.GetAllPoliceVehicleModelNames();
+        var serializedPoliceVehicleModels = JsonConvert.SerializeObject(policeVehicleModels);
+
+        foreach (var player in this._playerList)
+        {
+            player.TriggerEvent(Events.VehicleConfig.UpdatePoliceVehicleModels, serializedPoliceVehicleModels);
+        }
+    }
+
+    private List<string> GetAllPoliceVehicleModelNames()
+    {
+        return this._databaseContext.VehicleConfigs
+            .Where(x => x.Type == VehicleConfigType.Police)
+            .Select(x => x.Model)
+            .ToList();
     }
 }

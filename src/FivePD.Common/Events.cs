@@ -393,6 +393,13 @@ internal readonly record struct Events
         }
     }
 
+    public readonly record struct VehicleConfig
+    {
+        public const string RequestPoliceVehicleModels = "fivepd:vehicleConfig:requestPoliceVehicleModels";
+
+        public const string UpdatePoliceVehicleModels = "fivepd:vehicleConfig:updatePoliceVehicleModels";
+    }
+
     public readonly record struct Location
     {
         public const string Update = "fivepd:location:update";
