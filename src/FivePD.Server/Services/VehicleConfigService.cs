@@ -203,7 +203,6 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
 
     private void OnRequestPoliceVehicleModels([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
     {
-        Debug.WriteLine("hhh");
         var policeVehicleModels = this.GetAllPoliceVehicleModelNames();
         networkCallbackDelegate.InvokeWithJson(policeVehicleModels);
     }
@@ -222,6 +221,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     private List<string> GetAllPoliceVehicleModelNames()
     {
         return this._databaseContext.VehicleConfigs
+            .AsNoTracking()
             .Where(x => x.Type == VehicleConfigType.Police)
             .Select(x => x.Model)
             .ToList();
