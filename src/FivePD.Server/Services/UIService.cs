@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
 using FivePD.Server.Attributes;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using Serilog;
 
 namespace FivePD.Server.Services;
+
+#pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IUIService" />
 [Obfuscate]
@@ -65,28 +65,16 @@ public class UIService : IUIService, IOnInit
                     $"Can't register event method '{attribute.Event}'. Make sure that its declaring type has an interface and has been registered as a service.");
             }
 
-            if (attribute.WithPlayer)
-            {
-                this._eventHandlerDictionary.Add(
-                    attribute.Event,
-                    new Action<Player, ExpandoObject, NetworkCallbackDelegate>(([FromSource] player, expandoObject, networkCallbackDelegate) =>
-                    {
-                        this.HandleEvent(obj, methodInfo, networkCallbackDelegate, new[] { player, (object)expandoObject, networkCallbackDelegate });
-                    }));
-            }
-            else
-            {
-                this._eventHandlerDictionary.Add(
-                    attribute.Event,
-                    new Action<ExpandoObject, NetworkCallbackDelegate>((expandoObject, networkCallbackDelegate) =>
-                    {
-                        this.HandleEvent(obj, methodInfo, networkCallbackDelegate, new[] { (object)expandoObject, networkCallbackDelegate });
-                    }));
-            }
+            this._eventHandlerDictionary.Add(
+                attribute.Event,
+                new Action<Player, string, string>(([FromSource] player, guid, expandoObject) =>
+                {
+                    this.HandleEvent(obj, methodInfo, [player, guid, expandoObject]);
+                }));
         }
     }
 
-    private void HandleEvent(object obj, MethodInfo methodInfo, NetworkCallbackDelegate networkCallbackDelegate, object[] parameters)
+    private void HandleEvent(object obj, MethodInfo methodInfo, object[] parameters)
     {
         if (LifecycleHandler.IsStopped)
         {
@@ -99,7 +87,8 @@ public class UIService : IUIService, IOnInit
         }
         catch (Exception e)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            // TODO: Add unexpected error event trigger for player
+            // networkCallbackDelegate.InvokeWithUnexpectedError();
             LifecycleHandler.HandleError(e);
         }
     }

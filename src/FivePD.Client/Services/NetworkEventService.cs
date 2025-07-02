@@ -24,9 +24,9 @@ internal class NetworkEventService : INetworkEventService
 
         if (args.Length > 0 && args[args.Length - 1] is Delegate lastArg)
         {
-            var newArgs = new object[args.Length - 1 + 1];
+            var newArgs = new object[args.Length];
             newArgs[0] = guid.ToString();
-            args.CopyTo(newArgs, 1);
+            Array.Copy(args, 0, newArgs, 1, args.Length - 1);
 
             callback = lastArg;
 

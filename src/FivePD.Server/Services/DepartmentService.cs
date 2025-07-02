@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CitizenFX.Core;
@@ -10,7 +9,6 @@ using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Exceptions;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
@@ -19,6 +17,7 @@ using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using FivePD.Server.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -31,6 +30,7 @@ public class DepartmentService : IDepartmentService
     private readonly DatabaseContext _databaseContext;
     private readonly IPlayerDataService _playerDataService;
     private readonly IPlayerHandlerService _playerHandlerService;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DepartmentService"/> class.
@@ -38,11 +38,12 @@ public class DepartmentService : IDepartmentService
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerDataService">The <see cref="PlayerDataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="PlayerHandlerService"/> to use.</param>
-    public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService, IPlayerHandlerService playerHandlerService)
+    public DepartmentService(DatabaseContext databaseContext, IPlayerDataService playerDataService, IPlayerHandlerService playerHandlerService, INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
         this._playerDataService = playerDataService;
         this._playerHandlerService = playerHandlerService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -311,7 +312,7 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.GetAll)]
-    private void GetAllUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var departments = this._databaseContext.Departments
             .AsNoTracking()
@@ -320,13 +321,13 @@ public class DepartmentService : IDepartmentService
                 Id = x.Id,
                 Name = x.Name,
             });
-        networkCallbackDelegate.InvokeWithJson(departments);
+        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(departments));
     }
 
-    [UIEvent(Events.UI.Department.GetAllPageable, true)]
-    private void GetAllPageableUI([FromSource] Player player, ExpandoObject departmentsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Department.GetAllPageable)]
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var departmentsRequest = departmentsRequestString.ConvertTo<DepartmentsRequest>();
+        var departmentsRequest = JsonConvert.DeserializeObject<DepartmentsRequest>(serializedRequest);
         User user = this._playerHandlerService.FindUserOfPlayer(player);
         var filters = new Filters<Department>();
         filters.Add(
@@ -344,27 +345,26 @@ public class DepartmentService : IDepartmentService
             .Paginate(departmentsRequest.Page, filters);
 
         page.Items = page.Items.Select(item => new DepartmentResponse(item)).ToList();
-
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(page));
     }
 
     [UIEvent(Events.UI.Department.Get)]
-    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var department = this._databaseContext.Departments
             .AsNoTracking()
             .Include(dept => dept.Divisions)
             .Include(dept => dept.DepartmentRanks)
             .ThenInclude(x => x.Rank)
             .FirstOrDefault(dept => dept.Id == request.Id);
-        networkCallbackDelegate.InvokeWithJson(department);
+        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(department));
     }
 
     [UIEvent(Events.UI.Department.GetUsers)]
-    private void GetDepartmentUsersForNui(ExpandoObject departmentUsersRequestString, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetDepartmentUsersForNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var departmentUsersRequest = departmentUsersRequestString.ConvertTo<DepartmentUsersRequest>();
+        var departmentUsersRequest = JsonConvert.DeserializeObject<DepartmentUsersRequest>(serializedRequest);
 
         var filters = new Filters<User>();
         filters.Add(true, user => user.Department.Id == departmentUsersRequest.DepartmentId);
@@ -373,62 +373,65 @@ public class DepartmentService : IDepartmentService
             department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
 
         var page = this._databaseContext.Users.AsNoTracking().Include(x => x.CallsignFormat).Paginate(departmentUsersRequest.Page, filters);
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(page));
     }
 
     [UIEvent(Events.UI.Department.GetDivision)]
-    private void GetDepartmentDivisionForNui(ExpandoObject requestString, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetDepartmentDivisionForNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = requestString.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
 
         var division = this._databaseContext.Divisions
             .AsNoTracking()
             .FirstOrDefault(division => division.Id == request.Id);
-        networkCallbackDelegate.InvokeWithJson(division);
+        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(division));
     }
 
     [UIEvent(Events.UI.Department.GetDivisions)]
-    private void GetDepartmentDivisionsForNui(ExpandoObject departmentDivisionsRequestString, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetDepartmentDivisionsForNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var departmentDivisionsRequest =
-            departmentDivisionsRequestString.ConvertTo<DepartmentDivisionsRequest>();
+        var request = JsonConvert.DeserializeObject<DepartmentDivisionsRequest>(serializedRequest);
 
         var filters = new Filters<Division>();
-        filters.Add(true, division => division.Department.Id == departmentDivisionsRequest.DepartmentId);
+        filters.Add(true, division => division.Department.Id == request.DepartmentId);
         filters.Add(
-            !string.IsNullOrEmpty(departmentDivisionsRequest.Filters.Name),
-            department => department.Name.ToLower().Contains(departmentDivisionsRequest.Filters.Name.ToLower()));
+            !string.IsNullOrEmpty(request.Filters.Name),
+            department => department.Name.ToLower().Contains(request.Filters.Name.ToLower()));
 
         var page = this._databaseContext.Divisions
             .AsNoTracking()
-            .Paginate(departmentDivisionsRequest.Page, filters);
-        networkCallbackDelegate.InvokeWithJson(page);
+            .Paginate(request.Page, filters);
+        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(page));
     }
 
     [UIEvent(Events.UI.Department.Create)]
-    private void CreateDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CreateDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
         try
         {
-            var createDepartmentRequest = expandoObject.ConvertTo<CreateDepartmentRequest>();
+            var request = JsonConvert.DeserializeObject<CreateDepartmentRequest>(serializedRequest);
             this.CreateDepartment(new Department
             {
-                Name = createDepartmentRequest.Name,
-                CallsignFormat = createDepartmentRequest.CallsignFormat,
-                MaxUsers = createDepartmentRequest.MaxUsers,
+                Name = request.Name,
+                CallsignFormat = request.CallsignFormat,
+                MaxUsers = request.MaxUsers,
             });
-            networkCallbackDelegate.InvokeWithResponse(
+            this._networkEventService.TriggerEventWithResponse(
+                player,
+                guid,
                 true,
                 "UI.LABEL.SUCCESS.CREATE",
                 "UI.LABEL.DEPARTMENT.SUCCESS.CREATE",
                 new Dictionary<string, string>
                 {
-                    { "department", createDepartmentRequest.Name },
+                    { "department", request.Name },
                 });
         }
         catch (DepartmentExistsWithNameException)
         {
-            networkCallbackDelegate.InvokeWithResponse(
+            this._networkEventService.TriggerEventWithResponse(
+                player,
+                guid,
                 false,
                 "UI.ERROR.DEPARTMENT.CREATE.TITLE",
                 "UI.ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
@@ -436,16 +439,16 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.DeleteDivision)]
-    private void DeleteDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var divisionToDelete = this._databaseContext.Divisions
             .Include(division => division.Users)
             .Include(division => division.Department)
             .FirstOrDefault(division => division.Id == request.Id);
         if (divisionToDelete is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -458,7 +461,9 @@ public class DepartmentService : IDepartmentService
         this._databaseContext.Divisions.Remove(divisionToDelete);
         this._databaseContext.SaveChanges();
         this.DivisionDeleted?.Invoke(this, divisionToDelete);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.DELETE",
             "UI.LABEL.DIVISION.SUCCESS.DELETE",
@@ -469,25 +474,27 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.EditDivision)]
-    private void EditDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var renameDivisionRequest = expandoObject.ConvertTo<EditDivisionRequest>();
+        var request = JsonConvert.DeserializeObject<EditDivisionRequest>(serializedRequest);
         var divisionToEdit =
             this._databaseContext.Divisions.FirstOrDefault(division =>
-                division.Id == renameDivisionRequest.DivisionId);
+                division.Id == request.DivisionId);
         if (divisionToEdit is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         var divisionExistsWithName = this._databaseContext.Divisions
-            .FirstOrDefault(division => division.Name == renameDivisionRequest.Name &&
-                                        division.Department.Id == renameDivisionRequest.DepartmentId &&
+            .FirstOrDefault(division => division.Name == request.Name &&
+                                        division.Department.Id == request.DepartmentId &&
                                         division.Id != divisionToEdit.Id);
         if (divisionExistsWithName != null)
         {
-            networkCallbackDelegate.InvokeWithResponse(
+            this._networkEventService.TriggerEventWithResponse(
+                player,
+                guid,
                 false,
                 "UI.ERROR.DIVISION.EDIT.TITLE",
                 "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
@@ -495,10 +502,12 @@ public class DepartmentService : IDepartmentService
         }
 
         var divisionToEditOldName = divisionToEdit.Name;
-        divisionToEdit.Name = renameDivisionRequest.Name;
+        divisionToEdit.Name = request.Name;
         this._databaseContext.SaveChanges();
         this.DivisionUpdated?.Invoke(this, divisionToEdit);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.EDIT",
             "UI.LABEL.DIVISION.SUCCESS.EDIT",
@@ -509,54 +518,58 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.CreateDivision)]
-    private void CreateDivisionFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CreateDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var createDivisionRequest = expandoObject.ConvertTo<CreateDivisionRequest>();
+        var request = JsonConvert.DeserializeObject<CreateDivisionRequest>(serializedRequest);
         var divisionExistsWithName = this._databaseContext.Divisions.FirstOrDefault(division =>
-            division.Name == createDivisionRequest.Name && division.Department.Id == createDivisionRequest.DepartmentId);
+            division.Name == request.Name && division.Department.Id == request.DepartmentId);
         if (divisionExistsWithName != null)
         {
-            networkCallbackDelegate.InvokeWithResponse(
+            this._networkEventService.TriggerEventWithResponse(
+                player,
+                guid,
                 false,
                 "UI.ERROR.DIVISION.CREATE.TITLE",
                 "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
-        var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == createDivisionRequest.DepartmentId);
+        var department = this._databaseContext.Departments.FirstOrDefault(department => department.Id == request.DepartmentId);
         if (department is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         var createdDivisionEntry = this._databaseContext.Divisions.Add(new Division
         {
             Department = department,
-            Name = createDivisionRequest.Name,
+            Name = request.Name,
         });
         this._databaseContext.SaveChanges();
         this.DivisionCreated?.Invoke(this, createdDivisionEntry.Entity);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CREATE",
             "UI.LABEL.DIVISION.SUCCESS.CREATE",
             new Dictionary<string, string>
             {
-                { "division", createDivisionRequest.Name },
+                { "division", request.Name },
             });
     }
 
     [UIEvent(Events.UI.Department.Edit)]
-    private void EditDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<EditDepartmentRequest>();
+        var request = JsonConvert.DeserializeObject<EditDepartmentRequest>(serializedRequest);
         var department = this._databaseContext.Departments
             .Include(department => department.Users)
             .FirstOrDefault(department => department.Id == request.DepartmentId);
         if (department is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -564,7 +577,9 @@ public class DepartmentService : IDepartmentService
             dept.Id != request.DepartmentId && dept.Name == request.Name);
         if (departmentExistsWithName != null)
         {
-            networkCallbackDelegate.InvokeWithResponse(
+            this._networkEventService.TriggerEventWithResponse(
+                player,
+                guid,
                 false,
                 "UI.ERROR.DEPARTMENT.EDIT.TITLE",
                 "UI.ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
@@ -576,7 +591,7 @@ public class DepartmentService : IDepartmentService
             var defaultRank = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.DefaultRankId);
             if (defaultRank is null)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
         }
@@ -602,7 +617,9 @@ public class DepartmentService : IDepartmentService
 
         this._databaseContext.SaveChanges();
         this.DepartmentUpdated?.Invoke(this, department);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.EDIT",
             "UI.LABEL.DEPARTMENT.SUCCESS.EDIT",
@@ -613,16 +630,16 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.EditCallsignFormat)]
-    private void EditDepartmentCallsignFormatUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditDepartmentCallsignFormatUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<EditDepartmentCallsignFormatRequest>();
+        var request = JsonConvert.DeserializeObject<EditDepartmentCallsignFormatRequest>(serializedRequest);
         var department = this._databaseContext.Departments
             .Include(x => x.Users)
             .ThenInclude(u => u.CallsignFormat)
             .FirstOrDefault(department => department.Id == request.DepartmentId);
         if (department is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -656,7 +673,9 @@ public class DepartmentService : IDepartmentService
 
         this._databaseContext.SaveChanges();
         this.DepartmentUpdated?.Invoke(this, department);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.EDIT",
             "UI.LABEL.DEPARTMENT.SUCCESS.EDIT",
@@ -667,9 +686,9 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.CheckIfDepartmentNameTaken)]
-    private void CheckIfDepartmentNameTaken(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CheckIfDepartmentNameTaken([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<NameTakenRequest>();
+        var request = JsonConvert.DeserializeObject<NameTakenRequest>(serializedRequest);
         Department departmentExists;
         if (request.CheckForDepartmentId)
         {
@@ -682,19 +701,19 @@ public class DepartmentService : IDepartmentService
             departmentExists = this._databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
         }
 
-        networkCallbackDelegate.InvokeWithJson(new NameTakenResponse(departmentExists != null));
+        this._networkEventService.TriggerEventSerialized(player, guid, new NameTakenResponse(departmentExists != null));
     }
 
     [UIEvent(Events.UI.Department.Delete)]
-    private void DeleteDepartmentFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var department = this._databaseContext.Departments
             .Include(department => department.Users)
             .FirstOrDefault(department => department.Id == request.Id);
         if (department is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -709,7 +728,9 @@ public class DepartmentService : IDepartmentService
         this._databaseContext.Departments.Remove(department);
         this._databaseContext.SaveChanges();
         this.DepartmentDeleted?.Invoke(this, department);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.DELETE",
             "UI.LABEL.DEPARTMENT.SUCCESS.DELETE",
@@ -720,9 +741,9 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.Join, true)]
-    private void PlayerJoinDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void PlayerJoinDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var department = this._databaseContext.Departments
             .Include(department => department.Users)
             .ThenInclude(u => u.CallsignFormat)
@@ -730,7 +751,7 @@ public class DepartmentService : IDepartmentService
 
         if (department is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -775,7 +796,9 @@ public class DepartmentService : IDepartmentService
 
             this._databaseContext.SaveChanges();
 
-            networkCallbackDelegate.InvokeWithResponse(
+            this._networkEventService.TriggerEventWithResponse(
+                player,
+                guid,
                 true,
                 "UI.LABEL.SUCCESS.JOIN",
                 "UI.LABEL.DEPARTMENT.SUCCESS.JOIN",
@@ -786,16 +809,18 @@ public class DepartmentService : IDepartmentService
         }
         catch (DepartmentFullException)
         {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.DEPARTMENT.FULL.TITLE", "UI.ERROR.DEPARTMENT.FULL.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.DEPARTMENT.FULL.TITLE", "UI.ERROR.DEPARTMENT.FULL.DESCRIPTION");
         }
     }
 
     [UIEvent(Events.UI.Department.Leave, true)]
-    private void PlayerLeaveDepartmentFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void PlayerLeaveDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
         var playerDepartment = this._playerDataService.FindUserByLicense(player).Department;
         this.RemovePlayerFromDepartment(player);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.LEAVE",
             "UI.LABEL.DEPARTMENT.SUCCESS.LEAVE",
@@ -806,23 +831,23 @@ public class DepartmentService : IDepartmentService
     }
 
     [UIEvent(Events.UI.Department.RemoveUser, true)]
-    private void KickPlayerFromDepartmentNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void KickPlayerFromDepartmentNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var idRequest = expandoObject.ConvertTo<IdRequest>();
+        var idRequest = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == idRequest.Id);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this.RemovePlayerFromDepartment(user);
 
-        networkCallbackDelegate.InvokeWithResponse(true, "Kick", "Kicking player");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "Kick", "Kicking player");
     }
 
     [UIEvent(Events.UI.Department.GetAllSimpleWithArea)]
-    private void GetAllSimpleWithAreaCoordinatesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllSimpleWithAreaCoordinatesUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var departments = this._databaseContext.Departments
             .Include(x => x.AreaCoordinates)
@@ -834,13 +859,13 @@ public class DepartmentService : IDepartmentService
                 Coordinates = department.AreaCoordinates.ToList(),
             })
             .ToList();
-        networkCallbackDelegate.InvokeWithJson(departments);
+        this._networkEventService.TriggerEventSerialized(player, guid, departments);
     }
 
     [UIEvent(Events.UI.Department.UpdateAreas)]
-    private void UpdateAreasUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void UpdateAreasUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<UpdateDepartmentAreasRequest>();
+        var request = JsonConvert.DeserializeObject<UpdateDepartmentAreasRequest>(serializedRequest);
         foreach (var area in request.Areas)
         {
             var department = this._databaseContext.Departments
@@ -848,7 +873,7 @@ public class DepartmentService : IDepartmentService
                 .FirstOrDefault(x => x.Id == area.DepartmentId);
             if (department is null)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
@@ -887,6 +912,6 @@ public class DepartmentService : IDepartmentService
 
         this._databaseContext.SaveChanges();
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT");
     }
 }
