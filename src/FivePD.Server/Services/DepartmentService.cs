@@ -321,7 +321,7 @@ public class DepartmentService : IDepartmentService
                 Id = x.Id,
                 Name = x.Name,
             });
-        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(departments));
+        this._networkEventService.TriggerEventSerialized(player, guid, departments);
     }
 
     [UIEvent(Events.UI.Department.GetAllPageable)]
@@ -345,7 +345,7 @@ public class DepartmentService : IDepartmentService
             .Paginate(departmentsRequest.Page, filters);
 
         page.Items = page.Items.Select(item => new DepartmentResponse(item)).ToList();
-        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(page));
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Department.Get)]
@@ -358,7 +358,7 @@ public class DepartmentService : IDepartmentService
             .Include(dept => dept.DepartmentRanks)
             .ThenInclude(x => x.Rank)
             .FirstOrDefault(dept => dept.Id == request.Id);
-        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(department));
+        this._networkEventService.TriggerEventSerialized(player, guid, department);
     }
 
     [UIEvent(Events.UI.Department.GetUsers)]
@@ -373,7 +373,7 @@ public class DepartmentService : IDepartmentService
             department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
 
         var page = this._databaseContext.Users.AsNoTracking().Include(x => x.CallsignFormat).Paginate(departmentUsersRequest.Page, filters);
-        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(page));
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Department.GetDivision)]
@@ -384,7 +384,7 @@ public class DepartmentService : IDepartmentService
         var division = this._databaseContext.Divisions
             .AsNoTracking()
             .FirstOrDefault(division => division.Id == request.Id);
-        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(division));
+        this._networkEventService.TriggerEventSerialized(player, guid, division);
     }
 
     [UIEvent(Events.UI.Department.GetDivisions)]
@@ -401,7 +401,7 @@ public class DepartmentService : IDepartmentService
         var page = this._databaseContext.Divisions
             .AsNoTracking()
             .Paginate(request.Page, filters);
-        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(page));
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Department.Create)]
