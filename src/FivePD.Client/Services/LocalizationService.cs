@@ -19,15 +19,18 @@ namespace FivePD.Client.Services;
 internal class LocalizationService : ILocalizationService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalizationService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
-    public LocalizationService(EventHandlerDictionary eventHandlerDictionary)
+    /// <param name="networkEventService">The <see cref="NetworkEventService" /> to use.</param>
+    public LocalizationService(EventHandlerDictionary eventHandlerDictionary, INetworkEventService networkEventService)
     {
         this.Locales = new Dictionary<string, string>();
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -65,9 +68,9 @@ internal class LocalizationService : ILocalizationService, IOnInit
 
     private void LoadLocalization()
     {
-        BaseScript.TriggerServerEvent(
+        this._networkEventService.TriggerServerEvent(
             Events.Localization.GetDefaultOrPreferred,
-            new Action<string, string>((locale, localization) =>
+            new Action<string>((localization) =>
             {
                 this.CurrentLocalization = JsonConvert.DeserializeObject(localization);
                 Cfx.API.SendNuiMessage(JsonConvert.SerializeObject(new JObject
