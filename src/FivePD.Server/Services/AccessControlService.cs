@@ -14,6 +14,8 @@ using FivePD.Server.Models.Requests;
 
 namespace FivePD.Server.Services;
 
+#pragma warning disable
+
 /// <inheritdoc cref="FivePD.Server.Interfaces.IAccessControlService" />
 [Obfuscate]
 public class AccessControlService : IAccessControlService, IOnInit
@@ -21,6 +23,7 @@ public class AccessControlService : IAccessControlService, IOnInit
     private readonly DatabaseContext _databaseContext;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IPlayerHandlerService _playerHandlerService;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AccessControlService"/> class.
@@ -31,17 +34,19 @@ public class AccessControlService : IAccessControlService, IOnInit
     public AccessControlService(
         DatabaseContext databaseContext,
         EventHandlerDictionary eventHandlerDictionary,
-        IPlayerHandlerService playerHandlerService)
+        IPlayerHandlerService playerHandlerService,
+        INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerHandlerService = playerHandlerService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.AccessControl.HasAccess] += new Action<Player, NetworkCallbackDelegate>(this.HasAccess);
+        this._eventHandlerDictionary[Events.AccessControl.HasAccess] += new Action<Player, string>(this.HasAccess);
     }
 
     /// <inheritdoc />
@@ -70,16 +75,20 @@ public class AccessControlService : IAccessControlService, IOnInit
         player?.TriggerEvent(access ? Events.AccessControl.GiveAccess : Events.AccessControl.RemoveAccess);
     }
 
-    private void HasAccess([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void HasAccess([FromSource] Player player, string guid)
     {
         var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null)
         {
-            networkCallbackDelegate.Invoke(true);
+            this._networkEventService.TriggerEvent(player, guid, true);
+            // player.TriggerEvent($"generic-callback::{guid}", true);
+            // networkCallbackDelegate.Invoke(true);
             return;
         }
 
-        networkCallbackDelegate.Invoke(user.AccessFivePD);
+        this._networkEventService.TriggerEvent(player, guid, user.AccessFivePD);
+        // player.TriggerEvent($"generic-callback::{guid}", user.AccessFivePD);
+        // networkCallbackDelegate.Invoke(user.AccessFivePD);
     }
 
     [UIEvent(Events.AccessControl.GiveAccessUI)]

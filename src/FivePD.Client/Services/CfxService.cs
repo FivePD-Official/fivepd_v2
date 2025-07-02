@@ -30,7 +30,7 @@ internal class CfxService : ICfxService, IOnInit
             {
                 return;
             }
-            
+
             this._queueService.Queue(() => Cfx.API.AddAmmoToPed(entity.Handle, weaponHash, ammo));
         });
 
@@ -206,7 +206,7 @@ internal class CfxService : ICfxService, IOnInit
 
                 this._queueService.Queue(() => Cfx.API.TaskVehiclePark(ped.Handle, vehicle.Handle, x, y, z, heading, mode, radius, keepEngineOn));
             });
-        
+
         this._eventHandlerDictionary[Events.Cfx.TaskVehicleTempAction] += new Action<int, int, int, int>(
             (pedNetId, vehicleNetId, action, time) =>
             {
@@ -219,7 +219,7 @@ internal class CfxService : ICfxService, IOnInit
 
                 this._queueService.Queue(() => Cfx.API.TaskVehicleTempAction(ped.Handle, vehicle.Handle, action, time));
             });
-        
+
         this._eventHandlerDictionary[Events.Cfx.SetEntityAsMissionEntity] += new Action<int, bool, bool>(
             (entityNetId, p1, p2) =>
             {
@@ -240,7 +240,7 @@ internal class CfxService : ICfxService, IOnInit
         {
             return null;
         }
-        
+
         Cfx.API.SetEntityLoadCollisionFlag(entity.Handle, true);
 
         return entity;

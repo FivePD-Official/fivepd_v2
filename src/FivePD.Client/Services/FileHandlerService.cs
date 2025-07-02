@@ -8,10 +8,19 @@ using Newtonsoft.Json;
 
 namespace FivePD.Client.Services;
 
+#pragma warning disable
+
 /// <inheritdoc />
 internal class FileHandlerService : IFileHandlerService
 {
     private readonly ConcurrentDictionary<string, object> _cache = new();
+
+    private readonly INetworkEventService _networkEventService;
+
+    public FileHandlerService(INetworkEventService networkEventService)
+    {
+        this._networkEventService = networkEventService;
+    }
 
     /// <inheritdoc />
     public async Task<T> LoadFileAsync<T>(string path)
@@ -24,7 +33,7 @@ internal class FileHandlerService : IFileHandlerService
         var gotResponse = false;
         var deserializedObject = default(T);
 
-        BaseScript.TriggerServerEvent(Events.Config.Get, path, new Action<string>(data =>
+        this._networkEventService.TriggerServerEvent(Events.Config.Get, path, new Action<string>(data =>
         {
             if (string.IsNullOrEmpty(data))
             {
