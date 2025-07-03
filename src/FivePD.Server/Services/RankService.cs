@@ -13,6 +13,7 @@ using FivePD.Server.Models.Requests;
 using FivePD.Server.Models.Requests.Rank;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -21,14 +22,17 @@ namespace FivePD.Server.Services;
 public class RankService : IRankService
 {
     private readonly DatabaseContext _databaseContext;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RankService"/> class.
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
-    public RankService(DatabaseContext databaseContext)
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
+    public RankService(DatabaseContext databaseContext, INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -85,28 +89,28 @@ public class RankService : IRankService
     }
 
     [UIEvent(Events.Rank.Get)]
-    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var rank = this._databaseContext.Ranks
             .AsNoTracking()
             .FirstOrDefault(rank => rank.Id == request.Id);
-        networkCallbackDelegate.InvokeWithJson(rank);
+        this._networkEventService.TriggerEventSerialized(player, guid, rank);
     }
 
     [UIEvent(Events.Rank.GetAllGlobal)]
-    private void GetAllGlobalUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllGlobalUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var rank = this._databaseContext.Ranks
             .AsNoTracking()
             .Where(rank => rank.Global);
-        networkCallbackDelegate.InvokeWithJson(rank);
+        this._networkEventService.TriggerEventSerialized(player, guid, rank);
     }
 
     [UIEvent(Events.Rank.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<GetRanksPageRequest>();
+        var request = JsonConvert.DeserializeObject<GetRanksPageRequest>(serializedRequest);
 
         var filters = new Filters<Rank>();
         filters.Add(true, rank => rank.Global == request.Filters.Global);
@@ -116,13 +120,13 @@ public class RankService : IRankService
             department => department.Name.ToLower().Contains(request.Filters.Name.ToLower()));
 
         var page = this._databaseContext.Ranks.AsNoTracking().Include(x => x.DepartmentRanks).Paginate(request.Page, filters);
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.Rank.Create)]
-    private void CreateUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CreateUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<CreateRankRequest>();
+        var request = JsonConvert.DeserializeObject<CreateRankRequest>(serializedRequest);
         var rankWithSameName = this._databaseContext.Ranks
             .Include(rank => rank.DepartmentRanks)
             .FirstOrDefault(rank => rank.Name == request.Name && !rank.Global);
@@ -130,14 +134,14 @@ public class RankService : IRankService
         // Return if there is a rank with the same for the given department
         if (rankWithSameName?.DepartmentRanks.FirstOrDefault(x => x.DepartmentId == request.DepartmentId) is not null)
         {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
         var department = this._databaseContext.Departments.Include(x => x.DepartmentRanks).FirstOrDefault(x => x.Id == request.DepartmentId);
         if (department is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -150,17 +154,17 @@ public class RankService : IRankService
         });
         var departmentRank = new DepartmentRank { Rank = createdRankEntry.Entity, Department = department };
         department.DepartmentRanks.Add(departmentRank);
-        this.CreateRankUI(createdRankEntry.Entity, networkCallbackDelegate);
+        this.CreateRankUI(player, guid, createdRankEntry.Entity);
     }
 
     [UIEvent(Events.Rank.CreateGlobal)]
-    private void CreateGlobalUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CreateGlobalUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<CreateGlobalRankRequest>();
+        var request = JsonConvert.DeserializeObject<CreateGlobalRankRequest>(serializedRequest);
         var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == request.Name && rank.Global);
         if (rankExistsWithName is not null)
         {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -171,14 +175,16 @@ public class RankService : IRankService
             Permission = request.Permission,
             RequiredXp = request.RequiredXp,
         });
-        this.CreateRankUI(createdRankEntry.Entity, networkCallbackDelegate);
+        this.CreateRankUI(player, guid, createdRankEntry.Entity);
     }
 
-    private void CreateRankUI(Rank rank, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CreateRankUI(Player player, string guid, Rank rank)
     {
         this._databaseContext.SaveChanges();
         this.RankCreated?.Invoke(this, rank);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CREATE",
             "UI.LABEL.RANK.SUCCESS.CREATE",
@@ -189,13 +195,13 @@ public class RankService : IRankService
     }
 
     [UIEvent(Events.Rank.Edit)]
-    private void EditUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<EditRankRequest>();
+        var request = JsonConvert.DeserializeObject<EditRankRequest>(serializedRequest);
         var rankToEdit = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.RankId);
         if (rankToEdit is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -206,14 +212,14 @@ public class RankService : IRankService
         // Return if there is a rank with the same for the given department
         if (rankWithSameName?.DepartmentRanks.FirstOrDefault(x => x.DepartmentId == request.DepartmentId) is not null)
         {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
         var department = this._databaseContext.Departments.Include(x => x.DepartmentRanks).FirstOrDefault(x => x.Id == request.DepartmentId);
         if (department is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -221,24 +227,24 @@ public class RankService : IRankService
         rankToEdit.Name = request.Name;
         rankToEdit.Permission = request.Permission;
         rankToEdit.RequiredXp = request.RequiredXp;
-        this.EditRankUI(rankToEdit, rankToEditOldName, networkCallbackDelegate);
+        this.EditRankUI(player, guid, rankToEdit, rankToEditOldName);
     }
 
     [UIEvent(Events.Rank.EditGlobal)]
-    private void EditGlobalUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditGlobalUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<EditGlobalRankRequest>();
+        var request = JsonConvert.DeserializeObject<EditGlobalRankRequest>(serializedRequest);
         var rankToEdit = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.RankId);
         if (rankToEdit is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == request.Name && rank.Global && rank.Id != rankToEdit.Id);
         if (rankExistsWithName is not null)
         {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -246,14 +252,16 @@ public class RankService : IRankService
         rankToEdit.Name = request.Name;
         rankToEdit.Permission = request.Permission;
         rankToEdit.RequiredXp = request.RequiredXp;
-        this.EditRankUI(rankToEdit, rankToEditOldName, networkCallbackDelegate);
+        this.EditRankUI(player, guid, rankToEdit, rankToEditOldName);
     }
 
-    private void EditRankUI(Rank rank, string oldName, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditRankUI(Player player, string guid, Rank rank, string oldName)
     {
         this._databaseContext.SaveChanges();
         this.RankUpdated?.Invoke(this, rank);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.EDIT",
             "UI.LABEL.RANK.SUCCESS.EDIT",
@@ -264,15 +272,15 @@ public class RankService : IRankService
     }
 
     [UIEvent(Events.Rank.Delete)]
-    private void DeleteUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var rankToDelete = this._databaseContext.Ranks
             .Include(rank => rank.Users)
             .FirstOrDefault(rank => rank.Id == request.Id);
         if (rankToDelete is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -285,7 +293,9 @@ public class RankService : IRankService
         this._databaseContext.Ranks.Remove(rankToDelete);
         this._databaseContext.SaveChanges();
         this.RankDeleted?.Invoke(this, rankToDelete);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.DELETE",
             "UI.LABEL.RANK.SUCCESS.DELETE",
