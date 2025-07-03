@@ -542,7 +542,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
             new Dictionary<string, string>
             {
-                { "player", user.Name },
+                { "name", user.Name },
             });
     }
 

@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Reflection;
 using CitizenFX.Core;
+using FivePD.Common;
+using FivePD.Common.DTO;
 using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -17,22 +19,22 @@ public class UIService : IUIService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger _logger;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UIService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
-    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public UIService(
         EventHandlerDictionary eventHandlerDictionary,
         IServiceProvider serviceProvider,
-        ILogger logger)
+        INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._serviceProvider = serviceProvider;
-        this._logger = logger;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -69,12 +71,12 @@ public class UIService : IUIService, IOnInit
                 attribute.Event,
                 new Action<Player, string, string>(([FromSource] player, guid, expandoObject) =>
                 {
-                    this.HandleEvent(obj, methodInfo, [player, guid, expandoObject]);
+                    this.HandleEvent(obj, methodInfo, player, guid, [player, guid, expandoObject]);
                 }));
         }
     }
 
-    private void HandleEvent(object obj, MethodInfo methodInfo, object[] parameters)
+    private void HandleEvent(object obj, MethodInfo methodInfo, Player player, string guid, object[] parameters)
     {
         if (LifecycleHandler.IsStopped)
         {
@@ -87,8 +89,7 @@ public class UIService : IUIService, IOnInit
         }
         catch (Exception e)
         {
-            // TODO: Add unexpected error event trigger for player
-            // networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             LifecycleHandler.HandleError(e);
         }
     }
