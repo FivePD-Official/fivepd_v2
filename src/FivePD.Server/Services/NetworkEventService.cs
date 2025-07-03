@@ -19,7 +19,13 @@ public class NetworkEventService : INetworkEventService
 
     public void TriggerEventSerialized(Player player, string guid, object obj)
     {
-        this.TriggerEvent(player, guid, JsonConvert.SerializeObject(obj));
+        var settings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            NullValueHandling = NullValueHandling.Ignore
+        };
+
+        this.TriggerEvent(player, guid, JsonConvert.SerializeObject(obj, settings));
     }
 
     public void TriggerEventWithResponse(Player player, string guid, bool status, string title, string description, Dictionary<string, string> @params = null)
