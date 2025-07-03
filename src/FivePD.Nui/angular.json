@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "nui:build:production"
+              "buildTarget": "nui:build:production"
             },
             "development": {
-              "browserTarget": "nui:build:development"
+              "buildTarget": "nui:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -80,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "nui:build"
+            "buildTarget": "nui:build"
           }
         },
         "test": {
