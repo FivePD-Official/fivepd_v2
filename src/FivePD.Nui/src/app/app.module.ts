@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { EventService } from '@services/event/event.service';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { CustomHttpInterceptor } from './interceptors/custom-http-interceptor.interceptor';
 import { WindowService } from '@services/window/window.service';
 import { MenuService } from '@services/menu/menu.service';
@@ -37,63 +37,57 @@ import {
 import { InformationComponent } from "./pages/information/information.component";
 import { TimerBarComponent } from "./pages/timer-bar/timer-bar.component"; // Import TimerBarComponent
 
-@NgModule({
-  declarations: [AppComponent],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    FormsModule,
-    TippyModule.forRoot({
-      defaultVariation: 'custom',
-      variations: {
-        custom: {
-          ...tooltipVariation,
-          theme: 'custom',
-          arrow: false,
-          animation: false,
-        }
-      }
-    }),
-    StoreModule.forRoot({
-      app: appReducer,
-      user: userReducer,
-      sidebar: sidebarReducer,
-    }),
-    GameNotificationWrapperComponent,
-    InformationComponent,
-    TimerBarComponent,
-  ],
-  providers: [
-    CalloutService,
-    CalloutDetailsService,
-    ConfigService,
-    DepartmentService,
-    DevtoolsService,
-    DispatchService,
-    EventService,
-    IncidentService,
-    IncidentHistoryService,
-    LocalizationService,
-    VariableDataService,
-    MenuService,
-    MessageService,
-    ModalService,
-    NotificationService,
-    PedHistoryService,
-    UnitService,
-    UserService,
-    WindowService,
-    AttributeGridOptions,
-    VehicleService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: CustomHttpInterceptor,
-      multi: true,
-    }
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [AppComponent],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        FormsModule,
+        TippyModule.forRoot({
+            defaultVariation: 'custom',
+            variations: {
+                custom: {
+                    ...tooltipVariation,
+                    theme: 'custom',
+                    arrow: false,
+                    animation: false,
+                }
+            }
+        }),
+        StoreModule.forRoot({
+            app: appReducer,
+            user: userReducer,
+            sidebar: sidebarReducer,
+        }),
+        GameNotificationWrapperComponent,
+        InformationComponent,
+        TimerBarComponent], providers: [
+        CalloutService,
+        CalloutDetailsService,
+        ConfigService,
+        DepartmentService,
+        DevtoolsService,
+        DispatchService,
+        EventService,
+        IncidentService,
+        IncidentHistoryService,
+        LocalizationService,
+        VariableDataService,
+        MenuService,
+        MessageService,
+        ModalService,
+        NotificationService,
+        PedHistoryService,
+        UnitService,
+        UserService,
+        WindowService,
+        AttributeGridOptions,
+        VehicleService,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: CustomHttpInterceptor,
+            multi: true,
+        },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule {
 }

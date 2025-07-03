@@ -1,4 +1,4 @@
-﻿import { HttpClientTestingModule } from '@angular/common/http/testing';
+﻿import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { InjectionToken, NgModule, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
@@ -11,6 +11,7 @@ import { TranslatePipe } from "../app/pipes/translate.pipe";
 import { MockTranslatePipe } from "./mock-translate-pipe";
 import { LocalizationService } from "@services/localization/localization.service";
 import { RouterTestingModule } from "@angular/router/testing";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 interface Nextable<T> {
   next: (value: T) => void;
@@ -132,13 +133,7 @@ class TestHelperModuleBuilder {
   }
 }
 
-@NgModule({
-  imports: [
-    HttpClientTestingModule,
-    RouterTestingModule,
-  ],
-  declarations: []
-})
+@NgModule({ declarations: [], imports: [RouterTestingModule], providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()] })
 export class TestHelperModule {
   static builder() {
     return new TestHelperModuleBuilder(TestHelperModule);

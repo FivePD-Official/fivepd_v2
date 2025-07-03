@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ActionResponse, Collation, Page, PlayerDetailsDTO, SimpleUser, User} from '@models';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import {Store} from '@ngrx/store';
 import {GlobalState} from '@store';
