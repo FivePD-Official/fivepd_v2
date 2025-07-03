@@ -95,14 +95,14 @@ public class DispatcherUiService : IDispatcherUiService
         networkCallbackDelegate.Invoke(null);
     }
 
-    [UIEvent(Events.Dispatch.EnableForPlayer, true)]
+    [UIEvent(Events.Dispatch.EnableForPlayer)]
     private void OnEnableForPlayer([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var fPlayer = FPlayer.FromPlayer(player);
         fPlayer.Dispatcher.Value = true;
     }
 
-    [UIEvent(Events.Dispatch.DisableForPlayer, true)]
+    [UIEvent(Events.Dispatch.DisableForPlayer)]
     private void OnDisableForPlayer([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var fPlayer = FPlayer.FromPlayer(player);

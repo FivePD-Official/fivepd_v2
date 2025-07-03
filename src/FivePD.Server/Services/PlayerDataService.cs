@@ -366,7 +366,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         networkCallbackDelegate.Invoke(user?.Role ?? 0);
     }
 
-    [UIEvent(Events.UI.Player.GetDetails, true)]
+    [UIEvent(Events.UI.Player.GetDetails)]
     private void GetPlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var user = this._databaseContext.Users
@@ -427,7 +427,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._databaseContext.SaveChanges();
     }
 
-    [UIEvent(Events.UI.Player.ChangeDivision, true)]
+    [UIEvent(Events.UI.Player.ChangeDivision)]
     private void ChangePlayerDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
         var playerChangeRequest = JsonConvert.DeserializeObject<PlayerChangeRequest>(serializedRequest);
@@ -474,7 +474,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             });
     }
 
-    [UIEvent(Events.UI.Player.ChangeRank, true)]
+    [UIEvent(Events.UI.Player.ChangeRank)]
     private void ChangePlayerRankFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
         var playerChangeRequest = JsonConvert.DeserializeObject<PlayerChangeRequest>(serializedRequest);
@@ -595,7 +595,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }));
     }
 
-    [UIEvent(Events.UI.Player.UpdateDetails, true)]
+    [UIEvent(Events.UI.Player.UpdateDetails)]
     private void UpdatePlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<UpdatePlayerDetailsRequest>(serializedRequest);

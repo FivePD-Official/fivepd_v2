@@ -233,7 +233,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
-    [UIEvent(Events.UI.Unit.Join, true)]
+    [UIEvent(Events.UI.Unit.Join)]
     private void JoinUnitUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<UnitCallsignRequest>(serializedRequest);
@@ -288,7 +288,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
         }
     }
 
-    [UIEvent(Events.UI.Unit.RequestToJoin, true)]
+    [UIEvent(Events.UI.Unit.RequestToJoin)]
     private void RequestToJoinUnitUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request =  JsonConvert.DeserializeObject<UnitCallsignRequest>(serializedRequest);
@@ -367,7 +367,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
         }
     }
 
-    [UIEvent(Events.UI.Unit.Leave, true)]
+    [UIEvent(Events.UI.Unit.Leave)]
     private void LeaveUnitUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<UnitCallsignRequest>(serializedRequest);

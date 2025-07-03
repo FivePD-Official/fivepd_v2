@@ -740,7 +740,7 @@ public class DepartmentService : IDepartmentService
             });
     }
 
-    [UIEvent(Events.UI.Department.Join, true)]
+    [UIEvent(Events.UI.Department.Join)]
     private void PlayerJoinDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
@@ -813,7 +813,7 @@ public class DepartmentService : IDepartmentService
         }
     }
 
-    [UIEvent(Events.UI.Department.Leave, true)]
+    [UIEvent(Events.UI.Department.Leave)]
     private void PlayerLeaveDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
         var playerDepartment = this._playerDataService.FindUserByLicense(player).Department;
@@ -830,7 +830,7 @@ public class DepartmentService : IDepartmentService
             });
     }
 
-    [UIEvent(Events.UI.Department.RemoveUser, true)]
+    [UIEvent(Events.UI.Department.RemoveUser)]
     private void KickPlayerFromDepartmentNui([FromSource] Player player, string guid, string serializedRequest)
     {
         var idRequest = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);

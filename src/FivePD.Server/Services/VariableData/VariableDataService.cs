@@ -766,7 +766,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         networkCallbackDelegate.InvokeWithJson(entities);
     }
 
-    [UIEvent(Events.UI.VariableData.AddEntity, true)]
+    [UIEvent(Events.UI.VariableData.AddEntity)]
     private void AddEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AddEntityRequest>();
@@ -787,7 +787,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
-    [UIEvent(Events.UI.VariableData.EditEntity, true)]
+    [UIEvent(Events.UI.VariableData.EditEntity)]
     private void UpdateEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<AddEntityRequest>();
@@ -802,7 +802,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
     }
 
-    [UIEvent(Events.UI.VariableData.DeleteEntity, true)]
+    [UIEvent(Events.UI.VariableData.DeleteEntity)]
     private void DeleteEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<DeleteEntityRequest>();

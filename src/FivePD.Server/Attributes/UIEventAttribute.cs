@@ -12,8 +12,7 @@ internal class UIEventAttribute : Attribute
     /// Initializes a new instance of the <see cref="UIEventAttribute"/> class.
     /// </summary>
     /// <param name="eventName">Name of the event..</param>
-    /// <param name="withPlayer">Determines whether the event will be invoked with the Player or not.</param>
-    public UIEventAttribute(string eventName, bool withPlayer = false) // TODO: remove withPlayer
+    public UIEventAttribute(string eventName)
     {
         this.Event = eventName;
     }
