@@ -84,9 +84,9 @@ public class LocalizationService : ILocalizationService, IOnInit
     }
 
     [UIEvent(Events.Localization.GetAvailableLocalizations)]
-    private void OnGetAvailableLocalizations(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void OnGetAvailableLocalizations([FromSource] Player player, string guid)
     {
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(this._availableLocalizations));
+        this._networkEventService.TriggerEventSerialized(player, guid, this._availableLocalizations);
     }
 
     private void LoadLocalizations()
