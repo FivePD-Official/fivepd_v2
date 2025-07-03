@@ -14,6 +14,7 @@ using FivePD.Server.QueryHelpers;
 using FivePD.Server.UIModels;
 using FivePD.Server.UIModels.MenuModels;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace FivePD.Server.Services;
@@ -27,13 +28,15 @@ public class LoadoutConfigService : ILoadoutConfigService
     private readonly DatabaseContext _databaseContext;
     private readonly IMenuService _menuService;
     private readonly PlayerList _playerList;
+    private readonly INetworkEventService _networkEventService;
 
-    public LoadoutConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService, PlayerList playerList)
+    public LoadoutConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService, PlayerList playerList, INetworkEventService networkEventService)
     {
         this._logger = logger;
         this._databaseContext = databaseContext;
         this._menuService = menuService;
         this._playerList = playerList;
+        this._networkEventService = networkEventService;
     }
 
     public List<LoadoutConfig> GetAll()
@@ -47,9 +50,9 @@ public class LoadoutConfigService : ILoadoutConfigService
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Get)]
-    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var loadoutConfig = this._databaseContext.LoadoutConfigs
             .Include(x => x.LoadoutWeapons)
             .Select(x => new
@@ -62,17 +65,17 @@ public class LoadoutConfigService : ILoadoutConfigService
 
         if (loadoutConfig is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
-
-        networkCallbackDelegate.InvokeWithJson(loadoutConfig);
+        
+        this._networkEventService.TriggerEventSerialized(player, guid, loadoutConfig);
     }
 
     [UIEvent(Events.UI.LoadoutConfig.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<LoadoutConfigsRequest>();
+        var request = JsonConvert.DeserializeObject<LoadoutConfigsRequest>(serializedRequest);
         var filters = new Filters<LoadoutConfig>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Name),
@@ -82,13 +85,13 @@ public class LoadoutConfigService : ILoadoutConfigService
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Create)]
-    private void CreateLoadoutConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CreateLoadoutConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<AddLoadoutConfigRequest>();
+        var request = JsonConvert.DeserializeObject<AddLoadoutConfigRequest>(serializedRequest);
 
         var loadoutConfig = new LoadoutConfig { Name = request.Name };
 
@@ -105,19 +108,19 @@ public class LoadoutConfigService : ILoadoutConfigService
         this._databaseContext.LoadoutConfigs.Add(loadoutConfig);
         this._databaseContext.SaveChanges();
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.CREATE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.CREATE");
         this.SendNewMenuItems();
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Edit)]
-    private void EditLoadoutConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditLoadoutConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<EditLoadoutConfigRequest>();
+        var request = JsonConvert.DeserializeObject<EditLoadoutConfigRequest>(serializedRequest);
         var loadout = this._databaseContext.LoadoutConfigs.Include(x => x.LoadoutWeapons).FirstOrDefault(x => x.Id == request.Id);
         
         if (loadout is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -133,7 +136,7 @@ public class LoadoutConfigService : ILoadoutConfigService
 
             if (weapon is null)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
@@ -146,7 +149,7 @@ public class LoadoutConfigService : ILoadoutConfigService
 
             if (weapon is null)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
@@ -154,25 +157,25 @@ public class LoadoutConfigService : ILoadoutConfigService
         }
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.EDIT");
         this.SendNewMenuItems();
     }
 
     [UIEvent(Events.UI.LoadoutConfig.Delete)]
-    private void DeleteLoadoutConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteLoadoutConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var loadout = this._databaseContext.LoadoutConfigs.FirstOrDefault(x => x.Id == request.Id);
         
         if (loadout is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this._databaseContext.LoadoutConfigs.Remove(loadout);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.DELETE");
         this.SendNewMenuItems();
     }
     
