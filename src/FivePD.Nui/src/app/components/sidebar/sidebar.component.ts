@@ -72,7 +72,7 @@ export class SidebarComponent {
       title: 'UI.LABEL.MY_DEPARTMENT',
       path: () => `/mdt/departments/${this.user?.DepartmentId}`,
       icon: IconType.Building,
-      show: () => !!this.user?.Department ?? false,
+      show: () => !!this.user?.Department,
     },
     {
       divider: true,

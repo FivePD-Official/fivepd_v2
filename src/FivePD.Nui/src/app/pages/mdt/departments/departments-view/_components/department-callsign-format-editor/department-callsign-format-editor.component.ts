@@ -1,11 +1,7 @@
 import { Component, EventEmitter, Inject, Input, Optional, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ButtonComponent } from "../../../../../../components/button/button.component";
-import {
-  SingleSelectFieldComponent
-} from "../../../../../../components/form-inputs/single-select-field/single-select-field.component";
 import { ReactiveFormsModule } from "@angular/forms";
-import { TextFieldComponent } from "../../../../../../components/form-inputs/text-field/text-field.component";
 import { IconComponent } from "../../../../../../components/icon/icon.component";
 import { TranslatePipe } from "../../../../../../pipes/translate.pipe";
 import { CALLSIGN_FORMAT_ITEMS } from "./token";
@@ -19,7 +15,7 @@ export interface CallsignFormatChangeEvent {
 
 @Component({
     selector: 'app-department-callsign-format-modal',
-    imports: [CommonModule, ButtonComponent, SingleSelectFieldComponent, ReactiveFormsModule, TextFieldComponent, IconComponent, TranslatePipe],
+    imports: [ButtonComponent, ReactiveFormsModule, IconComponent, TranslatePipe],
     templateUrl: './department-callsign-format-editor.component.html'
 })
 export class DepartmentCallsignFormatEditorComponent {

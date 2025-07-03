@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GridComponent } from "../../../../components/grid/grid.component";
-import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { CalloutDetails, Collation, Column } from "@models";
 import { Router } from "@angular/router";
 import { CalloutDetailsService } from "@services/callout-details/callout-details.service";
@@ -11,7 +10,7 @@ import { LocalizationService } from "@services/localization/localization.service
 
 @Component({
     selector: 'app-callouts',
-    imports: [CommonModule, GridComponent, TranslatePipe],
+    imports: [CommonModule, GridComponent],
     templateUrl: './callouts.component.html'
 })
 export class CalloutsComponent {

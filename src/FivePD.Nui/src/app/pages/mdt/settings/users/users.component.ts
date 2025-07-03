@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { GridComponent } from "../../../../components/grid/grid.component";
 import { Collation, Column, User } from "@models";
 import { BehaviorSubject, filter, switchMap } from "rxjs";
@@ -10,7 +9,7 @@ import { AccessControlService } from "@services/access-control/access-control.se
 
 @Component({
     selector: 'app-users',
-    imports: [CommonModule, TranslatePipe, GridComponent],
+    imports: [CommonModule, GridComponent],
     templateUrl: './users.component.html'
 })
 export class UsersComponent {

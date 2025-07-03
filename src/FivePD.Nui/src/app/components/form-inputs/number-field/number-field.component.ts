@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { NumberField } from "@models";
@@ -8,7 +8,7 @@ import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
     selector: 'app-number-field',
-    imports: [CommonModule, ReactiveFormsModule, TranslatePipe, BaseFieldComponent],
+    imports: [ReactiveFormsModule, TranslatePipe, BaseFieldComponent],
     templateUrl: './number-field.component.html',
     styleUrl: './number-field.component.sass'
 })

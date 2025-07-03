@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseFieldComponent } from "../base-field/base-field.component";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { CheckboxField } from "@models";
@@ -8,7 +8,7 @@ import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
     selector: 'app-checkbox-field',
-    imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe],
+    imports: [BaseFieldComponent, ReactiveFormsModule, TranslatePipe],
     templateUrl: './checkbox-field.component.html',
     styleUrl: './checkbox-field.component.sass'
 })

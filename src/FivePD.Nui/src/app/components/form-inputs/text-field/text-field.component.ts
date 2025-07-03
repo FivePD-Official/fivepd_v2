@@ -1,17 +1,16 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { TextField } from "@models";
-import { SafeHtmlPipe } from "../../../pipes/safe-html.pipe";
 import { BaseFieldComponent } from "../base-field/base-field.component";
 import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
-    selector: 'app-text-field',
-    imports: [CommonModule, ReactiveFormsModule, TranslatePipe, SafeHtmlPipe, BaseFieldComponent],
-    templateUrl: './text-field.component.html',
-    styleUrl: './text-field.component.sass'
+  selector: 'app-text-field',
+  imports: [ReactiveFormsModule, TranslatePipe, BaseFieldComponent],
+  templateUrl: './text-field.component.html',
+  styleUrl: './text-field.component.sass'
 })
 export class TextFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;

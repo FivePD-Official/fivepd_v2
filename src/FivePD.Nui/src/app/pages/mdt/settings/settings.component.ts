@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { PageHeaderComponent } from "../../../components/page-header/page-header.component";
 import { IconType, Routes } from "@models";
@@ -10,7 +10,7 @@ import { RouteHelper } from "../../_service/route-helper";
 
 @Component({
     selector: 'app-settings',
-    imports: [CommonModule, RouterOutlet, PageHeaderComponent, IconComponent, TranslatePipe, RouterLinkActive, RouterLink],
+    imports: [RouterOutlet, PageHeaderComponent, IconComponent, TranslatePipe, RouterLinkActive, RouterLink],
     templateUrl: './settings.component.html',
     styleUrl: './settings.component.sass'
 })

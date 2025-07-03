@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from "../../../../../components/button/button.component";
-import { IconComponent } from "../../../../../components/icon/icon.component";
 import { TranslatePipe } from "../../../../../pipes/translate.pipe";
 import { CallsignFormatItemType } from "@models";
 import { ModalRef } from "@services/modals/modal/modal-ref";
@@ -11,9 +10,9 @@ import {
 import { CALLSIGN_FORMAT_VALUES } from "./token";
 
 @Component({
-    selector: 'app-user-callsign-editor',
-    imports: [CommonModule, ButtonComponent, IconComponent, TranslatePipe],
-    templateUrl: './callsign-editor.component.html'
+  selector: 'app-user-callsign-editor',
+  imports: [CommonModule, ButtonComponent, TranslatePipe],
+  templateUrl: './callsign-editor.component.html'
 })
 export class CallsignEditorComponent implements OnInit {
 

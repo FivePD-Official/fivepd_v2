@@ -18,14 +18,12 @@ import {
 import { PageHeaderComponent } from "../../../../../components/page-header/page-header.component";
 import { TranslatePipe } from "../../../../../pipes/translate.pipe";
 import { DepartmentService } from "@services/department/department.service";
-import { ContainerComponent } from "../../../../../components/container/container.component";
 import { nanoid } from 'nanoid';
 import { ButtonComponent } from "../../../../../components/button/button.component";
 import { NgClass } from "@angular/common";
 import { Area, GRAY, RED } from "./_models/area";
 import { customIcon } from "@services/map";
 import { IconComponent } from "../../../../../components/icon/icon.component";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { first, takeUntil } from "rxjs";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
@@ -44,7 +42,7 @@ const MIN_AREA_COORDINATES = 3;
 
 @Component({
     selector: 'app-department-area-management',
-    imports: [PageHeaderComponent, TranslatePipe, ContainerComponent, ButtonComponent, NgClass, IconComponent],
+    imports: [PageHeaderComponent, TranslatePipe, ButtonComponent, NgClass, IconComponent],
     templateUrl: './department-area-management.component.html'
 })
 export class DepartmentAreaManagementComponent implements OnInit {

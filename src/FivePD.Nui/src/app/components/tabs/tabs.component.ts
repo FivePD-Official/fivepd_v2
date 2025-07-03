@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { NgClass, NgFor } from '@angular/common';
 
 export interface Tab {
   label: string;
@@ -13,7 +12,7 @@ export interface Tab {
     selector: 'app-tabs',
     templateUrl: './tabs.component.html',
     styleUrls: ['./tabs.component.sass'],
-    imports: [NgFor, RouterLinkActive, RouterLink, TranslatePipe, NgClass]
+    imports: [RouterLinkActive, RouterLink, TranslatePipe]
 })
 export class TabsComponent {
   @Input({required: true}) tabs: Tab[] = [];
