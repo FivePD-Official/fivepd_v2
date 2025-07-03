@@ -15,15 +15,19 @@ namespace FivePD.Client.Services;
 internal class VehicleConfigService : IVehicleConfigService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly INetworkEventService _networkEventService;
+
     private List<int> _policeVehicleModelHashes = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleConfigService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    public VehicleConfigService(EventHandlerDictionary eventHandlerDictionary)
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
+    public VehicleConfigService(EventHandlerDictionary eventHandlerDictionary, INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -36,7 +40,7 @@ internal class VehicleConfigService : IVehicleConfigService, IOnInit
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Edit);
 
         this._eventHandlerDictionary[Events.VehicleConfig.UpdatePoliceVehicleModels] += new Action<string>(this.SetPoliceVehicleModels);
-        BaseScript.TriggerServerEvent(Events.VehicleConfig.RequestPoliceVehicleModels, new Action<string>(this.SetPoliceVehicleModels));
+        this._networkEventService.TriggerServerEvent(Events.VehicleConfig.RequestPoliceVehicleModels, new Action<string>(this.SetPoliceVehicleModels));
     }
 
     /// <summary>
