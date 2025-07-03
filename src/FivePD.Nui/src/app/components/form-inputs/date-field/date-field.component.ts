@@ -8,11 +8,10 @@ import { DateMaskDirective } from "../../../directives/date-mask.directive";
 import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
-  selector: 'app-date-field',
-  standalone: true,
-  imports: [CommonModule, BaseFieldComponent, TranslatePipe, ReactiveFormsModule, DateMaskDirective],
-  templateUrl: './date-field.component.html',
-  styleUrl: './date-field.component.sass'
+    selector: 'app-date-field',
+    imports: [CommonModule, BaseFieldComponent, TranslatePipe, ReactiveFormsModule, DateMaskDirective],
+    templateUrl: './date-field.component.html',
+    styleUrl: './date-field.component.sass'
 })
 export class DateFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;

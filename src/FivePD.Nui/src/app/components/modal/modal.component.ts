@@ -29,11 +29,10 @@ import { NgClass } from '@angular/common';
 export type ModalPosition = 'center' | 'side';
 
 @Component({
-  selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.sass'],
-  standalone: true,
-  imports: [NgClass, IconComponent, ButtonComponent, SafeHtmlPipe, TranslatePipe]
+    selector: 'app-modal',
+    templateUrl: './modal.component.html',
+    styleUrls: ['./modal.component.sass'],
+    imports: [NgClass, IconComponent, ButtonComponent, SafeHtmlPipe, TranslatePipe]
 })
 export class ModalComponent implements OnInit, AfterViewInit, OnDestroy {
 

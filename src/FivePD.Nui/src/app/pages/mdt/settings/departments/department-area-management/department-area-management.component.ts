@@ -43,10 +43,9 @@ type MarkerAttribution = {
 const MIN_AREA_COORDINATES = 3;
 
 @Component({
-  selector: 'app-department-area-management',
-  standalone: true,
-  imports: [PageHeaderComponent, TranslatePipe, ContainerComponent, ButtonComponent, NgClass, IconComponent],
-  templateUrl: './department-area-management.component.html',
+    selector: 'app-department-area-management',
+    imports: [PageHeaderComponent, TranslatePipe, ContainerComponent, ButtonComponent, NgClass, IconComponent],
+    templateUrl: './department-area-management.component.html'
 })
 export class DepartmentAreaManagementComponent implements OnInit {
 

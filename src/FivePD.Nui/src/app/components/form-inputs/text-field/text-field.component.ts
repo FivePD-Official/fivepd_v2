@@ -8,11 +8,10 @@ import { BaseFieldComponent } from "../base-field/base-field.component";
 import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
-  selector: 'app-text-field',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, SafeHtmlPipe, BaseFieldComponent],
-  templateUrl: './text-field.component.html',
-  styleUrl: './text-field.component.sass'
+    selector: 'app-text-field',
+    imports: [CommonModule, ReactiveFormsModule, TranslatePipe, SafeHtmlPipe, BaseFieldComponent],
+    templateUrl: './text-field.component.html',
+    styleUrl: './text-field.component.sass'
 })
 export class TextFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;

@@ -19,11 +19,10 @@ interface Selectable<T> {
 }
 
 @Component({
-  selector: 'app-callout-details',
-  templateUrl: './callout-details.component.html',
-  styleUrls: ['./callout-details.component.sass'],
-  standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, ReactiveFormsModule, NgClass, IconComponent, ButtonComponent, TranslatePipe]
+    selector: 'app-callout-details',
+    templateUrl: './callout-details.component.html',
+    styleUrls: ['./callout-details.component.sass'],
+    imports: [PageHeaderComponent, ContainerComponent, ReactiveFormsModule, NgClass, IconComponent, ButtonComponent, TranslatePipe]
 })
 export class CalloutDetailsComponent implements OnInit {
 

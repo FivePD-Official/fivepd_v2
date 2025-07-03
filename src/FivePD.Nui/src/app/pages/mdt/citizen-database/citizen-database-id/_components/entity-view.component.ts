@@ -6,8 +6,8 @@ import { Router } from "@angular/router";
 import { EntityValue, EntityValueLink } from "@services/variable-data/variable-data.service";
 
 @Component({
-  selector: 'entity-view',
-  template: `
+    selector: 'entity-view',
+    template: `
     <div class="flex flex-col gap-4">
       <div class="w-full flex flex-row items-center justify-between">
         <p class="common-title">{{ title | translate }}</p>
@@ -45,12 +45,11 @@ import { EntityValue, EntityValueLink } from "@services/variable-data/variable-d
         }
       </div>
     </div>`,
-  standalone: true,
-  imports: [
-    TranslatePipe,
-    IconComponent,
-    ButtonComponent,
-  ]
+    imports: [
+        TranslatePipe,
+        IconComponent,
+        ButtonComponent,
+    ]
 })
 export class EntityViewComponent {
 

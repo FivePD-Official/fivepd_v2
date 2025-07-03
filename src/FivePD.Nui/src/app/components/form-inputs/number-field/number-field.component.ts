@@ -7,11 +7,10 @@ import { BaseFieldComponent } from "../base-field/base-field.component";
 import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
-  selector: 'app-number-field',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, BaseFieldComponent],
-  templateUrl: './number-field.component.html',
-  styleUrl: './number-field.component.sass'
+    selector: 'app-number-field',
+    imports: [CommonModule, ReactiveFormsModule, TranslatePipe, BaseFieldComponent],
+    templateUrl: './number-field.component.html',
+    styleUrl: './number-field.component.sass'
 })
 export class NumberFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;

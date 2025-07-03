@@ -26,11 +26,10 @@ import { AsyncPipe } from "@angular/common";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.sass'],
-  standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, AsyncPipe]
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.sass'],
+    imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, AsyncPipe]
 })
 export class DashboardComponent {
 

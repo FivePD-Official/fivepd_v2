@@ -45,11 +45,10 @@ const sizeVariants: Record<ButtonSizes, string> = {
 };
 
 @Component({
-  selector: 'app-button',
-  templateUrl: './button.component.html',
-  styleUrls: ['./button.component.sass'],
-  standalone: true,
-  imports: [NgClass]
+    selector: 'app-button',
+    templateUrl: './button.component.html',
+    styleUrls: ['./button.component.sass'],
+    imports: [NgClass]
 })
 export class ButtonComponent implements OnInit, OnChanges {
 

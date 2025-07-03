@@ -10,11 +10,10 @@ export interface Tab {
 }
 
 @Component({
-  selector: 'app-tabs',
-  templateUrl: './tabs.component.html',
-  styleUrls: ['./tabs.component.sass'],
-  standalone: true,
-  imports: [NgFor, RouterLinkActive, RouterLink, TranslatePipe, NgClass]
+    selector: 'app-tabs',
+    templateUrl: './tabs.component.html',
+    styleUrls: ['./tabs.component.sass'],
+    imports: [NgFor, RouterLinkActive, RouterLink, TranslatePipe, NgClass]
 })
 export class TabsComponent {
   @Input({required: true}) tabs: Tab[] = [];

@@ -14,11 +14,10 @@ import { GlobalState } from "@store";
 import { AppActions } from "@store/app.actions";
 
 @Component({
-  selector: 'app-vehicle-database-id',
-  standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, TranslatePipe, AsyncPipe, DatePipe, IconComponent, RouterLink],
-  templateUrl: './vehicle-database-id.component.html',
-  styleUrls: ['./vehicle-database-id.component.sass']
+    selector: 'app-vehicle-database-id',
+    imports: [PageHeaderComponent, ContainerComponent, TranslatePipe, AsyncPipe, DatePipe, IconComponent, RouterLink],
+    templateUrl: './vehicle-database-id.component.html',
+    styleUrls: ['./vehicle-database-id.component.sass']
 })
 export class VehicleDatabaseIdComponent {
 

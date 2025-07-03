@@ -12,10 +12,9 @@ import { LocalizationService } from "@services/localization/localization.service
 import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
-  selector: 'app-attributes',
-  templateUrl: './attributes.component.html',
-  standalone: true,
-  imports: [ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent]
+    selector: 'app-attributes',
+    templateUrl: './attributes.component.html',
+    imports: [ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent]
 })
 export class AttributesComponent implements OnInit {
 

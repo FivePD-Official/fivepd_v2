@@ -10,10 +10,9 @@ import { BehaviorSubject, switchMap } from "rxjs";
 import { LocalizationService } from "@services/localization/localization.service";
 
 @Component({
-  selector: 'app-callouts',
-  standalone: true,
-  imports: [CommonModule, GridComponent, TranslatePipe],
-  templateUrl: './callouts.component.html',
+    selector: 'app-callouts',
+    imports: [CommonModule, GridComponent, TranslatePipe],
+    templateUrl: './callouts.component.html'
 })
 export class CalloutsComponent {
 

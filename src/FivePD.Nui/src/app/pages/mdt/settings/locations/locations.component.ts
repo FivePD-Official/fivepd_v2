@@ -15,10 +15,9 @@ import { LocalizationService } from "@services/localization/localization.service
 import { collationWithAdditionalFilters } from "../../../../helpers/request";
 
 @Component({
-  selector: 'app-locations',
-  standalone: true,
-  imports: [CommonModule, TranslatePipe, GridComponent],
-  templateUrl: './locations.component.html',
+    selector: 'app-locations',
+    imports: [CommonModule, TranslatePipe, GridComponent],
+    templateUrl: './locations.component.html'
 })
 export class LocationsComponent implements OnInit {
 

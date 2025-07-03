@@ -28,10 +28,9 @@ import {
 import { Validators } from "@angular/forms";
 
 @Component({
-  selector: 'app-my-settings',
-  templateUrl: './my-settings.component.html',
-  standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, DynamicFormComponent, TranslatePipe, ButtonComponent]
+    selector: 'app-my-settings',
+    templateUrl: './my-settings.component.html',
+    imports: [PageHeaderComponent, ContainerComponent, DynamicFormComponent, TranslatePipe, ButtonComponent]
 })
 export class MySettingsComponent implements OnInit {
 

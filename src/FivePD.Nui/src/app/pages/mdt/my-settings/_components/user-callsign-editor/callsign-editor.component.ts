@@ -11,10 +11,9 @@ import {
 import { CALLSIGN_FORMAT_VALUES } from "./token";
 
 @Component({
-  selector: 'app-user-callsign-editor',
-  standalone: true,
-  imports: [CommonModule, ButtonComponent, IconComponent, TranslatePipe],
-  templateUrl: './callsign-editor.component.html',
+    selector: 'app-user-callsign-editor',
+    imports: [CommonModule, ButtonComponent, IconComponent, TranslatePipe],
+    templateUrl: './callsign-editor.component.html'
 })
 export class CallsignEditorComponent implements OnInit {
 

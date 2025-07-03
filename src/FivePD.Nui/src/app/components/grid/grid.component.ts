@@ -30,11 +30,10 @@ import { MultiSelectFieldComponent } from "../form-inputs/multi-select-field/mul
 import { BadgeComponent } from "../badge/badge.component";
 
 @Component({
-  selector: 'app-grid',
-  templateUrl: './grid.component.html',
-  styleUrls: ['./grid.component.sass'],
-  standalone: true,
-  imports: [ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe, TextFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, BadgeComponent]
+    selector: 'app-grid',
+    templateUrl: './grid.component.html',
+    styleUrls: ['./grid.component.sass'],
+    imports: [ButtonComponent, TippyModule, ReactiveFormsModule, FormsModule, NgClass, RouterLink, IconComponent, PaginationComponent, TranslatePipe, TextFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, BadgeComponent]
 })
 export class GridComponent<T> implements OnInit, OnDestroy, OnChanges {
 

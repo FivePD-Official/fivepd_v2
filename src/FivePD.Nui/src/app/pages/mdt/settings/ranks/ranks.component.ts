@@ -12,13 +12,12 @@ import { RankService } from "@services/rank/rank.service";
 import { FormattedRank, RankOptions } from "../../../_service/rank-options";
 
 @Component({
-  selector: 'app-ranks',
-  standalone: true,
-  imports: [
-    AsyncPipe,
-    GridComponent
-  ],
-  templateUrl: './ranks.component.html',
+    selector: 'app-ranks',
+    imports: [
+        AsyncPipe,
+        GridComponent
+    ],
+    templateUrl: './ranks.component.html'
 })
 export class RanksComponent implements OnInit {
 

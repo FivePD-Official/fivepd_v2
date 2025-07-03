@@ -18,10 +18,9 @@ export interface CallsignFormatChangeEvent {
 }
 
 @Component({
-  selector: 'app-department-callsign-format-modal',
-  standalone: true,
-  imports: [CommonModule, ButtonComponent, SingleSelectFieldComponent, ReactiveFormsModule, TextFieldComponent, IconComponent, TranslatePipe],
-  templateUrl: './department-callsign-format-editor.component.html',
+    selector: 'app-department-callsign-format-modal',
+    imports: [CommonModule, ButtonComponent, SingleSelectFieldComponent, ReactiveFormsModule, TextFieldComponent, IconComponent, TranslatePipe],
+    templateUrl: './department-callsign-format-editor.component.html'
 })
 export class DepartmentCallsignFormatEditorComponent {
   _positions: CallsignFormatItem[] = [];

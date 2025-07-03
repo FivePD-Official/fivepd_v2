@@ -37,10 +37,9 @@ function createBaseFields(weaponComponent?: WeaponComponent): FormInputBase<any>
 }
 
 @Component({
-  selector: 'app-loadout-weapon-components',
-  templateUrl: './loadout-weapon-components.component.html',
-  standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe]
+    selector: 'app-loadout-weapon-components',
+    templateUrl: './loadout-weapon-components.component.html',
+    imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe]
 })
 export class LoadoutWeaponComponentsComponent {
 

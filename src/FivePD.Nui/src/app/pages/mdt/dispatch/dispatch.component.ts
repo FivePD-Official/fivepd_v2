@@ -53,11 +53,10 @@ const markerIcons: Record<MarkerIconName, MarkerIconProperties> = {
 };
 
 @Component({
-  selector: 'app-dispatch',
-  templateUrl: './dispatch.component.html',
-  styleUrls: ['./dispatch.component.sass'],
-  standalone: true,
-  imports: [ContainerComponent, NgClass, ButtonComponent, TranslatePipe, MultiSelectFieldComponent, AsyncPipe]
+    selector: 'app-dispatch',
+    templateUrl: './dispatch.component.html',
+    styleUrls: ['./dispatch.component.sass'],
+    imports: [ContainerComponent, NgClass, ButtonComponent, TranslatePipe, MultiSelectFieldComponent, AsyncPipe]
 })
 export class DispatchComponent implements OnInit, OnDestroy {
 

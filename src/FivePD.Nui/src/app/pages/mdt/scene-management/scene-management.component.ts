@@ -7,10 +7,9 @@ import { PageHeaderComponent } from "../../../components/page-header/page-header
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 
 @Component({
-  selector: 'app-scene-management',
-  standalone: true,
-  imports: [CommonModule, SceneManagementSpeedZoneComponent, TabsComponent, RouterOutlet, PageHeaderComponent, TranslatePipe],
-  templateUrl: './scene-management.component.html',
+    selector: 'app-scene-management',
+    imports: [CommonModule, SceneManagementSpeedZoneComponent, TabsComponent, RouterOutlet, PageHeaderComponent, TranslatePipe],
+    templateUrl: './scene-management.component.html'
 })
 export class SceneManagementComponent {
 

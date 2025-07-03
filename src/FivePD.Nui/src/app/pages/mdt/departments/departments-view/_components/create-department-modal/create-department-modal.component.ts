@@ -14,10 +14,9 @@ import {
 import { ModalRef } from "@services/modals/modal/modal-ref";
 
 @Component({
-  selector: 'app-create-department-model',
-  standalone: true,
-  imports: [CommonModule, DynamicFormComponent, ButtonComponent, TranslatePipe, DepartmentCallsignFormatEditorComponent],
-  templateUrl: './create-department-modal.component.html',
+    selector: 'app-create-department-model',
+    imports: [CommonModule, DynamicFormComponent, ButtonComponent, TranslatePipe, DepartmentCallsignFormatEditorComponent],
+    templateUrl: './create-department-modal.component.html'
 })
 export class CreateDepartmentModalComponent {
 

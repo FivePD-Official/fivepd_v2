@@ -39,11 +39,10 @@ import { CheckboxFieldComponent } from "../form-inputs/checkbox-field/checkbox-f
 type RemoveFocusTrap = () => void;
 
 @Component({
-  selector: 'app-dynamic-form',
-  templateUrl: './dynamic-form.component.html',
-  styleUrls: ['./dynamic-form.component.sass'],
-  standalone: true,
-  imports: [ReactiveFormsModule, NgClass, NgStyle, ButtonComponent, TranslatePipe, TextFieldComponent, NumberFieldComponent, TextareaFieldComponent, DateFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, CheckboxFieldComponent]
+    selector: 'app-dynamic-form',
+    templateUrl: './dynamic-form.component.html',
+    styleUrls: ['./dynamic-form.component.sass'],
+    imports: [ReactiveFormsModule, NgClass, NgStyle, ButtonComponent, TranslatePipe, TextFieldComponent, NumberFieldComponent, TextareaFieldComponent, DateFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, CheckboxFieldComponent]
 })
 export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 

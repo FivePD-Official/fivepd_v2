@@ -27,10 +27,9 @@ import {WeaponComponentService} from "@services/weapon-component/weapon-componen
 import {DataResolver} from "@services/modals/modal-form/modal-form-data-resolver";
 
 @Component({
-  selector: 'app-loadout-weapons',
-  templateUrl: './loadout-weapons.component.html',
-  standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe]
+    selector: 'app-loadout-weapons',
+    templateUrl: './loadout-weapons.component.html',
+    imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe]
 })
 export class LoadoutWeaponsComponent {
 

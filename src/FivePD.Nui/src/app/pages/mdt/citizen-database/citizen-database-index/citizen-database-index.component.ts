@@ -16,11 +16,10 @@ import { LocalizationService } from "@services/localization/localization.service
 import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
-  selector: 'app-citizen-database-index',
-  templateUrl: './citizen-database-index.component.html',
-  styleUrls: ['./citizen-database-index.component.sass'],
-  standalone: true,
-  imports: [PageHeaderComponent, DynamicFormComponent, RouterLink, GridComponent, DatePipe, TranslatePipe, AsyncPipe]
+    selector: 'app-citizen-database-index',
+    templateUrl: './citizen-database-index.component.html',
+    styleUrls: ['./citizen-database-index.component.sass'],
+    imports: [PageHeaderComponent, DynamicFormComponent, RouterLink, GridComponent, DatePipe, TranslatePipe, AsyncPipe]
 })
 export class CitizenDatabaseIndexComponent implements OnInit {
 

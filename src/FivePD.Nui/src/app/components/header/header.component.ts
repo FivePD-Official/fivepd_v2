@@ -14,11 +14,10 @@ import { takeUntil } from "rxjs";
 import { FeedbackService } from "@services/feedback/feedback.service";
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.sass'],
-  standalone: true,
-  imports: [ButtonComponent, IconComponent, DatePipe]
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.sass'],
+    imports: [ButtonComponent, IconComponent, DatePipe]
 })
 export class HeaderComponent implements OnInit {
 

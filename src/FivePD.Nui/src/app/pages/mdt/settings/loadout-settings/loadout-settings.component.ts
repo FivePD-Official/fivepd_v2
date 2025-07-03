@@ -27,10 +27,9 @@ import { DataResolver } from "@services/modals/modal-form/modal-form-data-resolv
 import { WeaponService } from "@services/weapon/weapon.service";
 
 @Component({
-  selector: 'app-loadout-settings',
-  templateUrl: './loadout-settings.component.html',
-  standalone: true,
-  imports: [ContainerComponent, GridComponent, TranslatePipe, AsyncPipe, LoadoutWeaponsComponent, LoadoutWeaponComponentsComponent]
+    selector: 'app-loadout-settings',
+    templateUrl: './loadout-settings.component.html',
+    imports: [ContainerComponent, GridComponent, TranslatePipe, AsyncPipe, LoadoutWeaponsComponent, LoadoutWeaponComponentsComponent]
 })
 export class LoadoutSettingsComponent {
 

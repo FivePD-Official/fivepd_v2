@@ -1,21 +1,24 @@
 ﻿import { Directive, Input } from "@angular/core";
 
 @Directive({
-  selector: '[tippy]',
+    selector: '[tippy]',
+    standalone: false
 })
 class TippyDirective {
   @Input('tippy') content: any;
 }
 
 @Directive({
-  selector: '[isEnabled]',
+    selector: '[isEnabled]',
+    standalone: false
 })
 class TippyIsEnabledDirective {
   @Input('isEnabled') content: any;
 }
 
 @Directive({
-  selector: '[placement]',
+    selector: '[placement]',
+    standalone: false
 })
 class TippyPlacementDirective {
   @Input('placement') content: any;

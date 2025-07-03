@@ -5,11 +5,10 @@ import { RouterOutlet } from '@angular/router';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 
 @Component({
-  selector: 'app-devtools-view',
-  templateUrl: './devtools-view.component.html',
-  styleUrls: ['./devtools-view.component.sass'],
-  standalone: true,
-  imports: [PageHeaderComponent, TabsComponent, RouterOutlet, TranslatePipe]
+    selector: 'app-devtools-view',
+    templateUrl: './devtools-view.component.html',
+    styleUrls: ['./devtools-view.component.sass'],
+    imports: [PageHeaderComponent, TabsComponent, RouterOutlet, TranslatePipe]
 })
 export class DevtoolsViewComponent {
 

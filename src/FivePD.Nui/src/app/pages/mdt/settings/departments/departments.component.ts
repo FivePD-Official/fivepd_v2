@@ -16,10 +16,9 @@ import {
 } from "../../departments/departments-view/_components/create-department-modal/create-department-modal.component";
 
 @Component({
-  selector: 'app-departments',
-  standalone: true,
-  imports: [CommonModule, GridComponent, TranslatePipe],
-  templateUrl: './departments.component.html',
+    selector: 'app-departments',
+    imports: [CommonModule, GridComponent, TranslatePipe],
+    templateUrl: './departments.component.html'
 })
 export class DepartmentsComponent implements OnInit {
 

@@ -14,18 +14,17 @@ import { SidebarActions } from "@store/sidebar.actions";
 import { RouteHelper } from "../../pages/_service/route-helper";
 
 @Component({
-  selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.sass'],
-  standalone: true,
-  imports: [
-    RouterLinkActive,
-    RouterLink,
-    IconComponent,
-    NgClass,
-    TranslatePipe,
-    NgTemplateOutlet
-  ],
+    selector: 'app-sidebar',
+    templateUrl: './sidebar.component.html',
+    styleUrls: ['./sidebar.component.sass'],
+    imports: [
+        RouterLinkActive,
+        RouterLink,
+        IconComponent,
+        NgClass,
+        TranslatePipe,
+        NgTemplateOutlet
+    ]
 })
 export class SidebarComponent {
 

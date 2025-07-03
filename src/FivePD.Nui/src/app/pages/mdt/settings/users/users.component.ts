@@ -9,10 +9,9 @@ import { LocalizationService } from "@services/localization/localization.service
 import { AccessControlService } from "@services/access-control/access-control.service";
 
 @Component({
-  selector: 'app-users',
-  standalone: true,
-  imports: [CommonModule, TranslatePipe, GridComponent],
-  templateUrl: './users.component.html',
+    selector: 'app-users',
+    imports: [CommonModule, TranslatePipe, GridComponent],
+    templateUrl: './users.component.html'
 })
 export class UsersComponent {
 

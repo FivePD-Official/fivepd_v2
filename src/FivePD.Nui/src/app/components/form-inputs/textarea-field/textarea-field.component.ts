@@ -7,11 +7,10 @@ import { TextField } from "@models";
 import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
-  selector: 'app-textarea-field',
-  standalone: true,
-  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe],
-  templateUrl: './textarea-field.component.html',
-  styleUrl: './textarea-field.component.sass'
+    selector: 'app-textarea-field',
+    imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe],
+    templateUrl: './textarea-field.component.html',
+    styleUrl: './textarea-field.component.sass'
 })
 export class TextareaFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;

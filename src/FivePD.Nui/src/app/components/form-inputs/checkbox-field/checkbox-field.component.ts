@@ -7,11 +7,10 @@ import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
-  selector: 'app-checkbox-field',
-  standalone: true,
-  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe],
-  templateUrl: './checkbox-field.component.html',
-  styleUrl: './checkbox-field.component.sass'
+    selector: 'app-checkbox-field',
+    imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe],
+    templateUrl: './checkbox-field.component.html',
+    styleUrl: './checkbox-field.component.sass'
 })
 export class CheckboxFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;

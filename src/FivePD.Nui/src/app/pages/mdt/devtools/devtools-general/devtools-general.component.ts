@@ -14,11 +14,10 @@ import { ContainerComponent } from '../../../../components/container/container.c
 import { AppActions } from "@store/app.actions";
 
 @Component({
-  selector: 'app-devtools-general',
-  templateUrl: './devtools-general.component.html',
-  styleUrls: ['./devtools-general.component.sass'],
-  standalone: true,
-  imports: [ContainerComponent, ButtonComponent, GridComponent]
+    selector: 'app-devtools-general',
+    templateUrl: './devtools-general.component.html',
+    styleUrls: ['./devtools-general.component.sass'],
+    imports: [ContainerComponent, ButtonComponent, GridComponent]
 })
 export class DevtoolsGeneralComponent {
 

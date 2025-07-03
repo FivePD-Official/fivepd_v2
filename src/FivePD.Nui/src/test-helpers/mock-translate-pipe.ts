@@ -3,7 +3,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'translate'
+    name: 'translate',
+    standalone: false
 })
 export class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {

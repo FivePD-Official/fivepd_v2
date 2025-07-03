@@ -12,10 +12,9 @@ import { DepartmentService } from "@services/department/department.service";
 import { UserService } from "@services/user/user.service";
 
 @Component({
-  selector: 'app-modal-form',
-  templateUrl: './modal-form.component.html',
-  standalone: true,
-  imports: [DynamicFormComponent],
+    selector: 'app-modal-form',
+    templateUrl: './modal-form.component.html',
+    imports: [DynamicFormComponent]
 })
 export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
