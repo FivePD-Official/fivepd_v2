@@ -20,15 +20,16 @@ namespace FivePD.Server.Services;
 public class ControlService : IControlService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    
     private readonly List<Control> _controls = new();
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlService"/> class.
     /// </summary>
-    public ControlService(EventHandlerDictionary eventHandlerDictionary)
+    public ControlService(EventHandlerDictionary eventHandlerDictionary, INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -117,9 +118,9 @@ public class ControlService : IControlService, IOnInit
         }
     }
 
-    private void OnGetAll(NetworkCallbackDelegate networkCallbackDelegate)
+    private void OnGetAll([FromSource] Player player, string guid)
     {
-        networkCallbackDelegate.InvokeWithJson(this._controls.Select(control => new ControlsDTO.ClientControlDTO
+        this._networkEventService.TriggerEvent(player, guid, this._controls.Select(control => new ControlsDTO.ClientControlDTO
         {
             Id = control.Id,
             Title = control.Title,
