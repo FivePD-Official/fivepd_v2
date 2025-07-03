@@ -118,9 +118,10 @@ public class ControlService : IControlService, IOnInit
         }
     }
 
+    // TODO: Not a UI event. Still broken
     private void OnGetAll([FromSource] Player player, string guid)
     {
-        this._networkEventService.TriggerEvent(player, guid, this._controls.Select(control => new ControlsDTO.ClientControlDTO
+        this._networkEventService.TriggerEventSerialized(player, guid, this._controls.Select(control => new ControlsDTO.ClientControlDTO
         {
             Id = control.Id,
             Title = control.Title,
