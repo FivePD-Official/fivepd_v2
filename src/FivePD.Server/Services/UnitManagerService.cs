@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -9,7 +8,6 @@ using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.EntityWrappers;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
@@ -17,6 +15,7 @@ using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Events;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -30,6 +29,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
     private readonly IInternalUnitService _unitService;
     private readonly IPlayerDataService _playerDataService;
     private readonly IPlayerHandlerService _playerHandlerService;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UnitManagerService"/> class.
@@ -40,13 +40,15 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public UnitManagerService(
         IGameNotificationService gameNotificationService,
         IConfirmationService confirmationService,
         IConfigService configService,
         IUnitService unitService,
         IPlayerDataService playerDataService,
-        IPlayerHandlerService playerHandlerService)
+        IPlayerHandlerService playerHandlerService,
+        INetworkEventService networkEventService)
     {
         this._gameNotificationService = gameNotificationService;
         this._confirmationService = confirmationService;
@@ -54,6 +56,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
         this._unitService = (IInternalUnitService)unitService;
         this._playerDataService = playerDataService;
         this._playerHandlerService = playerHandlerService;
+        this._networkEventService = networkEventService;
 
 #pragma warning disable
         // TEST DISPATCH
@@ -74,10 +77,10 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
 
     /// <inheritdoc/>
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
-    
+
     /// <inheritdoc/>
     public event EventHandler<Unit> OnPanicModeEnabled;
-    
+
     /// <inheritdoc/>
     public event EventHandler<Unit> OnPanicModeDisabled;
 
@@ -213,7 +216,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
     }
 
     [UIEvent(Events.UI.Unit.GetAll)]
-    private void GetAllUnitsUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllUnitsUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var units = this._unitService.Units
             .Select(unit => new UnitDTO(unit.Callsign, unit.TrafficStop is not null || unit.Callout is not null,
@@ -227,24 +230,25 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
             PageCount = 1,
             PageSize = units.Count,
         };
-
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Unit.Join, true)]
-    private void JoinUnitUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void JoinUnitUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<UnitCallsignRequest>();
+        var request = JsonConvert.DeserializeObject<UnitCallsignRequest>(serializedRequest);
         var unit = this._unitService.Units.FirstOrDefault(x => x.Callsign == request.Callsign);
         if (unit is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         if (this._configService.GeneralConfig.Unit.MaxMembers > 0 && unit.Players.Count >= this._configService.GeneralConfig.Unit.MaxMembers)
         {
-            networkCallbackDelegate.InvokeWithResponse(
+            this._networkEventService.TriggerEventWithResponse(
+                player, 
+                guid,
                 false,
                 "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE",
                 "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
@@ -259,7 +263,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
             ["callsign"] = unit.Callsign,
         };
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.JOIN", "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.JOIN", "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
         this._gameNotificationService.Notify(
             fPlayer,
             new GameNotificationOptions
@@ -285,19 +289,21 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
     }
 
     [UIEvent(Events.UI.Unit.RequestToJoin, true)]
-    private void RequestToJoinUnitUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void RequestToJoinUnitUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<UnitCallsignRequest>();
+        var request =  JsonConvert.DeserializeObject<UnitCallsignRequest>(serializedRequest);
         var unit = this._unitService.Units.FirstOrDefault(x => x.Callsign == request.Callsign);
         if (unit is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         if (this._configService.GeneralConfig.Unit.MaxMembers > 0 && unit.Players.Count >= this._configService.GeneralConfig.Unit.MaxMembers)
         {
-            networkCallbackDelegate.InvokeWithResponse(
+            this._networkEventService.TriggerEventWithResponse(
+                player,
+                guid,
                 false,
                 "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE",
                 "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
@@ -362,13 +368,13 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
     }
 
     [UIEvent(Events.UI.Unit.Leave, true)]
-    private void LeaveUnitUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void LeaveUnitUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<UnitCallsignRequest>();
+        var request = JsonConvert.DeserializeObject<UnitCallsignRequest>(serializedRequest);
         var unit = this._unitService.Units.FirstOrDefault(x => x.Callsign == request.Callsign);
         if (unit is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -380,7 +386,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
             ["callsign"] = unit.Callsign,
         };
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.LEAVE", "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE", playerLeaveDictionary);
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.LEAVE", "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE", playerLeaveDictionary);
         this._gameNotificationService.Notify(
             fPlayer,
             new GameNotificationOptions
