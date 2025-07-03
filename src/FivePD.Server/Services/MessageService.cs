@@ -116,7 +116,7 @@ public class MessageService : IMessageService
             });
     }
 
-    [UIEvent(Events.Message.Get, true)]
+    [UIEvent(Events.Message.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
@@ -133,7 +133,7 @@ public class MessageService : IMessageService
         this._networkEventService.TriggerEventSerialized(player, guid, message);
     }
 
-    [UIEvent(Events.Message.GetAllPageable, true)]
+    [UIEvent(Events.Message.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<MessageGetAllPageableRequest>(serializedRequest);
@@ -153,7 +153,7 @@ public class MessageService : IMessageService
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
-    [UIEvent(Events.Message.Send, true)]
+    [UIEvent(Events.Message.Send)]
     private void SendUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<SendMessageRequest>(serializedRequest);
@@ -175,7 +175,7 @@ public class MessageService : IMessageService
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.SEND", "UI.LABEL.MESSAGES.SUCCESS.SEND");
     }
 
-    [UIEvent(Events.Message.Read, true)]
+    [UIEvent(Events.Message.Read)]
     private void ReadUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);

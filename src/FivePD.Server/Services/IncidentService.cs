@@ -395,7 +395,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         networkCallbackDelegate.InvokeWithJson(page);
     }
 
-    [UIEvent(Events.Incident.SelfAssign, true)]
+    [UIEvent(Events.Incident.SelfAssign)]
     private void SelfAssignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<StringIdRequest>();
@@ -427,7 +427,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         networkCallbackDelegate.InvokeWithResponse(assignUnitToIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
     }
 
-    [UIEvent(Events.Incident.SelfUnassign, true)]
+    [UIEvent(Events.Incident.SelfUnassign)]
     private void SelfUnassignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<StringIdRequest>();
@@ -459,7 +459,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         networkCallbackDelegate.InvokeWithResponse(unassignUnitFromIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.DESCRIPTION");
     }
 
-    [UIEvent(Events.Incident.Complete, true)]
+    [UIEvent(Events.Incident.Complete)]
     private void CompleteUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
     {
         var request = expandoObject.ConvertTo<StringIdRequest>();

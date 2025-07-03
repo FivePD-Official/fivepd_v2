@@ -459,7 +459,7 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
         return instance;
     }
 
-    [UIEvent(Events.UI.Menu.GetAll, true)]
+    [UIEvent(Events.UI.Menu.GetAll)]
     private void UIGetMenus([FromSource] Player player, string guid, string serializedRequest)
     {
         var menus = this._menus.Keys.Select(this.CreateMenuInstance<Menu>).ToList();
