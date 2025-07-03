@@ -60,7 +60,7 @@ internal static class EventHandlerDictionaryExtensions
         Cfx.API.RegisterNuiCallbackType(eventName);
         eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
         {
-            BaseScript.TriggerServerEvent(eventName, body, new Action<string>(data =>
+            ServiceLocator.Resolve<INetworkEventService>().TriggerServerEvent(eventName, JsonConvert.SerializeObject(body), new Action<string>(data =>
             {
                 var overriddenData = onResponseOverrideData.Invoke(data);
                 cb.Invoke(overriddenData);
