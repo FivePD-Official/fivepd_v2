@@ -11,6 +11,7 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -81,29 +82,27 @@ public class AccessControlService : IAccessControlService, IOnInit
         if (user is null)
         {
             this._networkEventService.TriggerEvent(player, guid, true);
-            // player.TriggerEvent($"generic-callback::{guid}", true);
-            // networkCallbackDelegate.Invoke(true);
             return;
         }
 
         this._networkEventService.TriggerEvent(player, guid, user.AccessFivePD);
-        // player.TriggerEvent($"generic-callback::{guid}", user.AccessFivePD);
-        // networkCallbackDelegate.Invoke(user.AccessFivePD);
     }
 
     [UIEvent(Events.AccessControl.GiveAccessUI)]
-    private void AllowUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void AllowUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this.GiveAccess(user);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.ACCESS_CONTROL.SUCCESS.GIVE_ACCESS",
@@ -114,18 +113,20 @@ public class AccessControlService : IAccessControlService, IOnInit
     }
 
     [UIEvent(Events.AccessControl.RemoveAccessUI)]
-    private void DisallowUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DisallowUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this.RemoveAccess(user);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.ACCESS_CONTROL.SUCCESS.REMOVE_ACCESS",
