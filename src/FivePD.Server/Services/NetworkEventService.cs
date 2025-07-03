@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.DTO;
 using Newtonsoft.Json;
@@ -19,13 +20,7 @@ public class NetworkEventService : INetworkEventService
 
     public void TriggerEventSerialized(Player player, string guid, object obj)
     {
-        var settings = new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
-        this.TriggerEvent(player, guid, JsonConvert.SerializeObject(obj, settings));
+        this.TriggerEvent(player, guid, Converter.SerializeObjectWithoutReferenceLoop(obj));
     }
 
     public void TriggerEventWithResponse(Player player, string guid, bool status, string title, string description, Dictionary<string, string> @params = null)
