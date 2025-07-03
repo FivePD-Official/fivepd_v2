@@ -31,6 +31,7 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private readonly IConfigService _configService;
+    private readonly INetworkEventService _networkEventService;
 
     private readonly Dictionary<Type, string> _menus = new(); // Menu type, menu key
 
@@ -40,26 +41,29 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public MenuService(
         IServiceProvider serviceProvider,
         EventHandlerDictionary eventHandlerDictionary,
         ILogger logger,
-        IConfigService configService)
+        IConfigService configService,
+        INetworkEventService networkEventService)
     {
         this._serviceProvider = serviceProvider;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._logger = logger;
         this._configService = configService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.UI.Menu.OnOpen] += new Action<Player, string, NetworkCallbackDelegate>(this.OnMenuOpen);
-        this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string>(this.OnButtonSelect);
-        this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, bool>(this.OnCheckboxSelect);
-        this._eventHandlerDictionary[Events.UI.Menu.OnListSelect] += new Action<Player, string, int>(this.OnListSelect);
-        this._eventHandlerDictionary[Events.UI.Menu.OnListIndexChange] += new Action<Player, string, int>(this.OnListIndexChange);
+        this._eventHandlerDictionary[Events.UI.Menu.OnOpen] += new Action<Player, string, string>(this.OnMenuOpen);
+        this._eventHandlerDictionary[Events.UI.Menu.OnButtonSelect] += new Action<Player, string, string>(this.OnButtonSelect);
+        this._eventHandlerDictionary[Events.UI.Menu.OnCheckboxSelect] += new Action<Player, string, string, bool>(this.OnCheckboxSelect);
+        this._eventHandlerDictionary[Events.UI.Menu.OnListSelect] += new Action<Player, string, string, int>(this.OnListSelect);
+        this._eventHandlerDictionary[Events.UI.Menu.OnListIndexChange] += new Action<Player, string, string, int>(this.OnListIndexChange);
     }
 
     void IInternalMenuService.RegisterMenus()
@@ -172,7 +176,7 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
             { "Value", JToken.FromObject(value) },
         });
     }
-    
+
     /// <inheritdoc />
     public void UpdateMenuItem<TMenu, TProperty>(
         FPlayer player,
@@ -456,7 +460,7 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
     }
 
     [UIEvent(Events.UI.Menu.GetAll, true)]
-    private void UIGetMenus([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void UIGetMenus([FromSource] Player player, string guid, string serializedRequest)
     {
         var menus = this._menus.Keys.Select(this.CreateMenuInstance<Menu>).ToList();
 
@@ -498,30 +502,30 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
 
         var fPlayer = (IFPlayerWithMenus)FPlayer.FromNetId(player.Handle);
         fPlayer.SetMenus(menus);
-        networkCallbackDelegate.InvokeWithJson(response);
+        this._networkEventService.TriggerEventSerialized(player, guid, response);
     }
 
-    private void OnMenuOpen([FromSource] Player player, string menuId, NetworkCallbackDelegate networkCallbackDelegate)
+    private void OnMenuOpen([FromSource] Player player, string guid, string menuId)
     {
         var fPlayer = FPlayer.FromNetId(player.Handle);
         if (fPlayer is null)
         {
-            networkCallbackDelegate.Invoke(false);
+            this._networkEventService.TriggerEvent(player, guid, false);
             return;
         }
 
         var menu = ((IFPlayerWithMenus)fPlayer).FindMenu(menuId);
         if (menu is null)
         {
-            networkCallbackDelegate.Invoke(false);
+            this._networkEventService.TriggerEvent(player, guid, false);
             return;
         }
 
         var canOpen = menu.CanOpen(FPlayer.FromPlayer(player));
-        networkCallbackDelegate.Invoke(canOpen);
+        this._networkEventService.TriggerEvent(player, guid, canOpen);
     }
 
-    private void OnButtonSelect([FromSource] Player player, string hashcode)
+    private void OnButtonSelect([FromSource] Player player, string guid, string hashcode)
     {
         var fPlayer = FPlayer.FromNetId(player.Handle);
         var menuItem = ((IFPlayerWithMenus)fPlayer).FindMenuItem(hashcode);
@@ -534,7 +538,7 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
         casted.RaiseOnSelect(fPlayer);
     }
 
-    private void OnCheckboxSelect([FromSource] Player player, string hashcode, bool @checked)
+    private void OnCheckboxSelect([FromSource] Player player, string guid, string hashcode, bool @checked)
     {
         var fPlayer = FPlayer.FromNetId(player.Handle);
         var menuItem = ((IFPlayerWithMenus)fPlayer).FindMenuItem(hashcode);
@@ -547,7 +551,7 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
         casted.RaiseOnSelect(fPlayer, @checked);
     }
 
-    private void OnListSelect([FromSource] Player player, string hashcode, int index)
+    private void OnListSelect([FromSource] Player player, string guid, string hashcode, int index)
     {
         var fPlayer = FPlayer.FromNetId(player.Handle);
         var menuItem = ((IFPlayerWithMenus)fPlayer).FindMenuItem(hashcode);
@@ -560,7 +564,7 @@ public class MenuService : IMenuService, IInternalMenuService, IOnInit
         casted?.RaiseOnSelect(fPlayer, index);
     }
 
-    private void OnListIndexChange([FromSource] Player player, string hashcode, int index)
+    private void OnListIndexChange([FromSource] Player player, string guid, string hashcode, int index)
     {
         var fPlayer = FPlayer.FromNetId(player.Handle);
         var menuItem = ((IFPlayerWithMenus)fPlayer).FindMenuItem(hashcode);
