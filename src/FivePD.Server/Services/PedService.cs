@@ -32,6 +32,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private readonly DatabaseContext _databaseContext;
     private readonly IRandomService _randomService;
     private readonly ITickQueueService _tickQueueService;
+    private readonly INetworkEventService _networkEventService;
 
     private Guid _checkPedsId;
 
@@ -45,6 +46,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService" /> to use.</param>
     public PedService(
         IPedStorageService pedStorageService,
         IVehicleStorageService vehicleStorageService,
@@ -52,7 +54,8 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         IConfigService configService,
         DatabaseContext databaseContext,
         IRandomService randomService,
-        ITickQueueService tickQueueService)
+        ITickQueueService tickQueueService,
+        INetworkEventService networkEventService)
     {
         this._pedStorageService = (IInternalPedStorageService)pedStorageService;
         this._vehicleStorageService = vehicleStorageService;
@@ -61,6 +64,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         this._databaseContext = databaseContext;
         this._randomService = randomService;
         this._tickQueueService = tickQueueService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -193,9 +197,9 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     }
 
     [UIEvent(Events.PedHistory.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<PedHistoryGetAllRequest>();
+        var request = JsonConvert.DeserializeObject<PedHistoryGetAllRequest>(serializedRequest);
 
         var filters = new Filters<PedData>();
         filters.Add(
@@ -212,23 +216,23 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.PedHistory.Get)]
-    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var pedData = this._databaseContext.PedData
             .AsNoTracking()
             .Include(x => x.VehicleData)
             .Include(x => x.Licenses)
             .FirstOrDefault(x => x.Id == request.Id);
-        networkCallbackDelegate.InvokeWithJson(pedData);
+        this._networkEventService.TriggerEventSerialized(player, guid, pedData);
     }
 
     [UIEvent(Events.PedHistory.GetAllSimple)]
-    private void GetAllSimpleUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllSimpleUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var simplePedHistories = this._databaseContext.PedData
             .AsNoTracking()
@@ -242,6 +246,6 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             })
             .ToList();
 
-        networkCallbackDelegate.InvokeWithJson(simplePedHistories);
+        this._networkEventService.TriggerEventSerialized(player, guid, simplePedHistories);
     }
 }

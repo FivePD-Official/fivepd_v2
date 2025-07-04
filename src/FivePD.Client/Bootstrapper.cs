@@ -169,6 +169,11 @@ internal class Bootstrapper : BaseScript
             .Register<RemoveTickHandler>(() => this.OnTickRemove);
 
         services
+            .RegisterType<NetworkEventService>()
+            .As<INetworkEventService>()
+            .IsSingleton();
+
+        services
             .RegisterType<LocalizationService>()
             .As<ILocalizationService>()
             .As<IOnInit>()

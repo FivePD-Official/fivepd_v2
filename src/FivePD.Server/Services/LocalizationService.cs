@@ -11,6 +11,7 @@ using FivePD.Server.Attributes;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
+using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -21,6 +22,7 @@ namespace FivePD.Server.Services;
 public class LocalizationService : ILocalizationService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly INetworkEventService _networkEventService;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
@@ -30,16 +32,19 @@ public class LocalizationService : ILocalizationService, IOnInit
 
     /// <summary>Initializes a new instance of the <see cref="LocalizationService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
+    /// /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     public LocalizationService(
         EventHandlerDictionary eventHandlerDictionary,
+        INetworkEventService networkEventService,
         IPlayerHandlerService playerHandlerService,
         IConfigService configService,
         ILogger logger)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._networkEventService = networkEventService;
         this._playerHandlerService = playerHandlerService;
         this._configService = configService;
         this._logger = logger;
@@ -62,7 +67,7 @@ public class LocalizationService : ILocalizationService, IOnInit
         return this._localizationCache.TryGetValue(key, out var localization) ? localization : null;
     }
 
-    private void OnGetDefaultOrPreferred([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void OnGetDefaultOrPreferred([FromSource] Player player, string guid)
     {
         string locale;
 
@@ -76,13 +81,13 @@ public class LocalizationService : ILocalizationService, IOnInit
             locale = user.PreferredLanguage;
         }
 
-        networkCallbackDelegate.Invoke(locale, this.GetLocalization(locale));
+        this._networkEventService.TriggerEvent(player, guid, this.GetLocalization(locale));
     }
 
     [UIEvent(Events.Localization.GetAvailableLocalizations)]
-    private void OnGetAvailableLocalizations(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void OnGetAvailableLocalizations([FromSource] Player player, string guid, string serializedRequest)
     {
-        networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(this._availableLocalizations));
+        this._networkEventService.TriggerEventSerialized(player, guid, this._availableLocalizations);
     }
 
     private void LoadLocalizations()

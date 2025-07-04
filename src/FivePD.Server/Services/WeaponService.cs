@@ -11,6 +11,7 @@ using FivePD.Server.Models.LoadoutModels;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -20,16 +21,18 @@ namespace FivePD.Server.Services;
 public class WeaponService : IWeaponService
 {
     private readonly DatabaseContext _databaseContext;
+    private readonly INetworkEventService _networkEventService;
 
-    public WeaponService(DatabaseContext databaseContext)
+    public WeaponService(DatabaseContext databaseContext, INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
+        this._networkEventService = networkEventService;
     }
 
     [UIEvent(Events.UI.Weapon.Get)]
-    private void GetById(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetById([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var weapon = this._databaseContext.Weapons
             .Include(x => x.WeaponWeaponComponents)
             .Select(x => new
@@ -43,17 +46,17 @@ public class WeaponService : IWeaponService
 
         if (weapon is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        networkCallbackDelegate.InvokeWithJson(weapon);
+        this._networkEventService.TriggerEventSerialized(player, guid, weapon);
     }
 
     [UIEvent(Events.UI.Weapon.GetAllPageable)]
-    private void GetAllPageable(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageable([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<WeaponsRequest>();
+        var request = JsonConvert.DeserializeObject<WeaponsRequest>(serializedRequest);
         var filters = new Filters<Weapon>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Name),
@@ -66,13 +69,13 @@ public class WeaponService : IWeaponService
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Weapon.GetAllSimple)]
-    private void GetAllSimple(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllSimple([FromSource] Player player, string guid, string serializedRequest)
     {
-        networkCallbackDelegate.InvokeWithJson(this._databaseContext.Weapons.Select(x => new
+        this._networkEventService.TriggerEventSerialized(player, guid, this._databaseContext.Weapons.Select(x => new
         {
             Id = x.Id,
             Name = x.Name,
@@ -80,9 +83,9 @@ public class WeaponService : IWeaponService
     }
 
     [UIEvent(Events.UI.Weapon.Create)]
-    private void Create(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void Create([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<AddWeaponRequest>();
+        var request = JsonConvert.DeserializeObject<AddWeaponRequest>(serializedRequest);
 
         var weapon = new Weapon() { Name = request.Name, Model = request.Model };
 
@@ -99,18 +102,18 @@ public class WeaponService : IWeaponService
         this._databaseContext.Weapons.Add(weapon);
         this._databaseContext.SaveChanges();
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.CREATE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.CREATE");
     }
 
     [UIEvent(Events.UI.Weapon.Edit)]
-    private void Edit(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void Edit([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<EditWeaponRequest>();
+        var request = JsonConvert.DeserializeObject<EditWeaponRequest>(serializedRequest);
         var weapon = this._databaseContext.Weapons.Include(x => x.WeaponWeaponComponents).FirstOrDefault(x => x.Id == request.Id);
-        
+
         if (weapon is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -127,20 +130,20 @@ public class WeaponService : IWeaponService
 
             if (weaponComponent is null)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
             weapon.AddComponent(weaponComponent);
         }
-        
+
         foreach (var weaponWeaponComponent in weaponComponentsToRemove)
         {
             var weaponComponent = this._databaseContext.WeaponComponents.Find(weaponWeaponComponent.WeaponComponentId);
 
             if (weaponComponent is null)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
@@ -148,23 +151,23 @@ public class WeaponService : IWeaponService
         }
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.Weapon.Delete)]
-    private void Delete(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void Delete([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var weapon = this._databaseContext.Weapons.FirstOrDefault(x => x.Id == request.Id);
-        
+
         if (weapon is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this._databaseContext.Weapons.Remove(weapon);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.DELETE");
     }
 }

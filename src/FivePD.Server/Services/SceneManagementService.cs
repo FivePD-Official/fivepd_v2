@@ -28,6 +28,7 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
     private readonly PlayerList _playerList;
     private readonly IEntityService _entityService;
     private readonly ICfxService _cfxService;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneManagementService"/> class.
@@ -35,14 +36,17 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="entityService">The <see cref="IEntityService"/> to use.</param>
     /// <param name="cfxService">The <see cref="ICfxService"/> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public SceneManagementService(
         PlayerList playerList,
         IEntityService entityService,
-        ICfxService cfxService)
+        ICfxService cfxService,
+        INetworkEventService networkEventService)
     {
         this._playerList = playerList;
         this._entityService = entityService;
         this._cfxService = cfxService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -142,7 +146,7 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
     }
 
     [UIEvent(Events.SceneManagement.GetAllSpeedZones)]
-    private void GetAllSpeedZonesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllSpeedZonesUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var speedZonesWithPlayers = this._speedZones.Select(a => new SpeedZoneWithPlayerDTO
         {
@@ -150,26 +154,26 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
             SpeedZone = a.Value.Zone,
             PlayerName = a.Value.Player.GetUnderlyingPlayer().Name,
         }).ToList();
-        networkCallbackDelegate.InvokeWithJson(speedZonesWithPlayers);
+        this._networkEventService.TriggerEventSerialized(player, guid, speedZonesWithPlayers);
     }
 
     [UIEvent(Events.SceneManagement.DeleteUI)]
-    private void DeleteUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<StringIdRequest>();
-        if (!Guid.TryParse(request.Id, out var guid))
+        var request = JsonConvert.DeserializeObject<StringIdRequest>(serializedRequest);
+        if (!Guid.TryParse(request.Id, out var speedZoneId))
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        if (!this.DeleteSpeedZone(guid))
+        if (!this.DeleteSpeedZone(speedZoneId))
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        networkCallbackDelegate.InvokeWithResponse(true, "a", "b");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "a", "b");
     }
 
     private sealed record SpeedZoneWithPlayer(SpeedZone Zone, FPlayer Player);

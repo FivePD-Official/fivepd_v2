@@ -35,6 +35,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     private readonly IConfigService _configService;
     private readonly IVehicleStorageService _vehicleStorageService;
     private readonly IInternalDispatcherManagerService _dispatcherManagerService;
+    private readonly INetworkEventService _networkEventService;
 
     private readonly List<TrafficStop> _trafficStops = new();
 
@@ -55,7 +56,8 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         IConfigService configService,
         IIncidentHistoryService incidentHistoryService,
         IVehicleStorageService vehicleStorageService,
-        IDispatcherManagerService dispatcherManagerService)
+        IDispatcherManagerService dispatcherManagerService,
+        INetworkEventService networkEventService)
     {
         this._logger = logger;
         this._incidentHistoryService = (IInternalIncidentHistoryService)incidentHistoryService;
@@ -63,6 +65,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         this._configService = configService;
         this._vehicleStorageService = vehicleStorageService;
         this._dispatcherManagerService = (IInternalDispatcherManagerService)dispatcherManagerService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -304,12 +307,12 @@ public class IncidentService : IIncidentService, IInternalIncidentService
     }
 
     [UIEvent(Events.Incident.Get)]
-    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<StringIdRequest>();
+        var request = JsonConvert.DeserializeObject<StringIdRequest>(serializedRequest);
         if (!Guid.TryParse(request.Id, out var id))
         {
-            networkCallbackDelegate.InvokeWithJson(null);
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -347,15 +350,15 @@ public class IncidentService : IIncidentService, IInternalIncidentService
 
         if (!found)
         {
-            networkCallbackDelegate.InvokeWithJson(null);
+            this._networkEventService.TriggerEventSerialized(player, guid, null);
             return;
         }
 
-        networkCallbackDelegate.InvokeWithJson(incident);
+        this._networkEventService.TriggerEventSerialized(player, guid, incident);
     }
 
     [UIEvent(Events.Incident.GetAllActive)]
-    private void GetAllActiveUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllActiveUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var activeCallouts = this._callouts
             // .Where(x => x.Callout.Units.Count > 0)
@@ -392,23 +395,23 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             PageCount = 1,
             PageSize = incidents.Count,
         };
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
-    [UIEvent(Events.Incident.SelfAssign, true)]
-    private void SelfAssignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.Incident.SelfAssign)]
+    private void SelfAssignUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<StringIdRequest>();
+        var request = JsonConvert.DeserializeObject<StringIdRequest>(serializedRequest);
         if (!Guid.TryParse(request.Id, out var id))
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         var incident = this.GetById(id);
         if (incident is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -424,23 +427,23 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             this._dispatcherManagerService.SendUpdateRequestToDispatchers();
         }
 
-        networkCallbackDelegate.InvokeWithResponse(assignUnitToIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN");
+        this._networkEventService.TriggerEventWithResponse(player, guid, assignUnitToIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.DESCRIPTION");
     }
 
-    [UIEvent(Events.Incident.SelfUnassign, true)]
-    private void SelfUnassignUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.Incident.SelfUnassign)]
+    private void SelfUnassignUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<StringIdRequest>();
+        var request = JsonConvert.DeserializeObject<StringIdRequest>(serializedRequest);
         if (!Guid.TryParse(request.Id, out var id))
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         var incident = this.GetById(id);
         if (incident is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -456,27 +459,27 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             this._dispatcherManagerService.SendUpdateRequestToDispatchers();
         }
 
-        networkCallbackDelegate.InvokeWithResponse(unassignUnitFromIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.DESCRIPTION");
+        this._networkEventService.TriggerEventWithResponse(player, guid, unassignUnitFromIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.DESCRIPTION");
     }
 
-    [UIEvent(Events.Incident.Complete, true)]
-    private void CompleteUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.Incident.Complete)]
+    private void CompleteUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<StringIdRequest>();
+        var request = JsonConvert.DeserializeObject<StringIdRequest>(serializedRequest);
         if (!Guid.TryParse(request.Id, out var id))
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         var incident = this.GetById(id);
         if (incident is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this.CompleteIncident(incident);
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE", "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION.DESCRIPTION");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE", "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION.DESCRIPTION");
     }
 }
