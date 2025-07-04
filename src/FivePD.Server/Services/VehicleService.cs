@@ -114,7 +114,7 @@ public class VehicleService : IVehicleService, IOnInit
             .Include(x => x.Documents)
             .FirstOrDefault(x => x.Id == request.Id);
 
-        this._networkEventService.TriggerEvent(player, guid, vehicleData);
+        this._networkEventService.TriggerEventSerialized(player, guid, vehicleData);
     }
 
     [UIEvent(Events.Vehicle.GetAllPageable)]
@@ -138,6 +138,6 @@ public class VehicleService : IVehicleService, IOnInit
             .Include(x => x.PedData)
             .Paginate(request.Page, filters);
 
-        this._networkEventService.TriggerEvent(player, guid, page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 }

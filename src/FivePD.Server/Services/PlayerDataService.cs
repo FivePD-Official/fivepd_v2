@@ -410,7 +410,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             return;
         }
 
-        this._networkEventService.TriggerEvent(player, guid, null);
+        this._networkEventService.TriggerEvent(player, guid, user.DismissedWelcomeMessage);
     }
 
     private void DismissedWelcomeModal([FromSource] Player player)
