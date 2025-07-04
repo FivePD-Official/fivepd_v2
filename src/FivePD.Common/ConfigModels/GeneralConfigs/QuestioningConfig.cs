@@ -11,12 +11,6 @@ public sealed record QuestioningConfig
     /// </summary>
     public List<QuestionConfig> Questions { get; init; } = new();
 
-    /// <summary>
-    /// Gets whether to use Ollama for generating responses.
-    /// If false, responses will be taken from the config file.
-    /// </summary>
-    public bool UseOllamaResponses { get; init; }
-
     public sealed record QuestionConfig
     {
         /// <summary>
@@ -30,7 +24,7 @@ public sealed record QuestioningConfig
         public string Text { get; init; } = string.Empty;
 
         /// <summary>
-        /// Gets the list of possible responses if not using Ollama.
+        /// Gets the list of possible responses.
         /// Each response has a chance to be selected based on the ped's state.
         /// </summary>
         public List<ResponseConfig> Responses { get; init; } = new();
