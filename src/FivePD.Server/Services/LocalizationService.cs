@@ -11,6 +11,7 @@ using FivePD.Server.Attributes;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
+using FivePD.Server.Models.Requests;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -84,7 +85,7 @@ public class LocalizationService : ILocalizationService, IOnInit
     }
 
     [UIEvent(Events.Localization.GetAvailableLocalizations)]
-    private void OnGetAvailableLocalizations([FromSource] Player player, string guid)
+    private void OnGetAvailableLocalizations([FromSource] Player player, string guid, string serializedRequest)
     {
         this._networkEventService.TriggerEventSerialized(player, guid, this._availableLocalizations);
     }
