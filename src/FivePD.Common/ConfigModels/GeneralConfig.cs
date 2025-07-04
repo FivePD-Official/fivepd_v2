@@ -49,7 +49,5 @@ public sealed record GeneralConfig : IInternalGeneralConfig
 
     public MenusConfig Menu { get; init; } = new();
 
-    public OllamaConfig Ollama { get; init; } = new();
-
     public QuestioningConfig Questioning { get; init; } = new();
 }

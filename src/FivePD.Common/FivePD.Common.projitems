@@ -23,7 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\DispatchMenuItemConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\MdtConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\MenuConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\OllamaConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\PedLicensesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\MessagesConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigModels\GeneralConfigs\PedsConfig.cs" />
