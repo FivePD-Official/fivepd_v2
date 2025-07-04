@@ -2,10 +2,12 @@
 using System.Dynamic;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Server.Extensions;
+using FivePD.Server.Interfaces;
 using Newtonsoft.Json;
 
 namespace FivePD.Server;
@@ -16,7 +18,7 @@ public static class FeedbackHandler
 {
     private static HttpClient _httpClient;
 
-    public static async Task SendFeedback(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    public static async Task SendFeedback([FromSource] Player player, string guid, string serializedRequest)
     {
         _httpClient ??= new HttpClient(new HttpClientHandler
         {
@@ -26,7 +28,7 @@ public static class FeedbackHandler
 
         try
         {
-            dynamic obj = expandoObject;
+            dynamic obj = JsonConvert.DeserializeObject<dynamic>(serializedRequest);
 
             ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;
 
@@ -46,16 +48,16 @@ public static class FeedbackHandler
                 httpContent);
             if (response.StatusCode == HttpStatusCode.NoContent)
             {
-                networkCallbackDelegate.InvokeWithResponse(true, "Successful send", "Your feedback has been successfully sent. Thanks!");
+                ServiceLocator.GetService<INetworkEventService>().TriggerEventWithResponse(player, guid, true, "Successful send", "Your feedback has been successfully sent. Thanks!");
             }
             else
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                ServiceLocator.GetService<INetworkEventService>().TriggerEventWithUnexpectedError(player, guid);
             }
         }
         catch (Exception e)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            ServiceLocator.GetService<INetworkEventService>().TriggerEventWithUnexpectedError(player, guid);
         }
     }
 }

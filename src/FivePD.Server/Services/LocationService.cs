@@ -57,7 +57,7 @@ public class LocationService : ILocationService, IOnInit
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player, string>(this.OnPlayerConnected);
+        this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
 
         this._cachedLocations = this._databaseContext.Locations.ToList();
 
@@ -73,7 +73,7 @@ public class LocationService : ILocationService, IOnInit
         return this._cachedLocations.Where(x => x.Type == type).ToList();
     }
 
-    private void OnPlayerConnected([FromSource] Player player, string guid)
+    private void OnPlayerConnected([FromSource] Player player)
     {
         this.OnInitOrOnPlayerConnected(player);
     }

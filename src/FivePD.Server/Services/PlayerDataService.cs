@@ -92,9 +92,9 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
-        this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, NetworkCallbackDelegate>(this.GetDismissedWelcomeModal);
+        this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, string>(this.GetDismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.DismissedWelcomeModal] += new Action<Player>(this.DismissedWelcomeModal);
-        this._eventHandlerDictionary[Events.Player.GetRole] += new Action<Player, NetworkCallbackDelegate>(this.GetRole);
+        this._eventHandlerDictionary[Events.Player.GetRole] += new Action<Player, string>(this.GetRole);
     }
 
     /// <inheritdoc/>
@@ -360,10 +360,10 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
     }
 
-    private void GetRole([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetRole([FromSource] Player player, string guid)
     {
         var user = this._playerHandlerService.FindUserOfPlayer(player);
-        networkCallbackDelegate.Invoke(user?.Role ?? 0);
+        this._networkEventService.TriggerEvent(player, guid, user?.Role ?? 0);
     }
 
     [UIEvent(Events.UI.Player.GetDetails)]
@@ -398,7 +398,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._networkEventService.TriggerEventSerialized(player, guid, playerDetails);
     }
 
-    private void GetDismissedWelcomeModal([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetDismissedWelcomeModal([FromSource] Player player, string guid)
     {
         var user = this._databaseContext.Users
             .AsNoTracking()
@@ -406,11 +406,11 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             .FirstOrDefault();
         if (user is null)
         {
-            networkCallbackDelegate.Invoke(false);
+            this._networkEventService.TriggerEvent(player, guid, false);
             return;
         }
 
-        networkCallbackDelegate.Invoke(user.DismissedWelcomeMessage);
+        this._networkEventService.TriggerEvent(player, guid, null);
     }
 
     private void DismissedWelcomeModal([FromSource] Player player)
