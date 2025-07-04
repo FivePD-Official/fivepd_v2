@@ -29,6 +29,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 {
     private readonly DatabaseContext _databaseContext;
     private readonly IPlayerHandlerService _playerHandlerService;
+    private readonly INetworkEventService _networkEventService;
 
     private readonly List<VariableDataEntityObservable> _observables = new();
     private readonly Dictionary<Type, string> _activeSetTypes = new();
@@ -39,10 +40,12 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
-    public VariableDataService(DatabaseContext databaseContext, IPlayerHandlerService playerHandlerService)
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
+    public VariableDataService(DatabaseContext databaseContext, IPlayerHandlerService playerHandlerService, INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
         this._playerHandlerService = playerHandlerService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -505,27 +508,27 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     }
 
     [UIEvent(Events.UI.VariableData.GetSetAttribute)]
-    private void GetSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetSetAttributeFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var attribute = this._databaseContext.VariableDataAttributes
             .AsNoTracking()
             .FirstOrDefault(set => set.Id == request.Id);
 
         if (attribute is null)
         {
-            networkCallbackDelegate.Invoke(null);
+            this._networkEventService.TriggerEvent(player, guid, null);
             return;
         }
 
         attribute.Set = null;
-        networkCallbackDelegate.InvokeWithJson(attribute);
+        this._networkEventService.TriggerEvent(player, guid, attribute);
     }
 
     [UIEvent(Events.UI.VariableData.GetSetAttributes)]
-    private void GetSetAttributesFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetSetAttributesFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<GetSetRequest>();
+        var request = JsonConvert.DeserializeObject<GetSetRequest>(serializedRequest);
         var set = this._databaseContext.VariableDataSets
             .AsNoTracking()
             .Include(set => set.Attributes)
@@ -533,7 +536,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 
         if (set is null)
         {
-            networkCallbackDelegate.Invoke(null);
+            this._networkEventService.TriggerEvent(player, guid, null);
             return;
         }
 
@@ -542,26 +545,26 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             attribute.Set = null;
         }
 
-        networkCallbackDelegate.InvokeWithJson(set.Attributes);
+        this._networkEventService.TriggerEvent(player, guid, set.Attributes);
     }
 
     [UIEvent(Events.UI.VariableData.GetSetAttributesPageable)]
-    private void GetSetAttributesPageableFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetSetAttributesPageableFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<GetSetRequest>();
+        var request = JsonConvert.DeserializeObject<GetSetRequest>(serializedRequest);
         var page = this._databaseContext.VariableDataAttributes
             .AsNoTracking()
             .Include(attr => attr.Set)
             .Where(attr => attr.Set.Id == request.SetId)
             .Paginate(request.Page, new Filters<VariableDataAttribute>());
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEvent(player, guid, page);
     }
 
     [UIEvent(Events.UI.VariableData.AddSetAttribute)]
-    private void AddSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void AddSetAttributeFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<AddSetAttributeRequest>();
+        var request = JsonConvert.DeserializeObject<AddSetAttributeRequest>(serializedRequest);
         var set = this._databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .Include(set => set.Entities)
@@ -569,7 +572,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             .FirstOrDefault(set => set.Id == request.SetId);
         if (set is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -596,7 +599,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 
         if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
         {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.CREATE.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.ATTRIBUTE.CREATE.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -621,36 +624,42 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         }
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.ATTRIBUTE.SUCCESS.CREATE", new Dictionary<string, string>
-        {
-            { "attribute", request.Attribute.Name },
-        });
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "UI.LABEL.SUCCESS.CREATE",
+            "UI.LABEL.ATTRIBUTE.SUCCESS.CREATE",
+            new Dictionary<string, string>
+            {
+                { "attribute", request.Attribute.Name },
+            });
     }
 
     [UIEvent(Events.UI.VariableData.EditSetAttribute)]
-    private void EditSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditSetAttributeFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<EditSetAttributeRequest>();
+        var request = JsonConvert.DeserializeObject<EditSetAttributeRequest>(serializedRequest);
 
         var set = this._databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .FirstOrDefault(set => set.Id == request.SetId);
         if (set is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         var attribute = this._databaseContext.VariableDataAttributes.FirstOrDefault(attr => attr.Id == request.Attribute.Id);
         if (attribute is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         if (set.Attributes.Where(attr => attr.Id != attribute.Id).Any(attr => attr.Name == request.Attribute.Name))
         {
-            networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -668,16 +677,22 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         attribute.Hidden = request.Attribute.Hidden;
         attribute.ShowInGrid = request.Attribute.ShowInGrid;
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ATTRIBUTE.SUCCESS.EDIT", new Dictionary<string, string>
-        {
-            { "attribute", attributeOldName },
-        });
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "UI.LABEL.SUCCESS.EDIT",
+            "UI.LABEL.ATTRIBUTE.SUCCESS.EDIT",
+            new Dictionary<string, string>
+            {
+                { "attribute", attributeOldName },
+            });
     }
 
     [UIEvent(Events.UI.VariableData.DeleteSetAttribute)]
-    private void DeleteSetAttributeFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteSetAttributeFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<DeleteSetAttributeRequest>();
+        var request = JsonConvert.DeserializeObject<DeleteSetAttributeRequest>(serializedRequest);
         var set = this._databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .Include(set => set.Entities)
@@ -686,7 +701,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             .FirstOrDefault(set => set.Id == request.SetId);
         if (set is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -694,7 +709,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             .FirstOrDefault(attr => attr.Id == request.AttributeId);
         if (attributeToDelete is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -709,51 +724,51 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         var attributeName = attributeToDelete.Name;
         this._databaseContext.VariableDataAttributes.Remove(attributeToDelete);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
         {
             { "attribute", attributeName },
         });
     }
 
     [UIEvent(Events.UI.VariableData.GetEntity)]
-    private void GetEntityFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetEntityFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<GetSetEntityRequest>();
+        var request = JsonConvert.DeserializeObject<GetSetEntityRequest>(serializedRequest);
         var setType = this.FindSetTypeById(request.SetId);
         if (setType is null)
         {
-            networkCallbackDelegate.Invoke(null);
+            this._networkEventService.TriggerEvent(player, guid, null);
             return;
         }
 
         var entity = this.InternalGetEntity(request.Id);
-        networkCallbackDelegate.InvokeWithJson(entity);
+        this._networkEventService.TriggerEventSerialized(player, guid, entity);
     }
 
     [UIEvent(Events.UI.VariableData.GetEntitiesPageable)]
-    private void GetEntitiesPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetEntitiesPageableUI(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<GetSetEntitiesPageableRequest>();
+        var request = JsonConvert.DeserializeObject<GetSetEntitiesPageableRequest>(serializedRequest);
         var setType = this.FindSetTypeById(request.SetId);
         if (setType is null)
         {
-            networkCallbackDelegate.Invoke(null);
+            this._networkEventService.TriggerEvent(player, guid, null);
             return;
         }
 
         var filters = new Filters<VariableDataEntity>();
         var entities = this.GetEntitiesPage(setType, request.Page, filters);
-        networkCallbackDelegate.InvokeWithJson(entities);
+        this._networkEventService.TriggerEventSerialized(player, guid, entities);
     }
 
     [UIEvent(Events.UI.VariableData.GetEntities)]
-    private void GetEntitiesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetEntitiesUI(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<GetSetEntitiesRequest>();
+        var request = JsonConvert.DeserializeObject<GetSetEntitiesRequest>(serializedRequest);
         var setType = this.FindSetTypeById(request.SetId);
         if (setType is null)
         {
-            networkCallbackDelegate.Invoke(null);
+            this._networkEventService.TriggerEvent(player, guid, null);
             return;
         }
 
@@ -763,53 +778,53 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             entity.Values = null;
         }
 
-        networkCallbackDelegate.InvokeWithJson(entities);
+        this._networkEventService.TriggerEventSerialized(player, guid, entities);
     }
 
     [UIEvent(Events.UI.VariableData.AddEntity)]
-    private void AddEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void AddEntityFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<AddEntityRequest>();
+        var request = JsonConvert.DeserializeObject<AddEntityRequest>(serializedRequest);
         var setType = this.FindSetTypeById(request.SetId);
         if (setType is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         var addedEntity = this.InternalAddEntity(player, request.SetId, new VariableDataEntity(), request.Entity);
         if (addedEntity is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
     [UIEvent(Events.UI.VariableData.EditEntity)]
-    private void UpdateEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void UpdateEntityFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<AddEntityRequest>();
+        var request = JsonConvert.DeserializeObject<AddEntityRequest>(serializedRequest);
         var setType = this.FindSetTypeById(request.SetId);
         if (setType is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this.InternalUpdateEntity(player, request.SetId, request.EntityId, request.Entity);
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.VariableData.DeleteEntity)]
-    private void DeleteEntityFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteEntityFromNui(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<DeleteEntityRequest>();
+        var request = JsonConvert.DeserializeObject<DeleteEntityRequest>(serializedRequest);
         var setType = this.FindSetTypeById(request.SetId);
         if (setType is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -817,7 +832,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             .FirstOrDefault(entity => entity.Id == request.Id);
         if (entityToDelete is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -831,7 +846,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
                 Entity = entityToDelete,
                 Player = FPlayer.FromPlayer(player),
             });
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
     }
 
     private VariableDataEntity InternalAddEntity(Player player, string setId, VariableDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)
