@@ -1,14 +1,23 @@
 import {Component, OnInit} from '@angular/core';
-import {Button, Collation, Column, MappedVariableDataEntity, Page, User} from '@models';
-import {filter, switchMap} from 'rxjs';
+import {
+  Button,
+  Collation,
+  Column,
+  DropdownItem,
+  MappedVariableDataEntity,
+  Page,
+  SimplePedHistory,
+  User
+} from '@models';
+import { filter, map, switchMap } from 'rxjs';
 import {ATTRIBUTES, ENTITY} from '../../../components/modal/modal-entity-view/entity-token';
 import {LocalizationService} from '@services/localization/localization.service';
-import {CoreSetId} from '@enums';
+import { CoreSetId, FGender } from '@enums';
 import {Store} from '@ngrx/store';
 import {ModalEntityViewComponent} from '../../../components/modal/modal-entity-view/modal-entity-view.component';
 import {ModalConfirmService} from '@services/modals/modal-confirm/modal-confirm.service';
 import {GlobalState} from '@store';
-import {mapAttributesToFields, mapAttributesToGridColumns} from '@helpers';
+import {formatDate, mapAttributesToFields, mapAttributesToGridColumns} from '@helpers';
 import {ValueResolver} from '@services/modals/modal-form/modal-form-value-resolver';
 import {ModalFormService} from '@services/modals/modal-form/modal-form.service';
 import {ModalService} from '@services/modals/modal/modal.service';
@@ -18,6 +27,8 @@ import {TranslatePipe} from '../../../pipes/translate.pipe';
 import {GridComponent} from '../../../components/grid/grid.component';
 import {PageHeaderComponent} from '../../../components/page-header/page-header.component';
 import { VariableDataService } from "@services/variable-data/variable-data.service";
+import { DataResolver } from "@services/modals/modal-form/modal-form-data-resolver";
+import { PedHistoryService } from "@services/ped-history/ped-history.service";
 
 @Component({
   selector: 'app-reports',
@@ -46,7 +57,19 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: () => mapAttributesToFields(this._variableDataService.getSetAttributes(CoreSetId.ArrestReport)),
+        fields: (_, pedHistoryItems) => mapAttributesToFields({
+          attributes: this._variableDataService.getSetAttributes(CoreSetId.ArrestReport),
+          pedHistoryItems
+        }),
+        dataResolver: new DataResolver(
+          [] as DropdownItem[],
+          this._pedHistoryService.getAllSimple().pipe(
+            map(items => items.map(item => ({
+              key: item.Id,
+              label: `${item.Firstname} ${item.Lastname} - ${item.Gender === FGender.Male ? 'Male' : 'Female'} - ${formatDate(new Date(item.Birthdate), 'none')}`,
+            })))
+          )
+        )
       }).result
         .pipe(
           filter(res => res.success),
@@ -80,7 +103,7 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: () => mapAttributesToFields(this._variableDataService.getSetAttributes(CoreSetId.IncidentReport)),
+        fields: () => mapAttributesToFields({attributes: this._variableDataService.getSetAttributes(CoreSetId.IncidentReport)}),
       }).result
         .pipe(
           filter(res => res.success),
@@ -106,6 +129,7 @@ export class ReportsComponent implements OnInit {
     private readonly modalFormService: ModalFormService,
     private readonly modalConfirmService: ModalConfirmService,
     private readonly _userService: UserService,
+    private readonly _pedHistoryService: PedHistoryService,
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details.User;
@@ -160,7 +184,10 @@ export class ReportsComponent implements OnInit {
                       submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
                     },
                     columns: 2,
-                    fields: updatedEntity => mapAttributesToFields(this._variableDataService.getSetAttributes(entity.SetId), updatedEntity),
+                    fields: updatedEntity => mapAttributesToFields({
+                      attributes: this._variableDataService.getSetAttributes(entity.SetId),
+                      entity: updatedEntity
+                    }),
                     valueResolver: new ValueResolver(entity, this._variableDataService.getEntity(entity.SetId, entity.Id), v => v.entity)
                   }
                 ).result
@@ -249,7 +276,10 @@ export class ReportsComponent implements OnInit {
                     buttons: {
                       submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
                     },
-                    fields: updatedEntity => mapAttributesToFields(this._variableDataService.getSetAttributes(entity.SetId), updatedEntity),
+                    fields: updatedEntity => mapAttributesToFields({
+                      attributes: this._variableDataService.getSetAttributes(entity.SetId),
+                      entity: updatedEntity
+                    }),
                     valueResolver: new ValueResolver(entity, this._variableDataService.getEntity(entity.SetId, entity.Id), v => v.entity)
                   }
                 ).result

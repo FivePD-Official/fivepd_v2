@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PedLicense, PedLicenseStatus } from "@models";
+import { DropdownItem, PedLicense, PedLicenseStatus } from "@models";
 import { BehaviorSubject, combineLatest, filter, map, of, switchMap, tap } from "rxjs";
 import { CoreSetId, FGender, PedLicenseType, SetId } from "@enums";
 import { Store } from "@ngrx/store";
@@ -13,12 +13,13 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
-import { mapAttributesToFields } from "@helpers";
+import { formatDate, mapAttributesToFields } from "@helpers";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { EntityViewComponent } from "./_components/entity-view.component";
 import { parseId } from "../../../../helpers/parse-id";
 import { VariableDataService } from "@services/variable-data/variable-data.service";
+import { DataResolver } from "@services/modals/modal-form/modal-form-data-resolver";
 
 @Component({
   selector: 'app-citizen-database-id',
@@ -128,7 +129,16 @@ export class CitizenDatabaseIdComponent {
             buttons: {
               submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
             },
-            fields: () => mapAttributesToFields(attributes),
+            fields: (_, pedHistoryItems) => mapAttributesToFields({attributes, pedHistoryItems}),
+            dataResolver: new DataResolver(
+              [] as DropdownItem[],
+              this._pedHistoryService.getAllSimple().pipe(
+                map(items => items.map(item => ({
+                  key: item.Id,
+                  label: `${item.Firstname} ${item.Lastname} - ${item.Gender === FGender.Male ? 'Male' : 'Female'} - ${formatDate(new Date(item.Birthdate), 'none')}`,
+                })))
+              )
+            )
           }).result.pipe(res => {
             return res;
           })
