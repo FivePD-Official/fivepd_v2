@@ -1,6 +1,9 @@
 using System;
 using System.Dynamic;
 using CitizenFX.Core;
+using FivePD.Client.Injection;
+using FivePD.Client.Interfaces;
+using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Client.Extensions;
@@ -36,7 +39,7 @@ internal static class EventHandlerDictionaryExtensions
         Cfx.API.RegisterNuiCallbackType(eventName);
         eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
         {
-            BaseScript.TriggerServerEvent(eventName, body, new Action<string>(data =>
+            ServiceLocator.Resolve<INetworkEventService>().TriggerServerEvent(eventName, JsonConvert.SerializeObject(body), new Action<string>(data =>
             {
                 onResponse?.Invoke(data);
                 cb.Invoke(data);
@@ -57,7 +60,7 @@ internal static class EventHandlerDictionaryExtensions
         Cfx.API.RegisterNuiCallbackType(eventName);
         eventHandlerDictionary[$"__cfx_nui:{eventName}"] += new Action<ExpandoObject, CallbackDelegate>((body, cb) =>
         {
-            BaseScript.TriggerServerEvent(eventName, body, new Action<string>(data =>
+            ServiceLocator.Resolve<INetworkEventService>().TriggerServerEvent(eventName, JsonConvert.SerializeObject(body), new Action<string>(data =>
             {
                 var overriddenData = onResponseOverrideData.Invoke(data);
                 cb.Invoke(overriddenData);

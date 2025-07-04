@@ -6,15 +6,13 @@ using FivePD.Common;
 
 namespace FivePD.Client.Services;
 
+#pragma warning disable
+
 /// <inheritdoc cref="FivePD.Client.Interfaces.IDepartmentService" />
 internal class DepartmentService : IDepartmentService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DepartmentService"/> class.
-    /// </summary>
-    /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     public DepartmentService(EventHandlerDictionary eventHandlerDictionary)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;

@@ -10,6 +10,7 @@ using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -19,43 +20,45 @@ namespace FivePD.Server.Services;
 public class CalloutDetailService : ICalloutDetailService
 {
     private readonly DatabaseContext _databaseContext;
+    private readonly INetworkEventService _networkEventService;
 
-    public CalloutDetailService(DatabaseContext databaseContext)
+    public CalloutDetailService(DatabaseContext databaseContext, INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
+        this._networkEventService = networkEventService;
     }
 
     [UIEvent(Events.UI.CalloutDetails.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<CalloutDetailsRequest>();
+        var request = JsonConvert.DeserializeObject<CalloutDetailsRequest>(serializedRequest);
         var page = this._databaseContext.CalloutDetails
             .AsNoTracking()
             .Paginate(request.Page, new Filters<CalloutDetails>());
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.CalloutDetails.Get)]
-    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var calloutDetails = this._databaseContext.CalloutDetails
             .AsNoTracking()
             .Include(x => x.CalloutDetailsDepartments)
             .FirstOrDefault(x => x.Id == request.Id);
-        networkCallbackDelegate.InvokeWithJson(calloutDetails);
+        this._networkEventService.TriggerEventSerialized(player, guid, calloutDetails);
     }
 
     [UIEvent(Events.UI.CalloutDetails.UpdateRuleset)]
-    private void UpdateRulesetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void UpdateRulesetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<CalloutDetailsUpdateRulesetRequest>();
+        var request = JsonConvert.DeserializeObject<CalloutDetailsUpdateRulesetRequest>(serializedRequest);
         var calloutDetails = this._databaseContext.CalloutDetails
             .Include(x => x.CalloutDetailsDepartments)
             .FirstOrDefault(x => x.Id == request.Id);
         if (calloutDetails is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -82,6 +85,7 @@ public class CalloutDetailService : ICalloutDetailService
         }
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "Successful update", "Ruleset has been updated.");
+        // TODO: This needs to be localized
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "Successful update", "Ruleset has been updated.");
     }
 }

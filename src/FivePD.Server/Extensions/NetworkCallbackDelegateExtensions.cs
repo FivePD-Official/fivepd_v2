@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Server.Attributes;
 using FivePD.Server.Models.DTO;
@@ -9,6 +10,7 @@ namespace FivePD.Server.Extensions;
 /// Holds extension methods for <see cref="NetworkCallbackDelegate"/>.
 /// </summary>
 [Obfuscate]
+[Obsolete("DO NOT USE")]
 internal static class NetworkCallbackDelegateExtensions
 {
     /// <summary>
@@ -19,6 +21,7 @@ internal static class NetworkCallbackDelegateExtensions
     /// <param name="title">The title of the response.</param>
     /// <param name="description">The description of the response.</param>
     /// <param name="params">The params of the response.</param>
+    [Obsolete("DO NOT USE")]
     public static void InvokeWithResponse(this NetworkCallbackDelegate networkCallbackDelegate, bool status, string title, string description, Dictionary<string, string> @params = null)
     {
         var response = new ActionResponse
@@ -41,6 +44,7 @@ internal static class NetworkCallbackDelegateExtensions
     /// the error message Unexpected error.
     /// </summary>
     /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
+    [Obsolete("DO NOT USE")]
     public static void InvokeWithUnexpectedError(this NetworkCallbackDelegate networkCallbackDelegate)
     {
         networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.UNEXPECTED", "UI.ERROR.DATABASE_ACCESS.TITLE");
@@ -52,6 +56,7 @@ internal static class NetworkCallbackDelegateExtensions
     /// </summary>
     /// <param name="networkCallbackDelegate">The <see cref="NetworkCallbackDelegate"/> to invoke.</param>
     /// <param name="data">The object to send.</param>
+    [Obsolete("DO NOT USE")]
     public static void InvokeWithJson(this NetworkCallbackDelegate networkCallbackDelegate, object data)
     {
         networkCallbackDelegate.Invoke(Converter.SerializeObjectWithoutReferenceLoop(data));

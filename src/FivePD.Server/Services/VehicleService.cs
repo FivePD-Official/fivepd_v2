@@ -29,6 +29,7 @@ public class VehicleService : IVehicleService, IOnInit
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
     private readonly DatabaseContext _databaseContext;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleService"/> class.
@@ -38,18 +39,21 @@ public class VehicleService : IVehicleService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService" /> to use.</param>
     public VehicleService(
         IVehicleStorageService vehicleStorageService,
         IPedStorageService pedStorageService,
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
-        DatabaseContext databaseContext)
+        DatabaseContext databaseContext,
+        INetworkEventService networkEventService)
     {
         this._vehicleStorageService = (IInternalVehicleStorageService)vehicleStorageService;
         this._pedStorageService = pedStorageService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
         this._databaseContext = databaseContext;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -101,22 +105,22 @@ public class VehicleService : IVehicleService, IOnInit
     }
 
     [UIEvent(Events.Vehicle.Get)]
-    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var vehicleData = this._databaseContext.VehicleData
             .AsNoTracking()
             .Include(x => x.PedData)
             .Include(x => x.Documents)
             .FirstOrDefault(x => x.Id == request.Id);
 
-        networkCallbackDelegate.InvokeWithJson(vehicleData);
+        this._networkEventService.TriggerEventSerialized(player, guid, vehicleData);
     }
 
     [UIEvent(Events.Vehicle.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<VehicleHistoryGetAllRequest>();
+        var request = JsonConvert.DeserializeObject<VehicleHistoryGetAllRequest>(serializedRequest);
 
         var filters = new Filters<VehicleData>();
         filters.Add(
@@ -134,6 +138,6 @@ public class VehicleService : IVehicleService, IOnInit
             .Include(x => x.PedData)
             .Paginate(request.Page, filters);
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 }

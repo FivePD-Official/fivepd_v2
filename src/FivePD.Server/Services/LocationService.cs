@@ -27,6 +27,7 @@ public class LocationService : ILocationService, IOnInit
     private readonly PlayerList _playerList;
     private readonly DatabaseContext _databaseContext;
     private readonly IMarkerService _markerService;
+    private readonly INetworkEventService _networkEventService;
 
     private readonly List<Guid> _markers = new();
     private List<Location> _cachedLocations = new();
@@ -35,19 +36,22 @@ public class LocationService : ILocationService, IOnInit
     /// Initializes a new instance of the <see cref="LocationService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    /// <param name="playerList">The <see cref="PlayerList"/> to use..</param>
+    /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="markerService">The <see cref="IMarkerService"/> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public LocationService(
         EventHandlerDictionary eventHandlerDictionary,
         PlayerList playerList,
         DatabaseContext databaseContext,
-        IMarkerService markerService)
+        IMarkerService markerService,
+        INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerList = playerList;
         this._databaseContext = databaseContext;
         this._markerService = markerService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -80,9 +84,9 @@ public class LocationService : ILocationService, IOnInit
     }
 
     [UIEvent(Events.UI.Location.Create)]
-    private void CreateLocationUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CreateLocationUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<CreateLocationRequest>();
+        var request = JsonConvert.DeserializeObject<CreateLocationRequest>(serializedRequest);
         this._databaseContext.Locations.Add(new Location
         {
             Name = request.Name,
@@ -90,14 +94,14 @@ public class LocationService : ILocationService, IOnInit
             Position = request.Position,
         });
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOCATION.SUCCESS.CREATE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOCATION.SUCCESS.CREATE");
         this.UpdateMarkersForAllPlayers();
     }
 
     [UIEvent(Events.UI.Location.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<GetLocationRequest>();
+        var request = JsonConvert.DeserializeObject<GetLocationRequest>(serializedRequest);
         var filters = new Filters<Location>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Name),
@@ -107,23 +111,23 @@ public class LocationService : ILocationService, IOnInit
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Location.Delete)]
-    private void DeleteLocationUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteLocationUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var entityToRemove = this._databaseContext.Locations.FirstOrDefault(x => x.Id == request.Id);
         if (entityToRemove is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this._databaseContext.Locations.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOCATION.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOCATION.SUCCESS.DELETE");
         this.UpdateMarkersForAllPlayers();
     }
 

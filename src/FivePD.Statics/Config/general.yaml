@@ -8,11 +8,6 @@ Database:
 
 DefaultLanguage: en-US
 
-Ollama:
-  Url: "http://localhost:11434/api"
-  Model: "llama3.2:3b"
-  Language: "english"
-
 Features:
   AutoEnableFivePDAccess: true
   DiscordRichPresence: true
@@ -257,7 +252,6 @@ Messages:
   CanSend: ALL # ALL = everyone can send messages, ADMIN = only admins can send messages
 
 Questioning:
-  UseOllamaResponses: true # true = ollama will provide responses ("Ollama" config should be configured); false = response will be used from the config below
   Questions:
     - Id: "have_been_drinking"
       Text: "Have you been drinking today?"

@@ -9,6 +9,11 @@ namespace FivePD.Common;
 // {type} is optional, either "server" or "client"
 internal readonly record struct Events
 {
+    public readonly record struct NetworkEvent
+    {
+        public const string ClientToServer = "fivepd:networkEvent:clientToServer";
+    }
+
     public readonly record struct Lifecycle
     {
         public const string ServerBootstrapped = "fivepd:lifecycle:serverBootstrapped";

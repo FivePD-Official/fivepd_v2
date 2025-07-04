@@ -11,8 +11,11 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
+
+#pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IAccessControlService" />
 [Obfuscate]
@@ -21,6 +24,7 @@ public class AccessControlService : IAccessControlService, IOnInit
     private readonly DatabaseContext _databaseContext;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IPlayerHandlerService _playerHandlerService;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AccessControlService"/> class.
@@ -31,17 +35,19 @@ public class AccessControlService : IAccessControlService, IOnInit
     public AccessControlService(
         DatabaseContext databaseContext,
         EventHandlerDictionary eventHandlerDictionary,
-        IPlayerHandlerService playerHandlerService)
+        IPlayerHandlerService playerHandlerService,
+        INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerHandlerService = playerHandlerService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.AccessControl.HasAccess] += new Action<Player, NetworkCallbackDelegate>(this.HasAccess);
+        this._eventHandlerDictionary[Events.AccessControl.HasAccess] += new Action<Player, string>(this.HasAccess);
     }
 
     /// <inheritdoc />
@@ -70,31 +76,33 @@ public class AccessControlService : IAccessControlService, IOnInit
         player?.TriggerEvent(access ? Events.AccessControl.GiveAccess : Events.AccessControl.RemoveAccess);
     }
 
-    private void HasAccess([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void HasAccess([FromSource] Player player, string guid)
     {
         var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null)
         {
-            networkCallbackDelegate.Invoke(true);
+            this._networkEventService.TriggerEvent(player, guid, true);
             return;
         }
 
-        networkCallbackDelegate.Invoke(user.AccessFivePD);
+        this._networkEventService.TriggerEvent(player, guid, user.AccessFivePD);
     }
 
     [UIEvent(Events.AccessControl.GiveAccessUI)]
-    private void AllowUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void AllowUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this.GiveAccess(user);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.ACCESS_CONTROL.SUCCESS.GIVE_ACCESS",
@@ -105,18 +113,20 @@ public class AccessControlService : IAccessControlService, IOnInit
     }
 
     [UIEvent(Events.AccessControl.RemoveAccessUI)]
-    private void DisallowUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DisallowUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this.RemoveAccess(user);
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.ACCESS_CONTROL.SUCCESS.REMOVE_ACCESS",

@@ -20,6 +20,7 @@ public class ConfigService : IConfigService, IOnInit
     private readonly IFileHandlerService _fileHandlerService;
     private readonly ILogger _logger;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigService"/> class.
@@ -27,11 +28,13 @@ public class ConfigService : IConfigService, IOnInit
     /// <param name="fileHandlerService">The <see cref="IFileHandlerService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    public ConfigService(IFileHandlerService fileHandlerService, ILogger logger, EventHandlerDictionary eventHandlerDictionary)
+    /// <param name="networkEventService">The <see cref="NetworkEventService"/> to use.</param>
+    public ConfigService(IFileHandlerService fileHandlerService, ILogger logger, EventHandlerDictionary eventHandlerDictionary, INetworkEventService networkEventService)
     {
         this._fileHandlerService = fileHandlerService;
         this._logger = logger;
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -55,10 +58,10 @@ public class ConfigService : IConfigService, IOnInit
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.Config.Get] += new Action<string, NetworkCallbackDelegate>(this.OnGetConfig);
+        this._eventHandlerDictionary[Events.Config.Get] += new Action<Player, string, string>(this.OnGetConfig);
     }
 
-    private void OnGetConfig(string path, NetworkCallbackDelegate networkCallbackDelegate)
+    private void OnGetConfig([FromSource] Player player, string guid, string path)
     {
         var config = this.InternalLoadFile<object>(path);
 
@@ -68,7 +71,7 @@ public class ConfigService : IConfigService, IOnInit
             generalConfig.Database = null;
         }
 
-        networkCallbackDelegate.Invoke(JsonConvert.SerializeObject(config));
+        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(config));
     }
 
     private T InternalLoadFile<T>(string path, bool useCache = true)

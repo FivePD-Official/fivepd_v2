@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -21,6 +22,7 @@ using FivePD.Server.Models.Events;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace FivePD.Server.Services;
@@ -38,6 +40,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private readonly ILocalizationService _localizationService;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly IInternalPedStorageService _internalPedStorageService;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -51,6 +54,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="localizationService">The <see cref="ILocalizationService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="pedStorageService">The <see cref="IPedStorageService"/> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         DatabaseContext databaseContext,
@@ -60,7 +64,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         ILogger logger,
         ILocalizationService localizationService,
         IPlayerHandlerService playerHandlerService,
-        IPedStorageService pedStorageService)
+        IPedStorageService pedStorageService,
+        INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._databaseContext = databaseContext;
@@ -71,6 +76,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._localizationService = localizationService;
         this._playerHandlerService = playerHandlerService;
         this._internalPedStorageService = (IInternalPedStorageService)pedStorageService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -86,9 +92,9 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     void IOnInit.OnInit()
     {
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
-        this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, NetworkCallbackDelegate>(this.GetDismissedWelcomeModal);
+        this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, string>(this.GetDismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.DismissedWelcomeModal] += new Action<Player>(this.DismissedWelcomeModal);
-        this._eventHandlerDictionary[Events.Player.GetRole] += new Action<Player, NetworkCallbackDelegate>(this.GetRole);
+        this._eventHandlerDictionary[Events.Player.GetRole] += new Action<Player, string>(this.GetRole);
     }
 
     /// <inheritdoc/>
@@ -354,14 +360,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
     }
 
-    private void GetRole([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetRole([FromSource] Player player, string guid)
     {
         var user = this._playerHandlerService.FindUserOfPlayer(player);
-        networkCallbackDelegate.Invoke(user?.Role ?? 0);
+        this._networkEventService.TriggerEvent(player, guid, user?.Role ?? 0);
     }
 
-    [UIEvent(Events.UI.Player.GetDetails, true)]
-    private void GetPlayerDetailsUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Player.GetDetails)]
+    private void GetPlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var user = this._databaseContext.Users
             .AsNoTracking()
@@ -374,23 +380,25 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithJson(null);
+            this._networkEventService.TriggerEventSerialized(player, guid, null);
             return;
         }
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
         var unit = fPlayer.Unit;
 
-        networkCallbackDelegate.InvokeWithJson(new PlayerDetailsDTO
+        var playerDetails = new PlayerDetailsDTO
         {
             NetworkId = player.Handle,
             User = user,
             DutyStatus = fPlayer.DutyStatus.Value,
             UnitCallsign = unit is null ? string.Empty : unit.Callsign,
-        });
+        };
+
+        this._networkEventService.TriggerEventSerialized(player, guid, playerDetails);
     }
 
-    private void GetDismissedWelcomeModal([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetDismissedWelcomeModal([FromSource] Player player, string guid)
     {
         var user = this._databaseContext.Users
             .AsNoTracking()
@@ -398,11 +406,11 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             .FirstOrDefault();
         if (user is null)
         {
-            networkCallbackDelegate.Invoke(false);
+            this._networkEventService.TriggerEvent(player, guid, false);
             return;
         }
 
-        networkCallbackDelegate.Invoke(user.DismissedWelcomeMessage);
+        this._networkEventService.TriggerEvent(player, guid, user.DismissedWelcomeMessage);
     }
 
     private void DismissedWelcomeModal([FromSource] Player player)
@@ -419,14 +427,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._databaseContext.SaveChanges();
     }
 
-    [UIEvent(Events.UI.Player.ChangeDivision, true)]
-    private void ChangePlayerDivisionFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Player.ChangeDivision)]
+    private void ChangePlayerDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var playerChangeRequest = expandoObject.ConvertTo<PlayerChangeRequest>();
+        var playerChangeRequest = JsonConvert.DeserializeObject<PlayerChangeRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -441,7 +449,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             division = this._databaseContext.Divisions.FirstOrDefault(x => x.Id == playerChangeRequest.IdToChange);
             if (division is null)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
@@ -454,7 +462,9 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             Division = division,
             Player = FPlayer.FromPlayer(player),
         });
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.DIVISION.SUCCESS.CHANGE",
@@ -464,14 +474,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             });
     }
 
-    [UIEvent(Events.UI.Player.ChangeRank, true)]
-    private void ChangePlayerRankFromNui([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Player.ChangeRank)]
+    private void ChangePlayerRankFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var playerChangeRequest = expandoObject.ConvertTo<PlayerChangeRequest>();
+        var playerChangeRequest = JsonConvert.DeserializeObject<PlayerChangeRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -486,7 +496,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             rank = this._databaseContext.Ranks.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
             if (rank is null)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
@@ -499,7 +509,9 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             Rank = rank,
             Player = FPlayer.FromPlayer(player),
         });
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.RANK.SUCCESS.CHANGE",
@@ -510,19 +522,21 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     }
 
     [UIEvent(Events.UI.Player.ChangeFixedRank)]
-    private void ChangePlayerFixedRankFromNui(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void ChangePlayerFixedRankFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<PlayerChangeFixedRankRequest>();
+        var request = JsonConvert.DeserializeObject<PlayerChangeFixedRankRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(user => user.Id == request.UserId);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         user.FixedRank = request.FixedRank;
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
@@ -533,30 +547,32 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     }
 
     [UIEvent(Events.UI.Player.GetAllPageable)]
-    private void GetAllPageable(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageable([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<GetSetRequest>();
+        var request = JsonConvert.DeserializeObject<GetSetRequest>(serializedRequest);
         var page = this._databaseContext.Users
             .AsNoTracking()
             .Paginate(request.Page, new Filters<User>());
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Player.ChangeRole)]
-    private void ChangeRole(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void ChangeRole([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<ChangePlayerRoleRequest>();
+        var request = JsonConvert.DeserializeObject<ChangePlayerRoleRequest>(serializedRequest);
         var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.UserId);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         user.Role = request.Roles.Sum();
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
             "UI.LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
@@ -570,19 +586,19 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     }
 
     [UIEvent(Events.User.GetAllSimple)]
-    private void GetAllSimple(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllSimple([FromSource] Player player, string guid, string serializedRequest)
     {
-        networkCallbackDelegate.InvokeWithJson(this._databaseContext.Users.Select(x => new SimpleUserDTO
+        this._networkEventService.TriggerEventSerialized(player, guid, this._databaseContext.Users.Select(x => new SimpleUserDTO
         {
             Id = x.Id,
             Name = x.Name,
         }));
     }
 
-    [UIEvent(Events.UI.Player.UpdateDetails, true)]
-    private void UpdatePlayerDetailsUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.UI.Player.UpdateDetails)]
+    private void UpdatePlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<UpdatePlayerDetailsRequest>();
+        var request = JsonConvert.DeserializeObject<UpdatePlayerDetailsRequest>(serializedRequest);
         var user = this._databaseContext.Users
             .Include(x => x.CallsignFormat)
             .Include(x => x.Department)
@@ -590,7 +606,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             .FirstOrDefault(user => user.Id == request.Id);
         if (user is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -600,13 +616,13 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             var callsignMatchesWithFormat = !string.IsNullOrEmpty(callsign) && new Regex("^[A-Z0-9-]+$").IsMatch(callsign);
             if (!callsignMatchesWithFormat)
             {
-                networkCallbackDelegate.InvokeWithUnexpectedError();
+                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
             if (user.Department.Users.Any(x => x.Callsign == callsign))
             {
-                networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.USER.CALLSIGN.EDIT.TITLE", "UI.ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
+                this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.USER.CALLSIGN.EDIT.TITLE", "UI.ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
                 return;
             }
 
@@ -638,6 +654,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CHANGE", "UI.LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CHANGE", "UI.LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
     }
 }

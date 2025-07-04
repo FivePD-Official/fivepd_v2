@@ -19,6 +19,7 @@ internal class UIManagerService : IUIManagerService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILoggerService _loggerService;
+    private readonly INetworkEventService _networkEventService;
 
     private bool _ready;
     private bool _hasFocus;
@@ -28,10 +29,12 @@ internal class UIManagerService : IUIManagerService, IOnInit
     /// <summary>Initializes a new instance of the <see cref="UIService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="loggerService">The <see cref="ILoggerService" /> to use.</param>
-    public UIManagerService(EventHandlerDictionary eventHandlerDictionary, ILoggerService loggerService)
+    /// <param name="networkEventService">The <see cref="INetworkEventService" /> to use.</param>
+    public UIManagerService(EventHandlerDictionary eventHandlerDictionary, ILoggerService loggerService, INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._loggerService = loggerService;
+        this._networkEventService = networkEventService;
     }
 
     public bool MenuOpen { get; private set; }
@@ -58,7 +61,7 @@ internal class UIManagerService : IUIManagerService, IOnInit
                 this.MenuOpen = false;
                 
                 // Show welcome modal for first login
-                BaseScript.TriggerServerEvent(Events.Player.GetDismissedWelcomeModal, new Action<bool>(dismissedWelcomeModal =>
+                this._networkEventService.TriggerServerEvent(Events.Player.GetDismissedWelcomeModal, new Action<bool>(dismissedWelcomeModal =>
                 {
                     if (dismissedWelcomeModal)
                     {

@@ -25,6 +25,7 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
     private readonly IInternalIncidentService _incidentService;
     private readonly IAddonMetadataService _addonMetadataService;
     private readonly IConfigService _configService;
+    private readonly INetworkEventService _networkEventService;
 
     private readonly int _maxCalloutTimeout;
 
@@ -36,18 +37,21 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public CalloutManagerService(
         EventHandlerDictionary eventHandlerDictionary,
         ITickQueueService tickQueueService,
         IConfigService configService,
         IIncidentService incidentService,
-        IAddonMetadataService addonMetadataService)
+        IAddonMetadataService addonMetadataService,
+        INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._tickQueueService = tickQueueService;
         this._incidentService = (IInternalIncidentService)incidentService;
         this._addonMetadataService = addonMetadataService;
         this._configService = configService;
+        this._networkEventService = networkEventService;
 
         this._maxCalloutTimeout = configService.GeneralConfig.Callout.DispatchTypeAuto()
             ? configService.GeneralConfig.Callout.AutoRemove.TimeoutByDispatchType.Auto
@@ -112,7 +116,7 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
     }
 
     [UIEvent(Events.UI.Callout.GetAllTypes)]
-    private void GetAllCalloutTypesUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllCalloutTypesUI(Player player, string guid, string serializedRequest)
     {
         var types = ((IInternalAddonMetadataService)this._addonMetadataService).CalloutTypes.Select(x => new IncidentDTOs.CalloutTypeToUIDTO
         {
@@ -127,6 +131,6 @@ public class CalloutManagerService : ICalloutManagerService, IOnInit
             PageCount = 1,
             PageSize = types.Count,
         };
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -14,6 +13,7 @@ using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -25,6 +25,7 @@ public class MessageService : IMessageService
     private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly IGameNotificationService _gameNotificationService;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageService"/> class.
@@ -33,16 +34,19 @@ public class MessageService : IMessageService
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public MessageService(
         DatabaseContext databaseContext,
         IAddonMetadataService addonMetadataService,
         IPlayerHandlerService playerHandlerService,
-        IGameNotificationService gameNotificationService)
+        IGameNotificationService gameNotificationService,
+        INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
         this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
         this._playerHandlerService = playerHandlerService;
         this._gameNotificationService = gameNotificationService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -112,10 +116,10 @@ public class MessageService : IMessageService
             });
     }
 
-    [UIEvent(Events.Message.Get, true)]
-    private void GetUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.Message.Get)]
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
 
         var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null)
@@ -126,13 +130,13 @@ public class MessageService : IMessageService
         var message = this._databaseContext.Messages
             .AsNoTracking()
             .FirstOrDefault(x => x.Id == request.Id);
-        networkCallbackDelegate.InvokeWithJson(message);
+        this._networkEventService.TriggerEventSerialized(player, guid, message);
     }
 
-    [UIEvent(Events.Message.GetAllPageable, true)]
-    private void GetAllPageableUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.Message.GetAllPageable)]
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<MessageGetAllPageableRequest>();
+        var request = JsonConvert.DeserializeObject<MessageGetAllPageableRequest>(serializedRequest);
 
         var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null)
@@ -146,44 +150,35 @@ public class MessageService : IMessageService
             .Where(u => u.User.Id == user.Id)
             .OrderByDescending(x => x.SentAt)
             .Paginate(request.Page, filters, 6);
-
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
-    [UIEvent(Events.Message.Send, true)]
-    private void SendUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.Message.Send)]
+    private void SendUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        try
+        var request = JsonConvert.DeserializeObject<SendMessageRequest>(serializedRequest);
+        var sender = this._databaseContext.Users
+            .AsNoTracking()
+            .WhereAnyIdMatches(player)
+            .FirstOrDefault();
+        if (sender is null)
         {
-            var request = expandoObject.ConvertTo<SendMessageRequest>();
-            var sender = this._databaseContext.Users
-                .AsNoTracking()
-                .WhereAnyIdMatches(player)
-                .FirstOrDefault();
-            if (sender is null)
-            {
-                return;
-            }
-
-            var to = this._databaseContext.Users.Where(x => request.To.Contains(x.Id)).ToList();
-            foreach (var user in to)
-            {
-                this.Send(user, request.Subject, request.Content, sender.Name);
-            }
-
-            networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.SEND", "UI.LABEL.MESSAGES.SUCCESS.SEND");
+            return;
         }
-        catch (Exception e)
+
+        var to = this._databaseContext.Users.Where(x => request.To.Contains(x.Id)).ToList();
+        foreach (var user in to)
         {
-            Debug.WriteLine(e.Message);
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this.Send(user, request.Subject, request.Content, sender.Name);
         }
+
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.SEND", "UI.LABEL.MESSAGES.SUCCESS.SEND");
     }
 
-    [UIEvent(Events.Message.Read, true)]
-    private void ReadUI([FromSource] Player player, ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    [UIEvent(Events.Message.Read)]
+    private void ReadUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
 
         var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null)
@@ -198,6 +193,6 @@ public class MessageService : IMessageService
             this._databaseContext.SaveChanges();
         }
 
-        networkCallbackDelegate.InvokeWithJson(null);
+        this._networkEventService.TriggerEventSerialized(player, guid, message);
     }
 }

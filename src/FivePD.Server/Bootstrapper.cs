@@ -227,6 +227,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton(this.Players);
         services.AddDbContext<DatabaseContext>();
 
+        services.AddTransient<NetworkEventService>();
+        services.AddTransient<INetworkEventService>(provider => provider.GetRequiredService<NetworkEventService>());
+
         // Addons
         services.AddTransient<AddonLoggerService>();
         services.AddTransient<IAddonLoggerService>(provider => provider.GetRequiredService<AddonLoggerService>());
@@ -450,9 +453,6 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<GameNotificationService>();
         services.AddSingleton<IGameNotificationService>(provider => provider.GetRequiredService<GameNotificationService>());
-
-        services.AddSingleton<OllamaService>();
-        services.AddSingleton<IOllamaService>(provider => provider.GetRequiredService<OllamaService>());
 
         services.AddSingleton<GeneralAssistanceServiceSyncService>();
         services.AddSingleton<IGeneralAssistanceServiceSyncService>(provider => provider.GetRequiredService<GeneralAssistanceServiceSyncService>());

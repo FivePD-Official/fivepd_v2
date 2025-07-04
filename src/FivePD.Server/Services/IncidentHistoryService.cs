@@ -1,18 +1,17 @@
-﻿using System.Dynamic;
-using System.Linq;
+﻿using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Server.API;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
@@ -21,14 +20,17 @@ namespace FivePD.Server.Services;
 public class IncidentHistoryService : IIncidentHistoryService, IInternalIncidentHistoryService
 {
     private readonly DatabaseContext _databaseContext;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IncidentHistoryService"/> class.
     /// </summary>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
-    public IncidentHistoryService(DatabaseContext databaseContext)
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
+    public IncidentHistoryService(DatabaseContext databaseContext, INetworkEventService networkEventService)
     {
         this._databaseContext = databaseContext;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -74,9 +76,9 @@ public class IncidentHistoryService : IIncidentHistoryService, IInternalIncident
     }
 
     [UIEvent(Events.IncidentHistory.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IncidentHistoryGetAllRequest>();
+        var request = JsonConvert.DeserializeObject<IncidentHistoryGetAllRequest>(serializedRequest);
 
         var filters = new Filters<IncidentHistory>();
         filters.Add(
@@ -93,13 +95,13 @@ public class IncidentHistoryService : IIncidentHistoryService, IInternalIncident
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.IncidentHistory.GetAllOfUser)]
-    private void GetIncidentsOfUser(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetIncidentsOfUser([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var incidentHistories = this._databaseContext.IncidentHistories
             .Where(x => x.Users.Any(y => y.User.Id == request.Id))
             .Select(x => new SimpleIncidentHistoryDTO
@@ -109,6 +111,6 @@ public class IncidentHistoryService : IIncidentHistoryService, IInternalIncident
                 GeneratedAt = x.GeneratedAt,
             });
 
-        networkCallbackDelegate.InvokeWithJson(incidentHistories);
+        this._networkEventService.TriggerEventSerialized(player, guid, incidentHistories);
     }
 }

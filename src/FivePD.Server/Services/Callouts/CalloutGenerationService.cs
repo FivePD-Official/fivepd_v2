@@ -13,6 +13,7 @@ using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models.Requests;
+using Newtonsoft.Json;
 using Serilog;
 using Debug = CitizenFX.Core.Debug;
 
@@ -30,6 +31,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
     private readonly ILogger _logger;
     private readonly IInternalTickQueueService _tickQueueService;
     private readonly ICalloutDistributionService _calloutDistributionService;
+    private readonly INetworkEventService _networkEventService;
 
     private readonly Stopwatch _nextCalloutTimer = new();
     private int _nextCalloutInMs;
@@ -41,7 +43,8 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
         IRandomService randomService,
         ILogger logger,
         IInternalTickQueueService tickQueueService,
-        ICalloutDistributionService calloutDistributionService)
+        ICalloutDistributionService calloutDistributionService,
+        INetworkEventService networkEventService)
     {
         this._addonMetadataService = addonMetadataService;
         this._incidentService = (IInternalIncidentService)incidentService;
@@ -50,6 +53,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
         this._logger = logger;
         this._tickQueueService = tickQueueService;
         this._calloutDistributionService = calloutDistributionService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -98,13 +102,13 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
     }
 
     [UIEvent(Events.UI.Callout.Dispatch)]
-    private void DispatchCalloutUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DispatchCalloutUI(Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<DispatchCalloutRequest>();
+        var request = JsonConvert.DeserializeObject<DispatchCalloutRequest>(serializedRequest);
         var calloutType = this._addonMetadataService.CalloutTypes.FirstOrDefault(x => x.Type.Name == request.TypeName);
         if (calloutType is null)
         {
-            networkCallbackDelegate.Invoke(null);
+            this._networkEventService.TriggerEvent(player, guid, null);
             return;
         }
 
@@ -112,7 +116,7 @@ internal class CalloutGenerationService : ICalloutGenerationService, IOnInit, IO
         this.GenerateCalloutOfTypeAsync(calloutType.Type, true);
 #pragma warning restore CS4014
 
-        networkCallbackDelegate.Invoke(null);
+        this._networkEventService.TriggerEvent(player, guid, null);
     }
 
     private async Task GenerateCalloutOfTypeAsync(Type type, bool manualTrigger = false)

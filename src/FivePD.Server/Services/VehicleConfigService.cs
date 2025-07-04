@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -32,6 +31,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     private readonly IMenuService _menuService;
     private readonly PlayerList _playerList;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleConfigService"/> class.
@@ -41,25 +41,27 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     /// <param name="menuService">The menu service.</param>
     /// <param name="playerList">The player list.</param>
     /// <param name="eventHandlerDictionary">The event handler dictionary.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public VehicleConfigService(
         ILogger logger,
         DatabaseContext databaseContext,
         IMenuService menuService,
         PlayerList playerList,
-        EventHandlerDictionary eventHandlerDictionary)
+        EventHandlerDictionary eventHandlerDictionary,
+        INetworkEventService networkEventService)
     {
         this._logger = logger;
         this._databaseContext = databaseContext;
         this._menuService = menuService;
         this._playerList = playerList;
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.VehicleConfig.RequestPoliceVehicleModels] +=
-            new Action<Player, NetworkCallbackDelegate>(this.OnRequestPoliceVehicleModels);
+        this._eventHandlerDictionary[Events.VehicleConfig.RequestPoliceVehicleModels] += new Action<Player, string>(this.OnRequestPoliceVehicleModels);
     }
 
     /// <inheritdoc />
@@ -96,23 +98,23 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     }
 
     [UIEvent(Events.UI.VehicleConfig.Get)]
-    private void GetUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var vehicleConfig = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
         if (vehicleConfig is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        networkCallbackDelegate.InvokeWithJson(vehicleConfig);
+        this._networkEventService.TriggerEventSerialized(player, guid, vehicleConfig);
     }
 
     [UIEvent(Events.UI.VehicleConfig.GetAllPageable)]
-    private void GetAllPageableUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<VehicleConfigsRequest>();
+        var request = JsonConvert.DeserializeObject<VehicleConfigsRequest>(serializedRequest);
         var filters = new Filters<VehicleConfig<Dictionary<string, object>>>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Name),
@@ -125,13 +127,13 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
-        networkCallbackDelegate.InvokeWithJson(page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.VehicleConfig.Create)]
-    private void CreateVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void CreateVehicleConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<AddVehicleConfigRequest>();
+        var request = JsonConvert.DeserializeObject<AddVehicleConfigRequest>(serializedRequest);
         this._databaseContext.VehicleConfigs.Add(new VehicleConfig<Dictionary<string, object>>
         {
             Type = request.Type,
@@ -142,19 +144,19 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
             Options = request.Options,
         });
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
     }
 
     [UIEvent(Events.UI.VehicleConfig.Edit)]
-    private void EditVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void EditVehicleConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<EditVehicleConfigRequest>();
+        var request = JsonConvert.DeserializeObject<EditVehicleConfigRequest>(serializedRequest);
         var vehicleConfig = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
         if (vehicleConfig is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
@@ -165,25 +167,25 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
         vehicleConfig.Options = request.Options;
 
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
     }
 
     [UIEvent(Events.UI.VehicleConfig.Delete)]
-    private void DeleteVehicleConfigUI(ExpandoObject expandoObject, NetworkCallbackDelegate networkCallbackDelegate)
+    private void DeleteVehicleConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var request = expandoObject.ConvertTo<IdRequest>();
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
         var entityToRemove = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
         if (entityToRemove is null)
         {
-            networkCallbackDelegate.InvokeWithUnexpectedError();
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
         this._databaseContext.VehicleConfigs.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
-        networkCallbackDelegate.InvokeWithResponse(true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
     }
@@ -201,10 +203,10 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
         }
     }
 
-    private void OnRequestPoliceVehicleModels([FromSource] Player player, NetworkCallbackDelegate networkCallbackDelegate)
+    private void OnRequestPoliceVehicleModels([FromSource] Player player, string guid)
     {
         var policeVehicleModels = this.GetAllPoliceVehicleModelNames();
-        networkCallbackDelegate.InvokeWithJson(policeVehicleModels);
+        this._networkEventService.TriggerEventSerialized(player, guid, policeVehicleModels);
     }
 
     private void SendPoliceVehicleConfigUpdatesToAllClients()

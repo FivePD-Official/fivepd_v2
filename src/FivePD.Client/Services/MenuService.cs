@@ -18,6 +18,7 @@ internal class MenuService : IMenuService, IOnInit
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
     private readonly IUIManagerService _uiService;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MenuService"/> class.
@@ -25,14 +26,17 @@ internal class MenuService : IMenuService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="uiService">The <see cref="IUIManagerService" /> to use.</param>
     /// <param name="controlService">The <see cref="IControlService" /> to use.</param>
+    /// <param name="networkEventService">The <see cref="INetworkEventService" /> to use.</param>
     public MenuService(
         EventHandlerDictionary eventHandlerDictionary,
         IUIManagerService uiService,
-        IControlService controlService)
+        IControlService controlService,
+        INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._uiService = uiService;
         this._controlService = controlService;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc />
@@ -62,7 +66,7 @@ internal class MenuService : IMenuService, IOnInit
         {
             void OnPress()
             {
-                BaseScript.TriggerServerEvent(Events.UI.Menu.OnOpen, menu.Id, new Action<bool>(canOpen =>
+                this._networkEventService.TriggerServerEvent(Events.UI.Menu.OnOpen, menu.Id, new Action<bool>(canOpen =>
                 {
                     if (canOpen)
                     {
@@ -90,7 +94,7 @@ internal class MenuService : IMenuService, IOnInit
                     new Action<int, CallbackDelegate>(
                         (index, cb) =>
                         {
-                            BaseScript.TriggerServerEvent(Events.UI.Menu.OnListSelect, item.Hashcode, index);
+                            this._networkEventService.TriggerServerEvent(Events.UI.Menu.OnListSelect, item.Hashcode, index);
                             cb.Invoke(string.Empty);
                         }));
                 this._eventHandlerDictionary.AddUIEvent(
@@ -98,7 +102,7 @@ internal class MenuService : IMenuService, IOnInit
                     new Action<int, CallbackDelegate>(
                         (index, cb) =>
                         {
-                            BaseScript.TriggerServerEvent(Events.UI.Menu.OnListIndexChange, item.Hashcode, index);
+                            this._networkEventService.TriggerServerEvent(Events.UI.Menu.OnListIndexChange, item.Hashcode, index);
                             cb.Invoke(string.Empty);
                         }));
                 break;
@@ -108,7 +112,7 @@ internal class MenuService : IMenuService, IOnInit
                     new Action<bool, CallbackDelegate>(
                         (@checked, cb) =>
                         {
-                            BaseScript.TriggerServerEvent(Events.UI.Menu.OnCheckboxSelect, item.Hashcode, @checked);
+                            this._networkEventService.TriggerServerEvent(Events.UI.Menu.OnCheckboxSelect, item.Hashcode, @checked);
                             cb.Invoke(string.Empty);
                         }));
                 break;
@@ -118,7 +122,7 @@ internal class MenuService : IMenuService, IOnInit
                     new Action<int, CallbackDelegate>(
                         (_, cb) =>
                         {
-                            BaseScript.TriggerServerEvent(Events.UI.Menu.OnButtonSelect, item.Hashcode);
+                            this._networkEventService.TriggerServerEvent(Events.UI.Menu.OnButtonSelect, item.Hashcode);
                             cb.Invoke(string.Empty);
                         }));
                 break;
