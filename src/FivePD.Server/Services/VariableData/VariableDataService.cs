@@ -522,7 +522,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         }
 
         attribute.Set = null;
-        this._networkEventService.TriggerEvent(player, guid, attribute);
+        this._networkEventService.TriggerEventSerialized(player, guid, attribute);
     }
 
     [UIEvent(Events.UI.VariableData.GetSetAttributes)]
@@ -545,7 +545,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             attribute.Set = null;
         }
 
-        this._networkEventService.TriggerEvent(player, guid, set.Attributes);
+        this._networkEventService.TriggerEventSerialized(player, guid, set.Attributes);
     }
 
     [UIEvent(Events.UI.VariableData.GetSetAttributesPageable)]
@@ -558,7 +558,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             .Where(attr => attr.Set.Id == request.SetId)
             .Paginate(request.Page, new Filters<VariableDataAttribute>());
 
-        this._networkEventService.TriggerEvent(player, guid, page);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.VariableData.AddSetAttribute)]

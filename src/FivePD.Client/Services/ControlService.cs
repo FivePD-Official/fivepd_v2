@@ -23,6 +23,8 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
 {
     private readonly ITickService _tickService;
     private readonly IUIManagerService _uiManagerService;
+    private readonly INetworkEventService _networkEventService;
+
     private readonly List<HoldableKeybind> _actions = new();
     private readonly List<string> _registeredControlIds = new();
 
@@ -31,10 +33,12 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
     /// </summary>
     /// <param name="tickService">The <see cref="ITickService"/> to use.</param>
     /// <param name="uiManagerService">The <see cref="IUIManagerService"/> to use.</param>
-    public ControlService(ITickService tickService, IUIManagerService uiManagerService)
+    /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
+    public ControlService(ITickService tickService, IUIManagerService uiManagerService, INetworkEventService networkEventService)
     {
         this._tickService = tickService;
         this._uiManagerService = uiManagerService;
+        this._networkEventService = networkEventService;
         this.RegisterServerControls();
     }
 
@@ -198,7 +202,7 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
 
     private void RegisterServerControls()
     {
-        BaseScript.TriggerServerEvent(Events.Control.GetAll, new Action<string>(serializedControls =>
+        this._networkEventService.TriggerServerEvent(Events.Control.GetAll, new Action<string>(serializedControls =>
         {
             var controls = JsonConvert.DeserializeObject<List<ControlsDTO.ClientControlDTO>>(serializedControls);
             foreach (var control in controls)
