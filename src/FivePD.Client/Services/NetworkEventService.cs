@@ -54,6 +54,9 @@ internal class NetworkEventService : INetworkEventService
             return;
         }
 
-        BaseScript.TriggerServerEvent(eventName, guid.ToString(), args);
+        var newArgs2 = new object[args.Length + 1];
+        newArgs2[0] = guid.ToString();
+        Array.Copy(args, 0, newArgs2, 1, args.Length);
+        BaseScript.TriggerServerEvent(eventName, newArgs2);
     }
 }
