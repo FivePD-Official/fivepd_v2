@@ -2,7 +2,6 @@ import { Injectable, SecurityContext } from '@angular/core';
 import { LocalizationChangeEvent } from '@models';
 import { HttpClient } from '@angular/common/http';
 import { EventService } from '@services/event/event.service';
-import { DomSanitizer } from '@angular/platform-browser';
 import getKeyFromObjectPath from 'lodash-es/get';
 import { replaceParams } from '@helpers';
 
@@ -16,7 +15,6 @@ export class LocalizationService {
   constructor(
     private _http: HttpClient,
     private _event: EventService,
-    private sanitizer: DomSanitizer,
   ) {
     this._event.onEvent<LocalizationChangeEvent>('fivepd:player:localizationChange').subscribe(localization => {
       this.set(JSON.parse(localization.Data))
@@ -47,26 +45,8 @@ export class LocalizationService {
   }
 
   private async set(localization: object): Promise<void> {
-    await this.sanitizeObject(localization);
     if (localization) {
       this._localization = localization;
     }
-  }
-
-  private sanitizeObject(object: any): Promise<void> {
-    if (!object) {
-      return Promise.resolve();
-    }
-
-    return new Promise(resolve => {
-      Object.keys(object).forEach(key => {
-        if (object[key] && typeof object[key] === 'object') {
-          this.sanitizeObject(object[key]);
-          return;
-        }
-        object[key] = this.sanitizer.sanitize(SecurityContext.HTML, object[key]);
-        resolve();
-      });
-    });
   }
 }

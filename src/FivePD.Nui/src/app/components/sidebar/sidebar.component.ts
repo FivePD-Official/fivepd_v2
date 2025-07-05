@@ -78,7 +78,7 @@ export class SidebarComponent {
       divider: true,
     },
     {
-      title: 'Scene management',
+      title: 'UI.LABEL.SCENE_MANAGEMENT.TITLE',
       path: () => '/mdt/scene-management',
       icon: IconType.Warning,
       show: () => this.userService.userHasRole(UserRole.Admin),

@@ -28,4 +28,8 @@
     <PackageReference Update="SonarAnalyzer.CSharp" Version="8.36.1.44192" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Localization\hu-HU.json" />
+  </ItemGroup>
 </Project>
