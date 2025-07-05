@@ -245,7 +245,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
                     PlayAudio = this._configService.GeneralConfig.Audio.Files.CalloutDispatched,
                     Keys = new Dictionary<string, string>
                     {
-                        { "F1", "Accept" },
+                        { "F1", "UI.ACTION.ACCEPT" },
                     },
                 },
                 response =>

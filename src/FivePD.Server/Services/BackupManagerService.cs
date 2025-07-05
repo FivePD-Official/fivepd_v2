@@ -89,7 +89,7 @@ public class BackupManagerService : IBackupManagerService, IOnInit
                 },
                 Keys = new Dictionary<string, string>
                 {
-                    { "F1", "Accept" },
+                    { "F1", "UI.ACTION.ACCEPT" },
                 },
                 PlayAudio = this._configService.GeneralConfig.Audio.Files.BackupRequested,
             }, res =>

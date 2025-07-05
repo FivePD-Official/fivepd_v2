@@ -3,7 +3,6 @@
 <app-container [rows]="2" [columns]="1">
 
   <div class="flex flex-col gap-4">
-    <p class="common-title">{{ 'UI.LABEL.DETAILS' | translate }}</p>
     <app-dynamic-form [formFields]="userDetailsFields"
                       (onSubmit)="onUserDetailsSubmit($event)"
                       [disableSubmitWithOriginalValue]="true"

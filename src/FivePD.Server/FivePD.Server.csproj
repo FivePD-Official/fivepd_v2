@@ -107,9 +107,6 @@
         <Compile Remove="obj\x64\Release\netstandard2.0\FivePD.Server.AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="..\FivePD.Statics\Localizations\">
-        <Link>FivePD.Statics\Localizations</Link>
-      </Folder>
       <Folder Include="Migrations" />
     </ItemGroup>
     <ItemGroup>

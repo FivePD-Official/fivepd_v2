@@ -10,32 +10,36 @@ namespace FivePD.Localization
 {
     public static class Localization
     {
-        private const string LocalizationFileName = "en-US.json";
+        private static readonly string[] LocalizationFileNames = new[] { "en-US.json", "hu-HU.json" };
+
         private static readonly string ServerStaticsDirPath = AppDomain.CurrentDomain.BaseDirectory + "../../FivePD.Statics/Localizations";
         private static readonly string LocalizationDirPath = AppDomain.CurrentDomain.BaseDirectory + "../Localization";
-        private static readonly string LocalizationPath = LocalizationDirPath + '/' + LocalizationFileName;
-        private static readonly string OptimizedLocalizationPath = ServerStaticsDirPath + '/' + LocalizationFileName;
-        private static readonly string OptimizedTestLocalizationPath = ServerStaticsDirPath + "/en-US-TEST.json";
+        private static readonly string LocalizationPath = LocalizationDirPath + '/';
+        private static readonly string OptimizedLocalizationPath = ServerStaticsDirPath + '/';
+        private static readonly string OptimizedTestLocalizationPath = ServerStaticsDirPath + '/';
 
         public static void Main()
         {
-            FormatLocalization();
-            OptimizeLocalization();
+            foreach (var file in LocalizationFileNames)
+            {
+                FormatLocalization(file);
+                OptimizeLocalization(file, file == "en-US.json");
+            }
         }
 
-        private static void FormatLocalization()
+        private static void FormatLocalization(string file)
         {
             try
             {
                 var promotedKeys = new[] { "TITLE" };
-                var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(LocalizationPath));
+                var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(LocalizationPath + file));
                 var orderedJson = json
                     .OrderBy(x => !promotedKeys.Contains(x.Key))
                     .ThenBy(x => x.Key);
                 var formattedOrderedJson = JsonConvert.SerializeObject(
                     orderedJson.ToDictionary(item => item.Key.ToString(), item => item.Value.ToString()),
                     Formatting.Indented);
-                File.WriteAllText(LocalizationPath, formattedOrderedJson);
+                File.WriteAllText(LocalizationPath + file, formattedOrderedJson);
                 Console.WriteLine("Localization formatted.");
             }
             catch (Exception e)
@@ -44,25 +48,28 @@ namespace FivePD.Localization
             }
         }
 
-        private static void OptimizeLocalization()
+        private static void OptimizeLocalization(string file, bool createTestLocalization)
         {
             try
             {
-                var localization = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(LocalizationPath));
+                var localization = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(LocalizationPath + file));
                 var unflattenedLocalization = JsonHelper.Unflatten(localization);
                 var formattedLocalization = JsonConvert.SerializeObject(unflattenedLocalization);
-                File.WriteAllText(OptimizedLocalizationPath, formattedLocalization);
+                File.WriteAllText(OptimizedLocalizationPath + file, formattedLocalization);
                 Console.WriteLine("Localization optimized.");
 
-                foreach (var key in localization.Keys)
+                if (createTestLocalization)
                 {
-                    localization[key] = $"T: {localization[key]}";
-                }
+                    foreach (var key in localization.Keys)
+                    {
+                        localization[key] = $"T: {localization[key]}";
+                    }
 
-                unflattenedLocalization = JsonHelper.Unflatten(localization);
-                formattedLocalization = JsonConvert.SerializeObject(unflattenedLocalization);
-                File.WriteAllText(OptimizedTestLocalizationPath, formattedLocalization);
-                Console.WriteLine("Test localization created.");
+                    unflattenedLocalization = JsonHelper.Unflatten(localization);
+                    formattedLocalization = JsonConvert.SerializeObject(unflattenedLocalization);
+                    File.WriteAllText(OptimizedTestLocalizationPath + "en-US-TEST.json", formattedLocalization);
+                    Console.WriteLine("Test localization created.");
+                }
             }
             catch (Exception e)
             {
