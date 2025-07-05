@@ -15,13 +15,12 @@ interface GameNotification {
 }
 
 @Component({
-  selector: 'app-game-notification-wrapper',
-  standalone: true,
-  imports: [
-    TranslatePipe
-  ],
-  templateUrl: './game-notification-wrapper.component.html',
-  styleUrl: './game-notification-wrapper.component.sass'
+    selector: 'app-game-notification-wrapper',
+    imports: [
+        TranslatePipe
+    ],
+    templateUrl: './game-notification-wrapper.component.html',
+    styleUrl: './game-notification-wrapper.component.sass'
 })
 export class GameNotificationWrapperComponent implements OnInit {
 

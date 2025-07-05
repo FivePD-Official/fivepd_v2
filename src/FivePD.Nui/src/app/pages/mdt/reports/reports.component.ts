@@ -20,11 +20,10 @@ import {PageHeaderComponent} from '../../../components/page-header/page-header.c
 import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
-  selector: 'app-reports',
-  templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.sass'],
-  standalone: true,
-  imports: [PageHeaderComponent, GridComponent, TranslatePipe]
+    selector: 'app-reports',
+    templateUrl: './reports.component.html',
+    styleUrls: ['./reports.component.sass'],
+    imports: [PageHeaderComponent, GridComponent, TranslatePipe]
 })
 export class ReportsComponent implements OnInit {
 

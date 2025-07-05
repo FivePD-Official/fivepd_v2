@@ -18,16 +18,15 @@ import { LocalizationService } from "@services/localization/localization.service
 export const INCIDENT = new InjectionToken<IncidentDTO>('Incident');
 
 @Component({
-  selector: 'app-incident-details-modal',
-  standalone: true,
-  imports: [
-    AsyncPipe,
-    TranslatePipe,
-    BadgeComponent,
-    ButtonComponent
-  ],
-  templateUrl: './incident-details-modal.component.html',
-  styleUrl: './incident-details-modal.component.sass'
+    selector: 'app-incident-details-modal',
+    imports: [
+        AsyncPipe,
+        TranslatePipe,
+        BadgeComponent,
+        ButtonComponent
+    ],
+    templateUrl: './incident-details-modal.component.html',
+    styleUrl: './incident-details-modal.component.sass'
 })
 export class IncidentDetailsModalComponent {
   protected readonly FIncidentType = FIncidentType;

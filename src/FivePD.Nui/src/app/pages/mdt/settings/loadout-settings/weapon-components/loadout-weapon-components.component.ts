@@ -1,20 +1,15 @@
-﻿import {Component, inject} from '@angular/core';
-import {Button, Collation, Column, FormInputBase, ModalResponse, TextField, WeaponComponent,} from "@models";
-import {BehaviorSubject, filter, map, switchMap} from "rxjs";
-import {ModalService} from "@services/modals/modal/modal.service";
-import {ModalFormService} from "@services/modals/modal-form/modal-form.service";
-import {ModalConfirmService} from "@services/modals/modal-confirm/modal-confirm.service";
-import {TranslatePipe} from "../../../../../pipes/translate.pipe";
-import {GridComponent} from '../../../../../components/grid/grid.component';
-import {ContainerComponent} from '../../../../../components/container/container.component';
-import {PageHeaderComponent} from '../../../../../components/page-header/page-header.component';
-import {
-  SingleSelectFieldComponent
-} from "../../../../../components/form-inputs/single-select-field/single-select-field.component";
-import {AsyncPipe} from "@angular/common";
-import {ValueResolver} from "@services/modals/modal-form/modal-form-value-resolver";
-import {LocalizationService} from "@services/localization/localization.service";
-import {WeaponComponentService} from "@services/weapon-component/weapon-component.service";
+﻿import { Component, inject } from '@angular/core';
+import { Button, Collation, Column, FormInputBase, ModalResponse, TextField, WeaponComponent, } from "@models";
+import { BehaviorSubject, filter, map, switchMap } from "rxjs";
+import { ModalService } from "@services/modals/modal/modal.service";
+import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
+import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
+import { TranslatePipe } from "../../../../../pipes/translate.pipe";
+import { GridComponent } from '../../../../../components/grid/grid.component';
+import { AsyncPipe } from "@angular/common";
+import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
+import { LocalizationService } from "@services/localization/localization.service";
+import { WeaponComponentService } from "@services/weapon-component/weapon-component.service";
 
 function createBaseFields(weaponComponent?: WeaponComponent): FormInputBase<any>[] {
   return [
@@ -37,10 +32,9 @@ function createBaseFields(weaponComponent?: WeaponComponent): FormInputBase<any>
 }
 
 @Component({
-  selector: 'app-loadout-weapon-components',
-  templateUrl: './loadout-weapon-components.component.html',
-  standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe]
+    selector: 'app-loadout-weapon-components',
+    templateUrl: './loadout-weapon-components.component.html',
+    imports: [GridComponent, TranslatePipe, AsyncPipe]
 })
 export class LoadoutWeaponComponentsComponent {
 

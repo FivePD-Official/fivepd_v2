@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { MockedWithProperties, TestHelperModule } from "../test-helpers/test-helper.module";
-import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
+import { HttpTestingController, TestRequest, provideHttpClientTesting } from "@angular/common/http/testing";
 import { WindowService } from "@services/window/window.service";
 import { EventService } from "@services/event/event.service";
 import { LocalizationService } from "@services/localization/localization.service";
@@ -14,6 +14,7 @@ import { FixtureHelper } from "../test-helpers/fixture-helper";
 import {
   GameNotificationWrapperComponent
 } from "./components/game-notification-wrapper/game-notification-wrapper.component";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -30,23 +31,22 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
+    declarations: [AppComponent],
+    imports: [RouterTestingModule,
         GameNotificationWrapperComponent,
         TestHelperModule.builder()
-          .withWindowEventListener()
-          .withRouter()
-          .withStore()
-          .build()
-      ],
-      declarations: [AppComponent],
-      providers: [
+            .withWindowEventListener()
+            .withRouter()
+            .withStore()
+            .build()],
+    providers: [
         WindowService,
         EventService,
         LocalizationService,
-      ]
-    }).compileComponents();
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+}).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
     fixtureHelper = new FixtureHelper(fixture);

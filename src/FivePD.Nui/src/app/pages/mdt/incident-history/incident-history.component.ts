@@ -9,11 +9,10 @@ import { GridComponent } from '../../../components/grid/grid.component';
 import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 
 @Component({
-  selector: 'app-incident-history',
-  templateUrl: './incident-history.component.html',
-  styleUrls: ['./incident-history.component.sass'],
-  standalone: true,
-  imports: [PageHeaderComponent, GridComponent, TranslatePipe]
+    selector: 'app-incident-history',
+    templateUrl: './incident-history.component.html',
+    styleUrls: ['./incident-history.component.sass'],
+    imports: [PageHeaderComponent, GridComponent, TranslatePipe]
 })
 export class IncidentHistoryComponent implements OnInit {
 

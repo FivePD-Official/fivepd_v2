@@ -5,10 +5,9 @@ import { Subscription } from 'rxjs';
 import { NgStyle } from '@angular/common';
 
 @Component({
-  selector: 'app-timer-bar',
-  templateUrl: './timer-bar.component.html',
-  standalone: true,
-  imports: [NgStyle]
+    selector: 'app-timer-bar',
+    templateUrl: './timer-bar.component.html',
+    imports: [NgStyle]
 })
 export class TimerBarComponent implements OnInit, OnDestroy {
 

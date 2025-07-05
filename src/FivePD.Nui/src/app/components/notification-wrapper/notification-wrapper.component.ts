@@ -3,16 +3,15 @@ import { NotificationService } from '@services/notification/notification.service
 import { Subscription } from 'rxjs';
 import { Notification } from '@models';
 import { NotificationComponent } from '../notification/notification.component';
-import { NgFor } from '@angular/common';
+
 
 type NotificationWithTimer = Notification & { timer: number; exit: boolean };
 
 @Component({
-  selector: 'app-notification-wrapper',
-  templateUrl: './notification-wrapper.component.html',
-  styleUrls: ['./notification-wrapper.component.sass'],
-  standalone: true,
-  imports: [NgFor, NotificationComponent]
+    selector: 'app-notification-wrapper',
+    templateUrl: './notification-wrapper.component.html',
+    styleUrls: ['./notification-wrapper.component.sass'],
+    imports: [NotificationComponent]
 })
 export class NotificationWrapperComponent implements OnInit, OnDestroy {
 

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormChangeEvent, NumberField, TextField } from "@models";
 import { CustomValidators } from "../../../../../../helpers/validators";
 import { Validators } from "@angular/forms";
@@ -14,10 +14,9 @@ import {
 import { ModalRef } from "@services/modals/modal/modal-ref";
 
 @Component({
-  selector: 'app-create-department-model',
-  standalone: true,
-  imports: [CommonModule, DynamicFormComponent, ButtonComponent, TranslatePipe, DepartmentCallsignFormatEditorComponent],
-  templateUrl: './create-department-modal.component.html',
+    selector: 'app-create-department-model',
+    imports: [DynamicFormComponent, ButtonComponent, TranslatePipe, DepartmentCallsignFormatEditorComponent],
+    templateUrl: './create-department-modal.component.html'
 })
 export class CreateDepartmentModalComponent {
 

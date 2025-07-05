@@ -21,11 +21,10 @@ import { parseId } from "../../../../helpers/parse-id";
 import { VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
-  selector: 'app-citizen-database-id',
-  templateUrl: './citizen-database-id.component.html',
-  styleUrls: ['./citizen-database-id.component.sass'],
-  standalone: true,
-  imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, EntityViewComponent, AsyncPipe, RouterLink]
+    selector: 'app-citizen-database-id',
+    templateUrl: './citizen-database-id.component.html',
+    styleUrls: ['./citizen-database-id.component.sass'],
+    imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, EntityViewComponent, AsyncPipe, RouterLink]
 })
 export class CitizenDatabaseIdComponent {
 

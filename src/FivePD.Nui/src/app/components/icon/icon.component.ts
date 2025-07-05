@@ -1,13 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IconType } from '@models';
-import { NgClass, NgSwitch, NgSwitchCase } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
-  selector: '[app-icon]',
-  templateUrl: './icon.component.html',
-  styleUrls: ['./icon.component.sass'],
-  standalone: true,
-  imports: [NgSwitch, NgSwitchCase, NgClass]
+    selector: '[app-icon]',
+    templateUrl: './icon.component.html',
+    styleUrls: ['./icon.component.sass'],
+    imports: [NgClass]
 })
 export class IconComponent implements OnInit {
 

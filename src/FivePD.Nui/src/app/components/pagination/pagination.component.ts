@@ -5,11 +5,10 @@ import { IconComponent } from '../icon/icon.component';
 import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-pagination',
-  templateUrl: './pagination.component.html',
-  styleUrls: ['./pagination.component.sass'],
-  standalone: true,
-  imports: [NgClass, IconComponent, TranslatePipe]
+    selector: 'app-pagination',
+    templateUrl: './pagination.component.html',
+    styleUrls: ['./pagination.component.sass'],
+    imports: [NgClass, IconComponent, TranslatePipe]
 })
 export class PaginationComponent {
 

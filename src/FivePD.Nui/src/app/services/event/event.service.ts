@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, filter, Observable, ReplaySubject} from 'rxjs';
 import {BaseNuiEvent} from '@models';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 

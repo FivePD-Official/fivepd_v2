@@ -7,10 +7,9 @@ import { Column, Page, SpeedZoneWithPlayerDTO } from "@models";
 import { UserRole, UserService } from "@services/user/user.service";
 
 @Component({
-  selector: 'app-scene-management-speed-zone',
-  standalone: true,
-  imports: [CommonModule, GridComponent],
-  templateUrl: './scene-management-speed-zone.component.html',
+    selector: 'app-scene-management-speed-zone',
+    imports: [CommonModule, GridComponent],
+    templateUrl: './scene-management-speed-zone.component.html'
 })
 export class SceneManagementSpeedZoneComponent {
 

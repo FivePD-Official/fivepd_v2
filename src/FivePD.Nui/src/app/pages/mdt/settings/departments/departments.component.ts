@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GridComponent } from "../../../../components/grid/grid.component";
-import { TranslatePipe } from "../../../../pipes/translate.pipe";
 import { Button, Collation, Column, Department, GeneralConfig } from "@models";
 import { BehaviorSubject, filter, map, switchMap } from "rxjs";
 import { UserRole, UserService } from "@services/user/user.service";
@@ -16,10 +15,9 @@ import {
 } from "../../departments/departments-view/_components/create-department-modal/create-department-modal.component";
 
 @Component({
-  selector: 'app-departments',
-  standalone: true,
-  imports: [CommonModule, GridComponent, TranslatePipe],
-  templateUrl: './departments.component.html',
+    selector: 'app-departments',
+    imports: [CommonModule, GridComponent],
+    templateUrl: './departments.component.html'
 })
 export class DepartmentsComponent implements OnInit {
 
@@ -53,9 +51,9 @@ export class DepartmentsComponent implements OnInit {
     {
       label: 'UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TITLE',
       show: () => true,
-      disabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch ?? true,
+      disabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch,
       tooltip: {
-        enabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch ?? true,
+        enabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch,
         text: this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TOOLTIP', {
           configKey: 'AreaBasedDispatch',
         }),

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AudioService } from "@services/audio/audio.service";
-import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
+import { HttpTestingController } from "@angular/common/http/testing";
 import { TestHelperModule } from "../../../test-helpers/test-helper.module";
 
 describe('AudioService', () => {

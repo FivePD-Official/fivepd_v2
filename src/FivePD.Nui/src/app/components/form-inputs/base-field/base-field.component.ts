@@ -14,11 +14,10 @@ import { FormInputBase } from "@models";
 import { CustomValidators } from "../../../helpers/validators";
 
 @Component({
-  selector: 'app-base-field',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SafeHtmlPipe, TranslatePipe],
-  templateUrl: './base-field.component.html',
-  styleUrl: './base-field.component.sass'
+    selector: 'app-base-field',
+    imports: [CommonModule, ReactiveFormsModule, SafeHtmlPipe, TranslatePipe],
+    templateUrl: './base-field.component.html',
+    styleUrl: './base-field.component.sass'
 })
 export class BaseFieldComponent {
   @Input({required: false}) form!: FormGroup;

@@ -1,16 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { CustomHttpInterceptor } from "./custom-http-interceptor.interceptor";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('CustomHttpInterceptorInterceptor', () => {
   beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      HttpClientTestingModule,
-    ],
+    imports: [],
     providers: [
-      CustomHttpInterceptor,
-    ],
-  }));
+        CustomHttpInterceptor,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+}));
 
   it('should be created', () => {
     const interceptor: CustomHttpInterceptor = TestBed.inject(CustomHttpInterceptor);

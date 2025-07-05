@@ -5,11 +5,10 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { GridComponent } from '../../../../components/grid/grid.component';
 
 @Component({
-  selector: 'app-devtools-callouts',
-  templateUrl: './devtools-callouts.component.html',
-  styleUrls: ['./devtools-callouts.component.sass'],
-  standalone: true,
-  imports: [GridComponent, TranslatePipe]
+    selector: 'app-devtools-callouts',
+    templateUrl: './devtools-callouts.component.html',
+    styleUrls: ['./devtools-callouts.component.sass'],
+    imports: [GridComponent, TranslatePipe]
 })
 export class DevtoolsCalloutsComponent implements OnInit {
 

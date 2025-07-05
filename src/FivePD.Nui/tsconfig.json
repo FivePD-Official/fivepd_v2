@@ -4,13 +4,27 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@helpers": ["src/app/helpers"],
-      "@enums": ["src/app/enums"],
-      "@services/*": ["src/app/services/*"],
-      "@models": ["src/app/models"],
-      "@store": ["src/app/store"],
-      "@store/*": ["src/app/store/*"],
-      "@validators/*": ["src/app/validators/*"],
+      "@helpers": [
+        "src/app/helpers"
+      ],
+      "@enums": [
+        "src/app/enums"
+      ],
+      "@services/*": [
+        "src/app/services/*"
+      ],
+      "@models": [
+        "src/app/models"
+      ],
+      "@store": [
+        "src/app/store"
+      ],
+      "@store/*": [
+        "src/app/store/*"
+      ],
+      "@validators/*": [
+        "src/app/validators/*"
+      ]
     },
     "outDir": "./dist/",
     "forceConsistentCasingInFileNames": true,
@@ -21,9 +35,8 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "es2022",
     "module": "es2022",
@@ -33,7 +46,7 @@
       "dom",
       "DOM.Iterable"
     ],
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

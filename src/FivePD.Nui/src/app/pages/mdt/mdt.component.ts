@@ -9,11 +9,10 @@ import { HeaderComponent } from '../../components/header/header.component';
 import { NgClass } from "@angular/common";
 
 @Component({
-  selector: 'app-mdt',
-  templateUrl: './mdt.component.html',
-  styleUrls: ['./mdt.component.sass'],
-  standalone: true,
-  imports: [NgClass, HeaderComponent, SidebarComponent, RouterOutlet, NotificationWrapperComponent]
+    selector: 'app-mdt',
+    templateUrl: './mdt.component.html',
+    styleUrls: ['./mdt.component.sass'],
+    imports: [NgClass, HeaderComponent, SidebarComponent, RouterOutlet, NotificationWrapperComponent]
 })
 export class MdtComponent implements OnInit {
 

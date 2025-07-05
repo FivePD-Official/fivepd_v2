@@ -13,11 +13,10 @@ import { GlobalState } from "@store";
 import { RouterLink } from "@angular/router";
 
 @Component({
-  selector: 'app-vehicle-database-index',
-  standalone: true,
-  imports: [AsyncPipe, TranslatePipe, DynamicFormComponent, PageHeaderComponent, GridComponent, RouterLink],
-  templateUrl: './vehicle-database-index.component.html',
-  styleUrl: './vehicle-database-index.component.sass'
+    selector: 'app-vehicle-database-index',
+    imports: [AsyncPipe, TranslatePipe, DynamicFormComponent, PageHeaderComponent, GridComponent, RouterLink],
+    templateUrl: './vehicle-database-index.component.html',
+    styleUrl: './vehicle-database-index.component.sass'
 })
 export class VehicleDatabaseIndexComponent {
 

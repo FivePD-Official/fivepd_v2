@@ -9,11 +9,10 @@ import { NgStyle } from '@angular/common';
 import { EntityValue, EntityValueLink, VariableDataService } from "@services/variable-data/variable-data.service";
 
 @Component({
-  selector: 'app-modal-entity-view',
-  templateUrl: './modal-entity-view.component.html',
-  styleUrls: ['./modal-entity-view.component.sass'],
-  standalone: true,
-  imports: [NgStyle, IconComponent]
+    selector: 'app-modal-entity-view',
+    templateUrl: './modal-entity-view.component.html',
+    styleUrls: ['./modal-entity-view.component.sass'],
+    imports: [NgStyle, IconComponent]
 })
 export class ModalEntityViewComponent implements OnInit {
 

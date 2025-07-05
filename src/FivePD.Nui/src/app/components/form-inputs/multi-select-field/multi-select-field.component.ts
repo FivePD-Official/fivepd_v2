@@ -16,11 +16,10 @@ import { createDefaultFormGroup } from "../_helpers/field";
 import { DropdownRectHelperDirective } from "../../../directives/dropdown-rect-helper.directive";
 
 @Component({
-  selector: 'app-multi-select-field',
-  standalone: true,
-  imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe, ClickOutsideDirective, DropdownRectHelperDirective],
-  templateUrl: './multi-select-field.component.html',
-  styleUrl: './multi-select-field.component.sass'
+    selector: 'app-multi-select-field',
+    imports: [CommonModule, BaseFieldComponent, ReactiveFormsModule, TranslatePipe, ClickOutsideDirective, DropdownRectHelperDirective],
+    templateUrl: './multi-select-field.component.html',
+    styleUrl: './multi-select-field.component.sass'
 })
 export class MultiSelectFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;

@@ -14,18 +14,17 @@ import { SidebarActions } from "@store/sidebar.actions";
 import { RouteHelper } from "../../pages/_service/route-helper";
 
 @Component({
-  selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.sass'],
-  standalone: true,
-  imports: [
-    RouterLinkActive,
-    RouterLink,
-    IconComponent,
-    NgClass,
-    TranslatePipe,
-    NgTemplateOutlet
-  ],
+    selector: 'app-sidebar',
+    templateUrl: './sidebar.component.html',
+    styleUrls: ['./sidebar.component.sass'],
+    imports: [
+        RouterLinkActive,
+        RouterLink,
+        IconComponent,
+        NgClass,
+        TranslatePipe,
+        NgTemplateOutlet
+    ]
 })
 export class SidebarComponent {
 
@@ -73,7 +72,7 @@ export class SidebarComponent {
       title: 'UI.LABEL.MY_DEPARTMENT',
       path: () => `/mdt/departments/${this.user?.DepartmentId}`,
       icon: IconType.Building,
-      show: () => !!this.user?.Department ?? false,
+      show: () => !!this.user?.Department,
     },
     {
       divider: true,

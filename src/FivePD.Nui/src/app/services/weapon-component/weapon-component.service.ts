@@ -2,7 +2,7 @@
 import {Collation, Id, LoadoutConfig, SimpleUser, SimpleWeapon, SimpleWeaponComponent, WeaponComponent} from '@models';
 import { CrudApiService } from "@services/api/crud-api/crud-api.service";
 import {Observable} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {Store} from "@ngrx/store";
 import {GlobalState} from "@store";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";

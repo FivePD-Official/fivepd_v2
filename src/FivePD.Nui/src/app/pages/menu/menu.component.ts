@@ -21,11 +21,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-menu',
-  templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.sass'],
-  standalone: true,
-  imports: [NgClass, TranslatePipe, AsPipe]
+    selector: 'app-menu',
+    templateUrl: './menu.component.html',
+    styleUrls: ['./menu.component.sass'],
+    imports: [NgClass, TranslatePipe, AsPipe]
 })
 export class MenuComponent implements OnInit, AfterViewInit, OnChanges {
 

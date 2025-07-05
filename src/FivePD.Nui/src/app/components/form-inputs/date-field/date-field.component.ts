@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { TextField } from "@models";
 import { BaseFieldComponent } from "../base-field/base-field.component";
@@ -8,11 +8,10 @@ import { DateMaskDirective } from "../../../directives/date-mask.directive";
 import { createDefaultFormGroup } from "../_helpers/field";
 
 @Component({
-  selector: 'app-date-field',
-  standalone: true,
-  imports: [CommonModule, BaseFieldComponent, TranslatePipe, ReactiveFormsModule, DateMaskDirective],
-  templateUrl: './date-field.component.html',
-  styleUrl: './date-field.component.sass'
+    selector: 'app-date-field',
+    imports: [BaseFieldComponent, TranslatePipe, ReactiveFormsModule, DateMaskDirective],
+    templateUrl: './date-field.component.html',
+    styleUrl: './date-field.component.sass'
 })
 export class DateFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;

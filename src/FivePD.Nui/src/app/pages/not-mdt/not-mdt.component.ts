@@ -9,11 +9,10 @@ import { MenuComponent } from '../menu/menu.component';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-not-mdt',
-  templateUrl: './not-mdt.component.html',
-  styleUrls: ['./not-mdt.component.sass'],
-  standalone: true,
-  imports: [MenuComponent, WelcomeModalComponent, AsyncPipe]
+    selector: 'app-not-mdt',
+    templateUrl: './not-mdt.component.html',
+    styleUrls: ['./not-mdt.component.sass'],
+    imports: [MenuComponent, WelcomeModalComponent, AsyncPipe]
 })
 export class NotMdtComponent {
 

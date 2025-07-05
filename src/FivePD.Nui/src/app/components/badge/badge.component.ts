@@ -4,13 +4,12 @@ import { NgClass } from "@angular/common";
 export type BadgeVariants = 'gray' | 'red' | 'green' | 'amber' | 'blue';
 
 @Component({
-  selector: 'app-badge',
-  standalone: true,
-  imports: [
-    NgClass
-  ],
-  templateUrl: './badge.component.html',
-  styleUrl: './badge.component.sass'
+    selector: 'app-badge',
+    imports: [
+        NgClass
+    ],
+    templateUrl: './badge.component.html',
+    styleUrl: './badge.component.sass'
 })
 export class BadgeComponent {
   @Input({required: true}) variant!: BadgeVariants;

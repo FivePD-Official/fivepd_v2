@@ -1,7 +1,8 @@
 import { TranslatePipe } from './translate.pipe';
 import { TestBed } from '@angular/core/testing';
 import { LocalizationService } from '@services/localization/localization.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
   jest.mock('lodash-es/get', () => {
     return {
@@ -17,13 +18,13 @@ describe('TranslatePipe', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
-        LocalizationService
-      ]
-    }).compileComponents();
+    imports: [],
+    providers: [
+        LocalizationService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+}).compileComponents();
 
     localizationService = TestBed.inject(LocalizationService);
     pipe = new TranslatePipe(localizationService);

@@ -59,11 +59,10 @@ interface FormattedUser extends User {
 type Mode = 'view' | 'edit';
 
 @Component({
-  selector: 'app-departments-view',
-  templateUrl: './departments-view.component.html',
-  styleUrls: ['./departments-view.component.sass'],
-  standalone: true,
-  imports: [PageHeaderComponent, ButtonComponent, TippyModule, ContainerComponent, DynamicFormComponent, GridComponent, TranslatePipe]
+    selector: 'app-departments-view',
+    templateUrl: './departments-view.component.html',
+    styleUrls: ['./departments-view.component.sass'],
+    imports: [PageHeaderComponent, ButtonComponent, TippyModule, ContainerComponent, DynamicFormComponent, GridComponent, TranslatePipe]
 })
 export class DepartmentsViewComponent implements OnInit {
 

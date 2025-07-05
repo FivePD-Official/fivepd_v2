@@ -122,10 +122,9 @@ function mapTowTruckFields(value: ModalResponse['value']): ModalResponse['value'
 }
 
 @Component({
-  selector: 'app-vehicle-settings',
-  templateUrl: './vehicle-settings.component.html',
-  standalone: true,
-  imports: [ContainerComponent, GridComponent, TranslatePipe, SingleSelectFieldComponent, AsyncPipe]
+    selector: 'app-vehicle-settings',
+    templateUrl: './vehicle-settings.component.html',
+    imports: [ContainerComponent, GridComponent, TranslatePipe, AsyncPipe]
 })
 export class VehicleSettingsComponent {
 

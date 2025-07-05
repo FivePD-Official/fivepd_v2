@@ -2,11 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgStyle } from '@angular/common';
 
 @Component({
-  selector: 'app-container',
-  templateUrl: './container.component.html',
-  styleUrls: ['./container.component.sass'],
-  standalone: true,
-  imports: [NgStyle]
+    selector: 'app-container',
+    templateUrl: './container.component.html',
+    styleUrls: ['./container.component.sass'],
+    imports: [NgStyle]
 })
 export class ContainerComponent implements OnInit {
 

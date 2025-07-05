@@ -8,11 +8,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { getPriorityLabel } from "../../helpers/fpriority-helpers";
 
 @Component({
-  selector: 'app-information',
-  templateUrl: './information.component.html',
-  styleUrls: ['./information.component.sass'],
-  standalone: true,
-  imports: [TranslatePipe]
+    selector: 'app-information',
+    templateUrl: './information.component.html',
+    styleUrls: ['./information.component.sass'],
+    imports: [TranslatePipe]
 })
 export class InformationComponent {
 
