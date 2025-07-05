@@ -74,7 +74,7 @@ internal class WeaponService : IWeaponService, IOnInit
             return;
         }
         
-        BaseScript.TriggerServerEvent(Events.UI.Weapon.Edit, serializedRequest, new Action<string>(data => { callbackDelegate.Invoke(data); }));
+        this._networkEventService.TriggerServerEvent(Events.UI.Weapon.Edit, serializedRequest, new Action<string>(data => { callbackDelegate.Invoke(data); }));
     }
 
     public string CheckWeaponAndComponentValidity(string weaponModelName, List<string> componentHashes)
