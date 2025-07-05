@@ -29,6 +29,7 @@ import {PageHeaderComponent} from '../../../components/page-header/page-header.c
 import { VariableDataService } from "@services/variable-data/variable-data.service";
 import { DataResolver } from "@services/modals/modal-form/modal-form-data-resolver";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
+import { IncidentHistoryService } from "@services/incident-history/incident-history.service";
 
 @Component({
   selector: 'app-reports',
@@ -103,7 +104,19 @@ export class ReportsComponent implements OnInit {
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
         },
-        fields: () => mapAttributesToFields({attributes: this._variableDataService.getSetAttributes(CoreSetId.IncidentReport)}),
+        fields: (_, incidentHistoryItems) => mapAttributesToFields({
+          attributes: this._variableDataService.getSetAttributes(CoreSetId.IncidentReport),
+          incidentHistoryItems
+        }),
+        dataResolver: new DataResolver(
+          [] as DropdownItem[],
+          this._incidentHistoryService.getAllOfUser().pipe(
+            map(items => items.map(item => ({
+              key: item.Id,
+              label: `${item.Title} - ${formatDate(new Date(item.GeneratedAt), 'none')}`,
+            })))
+          )
+        )
       }).result
         .pipe(
           filter(res => res.success),
@@ -130,6 +143,7 @@ export class ReportsComponent implements OnInit {
     private readonly modalConfirmService: ModalConfirmService,
     private readonly _userService: UserService,
     private readonly _pedHistoryService: PedHistoryService,
+    private readonly _incidentHistoryService: IncidentHistoryService
   ) {
     store.pipe(takeUntilDestroyed()).subscribe(state => {
       this.user = state.user.details.User;

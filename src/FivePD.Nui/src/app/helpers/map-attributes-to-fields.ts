@@ -19,6 +19,7 @@ interface MapAttributesToFieldsOptions {
   entity?: MappedVariableDataEntity;
   additionalFields?: FormInputBase<any>[];
   pedHistoryItems?: DropdownItem[];
+  incidentHistoryItems?: DropdownItem[];
 }
 
 export function mapAttributesToFields(options: MapAttributesToFieldsOptions): FormInputBase<any>[] {
@@ -105,7 +106,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: singleIncidentHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      items: () => options.incidentHistoryItems ?? [],
       value: options.entity ? options.entity[CoreAttributes.IncidentHistoryId] : undefined,
     }));
   }
@@ -122,7 +123,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: multiIncidentHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      items: () => options.incidentHistoryItems ?? [],
       value: options.entity ? (options.entity[CoreAttributes.IncidentHistoryIds] as any[]) : undefined,
     }));
   }
