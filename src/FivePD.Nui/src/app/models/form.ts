@@ -2,6 +2,7 @@
 import { Paths } from './_dev/nested-object-keys';
 import { ActionResponse } from './nui-event-responses';
 import { ButtonVariants } from "./button";
+import { Vector3 } from "./entities";
 
 export interface FormSubmitEvent {
   value: any;
@@ -39,7 +40,7 @@ export interface MultiSelectFieldOptions extends DropdownBaseOptions {
 }
 
 interface FormInputBaseModel<T> {
-  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'singleSelect' | 'multiSelect' | 'checkboxGroup';
+  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'singleSelect' | 'multiSelect' | 'position';
   value: T | undefined;
   key: string;
   label: string;
@@ -162,5 +163,11 @@ export class MultiSelectField extends FormInputBase<number[]> {
 export class CheckboxField extends FormInputBase<boolean> {
   constructor(options: FormInputBaseOptions<boolean>) {
     super('checkbox', options);
+  }
+}
+
+export class PositionField extends FormInputBase<Vector3> {
+  constructor(options: FormInputBaseOptions<Vector3>) {
+    super('position', options);
   }
 }

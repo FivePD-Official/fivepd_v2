@@ -111,6 +111,7 @@
   "UI.ERROR.FIELD.MIN": "The minimum value is {{value}}.",
   "UI.ERROR.FIELD.NAME_TAKEN": "Name taken.",
   "UI.ERROR.FIELD.NO_CORE_ATTRIBUTE_NAME": "This name is reserved for a core attribute.",
+  "UI.ERROR.FIELD.POSITION_COMPONENTS.REQUIRED": "All position components are required.",
   "UI.ERROR.FIELD.REQUIRED": "Required.",
   "UI.ERROR.RANK.CREATE.TITLE": "Couldn't create rank",
   "UI.ERROR.RANK.EDIT.TITLE": "Couldn't edit rank",

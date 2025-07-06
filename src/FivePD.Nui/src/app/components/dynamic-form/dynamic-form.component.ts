@@ -1,17 +1,9 @@
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  Type
-} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import {
   CheckboxField,
-  DateField, FormChangeEvent,
+  PositionField,
+  DateField,
+  FormChangeEvent,
   FormInputBase,
   FormSubmitEvent,
   MultiSelectField,
@@ -35,6 +27,7 @@ import { DateFieldComponent } from "../form-inputs/date-field/date-field.compone
 import { SingleSelectFieldComponent } from "../form-inputs/single-select-field/single-select-field.component";
 import { MultiSelectFieldComponent } from "../form-inputs/multi-select-field/multi-select-field.component";
 import { CheckboxFieldComponent } from "../form-inputs/checkbox-field/checkbox-field.component";
+import { PositionFieldComponent } from "../form-inputs/position-field/position-field.component";
 
 type RemoveFocusTrap = () => void;
 
@@ -42,7 +35,7 @@ type RemoveFocusTrap = () => void;
     selector: 'app-dynamic-form',
     templateUrl: './dynamic-form.component.html',
     styleUrls: ['./dynamic-form.component.sass'],
-    imports: [ReactiveFormsModule, NgClass, NgStyle, ButtonComponent, TranslatePipe, TextFieldComponent, NumberFieldComponent, TextareaFieldComponent, DateFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, CheckboxFieldComponent]
+  imports: [ReactiveFormsModule, NgClass, NgStyle, ButtonComponent, TranslatePipe, TextFieldComponent, NumberFieldComponent, TextareaFieldComponent, DateFieldComponent, SingleSelectFieldComponent, MultiSelectFieldComponent, CheckboxFieldComponent, PositionFieldComponent]
 })
 export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 
@@ -284,4 +277,5 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy, After
   protected readonly DateField = DateField;
   protected readonly MultiSelectField = MultiSelectField;
   protected readonly CheckboxField = CheckboxField;
+  protected readonly PositionField = PositionField;
 }

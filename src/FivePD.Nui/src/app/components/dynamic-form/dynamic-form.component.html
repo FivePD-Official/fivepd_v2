@@ -36,6 +36,8 @@
                                       class="w-full block [&:not(:last-child)]:mb-5"/>
             } @else if (instanceof(field, CheckboxField)) {
               <app-checkbox-field [field]="field" [form]="form" class="w-full block [&:not(:last-child)]:mb-5"/>
+            } @else if (instanceof(field, PositionField)) {
+              <app-position-field [field]="field" [form]="form" />
             }
           }
         </div>
