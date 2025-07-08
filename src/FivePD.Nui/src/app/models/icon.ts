@@ -33,4 +33,5 @@
   MapPin = 'MapPin',
   Briefcase = 'Briefcase',
   Star = 'Star',
+  Lifebuoy = 'Lifebuoy',
 }

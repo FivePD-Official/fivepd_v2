@@ -573,6 +573,13 @@ internal readonly record struct Events
         public const string Speak = "fivepd:audio:speak";
     }
 
+    public readonly record struct AssistanceService
+    {
+        public const string GetTypeConfig = "fivepd:assistanceService:getTypeConfig";
+
+        public const string GetTypeConfigPage = "fivepd:assistanceService:getTypeConfigPage";
+    }
+
     public readonly record struct Cfx
     {
         // void AddAmmoToPed(int ped,uint weaponHash,int ammo);

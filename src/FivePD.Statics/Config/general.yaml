@@ -187,67 +187,6 @@ ProgressionSystem:
     Death: -50  # TODO: not implemented yet
     VehicleImpounded: 50  # TODO: not implemented yet
 
-AssistanceServices:
-  SpawnType: AUTO # AUTO = automatic spawn locations, MANUAL = should specify SpawnLocations
-  # ----------
-  AirAmbulance:
-    Enabled: true
-    ChanceToRevive: 100
-    SpawnLocations:
-      - X: 0
-        Y: -1.5
-        Z: 1
-  # ----------
-  Ambulance:
-    Enabled: true
-    ChanceToRevive: 50
-    SpawnLocations:
-      - X: 0
-        Y: -1.5
-        Z: 1
-  # ----------
-  AnimalControl:
-    Enabled: true
-    SpawnLocations:
-      - X: 0
-        Y: -1.5
-        Z: 1
-  # ----------
-  Coroner:
-    Enabled: true
-    SpawnLocations:
-      - X: 0
-        Y: -1.5
-        Z: 1
-  # ----------
-  Mechanic:
-    Enabled: true
-    SpawnLocations:
-      - X: 0
-        Y: -1.5
-        Z: 1
-  # ----------
-  PrisonTransport:
-    Enabled: true
-    SpawnLocations:
-      - X: 0
-        Y: -1.5
-        Z: 1
-  # ----------
-  RideShare:
-    Enabled: true
-    SpawnLocations:
-      - X: 0
-        Y: -1.5
-        Z: 1
-  # ----------
-  TowTruck:
-    Enabled: true
-    SpawnLocations:
-      - X: 0
-        Y: -1.5
-        Z: 1
-
 Messages:
   CanSend: ALL # ALL = everyone can send messages, ADMIN = only admins can send messages
 

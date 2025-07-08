@@ -310,6 +310,8 @@
   "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.DELETE": "Weapon has been successfully deleted.",
   "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.EDIT": "Weapon has been successfully edited.",
   "UI.LABEL.LOADOUT.PLURAL": "Loadouts",
+  "UI.LABEL.ASSISTANCE_SERVICE.SINGULAR": "Assistance service",
+  "UI.LABEL.ASSISTANCE_SERVICE.PLURAL": "Assistance services",
   "UI.LABEL.LOADOUT.SINGULAR": "Loadout",
   "UI.LABEL.LOCATION.CREATE.DESCRIPTION": "The components X, Y, and Z are prepopulated with your present coordinates.",
   "UI.LABEL.LOCATION.CREATE.TITLE": "Create location",

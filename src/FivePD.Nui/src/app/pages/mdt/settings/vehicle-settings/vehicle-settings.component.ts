@@ -190,7 +190,7 @@ export class VehicleSettingsComponent {
   readonly ambulanceVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
-    this.createActionsColumn(createBaseFields, () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value)),
+    this.createActionsColumn(createBaseFields, () => this.ambulanceVehicleConfigCollation$.next(this.ambulanceVehicleConfigCollation$.value)),
   ];
 
   readonly towTruckVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});

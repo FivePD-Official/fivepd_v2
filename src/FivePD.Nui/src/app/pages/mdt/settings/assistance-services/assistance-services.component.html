@@ -1,0 +1,9 @@
+<app-container [rows]="1" [columns]="1">
+
+  <app-grid [title]="'??????' | translate"
+            [data]="page$ | async"
+            [columns]="columns"
+            (onCollationChange)="collation$.next($event)"
+            [rowLinkResolver]="rowLinkResolver" />
+
+</app-container>

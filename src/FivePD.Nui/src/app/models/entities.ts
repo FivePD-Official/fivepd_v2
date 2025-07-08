@@ -1,5 +1,5 @@
-import {VariableDataAttribute} from './loose-data';
-import {FGender, FPriority, FIncidentType, PedLicenseType} from "@enums";
+import { VariableDataAttribute } from './loose-data';
+import { FGender, FPriority, FIncidentType, PedLicenseType } from "@enums";
 
 export type Id = string | number;
 
@@ -305,4 +305,13 @@ export interface SpeedZone {
 export interface SpeedZoneWithPlayerDTO extends WithStringId {
   SpeedZone: SpeedZone;
   PlayerName: string;
+}
+
+export interface AssistanceServiceTypeConfig extends WithId {
+  TypeName: string;
+  AssemblyName: string;
+  Active: boolean;
+  Enabled: boolean;
+  SpawnType: 'AUTO' | 'MANUAL' | 'STATION';
+  ManualSpawnLocations: string[];
 }
