@@ -1,1 +1,89 @@
-<p>assistance-service-type-config works!</p>
+<app-page-header [title]="'UI.LABEL.ASSISTANCE_SERVICE.TITLE.SINGULAR' | translate"/>
+
+<app-container [columns]="1" [rows]="2">
+
+  @if (assistanceServiceTypeConfig$ | async; as assistanceServiceTypeConfig) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit(assistanceServiceTypeConfig)" class="flex flex-col gap-4">
+      <p class="common-title">{{ 'UI.LABEL.DETAILS' | translate }}</p>
+      <div class="flex flex-col gap-4 max-w-max">
+        <div class="grid grid-rows-1 grid-cols-2 gap-8">
+          <p class="font-medium text-zinc-400">{{ 'UI.LABEL.NAME.SINGULAR' | translate }}</p>
+          <p class="text-zinc-200">{{ assistanceServiceTypeConfig.TypeName }}</p>
+        </div>
+        <div class="grid grid-rows-1 grid-cols-2 gap-8">
+          <p class="text-zinc-400">{{ 'UI.LABEL.ASSEMBLY_NAME.SINGULAR' | translate }}</p>
+          <p class="text-zinc-200">{{ assistanceServiceTypeConfig.AssemblyName }}</p>
+        </div>
+        <div class="grid grid-rows-1 grid-cols-2 gap-8">
+          <p class="text-zinc-400">{{ 'UI.LABEL.ACTIVE' | translate }}</p>
+          <p
+            class="text-zinc-200">{{ (assistanceServiceTypeConfig.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO') | translate }}</p>
+        </div>
+        <div class="grid grid-rows-1 grid-cols-2 gap-8">
+          <p class="text-zinc-400">{{ 'UI.LABEL.ENABLED' | translate }}</p>
+          <div class="flex flex-row justify-start">
+            <app-checkbox-field [form]="form" [field]="enabledCheckboxField"/>
+          </div>
+        </div>
+        <div class="grid grid-rows-1 grid-cols-2 gap-8">
+          <p class="text-zinc-400">{{ 'UI.LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TITLE' | translate }}</p>
+          <div class="flex flex-col gap-4">
+            @for (type of spawnTypes; track type) {
+              <div class="flex flex-row gap-2 group relative">
+                <input type="radio" [id]="type.value" [formControl]="spawnType" [value]="type.value"
+                       class="absolute w-full h-full inset-0 opacity-0 z-10 cursor-pointer">
+                <div
+                  class="relative h-6 w-6 border border-zinc-600 group-hover:border-zinc-400 rounded-full">
+                  <div
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-2 w-2 bg-zinc-300 rounded-full pointer-events-none"
+                    [ngClass]="{
+                'opacity-0': spawnType.value !== type.value,
+                'opacity-100': spawnType.value === type.value
+                }">
+                  </div>
+                </div>
+                <label class="text-zinc-200" [for]="type.value">{{ type.label | translate }}</label>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <p class="text-zinc-400">
+        {{ activeSpawnTypeHelpLabel | translate }}
+      </p>
+
+      @if (spawnType.value == AssistanceServiceTypeConfigSpawnTypes.MANUAL) {
+        <p class="font-medium text-zinc-400">{{ 'Spawn positions' | translate }}</p>
+        <div class="flex flex-row items-center gap-2">
+          <app-button label="Add position manually"
+                      variant="secondary"
+                      type="button"
+                      (onClick)="onAddPositionManually()"/>
+          <app-button label="Add my current position"
+                      variant="secondary"
+                      type="button"
+                      (onClick)="onAddCurrentPosition()"/>
+        </div>
+        <div class="flex flex-row flex-wrap items-center gap-2">
+          @for (position of manualSpawnLocations.value; track position) {
+            <div
+              class="flex flex-row items-center justify-center gap-4 bg-zinc-800 rounded-md text-zinc-400 px-2 h-[40px] tabular-nums">
+              X: {{ position.X }} | Y: {{ position.Y }} | Z: {{ position.Z }}
+              <button type="button" class="flex flex-row items-center justify-center group h-[40px] w-[30px]" (click)="onRemoveManualSpawnPosition($index)">
+                <div app-icon name="XMark" className="h-[20px] text-zinc-400 group-hover:text-white"></div>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="w-full flex flex-row items-center justify-end mt-6 gap-4">
+        <app-button type="submit"
+                    [label]="'UI.ACTION.SAVE' | translate"
+                    [disabled]="form.invalid || form.pristine"/>
+      </div>
+    </form>
+  }
+
+</app-container>

@@ -69,7 +69,7 @@ export class SettingsComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.ASSISTANCE_SERVICE.PLURAL',
+      title: 'UI.LABEL.ASSISTANCE_SERVICE.TITLE.PLURAL',
       path: () => '/mdt/settings/assistance-services',
       icon: IconType.Lifebuoy,
       show: () => this.userService.userHasRole(UserRole.Admin),

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AssistanceServiceTypeConfig, Collation, Id } from '@models';
+import { ActionResponse, AssistanceServiceTypeConfig, Collation, Id } from '@models';
 import { BaseApiService } from "@services/api/base-api/base-api.service";
 
 @Injectable({
@@ -15,5 +15,9 @@ export class AssistanceServiceService extends BaseApiService<AssistanceServiceTy
 
   getPage(collation?: Collation) {
     return this._getPage('getTypeConfigPage', collation);
+  }
+
+  edit(request: object) {
+    return this.httpClient.post<ActionResponse>(this.createUrl('editTypeConfig'), request);
   }
 }

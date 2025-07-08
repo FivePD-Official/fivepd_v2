@@ -307,11 +307,17 @@ export interface SpeedZoneWithPlayerDTO extends WithStringId {
   PlayerName: string;
 }
 
+export const AssistanceServiceTypeConfigSpawnTypes = {
+  AUTO: 'AUTO',
+  MANUAL: 'MANUAL',
+  STATION: 'STATION',
+};
+
 export interface AssistanceServiceTypeConfig extends WithId {
   TypeName: string;
   AssemblyName: string;
   Active: boolean;
   Enabled: boolean;
-  SpawnType: 'AUTO' | 'MANUAL' | 'STATION';
+  SpawnType: keyof typeof AssistanceServiceTypeConfigSpawnTypes;
   ManualSpawnLocations: string[];
 }

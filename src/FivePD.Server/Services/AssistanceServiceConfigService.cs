@@ -140,4 +140,24 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             .Paginate(request.Page, filters);
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
+    
+    [UIEvent(Events.AssistanceService.EditTypeConfig)]
+    private void EditTypeConfigUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<EditAssistanceServiceTypeConfig>(serializedRequest);
+        var assistanceServiceTypeConfig = this._databaseContext.AssistanceServiceTypeConfigs.FirstOrDefault(x => x.Id == request.Id);
+        if (assistanceServiceTypeConfig is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+        
+        assistanceServiceTypeConfig.Enabled = request.Enabled;
+        assistanceServiceTypeConfig.SpawnType = request.SpawnType;
+        assistanceServiceTypeConfig.ManualSpawnLocations = request.ManualSpawnLocations;
+        
+        this._databaseContext.SaveChanges();
+        
+        this._networkEventService.TriggerEventSerialized(player, guid, assistanceServiceTypeConfig);
+    }
 }
