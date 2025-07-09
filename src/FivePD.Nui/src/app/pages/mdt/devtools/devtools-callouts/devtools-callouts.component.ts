@@ -19,7 +19,7 @@ export class DevtoolsCalloutsComponent implements OnInit {
       accessorKey: 'TypeName',
     }),
     new Column<CalloutTypeDTO>({
-      header: 'UI.LABEL.ASSEMBLY.NAME.SINGULAR',
+      header: 'UI.LABEL.ASSEMBLY_NAME.SINGULAR',
       accessorKey: 'AssemblyName',
     }),
     new Column<CalloutTypeDTO>({

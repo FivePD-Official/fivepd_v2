@@ -774,7 +774,7 @@ namespace FivePD.Server.Migrations
             modelBuilder.Entity("FivePD.Server.Models.AssistanceServiceStationTypeConfig", b =>
                 {
                     b.HasOne("FivePD.Server.Models.AssistanceServiceStation", null)
-                        .WithMany("ServiceConfigs")
+                        .WithMany("TypeConfigs")
                         .HasForeignKey("AssistanceServiceStationId");
 
                     b.HasOne("FivePD.Server.Models.AssistanceServiceTypeConfig", "TypeConfig")

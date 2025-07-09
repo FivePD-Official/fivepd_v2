@@ -1,8 +1,16 @@
 import { Injectable } from '@angular/core';
-import { ActionResponse, AssistanceServiceStation, AssistanceServiceTypeConfig, Collation, Id } from '@models';
+import {
+  ActionResponse,
+  AssistanceServiceStation,
+  AssistanceServiceStationTypeConfig,
+  AssistanceServiceTypeConfig,
+  Collation,
+  Id, Page
+} from '@models';
 import { BaseApiService } from "@services/api/base-api/base-api.service";
 import { CrudApiService } from "@services/api/crud-api/crud-api.service";
 import { Observable } from 'rxjs';
+import { parseId } from "../../helpers/parse-id";
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +35,26 @@ export class AssistanceServiceStationService extends CrudApiService<AssistanceSe
   }
 
   edit(request: object) {
-    return this._edit('edit', request);
+    return this._edit('NOT IMPLEMENTED', request);
+  }
+
+  getTypeConfigsPage(collation?: Collation) {
+    return this._getPage<Page<AssistanceServiceStationTypeConfig>>('getStationTypeConfigsPage', collation);
+  }
+
+  addTypeConfig(request: object) {
+    return this.httpClient.post<ActionResponse>(this.createUrl('addStationTypeConfig'), request);
+  }
+
+  editTypeConfig(request: object) {
+    return this.httpClient.post<ActionResponse>(this.createUrl('editStationTypeConfig'), request);
+  }
+
+  deleteTypeConfig(id: Id) {
+    return this._delete('deleteStationTypeConfig', id);
+  }
+
+  getAvailableStationTypeConfigs(id: Id) {
+    return this.httpClient.post<AssistanceServiceTypeConfig[]>(this.createUrl('getAvailableStationTypeConfigs'), {Id: parseId(id)});
   }
 }

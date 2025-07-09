@@ -325,4 +325,11 @@ export interface AssistanceServiceTypeConfig extends WithId {
 export interface AssistanceServiceStation extends WithId {
   Name: string;
   Position: Vector3;
+  TypeConfigs: AssistanceServiceStationTypeConfig[];
+}
+
+export interface AssistanceServiceStationTypeConfig extends WithId {
+  TypeConfig: AssistanceServiceTypeConfig;
+  Capacity: number;
+  ActiveCapacity: number;
 }

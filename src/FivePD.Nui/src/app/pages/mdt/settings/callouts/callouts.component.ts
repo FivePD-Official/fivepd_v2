@@ -31,7 +31,7 @@ export class CalloutsComponent {
       accessorKey: 'TypeName',
     }),
     new Column({
-      header: 'UI.LABEL.ASSEMBLY.NAME.SINGULAR',
+      header: 'UI.LABEL.ASSEMBLY_NAME.SINGULAR',
       accessorKey: 'AssemblyName',
     }),
     new Column({

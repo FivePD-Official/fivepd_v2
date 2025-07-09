@@ -15,5 +15,5 @@ public class AssistanceServiceStation
 
     public Vector3 Position { get; set; }
 
-    public IList<AssistanceServiceStationTypeConfig> ServiceConfigs { get; set; }
+    public IList<AssistanceServiceStationTypeConfig> TypeConfigs { get; set; }
 }

@@ -54,7 +54,7 @@ export class AssistanceServicesComponent {
   readonly typeConfigsColumn: Column<AssistanceServiceTypeConfig>[] = [
     new Column({
       accessorKey: 'TypeName',
-      header: 'UI.LABEL.TYPE.NAME.SINGULAR',
+      header: 'UI.LABEL.TYPE_NAME.SINGULAR',
       show: () => true,
       filter: {
         label: 'UI.LABEL.SEARCH_BY.TYPE'
@@ -62,7 +62,7 @@ export class AssistanceServicesComponent {
     }),
     new Column({
       accessorKey: 'AssemblyName',
-      header: 'UI.LABEL.ASSEMBLY.NAME.SINGULAR',
+      header: 'UI.LABEL.ASSEMBLY_NAME.SINGULAR',
       show: () => true,
       filter: {
         label: 'UI.LABEL.SEARCH_BY.ASSEMBLY'

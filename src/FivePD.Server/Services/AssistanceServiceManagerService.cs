@@ -157,15 +157,15 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             }
             else if (assistanceServiceVehicleConfig.SpawnTypeStation())
             {
-                var stations = this._databaseContext.AssistanceServiceStationConfigs
-                    .Include(x => x.ServiceConfigs)
+                var stations = this._databaseContext.AssistanceServiceStations
+                    .Include(x => x.TypeConfigs)
                     .ThenInclude(x => x.TypeConfig)
                     .ToList();
                 var orderedStations = stations.OrderBy(s => Vector3.Distance(s.Position, requestedBy.GetUnderlyingPlayer().Character.Position));
 
                 foreach (var station in orderedStations)
                 {
-                    var serviceConfig = station.ServiceConfigs.FirstOrDefault(c =>
+                    var serviceConfig = station.TypeConfigs.FirstOrDefault(c =>
                         c.TypeConfig.TypeName == typeName &&
                         c.TypeConfig.AssemblyName == assemblyName &&
                         c.TypeConfig.Active &&
@@ -262,7 +262,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             return;
         }
 
-        var assistanceServiceVehicleConfig = this._databaseContext.AssistanceServiceStationVehicleConfigs
+        var assistanceServiceVehicleConfig = this._databaseContext.AssistanceServiceStationTypeConfigs
             .FirstOrDefault(x => x.Id == activeService.StationTypeConfig.Id);
         if (assistanceServiceVehicleConfig is null)
         {

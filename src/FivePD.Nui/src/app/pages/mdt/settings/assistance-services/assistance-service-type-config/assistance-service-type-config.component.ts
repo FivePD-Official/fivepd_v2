@@ -23,8 +23,6 @@ import { ButtonComponent } from "../../../../../components/button/button.compone
 import { DevtoolsService } from "@services/devtools/devtools.service";
 import { IconComponent } from "../../../../../components/icon/icon.component";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
-import { mapAttributesToFields } from "@helpers";
-import { CoreSetId } from "@enums";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { CustomValidators } from "../../../../../helpers/validators";
 

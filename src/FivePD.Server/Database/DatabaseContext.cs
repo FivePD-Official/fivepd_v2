@@ -171,12 +171,12 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Gets or sets the table containing the ped histories.
     /// </summary>
-    public DbSet<AssistanceServiceStation> AssistanceServiceStationConfigs { get; set; }
+    public DbSet<AssistanceServiceStation> AssistanceServiceStations { get; set; }
 
     /// <summary>
     /// Gets or sets the table containing the ped histories.
     /// </summary>
-    public DbSet<AssistanceServiceStationTypeConfig> AssistanceServiceStationVehicleConfigs { get; set; }
+    public DbSet<AssistanceServiceStationTypeConfig> AssistanceServiceStationTypeConfigs { get; set; }
 
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

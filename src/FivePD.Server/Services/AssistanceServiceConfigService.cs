@@ -46,7 +46,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             config.Active = false;
         }
 
-        var stationVehicleConfigs = this._databaseContext.AssistanceServiceStationVehicleConfigs.ToList();
+        var stationVehicleConfigs = this._databaseContext.AssistanceServiceStationTypeConfigs.ToList();
         foreach (var config in stationVehicleConfigs)
         {
             config.ActiveCapacity = 0;
@@ -165,7 +165,9 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
     private void GetStationUI(Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var assistanceServiceStation = this._databaseContext.AssistanceServiceStationConfigs.FirstOrDefault(x => x.Id == request.Id);
+        var assistanceServiceStation = this._databaseContext.AssistanceServiceStations
+            .Include(x => x.TypeConfigs)
+            .FirstOrDefault(x => x.Id == request.Id);
         this._networkEventService.TriggerEventSerialized(player, guid, assistanceServiceStation);
     }
 
@@ -174,7 +176,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
     {
         var request = JsonConvert.DeserializeObject<AssistanceServiceGetStationPageRequest>(serializedRequest);
         var filters = new Filters<AssistanceServiceStation>();
-        var page = this._databaseContext.AssistanceServiceStationConfigs
+        var page = this._databaseContext.AssistanceServiceStations
             .AsNoTracking()
             .Paginate(request.Page, filters);
         this._networkEventService.TriggerEventSerialized(player, guid, page);
@@ -184,7 +186,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
     private void CreateStationUI(Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<CreateAssistanceServiceStationRequest>(serializedRequest);
-        var assistanceServiceStation = this._databaseContext.AssistanceServiceStationConfigs.FirstOrDefault(x => x.Name == request.Name);
+        var assistanceServiceStation = this._databaseContext.AssistanceServiceStations.FirstOrDefault(x => x.Name == request.Name);
         if (assistanceServiceStation is not null)
         {
             this._networkEventService.TriggerEventWithResponse(
@@ -196,7 +198,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             return;
         }
 
-        this._databaseContext.AssistanceServiceStationConfigs.Add(new AssistanceServiceStation
+        this._databaseContext.AssistanceServiceStations.Add(new AssistanceServiceStation
         {
             Name = request.Name,
             Position = request.Position,
@@ -215,14 +217,14 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
     private void DeleteStationUI(Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var assistanceServiceStation = this._databaseContext.AssistanceServiceStationConfigs.FirstOrDefault(x => x.Id == request.Id);
+        var assistanceServiceStation = this._databaseContext.AssistanceServiceStations.FirstOrDefault(x => x.Id == request.Id);
         if (assistanceServiceStation is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
         
-        this._databaseContext.AssistanceServiceStationConfigs.Remove(assistanceServiceStation);
+        this._databaseContext.AssistanceServiceStations.Remove(assistanceServiceStation);
         this._databaseContext.SaveChanges();
 
         this._networkEventService.TriggerEventWithResponse(
@@ -232,5 +234,95 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             "UI.LABEL.SUCCESS.DELETE",
             "UI.LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.DELETE");
     }
+    
+    [UIEvent(Events.AssistanceService.GetStationTypeConfigsPage)]
+    private void GetStationTypeConfigsPageUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<AssistanceServiceGetStationTypeConfigsPageRequest>(serializedRequest);
+        var filters = new Filters<AssistanceServiceStationTypeConfig>();
+        var page = this._databaseContext.AssistanceServiceStationTypeConfigs
+            .AsNoTracking()
+            .Include(x => x.TypeConfig)
+            .Paginate(request.Page, filters);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
+    }
+    
+    [UIEvent(Events.AssistanceService.AddStationTypeConfig)]
+    private void AddStationTypeConfigUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<AddAssistanceServiceStationTypeConfigRequest>(serializedRequest);
+        var assistanceServiceStation = this._databaseContext.AssistanceServiceStations.FirstOrDefault(x => x.Id == request.StationId);
+        if (assistanceServiceStation is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+        
+        var assistanceServiceTypeConfig = this._databaseContext.AssistanceServiceTypeConfigs.FirstOrDefault(x => x.Id == request.TypeConfigId);
+        if (assistanceServiceTypeConfig is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
 
+        assistanceServiceStation.TypeConfigs.Add(new AssistanceServiceStationTypeConfig
+        {
+            TypeConfig = assistanceServiceTypeConfig,
+            Capacity = request.Capacity,
+            ActiveCapacity = 0
+        });
+        this._databaseContext.SaveChanges();
+
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "UI.LABEL.SUCCESS.ADD",
+            "UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
+    }
+    
+    [UIEvent(Events.AssistanceService.DeleteStationTypeConfig)]
+    private void DeleteStationTypeConfigUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
+        var assistanceServiceStationTypeConfig = this._databaseContext.AssistanceServiceStationTypeConfigs.FirstOrDefault(x => x.Id == request.Id);
+        if (assistanceServiceStationTypeConfig is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+        
+        this._databaseContext.AssistanceServiceStationTypeConfigs.Remove(assistanceServiceStationTypeConfig);
+        this._databaseContext.SaveChanges();
+
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "UI.LABEL.SUCCESS.DELETE",
+            "UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.DELETE");
+    }
+    
+    [UIEvent(Events.AssistanceService.GetAvailableStationTypeConfigs)]
+    private void GetAvailableStationTypeConfigsUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
+        var assistanceServiceStation = this._databaseContext.AssistanceServiceStations
+            .Include(x => x.TypeConfigs)
+            .ThenInclude(assistanceServiceStationTypeConfig => assistanceServiceStationTypeConfig.TypeConfig)
+            .FirstOrDefault(x => x.Id == request.Id);
+        if (assistanceServiceStation is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        var typeConfigs = this._databaseContext.AssistanceServiceTypeConfigs
+            .AsNoTracking()
+            .Where(x => x.Active && x.Enabled && x.SpawnType == "STATION")
+            .ToList();
+        
+        var filteredTypeConfigs = typeConfigs.Where(x => assistanceServiceStation.TypeConfigs.All(y => y.TypeConfig.Id != x.Id)).ToList();
+        this._networkEventService.TriggerEventSerialized(player, guid, filteredTypeConfigs);
+    }
 }
