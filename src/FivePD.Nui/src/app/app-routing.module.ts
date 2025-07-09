@@ -111,6 +111,10 @@ const mdtRoutes: Routes = [
             loadComponent: () => import('./pages/mdt/settings/assistance-services/assistance-service-type-config/assistance-service-type-config.component').then(m => m.AssistanceServiceTypeConfigComponent),
           },
           {
+            path: 'stations/:id',
+            loadComponent: () => import('./pages/mdt/settings/assistance-services/assistance-service-station/assistance-service-station.component').then(m => m.AssistanceServiceStationComponent),
+          },
+          {
             path: '',
             loadComponent: () => import('./pages/mdt/settings/assistance-services/assistance-services.component').then(m => m.AssistanceServicesComponent),
           }

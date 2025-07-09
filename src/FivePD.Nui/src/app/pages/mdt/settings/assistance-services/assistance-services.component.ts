@@ -3,10 +3,29 @@ import { AsyncPipe } from "@angular/common";
 import { ContainerComponent } from "../../../../components/container/container.component";
 import { GridComponent } from "../../../../components/grid/grid.component";
 import { TranslatePipe } from "../../../../pipes/translate.pipe";
-import { BehaviorSubject, switchMap } from "rxjs";
-import { AssistanceServiceTypeConfig, Collation, Column } from "@models";
-import { AssistanceServiceService } from "@services/assistance-service/assistance-service.service";
+import { BehaviorSubject, filter, switchMap } from "rxjs";
+import {
+  AssistanceServiceStation,
+  AssistanceServiceTypeConfig,
+  Button,
+  Collation,
+  Column,
+  PositionField,
+  TextField
+} from "@models";
 import { LocalizationService } from "@services/localization/localization.service";
+import {
+  AssistanceServiceTypeConfigService
+} from "@services/assistance-service-type-config/assistance-service-type-config.service";
+import {
+  AssistanceServiceStationService
+} from "@services/assistance-service-station/assistance-service-station.service";
+import { ModalService } from "@services/modals/modal/modal.service";
+import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
+import { CustomValidators } from "../../../../helpers/validators";
+import { ModalComponent } from "../../../../components/modal/modal.component";
+import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-assistance-services',
@@ -20,28 +39,33 @@ import { LocalizationService } from "@services/localization/localization.service
 })
 export class AssistanceServicesComponent {
 
-  private readonly _assistanceServiceService = inject(AssistanceServiceService);
+  private readonly _assistanceServiceTypeConfigService = inject(AssistanceServiceTypeConfigService);
+  private readonly _assistanceServiceStationService = inject(AssistanceServiceStationService);
   private readonly _localizationService = inject(LocalizationService);
+  private readonly _modalService = inject(ModalService);
+  private readonly _modalFormService = inject(ModalFormService);
+  private readonly _modalConfirmService = inject(ModalConfirmService);
+  private readonly _router = inject(Router);
 
-  readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
-  readonly page$ = this.collation$.pipe(
-    switchMap(collation => this._assistanceServiceService.getPage(collation))
+  readonly typeConfigsCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
+  readonly typeConfigsPage$ = this.typeConfigsCollation$.pipe(
+    switchMap(collation => this._assistanceServiceTypeConfigService.getPage(collation))
   );
-  readonly columns: Column<AssistanceServiceTypeConfig>[] = [
+  readonly typeConfigsColumn: Column<AssistanceServiceTypeConfig>[] = [
     new Column({
       accessorKey: 'TypeName',
-      header: 'Type name',
+      header: 'UI.LABEL.TYPE.NAME.SINGULAR',
       show: () => true,
       filter: {
-        label: 'Search by type name'
+        label: 'UI.LABEL.SEARCH_BY.TYPE'
       }
     }),
     new Column({
       accessorKey: 'AssemblyName',
-      header: 'Assembly name',
+      header: 'UI.LABEL.ASSEMBLY.NAME.SINGULAR',
       show: () => true,
       filter: {
-        label: 'Search by assembly name'
+        label: 'UI.LABEL.SEARCH_BY.ASSEMBLY'
       }
     }),
     new Column({
@@ -56,7 +80,85 @@ export class AssistanceServicesComponent {
     }),
   ];
 
-  rowLinkResolver(item: AssistanceServiceTypeConfig): string {
+  readonly stationsCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
+  readonly stationsPage$ = this.stationsCollation$.pipe(
+    switchMap(collation => this._assistanceServiceStationService.getPage(collation))
+  );
+  readonly stationsColumn: Column<AssistanceServiceStation>[] = [
+    new Column({
+      accessorKey: 'Name',
+      header: 'UI.LABEL.NAME.SINGULAR',
+      show: () => true,
+    }),
+    new Column({
+      header: 'UI.LABEL.ACTION.PLURAL',
+      show: () => true,
+      actions: [
+        {
+          type: 'button',
+          label: this._localizationService.translate('UI.ACTION.EDIT'),
+          onClick: station => this._router.navigate(['mdt', 'settings', 'assistance-services', 'stations', station.Id]),
+        },
+        {
+          type: 'button',
+          label: this._localizationService.translate('UI.ACTION.DELETE'),
+          onClick: station => {
+            this._modalConfirmService.open({
+              title: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.DELETE.TITLE',
+              description: this._localizationService.translate('UI.LABEL.ASSISTANCE_SERVICE.STATION.DELETE.DESCRIPTION', {station: `<b>${station.Name}</b>`}),
+              buttons: {
+                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+              },
+            }).result
+              .pipe(
+                filter(res => res.success),
+                switchMap(() => this._assistanceServiceStationService.delete(station.Id)),
+                this._modalService.handleResponse()
+              ).subscribe(() => this.stationsCollation$.next(this.stationsCollation$.value))
+          }
+        },
+      ]
+    })
+  ];
+  readonly stationsButtons: Button[] = [
+    {
+      type: 'button',
+      label: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.CREATE.TITLE',
+      show: () => true,
+      variant: 'secondary',
+      disabled: () => false,
+      onClick: () => this._modalFormService.open({
+        title: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.CREATE.TITLE',
+        buttons: {
+          submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+        },
+        fields: () => [
+          new TextField({
+            key: 'name',
+            label: 'UI.LABEL.NAME.SINGULAR',
+            required: true,
+          }),
+          new PositionField({
+            key: 'position',
+            label: 'UI.LABEL.POSITION.SINGULAR',
+            required: true,
+            validators: [CustomValidators.positionComponentsRequired()],
+            options: {
+              showAddCurrentPositionButton: true,
+            }
+          })
+        ]
+      }).result
+        .pipe(
+          filter(res => res.success),
+          switchMap(res => this._assistanceServiceStationService.create(res.value)),
+          this._modalService.handleResponse(),
+        )
+        .subscribe(() => this.stationsCollation$.next(this.stationsCollation$.value))
+    }
+  ];
+
+  typeConfigsRowLinkResolver(item: AssistanceServiceTypeConfig): string {
     return `/mdt/settings/assistance-services/type-configs/${item.Id}`;
   }
 }

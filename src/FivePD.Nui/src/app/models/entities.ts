@@ -321,3 +321,8 @@ export interface AssistanceServiceTypeConfig extends WithId {
   SpawnType: keyof typeof AssistanceServiceTypeConfigSpawnTypes;
   ManualSpawnLocations: string[];
 }
+
+export interface AssistanceServiceStation extends WithId {
+  Name: string;
+  Position: Vector3;
+}

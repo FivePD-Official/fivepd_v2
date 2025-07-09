@@ -1,6 +1,6 @@
 <app-page-header [title]="'UI.LABEL.ASSISTANCE_SERVICE.TITLE.SINGULAR' | translate"/>
 
-<app-container [columns]="1" [rows]="2">
+<app-container [columns]="1" [rows]="1">
 
   @if (assistanceServiceTypeConfig$ | async; as assistanceServiceTypeConfig) {
     <form [formGroup]="form" (ngSubmit)="onSubmit(assistanceServiceTypeConfig)" class="flex flex-col gap-4">

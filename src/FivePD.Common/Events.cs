@@ -580,6 +580,14 @@ internal readonly record struct Events
         public const string GetTypeConfigPage = "fivepd:assistanceService:getTypeConfigPage";
 
         public const string EditTypeConfig = "fivepd:assistanceService:editTypeConfig";
+        
+        public const string GetStation = "fivepd:assistanceService:getStation";
+
+        public const string GetStationPage = "fivepd:assistanceService:getStationPage";
+
+        public const string CreateStation = "fivepd:assistanceService:createStation";
+
+        public const string DeleteStation = "fivepd:assistanceService:deleteStation";
     }
 
     public readonly record struct Cfx

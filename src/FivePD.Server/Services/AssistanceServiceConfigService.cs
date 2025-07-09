@@ -115,7 +115,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
         });
         this._registrationOrder.Add(type);
     }
-    
+
     [UIEvent(Events.AssistanceService.GetTypeConfig)]
     private void GetTypeConfigUI(Player player, string guid, string serializedRequest)
     {
@@ -140,7 +140,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             .Paginate(request.Page, filters);
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
-    
+
     [UIEvent(Events.AssistanceService.EditTypeConfig)]
     private void EditTypeConfigUI(Player player, string guid, string serializedRequest)
     {
@@ -151,13 +151,86 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
-        
+
         assistanceServiceTypeConfig.Enabled = request.Enabled;
         assistanceServiceTypeConfig.SpawnType = request.SpawnType;
         assistanceServiceTypeConfig.ManualSpawnLocations = request.ManualSpawnLocations;
-        
+
         this._databaseContext.SaveChanges();
-        
+
         this._networkEventService.TriggerEventSerialized(player, guid, assistanceServiceTypeConfig);
     }
+
+    [UIEvent(Events.AssistanceService.GetStation)]
+    private void GetStationUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
+        var assistanceServiceStation = this._databaseContext.AssistanceServiceStationConfigs.FirstOrDefault(x => x.Id == request.Id);
+        this._networkEventService.TriggerEventSerialized(player, guid, assistanceServiceStation);
+    }
+
+    [UIEvent(Events.AssistanceService.GetStationPage)]
+    private void GetStationPageUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<AssistanceServiceGetStationPageRequest>(serializedRequest);
+        var filters = new Filters<AssistanceServiceStation>();
+        var page = this._databaseContext.AssistanceServiceStationConfigs
+            .AsNoTracking()
+            .Paginate(request.Page, filters);
+        this._networkEventService.TriggerEventSerialized(player, guid, page);
+    }
+
+    [UIEvent(Events.AssistanceService.CreateStation)]
+    private void CreateStationUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<CreateAssistanceServiceStationRequest>(serializedRequest);
+        var assistanceServiceStation = this._databaseContext.AssistanceServiceStationConfigs.FirstOrDefault(x => x.Name == request.Name);
+        if (assistanceServiceStation is not null)
+        {
+            this._networkEventService.TriggerEventWithResponse(
+                player,
+                guid,
+                false,
+                "UI.ERROR.ASSISTANCE_SERVICE.STATION.CREATE.TITLE",
+                "UI.ERROR.ASSISTANCE_SERVICE.STATION.NAME_CONFLICT.DESCRIPTION");
+            return;
+        }
+
+        this._databaseContext.AssistanceServiceStationConfigs.Add(new AssistanceServiceStation
+        {
+            Name = request.Name,
+            Position = request.Position,
+        });
+        this._databaseContext.SaveChanges();
+
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "UI.LABEL.SUCCESS.CREATE",
+            "UI.LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.CREATE");
+    }
+    
+    [UIEvent(Events.AssistanceService.DeleteStation)]
+    private void DeleteStationUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
+        var assistanceServiceStation = this._databaseContext.AssistanceServiceStationConfigs.FirstOrDefault(x => x.Id == request.Id);
+        if (assistanceServiceStation is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+        
+        this._databaseContext.AssistanceServiceStationConfigs.Remove(assistanceServiceStation);
+        this._databaseContext.SaveChanges();
+
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "UI.LABEL.SUCCESS.DELETE",
+            "UI.LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.DELETE");
+    }
+
 }

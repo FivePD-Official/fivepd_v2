@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { AssistanceServiceService } from "@services/assistance-service/assistance-service.service";
+import {
+  AssistanceServiceTypeConfigService
+} from "@services/assistance-service-type-config/assistance-service-type-config.service";
 import { ActivatedRoute } from "@angular/router";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { map, switchMap, tap } from "rxjs";
+import { filter, map, switchMap, tap } from "rxjs";
 import { parseId } from "../../../../../helpers/parse-id";
 import { ContainerComponent } from "../../../../../components/container/container.component";
 import { PageHeaderComponent } from "../../../../../components/page-header/page-header.component";
@@ -10,11 +12,21 @@ import { TranslatePipe } from "../../../../../pipes/translate.pipe";
 import { AsyncPipe, NgClass } from "@angular/common";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import deepEqual from "fast-deep-equal/es6";
-import { AssistanceServiceTypeConfig, AssistanceServiceTypeConfigSpawnTypes, CheckboxField } from "@models";
+import {
+  AssistanceServiceTypeConfig,
+  AssistanceServiceTypeConfigSpawnTypes,
+  CheckboxField,
+  PositionField
+} from "@models";
 import { CheckboxFieldComponent } from "../../../../../components/form-inputs/checkbox-field/checkbox-field.component";
 import { ButtonComponent } from "../../../../../components/button/button.component";
 import { DevtoolsService } from "@services/devtools/devtools.service";
 import { IconComponent } from "../../../../../components/icon/icon.component";
+import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
+import { mapAttributesToFields } from "@helpers";
+import { CoreSetId } from "@enums";
+import { ModalService } from "@services/modals/modal/modal.service";
+import { CustomValidators } from "../../../../../helpers/validators";
 
 @Component({
   selector: 'app-assistance-service-type-config',
@@ -34,9 +46,11 @@ import { IconComponent } from "../../../../../components/icon/icon.component";
 })
 export class AssistanceServiceTypeConfigComponent {
 
-  private readonly _assistanceServiceService = inject(AssistanceServiceService);
+  private readonly _assistanceServiceService = inject(AssistanceServiceTypeConfigService);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _devtoolsService = inject(DevtoolsService);
+  private readonly _modalService = inject(ModalService);
+  private readonly _modalFormService = inject(ModalFormService);
 
   readonly assistanceServiceTypeConfig$ = this._activatedRoute.params
     .pipe(
@@ -119,7 +133,24 @@ export class AssistanceServiceTypeConfigComponent {
   }
 
   onAddPositionManually(): void {
-
+    this._modalFormService.open({
+      title: 'Add position',
+      buttons: {
+        submit: {variant: 'primary', label: 'UI.ACTION.ADD'},
+      },
+      fields: () => [new PositionField({
+        key: 'position',
+        required: true,
+        validators: [CustomValidators.positionComponentsRequired()],
+        label: 'Position',
+      })]
+    }).result
+      .pipe(
+        filter(res => res.success),
+        tap(res => this.manualSpawnLocations.setValue([...this.manualSpawnLocations.value, res.value['position']])),
+        this._modalService.close(),
+      )
+      .subscribe()
   }
 
   onAddCurrentPosition(): void {

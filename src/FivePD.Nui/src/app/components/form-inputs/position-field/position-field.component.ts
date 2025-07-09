@@ -1,21 +1,25 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
-import { TextField, Vector3 } from "@models";
+import { PositionField, Vector3 } from "@models";
 import { BaseFieldComponent } from "../base-field/base-field.component";
 import { createDefaultFormGroup } from "../_helpers/field";
+import { ButtonComponent } from "../../button/button.component";
+import { DevtoolsService } from "@services/devtools/devtools.service";
 
 @Component({
   selector: 'app-position-field',
-  imports: [ReactiveFormsModule, TranslatePipe, BaseFieldComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, BaseFieldComponent, ButtonComponent],
   templateUrl: './position-field.component.html',
   styleUrl: './position-field.component.sass'
 })
 export class PositionFieldComponent implements OnInit {
   @Input({required: false}) form!: FormGroup;
-  @Input({required: true}) field!: TextField;
+  @Input({required: true}) field!: PositionField;
 
   @Output() onChange = new EventEmitter<Vector3>();
+
+  private readonly _devtoolsService = inject(DevtoolsService);
 
   private pseudoFormControl = new FormControl<Vector3 | undefined>(undefined);
 
@@ -60,5 +64,13 @@ export class PositionFieldComponent implements OnInit {
 
   get control() {
     return (this.form?.controls[this.field.key] ?? this.pseudoFormControl) as FormControl<Vector3>;
+  }
+
+  onAddCurrentPosition(): void {
+    this._devtoolsService.getCurrentPlayerPosition().subscribe(position => {
+      this.coordinateX.setValue(position.X);
+      this.coordinateY.setValue(position.Y);
+      this.coordinateZ.setValue(position.Z);
+    });
   }
 }

@@ -16,7 +16,7 @@
              [attr.placeholder]="field.placeholder | translate"
              [readonly]="field.readonly"/>
     </div>
-    <div class="flex flex-row items-center gap-2">
+    <div class="flex flex-row items-center gap-2 max-w-[150px]">
       <p class="font-medium text-zinc-300">Z</p>
       <input type="number"
              [formControl]="coordinateZ"
@@ -24,5 +24,10 @@
              [attr.placeholder]="field.placeholder | translate"
              [readonly]="field.readonly"/>
     </div>
+    @if (field.options['showAddCurrentPositionButton']) {
+      <app-button label="Add my current position"
+                  variant="tertiary-bg"
+                  (onClick)="onAddCurrentPosition()"/>
+    }
   </div>
 </app-base-field>

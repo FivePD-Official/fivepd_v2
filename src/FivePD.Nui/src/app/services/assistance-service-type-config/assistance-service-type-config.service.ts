@@ -5,7 +5,7 @@ import { BaseApiService } from "@services/api/base-api/base-api.service";
 @Injectable({
   providedIn: 'root'
 })
-export class AssistanceServiceService extends BaseApiService<AssistanceServiceTypeConfig> {
+export class AssistanceServiceTypeConfigService extends BaseApiService<AssistanceServiceTypeConfig> {
 
   override baseUrl = 'fivepd:assistanceService';
 
