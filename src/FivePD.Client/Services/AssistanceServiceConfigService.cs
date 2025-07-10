@@ -28,6 +28,7 @@ public class AssistanceServiceConfigService : IAssistanceServiceConfigService, I
         this._eventHandlerDictionary.AddUIToServerEvent(Events.AssistanceService.DeleteStation);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.AssistanceService.GetStationTypeConfigsPage);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.AssistanceService.GetAvailableStationTypeConfigs);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.AssistanceService.GetStationTypeConfig);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.AssistanceService.AddStationTypeConfig);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.AssistanceService.EditStationTypeConfig);
         this._eventHandlerDictionary.AddUIToServerEvent(Events.AssistanceService.DeleteStationTypeConfig);

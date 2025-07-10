@@ -587,6 +587,8 @@ internal readonly record struct Events
 
         public const string GetStationTypeConfigsPage = "fivepd:assistanceService:getStationTypeConfigsPage";
 
+        public const string GetStationTypeConfig = "fivepd:assistanceService:getStationTypeConfig";
+
         public const string AddStationTypeConfig = "fivepd:assistanceService:addStationTypeConfig";
 
         public const string EditStationTypeConfig = "fivepd:assistanceService:editStationTypeConfig";

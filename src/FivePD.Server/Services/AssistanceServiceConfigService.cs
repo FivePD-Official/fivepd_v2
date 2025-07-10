@@ -247,6 +247,17 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
     
+    [UIEvent(Events.AssistanceService.GetStationTypeConfig)]
+    private void GetStationTypeConfigUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
+        var assistanceServiceStationTypeConfig = this._databaseContext.AssistanceServiceStationTypeConfigs
+            .AsNoTracking()
+            .Include(x => x.TypeConfig)
+            .FirstOrDefault(x => x.Id == request.Id);
+        this._networkEventService.TriggerEventSerialized(player, guid, assistanceServiceStationTypeConfig);
+    }
+
     [UIEvent(Events.AssistanceService.AddStationTypeConfig)]
     private void AddStationTypeConfigUI(Player player, string guid, string serializedRequest)
     {
@@ -278,6 +289,28 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             guid,
             true,
             "UI.LABEL.SUCCESS.ADD",
+            "UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
+    }
+    
+    [UIEvent(Events.AssistanceService.EditStationTypeConfig)]
+    private void EditStationTypeConfigUI(Player player, string guid, string serializedRequest)
+    {
+        var request = JsonConvert.DeserializeObject<EditAssistanceServiceStationTypeConfig>(serializedRequest);
+        var assistanceServiceStationTypeConfig = this._databaseContext.AssistanceServiceStationTypeConfigs.FirstOrDefault(x => x.Id == request.Id);
+        if (assistanceServiceStationTypeConfig is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        assistanceServiceStationTypeConfig.Capacity = request.Capacity;
+        this._databaseContext.SaveChanges();
+
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "UI.LABEL.SUCCESS.EDIT",
             "UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
     }
     

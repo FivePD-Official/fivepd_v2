@@ -42,6 +42,10 @@ export class AssistanceServiceStationService extends CrudApiService<AssistanceSe
     return this._getPage<Page<AssistanceServiceStationTypeConfig>>('getStationTypeConfigsPage', collation);
   }
 
+  getTypeConfig(id: Id) {
+    return this._get<AssistanceServiceStationTypeConfig>('getStationTypeConfig', id);
+  }
+
   addTypeConfig(request: object) {
     return this.httpClient.post<ActionResponse>(this.createUrl('addStationTypeConfig'), request);
   }

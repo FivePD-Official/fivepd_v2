@@ -11,21 +11,22 @@ import { ContainerComponent } from "../../../../../components/container/containe
 import { TranslatePipe } from "../../../../../pipes/translate.pipe";
 import { AsyncPipe } from "@angular/common";
 import {
-  AssistanceServiceStationTypeConfig, AssistanceServiceTypeConfig,
+  AssistanceServiceStationTypeConfig,
+  AssistanceServiceTypeConfig,
   Button,
   Collation,
-  Column, DropdownItem,
+  Column,
+  DropdownItem,
   NumberField,
-  PositionField, SingleSelectField,
-  TextField
+  SingleSelectField
 } from "@models";
 import { GridComponent } from "../../../../../components/grid/grid.component";
-import { CustomValidators } from "../../../../../helpers/validators";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { ModalConfirmService } from "@services/modals/modal-confirm/modal-confirm.service";
 import { DataResolver } from "@services/modals/modal-form/modal-form-data-resolver";
 import { LocalizationService } from "@services/localization/localization.service";
+import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 
 @Component({
   selector: 'app-assistance-service-station',
@@ -80,15 +81,50 @@ export class AssistanceServiceStationComponent {
       header: 'UI.LABEL.ACTION.PLURAL',
       show: () => true,
       actions: [
-        // {
-        //   type: 'button',
-        //   label: this._localizationService.translate('UI.ACTION.EDIT'),
-        //   onClick: station => this._router.navigate(['mdt', 'settings', 'assistance-services', 'stations', station.Id]),
-        // },
+        {
+          type: 'button',
+          label: this._localizationService.translate('UI.ACTION.EDIT'),
+          onClick: stationTypeConfig => this._modalFormService.open({
+            title: 'UI.ACTION.EDIT',
+            buttons: {
+              submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+            },
+            valueResolver: new ValueResolver(stationTypeConfig, this._assistanceServiceStationService.getTypeConfig(stationTypeConfig.Id)),
+            fields: (updatedStationTypeConfig) => {
+              const c = updatedStationTypeConfig ?? stationTypeConfig;
+              return [
+                new SingleSelectField({
+                  defaultItemLabel: `${c.TypeConfig.TypeName} - ${c.TypeConfig.AssemblyName}`,
+                  size: 'normal',
+                  variant: 'secondary',
+                  key: 'typeConfigId',
+                  label: 'Assistance service',
+                  required: true,
+                  readonly: true,
+                  items: () => [],
+                }),
+                new NumberField({
+                  key: 'capacity',
+                  label: 'UI.LABEL.CAPACITY.SINGULAR',
+                  required: true,
+                  value: c.Capacity,
+                }),
+              ];
+            }
+          }).result
+            .pipe(
+              filter(res => res.success),
+              switchMap(res => this._assistanceServiceStationService.editTypeConfig({
+                Id: stationTypeConfig.Id,
+                Capacity: res.value['capacity'],
+              })),
+              this._modalService.handleResponse()
+            ).subscribe(() => this.typeConfigsCollation$.next(this.typeConfigsCollation$.value))
+        },
         {
           type: 'button',
           label: 'UI.ACTION.DELETE',
-          onClick: typeConfig => {
+          onClick: stationTypeConfig => {
             this._modalConfirmService.open({
               title: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.DELETE.TITLE',
               description: this._localizationService.translate('UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.DELETE.DESCRIPTION'),
@@ -98,7 +134,7 @@ export class AssistanceServiceStationComponent {
             }).result
               .pipe(
                 filter(res => res.success),
-                switchMap(() => this._assistanceServiceStationService.deleteTypeConfig(typeConfig.Id)),
+                switchMap(() => this._assistanceServiceStationService.deleteTypeConfig(stationTypeConfig.Id)),
                 this._modalService.handleResponse()
               ).subscribe(() => this.typeConfigsCollation$.next(this.typeConfigsCollation$.value))
           }
@@ -109,12 +145,12 @@ export class AssistanceServiceStationComponent {
   readonly typeConfigsButtons: Button[] = [
     {
       type: 'button',
-      label: 'Add assistance service',
+      label: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.ADD.TITLE',
       show: () => true,
       variant: 'secondary',
       disabled: () => false,
       onClick: () => this._modalFormService.open({
-        title: 'Add assistance service',
+        title: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.ADD.TITLE',
         buttons: {
           submit: {variant: 'primary', label: 'UI.ACTION.ADD'},
         },
@@ -125,9 +161,12 @@ export class AssistanceServiceStationComponent {
             size: 'normal',
             variant: 'secondary',
             key: 'typeConfigId',
-            label: 'Assistance service',
+            label: 'UI.LABEL.ASSISTANCE_SERVICE.TITLE.SINGULAR',
             required: true,
-            items: () => (assistanceServiceTypeConfigs ?? []).map(x => ({key: x.Id, label: `${x.TypeName} - ${x.AssemblyName}`} as DropdownItem))
+            items: () => (assistanceServiceTypeConfigs ?? []).map(x => ({
+              key: x.Id,
+              label: `${x.TypeName} - ${x.AssemblyName}`
+            } as DropdownItem))
           }),
           new NumberField({
             key: 'capacity',
