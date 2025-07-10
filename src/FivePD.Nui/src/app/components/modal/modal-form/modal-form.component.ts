@@ -98,6 +98,7 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // TODO: why is this not invoked anywhere? current impl is not dynamic, example: https://github.com/FivePD-Official/fivepd/commit/406cd77e70140f3195919be2cbb77e6fbf7332d5#diff-ff2ce897f5b65b89e71e53125f4efaaa10cc90f0dfaf685acade83150e3d01f7R64
   private getPredefinedAttributeObservables(fields: FormInputBase<any>[]): Observable<any>[] {
     const observables: Observable<any>[] = [];
 

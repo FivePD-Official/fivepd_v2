@@ -1,38 +1,27 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MessageService } from "@services/message/message.service";
-import {
-  Collation,
-  GeneralConfig,
-  Message,
-  MultiSelectField,
-  Page,
-  SimpleUser,
-  TextareaField,
-  TextField
-} from "@models";
-import { FPriority } from "@enums";
+import { Collation, GeneralConfig, Message, MultiSelectField, SimpleUser, TextareaField, TextField } from "@models";
 import { ConfigService } from "@services/config/config.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
-import { UserService } from "@services/user/user.service";
+import { UserRole, UserService } from "@services/user/user.service";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
-import { filter, switchMap, takeUntil } from "rxjs";
+import { BehaviorSubject, combineLatest, filter, map, of, switchMap } from "rxjs";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { PaginationComponent } from '../../../components/pagination/pagination.component';
 import { ButtonComponent } from '../../../components/button/button.component';
-import { DatePipe, NgClass } from '@angular/common';
+import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import { PageHeaderComponent } from '../../../components/page-header/page-header.component';
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { LocalizationService } from "@services/localization/localization.service";
-import { injectDestroy } from "../../../helpers/destroy-ref";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'app-messages',
-    templateUrl: './messages.component.html',
-    imports: [PageHeaderComponent, ButtonComponent, NgClass, PaginationComponent, DatePipe, TranslatePipe]
+  selector: 'app-messages',
+  templateUrl: './messages.component.html',
+  imports: [PageHeaderComponent, ButtonComponent, NgClass, PaginationComponent, DatePipe, TranslatePipe, AsyncPipe]
 })
-export class MessagesComponent implements OnInit {
+export class MessagesComponent {
 
-  private readonly destroy$ = injectDestroy();
   private readonly _messageService = inject(MessageService);
   private readonly _configService = inject(ConfigService);
   private readonly _modalService = inject(ModalService);
@@ -41,25 +30,19 @@ export class MessagesComponent implements OnInit {
   protected readonly localizationService = inject(LocalizationService);
 
   config?: GeneralConfig;
-  messagesPage?: Page<Message>;
-  messagesCollation: Collation = {
-    Page: 1,
-    Filters: {}
-  };
   selectedMessage?: Message;
 
-  ngOnInit(): void {
-    this._configService.getGeneralConfig().pipe(takeUntil(this.destroy$)).subscribe(config => {
-      this.config = config;
-    });
-    this.getMessages();
-  }
-
-  getMessages(): void {
-    this._messageService.getPage(this.messagesCollation).subscribe(page => {
-      this.messagesPage = page;
-    });
-  }
+  readonly collation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
+  readonly page$ = this.collation$.pipe(
+    switchMap(collation => this._messageService.getPage(collation)),
+  );
+  readonly canSend$ = combineLatest([
+    this._configService.getGeneralConfig(),
+    of(this._userService.userHasRole(UserRole.Admin)),
+  ]).pipe(
+    takeUntilDestroyed(),
+    map(([config, isUserAdmin]) => config.canSendMessageAll() || isUserAdmin),
+  );
 
   onMessageClick(message: Message): void {
     this.selectedMessage = message;
@@ -74,15 +57,7 @@ export class MessagesComponent implements OnInit {
   }
 
   onPageChange(page: number): void {
-    this.messagesCollation.Page = page;
-    this.getMessages();
-  }
-
-  getLocalizedSentAtLabel(message: Message): string {
-    return this.localizationService.translate('UI.LABEL.MESSAGES.MESSAGE_SENT_INFO', {
-      name: message.Sender,
-      date: new DatePipe('en').transform(message.SentAt, 'medium') ?? '-',
-    });
+    this.collation$.next({...this.collation$.value, Page: page});
   }
 
   trySendMessage(): void {
@@ -124,8 +99,7 @@ export class MessagesComponent implements OnInit {
           variant: 'primary',
           label: 'UI.ACTION.SEND',
         }
-      }
-      ,
+      },
       valueResolver: new ValueResolver([], this._userService.getAllSimple()),
     }).result
       .pipe(
@@ -134,7 +108,5 @@ export class MessagesComponent implements OnInit {
         this._modalService.handleResponse(),
       ).subscribe();
   }
-
-  protected readonly FIncidentPriority = FPriority;
 }
 
