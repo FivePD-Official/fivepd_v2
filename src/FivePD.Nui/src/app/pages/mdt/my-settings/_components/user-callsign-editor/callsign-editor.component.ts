@@ -34,7 +34,10 @@ export class CallsignEditorComponent implements OnInit {
   }
 
   get valid() {
-    return this.positions.every(x => x.Value);
+    return this.positions.every((item, index) => {
+      this.validatePosition(index);
+      return item.Value && !this.errors[index];
+    });
   }
 
   getItemTypeLabel(type: CallsignFormatItemType): string {
@@ -62,16 +65,18 @@ export class CallsignEditorComponent implements OnInit {
   }
 
   onCharacterChange(index: number, event: any) {
-    const value = event.target.value.toString().toUpperCase();
-    this.positions[index].Value = value;
+    this.positions[index].Value = event.target.value.toString().toUpperCase();
+    this.validatePosition(index);
+  }
 
+  validatePosition(index: number): void {
     const position = this.positions[index];
     if (position.Type === CallsignFormatItemType.RandomLetter) {
-      this.errors[index] = !/^[A-Z]+$/.test(value);
+      this.errors[index] = !/^[A-Z]+$/.test(position.Value!);
     } else if (position.Type === CallsignFormatItemType.RandomNumber) {
-      this.errors[index] = !/^[0-9]+$/.test(value);
+      this.errors[index] = !/^[0-9]+$/.test(position.Value!);
     } else if (position.Type === CallsignFormatItemType.Word) {
-      this.errors[index] = !/^[A-Z0-9-]+$/.test(value);
+      this.errors[index] = !/^[A-Z0-9-]+$/.test(position.Value!);
     }
   }
 
