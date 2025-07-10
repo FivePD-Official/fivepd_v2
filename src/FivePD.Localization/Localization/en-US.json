@@ -359,8 +359,6 @@
   "UI.LABEL.MESSAGE.PLURAL": "Messages",
   "UI.LABEL.MESSAGE.SINGULAR": "Message",
   "UI.LABEL.MESSAGES.ACTION.SEND": "Send message",
-  "UI.LABEL.MESSAGES.MESSAGE_SENT_BY": "Sent by {{name}}",
-  "UI.LABEL.MESSAGES.MESSAGE_SENT_INFO": "Sent by {{name}} at {{date}}",
   "UI.LABEL.MESSAGES.NO_MESSAGES": "You have no messages.",
   "UI.LABEL.MESSAGES.RECEIVED": "You've received a new message from {{sender}}.",
   "UI.LABEL.MESSAGES.SEND_FORM.MESSAGE": "Message",

@@ -1,73 +1,84 @@
 <app-page-header [title]="'UI.LABEL.MESSAGES.TITLE' | translate">
-  @if (config?.canSendMessageAll()) {
+  @if (canSend$ | async) {
     <app-button [label]="'UI.LABEL.MESSAGES.ACTION.SEND' | translate"
                 (onClick)="trySendMessage()"/>
   }
 </app-page-header>
 
-<div class="w-full flex flex-col items-center">
-  @if (!messagesPage?.Items?.length) {
-    <div class="mt-10">
-      <p class="text-zinc-400 block text-xl">
-        {{ 'UI.LABEL.MESSAGES.NO_MESSAGES' | translate }}
-      </p>
-    </div>
-  }
-</div>
-
-@if (messagesPage?.Items?.length) {
-  <div class="w-full grid grid-rows-1 grid-cols-[3fr_7fr] gap-8">
-
-    <div class="flex flex-col">
-      @for (message of messagesPage?.Items; track message; let i = $index) {
-        <button
-          class="p-4 flex flex-col items-start justify-start border-t border-l border-r border-color"
-          [ngClass]="{
-              'hover:bg-zinc-800':  message.Id !== selectedMessage?.Id,
-              'bg-zinc-800':  message.Id === selectedMessage?.Id,
-              'rounded-tl-md rounded-tr-md': i === 0,
-              'rounded-bl-md rounded-br-md border-b-[1px]': i === (messagesPage?.Items?.length ?? 1) - 1
-            }"
-          type="button"
-          (click)="onMessageClick(message)">
-          <div class="flex flex-row items-center gap-2">
-            @if (!message.Read) {
-              <span class="relative flex h-3 w-3">
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-              </span>
-            }
-            <p class="text-zinc-200 text-lg font-bold">{{ message.Subject }}</p>
-          </div>
-          <div class="w-full flex flex-row items-center justify-between">
-            <p class="text-zinc-400 text-left"
-               [innerHTML]="localizationService.translate('UI.LABEL.MESSAGES.MESSAGE_SENT_BY', {name: message.Sender})">
-            </p>
-            <p class="text-zinc-400 text-right">
-              {{ message.SentAt | date: 'medium' }}
-            </p>
-          </div>
-          <div class="mt-4">
-            <p class="line-clamp-1 text-zinc-400 text-left">{{ message.Content }}</p>
-          </div>
-        </button>
-      }
-
-      @if ((messagesPage?.PageCount ?? 1) > 1) {
-        <app-pagination [collation]="messagesCollation"
-                        [data]="messagesPage"
-                        (onPageChange)="onPageChange($event)"/>
-      }
-    </div>
-
-    @if (selectedMessage) {
-      <div class="flex flex-col items-start justify-start">
-        <h1 class="text-zinc-200 font-bold text-2xl">{{ selectedMessage!.Subject }}</h1>
-        <p class="text-zinc-400 mt-2" [innerHTML]="getLocalizedSentAtLabel(selectedMessage)"></p>
-        <div class="mt-6">
-          <p class="text-zinc-400">{{ selectedMessage!.Content }}</p>
-        </div>
+@if (page$ | async; as page) {
+  <div class="w-full flex flex-col items-center">
+    @if (!page.Items.length) {
+      <div class="mt-10">
+        <p class="text-zinc-400 block text-xl">
+          {{ 'UI.LABEL.MESSAGES.NO_MESSAGES' | translate }}
+        </p>
       </div>
     }
-
   </div>
+
+  @if (page.Items.length) {
+    <div class="w-full h-[calc(100%-8rem)] grid grid-rows-1 grid-cols-[3fr_7fr] gap-8">
+
+      <div class="w-full h-full flex flex-col items-center justify-between bg-zinc-800 pb-4 rounded-lg">
+
+        <div class="w-full flex flex-col">
+          @for (message of page.Items; track message;) {
+            <button
+              class="relative p-4 flex flex-col items-start justify-start gap-1 border-b border-color transition-none"
+              [ngClass]="[message.Id === selectedMessage?.Id ? 'bg-zinc-700' : 'hover:bg-zinc-700', $first ? 'rounded-t-lg' : '']"
+              type="button"
+              (click)="onMessageClick(message)"
+            >
+              <div class="absolute top-0 left-0 w-[4px] h-full transition-none"
+                   [ngClass]="[message.Read ? 'bg-transparent' : 'bg-primary', $first ? 'rounded-tl-lg' : '']"></div>
+              <div class="w-full flex flex-row items-center justify-between">
+                <p class="text-zinc-200 font-medium text-left text-lg">
+                  {{ message.Sender }}
+                </p>
+                <p class="text-zinc-400 font-medium text-right text-sm">
+                  {{ message.SentAt | date: 'medium' }}
+                </p>
+              </div>
+              <p class="line-clamp-1 font-medium text-left text-xl transition-none"
+                 [ngClass]="message.Read ? 'text-zinc-200' : 'text-primary'">
+                {{ message.Subject }}
+              </p>
+              <p class="line-clamp-1 text-zinc-400 text-left">
+                {{ message.Content }}
+              </p>
+            </button>
+          }
+        </div>
+
+        <app-pagination [collation]="(collation$ | async)!"
+                        [data]="page$ | async"
+                        [topStyling]="false"
+                        (onPageChange)="onPageChange($event)"/>
+      </div>
+
+      @if (selectedMessage) {
+        <div class="flex flex-col items-start justify-start">
+          <div class="w-full p-4 bg-zinc-800 rounded-lg">
+            <p class="text-zinc-200 text-2xl font-medium">
+              {{ selectedMessage.Subject }}
+            </p>
+          </div>
+          <div class="w-full flex flex-col gap-8 bg-zinc-800 px-4 pt-4 pb-8 mt-4 rounded-lg">
+            <div class="w-full flex flex-row items-center justify-between ">
+              <p class="text-zinc-400 font-medium text-left text-lg">
+                {{ selectedMessage.Sender }}
+              </p>
+              <p class="text-zinc-400 font-medium text-right text-lg">
+                {{ selectedMessage.SentAt | date: 'medium' }}
+              </p>
+            </div>
+            <div>
+              <p class="text-zinc-200 text-lg">{{ selectedMessage.Content }}</p>
+            </div>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
 }

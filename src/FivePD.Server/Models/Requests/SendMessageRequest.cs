@@ -6,6 +6,8 @@ namespace FivePD.Server.Models.Requests;
 
 internal record struct SendMessageRequest
 {
+    public bool SendToEveryone { get; init; }
+
     public List<int> To { get; init; }
 
     public string Subject { get; init; }
