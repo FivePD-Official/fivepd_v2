@@ -14,6 +14,7 @@ export class PaginationComponent {
 
   @Input() data?: Page<any> | null;
   @Input() collation!: Collation;
+  @Input() topStyling = true;
 
   @Output() onPageChange = new EventEmitter<number>();
 

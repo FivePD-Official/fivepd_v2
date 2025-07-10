@@ -28,7 +28,6 @@ import { injectDestroy } from "../../../helpers/destroy-ref";
 @Component({
     selector: 'app-messages',
     templateUrl: './messages.component.html',
-    styleUrls: ['./messages.component.sass'],
     imports: [PageHeaderComponent, ButtonComponent, NgClass, PaginationComponent, DatePipe, TranslatePipe]
 })
 export class MessagesComponent implements OnInit {

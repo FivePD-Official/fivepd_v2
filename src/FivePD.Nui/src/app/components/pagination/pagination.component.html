@@ -1,5 +1,6 @@
 @if (collation && data) {
-  <div class="pagination flex flex-row items-center justify-end pt-4 mt-5 border-t border-color">
+  <div class="pagination flex flex-row items-center justify-end"
+       [ngClass]="topStyling ? 'pt-4 mt-5 border-t border-color' : ''">
     <div class="flex flex-row items-center gap-2">
 
       <button [disabled]="collation.Page === 1" (click)="toFirstPage()" class="arrow"
