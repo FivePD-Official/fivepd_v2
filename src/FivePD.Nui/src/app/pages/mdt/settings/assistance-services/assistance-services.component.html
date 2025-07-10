@@ -1,0 +1,15 @@
+<app-container [rows]="2" [columns]="1">
+
+  <app-grid [title]="'UI.LABEL.ASSISTANCE_SERVICE.TITLE.PLURAL' | translate"
+            [data]="typeConfigsPage$ | async"
+            [columns]="typeConfigsColumn"
+            (onCollationChange)="typeConfigsCollation$.next($event)"
+            [rowLinkResolver]="typeConfigsRowLinkResolver" />
+
+  <app-grid [title]="'UI.LABEL.ASSISTANCE_SERVICE.STATION.PLURAL' | translate"
+            [data]="stationsPage$ | async"
+            [columns]="stationsColumn"
+            [buttons]="stationsButtons"
+            (onCollationChange)="stationsCollation$.next($event)"/>
+
+</app-container>

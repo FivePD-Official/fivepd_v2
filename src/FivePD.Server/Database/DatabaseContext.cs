@@ -163,6 +163,21 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<WeaponComponent> WeaponComponents { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table containing the ped histories.
+    /// </summary>
+    public DbSet<AssistanceServiceTypeConfig> AssistanceServiceTypeConfigs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing the ped histories.
+    /// </summary>
+    public DbSet<AssistanceServiceStation> AssistanceServiceStations { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table containing the ped histories.
+    /// </summary>
+    public DbSet<AssistanceServiceStationTypeConfig> AssistanceServiceStationTypeConfigs { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -397,5 +412,25 @@ public class DatabaseContext : DbContext
             .HasOne(pt => pt.WeaponComponent)
             .WithMany(t => t.WeaponWeaponComponents)
             .HasForeignKey(pt => pt.WeaponComponentId);
+
+        modelBuilder.Entity<AssistanceServiceTypeConfig>(type =>
+        {
+            type.Property(t => t.ManualSpawnLocations)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<List<Vector3>>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        });
+
+        modelBuilder.Entity<AssistanceServiceStation>(type =>
+        {
+            type.Property(t => t.Position)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<Vector3>(
+                        v,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        });
     }
 }

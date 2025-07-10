@@ -6,10 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Server.Attributes;
+using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
+using FivePD.Server.Models;
 using FivePD.Server.Models.AssistanceServiceModels;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace FivePD.Server.Services;
@@ -21,12 +24,11 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     private readonly IServiceProvider _serviceProvider;
     private readonly ITickQueueService _tickQueueService;
     private readonly ILogger _logger;
-    private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
     private readonly IVector3Service _vector3Service;
+    private readonly IAssistanceServiceConfigService _assistanceServiceConfigService;
+    private readonly DatabaseContext _databaseContext;
 
-    private readonly ConcurrentDictionary<Type, AssistanceServiceOptions> _availableServices = new();
-    private readonly List<Type> _registrationOrder = new();
     private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _activeServices = new();
 
     /// <summary>
@@ -35,103 +37,52 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
-    /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
     /// <param name="vector3Service">The <see cref="IVector3Service"/> to use.</param>
+    /// <param name="assistanceServiceConfigService">The <see cref="IAssistanceServiceConfigService"/> to use.</param>
+    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     public AssistanceServiceManagerService(
         IServiceProvider serviceProvider,
         ITickQueueService tickQueueService,
         ILogger logger,
-        IConfigService configService,
         IRandomService randomService,
-        IVector3Service vector3Service)
+        IVector3Service vector3Service,
+        IAssistanceServiceConfigService assistanceServiceConfigService,
+        DatabaseContext databaseContext)
     {
         this._serviceProvider = serviceProvider;
         this._tickQueueService = tickQueueService;
         this._logger = logger;
-        this._configService = configService;
         this._randomService = randomService;
         this._vector3Service = vector3Service;
+        this._assistanceServiceConfigService = assistanceServiceConfigService;
+        this._databaseContext = databaseContext;
     }
+
+    /// <inheritdoc />
+    public IReadOnlyList<AvailableAssistanceService> AvailableServices =>
+        this._assistanceServiceConfigService.AvailableServices;
 
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
-        var config = this._configService.GeneralConfig.AssistanceServices;
-        if (config.Ambulance.Enabled)
+        this._assistanceServiceConfigService.Register<Ambulance>(new AssistanceServiceOptions
         {
-            this.Register<Ambulance>(new AssistanceServiceOptions
-            {
-                RequestLabel = "Request ambulance",
-                CancelLabel = "Cancel ambulance",
-                SpawnLocations = config.Ambulance.SpawnLocations,
-            });
-        }
+            RequestLabel = "Request ambulance",
+            CancelLabel = "Cancel ambulance",
+        });
 
-        if (config.TowTruck.Enabled)
+        this._assistanceServiceConfigService.Register<Towing>(new AssistanceServiceOptions
         {
-            this.Register<Towing>(new AssistanceServiceOptions
-            {
-                RequestLabel = "Request tow",
-                CancelLabel = "Cancel tow",
-                SpawnLocations = config.TowTruck.SpawnLocations,
-            });
-        }
+            RequestLabel = "Request tow",
+            CancelLabel = "Cancel tow",
+        });
 
-        if (config.RideShare.Enabled)
+        this._assistanceServiceConfigService.Register<RideShare>(new AssistanceServiceOptions
         {
-            this.Register<RideShare>(new AssistanceServiceOptions
-            {
-                RequestLabel = "Request ride share",
-                CancelLabel = "Cancel ride share",
-                SpawnLocations = config.RideShare.SpawnLocations,
-            });
-        }
-    }
-
-    /// <inheritdoc />
-    public void Register<T>(AssistanceServiceOptions options)
-        where T : AssistanceService
-    {
-        var type = typeof(T);
-        if (this._availableServices.ContainsKey(type))
-        {
-            this._logger.Error(
-                "Can not register assistance service with type \"{Type}\". An assistance service with the same type has been already registered.", type);
-            return;
-        }
-
-        if (string.IsNullOrEmpty(options.RequestLabel))
-        {
-            this._logger.Error("Can not register assistance service with type \"{Type}\". The RequestLabel is null or empty.", type);
-            return;
-        }
-
-        if (string.IsNullOrEmpty(options.CancelLabel))
-        {
-            this._logger.Error("Can not register assistance service with type \"{Type}\". The CancelLabel is null or empty.", type);
-            return;
-        }
-
-        this._logger.Information("Registering an assistance service of type \"{Type}\"", type);
-
-        this._availableServices[type] = options;
-        this._registrationOrder.Add(type);
-    }
-
-    /// <inheritdoc />
-    public List<(Type Type, AssistanceServiceOptions Options)> AvailableServices()
-    {
-        var orderedServices = new List<(Type Type, AssistanceServiceOptions Options)>();
-        foreach (var type in this._registrationOrder)
-        {
-            if (this._availableServices.TryGetValue(type, out var options))
-            {
-                orderedServices.Add((type, options));
-            }
-        }
-
-        return orderedServices;
+            RequestLabel = "Request ride share",
+            CancelLabel = "Cancel ride share",
+        });
     }
 
     /// <inheritdoc />
@@ -153,7 +104,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             return Guid.Empty;
         }
 
-        if (!this._availableServices.TryGetValue(type, out var options))
+        var availableService = this._assistanceServiceConfigService.AvailableServices.FirstOrDefault(x => x.Type == type);
+        if (availableService is null)
         {
             this._logger.Error("Failed to call assistance service with type \"{Type}\". This type has not been registered.", type);
             return Guid.Empty;
@@ -173,13 +125,22 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 ((IInternalAssistanceService)assistanceService).SpawnHeading = pointOnRoadSide.Heading;
             }
 
-            if (this._configService.GeneralConfig.AssistanceServices.SpawnTypeAuto())
+            var typeName = type.Name;
+            var assemblyName = type.Assembly.GetName().Name;
+            var assistanceServiceVehicleConfig = this._databaseContext.AssistanceServiceTypeConfigs
+                .FirstOrDefault(x => x.TypeName == typeName && x.AssemblyName == assemblyName);
+            if (assistanceServiceVehicleConfig is null)
             {
-                await SetRandomLocation();
+                this._logger.Error("Could not find database entry for assistance service with type \"{Type}\".", type);
+                return Guid.Empty;
             }
-            else
+
+            AssistanceServiceStation selectedStation = null;
+            AssistanceServiceStationTypeConfig selectedStationTypeConfig = null;
+
+            if (assistanceServiceVehicleConfig.SpawnTypeManual())
             {
-                var locations = options.SpawnLocations ?? new List<Vector3>();
+                var locations = assistanceServiceVehicleConfig.ManualSpawnLocations ?? new List<Vector3>();
                 if (locations.Count == 0)
                 {
                     await SetRandomLocation();
@@ -187,11 +148,68 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 else
                 {
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = locations[this._randomService.Random.Next(0, locations.Count)];
-                    ((IInternalAssistanceService)assistanceService).SpawnHeading = options.SpawnHeading;
+                    ((IInternalAssistanceService)assistanceService).SpawnHeading = 0f; // TODO
+                }
+            }
+            else if (assistanceServiceVehicleConfig.SpawnTypeAuto())
+            {
+                await SetRandomLocation();
+            }
+            else if (assistanceServiceVehicleConfig.SpawnTypeStation())
+            {
+                var stations = this._databaseContext.AssistanceServiceStations
+                    .Include(x => x.TypeConfigs)
+                    .ThenInclude(x => x.TypeConfig)
+                    .ToList();
+                var orderedStations = stations.OrderBy(s => Vector3.Distance(s.Position, requestedBy.GetUnderlyingPlayer().Character.Position));
+
+                foreach (var station in orderedStations)
+                {
+                    var serviceConfig = station.TypeConfigs.FirstOrDefault(c =>
+                        c.TypeConfig.TypeName == typeName &&
+                        c.TypeConfig.AssemblyName == assemblyName &&
+                        c.TypeConfig.Active &&
+                        c.TypeConfig.Enabled &&
+                        c.ActiveCapacity < c.Capacity);
+
+                    if (serviceConfig is not null)
+                    {
+                        selectedStation = station;
+                        selectedStationTypeConfig = serviceConfig;
+                        break;
+                    }
+                }
+
+                if (selectedStation is null)
+                {
+                    await SetRandomLocation();
+                }
+                else
+                {
+                    selectedStationTypeConfig.ActiveCapacity++;
+                    this._databaseContext.SaveChanges();
+
+                    ((IInternalAssistanceService)assistanceService).SpawnLocation = selectedStation.Position;
+                    ((IInternalAssistanceService)assistanceService).SpawnHeading = 0f; // TODO
                 }
             }
 
-            var assistanceServiceInvoker = new AssistanceServiceInvoker(assistanceService, onCanceled, new CancellationTokenSource(), this._logger);
+            void LocalOnCanceled()
+            {
+                if (onCanceled is not null)
+                {
+                    onCanceled();
+                }
+
+                this.OnStationVehicleCanceled(guid);
+            }
+
+            var assistanceServiceInvoker = new AssistanceServiceInvoker(
+                assistanceService,
+                LocalOnCanceled,
+                new CancellationTokenSource(),
+                this._logger,
+                selectedStationTypeConfig);
             this._activeServices.TryAdd(guid, assistanceServiceInvoker);
 #pragma warning disable CS4014
             this._tickQueueService.EnqueueAsync(assistanceServiceInvoker.InvokeAssistanceServiceMethodsAsync);
@@ -214,6 +232,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
         {
             this._activeServices.TryRemove(guid, out var service);
             service?.CancellationTokenSource.Cancel();
+            this.OnStationVehicleCanceled(guid);
             guid = Guid.Empty;
         }
         catch (Exception e)
@@ -235,11 +254,36 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray()) as AssistanceService;
     }
 
+    private void OnStationVehicleCanceled(Guid guid)
+    {
+        var activeService = this._activeServices[guid];
+        if (activeService is null)
+        {
+            return;
+        }
+
+        var assistanceServiceVehicleConfig = this._databaseContext.AssistanceServiceStationTypeConfigs
+            .FirstOrDefault(x => x.Id == activeService.StationTypeConfig.Id);
+        if (assistanceServiceVehicleConfig is null)
+        {
+            return;
+        }
+
+        assistanceServiceVehicleConfig.ActiveCapacity--;
+
+        if (assistanceServiceVehicleConfig.ActiveCapacity < 0)
+        {
+            assistanceServiceVehicleConfig.ActiveCapacity = 0;
+        }
+
+        this._databaseContext.SaveChanges();
+    }
+
     private sealed record AssistanceServiceInvoker
     {
-        private readonly AssistanceService _service;
         private readonly ILogger _logger;
         private readonly Action _onCanceled;
+        private readonly AssistanceService _service;
 
         private readonly List<Func<Task>> _methodQueue = new();
 
@@ -247,18 +291,22 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             AssistanceService service,
             Action onCanceled,
             CancellationTokenSource cancellationTokenSource,
-            ILogger logger)
+            ILogger logger,
+            AssistanceServiceStationTypeConfig stationTypeConfig = null)
         {
             this._service = service;
             this.CancellationTokenSource = cancellationTokenSource;
             this._logger = logger;
             this._onCanceled = onCanceled;
+            this.StationTypeConfig = stationTypeConfig;
 
             this._methodQueue.Add(() => service.OnCalledAsync(cancellationTokenSource));
             this._methodQueue.Add(service.OnCompletedAsync);
         }
 
         public CancellationTokenSource CancellationTokenSource { get; private set; }
+
+        public AssistanceServiceStationTypeConfig StationTypeConfig { get; private set; }
 
         /// <summary>
         /// Invokes the methods of the assistance service.

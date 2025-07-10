@@ -293,6 +293,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IAssistanceServiceManagerService>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
 
+        services.AddSingleton<AssistanceServiceConfigService>();
+        services.AddSingleton<IAssistanceServiceConfigService>(provider => provider.GetRequiredService<AssistanceServiceConfigService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AssistanceServiceConfigService>());
+
         services.AddSingleton<CfxService>();
         services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
 

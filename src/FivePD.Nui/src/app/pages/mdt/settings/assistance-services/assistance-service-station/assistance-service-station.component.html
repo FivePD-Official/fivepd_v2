@@ -1,0 +1,31 @@
+<app-page-header [title]="'UI.LABEL.ASSISTANCE_SERVICE.STATION.SINGULAR' | translate"/>
+
+<app-container [columns]="1" [rows]="1">
+
+  @if (assistanceServiceStation$ | async; as assistanceServiceStation) {
+    <div class="flex flex-col gap-4">
+      <p class="common-title">{{ 'UI.LABEL.DETAILS' | translate }}</p>
+      <div class="flex flex-col gap-4 max-w-max">
+        <div class="grid grid-rows-1 grid-cols-2 gap-8">
+          <p class="font-medium text-zinc-400">{{ 'UI.LABEL.NAME.SINGULAR' | translate }}</p>
+          <p class="text-zinc-200">{{ assistanceServiceStation.Name }}</p>
+        </div>
+        <div class="grid grid-rows-1 grid-cols-2 gap-8">
+          <p class="text-zinc-400">{{ 'UI.LABEL.POSITION.SINGULAR' | translate }}</p>
+          <p class="text-zinc-200">
+            X: {{ assistanceServiceStation.Position.X }} |
+            Y: {{ assistanceServiceStation.Position.Y }} |
+            Z: {{ assistanceServiceStation.Position.Z }}
+          </p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <app-grid [title]="'UI.LABEL.ASSISTANCE_SERVICE.TITLE.PLURAL' | translate"
+            [data]="typeConfigsPage$ | async"
+            [columns]="typeConfigsColumn"
+            [buttons]="typeConfigsButtons"
+            (onCollationChange)="typeConfigsCollation$.next($event)" />
+
+</app-container>

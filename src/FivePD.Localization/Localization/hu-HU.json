@@ -147,7 +147,6 @@
   "UI.LABEL.ARREST_REPORT.PLURAL": "Arrest reports",
   "UI.LABEL.ARREST_REPORT.SINGULAR": "Arrest report",
   "UI.LABEL.ASSEMBLY_NAME.SINGULAR": "Assembly name",
-  "UI.LABEL.ASSEMBLY.NAME.SINGULAR": "Assembly name",
   "UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION": "Are you sure you want to delete {{attribute}} from the {{set}} set? You can't undo this action.",
   "UI.LABEL.ATTRIBUTE.DELETE.TITLE": "Delete attribute",
   "UI.LABEL.ATTRIBUTE.EDIT": "Edit attribute",

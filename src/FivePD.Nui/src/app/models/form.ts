@@ -2,6 +2,7 @@
 import { Paths } from './_dev/nested-object-keys';
 import { ActionResponse } from './nui-event-responses';
 import { ButtonVariants } from "./button";
+import { Vector3 } from "./entities";
 
 export interface FormSubmitEvent {
   value: any;
@@ -38,8 +39,8 @@ export interface MultiSelectFieldOptions extends DropdownBaseOptions {
   resetWhenSelectedId?: number;
 }
 
-interface FormInputBaseModel<T> {
-  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'singleSelect' | 'multiSelect' | 'checkboxGroup';
+interface FormInputBaseModel<T, TOptions = Record<string, any>> {
+  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'singleSelect' | 'multiSelect' | 'position';
   value: T | undefined;
   key: string;
   label: string;
@@ -50,14 +51,14 @@ interface FormInputBaseModel<T> {
   validators: ValidatorFn[];
   asyncValidators: AsyncValidatorFn[];
   show?: (form: FormGroup) => boolean;
-  options: Record<string, any>;
+  options: TOptions;
 }
 
-export type FormInputBaseOptions<T> = {
-  [P in keyof Omit<FormInputBaseModel<T>, 'type'>]?: FormInputBaseModel<T>[P];
+export type FormInputBaseOptions<T, TOptions = Record<string, any>> = {
+  [P in keyof Omit<FormInputBaseModel<T, TOptions>, 'type'>]?: FormInputBaseModel<T, TOptions>[P];
 };
 
-export abstract class FormInputBase<T> {
+export abstract class FormInputBase<T, TOptions = Record<string, any>> {
 
   private readonly _type: FormInputBaseModel<T>['type'];
   value: FormInputBaseModel<T>['value'];
@@ -74,7 +75,7 @@ export abstract class FormInputBase<T> {
 
   protected constructor(
     type: FormInputBaseModel<T>['type'],
-    options: FormInputBaseOptions<T> = {},
+    options: FormInputBaseOptions<T, TOptions> = {},
   ) {
     this._type = type;
     this.value = options.value;
@@ -162,5 +163,11 @@ export class MultiSelectField extends FormInputBase<number[]> {
 export class CheckboxField extends FormInputBase<boolean> {
   constructor(options: FormInputBaseOptions<boolean>) {
     super('checkbox', options);
+  }
+}
+
+export class PositionField extends FormInputBase<Vector3> {
+  constructor(options: FormInputBaseOptions<Vector3, { showAddCurrentPositionButton?: boolean }>) {
+    super('position', options);
   }
 }

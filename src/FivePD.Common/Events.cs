@@ -573,6 +573,35 @@ internal readonly record struct Events
         public const string Speak = "fivepd:audio:speak";
     }
 
+    public readonly record struct AssistanceService
+    {
+        public const string GetTypeConfig = "fivepd:assistanceService:getTypeConfig";
+
+        public const string GetTypeConfigPage = "fivepd:assistanceService:getTypeConfigPage";
+
+        public const string EditTypeConfig = "fivepd:assistanceService:editTypeConfig";
+
+        public const string GetStation = "fivepd:assistanceService:getStation";
+
+        public const string GetStationPage = "fivepd:assistanceService:getStationPage";
+
+        public const string GetStationTypeConfigsPage = "fivepd:assistanceService:getStationTypeConfigsPage";
+
+        public const string GetStationTypeConfig = "fivepd:assistanceService:getStationTypeConfig";
+
+        public const string AddStationTypeConfig = "fivepd:assistanceService:addStationTypeConfig";
+
+        public const string EditStationTypeConfig = "fivepd:assistanceService:editStationTypeConfig";
+
+        public const string DeleteStationTypeConfig = "fivepd:assistanceService:deleteStationTypeConfig";
+
+        public const string GetAvailableStationTypeConfigs = "fivepd:assistanceService:getAvailableStationTypeConfigs";
+
+        public const string CreateStation = "fivepd:assistanceService:createStation";
+
+        public const string DeleteStation = "fivepd:assistanceService:deleteStation";
+    }
+
     public readonly record struct Cfx
     {
         // void AddAmmoToPed(int ped,uint weaponHash,int ammo);

@@ -33,8 +33,6 @@ public sealed record GeneralConfig : IInternalGeneralConfig
 
     public CalloutConfig Callout { get; init; } = new();
 
-    public AssistanceServicesConfig AssistanceServices { get; init; } = new();
-
     public FeatureFlagsConfig Features { get; init; } = new();
 
     public ProgressionSystemConfig ProgressionSystem { get; init; } = new();

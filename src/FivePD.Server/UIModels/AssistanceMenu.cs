@@ -51,7 +51,7 @@ public sealed class AssistanceMenu : Menu
     {
         var items = new List<MenuItem>();
 
-        foreach (var service in this._assistanceServiceManagerService.AvailableServices())
+        foreach (var service in this._assistanceServiceManagerService.AvailableServices)
         {
             var button = new MenuButtonItem(service.Options.RequestLabel, service.Options.Description);
             var id = Guid.Empty;

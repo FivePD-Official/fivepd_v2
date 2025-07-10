@@ -13,7 +13,7 @@ public sealed record AssistanceServiceOptions
 
     public string Description { get; init; }
 
-    public List<Vector3> SpawnLocations { get; init; } = new();
+    // public List<Vector3> SpawnLocations { get; init; } = new();
 
     public float SpawnHeading { get; init; }
 };

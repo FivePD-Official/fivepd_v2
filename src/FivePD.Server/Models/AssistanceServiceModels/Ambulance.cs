@@ -146,7 +146,8 @@ public class Ambulance : AssistanceService
 
         await Task.Delay(5000); // TODO: wait until driver is close to ped
 
-        var couldRevive = this._randomService.GetRandomChance <= this._configService.GeneralConfig.AssistanceServices.Ambulance.ChanceToRevive;
+        // ?? var couldRevive = this._randomService.GetRandomChance <= this._configService.GeneralConfig.AssistanceServices.Ambulance.ChanceToRevive;
+        var couldRevive = this._randomService.GetRandomChance <= 50; // TODO: use VehicleConfig.Options to store ChanceToRevive
         if (couldRevive)
         {
             this._cfxService.ResurrectPed(ped.NetworkId);

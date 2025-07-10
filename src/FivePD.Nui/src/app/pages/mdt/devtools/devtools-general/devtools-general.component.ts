@@ -60,7 +60,7 @@ export class DevtoolsGeneralComponent {
     },
     {
       type: 'button',
-      label: 'Get current coordinate',
+      label: 'Add my current coordinate',
       show: () => true,
       disabled: () => false,
       onClick: () => {

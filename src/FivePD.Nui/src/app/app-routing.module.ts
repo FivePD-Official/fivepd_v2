@@ -103,6 +103,23 @@ const mdtRoutes: Routes = [
         path: 'ranks',
         loadComponent: () => import('./pages/mdt/settings/ranks/ranks.component').then(m => m.RanksComponent),
       },
+      {
+        path: 'assistance-services',
+        children: [
+          {
+            path: 'type-configs/:id',
+            loadComponent: () => import('./pages/mdt/settings/assistance-services/assistance-service-type-config/assistance-service-type-config.component').then(m => m.AssistanceServiceTypeConfigComponent),
+          },
+          {
+            path: 'stations/:id',
+            loadComponent: () => import('./pages/mdt/settings/assistance-services/assistance-service-station/assistance-service-station.component').then(m => m.AssistanceServiceStationComponent),
+          },
+          {
+            path: '',
+            loadComponent: () => import('./pages/mdt/settings/assistance-services/assistance-services.component').then(m => m.AssistanceServicesComponent),
+          }
+        ]
+      },
     ]
   },
   {

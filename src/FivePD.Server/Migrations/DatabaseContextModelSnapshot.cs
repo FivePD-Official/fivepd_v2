@@ -17,6 +17,80 @@ namespace FivePD.Server.Migrations
                 .HasAnnotation("ProductVersion", "3.1.32")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("FivePD.Server.Models.AssistanceServiceStation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_assistance_service_stations");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.AssistanceServiceStationTypeConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ActiveCapacity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssistanceServiceStationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TypeConfigId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssistanceServiceStationId");
+
+                    b.HasIndex("TypeConfigId");
+
+                    b.ToTable("fivepd_assistance_service_station_type_configs");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.AssistanceServiceTypeConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("AssemblyName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("ManualSpawnLocations")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("SpawnType")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("TypeName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("fivepd_assistance_service_type_configs");
+                });
+
             modelBuilder.Entity("FivePD.Server.Models.CalloutDetails", b =>
                 {
                     b.Property<int>("Id")
@@ -695,6 +769,18 @@ namespace FivePD.Server.Migrations
                     b.HasIndex("VehicleDataId");
 
                     b.ToTable("fivepd_vehicle_documents");
+                });
+
+            modelBuilder.Entity("FivePD.Server.Models.AssistanceServiceStationTypeConfig", b =>
+                {
+                    b.HasOne("FivePD.Server.Models.AssistanceServiceStation", null)
+                        .WithMany("TypeConfigs")
+                        .HasForeignKey("AssistanceServiceStationId");
+
+                    b.HasOne("FivePD.Server.Models.AssistanceServiceTypeConfig", "TypeConfig")
+                        .WithMany()
+                        .HasForeignKey("TypeConfigId")
+                        .HasConstraintName("FK_fivepd_assistance_service_station_type_configs_fivepd_assis~1");
                 });
 
             modelBuilder.Entity("FivePD.Server.Models.CalloutDetailsDepartment", b =>

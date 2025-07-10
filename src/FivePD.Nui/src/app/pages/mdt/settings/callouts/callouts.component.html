@@ -1,3 +1,5 @@
 <app-grid [columns]="columns"
           [data]="calloutDetails$ | async"
-          (onCollationChange)="collation$.next($event)"/>
+          (onCollationChange)="collation$.next($event)"
+          [rowLinkResolver]="rowLinkResolver"
+          [rowsClickable]="_userService.userHasRole(UserRole.Admin)"/>

@@ -55,4 +55,18 @@ export class CustomValidators {
   static dropdownMultiRequired(control: AbstractControl): ValidationErrors | null {
     return !Array.isArray(control.value) ? null : control.value?.length === 0 ? {required: true} : null;
   }
+
+  static positionComponentsRequired(): ValidatorFn {
+    return c => {
+      if (c.value === undefined) {
+        return {positionComponentsRequired: true};
+      }
+
+      if ([c.value['X'], c.value['Y'], c.value['Z']].some(value => value === null || value === undefined)) {
+        return {positionComponentsRequired: true};
+      }
+
+      return null;
+    }
+  }
 }

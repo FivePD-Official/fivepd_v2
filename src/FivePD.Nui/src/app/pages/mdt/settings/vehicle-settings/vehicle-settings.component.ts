@@ -3,12 +3,12 @@ import {
   Button,
   CheckboxField,
   Collation,
-  Column,
+  Column, PositionField,
   FormInputBase,
   ModalResponse,
   MultiSelectField,
   NumberField,
-  TextField,
+  TextField, Vector3,
   VehicleConfig,
   VehicleConfigType
 } from "@models";
@@ -29,6 +29,7 @@ import { Validators } from "@angular/forms";
 import { ValueResolver } from "@services/modals/modal-form/modal-form-value-resolver";
 import { LocalizationService } from "@services/localization/localization.service";
 import { collationWithAdditionalFilters } from "../../../../helpers/request";
+import { CustomValidators } from "../../../../helpers/validators";
 
 function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
   return [
@@ -78,7 +79,7 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
 }
 
 function createTowTruckFields(localizationService: LocalizationService, vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
-  const towedVehiclePositionOffset = vehicleConfig?.Options['TowedVehiclePositionOffset'];
+  const towedVehiclePositionOffset = vehicleConfig?.Options['TowedVehiclePositionOffset'] as Vector3;
 
   return [
     ...createBaseFields(vehicleConfig),
@@ -89,34 +90,27 @@ function createTowTruckFields(localizationService: LocalizationService, vehicleC
       required: true,
       value: vehicleConfig?.Options['SirenActive'],
     }),
-    new TextField({
+    new PositionField({
       key: 'TowedVehiclePositionOffset',
       label: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.TOWED_VEHICLE_POSITION_OFFSET.LABEL'),
-      // placeholder: 'TODO: replace with 3 fields for x,y,z',
-      helpLabel: 'temporary format: X,Y,Z',
       required: true,
-      value: towedVehiclePositionOffset ? `${towedVehiclePositionOffset['X']},${towedVehiclePositionOffset['Y']},${towedVehiclePositionOffset['Z']}` : '',
+      validators: [CustomValidators.positionComponentsRequired()],
+      value: towedVehiclePositionOffset ? towedVehiclePositionOffset : undefined,
     }),
   ];
 }
 
 function mapTowTruckFields(value: ModalResponse['value']): ModalResponse['value'] {
   const sirenActive = value['SirenActive'];
-  const split = value['TowedVehiclePositionOffset'].split(',');
 
   // delete fields which should be in the Options
   delete value['SirenActive'];
-  delete value['TowedVehiclePositionOffset'];
 
   return {
     ...value,
     Options: {
       SirenActive: sirenActive,
-      TowedVehiclePositionOffset: {
-        X: Number(split[0]),
-        Y: Number(split[1]),
-        Z: Number(split[2]),
-      },
+      TowedVehiclePositionOffset: value['TowedVehiclePositionOffset']
     }
   };
 }
@@ -196,7 +190,7 @@ export class VehicleSettingsComponent {
   readonly ambulanceVehicleConfigColumns: Column<VehicleConfig>[] = [
     this.nameColumn,
     this.modelColumn,
-    this.createActionsColumn(createBaseFields, () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value)),
+    this.createActionsColumn(createBaseFields, () => this.ambulanceVehicleConfigCollation$.next(this.ambulanceVehicleConfigCollation$.value)),
   ];
 
   readonly towTruckVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});

@@ -1,0 +1,33 @@
+<app-base-field [field]="field" [form]="form" [control]="control">
+  <div class="flex flex-row items-center gap-6">
+    <div class="flex flex-row items-center gap-2">
+      <p class="font-medium text-zinc-300">X</p>
+      <input type="number"
+             [formControl]="coordinateX"
+             [attr.id]="field.key"
+             [attr.placeholder]="field.placeholder | translate"
+             [readonly]="field.readonly"/>
+    </div>
+    <div class="flex flex-row items-center gap-2">
+      <p class="font-medium text-zinc-300">Y</p>
+      <input type="number"
+             [formControl]="coordinateY"
+             [attr.id]="field.key"
+             [attr.placeholder]="field.placeholder | translate"
+             [readonly]="field.readonly"/>
+    </div>
+    <div class="flex flex-row items-center gap-2 max-w-[150px]">
+      <p class="font-medium text-zinc-300">Z</p>
+      <input type="number"
+             [formControl]="coordinateZ"
+             [attr.id]="field.key"
+             [attr.placeholder]="field.placeholder | translate"
+             [readonly]="field.readonly"/>
+    </div>
+    @if (field.options['showAddCurrentPositionButton']) {
+      <app-button label="Add my current position"
+                  variant="tertiary-bg"
+                  (onClick)="onAddCurrentPosition()"/>
+    }
+  </div>
+</app-base-field>
