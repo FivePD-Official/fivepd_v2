@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PositionFieldComponent } from './position-field.component';
 import { TestHelperModule } from "../../../../test-helpers/test-helper.module";
 import { FormGroup } from "@angular/forms";
-import { TextField } from "@models";
+import { PositionField, TextField } from "@models";
 
 describe('PositionFieldComponent', () => {
   let component: PositionFieldComponent;
@@ -24,7 +24,7 @@ describe('PositionFieldComponent', () => {
     component = fixture.componentInstance;
 
     component.form = new FormGroup([]);
-    component.field = new TextField({});
+    component.field = new PositionField({});
 
     fixture.detectChanges();
   });

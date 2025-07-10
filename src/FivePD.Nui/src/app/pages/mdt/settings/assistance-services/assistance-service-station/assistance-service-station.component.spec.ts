@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AssistanceServiceStationComponent } from './assistance-service-station.component';
+import { TestHelperModule } from "../../../../../../test-helpers/test-helper.module";
+import { TippyModule } from "@ngneat/helipopper";
+import { mockedTippyModule } from "../../../../../../test-helpers/mock-tippy";
 
 describe('AssistanceServiceStationComponent', () => {
   let component: AssistanceServiceStationComponent;
@@ -8,9 +10,17 @@ describe('AssistanceServiceStationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AssistanceServiceStationComponent]
+      imports: [
+        AssistanceServiceStationComponent,
+        TestHelperModule.builder()
+          .withLocalizationService()
+          .withTranslatePipe()
+          .withStore()
+          .build()
+      ]
     })
-    .compileComponents();
+      .overrideModule(TippyModule, mockedTippyModule())
+      .compileComponents();
 
     fixture = TestBed.createComponent(AssistanceServiceStationComponent);
     component = fixture.componentInstance;
