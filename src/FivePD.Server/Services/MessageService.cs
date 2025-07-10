@@ -157,17 +157,15 @@ public class MessageService : IMessageService
     private void SendUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<SendMessageRequest>(serializedRequest);
-        var sender = this._databaseContext.Users
-            .AsNoTracking()
-            .WhereAnyIdMatches(player)
-            .FirstOrDefault();
+        var sender = this._playerHandlerService.FindUserOfPlayer(player);
         if (sender is null)
         {
             return;
         }
 
-        var to = this._databaseContext.Users.Where(x => request.To.Contains(x.Id)).ToList();
-        foreach (var user in to)
+        var users = this._databaseContext.Users;
+        var to = request.SendToEveryone ? users.Where(x => x.Id != sender.Id) : users.Where(x => request.To.Contains(x.Id));
+        foreach (var user in to.ToList())
         {
             this.Send(user, request.Subject, request.Content, sender.Name);
         }

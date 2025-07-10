@@ -1,6 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { MessageService } from "@services/message/message.service";
-import { Collation, GeneralConfig, Message, MultiSelectField, SimpleUser, TextareaField, TextField } from "@models";
+import {
+  CheckboxField,
+  Collation,
+  GeneralConfig,
+  Message,
+  MultiSelectField,
+  SimpleUser,
+  TextareaField,
+  TextField
+} from "@models";
 import { ConfigService } from "@services/config/config.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { UserRole, UserService } from "@services/user/user.service";
@@ -66,6 +75,11 @@ export class MessagesComponent {
       fields: (users) => {
         const simpleUsers: SimpleUser[] = Array.isArray(users) ? users : [];
         return [
+          new CheckboxField({
+            key: 'SendToEveryone',
+            label: 'Send to everyone',
+            required: false,
+          }),
           new MultiSelectField({
             key: 'To',
             label: this.localizationService.translate('UI.LABEL.MESSAGES.SEND_FORM.TO'),
@@ -73,10 +87,11 @@ export class MessagesComponent {
             required: true,
             size: 'normal',
             variant: 'secondary',
-            items: () => simpleUsers.map(user => ({
+            show: form => !form.value['SendToEveryone'],
+            items: () => simpleUsers.filter(x => x.Id !== this._userService.user?.User.Id).map(user => ({
               key: user.Id,
               label: user.Name,
-            })),
+            }))
           }),
           new TextField({
             key: 'Subject',
