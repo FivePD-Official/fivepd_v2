@@ -110,7 +110,7 @@ export class LoadoutSettingsComponent {
                 ]
               },
               valueResolver: new ValueResolver(loadoutConfig, this._loadoutConfigService.get(loadoutConfig.Id)),
-              dataResolver: new DataResolver([], this._weaponService.getAllSimple()),
+              dataResolver: new DataResolver([] as SimpleWeapon[], this._weaponService.getAllSimple()),
               buttons: {
                 submit: {
                   variant: 'primary',

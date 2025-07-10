@@ -9,16 +9,24 @@
   MappedVariableDataEntity,
   NumberField,
   TextareaField,
-  TextField, MultiSelectField, SingleSelectFieldOptions
+  TextField, MultiSelectField, SingleSelectFieldOptions, SimplePedHistory, DropdownItem
 } from '@models';
 import { coreAttributeNames, CoreAttributes } from "./core-attributes";
 import { MultiSelectFieldComponent } from "../components/form-inputs/multi-select-field/multi-select-field.component";
 
-export function mapAttributesToFields(attributes: VariableDataAttribute[], entity?: MappedVariableDataEntity, additionalFields: FormInputBase<any>[] = []): FormInputBase<any>[] {
+interface MapAttributesToFieldsOptions {
+  attributes: VariableDataAttribute[];
+  entity?: MappedVariableDataEntity;
+  additionalFields?: FormInputBase<any>[];
+  pedHistoryItems?: DropdownItem[];
+  incidentHistoryItems?: DropdownItem[];
+}
+
+export function mapAttributesToFields(options: MapAttributesToFieldsOptions): FormInputBase<any>[] {
   const fields: FormInputBase<any>[] = [];
 
   // Add predefined fields
-  const singleUser = attributes.find(x => x.Name === CoreAttributes.UserId);
+  const singleUser = options.attributes.find(x => x.Name === CoreAttributes.UserId);
   if (singleUser && !singleUser.Hidden) {
     fields.push(new SingleSelectField({
       key: CoreAttributes.UserId,
@@ -30,12 +38,12 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: singleUser.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [],
-      value: entity ? entity[CoreAttributes.UserId] : undefined,
+      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      value: options.entity ? options.entity[CoreAttributes.UserId] : undefined,
     }));
   }
 
-  const multiUser = attributes.find(x => x.Name === CoreAttributes.UserIds);
+  const multiUser = options.attributes.find(x => x.Name === CoreAttributes.UserIds);
   if (multiUser && !multiUser.Hidden) {
     fields.push(new MultiSelectField({
       key: CoreAttributes.UserIds,
@@ -47,12 +55,12 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: multiUser.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [],
-      value: entity ? (entity[CoreAttributes.UserIds] as any[]) : undefined,
+      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      value: options.entity ? (options.entity[CoreAttributes.UserIds] as any[]) : undefined,
     }));
   }
 
-  const singleDepartment = attributes.find(x => x.Name === CoreAttributes.DepartmentId);
+  const singleDepartment = options.attributes.find(x => x.Name === CoreAttributes.DepartmentId);
   if (singleDepartment && !singleDepartment.Hidden) {
     fields.push(new SingleSelectField({
       key: CoreAttributes.DepartmentId,
@@ -64,12 +72,12 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: singleDepartment.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [],
-      value: entity ? entity[CoreAttributes.DepartmentId] : undefined,
+      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      value: options.entity ? options.entity[CoreAttributes.DepartmentId] : undefined,
     }));
   }
 
-  const multiDepartment = attributes.find(x => x.Name === CoreAttributes.DepartmentIds);
+  const multiDepartment = options.attributes.find(x => x.Name === CoreAttributes.DepartmentIds);
   if (multiDepartment && !multiDepartment.Hidden) {
     fields.push(new MultiSelectField({
       key: CoreAttributes.DepartmentIds,
@@ -81,12 +89,12 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: multiDepartment.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [],
-      value: entity ? (entity[CoreAttributes.DepartmentIds] as any[]) : undefined,
+      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      value: options.entity ? (options.entity[CoreAttributes.DepartmentIds] as any[]) : undefined,
     }));
   }
 
-  const singleIncidentHistory = attributes.find(x => x.Name === CoreAttributes.IncidentHistoryId);
+  const singleIncidentHistory = options.attributes.find(x => x.Name === CoreAttributes.IncidentHistoryId);
   if (singleIncidentHistory && !singleIncidentHistory.Hidden) {
     fields.push(new SingleSelectField({
       key: CoreAttributes.IncidentHistoryId,
@@ -98,12 +106,12 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: singleIncidentHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [],
-      value: entity ? entity[CoreAttributes.IncidentHistoryId] : undefined,
+      items: () => options.incidentHistoryItems ?? [],
+      value: options.entity ? options.entity[CoreAttributes.IncidentHistoryId] : undefined,
     }));
   }
 
-  const multiIncidentHistory = attributes.find(x => x.Name === CoreAttributes.IncidentHistoryIds);
+  const multiIncidentHistory = options.attributes.find(x => x.Name === CoreAttributes.IncidentHistoryIds);
   if (multiIncidentHistory && !multiIncidentHistory.Hidden) {
     fields.push(new MultiSelectField({
       key: CoreAttributes.IncidentHistoryIds,
@@ -115,12 +123,12 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: multiIncidentHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [],
-      value: entity ? (entity[CoreAttributes.IncidentHistoryIds] as any[]) : undefined,
+      items: () => options.incidentHistoryItems ?? [],
+      value: options.entity ? (options.entity[CoreAttributes.IncidentHistoryIds] as any[]) : undefined,
     }));
   }
 
-  const singlePedHistory = attributes.find(x => x.Name === CoreAttributes.PedHistoryId);
+  const singlePedHistory = options.attributes.find(x => x.Name === CoreAttributes.PedHistoryId);
   if (singlePedHistory && !singlePedHistory.Hidden) {
     fields.push(new SingleSelectField({
       key: CoreAttributes.PedHistoryId,
@@ -132,12 +140,12 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: singlePedHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [],
-      value: entity ? entity[CoreAttributes.PedHistoryId] : undefined,
+      items: () => options.pedHistoryItems ?? [],
+      value: options.entity ? options.entity[CoreAttributes.PedHistoryId] : undefined,
     }));
   }
 
-  const multiPedHistory = attributes.find(x => x.Name === CoreAttributes.PedHistoryIds);
+  const multiPedHistory = options.attributes.find(x => x.Name === CoreAttributes.PedHistoryIds);
   if (multiPedHistory && !multiPedHistory.Hidden) {
     fields.push(new MultiSelectField({
       key: CoreAttributes.PedHistoryIds,
@@ -149,18 +157,18 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       defaultItemLabel: multiPedHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [],
-      value: entity ? (entity[CoreAttributes.PedHistoryIds] as any[]) : undefined,
+      items: () => options.pedHistoryItems ?? [],
+      value: options.entity ? (options.entity[CoreAttributes.PedHistoryIds] as any[]) : undefined,
     }));
   }
 
-  const filteredAttributes = attributes
+  const filteredAttributes = options.attributes
     .filter(x => !x.Hidden)
     .filter(x => !coreAttributeNames.includes(x.Name as CoreAttributes));
 
   // Add other non readonly fields
   for (const attr of filteredAttributes) {
-    const options: FormInputBaseOptions<any> = {
+    const inputOptions: FormInputBaseOptions<any> = {
       key: attr.Name,
       label: attr.Label,
       helpLabel: attr.HelpLabel,
@@ -169,15 +177,15 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
       readonly: attr.Readonly,
     };
 
-    if (entity) {
-      options.value = entity[attr.Name];
+    if (options.entity) {
+      inputOptions.value = options.entity[attr.Name];
     }
 
     let inputField: FormInputBase<any> | undefined;
     if (attr.DataType === AttributeDataType.ShortString) {
-      inputField = new TextField(options);
+      inputField = new TextField(inputOptions);
     } else if (attr.DataType === AttributeDataType.LongString) {
-      inputField = new TextareaField(options);
+      inputField = new TextareaField(inputOptions);
     } else if (attr.DataType === AttributeDataType.Integer) {
       if (attr.Options?.Items) {
         const dropdownOptions: FormInputBase<number> & SingleSelectFieldOptions = {
@@ -190,7 +198,7 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
           defaultItemLabel: attr.Label ?? '?',
           size: 'normal',
           variant: 'secondary',
-          value: entity ? options.value : -1,
+          value: options.entity ? inputOptions.value : -1,
           ...options,
         } as any;
 
@@ -199,12 +207,12 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
           ...dropdownOptions,
         });
       } else {
-        inputField = new NumberField(options);
+        inputField = new NumberField(inputOptions);
       }
     } else if (attr.DataType === AttributeDataType.Bool) {
-      inputField = new CheckboxField(options);
+      inputField = new CheckboxField(inputOptions);
     } else if (attr.DataType === AttributeDataType.Date) {
-      inputField = new DateField(options);
+      inputField = new DateField(inputOptions);
     }
 
     if (!inputField) {
@@ -214,7 +222,9 @@ export function mapAttributesToFields(attributes: VariableDataAttribute[], entit
     fields.push(inputField);
   }
 
-  fields.push(...additionalFields);
+  if (options.additionalFields) {
+    fields.push(...options.additionalFields);
+  }
 
   return fields;
 }

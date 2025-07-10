@@ -18,14 +18,16 @@ namespace FivePD.Client.Services;
 internal class WeaponService : IWeaponService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
+    private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaponService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    public WeaponService(EventHandlerDictionary eventHandlerDictionary)
+    public WeaponService(EventHandlerDictionary eventHandlerDictionary, INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
+        this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
@@ -45,7 +47,8 @@ internal class WeaponService : IWeaponService, IOnInit
 
     private void CreateWeapon(ExpandoObject request, CallbackDelegate callbackDelegate)
     {
-        var body = JsonConvert.DeserializeObject<AddWeaponRequest>(JsonConvert.SerializeObject(request));
+        var serializedRequest = JsonConvert.SerializeObject(request);
+        var body = JsonConvert.DeserializeObject<AddWeaponRequest>(serializedRequest);
 
         var isValid = this.CheckWeaponAndComponentValidity(body.Model, body.WeaponComponentHashes);
 
@@ -55,12 +58,13 @@ internal class WeaponService : IWeaponService, IOnInit
             return;
         }
         
-        BaseScript.TriggerServerEvent(Events.UI.Weapon.Create, body, new Action<string>(data => { callbackDelegate.Invoke(data); }));
+        this._networkEventService.TriggerServerEvent(Events.UI.Weapon.Create, serializedRequest, new Action<string>(data => { callbackDelegate.Invoke(data); }));
     }
     
     private void EditWeapon(ExpandoObject request, CallbackDelegate callbackDelegate)
     {
-        var body = JsonConvert.DeserializeObject<EditWeaponRequest>(JsonConvert.SerializeObject(request));
+        var serializedRequest = JsonConvert.SerializeObject(request);
+        var body = JsonConvert.DeserializeObject<EditWeaponRequest>(serializedRequest);
 
         var isValid = this.CheckWeaponAndComponentValidity(body.Model, body.WeaponComponentHashes);
 
@@ -70,7 +74,7 @@ internal class WeaponService : IWeaponService, IOnInit
             return;
         }
         
-        BaseScript.TriggerServerEvent(Events.UI.Weapon.Edit, body, new Action<string>(data => { callbackDelegate.Invoke(data); }));
+        this._networkEventService.TriggerServerEvent(Events.UI.Weapon.Edit, serializedRequest, new Action<string>(data => { callbackDelegate.Invoke(data); }));
     }
 
     public string CheckWeaponAndComponentValidity(string weaponModelName, List<string> componentHashes)
