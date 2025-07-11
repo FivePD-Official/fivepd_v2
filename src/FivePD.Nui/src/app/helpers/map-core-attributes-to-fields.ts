@@ -2,30 +2,37 @@
   AttributeDataType,
   CheckboxField,
   DateField,
-  SingleSelectField,
+  DropdownItem,
   FormInputBase,
   FormInputBaseOptions,
-  VariableDataAttribute,
   MappedVariableDataEntity,
+  MultiSelectField,
   NumberField,
+  SingleSelectField,
+  SingleSelectFieldOptions,
   TextareaField,
-  TextField, MultiSelectField, SingleSelectFieldOptions, SimplePedHistory, DropdownItem
+  TextField,
+  VariableDataAttribute
 } from '@models';
 import { coreAttributeNames, CoreAttributes } from "./core-attributes";
-import { MultiSelectFieldComponent } from "../components/form-inputs/multi-select-field/multi-select-field.component";
 
 interface MapAttributesToFieldsOptions {
   attributes: VariableDataAttribute[];
   entity?: MappedVariableDataEntity;
   additionalFields?: FormInputBase<any>[];
-  pedHistoryItems?: DropdownItem[];
-  incidentHistoryItems?: DropdownItem[];
+  coreAttributeDropdownItems?: CoreAttributeDropdownItems;
 }
 
-export function mapAttributesToFields(options: MapAttributesToFieldsOptions): FormInputBase<any>[] {
+export interface CoreAttributeDropdownItems {
+  userIds: DropdownItem[];
+  departmentIds: DropdownItem[];
+  incidentHistoryIds: DropdownItem[];
+  pedHistoryIds: DropdownItem[];
+}
+
+export function mapCoreAttributesToFields(options: MapAttributesToFieldsOptions): FormInputBase<any>[] {
   const fields: FormInputBase<any>[] = [];
 
-  // Add predefined fields
   const singleUser = options.attributes.find(x => x.Name === CoreAttributes.UserId);
   if (singleUser && !singleUser.Hidden) {
     fields.push(new SingleSelectField({
@@ -38,7 +45,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: singleUser.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      items: () => options.coreAttributeDropdownItems?.userIds ?? [],
       value: options.entity ? options.entity[CoreAttributes.UserId] : undefined,
     }));
   }
@@ -55,7 +62,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: multiUser.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      items: () => options.coreAttributeDropdownItems?.userIds ?? [],
       value: options.entity ? (options.entity[CoreAttributes.UserIds] as any[]) : undefined,
     }));
   }
@@ -72,7 +79,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: singleDepartment.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      items: () => options.coreAttributeDropdownItems?.departmentIds ?? [],
       value: options.entity ? options.entity[CoreAttributes.DepartmentId] : undefined,
     }));
   }
@@ -89,12 +96,13 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: multiDepartment.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => [], // TODO: add items to MapAttributesToFieldsOptions and return that value here
+      items: () => options.coreAttributeDropdownItems?.departmentIds ?? [],
       value: options.entity ? (options.entity[CoreAttributes.DepartmentIds] as any[]) : undefined,
     }));
   }
 
   const singleIncidentHistory = options.attributes.find(x => x.Name === CoreAttributes.IncidentHistoryId);
+  console.log('options.coreAttributeDropdownItems', options.coreAttributeDropdownItems?.incidentHistoryIds)
   if (singleIncidentHistory && !singleIncidentHistory.Hidden) {
     fields.push(new SingleSelectField({
       key: CoreAttributes.IncidentHistoryId,
@@ -106,7 +114,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: singleIncidentHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => options.incidentHistoryItems ?? [],
+      items: () => options.coreAttributeDropdownItems?.incidentHistoryIds ?? [],
       value: options.entity ? options.entity[CoreAttributes.IncidentHistoryId] : undefined,
     }));
   }
@@ -123,7 +131,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: multiIncidentHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => options.incidentHistoryItems ?? [],
+      items: () => options.coreAttributeDropdownItems?.incidentHistoryIds ?? [],
       value: options.entity ? (options.entity[CoreAttributes.IncidentHistoryIds] as any[]) : undefined,
     }));
   }
@@ -140,7 +148,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: singlePedHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => options.pedHistoryItems ?? [],
+      items: () => options.coreAttributeDropdownItems?.pedHistoryIds ?? [],
       value: options.entity ? options.entity[CoreAttributes.PedHistoryId] : undefined,
     }));
   }
@@ -157,7 +165,7 @@ export function mapAttributesToFields(options: MapAttributesToFieldsOptions): Fo
       defaultItemLabel: multiPedHistory.Label ?? '-',
       size: 'normal',
       variant: 'secondary',
-      items: () => options.pedHistoryItems ?? [],
+      items: () => options.coreAttributeDropdownItems?.pedHistoryIds ?? [],
       value: options.entity ? (options.entity[CoreAttributes.PedHistoryIds] as any[]) : undefined,
     }));
   }

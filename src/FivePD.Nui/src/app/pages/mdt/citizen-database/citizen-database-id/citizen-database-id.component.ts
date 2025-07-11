@@ -13,7 +13,7 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
-import { formatDate, mapAttributesToFields } from "@helpers";
+import { formatDate, mapCoreAttributesToFields } from "@helpers";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { EntityViewComponent } from "./_components/entity-view.component";
@@ -128,16 +128,7 @@ export class CitizenDatabaseIdComponent {
             buttons: {
               submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
             },
-            fields: (_, pedHistoryItems) => mapAttributesToFields({attributes, pedHistoryItems}),
-            dataResolver: new DataResolver(
-              [] as DropdownItem[],
-              this._pedHistoryService.getAllSimple().pipe(
-                map(items => items.map(item => ({
-                  key: item.Id,
-                  label: `${item.Firstname} ${item.Lastname} - ${item.Gender === FGender.Male ? 'Male' : 'Female'} - ${formatDate(new Date(item.Birthdate), 'none')}`,
-                })))
-              )
-            )
+            fields: (_, _2, coreAttributeDropdownItems) => mapCoreAttributesToFields({attributes, coreAttributeDropdownItems}),
           }).result.pipe(res => {
             return res;
           })

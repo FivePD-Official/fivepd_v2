@@ -20,6 +20,7 @@ using FivePD.Server.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Debug = System.Diagnostics.Debug;
 
 namespace FivePD.Server.Services.VariableData;
 
@@ -496,6 +497,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
                 entity.MappedValues["PedHistory"] = value;
             }
 
+            Debug.WriteLine($"AAAA: {entity.MappedValues.ContainsKey("PedHistoryIds")}");
             if (entity.MappedValues.ContainsKey("PedHistoryIds"))
             {
                 var ids = (entity.MappedValues["PedHistoryIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
@@ -741,7 +743,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        var entity = this.InternalGetEntity(request.Id);
+        var entity = this.InternalGetEntity(request.Id, queryCoreAttributeValue: true);
         this._networkEventService.TriggerEventSerialized(player, guid, entity);
     }
 
@@ -799,7 +801,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.ENTITY.SUCCESS.CREATE");
     }
 
     [UIEvent(Events.UI.VariableData.EditEntity)]

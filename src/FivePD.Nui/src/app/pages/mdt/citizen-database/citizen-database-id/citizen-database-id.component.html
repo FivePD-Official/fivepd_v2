@@ -111,7 +111,8 @@
 
       <entity-view title="UI.LABEL.ARREST_REPORT.PLURAL"
                    [entities]="(arrestReports$ | async)!"
-                   [showCreateButton]="false"/>
+                   [showCreateButton]="true"
+                   (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.ArrestReport)"/>
 
     </app-container>
 
