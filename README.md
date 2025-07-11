@@ -55,5 +55,6 @@ In case you need the new localization file to be loaded on the server just build
 1. Run the `Build localization` configuration to generate the optimized localization file. Will output
    to `FivePD.Statics/Localizations`.
 1. Run `npm run build` in the `FivePD.Nui` project. Will output to `FivePD.Nui/dist`
+1. Copy all files from `FivePD.Nui/dist/browser` to `build-public/Libraries/FivePD.Nui`
 1. In the `fxmanifest.lua` change the `ui_page` value to `Libraries/FivePD.Nui/index.html`
 1. Obfuscate!
