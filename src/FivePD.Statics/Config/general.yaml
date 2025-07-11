@@ -21,7 +21,7 @@ Features:
 # DateFormat: MM-dd-yyyy TODO: not implemented yet
 
 Audio:
-  # file names should be relative to the "fivepd/Audio" directory
+  # file names should be relative to the "fivepd/Libraries/FivePD.Nui/assets/audio" directory
   Files:
     DutyNotification: "notification.mp3"
     BackupRequested: "single_beep.mp3"

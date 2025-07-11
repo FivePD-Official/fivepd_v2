@@ -13,6 +13,7 @@ import { AudioService } from "@services/audio/audio.service";
 import { FeedbackService } from "@services/feedback/feedback.service";
 import { BaseNuiEvent } from "@models";
 import { UserService } from "@services/user/user.service";
+import { environment } from "../environments/environment";
 
 @Component({
     selector: 'app-root',
@@ -109,15 +110,27 @@ export class AppComponent implements OnInit {
     document.body.style.display = 'none';
 
     const style = document.createElement('style');
-    style.appendChild(document.createTextNode(`\
-      @font-face {
-        font-family: 'Satoshi';
-        src: url('../assets/Satoshi-Variable.woff2') format('woff2');
-        font-weight: 300 900;
-        font-display: block;
-        font-style: normal;
-      }
-    `));
+    if (environment.production) {
+      style.appendChild(document.createTextNode(`\
+        @font-face {
+          font-family: 'Satoshi';
+          src: url('assets/Satoshi-Variable.woff2') format('woff2');
+          font-weight: 300 900;
+          font-display: block;
+          font-style: normal;
+        }
+      `));
+    } else {
+      style.appendChild(document.createTextNode(`\
+        @font-face {
+          font-family: 'Satoshi';
+          src: url('../assets/Satoshi-Variable.woff2') format('woff2');
+          font-weight: 300 900;
+          font-display: block;
+          font-style: normal;
+        }
+      `));
+    }
     document.head.appendChild(style);
   }
 }
