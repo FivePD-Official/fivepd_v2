@@ -1,20 +1,27 @@
 import { AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormInputBase, FormSubmitEvent, ModalFormOptions, MultiSelectField, SingleSelectField } from '@models';
+import { DropdownItem, FormInputBase, FormSubmitEvent, ModalFormOptions } from '@models';
 import { DynamicFormComponent } from '../../dynamic-form/dynamic-form.component';
-import { forkJoin, map, Observable, of, Subject, switchMap, takeUntil, tap, zip } from 'rxjs';
+import { map, Observable, of, Subject, switchMap, takeUntil, tap, zip } from 'rxjs';
 import { ModalRef } from '@services/modals/modal/modal-ref';
 import { IncidentHistoryService } from "@services/incident-history/incident-history.service";
 import { CoreAttributes } from "../../../helpers/core-attributes";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { FGender } from "@enums";
-import { formatDate } from "@helpers";
+import { CoreAttributeDropdownItems, formatDate } from "@helpers";
 import { DepartmentService } from "@services/department/department.service";
 import { UserService } from "@services/user/user.service";
 
+interface CoreAttributeDropdownItemObservables {
+  userIds: Observable<DropdownItem[]>;
+  departmentIds: Observable<DropdownItem[]>;
+  pedHistoryIds: Observable<DropdownItem[]>;
+  incidentHistoryIds: Observable<DropdownItem[]>;
+}
+
 @Component({
-    selector: 'app-modal-form',
-    templateUrl: './modal-form.component.html',
-    imports: [DynamicFormComponent]
+  selector: 'app-modal-form',
+  templateUrl: './modal-form.component.html',
+  imports: [DynamicFormComponent]
 })
 export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -43,7 +50,7 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   populateForm(): void {
-    const { fields, valueResolver, dataResolver } = this.modalRef.options as ModalFormOptions<any>;
+    const {fields, valueResolver, dataResolver} = this.modalRef.options as ModalFormOptions<any>;
     if (!fields) {
       return;
     }
@@ -51,36 +58,58 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
     let entity: any;
     let additionalData: any;
 
-    if (valueResolver) {
-      valueResolver.value.pipe(
-        takeUntil(this.destroy$),
-        tap(val => entity = val),
-        switchMap(() => {
-          if (dataResolver) {
-            return dataResolver.value;
-          } else {
-            return of(undefined);
-          }
-        }),
-        takeUntil(this.destroy$),
-      ).subscribe(val => {
-        additionalData = val;
-        this.updateFields(fields, entity, additionalData);
-      });
-    } else if (dataResolver) {
-      dataResolver.value.pipe(
-        takeUntil(this.destroy$),
-      ).subscribe(val => {
-        additionalData = val;
-        this.updateFields(fields, entity, additionalData);
-      });
-    } else {
-      this.updateFields(fields, undefined, undefined);
-    }
+    const a = this.getPredefinedAttributeObservables(fields());
+    const coreAttributeDropdownItems: CoreAttributeDropdownItems = {
+      userIds: [],
+      departmentIds: [],
+      pedHistoryIds: [],
+      incidentHistoryIds: [],
+    };
+
+    zip([
+      a.userIds,
+      a.departmentIds,
+      a.pedHistoryIds,
+      a.incidentHistoryIds,
+    ]).subscribe(([u, d, p, i]) => {
+      coreAttributeDropdownItems.userIds = u;
+      coreAttributeDropdownItems.departmentIds = d;
+      coreAttributeDropdownItems.pedHistoryIds = p;
+      coreAttributeDropdownItems.incidentHistoryIds = i;
+
+      if (valueResolver) {
+        valueResolver.value.pipe(
+          takeUntil(this.destroy$),
+          tap(val => entity = val),
+          switchMap(() => {
+            if (dataResolver) {
+              return dataResolver.value;
+            } else {
+              return of(undefined);
+            }
+          }),
+          takeUntil(this.destroy$),
+        ).subscribe(val => {
+          additionalData = val;
+          this.updateFields(fields, entity, additionalData, coreAttributeDropdownItems);
+        });
+      } else if (dataResolver) {
+        dataResolver.value.pipe(
+          takeUntil(this.destroy$),
+        ).subscribe(val => {
+          additionalData = val;
+          this.updateFields(fields, entity, additionalData, coreAttributeDropdownItems);
+        });
+      } else {
+        this.updateFields(fields, undefined, undefined, coreAttributeDropdownItems);
+      }
+    });
+
+
   }
 
-  private updateFields(fieldsFunction: (entity?: any, additionalData?: any) => FormInputBase<any>[], entity?: any, additionalData?: any): void {
-    this.fields = fieldsFunction(entity, additionalData);
+  private updateFields(fieldsFunction: (entity?: any, additionalData?: any, coreAttributeDropdownItems?: CoreAttributeDropdownItems) => FormInputBase<any>[], entity?: any, additionalData?: any, coreAttributeDropdownItems?: CoreAttributeDropdownItems): void {
+    this.fields = fieldsFunction(entity, additionalData, coreAttributeDropdownItems);
   }
 
   submit(event?: FormSubmitEvent): void {
@@ -99,27 +128,27 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // TODO: why is this not invoked anywhere? current impl is not dynamic, example: https://github.com/FivePD-Official/fivepd/commit/406cd77e70140f3195919be2cbb77e6fbf7332d5#diff-ff2ce897f5b65b89e71e53125f4efaaa10cc90f0dfaf685acade83150e3d01f7R64
-  private getPredefinedAttributeObservables(fields: FormInputBase<any>[]): Observable<any>[] {
-    const observables: Observable<any>[] = [];
+  private getPredefinedAttributeObservables(fields: FormInputBase<any>[]): CoreAttributeDropdownItemObservables {
+    const observables: CoreAttributeDropdownItemObservables = {
+      userIds: of([]),
+      departmentIds: of([]),
+      pedHistoryIds: of([]),
+      incidentHistoryIds: of([]),
+    };
+
+    // const observables: Observable<any>[] = [];
 
     const [singleUser, multiUser] = [
       fields.find(x => x.key === CoreAttributes.UserId),
       fields.find(x => x.key === CoreAttributes.UserIds),
     ];
     if (singleUser || multiUser) {
-      observables.push(this._userService.getAllSimple().pipe(tap(res => {
-          const mapped = res.map(item => ({
-            key: item.Id,
-            label: item.Name,
-          }));
-          if (singleUser) {
-            (singleUser as any)!.items = mapped;
-          }
-          if (multiUser) {
-            (multiUser as any)!.items = mapped;
-          }
-        })),
-      );
+      observables.userIds = this._userService.getAllSimple().pipe(map(res => {
+        return res.map(item => ({
+          key: item.Id,
+          label: item.Name,
+        }))
+      }));
     }
 
     const [singleDepartment, multiDepartment] = [
@@ -127,19 +156,12 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
       fields.find(x => x.key === CoreAttributes.DepartmentIds),
     ];
     if (singleDepartment || multiDepartment) {
-      observables.push(this._departmentService.getAllSimple().pipe(tap(res => {
-          const mapped = res.map(item => ({
-            key: item.Id,
-            label: item.Name,
-          }));
-          if (singleDepartment) {
-            (singleDepartment as SingleSelectField)!.items = () => mapped;
-          }
-          if (multiDepartment) {
-            (multiDepartment as MultiSelectField)!.items = () => mapped;
-          }
+      observables.departmentIds = this._departmentService.getAllSimple().pipe(map(res => {
+        return res.map(item => ({
+          key: item.Id,
+          label: item.Name,
         }))
-      );
+      }))
     }
 
     const [singleIncidentHistory, multiIncidentHistory] = [
@@ -147,19 +169,12 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
       fields.find(x => x.key === CoreAttributes.IncidentHistoryIds),
     ];
     if (singleIncidentHistory || multiIncidentHistory) {
-      observables.push(this._incidentHistoryService.getAllOfUser().pipe(tap(res => {
-          const mapped = res.map(item => ({
-            key: item.Id,
-            label: `${item.Title} (${item.GeneratedAt})`,
-          }));
-          if (singleIncidentHistory) {
-            (singleIncidentHistory as SingleSelectField)!.items = () => mapped;
-          }
-          if (multiIncidentHistory) {
-            (multiIncidentHistory as MultiSelectField)!.items = () => mapped;
-          }
-        })),
-      );
+      observables.incidentHistoryIds = this._incidentHistoryService.getAllOfUser().pipe(map(res => {
+        return res.map(item => ({
+          key: item.Id,
+          label: `${item.Title} (${item.GeneratedAt})`,
+        }))
+      }))
     }
 
     const [singlePedHistory, multiPedHistory] = [
@@ -167,23 +182,12 @@ export class ModalFormComponent implements OnInit, AfterViewInit, OnDestroy {
       fields.find(x => x.key === CoreAttributes.PedHistoryIds),
     ];
     if (singlePedHistory || multiPedHistory) {
-      observables.push(this._pedHistoryService.getAllSimple().pipe(tap(res => {
-          const mapped = res.map(item => ({
-            key: item.Id,
-            label: `${item.Firstname} ${item.Lastname} - ${item.Gender === FGender.Male ? 'Male' : 'Female'} - ${formatDate(new Date(item.Birthdate), 'none')}`,
-          }));
-          if (singlePedHistory) {
-            (singlePedHistory as SingleSelectField)!.items = () => mapped;
-          }
-          if (multiPedHistory) {
-            (multiPedHistory as MultiSelectField)!.items = () => mapped;
-          }
+      observables.pedHistoryIds = this._pedHistoryService.getAllSimple().pipe(map(res => {
+        return res.map(item => ({
+          key: item.Id,
+          label: `${item.Firstname} ${item.Lastname} - ${item.Gender === FGender.Male ? 'Male' : 'Female'} - ${formatDate(new Date(item.Birthdate), 'none')}`,
         }))
-      );
-    }
-
-    if (!observables.length) {
-      observables.push(of(null));
+      }))
     }
 
     return observables;

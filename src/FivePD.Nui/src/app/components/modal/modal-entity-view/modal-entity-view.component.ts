@@ -37,8 +37,8 @@ export class ModalEntityViewComponent implements OnInit {
     this.columnsGridStyle = `1fr / repeat(${this.modalRef.options?.columns ?? 1}, 1fr)`;
   }
 
-  typeof(value: any): string {
-    return typeof value;
+  isArray(value: any): value is EntityValueLink[] {
+    return Array.isArray(value);
   }
 
   onLinkClick(link: EntityValueLink): void {
@@ -65,5 +65,4 @@ export class ModalEntityViewComponent implements OnInit {
     }
     this.entityValueColumns = columns;
   }
-
 }
