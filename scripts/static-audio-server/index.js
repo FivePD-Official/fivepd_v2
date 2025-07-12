@@ -9,7 +9,7 @@ app.get("/", (_, res) => res.send(""));
 app.use(
   "/audio",
   express.static(
-    path.join(__dirname, "../../src/FivePD.Nui/src/fivepd/assets/audio")
+    path.join(__dirname, "../../src/FivePD.Nui/src/assets/audio")
   )
 );
 

@@ -190,6 +190,11 @@ internal readonly record struct Events
             public const string UpdateDetails = "fivepd:player:updateDetails";
         }
 
+        public readonly record struct Information
+        {
+            public const string Update = "fivepd:information:update";
+        }
+
         public readonly record struct Department
         {
             public const string GetAll = "fivepd:department:getAll";
