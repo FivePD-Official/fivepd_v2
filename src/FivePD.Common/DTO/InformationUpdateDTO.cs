@@ -9,7 +9,7 @@ namespace FivePD.Common.DTO;
 [Obfuscate]
 internal sealed record InformationUpdateDTO
 {
-    public readonly string Event = "fivepd:ui:information:update";
+    public readonly string Event = Events.UI.Information.Update;
 
     public string Status { get; set; }
 
