@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.EntityWrappers;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.UIModels.MenuModels;
 using Cfx = CitizenFX.Core.Native;
@@ -20,23 +19,32 @@ public class SceneManagerMenu : Menu
     private readonly ISceneManagementService _sceneManagementService;
     private readonly IMenuService _menuService;
     private readonly IEntityService _entityService;
+    private readonly IVector3Service _vector3Service;
+    private readonly ICfxService _cfxService;
+
+    private FPlayer _currentPlayer;
 
     private int _selectedSpeedZoneSpeed;
     private int _selectedSpeedZoneRadius;
     private Guid _createdSpeedZoneId = Guid.Empty;
-    private FPlayer _currentPlayer;
+
+    private List<Prop> _props = new();
 
     public SceneManagerMenu(
         IConfigService configService,
         ISceneManagementService sceneManagementService,
         IMenuService menuService,
-        IEntityService entityService)
+        IEntityService entityService,
+        IVector3Service vector3Service,
+        ICfxService cfxService)
         : base(Controls.SceneManagerMenu.Id, Controls.SceneManagerMenu.Title, Controls.SceneManagerMenu.Key)
     {
         this._configService = configService;
         this._sceneManagementService = sceneManagementService;
         this._menuService = menuService;
         this._entityService = entityService;
+        this._vector3Service = vector3Service;
+        this._cfxService = cfxService;
 
         sceneManagementService.SpeedZoneDeleted += (_, args) =>
         {
@@ -69,7 +77,7 @@ public class SceneManagerMenu : Menu
 
         if (this._configService.GeneralConfig.Menu.SceneManager.ObjectPlacement.Enabled)
         {
-            // TODO: uncomment: items.AddRange(this.CreateObjectPlacementItems());
+            items.AddRange(this.CreateObjectPlacementItems());
         }
 
         return items;
@@ -145,7 +153,8 @@ public class SceneManagerMenu : Menu
             false);
         this.ReleaseTraffic.OnSelect += p =>
         {
-            Debug.WriteLine($"pos: {Math.Sqrt(this._sceneManagementService.SpeedZones()[0].Position.DistanceToSquared2D(p.GetUnderlyingPlayer().Character.Position))}");
+            Debug.WriteLine(
+                $"pos: {Math.Sqrt(this._sceneManagementService.SpeedZones()[0].Position.DistanceToSquared2D(p.GetUnderlyingPlayer().Character.Position))}");
             this._sceneManagementService.ReleaseSpeedZoneTraffic(this._createdSpeedZoneId);
             return Task.CompletedTask;
         };
@@ -165,27 +174,50 @@ public class SceneManagerMenu : Menu
 
     private List<MenuItem> CreateObjectPlacementItems()
     {
-        var items = new List<MenuItem> { new MenuDividerItem("Object placement") };
+        var items = new List<MenuItem> { new MenuDividerItem("UI.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.TITLE") };
 
         var objects = this._configService.GeneralConfig.Menu.SceneManager.ObjectPlacement.Objects;
-        var speedSelector = new MenuListItem("Spawn object", string.Empty, objects
+        var speedSelector = new MenuListItem("UI.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.SPAWN.TITLE", string.Empty, objects
             .Select(x => new MenuListOption(x.Name.ToString()))
             .ToList());
         speedSelector.OnSelect += async (player, index) =>
         {
-            var a = player.GetUnderlyingPlayer().Character.Position;
-            var f = player.GetUnderlyingPlayer().Character.ForwardVector();
-            var pos = a + f * 2f;
-            var prop = await this._entityService.SpawnPropAsync(Cfx.API.GetHashKey(objects[index].Model), pos);
+            var forwardVector = await this._vector3Service.GetPlayerForwardVectorAsync(player.GetUnderlyingPlayer());
+            var prop = await this._entityService.SpawnPropAsync(
+                Cfx.API.GetHashKey(objects[index].Model),
+                player.GetUnderlyingPlayer().Character.Position + forwardVector * 2f);
+            prop.Heading = player.GetUnderlyingPlayer().Character.Heading;
+            this._cfxService.PlaceObjectOnGroundProperly(prop.NetworkId);
+            this._props.Add(prop);
         };
         items.Add(speedSelector);
 
-        var place = new MenuButtonItem("Delete all objects", string.Empty, false);
-        place.OnSelect += (player) => { return Task.CompletedTask; };
+        var place = new MenuButtonItem("UI.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.DELETE_ALL.TITLE", string.Empty);
+        place.OnSelect += _ =>
+        {
+            foreach (var prop in this._props)
+            {
+                Cfx.API.DeleteEntity(prop.Handle);
+            }
+
+            this._props.Clear();
+
+            return Task.CompletedTask;
+        };
         items.Add(place);
 
-        var remove = new MenuButtonItem("Delete previous object", string.Empty, false);
-        remove.OnSelect += (player) => { return Task.CompletedTask; };
+        var remove = new MenuButtonItem("UI.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.DELETE_PREVIOUS.TITLE", string.Empty);
+        remove.OnSelect += _ =>
+        {
+            var lastProp = this._props.LastOrDefault();
+            if (lastProp is not null)
+            {
+                Cfx.API.DeleteEntity(lastProp.Handle);
+                this._props.Remove(lastProp);
+            }
+
+            return Task.CompletedTask;
+        };
         items.Add(remove);
 
         return items;

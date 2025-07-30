@@ -41,6 +41,11 @@ internal class Vector3Service : IVector3Service, IOnInit
             var pointOnRoadSide = offsetWithHeading with { Location = point };
             BaseScript.TriggerServerEvent(Events.Generic.Callback, callbackId, JsonConvert.SerializeObject(pointOnRoadSide));
         });
+        
+        this._eventHandlerDictionary[Events.Vector3.GetPlayerForwardVector] += new Action<string>(callbackId =>
+        {
+            BaseScript.TriggerServerEvent(Events.Generic.Callback, callbackId, JsonConvert.SerializeObject(Game.PlayerPed.ForwardVector));
+        });
     }
 
     private Vector3 GetRandomOffset(int entityNetworkId, int offsetMin, int offsetMax)

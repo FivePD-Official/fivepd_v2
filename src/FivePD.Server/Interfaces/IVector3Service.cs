@@ -26,4 +26,11 @@ public interface IVector3Service
     /// <param name="offsetMax">The maximum offset.</param>
     /// <returns>A serialized json with location and heading.</returns>
     public Task<Vector3WithHeading> GetPointOnRoadSideAsync(Entity entity, int offsetMin, int offsetMax);
+
+    /// <summary>
+    /// Gets the forward vector of the specified player.
+    /// </summary>
+    /// <param name="player">The player whose forward vector is to be calculated.</param>
+    /// <returns>A Vector3 representing the forward direction of the player.</returns>
+    public Task<Vector3> GetPlayerForwardVectorAsync(Player player);
 }

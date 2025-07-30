@@ -231,6 +231,17 @@ internal class CfxService : ICfxService, IOnInit
 
                 this._queueService.Queue(() => CitizenFX.Core.Native.API.SetEntityAsMissionEntity(entity.Handle, p1, p2));
             });
+        
+        this._eventHandlerDictionary[Events.Cfx.PlaceObjectOnGroundProperly] += new Action<int>(entityNetId =>
+        {
+            var entity = this.GetEntity(entityNetId);
+            if (entity is null)
+            {
+                return;
+            }
+
+            this._queueService.Queue(() => Cfx.API.PlaceObjectOnGroundProperly(entity.Handle));
+        });
     }
 
     private Entity GetEntity(int networkId)

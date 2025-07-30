@@ -63,4 +63,16 @@ public class Vector3Service : IVector3Service
             }));
         return JsonConvert.DeserializeObject<Vector3WithHeading>(serializedResponse);
     }
+
+    /// <inheritdoc />
+    public async Task<Vector3> GetPlayerForwardVectorAsync(Player player)
+    {
+        if (player is null)
+        {
+            return Vector3.Zero;
+        }
+
+        var serializedResponse = await this._eventService.TriggerEventStrictAsync(player, Events.Vector3.GetPlayerForwardVector);
+        return JsonConvert.DeserializeObject<Vector3>(serializedResponse);
+    }
 }

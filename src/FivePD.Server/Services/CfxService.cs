@@ -135,4 +135,9 @@ public class CfxService : ICfxService
     {
         this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.SetEntityAsMissionEntity, entity, p1, p2);
     }
+    
+    public void PlaceObjectOnGroundProperly(int entity)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.PlaceObjectOnGroundProperly, entity);
+    }
 }
