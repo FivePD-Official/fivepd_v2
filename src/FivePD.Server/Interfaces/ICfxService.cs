@@ -69,4 +69,6 @@ public interface ICfxService
     public void TaskVehicleTempAction(int driver, int vehicle, int action, int time);
 
     public void SetEntityAsMissionEntity(int entity, bool p1, bool p2);
+
+    public void PlaceObjectOnGroundProperly(int entity);
 }

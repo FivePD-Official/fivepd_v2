@@ -44,6 +44,8 @@ internal readonly record struct Events
         public const string GetRandomOffset = "fivepd:vector3:getRandomOffset";
 
         public const string GetPointOnRoadSide = "fivepd:vector3:GetPointOnRoadSide";
+
+        public const string GetPlayerForwardVector = "fivepd:vector3:GetPlayerForwardVector";
     }
 
     public readonly record struct Player
@@ -656,5 +658,8 @@ internal readonly record struct Events
 
         // void SetEntityAsMissionEntity(int entity, bool p1, bool p2);
         public const string SetEntityAsMissionEntity = "fivepd:cfx:SetEntityAsMissionEntity";
+     
+        // bool PlaceObjectOnGroundProperly(int _object);
+        public const string PlaceObjectOnGroundProperly = "fivepd:cfx:PlaceObjectOnGroundProperly";
     }
 }
