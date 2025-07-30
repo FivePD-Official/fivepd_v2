@@ -74,6 +74,9 @@ public interface IUnitManagerService
     public void DisablePanicMode(Unit unit);
 }
 
+/// <summary>
+/// A service for managing units.
+/// </summary>
 internal interface IInternalUnitManagerService
 {
     /// <summary>

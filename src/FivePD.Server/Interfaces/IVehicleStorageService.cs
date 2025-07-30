@@ -31,7 +31,13 @@ public interface IVehicleStorageService
     public VehicleData GetVehicleData(FVehicle vehicle);
 }
 
+/// <summary>
+/// A service for managing and accessing vehicle data.
+/// </summary>
 internal interface IInternalVehicleStorageService
 {
+    /// <summary>
+    /// Gets a dictionary of all vehicles on the server.
+    /// </summary>
     public ConcurrentDictionary<int, FVehicle> InternalVehicles { get; }
 }

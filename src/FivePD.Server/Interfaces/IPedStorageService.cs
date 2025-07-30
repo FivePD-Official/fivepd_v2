@@ -30,7 +30,13 @@ public interface IPedStorageService
     public PedData GetPedData(FPed ped);
 }
 
+/// <summary>
+/// A service for managing and accessing ped data.
+/// </summary>
 internal interface IInternalPedStorageService
 {
+    /// <summary>
+    /// Gets a dictionary of all peds on the server.
+    /// </summary>
     public ConcurrentDictionary<int, FPed> InternalPeds { get; }
 }
