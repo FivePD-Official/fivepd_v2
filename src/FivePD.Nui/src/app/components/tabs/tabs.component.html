@@ -6,13 +6,19 @@
         <p class="text-center text-zinc-400 group-[.active]:text-zinc-100">{{ tab.label | translate }}</p>
       </div>
     } @else {
-      <div [attr.data-testid]="'tab - ' + tab.label"
-           class="group rounded-md h-[40px] cursor-pointer hover:bg-zinc-700 flex flex-row items-center justify-center"
-           [routerLink]="tab.routerLink"
-           routerLinkActive="bg-zinc-700 active"
-           [routerLinkActiveOptions]="{exact: true}">
+      <button type="button"
+              [attr.data-testid]="'tab - ' + tab.label"
+              class="group rounded-md h-[40px] cursor-pointer hover:bg-zinc-700 flex flex-row items-center justify-center"
+              (click)="onTabSelected(tab)"
+              [ngClass]="activeTab === tab ? 'bg-zinc-700 active' : ''">
         <p class="text-center text-zinc-400 group-[.active]:text-zinc-100">{{ tab.label | translate }}</p>
-      </div>
+      </button>
     }
   }
 </div>
+
+@if (displayChildren) {
+  <div>
+    <ng-content select="app-tab" />
+  </div>
+}
