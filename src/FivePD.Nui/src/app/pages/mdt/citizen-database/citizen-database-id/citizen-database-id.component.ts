@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { PedHistoryService } from "@services/ped-history/ped-history.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { DropdownItem, PedLicense, PedLicenseStatus } from "@models";
+import { PedLicense, PedLicenseStatus } from "@models";
 import { BehaviorSubject, combineLatest, filter, map, of, switchMap, tap } from "rxjs";
 import { CoreSetId, FGender, PedLicenseType, SetId } from "@enums";
 import { Store } from "@ngrx/store";
@@ -13,19 +13,20 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 import { ContainerComponent } from '../../../../components/container/container.component';
 import { PageHeaderComponent } from '../../../../components/page-header/page-header.component';
 import { AppActions } from "@store/app.actions";
-import { formatDate, mapCoreAttributesToFields } from "@helpers";
+import { mapCoreAttributesToFields } from "@helpers";
 import { ModalService } from "@services/modals/modal/modal.service";
 import { ModalFormService } from "@services/modals/modal-form/modal-form.service";
 import { EntityViewComponent } from "./_components/entity-view.component";
 import { parseId } from "../../../../helpers/parse-id";
 import { VariableDataService } from "@services/variable-data/variable-data.service";
-import { DataResolver } from "@services/modals/modal-form/modal-form-data-resolver";
+import { Tab, TabsComponent } from "../../../../components/tabs/tabs.component";
+import { TabComponent } from "../../../../components/tabs/tab/tab.component";
 
 @Component({
     selector: 'app-citizen-database-id',
     templateUrl: './citizen-database-id.component.html',
     styleUrls: ['./citizen-database-id.component.sass'],
-    imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, EntityViewComponent, AsyncPipe, RouterLink]
+  imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, EntityViewComponent, AsyncPipe, RouterLink, TabsComponent, TabComponent, TabComponent]
 })
 export class CitizenDatabaseIdComponent {
 
@@ -39,6 +40,24 @@ export class CitizenDatabaseIdComponent {
   protected readonly CoreSetId = CoreSetId;
   protected readonly FGender = FGender;
   protected readonly PedLicenseStatus = PedLicenseStatus;
+
+  readonly tabs: Tab[] = [
+    {
+      label: 'LABEL.TICKET.PLURAL',
+      disabled: () => false,
+      routerLink: '',
+    },
+    {
+      label: 'LABEL.WARNING.PLURAL',
+      disabled: () => false,
+      routerLink: '',
+    },
+    {
+      label: 'UI.LABEL.ARREST_REPORT.PLURAL',
+      disabled: () => false,
+      routerLink: '',
+    },
+  ];
 
   readonly id$ = new BehaviorSubject<number>(0);
   readonly ped$ = this._activatedRoute.params

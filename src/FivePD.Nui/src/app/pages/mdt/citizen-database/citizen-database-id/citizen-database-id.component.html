@@ -97,24 +97,28 @@
 
     </app-container>
 
-    <app-container [rows]="2" [columns]="2">
+    <app-tabs [tabs]="tabs" [displayChildren]="true">
+      <app-tab title="LABEL.TICKET.PLURAL">
+        <entity-view title="LABEL.TICKET.PLURAL"
+                     [entities]="(tickets$ | async)!"
+                     [showCreateButton]="true"
+                     (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.PedTicket)"/>
+      </app-tab>
 
-      <entity-view title="LABEL.TICKET.PLURAL"
-                   [entities]="(tickets$ | async)!"
-                   [showCreateButton]="true"
-                   (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.PedTicket)"/>
+      <app-tab title="LABEL.WARNING.PLURAL">
+        <entity-view title="LABEL.WARNING.PLURAL"
+                     [entities]="(warnings$ | async)!"
+                     [showCreateButton]="true"
+                     (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.PedWarning)"/>
+      </app-tab>
 
-      <entity-view title="LABEL.WARNING.PLURAL"
-                   [entities]="(warnings$ | async)!"
-                   [showCreateButton]="true"
-                   (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.PedWarning)"/>
-
-      <entity-view title="UI.LABEL.ARREST_REPORT.PLURAL"
-                   [entities]="(arrestReports$ | async)!"
-                   [showCreateButton]="true"
-                   (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.ArrestReport)"/>
-
-    </app-container>
+      <app-tab title="UI.LABEL.ARREST_REPORT.PLURAL">
+        <entity-view title="UI.LABEL.ARREST_REPORT.PLURAL"
+                     [entities]="(arrestReports$ | async)!"
+                     [showCreateButton]="true"
+                     (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.ArrestReport)"/>
+      </app-tab>
+    </app-tabs>
 
   </app-container>
 }
