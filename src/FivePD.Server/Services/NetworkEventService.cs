@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Server.Attributes;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.DTO;
@@ -11,6 +12,7 @@ namespace FivePD.Server.Services;
 
 #pragma warning disable
 
+[Obfuscate]
 public class NetworkEventService : INetworkEventService
 {
     public void TriggerEvent(Player player, string guid, params object[] args)

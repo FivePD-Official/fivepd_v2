@@ -4,7 +4,9 @@ using FivePD.Server.Models.AssistanceServiceModels;
 
 namespace FivePD.Server.Interfaces;
 
-#pragma warning disable
+/// <summary>
+/// A service for managing assistance service configurations.
+/// </summary>
 
 public interface IAssistanceServiceConfigService
 {

@@ -4,7 +4,7 @@ using FivePD.Server.Models;
 namespace FivePD.Server.Interfaces;
 
 /// <summary>
-/// Handles the unit backup requests.
+/// A service for managing unit backup requests.
 /// </summary>
 public interface IBackupManagerService
 {

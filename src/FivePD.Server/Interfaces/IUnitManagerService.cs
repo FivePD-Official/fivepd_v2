@@ -6,8 +6,9 @@ using FivePD.Server.Models.Events;
 
 namespace FivePD.Server.Interfaces;
 
-#pragma warning disable
-
+/// <summary>
+/// A service for managing units.
+/// </summary>
 public interface IUnitManagerService
 {
     /// <summary>
@@ -29,12 +30,12 @@ public interface IUnitManagerService
     /// Invoked when a player left a unit.
     /// </summary>
     public event EventHandler<UnitPlayerEventArgs> OnPlayerLeftUnit;
-    
+
     /// <summary>
     /// Invoked when a unit has enabled the panic mode.
     /// </summary>
     public event EventHandler<Unit> OnPanicModeEnabled;
-    
+
     /// <summary>
     /// Invoked when a unit has disabled the panic mode.
     /// </summary>

@@ -6,10 +6,14 @@ using FivePD.Server.Models;
 
 namespace FivePD.Server.Interfaces;
 
-#pragma warning disable
-
+/// <summary>
+/// A service for managing and accessing vehicle data.
+/// </summary>
 public interface IVehicleStorageService
 {
+    /// <summary>
+    /// Gets a readonly dictionary of all vehicles on the server.
+    /// </summary>
     public ReadOnlyDictionary<int, FVehicle> Vehicles { get; }
 
     /// <summary>
@@ -18,7 +22,7 @@ public interface IVehicleStorageService
     /// <param name="networkId">The vehicle's network ID.</param>
     /// <returns>The vehicle or null.</returns>
     public FVehicle TryGetVehicle(int networkId);
-    
+
     /// <summary>
     /// Gets the <see cref="VehicleData"/> of the given <see cref="FVehicle"/>.
     /// </summary>

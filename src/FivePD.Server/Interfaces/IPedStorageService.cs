@@ -5,10 +5,14 @@ using FivePD.Server.Models;
 
 namespace FivePD.Server.Interfaces;
 
-#pragma warning disable
-
+/// <summary>
+/// A service for managing and accessing ped data.
+/// </summary>
 public interface IPedStorageService
 {
+    /// <summary>
+    /// Gets a readonly dictionary of all peds on the server.
+    /// </summary>
     public ReadOnlyDictionary<int, FPed> Peds { get; }
 
     /// <summary>
