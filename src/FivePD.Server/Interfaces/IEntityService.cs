@@ -21,7 +21,7 @@ public interface IEntityService
     /// <param name="heading">The heading the ped will use.</param>
     /// <param name="clearArea">A boolean value representing whether the area should be cleared.</param>
     /// <returns>The spawned ped.</returns>
-    Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading, bool clearArea = false);
+    public Task<FPed> SpawnPedAsync(uint model, Vector3 location, float heading, bool clearArea = false);
 
     /// <summary>
     /// Spawns a vehicle directly on the server.
@@ -31,7 +31,7 @@ public interface IEntityService
     /// <param name="heading">The heading the ped will use.</param>
     /// <param name="clearArea">A boolean value representing whether the area should be cleared.</param>
     /// <returns>The spawned vehicle.</returns>
-    Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading, bool clearArea = false);
+    public Task<FVehicle> SpawnVehicleAsync(uint model, Vector3 location, float heading, bool clearArea = false);
 
     /// <summary>
     /// Spawns a prop (object) via RPC natives.
@@ -40,7 +40,7 @@ public interface IEntityService
     /// <param name="location">A location where the prop will spawn.</param>
     /// <param name="clearArea">A boolean value representing whether the area should be cleared.</param>
     /// <returns>The spawned prop.</returns>
-    Task<Prop> SpawnPropAsync(int model, Vector3 location, bool clearArea = false);
+    public Task<Prop> SpawnPropAsync(int model, Vector3 location, bool clearArea = false);
 
     /// <summary>
     /// Gets all peds.

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,16 +16,24 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Models.AssistanceServiceModels;
 
-#pragma warning disable
-
+/// <summary>
+/// Represents a ride share assistance service.
+/// </summary>
 public class RideShare : AssistanceService
 {
+    private const float SlowingDistance = 125f;
+    private const float MaximumSpeed = 30f;
+    private const float MinimumSpeed = 5f;
+
     private readonly IEntityService _entityService;
     private readonly IVehicleConfigService _vehicleConfigService;
     private readonly IRandomService _randomService;
     private readonly IConfirmationService _confirmationService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IGameNotificationService _gameNotificationService;
+
+    private readonly Guid _waypointId = Guid.NewGuid();
+    private readonly string _waypointSelectedEventName;
 
     private Vector3 _target = Vector3.Zero;
 
@@ -35,13 +43,15 @@ public class RideShare : AssistanceService
     private FPed _closestPed;
     private Vector3 _selectedWaypointToDrive = Vector3.Zero;
 
-    private const float SlowingDistance = 125f;
-    private const float MaximumSpeed = 30f;
-    private const float MinimumSpeed = 5f;
-
-    private readonly Guid _waypointId = Guid.NewGuid();
-    private readonly string _waypointSelectedEventName;
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RideShare"/> class.
+    /// </summary>
+    /// <param name="entityService">The entity service.</param>
+    /// <param name="vehicleConfigService">The vehicle configuration service.</param>
+    /// <param name="randomService">The random service.</param>
+    /// <param name="confirmationService">The confirmation service.</param>
+    /// <param name="eventHandlerDictionary">The event handler dictionary.</param>
+    /// <param name="gameNotificationService">The game notification service.</param>
     public RideShare(
         IEntityService entityService,
         IVehicleConfigService vehicleConfigService,
@@ -61,6 +71,7 @@ public class RideShare : AssistanceService
         this._eventHandlerDictionary[this._waypointSelectedEventName] += this.SetSelectedWaypointToDrive;
     }
 
+    /// <inheritdoc />
     public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
         this._requestedForPlayer = await this._confirmationService.TriggerConfirmationAsync(this.RequestedBy, new ConfirmationProperties
@@ -71,7 +82,7 @@ public class RideShare : AssistanceService
             {
                 ["F1"] = "You",
                 ["F2"] = "Closest pedestrian",
-            }
+            },
         });
 
         if (this._requestedForPlayer)
@@ -92,11 +103,13 @@ public class RideShare : AssistanceService
         }
     }
 
+    /// <inheritdoc />
     public override Task<bool> CanRunAsync()
     {
         return Task.FromResult(true);
     }
 
+    /// <inheritdoc />
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
     {
         var vehicles = this._vehicleConfigService.GetAll(VehicleConfigType.RideShare);
@@ -169,11 +182,15 @@ public class RideShare : AssistanceService
                 });
 
             await Task.Delay(60000);
+
+#pragma warning disable S125
+
             // await TaskHelpers.DelayUntilAsync(
             //     () => this.RequestedBy.FPed.Properties.IsInVehicle, // this does not seem to work or idk, did not test
             //     TimeSpan.FromSeconds(60),
             //     TimeSpan.FromMilliseconds(500),
             //     cancellationTokenSource);
+#pragma warning restore S125
         }
         else
         {
@@ -182,41 +199,37 @@ public class RideShare : AssistanceService
         }
     }
 
+    /// <inheritdoc />
     public override Task OnCancellationRequestedAsync()
     {
-        var entitiesToClear = new Dictionary<FEntity, FEntity>
-        {
-            { this._driver, this._vehicle },
-            { this._vehicle, null },
-        };
-        if (this._closestPed is not null)
-        {
-            entitiesToClear[this._closestPed] = null;
-        }
-
-        this.ClearEntities(entitiesToClear);
-        return Task.FromResult(0);
+        return this.OnCompletedOrCanceledAsync();
     }
 
+    /// <inheritdoc />
     public override Task OnCompletedAsync()
     {
-        var entitiesToClear = new Dictionary<FEntity, FEntity>
-        {
-            { this._driver, this._vehicle },
-            { this._vehicle, null },
-        };
-        if (this._closestPed is not null)
-        {
-            entitiesToClear[this._closestPed] = null;
-        }
-
-        this.ClearEntities(entitiesToClear);
-        return Task.FromResult(0);
+        return this.OnCompletedOrCanceledAsync();
     }
 
     private void SetSelectedWaypointToDrive(string serializedWaypoint)
     {
         this._selectedWaypointToDrive = JsonConvert.DeserializeObject<Vector3>(serializedWaypoint);
         this._eventHandlerDictionary[this._waypointSelectedEventName] -= this.SetSelectedWaypointToDrive;
+    }
+
+    private Task OnCompletedOrCanceledAsync()
+    {
+        var entitiesToClear = new Dictionary<FEntity, FEntity>
+        {
+            { this._driver, this._vehicle },
+            { this._vehicle, null },
+        };
+        if (this._closestPed is not null)
+        {
+            entitiesToClear[this._closestPed] = null;
+        }
+
+        this.ClearEntities(entitiesToClear);
+        return Task.FromResult(0);
     }
 }

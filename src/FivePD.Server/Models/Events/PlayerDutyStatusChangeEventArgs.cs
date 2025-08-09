@@ -3,8 +3,6 @@ using FivePD.Server.EntityWrappers;
 
 namespace FivePD.Server.Models.Events;
 
-#pragma warning disable
-
 /// <summary>
 /// The event arguments for when the duty status of a player is changed.
 /// </summary>

@@ -1,15 +1,11 @@
-﻿using FivePD.Server.API;
+using FivePD.Server.API;
 
 namespace FivePD.Server.Interfaces.Dispatcher;
-
-#pragma warning disable
 
 /// <summary>
 /// Public interface for managing dispatcher operations.
 /// </summary>
-public interface IDispatcherManagerService
-{
-}
+public interface IDispatcherManagerService;
 
 /// <summary>
 /// Internal interface for managing dispatcher operations and incident communications.
@@ -27,7 +23,7 @@ internal interface IInternalDispatcherManagerService
     /// </summary>
     /// <param name="incident">The incident to be removed.</param>
     public void RemoveIncidentFromDispatchers(IIncident incident);
- 
+
     /// <summary>
     /// Sends a request to all dispatchers to update their current state.
     /// </summary>

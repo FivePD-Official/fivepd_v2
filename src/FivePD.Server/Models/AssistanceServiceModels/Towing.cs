@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
-using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
@@ -14,10 +13,15 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Models.AssistanceServiceModels;
 
-#pragma warning disable
-
+/// <summary>
+/// Represents a towing assistance service.
+/// </summary>
 public class Towing : AssistanceService
 {
+    private const float SlowingDistance = 125f;
+    private const float MaximumSpeed = 25f;
+    private const float MinimumSpeed = 5f;
+
     private readonly IEntityService _entityService;
     private readonly IRandomService _randomService;
     private readonly ICfxService _cfxService;
@@ -28,12 +32,16 @@ public class Towing : AssistanceService
     private FVehicle _towTruck;
     private FVehicle _targetVehicle;
 
-    private const float SlowingDistance = 125f;
-    private const float MaximumSpeed = 25f;
-    private const float MinimumSpeed = 5f;
-
     private Vector3 _targetPosition;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Towing"/> class.
+    /// </summary>
+    /// <param name="entityService">The entity service.</param>
+    /// <param name="randomService">The random service.</param>
+    /// <param name="cfxService">The cfx service.</param>
+    /// <param name="gameNotificationService">The game notification service.</param>
+    /// <param name="vehicleConfigService">The vehicle configuration service.</param>
     public Towing(
         IEntityService entityService,
         IRandomService randomService,
@@ -48,12 +56,15 @@ public class Towing : AssistanceService
         this._vehicleConfigService = vehicleConfigService;
     }
 
+    /// <inheritdoc />
     public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
         this._targetVehicle = this._entityService.GetClosestFVehicleToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
         this._targetPosition = this._targetVehicle?.GetUnderlyingVehicle.Position ?? default;
+        await Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public override Task<bool> CanRunAsync()
     {
         if (this._targetVehicle is not null)
@@ -71,6 +82,7 @@ public class Towing : AssistanceService
         return Task.FromResult(false);
     }
 
+    /// <inheritdoc />
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
     {
         var towTrucks = this._vehicleConfigService.GetAll<TowTruckVehicleConfigOptions>(VehicleConfigType.TowTruck);
@@ -156,23 +168,26 @@ public class Towing : AssistanceService
             true);
     }
 
+    /// <inheritdoc />
     public override Task OnCancellationRequestedAsync()
     {
-        this.ClearEntities(new Dictionary<FEntity, FEntity>()
-        {
-            { this._driver, this._towTruck },
-            { this._towTruck, null }
-        });
-        return Task.FromResult(0);
+        return this.OnCompletedOrCanceledAsync();
     }
 
+    /// <inheritdoc />
     public override Task OnCompletedAsync()
+    {
+        return this.OnCompletedOrCanceledAsync();
+    }
+
+    private Task OnCompletedOrCanceledAsync()
     {
         this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
             { this._driver, this._towTruck },
-            { this._towTruck, null }
+            { this._towTruck, null },
         });
-        return Task.FromResult(0);
+
+        return Task.CompletedTask;
     }
 }

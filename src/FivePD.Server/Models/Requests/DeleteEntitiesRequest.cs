@@ -1,6 +1,6 @@
-﻿#pragma warning disable
+﻿namespace FivePD.Server.Models.Requests;
 
-namespace FivePD.Server.Models.Requests;
+#pragma warning disable
 
 internal class DeleteEntitiesRequest
 {

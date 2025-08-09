@@ -1,11 +1,27 @@
-﻿namespace FivePD.Server.Models;
+namespace FivePD.Server.Models;
 
-#pragma warning disable
-
+/// <summary>
+/// Represents the type of a vehicle configuration.
+/// </summary>
 public enum VehicleConfigType
 {
+    /// <summary>
+    /// A police vehicle.
+    /// </summary>
     Police,
+
+    /// <summary>
+    /// An ambulance vehicle.
+    /// </summary>
     Ambulance,
+
+    /// <summary>
+    /// A tow truck vehicle.
+    /// </summary>
     TowTruck,
-    RideShare
+
+    /// <summary>
+    /// A ride share vehicle.
+    /// </summary>
+    RideShare,
 }

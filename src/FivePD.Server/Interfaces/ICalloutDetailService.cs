@@ -1,7 +1,8 @@
-﻿namespace FivePD.Server.Interfaces;
+namespace FivePD.Server.Interfaces;
 
-#pragma warning disable
-
+/// <summary>
+/// Service for managing callout details.
+/// </summary>
 public interface ICalloutDetailService
 {
 }

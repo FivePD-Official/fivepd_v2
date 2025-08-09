@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using FivePD.Server.Models;
-
-#pragma warning disable
 
 namespace FivePD.Server.Interfaces;
 
@@ -18,7 +16,13 @@ public interface IUnitService
     public ReadOnlyCollection<Unit> Units();
 }
 
+/// <summary>
+/// Internal interface for managing units.
+/// </summary>
 internal interface IInternalUnitService
 {
+    /// <summary>
+    /// Gets the list of units.
+    /// </summary>
     List<Unit> Units { get; }
 }

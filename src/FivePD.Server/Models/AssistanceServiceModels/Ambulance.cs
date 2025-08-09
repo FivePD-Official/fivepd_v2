@@ -1,13 +1,10 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
-using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
@@ -17,10 +14,15 @@ using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Models.AssistanceServiceModels;
 
-#pragma warning disable
-
+/// <summary>
+/// Represents an ambulance assistance service.
+/// </summary>
 public class Ambulance : AssistanceService
 {
+    private const float SlowingDistance = 125f;
+    private const float MaximumSpeed = 30f;
+    private const float MinimumSpeed = 5f;
+
     private readonly IEntityService _entityService;
     private readonly IConfigService _configService;
     private readonly IRandomService _randomService;
@@ -31,13 +33,20 @@ public class Ambulance : AssistanceService
 
     private FPed _driver;
     private FVehicle _ambulance;
-    private const float SlowingDistance = 125f;
-    private const float MaximumSpeed = 30f;
-    private const float MinimumSpeed = 5f;
 
     private Vector3 _target;
     private Entity _currentEntity;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Ambulance"/> class.
+    /// </summary>
+    /// <param name="entityService">The entity service.</param>
+    /// <param name="configService">The configuration service.</param>
+    /// <param name="randomService">The random service.</param>
+    /// <param name="gameNotificationService">The game notification service.</param>
+    /// <param name="cfxService">The CFX service.</param>
+    /// <param name="vehicleConfigService">The vehicle configuration service.</param>
+    /// <param name="syncService">The general assistance service synchronization service.</param>
     public Ambulance(
         IEntityService entityService,
         IConfigService configService,
@@ -56,16 +65,20 @@ public class Ambulance : AssistanceService
         this._syncService = syncService;
     }
 
+    /// <inheritdoc />
     public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
         this._target = this.RequestedBy.GetUnderlyingPlayer().Character.Position;
+        await Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public override Task<bool> CanRunAsync()
     {
         return Task.FromResult(true);
     }
 
+    /// <inheritdoc />
     public override async Task OnCalledAsync(CancellationTokenSource cancellationTokenSource)
     {
         var ambulances = this._vehicleConfigService.GetAll(VehicleConfigType.Ambulance);
@@ -140,13 +153,34 @@ public class Ambulance : AssistanceService
         }
     }
 
+    /// <inheritdoc />
+    public override Task OnCancellationRequestedAsync()
+    {
+        return this.OnCompletedOrCanceledAsync();
+    }
+
+    /// <inheritdoc />
+    public override Task OnCompletedAsync()
+    {
+        return this.OnCompletedOrCanceledAsync();
+    }
+
+    /// <summary>
+    /// Performs the work of reviving a ped.
+    /// </summary>
+    /// <param name="ped">The ped to revive.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     private async Task DoWorkAsync(Entity ped, CancellationTokenSource cancellationToken)
     {
         this._driver.Task.RunTo(ped.Position);
 
         await Task.Delay(5000); // TODO: wait until driver is close to ped
 
+#pragma warning disable S125
+
         // ?? var couldRevive = this._randomService.GetRandomChance <= this._configService.GeneralConfig.AssistanceServices.Ambulance.ChanceToRevive;
+#pragma warning restore S125
+
         var couldRevive = this._randomService.GetRandomChance <= 50; // TODO: use VehicleConfig.Options to store ChanceToRevive
         if (couldRevive)
         {
@@ -173,7 +207,7 @@ public class Ambulance : AssistanceService
         await Task.Delay(1000);
     }
 
-    public override async Task OnCancellationRequestedAsync()
+    private Task OnCompletedOrCanceledAsync()
     {
         if (this._currentEntity is not null)
         {
@@ -183,24 +217,9 @@ public class Ambulance : AssistanceService
         this.ClearEntities(new Dictionary<FEntity, FEntity>()
         {
             { this._driver, this._ambulance },
-            { this._ambulance, null }
-        });
-        await Task.CompletedTask;
-    }
-
-    public override async Task OnCompletedAsync()
-    {
-        if (this._currentEntity is not null)
-        {
-            this._syncService.RemoveEntity(this._currentEntity);
-        }
-
-        this.ClearEntities(new Dictionary<FEntity, FEntity>()
-        {
-            { this._driver, this._ambulance },
-            { this._ambulance, null }
+            { this._ambulance, null },
         });
 
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 }

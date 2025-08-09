@@ -1,7 +1,6 @@
-﻿#pragma warning disable CS1591
-#pragma warning disable SA1600
+﻿namespace FivePD.Server.Models.Requests;
 
-namespace FivePD.Server.Models.Requests;
+#pragma warning disable
 
 internal record struct DeleteEntityRequest
 {

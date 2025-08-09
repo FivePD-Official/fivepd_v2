@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Utilities;
 
 namespace FivePD.Server.Models;
 
-#pragma warning disable
-
+/// <summary>
+/// Represents a vehicle document.
+/// </summary>
 [Table("fivepd_vehicle_documents")]
 public class VehicleDocument
 {
@@ -19,11 +20,23 @@ public class VehicleDocument
     /// </summary>
     public VehicleData VehicleData { get; set; }
 
+    /// <summary>
+    /// Gets or sets the status of the vehicle document.
+    /// </summary>
     public VehicleDocumentStatus Status { get; set; }
 
+    /// <summary>
+    /// Gets or sets the type of the vehicle document.
+    /// </summary>
     public VehicleDocumentType Type { get; set; }
 
+    /// <summary>
+    /// Gets or sets the issue date of the vehicle document.
+    /// </summary>
     public DateTime IssueDate { get; set; }
 
+    /// <summary>
+    /// Gets or sets the expiration date of the vehicle document.
+    /// </summary>
     public DateTime ExpirationDate { get; set; }
 }

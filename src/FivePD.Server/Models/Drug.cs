@@ -1,8 +1,12 @@
-﻿namespace FivePD.Server.Models;
+namespace FivePD.Server.Models;
 
-#pragma warning disable
-
+/// <summary>
+/// Represents a drug.
+/// </summary>
 public class Drug
 {
+    /// <summary>
+    /// Gets or sets the name of the drug.
+    /// </summary>
     public string Name { get; set; }
 }
