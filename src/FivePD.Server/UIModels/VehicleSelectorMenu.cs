@@ -78,8 +78,8 @@ public sealed class VehicleSelectorMenu : Menu
         var items = new List<MenuItem>();
 
         this.VehicleSpawnerItem = new MenuListItem(
-            "DUTY_MENU.ITEM.SPAWN_VEHICLE.TITLE",
-            "DUTY_MENU.ITEM.SPAWN_VEHICLE.DESCRIPTION",
+            "UI.MENU.VEHICLE.SPAWN.TITLE",
+            "UI.MENU.VEHICLE.SPAWN.DESCRIPTION",
             this._vehicleConfigService.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
         this.VehicleSpawnerItem.OnSelect += async (player, index) =>
         {
