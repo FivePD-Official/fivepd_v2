@@ -63,7 +63,8 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
             return;
         }
 
-        if (entity is null || !Cfx.API.DoesEntityExist(entity.NetworkId))
+        // TODO DoesEntityExist does not work?? if (entity is null || !Cfx.API.DoesEntityExist(entity.NetworkId))
+        if (entity is null)
         {
             this._logger.Warning("Cannot add entity: entity is null or does not exist");
             return;
@@ -112,7 +113,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
     /// <inheritdoc />
     public bool StartWorkOnEntity(Entity entity)
     {
-        if (entity is null || !Cfx.API.DoesEntityExist(entity.NetworkId))
+        if (entity is null)
         {
             this._logger.Warning("Cannot start work on entity: entity is null or does not exist");
             return false;
@@ -151,7 +152,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
         }
 
         var availableEntity = entities
-            .Where(e => !e.WorkStarted && Cfx.API.DoesEntityExist(e.Entity.NetworkId))
+            .Where(e => !e.WorkStarted)
             .Where(e => this.IsWithinRadius(serviceLocation, e.ServiceLocation, Math.Min(maxRadius, e.MaxRadius)))
             .OrderBy(e => Vector3.Distance(serviceLocation, e.Entity.Position))
             .FirstOrDefault();
@@ -160,17 +161,11 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
     }
 
     /// <inheritdoc />
-    public bool RemoveEntity(Entity entity)
+    public bool RemoveEntity(int entityNetworkId)
     {
-        if (entity is null)
+        if (!this._entityLookup.TryGetValue(entityNetworkId, out var syncedEntity))
         {
-            this._logger.Warning("Cannot remove entity: entity is null");
-            return false;
-        }
-
-        if (!this._entityLookup.TryGetValue(entity.NetworkId, out var syncedEntity))
-        {
-            this._logger.Debug("Entity {EntityNetworkId} not found in sync service", entity.NetworkId);
+            this._logger.Debug("Entity {EntityNetworkId} not found in sync service", entityNetworkId);
             return false;
         }
 
@@ -184,9 +179,9 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
             }
         }
 
-        this._entityLookup.TryRemove(entity.NetworkId, out _);
+        this._entityLookup.TryRemove(entityNetworkId, out _);
 
-        this._logger.Debug("Removed entity {EntityNetworkId} from sync service", entity.NetworkId);
+        this._logger.Debug("Removed entity {EntityNetworkId} from sync service", entityNetworkId);
         return true;
     }
 
@@ -205,7 +200,6 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
         }
 
         return entities
-            .Where(e => Cfx.API.DoesEntityExist(e.Entity.NetworkId))
             .Where(e => this.IsWithinRadius(serviceLocation, e.ServiceLocation, Math.Min(maxRadius, e.MaxRadius)))
             .Select(e => (e.Entity, e.WorkStarted))
             .ToList();
@@ -214,7 +208,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
     /// <inheritdoc />
     public bool IsEntityBeingWorkedOn(Entity entity)
     {
-        if (entity is null || !Cfx.API.DoesEntityExist(entity.NetworkId))
+        if (entity is null)
         {
             return false;
         }
@@ -231,8 +225,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
         {
             var syncedEntity = kvp.Value;
 
-            if (!Cfx.API.DoesEntityExist(syncedEntity.Entity.NetworkId) ||
-                (syncedEntity.WorkStarted && DateTime.UtcNow - syncedEntity.WorkStartedAt > TimeSpan.FromMinutes(10)))
+            if (syncedEntity.WorkStarted && DateTime.UtcNow - syncedEntity.WorkStartedAt > TimeSpan.FromMinutes(10))
             {
                 toRemove.Add(kvp.Key);
             }

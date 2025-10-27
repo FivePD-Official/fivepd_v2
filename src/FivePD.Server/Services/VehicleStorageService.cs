@@ -29,7 +29,16 @@ public class VehicleStorageService : IVehicleStorageService, IInternalVehicleSto
 
     public FVehicle TryGetVehicle(int networkId)
     {
-        return this._vehicles.TryGetValue(networkId, out var vehicle) ? vehicle : null;
+        var found = this._vehicles.TryGetValue(networkId, out var vehicle);
+        if (found)
+        {
+            return vehicle;
+        }
+
+        vehicle = FVehicle.FromNetId(networkId);
+        this._vehicles[networkId] = vehicle;
+
+        return vehicle;
     }
     
     public VehicleData GetVehicleData(FVehicle vehicle)

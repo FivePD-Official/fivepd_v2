@@ -61,4 +61,16 @@ public static class DefaultVehicleConfigs
         Livery = 0,
         Extras = new List<int>(),
     };
+
+    /// <summary>
+    /// Gets the default coroner vehicle config.
+    /// </summary>
+    public static VehicleConfig<Dictionary<string, object>> Coroner => new()
+    {
+        Type = VehicleConfigType.Coroner,
+        Name = "Coroner",
+        Model = "speedo",
+        Livery = 0,
+        Extras = new List<int>(),
+    };
 }

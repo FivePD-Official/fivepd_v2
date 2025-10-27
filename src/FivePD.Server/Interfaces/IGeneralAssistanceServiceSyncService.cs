@@ -46,9 +46,9 @@ public interface IGeneralAssistanceServiceSyncService
     /// <summary>
     /// Removes an entity from the sync service (e.g., when work is completed or entity is no longer valid).
     /// </summary>
-    /// <param name="entity">The entity to remove.</param>
+    /// <param name="entityNetworkId">The network id of the entity to remove.</param>
     /// <returns>True if the entity was removed, false if it wasn't found.</returns>
-    bool RemoveEntity(Entity entity);
+    bool RemoveEntity(int entityNetworkId);
 
     /// <summary>
     /// Gets all entities for a specific assistance service type within a radius of a location.

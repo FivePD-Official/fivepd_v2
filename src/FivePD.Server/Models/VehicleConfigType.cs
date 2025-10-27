@@ -24,4 +24,9 @@ public enum VehicleConfigType
     /// A ride share vehicle.
     /// </summary>
     RideShare,
+
+    /// <summary>
+    /// A coroner vehicle.
+    /// </summary>
+    Coroner,
 }

@@ -147,8 +147,9 @@ public class Ambulance : AssistanceService
 
             if (this._syncService.StartWorkOnEntity(this._currentEntity))
             {
+                var entityNetworkId = this._currentEntity.NetworkId;
                 await this.DoWorkAsync(this._currentEntity, cancellationTokenSource);
-                this._syncService.RemoveEntity(this._currentEntity);
+                this._syncService.RemoveEntity(entityNetworkId);
             }
         }
     }
@@ -211,7 +212,7 @@ public class Ambulance : AssistanceService
     {
         if (this._currentEntity is not null)
         {
-            this._syncService.RemoveEntity(this._currentEntity);
+            this._syncService.RemoveEntity(this._currentEntity.NetworkId);
         }
 
         this.ClearEntities(new Dictionary<FEntity, FEntity>()

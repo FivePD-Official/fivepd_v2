@@ -72,6 +72,12 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             CancelLabel = "Cancel ambulance",
         });
 
+        this._assistanceServiceConfigService.Register<Coroner>(new AssistanceServiceOptions
+        {
+            RequestLabel = "Request coroner",
+            CancelLabel = "Cancel coroner",
+        });
+
         this._assistanceServiceConfigService.Register<Towing>(new AssistanceServiceOptions
         {
             RequestLabel = "Request tow",
@@ -230,9 +236,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     {
         try
         {
-            this._activeServices.TryRemove(guid, out var service);
+            var service = this.OnStationVehicleCanceled(guid);
             service?.CancellationTokenSource.Cancel();
-            this.OnStationVehicleCanceled(guid);
             guid = Guid.Empty;
         }
         catch (Exception e)
@@ -254,19 +259,23 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             parameters.Select(item => this._serviceProvider.GetService(item.ParameterType)).ToArray()) as AssistanceService;
     }
 
-    private void OnStationVehicleCanceled(Guid guid)
+    private AssistanceServiceInvoker OnStationVehicleCanceled(Guid guid)
     {
-        var activeService = this._activeServices[guid];
-        if (activeService is null)
+        if (!this._activeServices.TryGetValue(guid, out var activeService))
         {
-            return;
+            return null;
+        }
+
+        if (!this._activeServices.TryRemove(guid, out _) || activeService?.StationTypeConfig is null)
+        {
+            return activeService;
         }
 
         var assistanceServiceVehicleConfig = this._databaseContext.AssistanceServiceStationTypeConfigs
             .FirstOrDefault(x => x.Id == activeService.StationTypeConfig.Id);
         if (assistanceServiceVehicleConfig is null)
         {
-            return;
+            return activeService;
         }
 
         assistanceServiceVehicleConfig.ActiveCapacity--;
@@ -277,6 +286,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
         }
 
         this._databaseContext.SaveChanges();
+        return activeService;
     }
 
     private sealed record AssistanceServiceInvoker

@@ -30,7 +30,16 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
     /// <inheritdoc/>
     public FPed TryGetPed(int networkId)
     {
-        return this._peds.TryGetValue(networkId, out var ped) ? ped : null;
+        var found = this._peds.TryGetValue(networkId, out var ped);
+        if (found)
+        {
+            return ped;
+        }
+
+        ped = FPed.FromNetId(networkId);
+        this._peds[networkId] = ped;
+
+        return ped;
     }
 
     /// <inheritdoc/>
