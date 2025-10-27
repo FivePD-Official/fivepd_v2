@@ -43,12 +43,17 @@ export class DropdownRectHelperDirective {
     const selectedItemRect = this.selectedItem.getBoundingClientRect();
     this.elementRef.nativeElement.style.width = `${parentRect.width}px`;
     let top: number;
-    if (modalRect) {
-      top = parentRect.top - modalRect.top + selectedItemRect.height;
-    } else {
-      top = parentRect.top - selectedItemRect.height;
-    }
+    /*
+    when the lines below are uncommented: "&.dropdown--open .dropdown-items" => "@apply fixed" instead of "absolute"
+    when these are used the modal cannot be scrolled when the dropdown is opened
+     */
 
-    this.elementRef.nativeElement.style.top = `${top}px`;
+    // if (modalRect) {
+    //   top = parentRect.top - modalRect.top + selectedItemRect.height;
+    // } else {
+    //   top = parentRect.top - selectedItemRect.height;
+    // }
+
+    // this.elementRef.nativeElement.style.top = `${top}px`;
   }
 }
