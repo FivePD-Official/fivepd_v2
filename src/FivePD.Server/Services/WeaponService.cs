@@ -40,7 +40,8 @@ public class WeaponService : IWeaponService
                 Id = x.Id,
                 Name = x.Name,
                 Model = x.Model,
-                WeaponComponentIds = x.WeaponWeaponComponents.Select(wwc => wwc.WeaponComponentId)
+                WeaponComponentIds = x.WeaponWeaponComponents.Select(wwc => wwc.WeaponComponentId),
+                WeaponComponentHashes = x.WeaponWeaponComponents.Select(wwc => wwc.WeaponComponent.HashKey)
             })
             .FirstOrDefault(x => x.Id == request.Id);
 

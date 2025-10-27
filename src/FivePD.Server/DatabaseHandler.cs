@@ -7,6 +7,8 @@ using FivePD.Server.Exceptions;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Models;
 using FivePD.Server.Models.AssistanceServiceModels;
+using FivePD.Server.Models.LoadoutModels;
+using FivePD.Server.Models.LoadoutModels.JoinTables;
 using FivePD.Server.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -72,6 +74,7 @@ internal static class DatabaseHandler
         SeedCallouts();
         SeedSampleDepartment();
         SeedVehicleConfigs();
+        SeedLoadoutConfigs();
     }
 
     private static void SeedCallouts()
@@ -187,5 +190,73 @@ internal static class DatabaseHandler
         _databaseContext.VehicleConfigs.AddRange(towTrucks);
         _databaseContext.SaveChanges();
         _logger?.Information("Created sample vehicle configs.");
+    }
+
+    private static void SeedLoadoutConfigs()
+    {
+        if (_databaseContext.LoadoutConfigs.Any())
+        {
+            return;
+        }
+
+        var pistol = new Weapon
+        {
+            Name = "Pistol",
+            Model = "WEAPON_PISTOL",
+        };
+
+        var rifle = new Weapon
+        {
+            Name = "Carbine Rifle",
+            Model = "WEAPON_CARBINERIFLE",
+        };
+
+        var taser = new Weapon
+        {
+            Name = "Taser",
+            Model = "WEAPON_STUNGUN",
+        };
+
+        var pistolSuppressor = new WeaponComponent
+        {
+            Name = "Suppressor",
+            HashKey = "COMPONENT_AT_PI_SUPP_02",
+        };
+
+        var rifleScope = new WeaponComponent
+        {
+            Name = "Scope",
+            HashKey = "COMPONENT_AT_SCOPE_MEDIUM",
+        };
+
+        var pistolSuppressorJoin = new WeaponWeaponComponent { Weapon = pistol, WeaponComponent = pistolSuppressor };
+        var rifleScopeJoin = new WeaponWeaponComponent { Weapon = rifle, WeaponComponent = rifleScope };
+
+        pistol.WeaponWeaponComponents.Add(pistolSuppressorJoin);
+        rifle.WeaponWeaponComponents.Add(rifleScopeJoin);
+
+        var patrolLoadout = new LoadoutConfig
+        {
+            Name = "Patrol Loadout",
+        };
+        patrolLoadout.AddWeapon(pistol);
+        patrolLoadout.AddWeapon(taser);
+
+        var swatLoadout = new LoadoutConfig
+        {
+            Name = "SWAT Loadout",
+        };
+        swatLoadout.AddWeapon(rifle);
+        swatLoadout.AddWeapon(pistol);
+
+        var loadouts = new List<LoadoutConfig> { patrolLoadout, swatLoadout };
+        var weapons = new List<Weapon> { pistol, rifle, taser };
+        var components = new List<WeaponComponent> { pistolSuppressor, rifleScope };
+
+        _databaseContext.Weapons.AddRange(weapons);
+        _databaseContext.WeaponComponents.AddRange(components);
+        _databaseContext.LoadoutConfigs.AddRange(loadouts);
+        _databaseContext.SaveChanges();
+        _logger?.Information("Created sample loadout configs.");
     }
 }
