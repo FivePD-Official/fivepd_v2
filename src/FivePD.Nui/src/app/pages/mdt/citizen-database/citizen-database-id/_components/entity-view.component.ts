@@ -12,7 +12,7 @@ import { EntityValue, EntityValueLink } from "@services/variable-data/variable-d
       <div class="w-full flex flex-row items-center justify-between">
         <p class="common-title">{{ title | translate }}</p>
         @if (showCreateButton) {
-          <app-button [label]="'UI.ACTION.CREATE' | translate"
+          <app-button [label]="'ACTION.CREATE.TITLE' | translate"
                       (onClick)="createButtonClick.emit()"
                       variant="secondary"/>
         }

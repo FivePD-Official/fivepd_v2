@@ -47,7 +47,7 @@ internal static class NetworkCallbackDelegateExtensions
     [Obsolete("DO NOT USE")]
     public static void InvokeWithUnexpectedError(this NetworkCallbackDelegate networkCallbackDelegate)
     {
-        networkCallbackDelegate.InvokeWithResponse(false, "UI.ERROR.UNEXPECTED", "UI.ERROR.DATABASE_ACCESS.TITLE");
+        networkCallbackDelegate.InvokeWithResponse(false, "ERROR.UNEXPECTED", "ERROR.DATABASE_ACCESS.TITLE");
     }
 
     /// <summary>

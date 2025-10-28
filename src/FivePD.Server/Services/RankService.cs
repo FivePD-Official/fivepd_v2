@@ -134,7 +134,7 @@ public class RankService : IRankService
         // Return if there is a rank with the same for the given department
         if (rankWithSameName?.DepartmentRanks.FirstOrDefault(x => x.DepartmentId == request.DepartmentId) is not null)
         {
-            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.RANK.CREATE.TITLE", "ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -164,7 +164,7 @@ public class RankService : IRankService
         var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == request.Name && rank.Global);
         if (rankExistsWithName is not null)
         {
-            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.RANK.CREATE.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.RANK.CREATE.TITLE", "ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -212,7 +212,7 @@ public class RankService : IRankService
         // Return if there is a rank with the same for the given department
         if (rankWithSameName?.DepartmentRanks.FirstOrDefault(x => x.DepartmentId == request.DepartmentId) is not null)
         {
-            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.RANK.EDIT.TITLE", "ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -244,7 +244,7 @@ public class RankService : IRankService
         var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == request.Name && rank.Global && rank.Id != rankToEdit.Id);
         if (rankExistsWithName is not null)
         {
-            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.RANK.EDIT.TITLE", "UI.ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.RANK.EDIT.TITLE", "ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 

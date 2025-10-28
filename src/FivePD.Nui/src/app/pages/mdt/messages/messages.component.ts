@@ -112,7 +112,7 @@ export class MessagesComponent {
       buttons: {
         submit: {
           variant: 'primary',
-          label: 'UI.ACTION.SEND',
+          label: 'ACTION.SEND.TITLE',
         }
       },
       valueResolver: new ValueResolver([], this._userService.getAllSimple()),

@@ -124,7 +124,7 @@ export class MySettingsComponent implements OnInit {
 
   tryEditCallsign(): void {
     this._modalService.open(CallsignEditorComponent, {
-        title: 'UI.ACTION.EDIT_CALLSIGN'
+        title: 'ACTION.EDIT.CALLSIGN.TITLE'
       }, new Map()
         .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
         .set(CALLSIGN_FORMAT_VALUES, this.user?.User?.CallsignFormat.Values)

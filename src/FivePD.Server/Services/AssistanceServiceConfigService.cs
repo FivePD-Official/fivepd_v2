@@ -193,8 +193,8 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
                 player,
                 guid,
                 false,
-                "UI.ERROR.ASSISTANCE_SERVICE.STATION.CREATE.TITLE",
-                "UI.ERROR.ASSISTANCE_SERVICE.STATION.NAME_CONFLICT.DESCRIPTION");
+                "ERROR.ASSISTANCE_SERVICE.STATION.CREATE.TITLE",
+                "ERROR.ASSISTANCE_SERVICE.STATION.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -210,7 +210,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             guid,
             true,
             "UI.LABEL.SUCCESS.CREATE",
-            "UI.LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.CREATE");
+            "LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.CREATE");
     }
     
     [UIEvent(Events.AssistanceService.DeleteStation)]
@@ -232,7 +232,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             guid,
             true,
             "UI.LABEL.SUCCESS.DELETE",
-            "UI.LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.DELETE");
+            "LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.DELETE");
     }
     
     [UIEvent(Events.AssistanceService.GetStationTypeConfigsPage)]
@@ -289,7 +289,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             guid,
             true,
             "UI.LABEL.SUCCESS.ADD",
-            "UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
+            "LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
     }
     
     [UIEvent(Events.AssistanceService.EditStationTypeConfig)]
@@ -311,7 +311,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             guid,
             true,
             "UI.LABEL.SUCCESS.EDIT",
-            "UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
+            "LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
     }
     
     [UIEvent(Events.AssistanceService.DeleteStationTypeConfig)]
@@ -333,7 +333,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             guid,
             true,
             "UI.LABEL.SUCCESS.DELETE",
-            "UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.DELETE");
+            "LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.DELETE");
     }
     
     [UIEvent(Events.AssistanceService.GetAvailableStationTypeConfigs)]

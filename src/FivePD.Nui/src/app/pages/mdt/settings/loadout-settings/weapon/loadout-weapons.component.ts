@@ -74,11 +74,11 @@ export class LoadoutWeaponsComponent {
 
   private createActionsColumn(onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<Weapon> {
     return new Column<Weapon>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.EDIT',
+          label: 'ACTION.EDIT.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: weapon => {
@@ -123,7 +123,7 @@ export class LoadoutWeaponsComponent {
               buttons: {
                 submit: {
                   variant: 'primary',
-                  label: 'UI.ACTION.SAVE',
+                  label: 'ACTION.SAVE.TITLE',
                 },
               },
             }).result
@@ -140,7 +140,7 @@ export class LoadoutWeaponsComponent {
         },
         {
           type: 'button',
-          label: 'UI.ACTION.DELETE',
+          label: 'ACTION.DELETE.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: weapon => this._modalConfirmService.open({
@@ -149,7 +149,7 @@ export class LoadoutWeaponsComponent {
             buttons: {
               submit: {
                 variant: 'danger',
-                label: 'UI.ACTION.DELETE',
+                label: 'ACTION.DELETE.TITLE',
               },
             },
           }).result
@@ -204,7 +204,7 @@ export class LoadoutWeaponsComponent {
         buttons: {
           submit: {
             variant: 'primary',
-            label: 'UI.ACTION.CREATE',
+            label: 'ACTION.CREATE.TITLE',
           },
         },
         valueResolver: new ValueResolver([], this._weaponComponentService.getAllSimple()),

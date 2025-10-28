@@ -33,13 +33,13 @@ export class SidebarComponent {
   isSidebarCollapsed: boolean = false;
   private readonly defaultRoutes: Routes = [
     {
-      title: 'UI.LABEL.DASHBOARD',
+      title: 'LABEL.DASHBOARD.TITLE',
       path: () => '/mdt/dashboard',
       icon: IconType.Squares,
       show: () => true,
     },
     {
-      title: 'UI.LABEL.CITIZEN_DATABASE.TITLE',
+      title: 'LABEL.CITIZEN_DATABASE.TITLE',
       path: () => '/mdt/citizen-database',
       icon: IconType.Identification,
       show: () => true,
@@ -97,7 +97,7 @@ export class SidebarComponent {
       linkActive: () => this.router.url.startsWith('/mdt/settings'),
     },
     {
-      title: 'UI.LABEL.DEVELOPER_TOOLS.TITLE',
+      title: 'LABEL.DEVELOPER_TOOLS.TITLE',
       path: () => '/mdt/devtools',
       icon: IconType.CodeBracket,
       show: () => this.userService.userHasRole(UserRole.Admin, UserRole.Developer),

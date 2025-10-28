@@ -34,8 +34,8 @@ export class CreateDepartmentModalComponent {
     }),
     new TextField({
       key: 'Callsign',
-      label: 'UI.LABEL.CALLSIGN.TITLE',
-      helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
+      label: 'LABEL.CALLSIGN.TITLE',
+      helpLabel: 'LABEL.CALLSIGN.HELP_LABEL',
       validators: [CustomValidators.onlyLetters()],
     }),
     new NumberField({

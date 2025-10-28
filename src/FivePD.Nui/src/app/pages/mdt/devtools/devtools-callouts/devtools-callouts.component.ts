@@ -19,15 +19,15 @@ export class DevtoolsCalloutsComponent implements OnInit {
       accessorKey: 'TypeName',
     }),
     new Column<CalloutTypeDTO>({
-      header: 'UI.LABEL.ASSEMBLY_NAME.SINGULAR',
+      header: 'LABEL.ASSEMBLY_NAME.SINGULAR',
       accessorKey: 'AssemblyName',
     }),
     new Column<CalloutTypeDTO>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.DISPATCH',
+          label: 'ACTION.DISPATCH.TITLE',
           onClick: callout => {
             this._calloutService.dispatch(callout).subscribe();
           }

@@ -72,11 +72,11 @@ export class LoadoutSettingsComponent {
 
   private createActionsColumn(onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<LoadoutConfig> {
     return new Column<LoadoutConfig>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.EDIT',
+          label: 'ACTION.EDIT.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: loadoutConfig => {
@@ -114,7 +114,7 @@ export class LoadoutSettingsComponent {
               buttons: {
                 submit: {
                   variant: 'primary',
-                  label: 'UI.ACTION.SAVE',
+                  label: 'ACTION.SAVE.TITLE',
                 },
               },
             }).result
@@ -131,7 +131,7 @@ export class LoadoutSettingsComponent {
         },
         {
           type: 'button',
-          label: 'UI.ACTION.DELETE',
+          label: 'ACTION.DELETE.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: loadoutConfig => this._modalConfirmService.open({
@@ -140,7 +140,7 @@ export class LoadoutSettingsComponent {
             buttons: {
               submit: {
                 variant: 'danger',
-                label: 'UI.ACTION.DELETE',
+                label: 'ACTION.DELETE.TITLE',
               },
             },
           }).result
@@ -190,7 +190,7 @@ export class LoadoutSettingsComponent {
         buttons: {
           submit: {
             variant: 'primary',
-            label: 'UI.ACTION.CREATE',
+            label: 'ACTION.CREATE.TITLE',
           },
         },
       }).result

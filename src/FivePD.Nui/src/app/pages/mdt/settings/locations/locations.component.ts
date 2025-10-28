@@ -110,11 +110,11 @@ export class LocationsComponent implements OnInit {
 
   private createActionsColumn(onResponse: () => void): Column<Location> {
     return new Column<Location>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.DELETE',
+          label: 'ACTION.DELETE.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: location => this._modalConfirmService.open({
@@ -125,7 +125,7 @@ export class LocationsComponent implements OnInit {
             buttons: {
               submit: {
                 variant: 'danger',
-                label: 'UI.ACTION.DELETE',
+                label: 'ACTION.DELETE.TITLE',
               },
             },
           }).result
@@ -176,7 +176,7 @@ export class LocationsComponent implements OnInit {
           buttons: {
             submit: {
               variant: 'primary',
-              label: 'UI.ACTION.CREATE',
+              label: 'ACTION.CREATE.TITLE',
             },
           },
         }).result),

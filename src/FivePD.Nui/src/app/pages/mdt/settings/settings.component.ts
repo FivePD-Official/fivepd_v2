@@ -27,7 +27,7 @@ export class SettingsComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.DEPARTMENT.PLURAL',
+      title: 'LABEL.DEPARTMENT.PLURAL',
       path: () => `/mdt/settings/departments`,
       icon: IconType.Building2,
       show: () => true,
@@ -39,13 +39,13 @@ export class SettingsComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.CALLOUT.PLURAL',
+      title: 'LABEL.CALLOUT.PLURAL',
       path: () => `/mdt/settings/callouts`,
       icon: IconType.Megaphone,
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.ATTRIBUTE.PLURAL',
+      title: 'LABEL.ATTRIBUTE.PLURAL',
       path: () => `/mdt/settings/attributes`,
       icon: IconType.AtSymbol,
       show: () => this.userService.userHasRole(UserRole.Admin),
@@ -69,7 +69,7 @@ export class SettingsComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.ASSISTANCE_SERVICE.TITLE.PLURAL',
+      title: 'LABEL.ASSISTANCE_SERVICE.TITLE.PLURAL',
       path: () => '/mdt/settings/assistance-services',
       icon: IconType.Lifebuoy,
       show: () => this.userService.userHasRole(UserRole.Admin),

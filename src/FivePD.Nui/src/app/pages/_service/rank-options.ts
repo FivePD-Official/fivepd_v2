@@ -63,11 +63,11 @@ export class RankOptions {
 
     if (options.showActionsColumn) {
       columns.push(new Column({
-        header: this._localizationService.translate('UI.LABEL.ACTION.PLURAL'),
+        header: this._localizationService.translate('LABEL.ACTION.PLURAL'),
         actions: [
           {
             type: 'button',
-            label: this._localizationService.translate('UI.ACTION.EDIT'),
+            label: this._localizationService.translate('ACTION.EDIT.TITLE'),
             onClick: rank => {
               this._modalFormService.open<FormattedRank>({
                 title: 'UI.LABEL.RANK.EDIT',
@@ -121,7 +121,7 @@ export class RankOptions {
                 },
                 valueResolver: new ValueResolver(rank, this._rankService.get(rank.Id)),
                 buttons: {
-                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                  submit: {variant: 'primary', label: 'ACTION.SAVE.TITLE'},
                 },
               }).result
                 .pipe(
@@ -131,13 +131,13 @@ export class RankOptions {
           },
           {
             type: 'button',
-            label: this._localizationService.translate('UI.ACTION.DELETE'),
+            label: this._localizationService.translate('ACTION.DELETE.TITLE'),
             onClick: rank => {
               this._modalConfirmService.open({
                 title: 'UI.LABEL.RANK.DELETE.TITLE',
                 description: this._localizationService.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
                 buttons: {
-                  submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                  submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
                 },
               }).result
                 .pipe(
@@ -163,11 +163,11 @@ export class RankOptions {
 
     if (options.showCreateButton) {
       buttons.push({
-        label: this._localizationService.translate('UI.ACTION.CREATE_RANK'),
+        label: this._localizationService.translate('ACTION.CREATE.RANK.TITLE'),
         show: () => true,
         disabled: () => false,
         onClick: () => this._modalFormService.open({
-          title: 'UI.ACTION.CREATE_RANK',
+          title: 'ACTION.CREATE.RANK.TITLE',
           fields: () => {
             const fields: FormInputBase<any>[] = [
               new TextField({
@@ -213,7 +213,7 @@ export class RankOptions {
           buttons: {
             submit: {
               variant: 'primary',
-              label: 'UI.ACTION.CREATE',
+              label: 'ACTION.CREATE.TITLE',
             },
           },
         }).result

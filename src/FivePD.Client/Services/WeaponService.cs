@@ -87,8 +87,8 @@ internal class WeaponService : IWeaponService, IOnInit
             var response = new
             {
                 Status = false,
-                Title = "UI.ERROR.WEAPON.HASH_NOT_VALID.TITLE",
-                Description = "UI.ERROR.WEAPON.HASH_NOT_VALID.DESCRIPTION",
+                Title = "ERROR.WEAPON.HASH_NOT_VALID.TITLE",
+                Description = "ERROR.WEAPON.HASH_NOT_VALID.DESCRIPTION",
                 Params = new Dictionary<string, string>(){{"model", weaponModelName}}
             };
             
@@ -105,8 +105,8 @@ internal class WeaponService : IWeaponService, IOnInit
                 var response = new
                 {
                     Status = false,
-                    Title = "UI.ERROR.WEAPON_COMPONENT.HASH_NOT_VALID.TITLE",
-                    Description = "UI.ERROR.WEAPON_COMPONENT.HASH_NOT_VALID.DESCRIPTION",
+                    Title = "ERROR.WEAPON_COMPONENT.HASH_NOT_VALID.TITLE",
+                    Description = "ERROR.WEAPON_COMPONENT.HASH_NOT_VALID.DESCRIPTION",
                     Params = new Dictionary<string, string>(){{"model", componentHash}}
                 };
             

@@ -16,13 +16,13 @@
       <div class="w-full flex flex-col gap-4">
         <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
           <div class="flex flex-col">
-            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}</p>
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}</p>
             <p class="text-zinc-200">
               {{ information.IncidentWrapper.Incident.Title }}
             </p>
           </div>
           <div class="flex flex-col">
-            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.ADDRESS.SINGULAR' | translate }}</p>
             <p class="text-zinc-200">
               {{ information.IncidentWrapper.Address }}
             </p>
@@ -40,7 +40,7 @@
             <p class="text-zinc-200">
               {{
                 (information.IncidentWrapper.Incident.Type === FIncidentType.Callout
-                  ? 'UI.LABEL.CALLOUT.SINGULAR'
+                  ? 'LABEL.CALLOUT.SINGULAR'
                   : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate
               }}
             </p>
@@ -52,13 +52,13 @@
 
     <div class="w-full grid grid-rows-1 grid-cols-3 gap-4">
       <div class="flex flex-col">
-        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.DUTY_STATUS.SINGULAR' | translate }}</p>
+        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.DUTY_STATUS.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">
           {{ (information.DutyStatus === FDutyStatus.OnDuty ? 'PLAYER_STATUS.ON_DUTY.GENERIC' : 'PLAYER_STATUS.OFF_DUTY.GENERIC') | translate }}
         </p>
       </div>
       <div class="flex flex-col">
-        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.AVAILABILITY.SINGULAR' | translate }}</p>
+        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.AVAILABILITY.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">
           {{ (information.Availability === FPlayerAvailability.Receiving ? 'PLAYER_AVAILABILITY.RECEIVING' : 'PLAYER_AVAILABILITY.NOT_RECEIVING') | translate }}
         </p>

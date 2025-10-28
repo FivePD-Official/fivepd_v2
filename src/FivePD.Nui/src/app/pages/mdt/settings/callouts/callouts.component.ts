@@ -31,11 +31,11 @@ export class CalloutsComponent {
       accessorKey: 'TypeName',
     }),
     new Column({
-      header: 'UI.LABEL.ASSEMBLY_NAME.SINGULAR',
+      header: 'LABEL.ASSEMBLY_NAME.SINGULAR',
       accessorKey: 'AssemblyName',
     }),
     new Column({
-      header: 'UI.LABEL.ACTIVE',
+      header: 'LABEL.ACTIVE.TITLE',
       valueResolver: item => this._localizationService.translate(item.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
       badgeResolver: item => item.Active ? 'green' : 'red'
     }),

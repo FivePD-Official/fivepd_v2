@@ -1,5 +1,5 @@
-<app-page-header [title]="department?.Name ?? ('UI.LABEL.DEPARTMENT.SINGULAR' | translate)">
-  <app-button [label]="'UI.ACTION.JOIN' | translate"
+<app-page-header [title]="department?.Name ?? ('LABEL.DEPARTMENT.SINGULAR' | translate)">
+  <app-button [label]="'ACTION.JOIN.TITLE' | translate"
               [show]="!isUserInDepartment"
               variant="secondary"
               [disabled]="!!user?.UnitCallsign"
@@ -7,7 +7,7 @@
               [isEnabled]="!!user?.UnitCallsign"
               placement="left"
               (onClick)="joinDepartment()"/>
-  <app-button [label]="'UI.ACTION.LEAVE' | translate"
+  <app-button [label]="'ACTION.LEAVE.TITLE' | translate"
               [show]="isUserInDepartment"
               variant="secondary"
               [disabled]="!!user?.UnitCallsign"
@@ -24,7 +24,7 @@
       <app-container [columns]="2">
         <app-container [columns]="2">
           @if (departmentSettingsForm) {
-            <app-dynamic-form [title]="'UI.LABEL.DEPARTMENT.SETTINGS' | translate"
+            <app-dynamic-form [title]="'LABEL.DEPARTMENT.SETTINGS' | translate"
                               [formFields]="departmentSettingsForm"
                               [columns]="1"
                               [limitWidth]="false"
@@ -40,7 +40,7 @@
                         (onClick)="tryEditMemberCallsignFormat()"/>
           </div>
         </app-container>
-        <app-grid [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
+        <app-grid [title]="'LABEL.DIVISION.PLURAL' | translate"
                   [buttons]="divisionsButtons"
                   [data]="divisions"
                   [columns]="divisionsColumns"
@@ -62,7 +62,7 @@
 
   @if (department) {
     <app-container [columns]="2">
-      <app-grid [title]="'UI.LABEL.DIVISION.PLURAL' | translate"
+      <app-grid [title]="'LABEL.DIVISION.PLURAL' | translate"
                 [buttons]="divisionsButtons"
                 [data]="divisions"
                 [columns]="divisionsColumns"

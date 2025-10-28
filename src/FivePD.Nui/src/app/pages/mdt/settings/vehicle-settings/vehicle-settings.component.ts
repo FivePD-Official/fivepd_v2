@@ -60,7 +60,7 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
     }),
     new MultiSelectField({
       key: 'Extras',
-      label: 'UI.LABEL.EXTRA.PLURAL',
+      label: 'LABEL.EXTRA.PLURAL',
       defaultItemLabel: '',
       addDefaultItem: false,
       value: vehicleConfig?.Extras,
@@ -163,14 +163,14 @@ export class VehicleSettingsComponent {
     this.createActionsColumn(createBaseFields, () => this.policeVehicleConfigCollation$.next(this.policeVehicleConfigCollation$.value)),
     // TODO
     // new Column<VehicleConfig>({
-    //   header: 'UI.LABEL.DEPARTMENT.SINGULAR',
+    //   header: 'LABEL.DEPARTMENT.SINGULAR',
     //   accessorKey: "Department",
     //   filter: {
     //     label: 'UI.LABEL.SEARCH_BY.DEPARTMENT',
     //   }
     // }),
     // new Column<VehicleConfig>({
-    //   header: 'UI.LABEL.DIVISION.SINGULAR',
+    //   header: 'LABEL.DIVISION.SINGULAR',
     //   accessorKey: "Division",
     // }),
   ];
@@ -214,11 +214,11 @@ export class VehicleSettingsComponent {
 
   private createActionsColumn(fields: (vehicleConfig: VehicleConfig | undefined) => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<VehicleConfig> {
     return new Column<VehicleConfig>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.EDIT',
+          label: 'ACTION.EDIT.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: vehicleConfig => {
@@ -229,7 +229,7 @@ export class VehicleSettingsComponent {
               buttons: {
                 submit: {
                   variant: 'primary',
-                  label: 'UI.ACTION.SAVE',
+                  label: 'ACTION.SAVE.TITLE',
                 },
               },
             }).result
@@ -246,7 +246,7 @@ export class VehicleSettingsComponent {
         },
         {
           type: 'button',
-          label: 'UI.ACTION.DELETE',
+          label: 'ACTION.DELETE.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: vehicleConfig => this._modalConfirmService.open({
@@ -255,7 +255,7 @@ export class VehicleSettingsComponent {
             buttons: {
               submit: {
                 variant: 'danger',
-                label: 'UI.ACTION.DELETE',
+                label: 'ACTION.DELETE.TITLE',
               },
             },
           }).result
@@ -280,7 +280,7 @@ export class VehicleSettingsComponent {
         buttons: {
           submit: {
             variant: 'primary',
-            label: 'UI.ACTION.CREATE',
+            label: 'ACTION.CREATE.TITLE',
           },
         },
       }).result

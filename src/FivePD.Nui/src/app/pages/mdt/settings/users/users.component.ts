@@ -32,7 +32,7 @@ export class UsersComponent {
     new Column<User>({
       header: this._localizationService.translate('Access for FivePD'),
       show: () => true,
-      valueResolver: user => this._localizationService.translate(user.AccessFivePD ? 'UI.LABEL.ACCESS_CONTROL.ALLOWED' : 'UI.LABEL.ACCESS_CONTROL.NOT_ALLOWED'),
+      valueResolver: user => this._localizationService.translate(user.AccessFivePD ? 'LABEL.ACCESS_CONTROL.ALLOWED' : 'LABEL.ACCESS_CONTROL.NOT_ALLOWED'),
       badgeResolver: user => user.AccessFivePD ? 'green' : 'gray',
     }),
     new Column<User>({
@@ -64,18 +64,18 @@ export class UsersComponent {
       ]
     }),
     new Column<User>({
-      header: this._localizationService.translate('UI.LABEL.ACTION.PLURAL'),
+      header: this._localizationService.translate('LABEL.ACTION.PLURAL'),
       actions: [
         {
           type: 'button',
           show: user => user.AccessFivePD,
-          label: this._localizationService.translate('UI.LABEL.ACCESS_CONTROL.ACTION.REMOVE_ACCESS'),
+          label: this._localizationService.translate('LABEL.ACCESS_CONTROL.ACTION.REMOVE_ACCESS'),
           onClick: user => this._accessControlService.disallow(user.Id).subscribe(() => this.collation$.next(this.collation$.value))
         },
         {
           type: 'button',
           show: user => !user.AccessFivePD,
-          label: this._localizationService.translate('UI.LABEL.ACCESS_CONTROL.ACTION.GIVE_ACCESS'),
+          label: this._localizationService.translate('LABEL.ACCESS_CONTROL.ACTION.GIVE_ACCESS'),
           onClick: user => this._accessControlService.allow(user.Id).subscribe(() => this.collation$.next(this.collation$.value))
         },
       ]

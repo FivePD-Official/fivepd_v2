@@ -5,7 +5,7 @@
 
       <div class="w-full flex flex-row items-center justify-between">
         <p class="text-zinc-200 font-medium">
-          {{ (incident.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate }}
+          {{ (incident.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate }}
         </p>
 
         <app-badge [label]="getPriorityLabel(incident.Priority) | translate"
@@ -13,12 +13,12 @@
       </div>
 
       <div class="flex flex-col gap-1">
-        <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
+        <p class="text-zinc-400 font-medium">{{ 'LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
         <p class="text-white text-lg">{{ incident.Description }}</p>
       </div>
 
       <div class="flex flex-col gap-1">
-        <p class="text-zinc-400 font-medium">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+        <p class="text-zinc-400 font-medium">{{ 'LABEL.ADDRESS.SINGULAR' | translate }}</p>
         <p class="text-white text-lg">{{ incident.Address }}</p>
       </div>
 
@@ -29,7 +29,7 @@
 
     </div>
     <div class="mt-10 flex flex-col gap-1">
-      <p class="text-zinc-200 font-medium text-lg">{{ 'UI.LABEL.ACTION.PLURAL' | translate }}</p>
+      <p class="text-zinc-200 font-medium text-lg">{{ 'LABEL.ACTION.PLURAL' | translate }}</p>
       <div class="flex flex-row gap-4">
         @if (isUnitAssignedToIncident$ | async) {
           <app-button [label]="'UI.LABEL.INCIDENT.SELF_UNASSIGN.TITLE' | translate"

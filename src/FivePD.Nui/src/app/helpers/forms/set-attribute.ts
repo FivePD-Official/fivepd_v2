@@ -33,8 +33,8 @@ export function createAttributesFormFields(localizationService: LocalizationServ
         },
         {key: AttributeDataType.LongString, label: localizationService.translate('UI.LABEL.LONG_TEXT.SINGULAR')},
         {key: AttributeDataType.Integer, label: localizationService.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR')},
-        {key: AttributeDataType.Bool, label: localizationService.translate('UI.LABEL.CHECKBOX.SINGULAR')},
-        {key: AttributeDataType.Date, label: localizationService.translate('UI.LABEL.DATE.SINGULAR')},
+        {key: AttributeDataType.Bool, label: localizationService.translate('LABEL.CHECKBOX.SINGULAR')},
+        {key: AttributeDataType.Date, label: localizationService.translate('LABEL.DATE.TITLE.SINGULAR')},
       ]
     }),
     new TextField({
@@ -82,38 +82,38 @@ export function createAttributesFormFields(localizationService: LocalizationServ
   if (!value) {
     fields.unshift(new SingleSelectField({
       key: 'AttributeType',
-      label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPE.TITLE'),
-      helpLabel: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPE.HELP_LABEL'),
+      label: localizationService.translate('LABEL.ATTRIBUTE.TYPE.TITLE'),
+      helpLabel: localizationService.translate('LABEL.ATTRIBUTE.TYPE.HELP_LABEL'),
       size: 'normal',
       variant: 'secondary',
-      defaultItemLabel: localizationService.translate('UI.LABEL.CUSTOM'),
+      defaultItemLabel: localizationService.translate('LABEL.CUSTOM.TITLE'),
       items: () => [
-        {key: CoreAttributes.SubmitDate, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.SUBMIT_DATE')},
-        {key: CoreAttributes.UserId, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.USER_ID')},
-        {key: CoreAttributes.UserIds, label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.USER_IDS')},
+        {key: CoreAttributes.SubmitDate, label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.SUBMIT_DATE')},
+        {key: CoreAttributes.UserId, label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.USER_ID.SINGULAR')},
+        {key: CoreAttributes.UserIds, label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.USER_ID.PLURAL')},
         {
           key: CoreAttributes.DepartmentId,
-          label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.DEPARTMENT_ID')
+          label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.DEPARTMENT_ID.SINGULAR')
         },
         {
           key: CoreAttributes.DepartmentIds,
-          label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.DEPARTMENT_IDS')
+          label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.DEPARTMENT_ID.PLURAL')
         },
         {
           key: CoreAttributes.PedHistoryId,
-          label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.PED_HISTORY_ID')
+          label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.PED_HISTORY_ID.SINGULAR')
         },
         {
           key: CoreAttributes.PedHistoryIds,
-          label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.PED_HISTORY_IDS')
+          label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.PED_HISTORY_IDS.PLURAL')
         },
         {
           key: CoreAttributes.IncidentHistoryId,
-          label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.INCIDENT_HISTORY_ID')
+          label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.INCIDENT_HISTORY_ID.SINGULAR')
         },
         {
           key: CoreAttributes.IncidentHistoryIds,
-          label: localizationService.translate('UI.LABEL.ATTRIBUTE.TYPES.INCIDENT_HISTORY_IDS')
+          label: localizationService.translate('LABEL.ATTRIBUTE.TYPES.INCIDENT_HISTORY_IDS.PLURAL')
         },
       ],
     }));

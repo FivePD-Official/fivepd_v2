@@ -467,7 +467,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             guid,
             true,
             "UI.LABEL.SUCCESS.CHANGE",
-            "UI.LABEL.DIVISION.SUCCESS.CHANGE",
+            "LABEL.DIVISION.SUCCESS.CHANGE",
             new Dictionary<string, string>
             {
                 { "player", user.Name },
@@ -622,7 +622,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
             if (user.Department.Users.Any(x => x.Callsign == callsign))
             {
-                this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.USER.CALLSIGN.EDIT.TITLE", "UI.ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
+                this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.USER.CALLSIGN.EDIT.TITLE", "ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
                 return;
             }
 

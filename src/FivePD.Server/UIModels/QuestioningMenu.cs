@@ -85,7 +85,7 @@ public sealed class QuestioningMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.ERROR.UNEXPECTED",
+                    Message = "ERROR.UNEXPECTED",
                 });
             return;
         }

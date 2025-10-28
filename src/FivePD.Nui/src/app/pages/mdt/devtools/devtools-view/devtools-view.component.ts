@@ -18,7 +18,7 @@ export class DevtoolsViewComponent {
       routerLink: '/mdt/devtools'
     },
     {
-      label: 'UI.LABEL.CALLOUT.PLURAL',
+      label: 'LABEL.CALLOUT.PLURAL',
       routerLink: '/mdt/devtools/callouts'
     },
   ];

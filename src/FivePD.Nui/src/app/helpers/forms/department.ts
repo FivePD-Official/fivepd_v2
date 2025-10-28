@@ -7,9 +7,9 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
   return new TextField({
     key: 'CallsignFormat',
     required: true,
-    label: 'UI.LABEL.CALLSIGN.FORMAT.TITLE',
+    label: 'LABEL.CALLSIGN.FORMAT.TITLE',
     helpLabel: `
-              ${localizationService.translate('UI.LABEL.CALLSIGN.FORMAT.HELP_LABEL')} ${localizationService.translate('UI.LABEL.AVAILABLE_CHARACTERS')}: <br/>
+              ${localizationService.translate('LABEL.CALLSIGN.FORMAT.HELP_LABEL')} ${localizationService.translate('LABEL.AVAILABLE_CHARACTERS')}: <br/>
               <table>
                 <tr>
                   <td><b>L</b><td>
@@ -21,15 +21,15 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
                 </tr>
                 <tr>
                   <td><b>-</b><td>
-                  <td>(${localizationService.translate('UI.LABEL.DASH.SINGULAR')})<td>
+                  <td>(${localizationService.translate('LABEL.DASH.SINGULAR')})<td>
                 </tr>
                 <tr>
                   <td><b>A-Z</b><td>
-                  <td>(${localizationService.translate('UI.LABEL.ANY_LETTER')})<td>
+                  <td>(${localizationService.translate('LABEL.ANY_LETTER')})<td>
                 </tr>
                 <tr>
                   <td><b>0-9</b><td>
-                  <td>(${localizationService.translate('UI.LABEL.ANY_NUMBER')})<td>
+                  <td>(${localizationService.translate('LABEL.ANY_NUMBER')})<td>
                 </tr>
               </table>
             `,

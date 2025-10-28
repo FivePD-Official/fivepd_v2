@@ -49,12 +49,12 @@ export class DepartmentsComponent implements OnInit {
 
   readonly buttons: Button[] = [
     {
-      label: 'UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TITLE',
+      label: 'LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TITLE',
       show: () => true,
       disabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch,
       tooltip: {
         enabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch,
-        text: this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TOOLTIP', {
+        text: this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TOOLTIP', {
           configKey: 'AreaBasedDispatch',
         }),
         placement: 'left',
@@ -62,12 +62,12 @@ export class DepartmentsComponent implements OnInit {
       onClick: () => this._router.navigate(['mdt', 'settings', 'departments', 'area-management']),
     },
     {
-      label: 'UI.ACTION.CREATE_DEPARTMENT',
+      label: 'ACTION.CREATE.DEPARTMENT.TITLE',
       show: () => this._userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => {
         this._modalService.open(CreateDepartmentModalComponent, {
-          title: 'UI.ACTION.CREATE_DEPARTMENT'
+          title: 'ACTION.CREATE.DEPARTMENT.TITLE'
         }).result
           .pipe(
             filter(res => res.success),
@@ -87,41 +87,41 @@ export class DepartmentsComponent implements OnInit {
       }
     }),
     new Column<Department>({
-      header: 'UI.LABEL.CALLSIGN.TITLE',
+      header: 'LABEL.CALLSIGN.TITLE',
       accessorKey: 'Callsign',
       filter: {
         label: 'UI.LABEL.SEARCH_BY.CALLSIGN',
       },
     }),
     new Column<Department>({
-      header: 'UI.LABEL.CAPACITY.SINGULAR',
+      header: 'LABEL.CAPACITY.SINGULAR',
       accessorKey: 'UserCount',
       valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localizationService.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
     new Column<Department>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       show: () => this._userService.userIsDepartmentManagerOrAdmin(),
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.EDIT',
+          label: 'ACTION.EDIT.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: item => this._router.navigate(['mdt', 'settings', 'departments', item.Id]),
         },
         {
           type: 'button',
-          label: 'UI.ACTION.DELETE',
+          label: 'ACTION.DELETE.TITLE',
           show: () => this._userService.userHasRole(UserRole.Admin),
           disabled: () => false,
           onClick: department => {
             this._modalConfirmService.open({
-              title: 'UI.LABEL.DEPARTMENT.DELETE.TITLE',
-              description: this._localizationService.translate('UI.LABEL.DEPARTMENT.DELETE.DESCRIPTION', {department: `<b>${department.Name}</b>`}),
+              title: 'LABEL.DEPARTMENT.DELETE.TITLE',
+              description: this._localizationService.translate('LABEL.DEPARTMENT.DELETE.DESCRIPTION', {department: `<b>${department.Name}</b>`}),
               buttons: {
                 submit: {
                   variant: 'danger',
-                  label: 'UI.ACTION.DELETE',
+                  label: 'ACTION.DELETE.TITLE',
                 },
               },
             }).result

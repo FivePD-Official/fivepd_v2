@@ -44,6 +44,6 @@ public class NetworkEventService : INetworkEventService
 
     public void TriggerEventWithUnexpectedError(Player player, string guid)
     {
-        this.TriggerEventWithResponse(player, guid, false, "UI.ERROR.UNEXPECTED", "UI.ERROR.DATABASE_ACCESS.TITLE");
+        this.TriggerEventWithResponse(player, guid, false, "ERROR.UNEXPECTED", "ERROR.DATABASE_ACCESS.TITLE");
     }
 }

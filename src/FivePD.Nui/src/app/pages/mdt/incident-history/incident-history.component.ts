@@ -39,11 +39,11 @@ export class IncidentHistoryComponent implements OnInit {
     new Column({
       header: 'UI.LABEL.TYPE.SINGULAR',
       accessorKey: 'Type',
-      valueResolver: item => this._localizationService.translate(item.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR'),
+      valueResolver: item => this._localizationService.translate(item.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR'),
       filter: {
         label: this._localizationService.translate('UI.LABEL.SEARCH_BY.TYPE'),
         dropdown: [
-          {key: FIncidentType.Callout, label: this._localizationService.translate('UI.LABEL.CALLOUT.SINGULAR')},
+          {key: FIncidentType.Callout, label: this._localizationService.translate('LABEL.CALLOUT.SINGULAR')},
           {key: FIncidentType.TrafficStop, label: this._localizationService.translate('UI.LABEL.TRAFFIC_STOP.SINGULAR')},
         ]
       }
@@ -54,11 +54,11 @@ export class IncidentHistoryComponent implements OnInit {
     //   actions: [
     //     {
     //       type: 'button',
-    //       label: this._localizationService.translate('UI.ACTION.VIEW'),
+    //       label: this._localizationService.translate('ACTION.VIEW.TITLE'),
     //       show: () => true,
     //       onClick: entity => {
     //         this._modalService.open(ModalEntityViewComponent, {
-    //           title: 'UI.LABEL.ARREST_REPORT.SINGULAR',
+    //           title: 'LABEL.ARREST_REPORT.SINGULAR',
     //           columns: 2,
     //         }, new Map().set(ENTITY, entity).set(ATTRIBUTES, wrapper.attributes));
     //       }

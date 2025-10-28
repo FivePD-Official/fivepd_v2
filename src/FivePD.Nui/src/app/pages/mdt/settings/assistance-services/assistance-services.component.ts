@@ -62,19 +62,19 @@ export class AssistanceServicesComponent {
     }),
     new Column({
       accessorKey: 'AssemblyName',
-      header: 'UI.LABEL.ASSEMBLY_NAME.SINGULAR',
+      header: 'LABEL.ASSEMBLY_NAME.SINGULAR',
       show: () => true,
       filter: {
         label: 'UI.LABEL.SEARCH_BY.ASSEMBLY'
       }
     }),
     new Column({
-      header: 'UI.LABEL.ACTIVE',
+      header: 'LABEL.ACTIVE.TITLE',
       valueResolver: item => this._localizationService.translate(item.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
       badgeResolver: item => item.Active ? 'green' : 'gray'
     }),
     new Column({
-      header: 'UI.LABEL.ENABLED',
+      header: 'LABEL.ENABLED',
       valueResolver: item => this._localizationService.translate(item.Enabled ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
       badgeResolver: item => item.Enabled ? 'green' : 'gray'
     }),
@@ -91,23 +91,23 @@ export class AssistanceServicesComponent {
       show: () => true,
     }),
     new Column({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       show: () => true,
       actions: [
         {
           type: 'button',
-          label: this._localizationService.translate('UI.ACTION.EDIT'),
+          label: this._localizationService.translate('ACTION.EDIT.TITLE'),
           onClick: station => this._router.navigate(['mdt', 'settings', 'assistance-services', 'stations', station.Id]),
         },
         {
           type: 'button',
-          label: this._localizationService.translate('UI.ACTION.DELETE'),
+          label: this._localizationService.translate('ACTION.DELETE.TITLE'),
           onClick: station => {
             this._modalConfirmService.open({
-              title: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.DELETE.TITLE',
-              description: this._localizationService.translate('UI.LABEL.ASSISTANCE_SERVICE.STATION.DELETE.DESCRIPTION', {station: `<b>${station.Name}</b>`}),
+              title: 'LABEL.ASSISTANCE_SERVICE.STATION.DELETE.TITLE',
+              description: this._localizationService.translate('LABEL.ASSISTANCE_SERVICE.STATION.DELETE.DESCRIPTION', {station: `<b>${station.Name}</b>`}),
               buttons: {
-                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
               },
             }).result
               .pipe(
@@ -123,14 +123,14 @@ export class AssistanceServicesComponent {
   readonly stationsButtons: Button[] = [
     {
       type: 'button',
-      label: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.CREATE.TITLE',
+      label: 'LABEL.ASSISTANCE_SERVICE.STATION.CREATE.TITLE',
       show: () => true,
       variant: 'secondary',
       disabled: () => false,
       onClick: () => this._modalFormService.open({
-        title: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.CREATE.TITLE',
+        title: 'LABEL.ASSISTANCE_SERVICE.STATION.CREATE.TITLE',
         buttons: {
-          submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+          submit: {variant: 'primary', label: 'ACTION.CREATE.TITLE'},
         },
         fields: () => [
           new TextField({

@@ -324,7 +324,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                     },
                     Keys = new Dictionary<string, string>
                     {
-                        { "F1", "UI.ACTION.ACCEPT" },
+                        { "F1", "ACTION.ACCEPT.TITLE" },
                     },
                     PlayAudio = this._configService.GeneralConfig.Audio.Files.UnitJoinRequest,
                 },
