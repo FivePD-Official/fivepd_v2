@@ -15,15 +15,15 @@ function createBaseFields(weaponComponent?: WeaponComponent): FormInputBase<any>
   return [
     new TextField({
       key: 'Name',
-      label: 'UI.LABEL.NAME.SINGULAR',
-      helpLabel: 'UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.NAME.HELP_LABEL',
+      label: 'LABEL.NAME.SINGULAR',
+      helpLabel: 'LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.NAME.HELP_LABEL',
       required: true,
       value: weaponComponent?.Name,
     }),
     new TextField({
       key: 'HashKey',
-      label: 'UI.LABEL.HASH_KEY.SINGULAR', // Make localisation for HashKey
-      helpLabel: 'UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.HASH_KEY.HELP_LABEL',
+      label: 'LABEL.HASH_KEY.SINGULAR', // Make localisation for HashKey
+      helpLabel: 'LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.HASH_KEY.HELP_LABEL',
       required: true,
       value: weaponComponent?.HashKey,
 
@@ -45,17 +45,17 @@ export class LoadoutWeaponComponentsComponent {
   private readonly _localizationService = inject(LocalizationService);
 
   readonly nameColumn = new Column<WeaponComponent>({
-    header: 'UI.LABEL.NAME.SINGULAR',
+    header: 'LABEL.NAME.SINGULAR',
     accessorKey: "Name",
     filter: {
-      label: 'UI.LABEL.SEARCH_BY.NAME',
+      label: 'LABEL.SEARCH_BY.NAME',
     }
   });
   readonly hashKeyColumn = new Column<WeaponComponent>({
-    header: 'UI.LABEL.HASH_KEY.SINGULAR',
+    header: 'LABEL.HASH_KEY.SINGULAR',
     accessorKey: "HashKey",
     filter: {
-      label: 'UI.LABEL.SEARCH_BY.HASH_KEY',
+      label: 'LABEL.SEARCH_BY.HASH_KEY',
     }
   });
 
@@ -86,7 +86,7 @@ export class LoadoutWeaponComponentsComponent {
           disabled: () => false,
           onClick: weaponComponent => {
             this._modalFormService.open({
-              title: 'UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.EDIT.TITLE',
+              title: 'LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.EDIT.TITLE',
               fields: weaponComponent => fields(weaponComponent),
               valueResolver: new ValueResolver(weaponComponent, this._weaponComponentService.get(weaponComponent.Id)),
               buttons: {
@@ -113,8 +113,8 @@ export class LoadoutWeaponComponentsComponent {
           show: () => true,
           disabled: () => false,
           onClick: weaponComponent => this._modalConfirmService.open({
-            title: 'UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.DELETE.TITLE',
-            description: this._localizationService.translate('UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.DELETE.DESCRIPTION', {name: weaponComponent.Name}),
+            title: 'LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.DELETE.TITLE',
+            description: this._localizationService.translate('LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.DELETE.DESCRIPTION', {name: weaponComponent.Name}),
             buttons: {
               submit: {
                 variant: 'danger',
@@ -134,11 +134,11 @@ export class LoadoutWeaponComponentsComponent {
 
   private createAddWeaponComponentButton(fields: () => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Button {
     return {
-      label: this._localizationService.translate('UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.CREATE.TITLE'),
+      label: this._localizationService.translate('LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.CREATE.TITLE'),
       show: () => true,
       disabled: () => false,
       onClick: () => this._modalFormService.open({
-        title: 'UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.CREATE.TITLE',
+        title: 'LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.CREATE.TITLE',
         fields,
         buttons: {
           submit: {

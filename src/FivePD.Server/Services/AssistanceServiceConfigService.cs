@@ -209,7 +209,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CREATE",
+            "LABEL.SUCCESS.CREATE",
             "LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.CREATE");
     }
     
@@ -231,7 +231,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.DELETE",
+            "LABEL.SUCCESS.DELETE",
             "LABEL.ASSISTANCE_SERVICE.STATION.SUCCESS.DELETE");
     }
     
@@ -288,7 +288,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.ADD",
+            "LABEL.SUCCESS.ADD",
             "LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
     }
     
@@ -310,7 +310,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
             "LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.ADD");
     }
     
@@ -332,7 +332,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.DELETE",
+            "LABEL.SUCCESS.DELETE",
             "LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.SUCCESS.DELETE");
     }
     

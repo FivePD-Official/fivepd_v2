@@ -420,7 +420,7 @@ public class DepartmentService : IDepartmentService
                 player,
                 guid,
                 true,
-                "UI.LABEL.SUCCESS.CREATE",
+                "LABEL.SUCCESS.CREATE",
                 "LABEL.DEPARTMENT.SUCCESS.CREATE",
                 new Dictionary<string, string>
                 {
@@ -465,7 +465,7 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.DELETE",
+            "LABEL.SUCCESS.DELETE",
             "LABEL.DIVISION.SUCCESS.DELETE",
             new Dictionary<string, string>
             {
@@ -509,7 +509,7 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
             "LABEL.DIVISION.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
@@ -552,7 +552,7 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CREATE",
+            "LABEL.SUCCESS.CREATE",
             "LABEL.DIVISION.SUCCESS.CREATE",
             new Dictionary<string, string>
             {
@@ -621,7 +621,7 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
             "LABEL.DEPARTMENT.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
@@ -677,7 +677,7 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
             "LABEL.DEPARTMENT.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
@@ -732,7 +732,7 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.DELETE",
+            "LABEL.SUCCESS.DELETE",
             "LABEL.DEPARTMENT.SUCCESS.DELETE",
             new Dictionary<string, string>
             {
@@ -800,7 +800,7 @@ public class DepartmentService : IDepartmentService
                 player,
                 guid,
                 true,
-                "UI.LABEL.SUCCESS.JOIN",
+                "LABEL.SUCCESS.JOIN",
                 "LABEL.DEPARTMENT.SUCCESS.JOIN",
                 new Dictionary<string, string>
                 {
@@ -822,7 +822,7 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.LEAVE",
+            "LABEL.SUCCESS.LEAVE",
             "LABEL.DEPARTMENT.SUCCESS.LEAVE",
             new Dictionary<string, string>
             {
@@ -912,6 +912,6 @@ public class DepartmentService : IDepartmentService
 
         this._databaseContext.SaveChanges();
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT");
     }
 }

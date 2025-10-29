@@ -1,19 +1,19 @@
 ﻿<app-container [rows]="2" [columns]="1">
 
-  <app-grid [title]="'UI.LABEL.VEHICLE_CONFIG.TYPE.POLICE.TITLE' | translate"
+  <app-grid [title]="'LABEL.VEHICLE_CONFIG.TYPE.POLICE.TITLE' | translate"
             [data]="policeVehicleConfigPage$ | async"
             [buttons]="policeVehicleConfigButtons"
             [columns]="policeVehicleConfigColumns"
             (onCollationChange)="policeVehicleConfigCollation$.next($event)"/>
 
   @if (this._userService.userHasRole(UserRole.Admin)) {
-    <app-grid [title]="'UI.LABEL.VEHICLE_CONFIG.TYPE.AMBULANCE.TITLE' | translate"
+    <app-grid [title]="'LABEL.VEHICLE_CONFIG.TYPE.AMBULANCE.TITLE' | translate"
               [data]="ambulanceVehicleConfigPage$ | async"
               [buttons]="ambulanceVehicleConfigButtons"
               [columns]="ambulanceVehicleConfigColumns"
               (onCollationChange)="ambulanceVehicleConfigCollation$.next($event)"/>
 
-    <app-grid [title]="'UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.TITLE' | translate"
+    <app-grid [title]="'LABEL.VEHICLE_CONFIG.TYPE.TOW.TITLE' | translate"
               [data]="towTruckVehicleConfigPage$ | async"
               [buttons]="towTruckVehicleConfigButtons"
               [columns]="towTruckVehicleConfigColumns"

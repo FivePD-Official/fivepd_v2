@@ -47,21 +47,21 @@ export class LoadoutWeaponsComponent {
   ];
 
   readonly nameColumn = new Column<Weapon>({
-    header: 'UI.LABEL.NAME.SINGULAR',
+    header: 'LABEL.NAME.SINGULAR',
     accessorKey: "Name",
     filter: {
-      label: 'UI.LABEL.SEARCH_BY.NAME',
+      label: 'LABEL.SEARCH_BY.NAME',
     }
   });
   readonly modelColumn = new Column<Weapon>({
-    header: 'UI.LABEL.MODEL.SINGULAR',
+    header: 'LABEL.MODEL.SINGULAR',
     accessorKey: "Model",
     filter: {
-      label: 'UI.LABEL.SEARCH_BY.MODEL',
+      label: 'LABEL.SEARCH_BY.MODEL',
     }
   });
   readonly attachmentCountColumn = new Column<Weapon>({
-    header: 'UI.LABEL.LOADOUT_CONFIG.WEAPON.COLUMN.ATTACHMENT.COUNT.SINGULAR',
+    header: 'LABEL.LOADOUT_CONFIG.WEAPON.COLUMN.ATTACHMENT.COUNT.SINGULAR',
     valueResolver: item => item.WeaponWeaponComponents.length.toString(),
   });
 
@@ -83,27 +83,27 @@ export class LoadoutWeaponsComponent {
           disabled: () => false,
           onClick: weapon => {
             this._modalFormService.open({
-              title: 'UI.LABEL.LOADOUT_CONFIG.WEAPON.EDIT.TITLE',
+              title: 'LABEL.LOADOUT_CONFIG.WEAPON.EDIT.TITLE',
               fields: (weapon, wepComponents) => {
                 const weaponComponents: SimpleWeaponComponent[] = Array.isArray(wepComponents) ? wepComponents : [];
                 return [
                   new TextField({
                     key: 'Name',
-                    label: 'UI.LABEL.NAME.SINGULAR',
-                    helpLabel: 'UI.LABEL.LOADOUT_CONFIG.WEAPON.NAME.HELP_LABEL',
+                    label: 'LABEL.NAME.SINGULAR',
+                    helpLabel: 'LABEL.LOADOUT_CONFIG.WEAPON.NAME.HELP_LABEL',
                     required: true,
                     value: weapon?.Name,
                   }),
                   new TextField({
                     key: 'Model',
-                    label: 'UI.LABEL.MODEL.SINGULAR',
-                    helpLabel: 'UI.LABEL.LOADOUT_CONFIG.WEAPON.MODEL.HELP_LABEL',
+                    label: 'LABEL.MODEL.SINGULAR',
+                    helpLabel: 'LABEL.LOADOUT_CONFIG.WEAPON.MODEL.HELP_LABEL',
                     required: true,
                     value: weapon?.Model,
                   }),
                   new MultiSelectField({
                     key: 'WeaponComponentHashes',
-                    label: 'UI.LABEL.WEAPON_COMPONENT.PLURAL',
+                    label: 'LABEL.WEAPON_COMPONENT.PLURAL',
                     defaultItemLabel: '',
                     addDefaultItem: false,
                     value: weapon?.WeaponComponentHashes,
@@ -144,8 +144,8 @@ export class LoadoutWeaponsComponent {
           show: () => true,
           disabled: () => false,
           onClick: weapon => this._modalConfirmService.open({
-            title: 'UI.LABEL.LOADOUT_CONFIG.DELETE.TITLE',
-            description: this._localizationService.translate('UI.LABEL.LOADOUT_CONFIG.WEAPON.DELETE.DESCRIPTION', {name: weapon.Name}),
+            title: 'LABEL.LOADOUT_CONFIG.DELETE.TITLE',
+            description: this._localizationService.translate('LABEL.LOADOUT_CONFIG.WEAPON.DELETE.DESCRIPTION', {name: weapon.Name}),
             buttons: {
               submit: {
                 variant: 'danger',
@@ -165,29 +165,29 @@ export class LoadoutWeaponsComponent {
 
   private createAddWeaponButton(onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Button {
     return {
-      label: this._localizationService.translate('UI.LABEL.LOADOUT_CONFIG.WEAPON.CREATE.TITLE'),
+      label: this._localizationService.translate('LABEL.LOADOUT_CONFIG.WEAPON.CREATE.TITLE'),
       show: () => true,
       disabled: () => false,
       onClick: () => this._modalFormService.open({
-        title: 'UI.LABEL.LOADOUT_CONFIG.WEAPON.CREATE.TITLE',
+        title: 'LABEL.LOADOUT_CONFIG.WEAPON.CREATE.TITLE',
         fields: (wepComponents) => {
           const weaponComponents: SimpleWeaponComponent[] = Array.isArray(wepComponents) ? wepComponents : [];
           return [
             new TextField({
               key: 'Name',
-              label: 'UI.LABEL.NAME.SINGULAR',
-              helpLabel: 'UI.LABEL.LOADOUT_CONFIG.WEAPON.NAME.HELP_LABEL',
+              label: 'LABEL.NAME.SINGULAR',
+              helpLabel: 'LABEL.LOADOUT_CONFIG.WEAPON.NAME.HELP_LABEL',
               required: true,
             }),
             new TextField({
               key: 'Model',
-              label: 'UI.LABEL.MODEL.SINGULAR',
-              helpLabel: 'UI.LABEL.LOADOUT_CONFIG.WEAPON.MODEL.HELP_LABEL',
+              label: 'LABEL.MODEL.SINGULAR',
+              helpLabel: 'LABEL.LOADOUT_CONFIG.WEAPON.MODEL.HELP_LABEL',
               required: true,
             }),
             new MultiSelectField({
               key: 'WeaponComponentHashes',
-              label: 'UI.LABEL.WEAPON_COMPONENT.PLURAL',
+              label: 'LABEL.WEAPON_COMPONENT.PLURAL',
               defaultItemLabel: '',
               addDefaultItem: false,
               items: () => weaponComponents.map(wc => ({

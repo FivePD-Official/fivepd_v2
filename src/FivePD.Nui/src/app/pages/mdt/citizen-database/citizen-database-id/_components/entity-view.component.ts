@@ -41,7 +41,7 @@ import { EntityValue, EntityValueLink } from "@services/variable-data/variable-d
             }
           </div>
         } @empty {
-          <p class="text-zinc-400 block">{{ 'UI.LABEL.NO_RESULTS' | translate }}</p>
+          <p class="text-zinc-400 block">{{ 'LABEL.NO_RESULTS' | translate }}</p>
         }
       </div>
     </div>`,

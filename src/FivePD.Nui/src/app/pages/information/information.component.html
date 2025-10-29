@@ -8,7 +8,7 @@
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-red-500"></span>
           <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
         </span>
-        <p class="font-medium text-red-500">{{ 'UI.LABEL.PANIC_MODE.ACTIVE' | translate }}</p>
+        <p class="font-medium text-red-500">{{ 'LABEL.PANIC_MODE.ACTIVE' | translate }}</p>
       </div>
     }
 
@@ -36,12 +36,12 @@
             </p>
           </div>
           <div class="flex flex-col">
-            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.TYPE.SINGULAR' | translate }}</p>
             <p class="text-zinc-200">
               {{
                 (information.IncidentWrapper.Incident.Type === FIncidentType.Callout
                   ? 'LABEL.CALLOUT.SINGULAR'
-                  : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate
+                  : 'LABEL.TRAFFIC_STOP.SINGULAR') | translate
               }}
             </p>
           </div>
@@ -64,7 +64,7 @@
         </p>
       </div>
       <div class="flex flex-col">
-        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.STATUS.SINGULAR' | translate }}</p>
+        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.STATUS.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">{{ information.Status }}</p>
       </div>
     </div>

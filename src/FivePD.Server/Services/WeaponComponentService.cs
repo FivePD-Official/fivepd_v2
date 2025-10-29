@@ -84,8 +84,8 @@ public class WeaponComponentService : IWeaponComponentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CREATE",
-            "UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.CREATE");
+            "LABEL.SUCCESS.CREATE",
+            "LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.CREATE");
     }
 
     [UIEvent(Events.UI.WeaponComponent.Edit)]
@@ -108,8 +108,8 @@ public class WeaponComponentService : IWeaponComponentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
-            "UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.EDIT");
+            "LABEL.SUCCESS.EDIT",
+            "LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.WeaponComponent.Delete)]
@@ -130,7 +130,7 @@ public class WeaponComponentService : IWeaponComponentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.DELETE",
-            "UI.LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.DELETE");
+            "LABEL.SUCCESS.DELETE",
+            "LABEL.LOADOUT_CONFIG.WEAPON_COMPONENT.SUCCESS.DELETE");
     }
 }

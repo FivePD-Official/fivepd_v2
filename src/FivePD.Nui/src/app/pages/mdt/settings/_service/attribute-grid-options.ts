@@ -23,58 +23,58 @@ export class AttributeGridOptions {
   private readonly _modalConfirmService = inject(ModalConfirmService);
   private readonly _localizationService = inject(LocalizationService);
 
-  valueResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): string => this._localizationService.translate(item[key] ? 'UI.LABEL.YES' : 'UI.LABEL.NO');
+  valueResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): string => this._localizationService.translate(item[key] ? 'LABEL.YES.TITLE' : 'UI.LABEL.NO');
   badgeResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): BadgeVariants => item[key] ? 'green' : 'gray';
 
   createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<VariableDataAttribute>[] {
     return [
       {
-        header: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
+        header: this._localizationService.translate('LABEL.NAME.SINGULAR'),
         show: () => true,
         accessorKey: 'Name',
       },
       {
-        header: this._localizationService.translate('UI.LABEL.TYPE.SINGULAR'),
+        header: this._localizationService.translate('LABEL.TYPE.SINGULAR'),
         show: () => true,
         valueResolver: attr => {
           switch (attr.DataType) {
             case AttributeDataType.ShortString:
-              return this._localizationService.translate('UI.LABEL.SHORT_TEXT.SINGULAR');
+              return this._localizationService.translate('LABEL.SHORT_TEXT.SINGULAR');
             case AttributeDataType.LongString:
-              return this._localizationService.translate('UI.LABEL.LONG_TEXT.SINGULAR');
+              return this._localizationService.translate('LABEL.LONG_TEXT.SINGULAR');
             case AttributeDataType.Integer:
-              return this._localizationService.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR');
+              return this._localizationService.translate('LABEL.WHOLE_NUMBER.SINGULAR');
             case AttributeDataType.Bool:
               return this._localizationService.translate('LABEL.CHECKBOX.SINGULAR');
             case AttributeDataType.Date:
               return this._localizationService.translate('LABEL.DATE.TITLE.SINGULAR');
             case AttributeDataType.IntegerList:
-              return this._localizationService.translate('UI.LABEL.WHOLE_NUMBER_LIST.SINGULAR');
+              return this._localizationService.translate('LABEL.WHOLE_NUMBER_LIST.SINGULAR');
             default:
               return '-';
           }
         },
       },
       {
-        header: this._localizationService.translate('UI.LABEL.HIDDEN.TITLE'),
+        header: this._localizationService.translate('LABEL.HIDDEN.TITLE'),
         show: () => true,
         valueResolver: item => this.valueResolver(item, 'Hidden'),
         badgeResolver: item => this.badgeResolver(item, 'Hidden'),
       },
       {
-        header: this._localizationService.translate('UI.LABEL.READONLY.TITLE'),
+        header: this._localizationService.translate('LABEL.READONLY.TITLE'),
         show: () => true,
         valueResolver: item => this.valueResolver(item, 'Readonly'),
         badgeResolver: item => this.badgeResolver(item, 'Readonly'),
       },
       {
-        header: this._localizationService.translate('UI.LABEL.REQUIRED'),
+        header: this._localizationService.translate('LABEL.REQUIRED.TITLE'),
         show: () => true,
         valueResolver: item => this.valueResolver(item, 'Required'),
         badgeResolver: item => this.badgeResolver(item, 'Required'),
       },
       {
-        header: this._localizationService.translate('UI.LABEL.SHOW_IN_GRID.TITLE'),
+        header: this._localizationService.translate('LABEL.SHOW_IN_GRID.TITLE'),
         show: () => true,
         valueResolver: item => this.valueResolver(item, 'ShowInGrid'),
         badgeResolver: item => this.badgeResolver(item, 'ShowInGrid'),

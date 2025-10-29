@@ -41,7 +41,7 @@ export class HeaderComponent implements OnInit {
   }
 
   get loggedInAsText() {
-    return this._localizationService.translate('UI.LABEL.HEADER.LOGGED_IN_AS', {
+    return this._localizationService.translate('LABEL.HEADER.LOGGED_IN_AS', {
       name: this.user?.Name ?? '-',
     })
   }

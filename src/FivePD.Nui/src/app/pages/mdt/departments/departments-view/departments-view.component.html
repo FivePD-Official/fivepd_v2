@@ -48,7 +48,7 @@
                   (onCellAction)="getDivisions()"/>
       </app-container>
       @if (!department.UseGlobalRanks) {
-        <app-grid [title]="'UI.LABEL.RANK.PLURAL' | translate"
+        <app-grid [title]="'LABEL.RANK.PLURAL' | translate"
                   [buttons]="ranksButtons"
                   [data]="departmentRanksPage"
                   [columns]="ranksColumns"
@@ -69,7 +69,7 @@
                 (onCollationChange)="onDivisionsCollationChange($event)"
                 (onCellAction)="getDivisions()"/>
       @if (!department.UseGlobalRanks) {
-        <app-grid [title]="'UI.LABEL.RANK.PLURAL' | translate"
+        <app-grid [title]="'LABEL.RANK.PLURAL' | translate"
                   [buttons]="ranksButtons"
                   [data]="departmentRanksPage"
                   [columns]="ranksColumns"
@@ -81,7 +81,7 @@
 
 }
 
-<app-grid [title]="'UI.LABEL.MEMBER.PLURAL' | translate"
+<app-grid [title]="'LABEL.MEMBER.PLURAL' | translate"
           [data]="users"
           [columns]="usersColumns"
           (onCollationChange)="onUsersCollationChange($event)"

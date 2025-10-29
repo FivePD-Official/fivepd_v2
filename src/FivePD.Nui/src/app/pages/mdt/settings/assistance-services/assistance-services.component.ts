@@ -54,10 +54,10 @@ export class AssistanceServicesComponent {
   readonly typeConfigsColumn: Column<AssistanceServiceTypeConfig>[] = [
     new Column({
       accessorKey: 'TypeName',
-      header: 'UI.LABEL.TYPE_NAME.SINGULAR',
+      header: 'LABEL.TYPE_NAME.SINGULAR',
       show: () => true,
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.TYPE'
+        label: 'LABEL.SEARCH_BY.TYPE'
       }
     }),
     new Column({
@@ -65,17 +65,17 @@ export class AssistanceServicesComponent {
       header: 'LABEL.ASSEMBLY_NAME.SINGULAR',
       show: () => true,
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.ASSEMBLY'
+        label: 'LABEL.SEARCH_BY.ASSEMBLY'
       }
     }),
     new Column({
       header: 'LABEL.ACTIVE.TITLE',
-      valueResolver: item => this._localizationService.translate(item.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
+      valueResolver: item => this._localizationService.translate(item.Active ? 'LABEL.YES.TITLE' : 'LABEL.NO.TITLE'),
       badgeResolver: item => item.Active ? 'green' : 'gray'
     }),
     new Column({
       header: 'LABEL.ENABLED',
-      valueResolver: item => this._localizationService.translate(item.Enabled ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
+      valueResolver: item => this._localizationService.translate(item.Enabled ? 'LABEL.YES.TITLE' : 'LABEL.NO.TITLE'),
       badgeResolver: item => item.Enabled ? 'green' : 'gray'
     }),
   ];
@@ -87,7 +87,7 @@ export class AssistanceServicesComponent {
   readonly stationsColumn: Column<AssistanceServiceStation>[] = [
     new Column({
       accessorKey: 'Name',
-      header: 'UI.LABEL.NAME.SINGULAR',
+      header: 'LABEL.NAME.SINGULAR',
       show: () => true,
     }),
     new Column({
@@ -135,12 +135,12 @@ export class AssistanceServicesComponent {
         fields: () => [
           new TextField({
             key: 'name',
-            label: 'UI.LABEL.NAME.SINGULAR',
+            label: 'LABEL.NAME.SINGULAR',
             required: true,
           }),
           new PositionField({
             key: 'position',
-            label: 'UI.LABEL.POSITION.SINGULAR',
+            label: 'LABEL.POSITION.SINGULAR',
             required: true,
             validators: [CustomValidators.positionComponentsRequired()],
             options: {

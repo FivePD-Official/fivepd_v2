@@ -142,7 +142,7 @@ export class ReportsComponent implements OnInit {
         {
           index: 0,
           item: new Column<MappedVariableDataEntity>({
-            header: 'UI.LABEL.ID.SHORT.SINGULAR',
+            header: 'LABEL.ID.SHORT.SINGULAR',
             valueResolver: item => item.Id.toString(),
           }),
         },
@@ -230,7 +230,7 @@ export class ReportsComponent implements OnInit {
         {
           index: 0,
           item: new Column<MappedVariableDataEntity>({
-            header: 'UI.LABEL.ID.SHORT.SINGULAR',
+            header: 'LABEL.ID.SHORT.SINGULAR',
             valueResolver: item => item.Id.toString(),
           }),
         },
@@ -253,7 +253,7 @@ export class ReportsComponent implements OnInit {
               show: () => true,
               onClick: entity => {
                 this._modal.open(ModalEntityViewComponent, {
-                  title: 'UI.LABEL.INCIDENT_REPORT.SINGULAR',
+                  title: 'LABEL.INCIDENT_REPORT.SINGULAR',
                 }, new Map().set(ENTITY, entity).set(ATTRIBUTES, wrapper.attributes))
                   .result
                   .pipe(this._modal.close())
@@ -292,8 +292,8 @@ export class ReportsComponent implements OnInit {
               show: () => this._userService.userIsDepartmentManagerOrAdmin(),
               onClick: item => {
                 this.modalConfirmService.open({
-                  title: 'UI.LABEL.INCIDENT_REPORT.DELETE.TITLE',
-                  description: this._localization.translate('UI.LABEL.INCIDENT_REPORT.DELETE.DESCRIPTION'),
+                  title: 'LABEL.INCIDENT_REPORT.DELETE.TITLE',
+                  description: this._localization.translate('LABEL.INCIDENT_REPORT.DELETE.DESCRIPTION'),
                   buttons: {
                     submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
                   },

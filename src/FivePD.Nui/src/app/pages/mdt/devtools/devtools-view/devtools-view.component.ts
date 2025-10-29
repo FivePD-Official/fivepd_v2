@@ -14,7 +14,7 @@ export class DevtoolsViewComponent {
 
   tabs: Tab[] = [
     {
-      label: 'UI.LABEL.GENERAL',
+      label: 'LABEL.GENERAL',
       routerLink: '/mdt/devtools'
     },
     {

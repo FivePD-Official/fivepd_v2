@@ -35,7 +35,7 @@ export class LocalizationService {
     return this._http.post<Record<string, string>>('fivepd:localization:getAvailableLocalizations', {});
   }
 
-  translate(path: string, params: Record<string, string> = {}, boldParams: boolean = true): string {
+  translate(path: string, params: Record<string, string> = {}, boldParams: boolean = true): string { // TODO: maybe remove boldParams ?
     const translation = getKeyFromObjectPath(this._localization, path, path);
     for (const [key, value] of Object.entries(params ?? {})) {
       params[key] = this.translate(value, {}, false);

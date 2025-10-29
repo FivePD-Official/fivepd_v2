@@ -466,7 +466,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
+            "LABEL.SUCCESS.CHANGE",
             "LABEL.DIVISION.SUCCESS.CHANGE",
             new Dictionary<string, string>
             {
@@ -513,8 +513,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            "UI.LABEL.RANK.SUCCESS.CHANGE",
+            "LABEL.SUCCESS.CHANGE",
+            "LABEL.RANK.SUCCESS.CHANGE",
             new Dictionary<string, string>
             {
                 { "player", user.Name },
@@ -538,8 +538,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
+            "LABEL.SUCCESS.CHANGE",
+            request.FixedRank ? "LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
             new Dictionary<string, string>
             {
                 { "name", user.Name },
@@ -574,8 +574,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            "UI.LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
+            "LABEL.SUCCESS.CHANGE",
+            "LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
             new Dictionary<string, string>
             {
                 { "name", user.Name },
@@ -654,6 +654,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CHANGE", "UI.LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CHANGE", "LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
     }
 }

@@ -21,7 +21,7 @@ export class SettingsComponent {
 
   readonly routes: Routes = [
     {
-      title: 'UI.LABEL.USER.PLURAL',
+      title: 'LABEL.USER.PLURAL',
       path: () => `/mdt/settings/users`,
       icon: IconType.Users,
       show: () => this.userService.userHasRole(UserRole.Admin),
@@ -51,19 +51,19 @@ export class SettingsComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.VEHICLE.PLURAL',
+      title: 'LABEL.VEHICLE.PLURAL',
       path: () => '/mdt/settings/vehicles',
       icon: IconType.Truck,
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
     },
     {
-      title: 'UI.LABEL.LOCATION.PLURAL',
+      title: 'LABEL.LOCATION.PLURAL',
       path: () => '/mdt/settings/locations',
       icon: IconType.MapPin,
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.LOADOUT.PLURAL',
+      title: 'LABEL.LOADOUT.PLURAL',
       path: () => '/mdt/settings/loadouts',
       icon: IconType.Briefcase,
       show: () => this.userService.userHasRole(UserRole.Admin),

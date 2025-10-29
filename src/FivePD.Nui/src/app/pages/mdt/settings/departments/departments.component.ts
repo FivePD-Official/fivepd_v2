@@ -56,7 +56,7 @@ export class DepartmentsComponent implements OnInit {
         enabled: () => !this.generalConfig?.config?.Callout?.AreaBasedDispatch,
         text: this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.ACTION.MANAGE_AREAS.TOOLTIP', {
           configKey: 'AreaBasedDispatch',
-        }),
+        }, false),
         placement: 'left',
       },
       onClick: () => this._router.navigate(['mdt', 'settings', 'departments', 'area-management']),
@@ -80,23 +80,23 @@ export class DepartmentsComponent implements OnInit {
 
   readonly columns: Column<Department>[] = [
     new Column<Department>({
-      header: 'UI.LABEL.NAME.SINGULAR',
+      header: 'LABEL.NAME.SINGULAR',
       accessorKey: 'Name',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.NAME',
+        label: 'LABEL.SEARCH_BY.NAME',
       }
     }),
     new Column<Department>({
       header: 'LABEL.CALLSIGN.TITLE',
       accessorKey: 'Callsign',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.CALLSIGN',
+        label: 'LABEL.SEARCH_BY.CALLSIGN',
       },
     }),
     new Column<Department>({
       header: 'LABEL.CAPACITY.SINGULAR',
       accessorKey: 'UserCount',
-      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localizationService.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
+      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localizationService.translate('LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
     new Column<Department>({
       header: 'LABEL.ACTION.PLURAL',

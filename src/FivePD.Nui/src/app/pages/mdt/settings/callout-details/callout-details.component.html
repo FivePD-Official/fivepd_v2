@@ -6,7 +6,7 @@
     <p class="common-title">{{ 'LABEL.DETAILS.TITLE' | translate }}</p>
     <div class="flex flex-col gap-4 max-w-max">
       <div class="grid grid-rows-1 grid-cols-2 gap-8">
-        <p class="font-medium text-zinc-400">{{ 'UI.LABEL.NAME.SINGULAR' | translate }}</p>
+        <p class="font-medium text-zinc-400">{{ 'LABEL.NAME.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">{{ calloutDetails?.TypeName }}</p>
       </div>
       <div class="grid grid-rows-1 grid-cols-2 gap-8">
@@ -15,7 +15,7 @@
       </div>
       <div class="grid grid-rows-1 grid-cols-2 gap-8">
         <p class="text-zinc-400">{{ 'LABEL.ACTIVE.TITLE' | translate }}</p>
-        <p class="text-zinc-200">{{ (calloutDetails?.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO') | translate }}</p>
+        <p class="text-zinc-200">{{ (calloutDetails?.Active ? 'LABEL.YES.TITLE' : 'LABEL.NO.TITLE') | translate }}</p>
       </div>
     </div>
   </div>
@@ -25,7 +25,7 @@
       <p class="common-title">{{ 'LABEL.DEPARTMENT.PLURAL' | translate }}</p>
       <div class="flex flex-col gap-4">
         <div class="max-w-max grid grid-rows-1 grid-cols-2 gap-8">
-          <p class="text-zinc-400">{{ 'UI.LABEL.RULESET.TYPE' | translate }}</p>
+          <p class="text-zinc-400">{{ 'LABEL.RULESET.TYPE' | translate }}</p>
           <div class="flex flex-col gap-4">
             <div class="flex flex-row gap-2 group relative">
               <input type="radio" id="allowlist" [formControl]="rulesetType" [value]="CalloutDetailsRulesetType.Allow"
@@ -40,7 +40,7 @@
                 }">
                 </div>
               </div>
-              <label class="text-zinc-200" for="allowlist">{{ 'UI.LABEL.RULESET.ALLOWLIST' | translate }}</label>
+              <label class="text-zinc-200" for="allowlist">{{ 'LABEL.RULESET.ALLOWLIST' | translate }}</label>
             </div>
             <div class="flex flex-row gap-2 group relative">
               <input type="radio" id="denylist" [formControl]="rulesetType" [value]="CalloutDetailsRulesetType.Deny"
@@ -53,7 +53,7 @@
               'opacity-100': rulesetType.value === CalloutDetailsRulesetType.Deny
               }"></div>
               </div>
-              <label class="text-zinc-200" for="denylist">{{ 'UI.LABEL.RULESET.DENYLIST' | translate }}</label>
+              <label class="text-zinc-200" for="denylist">{{ 'LABEL.RULESET.DENYLIST' | translate }}</label>
             </div>
           </div>
         </div>

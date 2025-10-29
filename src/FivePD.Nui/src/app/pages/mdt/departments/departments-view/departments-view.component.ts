@@ -205,10 +205,10 @@ export class DepartmentsViewComponent implements OnInit {
   private createDivisionsColumns(): Column<Division>[] {
     const columns: Column<Division>[] = [
       new Column<Division>({
-        header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+        header: this._localization.translate('LABEL.NAME.SINGULAR'),
         accessorKey: 'Name',
         filter: {
-          label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
+          label: this._localization.translate('LABEL.SEARCH_BY.NAME'),
         },
       }),
     ];
@@ -226,8 +226,8 @@ export class DepartmentsViewComponent implements OnInit {
                 fields: updatedDivision => [
                   new TextField({
                     key: 'Name',
-                    label: 'UI.LABEL.NAME.SINGULAR',
-                    placeholder: 'UI.LABEL.NAME.SINGULAR',
+                    label: 'LABEL.NAME.SINGULAR',
+                    placeholder: 'LABEL.NAME.SINGULAR',
                     required: true,
                     value: updatedDivision?.Name,
                   })
@@ -286,8 +286,8 @@ export class DepartmentsViewComponent implements OnInit {
             fields: () => [
               new TextField({
                 key: 'Name',
-                label: 'UI.LABEL.NAME.SINGULAR',
-                placeholder: 'UI.LABEL.NAME.SINGULAR',
+                label: 'LABEL.NAME.SINGULAR',
+                placeholder: 'LABEL.NAME.SINGULAR',
                 required: true,
               })
             ],
@@ -313,10 +313,10 @@ export class DepartmentsViewComponent implements OnInit {
   private createUsersColumns(): Column<FormattedUser>[] {
     const columns = [
       new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+        header: this._localization.translate('LABEL.NAME.SINGULAR'),
         accessorKey: 'Name',
         filter: {
-          label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
+          label: this._localization.translate('LABEL.SEARCH_BY.NAME'),
         },
       })
     ];
@@ -360,11 +360,11 @@ export class DepartmentsViewComponent implements OnInit {
 
     if (this.userService.userIsDepartmentManagerOrAdmin() || this.user?.User?.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
+        header: this._localization.translate('LABEL.RANK.SINGULAR'),
         actions: [
           {
             type: 'singleSelect',
-            label: this._localization.translate('UI.LABEL.NO_RANK'),
+            label: this._localization.translate('LABEL.NO_RANK'),
             value: user => user?.RankId ?? -1,
             items: () => this.ranksDropdown,
             onSelect: (user, selectedId) => {
@@ -378,7 +378,7 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     } else {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
+        header: this._localization.translate('LABEL.RANK.SINGULAR'),
         accessorKey: 'RankName',
       }));
     }
@@ -389,7 +389,7 @@ export class DepartmentsViewComponent implements OnInit {
         actions: [
           {
             type: 'singleSelect',
-            label: this._localization.translate('UI.LABEL.NO_DIVISION'),
+            label: this._localization.translate('LABEL.NO_DIVISION'),
             value: user => user?.DivisionId ?? -1,
             items: () => this.divisionsDropdown,
             onSelect: (user, selectedId) => {
@@ -410,7 +410,7 @@ export class DepartmentsViewComponent implements OnInit {
 
     if (this.generalConfig?.config.Features.ProgressionSystem) {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.RANK.FIXED'),
+        header: this._localization.translate('LABEL.RANK.FIXED'),
         show: () => this.userService.userIsDepartmentManagerOrAdmin(),
         actions: [
           {
@@ -614,23 +614,23 @@ export class DepartmentsViewComponent implements OnInit {
       new TextField({
         key: 'Name',
         required: true,
-        label: 'UI.LABEL.NAME.SINGULAR',
+        label: 'LABEL.NAME.SINGULAR',
         asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
       new NumberField({
         key: 'MaxUsers',
-        label: 'UI.LABEL.MAX_MEMBERS.TITLE',
+        label: 'LABEL.MAX_MEMBERS.TITLE',
         required: true,
         value: this.department.MaxUsers,
-        helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
+        helpLabel: 'LABEL.MAX_MEMBERS.HELP_LABEL',
       }),
       new SingleSelectField({
         key: 'DefaultRankId',
         label: 'LABEL.DEFAULT_RANK.TITLE',
         required: false,
         helpLabel: 'LABEL.DEFAULT_RANK.DESCRIPTION',
-        defaultItemLabel: this._localization.translate('UI.LABEL.NO_DEFAULT_RANK'),
+        defaultItemLabel: this._localization.translate('LABEL.NO_DEFAULT_RANK'),
         value: this.department?.DefaultRankId ?? -1,
         items: () => this.ranksDropdown,
         size: 'normal',

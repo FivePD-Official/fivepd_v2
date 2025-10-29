@@ -250,8 +250,8 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                 player, 
                 guid,
                 false,
-                "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE",
-                "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
+                "LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE",
+                "LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
             return;
         }
 
@@ -263,13 +263,13 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
             ["callsign"] = unit.Callsign,
         };
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.JOIN", "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.JOIN", "LABEL.UNIT.SUCCESS.PLAYER.JOIN", playerJoinDictionary);
         this._gameNotificationService.Notify(
             fPlayer,
             new GameNotificationOptions
             {
                 Title = "FivePD",
-                Message = "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN",
+                Message = "LABEL.UNIT.SUCCESS.PLAYER.JOIN",
                 MessageParams = playerJoinDictionary,
             });
         foreach (var p in unit.Players.Where(p => p.NetId != player.Handle))
@@ -279,7 +279,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
+                    Message = "LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
                     MessageParams = new Dictionary<string, string>
                     {
                         ["name"] = fPlayer.GetUnderlyingPlayer().Name,
@@ -305,8 +305,8 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                 player,
                 guid,
                 false,
-                "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE",
-                "UI.LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
+                "LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.TITLE",
+                "LABEL.UNIT.ERROR.JOIN.MAX_MEMBERS.DESCRIPTION");
             return;
         }
 
@@ -343,7 +343,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                         new GameNotificationOptions
                         {
                             Title = "FivePD",
-                            Message = "UI.LABEL.UNIT.SUCCESS.PLAYER.JOIN",
+                            Message = "LABEL.UNIT.SUCCESS.PLAYER.JOIN",
                             MessageParams = new Dictionary<string, string>
                             {
                                 ["callsign"] = unit.Callsign,
@@ -356,7 +356,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                             new GameNotificationOptions
                             {
                                 Title = "FivePD",
-                                Message = "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
+                                Message = "LABEL.UNIT.SUCCESS.NOT_PLAYER.JOIN",
                                 MessageParams = new Dictionary<string, string>
                                 {
                                     ["name"] = fPlayer.GetUnderlyingPlayer().Name,
@@ -386,13 +386,13 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
             ["callsign"] = unit.Callsign,
         };
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.LEAVE", "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE", playerLeaveDictionary);
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.LEAVE", "LABEL.UNIT.SUCCESS.PLAYER.LEAVE", playerLeaveDictionary);
         this._gameNotificationService.Notify(
             fPlayer,
             new GameNotificationOptions
             {
                 Title = "FivePD",
-                Message = "UI.LABEL.UNIT.SUCCESS.PLAYER.LEAVE",
+                Message = "LABEL.UNIT.SUCCESS.PLAYER.LEAVE",
                 MessageParams = playerLeaveDictionary,
             });
         foreach (var p in unit.Players.Where(p => p.NetId != player.Handle))
@@ -402,7 +402,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.LABEL.UNIT.SUCCESS.NOT_PLAYER.LEAVE",
+                    Message = "LABEL.UNIT.SUCCESS.NOT_PLAYER.LEAVE",
                     MessageParams = new Dictionary<string, string>
                     {
                         ["name"] = fPlayer.GetUnderlyingPlayer().Name,

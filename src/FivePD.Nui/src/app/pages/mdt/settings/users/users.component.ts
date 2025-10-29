@@ -25,7 +25,7 @@ export class UsersComponent {
 
   readonly columns: Column<User>[] = [
     new Column<User>({
-      header: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
+      header: this._localizationService.translate('LABEL.NAME.SINGULAR'),
       show: () => true,
       accessorKey: 'Name',
     }),
@@ -36,18 +36,18 @@ export class UsersComponent {
       badgeResolver: user => user.AccessFivePD ? 'green' : 'gray',
     }),
     new Column<User>({
-      header: this._localizationService.translate('UI.LABEL.ROLE.SINGULAR'),
+      header: this._localizationService.translate('LABEL.ROLE.SINGULAR'),
       show: () => true,
       actions: [
         {
           type: 'multiSelect',
-          label: this._localizationService.translate('UI.LABEL.ROLE.NO'),
+          label: this._localizationService.translate('LABEL.ROLE.NO'),
           value: () => this._userService.getUserRoleBits(),
           items: () => {
             return [
-              {key: UserRole.Admin, label: this._localizationService.translate('UI.LABEL.ROLE.ADMIN')},
-              {key: UserRole.Developer, label: this._localizationService.translate('UI.LABEL.ROLE.DEVELOPER')},
-              {key: UserRole.Dispatcher, label: this._localizationService.translate('UI.LABEL.ROLE.DISPATCHER')},
+              {key: UserRole.Admin, label: this._localizationService.translate('LABEL.ROLE.ADMIN')},
+              {key: UserRole.Developer, label: this._localizationService.translate('LABEL.ROLE.DEVELOPER')},
+              {key: UserRole.Dispatcher, label: this._localizationService.translate('LABEL.ROLE.DISPATCHER')},
             ];
           },
           resetWhenSelectedId: UserRole.None,

@@ -427,7 +427,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             this._dispatcherManagerService.SendUpdateRequestToDispatchers();
         }
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, assignUnitToIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.DESCRIPTION");
+        this._networkEventService.TriggerEventWithResponse(player, guid, assignUnitToIncident, "LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.TITLE", "LABEL.INCIDENT.SUCCESS.SELF_ASSIGN.DESCRIPTION");
     }
 
     [UIEvent(Events.Incident.SelfUnassign)]
@@ -459,7 +459,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             this._dispatcherManagerService.SendUpdateRequestToDispatchers();
         }
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, unassignUnitFromIncident, "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.TITLE", "UI.LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.DESCRIPTION");
+        this._networkEventService.TriggerEventWithResponse(player, guid, unassignUnitFromIncident, "LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.TITLE", "LABEL.INCIDENT.SUCCESS.SELF_UNASSIGN.DESCRIPTION");
     }
 
     [UIEvent(Events.Incident.Complete)]
@@ -480,6 +480,6 @@ public class IncidentService : IIncidentService, IInternalIncidentService
         }
 
         this.CompleteIncident(incident);
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE", "UI.LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION.DESCRIPTION");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.INCIDENT.COMPLETE.SUCCESS.TITLE", "LABEL.INCIDENT.COMPLETE.SUCCESS.DESCRIPTION");
     }
 }

@@ -4,7 +4,7 @@
   <app-container [columns]="2">
     <div class="grid-item grid-item--details">
       <p class="common-title">
-        {{ 'UI.LABEL.MY_DETAILS' | translate }}
+        {{ 'LABEL.MY_DETAILS' | translate }}
       </p>
       <div class="grid-item--content">
         <ul
@@ -18,7 +18,7 @@
             <p>{{ user?.User?.Division?.Name ?? '-' }}</p>
           </li>
           <li>
-            <p>{{ 'UI.LABEL.RANK.SINGULAR' | translate }}</p>
+            <p>{{ 'LABEL.RANK.SINGULAR' | translate }}</p>
             <p>{{ user?.User?.Rank?.Name ?? '-' }}</p>
           </li>
           <li>
@@ -27,7 +27,7 @@
           </li>
           @if (generalConfig?.config?.Features?.ProgressionSystem) {
             <li>
-              <p>{{ 'UI.LABEL.XP.SHORT' | translate }}</p>
+              <p>{{ 'LABEL.XP.SHORT' | translate }}</p>
               <p>{{ user?.User?.Xp ?? '-' }}</p>
             </li>
           }
@@ -48,7 +48,7 @@
           <ul class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-1 items-start gap-4">
             <div class="grid grid-rows-[repeat(2,1fr)] grid-cols-1 gap-4">
               <li>
-                <p>{{ 'UI.LABEL.TITLE.SINGULAR' | translate }}</p>
+                <p>{{ 'LABEL.TITLE.SINGULAR' | translate }}</p>
                 <p>{{ (assignedIncident$ | async)?.Incident?.Title }}</p>
               </li>
               <li>
@@ -66,8 +66,8 @@
                 <p>{{ (priorityLabel$ | async)! | translate }}</p>
               </li>
               <li>
-                <p>{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
-                <p>{{ ((assignedIncident$ | async)?.Incident?.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate }}</p>
+                <p>{{ 'LABEL.TYPE.SINGULAR' | translate }}</p>
+                <p>{{ ((assignedIncident$ | async)?.Incident?.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'LABEL.TRAFFIC_STOP.SINGULAR') | translate }}</p>
               </li>
             </div>
           </ul>
@@ -81,7 +81,7 @@
             [columns]="incidentsColumnDef"
             [showPagination]="false"/>
 
-  <app-grid [title]="'UI.LABEL.UNIT.PLURAL' | translate"
+  <app-grid [title]="'LABEL.UNIT.PLURAL' | translate"
             [data]="units$ | async"
             [columns]="unitsColumnDef"
             [showPagination]="false"/>

@@ -63,7 +63,7 @@ export class AssistanceServiceStationComponent {
   );
   readonly typeConfigsColumn: Column<AssistanceServiceStationTypeConfig>[] = [
     new Column({
-      header: 'UI.LABEL.TYPE_NAME.SINGULAR',
+      header: 'LABEL.TYPE_NAME.SINGULAR',
       valueResolver: item => item.TypeConfig.TypeName,
       show: () => true,
     }),

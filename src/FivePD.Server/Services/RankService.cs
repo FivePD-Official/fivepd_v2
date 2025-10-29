@@ -186,8 +186,8 @@ public class RankService : IRankService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CREATE",
-            "UI.LABEL.RANK.SUCCESS.CREATE",
+            "LABEL.SUCCESS.CREATE",
+            "LABEL.RANK.SUCCESS.CREATE",
             new Dictionary<string, string>
             {
                 { "rank", rank.Name },
@@ -263,8 +263,8 @@ public class RankService : IRankService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
-            "UI.LABEL.RANK.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
+            "LABEL.RANK.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
                 { "rank", oldName },
@@ -297,8 +297,8 @@ public class RankService : IRankService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.DELETE",
-            "UI.LABEL.RANK.SUCCESS.DELETE",
+            "LABEL.SUCCESS.DELETE",
+            "LABEL.RANK.SUCCESS.DELETE",
             new Dictionary<string, string>
             {
                 { "rank", rankToDeleteName },

@@ -23,28 +23,28 @@ export class IncidentHistoryComponent implements OnInit {
   };
   incidentHistoryPageColumnDef: Column<IncidentHistory>[] = [
     new Column({
-      header: 'UI.LABEL.ID.SHORT.SINGULAR',
+      header: 'LABEL.ID.SHORT.SINGULAR',
       accessorKey: 'Id',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.ID',
+        label: 'LABEL.SEARCH_BY.ID',
       }
     }),
     new Column({
-      header: 'UI.LABEL.TITLE.SINGULAR',
+      header: 'LABEL.TITLE.SINGULAR',
       accessorKey: 'Title',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.TITLE',
+        label: 'LABEL.SEARCH_BY.TITLE',
       },
     }),
     new Column({
-      header: 'UI.LABEL.TYPE.SINGULAR',
+      header: 'LABEL.TYPE.SINGULAR',
       accessorKey: 'Type',
-      valueResolver: item => this._localizationService.translate(item.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR'),
+      valueResolver: item => this._localizationService.translate(item.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'LABEL.TRAFFIC_STOP.SINGULAR'),
       filter: {
-        label: this._localizationService.translate('UI.LABEL.SEARCH_BY.TYPE'),
+        label: this._localizationService.translate('LABEL.SEARCH_BY.TYPE'),
         dropdown: [
           {key: FIncidentType.Callout, label: this._localizationService.translate('LABEL.CALLOUT.SINGULAR')},
-          {key: FIncidentType.TrafficStop, label: this._localizationService.translate('UI.LABEL.TRAFFIC_STOP.SINGULAR')},
+          {key: FIncidentType.TrafficStop, label: this._localizationService.translate('LABEL.TRAFFIC_STOP.SINGULAR')},
         ]
       }
     }),

@@ -15,7 +15,7 @@ export class DevtoolsCalloutsComponent implements OnInit {
   callouts?: Page<CalloutTypeDTO>;
   calloutsColumnDef: Column<CalloutTypeDTO>[] = [
     new Column<CalloutTypeDTO>({
-      header: 'UI.LABEL.NAME.SINGULAR',
+      header: 'LABEL.NAME.SINGULAR',
       accessorKey: 'TypeName',
     }),
     new Column<CalloutTypeDTO>({

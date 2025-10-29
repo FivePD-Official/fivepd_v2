@@ -44,14 +44,14 @@ export class LoadoutSettingsComponent {
   private readonly _weaponService = inject(WeaponService);
 
   readonly nameColumn = new Column<LoadoutConfig>({
-    header: 'UI.LABEL.NAME.SINGULAR',
+    header: 'LABEL.NAME.SINGULAR',
     accessorKey: "Name",
     filter: {
-      label: 'UI.LABEL.SEARCH_BY.NAME',
+      label: 'LABEL.SEARCH_BY.NAME',
     }
   });
   readonly weaponCountColumn = new Column<LoadoutConfig>({
-    header: 'UI.LABEL.LOADOUT_CONFIG.COLUMN.WEAPON.COUNT.SINGULAR',
+    header: 'LABEL.LOADOUT_CONFIG.COLUMN.WEAPON.COUNT.SINGULAR',
     valueResolver: item => item.LoadoutWeapons.length.toString(),
   });
 
@@ -81,20 +81,20 @@ export class LoadoutSettingsComponent {
           disabled: () => false,
           onClick: loadoutConfig => {
             this._modalFormService.open({
-              title: 'UI.LABEL.LOADOUT_CONFIG.EDIT.TITLE',
+              title: 'LABEL.LOADOUT_CONFIG.EDIT.TITLE',
               fields: (loadoutConfig, weps) => {
                 const weapons: SimpleWeapon[] = Array.isArray(weps) ? weps : [];
                 return [
                   new TextField({
                     key: 'Name',
-                    label: 'UI.LABEL.NAME.SINGULAR',
-                    helpLabel: 'UI.LABEL.LOADOUT_CONFIG.NAME.HELP_LABEL',
+                    label: 'LABEL.NAME.SINGULAR',
+                    helpLabel: 'LABEL.LOADOUT_CONFIG.NAME.HELP_LABEL',
                     required: true,
                     value: loadoutConfig?.Name,
                   }),
                   new MultiSelectField({
                     key: 'WeaponIds',
-                    label: 'UI.LABEL.WEAPON.PLURAL',
+                    label: 'LABEL.WEAPON.PLURAL',
                     defaultItemLabel: '',
                     addDefaultItem: false,
                     value: loadoutConfig?.WeaponIds,
@@ -135,8 +135,8 @@ export class LoadoutSettingsComponent {
           show: () => true,
           disabled: () => false,
           onClick: loadoutConfig => this._modalConfirmService.open({
-            title: 'UI.LABEL.LOADOUT_CONFIG.DELETE.TITLE',
-            description: this._localizationService.translate('UI.LABEL.LOADOUT_CONFIG.DELETE.DESCRIPTION', {name: loadoutConfig.Name}),
+            title: 'LABEL.LOADOUT_CONFIG.DELETE.TITLE',
+            description: this._localizationService.translate('LABEL.LOADOUT_CONFIG.DELETE.DESCRIPTION', {name: loadoutConfig.Name}),
             buttons: {
               submit: {
                 variant: 'danger',
@@ -156,23 +156,23 @@ export class LoadoutSettingsComponent {
 
   private createAddLoadoutButton(onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Button {
     return {
-      label: this._localizationService.translate('UI.LABEL.LOADOUT_CONFIG.CREATE.TITLE'),
+      label: this._localizationService.translate('LABEL.LOADOUT_CONFIG.CREATE.TITLE'),
       show: () => true,
       disabled: () => false,
       onClick: () => this._modalFormService.open({
-        title: 'UI.LABEL.LOADOUT_CONFIG.CREATE.TITLE',
+        title: 'LABEL.LOADOUT_CONFIG.CREATE.TITLE',
         fields: (undefined, weps) => {
           const weapons: SimpleWeapon[] = Array.isArray(weps) ? weps : [];
           return [
             new TextField({
               key: 'Name',
-              label: 'UI.LABEL.NAME.SINGULAR',
-              helpLabel: 'UI.LABEL.LOADOUT_CONFIG.NAME.HELP_LABEL',
+              label: 'LABEL.NAME.SINGULAR',
+              helpLabel: 'LABEL.LOADOUT_CONFIG.NAME.HELP_LABEL',
               required: true,
             }),
             new MultiSelectField({
               key: 'WeaponIds',
-              label: 'UI.LABEL.WEAPON.PLURAL',
+              label: 'LABEL.WEAPON.PLURAL',
               defaultItemLabel: '',
               addDefaultItem: false,
               items: () => weapons.map(w => ({

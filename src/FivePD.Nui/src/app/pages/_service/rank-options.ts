@@ -42,21 +42,21 @@ export class RankOptions {
   }): Column<FormattedRank>[] {
     const columns: Column<FormattedRank>[] = [
       new Column({
-        header: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
+        header: this._localizationService.translate('LABEL.NAME.SINGULAR'),
         accessorKey: 'Name',
         filter: {
-          label: this._localizationService.translate('UI.LABEL.SEARCH_BY.NAME'),
+          label: this._localizationService.translate('LABEL.SEARCH_BY.NAME'),
         },
       }),
       new Column({
-        header: this._localizationService.translate('UI.LABEL.PERMISSIONS'),
+        header: this._localizationService.translate('LABEL.PERMISSIONS'),
         accessorKey: 'Permissions',
       }),
     ];
 
     if (options.generalConfig.config.Features.ProgressionSystem) {
       columns.push(new Column({
-        header: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
+        header: this._localizationService.translate('LABEL.REQUIRED_XP'),
         accessorKey: 'RequiredXp',
       }));
     }
@@ -70,13 +70,13 @@ export class RankOptions {
             label: this._localizationService.translate('ACTION.EDIT.TITLE'),
             onClick: rank => {
               this._modalFormService.open<FormattedRank>({
-                title: 'UI.LABEL.RANK.EDIT',
+                title: 'LABEL.RANK.EDIT',
                 fields: updatedRank => {
                   const fields: FormInputBase<any>[] = [
                     new TextField({
                       key: 'Name',
-                      label: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
-                      placeholder: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
+                      label: this._localizationService.translate('LABEL.NAME.SINGULAR'),
+                      placeholder: this._localizationService.translate('LABEL.NAME.SINGULAR'),
                       required: true,
                       value: updatedRank?.Name,
                     }),
@@ -85,8 +85,8 @@ export class RankOptions {
                   if (options.generalConfig.config.Features.ProgressionSystem) {
                     fields.push(new NumberField({
                       key: 'RequiredXp',
-                      label: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
-                      placeholder: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
+                      label: this._localizationService.translate('LABEL.REQUIRED_XP'),
+                      placeholder: this._localizationService.translate('LABEL.REQUIRED_XP'),
                       required: true,
                       value: updatedRank?.RequiredXp,
                     }))
@@ -134,8 +134,8 @@ export class RankOptions {
             label: this._localizationService.translate('ACTION.DELETE.TITLE'),
             onClick: rank => {
               this._modalConfirmService.open({
-                title: 'UI.LABEL.RANK.DELETE.TITLE',
-                description: this._localizationService.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
+                title: 'LABEL.RANK.DELETE.TITLE',
+                description: this._localizationService.translate('LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
                 buttons: {
                   submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
                 },
@@ -172,8 +172,8 @@ export class RankOptions {
             const fields: FormInputBase<any>[] = [
               new TextField({
                 key: 'Name',
-                label: 'UI.LABEL.NAME.SINGULAR',
-                placeholder: 'UI.LABEL.NAME.SINGULAR',
+                label: 'LABEL.NAME.SINGULAR',
+                placeholder: 'LABEL.NAME.SINGULAR',
                 required: true,
               }),
             ];
@@ -181,8 +181,8 @@ export class RankOptions {
             if (options.generalConfig.config.Features.ProgressionSystem) {
               fields.push(new NumberField({
                 key: 'RequiredXp',
-                label: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
-                placeholder: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
+                label: this._localizationService.translate('LABEL.REQUIRED_XP'),
+                placeholder: this._localizationService.translate('LABEL.REQUIRED_XP'),
                 required: true,
               }));
             }

@@ -128,7 +128,7 @@ export class MultiSelectFieldComponent implements OnInit {
     }
 
     if (this.dropdownSelectedItems.length) {
-      this.dropdownSelectedItemLabel = this._localizationService.translate('UI.LABEL.SELECTED', {count: this.dropdownSelectedItems.length.toString()}, false);
+      this.dropdownSelectedItemLabel = this._localizationService.translate('LABEL.N_COUNT_SELECTED', {count: this.dropdownSelectedItems.length.toString()}, false);
     } else {
       this.dropdownSelectedItemLabel = this.field.defaultItemLabel || this.field.label;
     }

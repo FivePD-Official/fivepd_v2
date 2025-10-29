@@ -13,11 +13,11 @@ export function createDepartmentCallsignFormatInputField(localizationService: Lo
               <table>
                 <tr>
                   <td><b>L</b><td>
-                  <td>(${localizationService.translate('UI.LABEL.LETTER.SINGULAR')})<td>
+                  <td>(${localizationService.translate('LABEL.LETTER.SINGULAR')})<td>
                 </tr>
                 <tr>
                   <td><b>N</b><td>
-                  <td>(${localizationService.translate('UI.LABEL.NUMBER.SINGULAR')})<td>
+                  <td>(${localizationService.translate('LABEL.NUMBER.SINGULAR')})<td>
                 </tr>
                 <tr>
                   <td><b>-</b><td>

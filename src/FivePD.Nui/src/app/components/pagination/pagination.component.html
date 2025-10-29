@@ -7,14 +7,14 @@
               [ngClass]="{'arrow-disabled': collation.Page === 1}">
         <div app-icon name="ChevronLeftDouble" className="h-[22px] text-zinc-200"
              [ngClassName]="{'text-zinc-500': collation.Page === 1}"></div>
-        <span>{{ 'UI.LABEL.PAGINATION.FIRST' | translate }}</span>
+        <span>{{ 'LABEL.PAGINATION.FIRST' | translate }}</span>
       </button>
 
       <button [disabled]="collation.Page === 1" (click)="toPreviousPage()" class="arrow"
               [ngClass]="{'arrow-disabled': collation.Page === 1}">
         <div app-icon name="ChevronLeft" className="h-[22px] text-zinc-200"
              [ngClassName]="{'text-zinc-500': collation.Page === 1}"></div>
-        <span>{{ 'UI.LABEL.PAGINATION.PREVIOUS' | translate }}</span>
+        <span>{{ 'LABEL.PAGINATION.PREVIOUS' | translate }}</span>
       </button>
 
       @if (collation.Page > 1) {
@@ -34,14 +34,14 @@
 
       <button [disabled]="collation.Page === (data ? data!.PageCount : 1)" (click)="toNextPage()" class="arrow"
               [ngClass]="{'arrow-disabled': collation.Page === (data ? data.PageCount : 1)}">
-        <span>{{ 'UI.LABEL.PAGINATION.NEXT' | translate }}</span>
+        <span>{{ 'LABEL.PAGINATION.NEXT' | translate }}</span>
         <div app-icon name="ChevronRight" className="h-[22px] text-zinc-200"
              [ngClassName]="{'text-zinc-500': collation.Page === (data ? data.PageCount : 1)}"></div>
       </button>
 
       <button [disabled]="collation.Page === (data ? data!.PageCount : 1)" (click)="toLastPage()" class="arrow"
               [ngClass]="{'arrow-disabled': collation.Page === (data ? data.PageCount : 1)}">
-        <span>{{ 'UI.LABEL.PAGINATION.LAST' | translate }}</span>
+        <span>{{ 'LABEL.PAGINATION.LAST' | translate }}</span>
         <div app-icon name="ChevronRightDouble" className="h-[22px] text-zinc-200"
              [ngClassName]="{'text-zinc-500': collation.Page === (data ? data.PageCount : 1)}"></div>
       </button>

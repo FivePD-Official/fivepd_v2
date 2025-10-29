@@ -1,6 +1,6 @@
-<app-page-header [title]="'UI.LABEL.MESSAGES.TITLE' | translate">
+<app-page-header [title]="'LABEL.MESSAGES.TITLE' | translate">
   @if (canSend$ | async) {
-    <app-button [label]="'UI.LABEL.MESSAGES.ACTION.SEND' | translate"
+    <app-button [label]="'LABEL.MESSAGES.ACTION.SEND' | translate"
                 (onClick)="trySendMessage()"/>
   }
 </app-page-header>
@@ -10,7 +10,7 @@
     @if (!page.Items.length) {
       <div class="mt-10">
         <p class="text-zinc-400 block text-xl">
-          {{ 'UI.LABEL.MESSAGES.NO_MESSAGES' | translate }}
+          {{ 'LABEL.MESSAGES.NO_MESSAGES' | translate }}
         </p>
       </div>
     }

@@ -59,23 +59,23 @@ export class DashboardComponent {
   );
   readonly departmentsColumnDef: Column<Department>[] = [
     new Column<Department>({
-      header: 'UI.LABEL.NAME.SINGULAR',
+      header: 'LABEL.NAME.SINGULAR',
       accessorKey: 'Name',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.NAME',
+        label: 'LABEL.SEARCH_BY.NAME',
       }
     }),
     new Column<Department>({
       header: 'LABEL.CALLSIGN.TITLE',
       accessorKey: 'Callsign',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.CALLSIGN',
+        label: 'LABEL.SEARCH_BY.CALLSIGN',
       },
     }),
     new Column<Department>({
       header: 'LABEL.CAPACITY.SINGULAR',
       accessorKey: 'UserCount',
-      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
+      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
   ];
 
@@ -93,7 +93,7 @@ export class DashboardComponent {
       accessorKey: 'Callsign',
     }),
     new Column<UnitDTO>({
-      header: 'UI.LABEL.OFFICER.PLURAL',
+      header: 'LABEL.OFFICER.PLURAL',
       valueResolver: item => (this.generalConfig?.config?.Unit?.MaxMembers ?? 0) > 0
         ? `${item.Players.length.toString()} / ${this.generalConfig?.config.Unit.MaxMembers}`
         : item.Players.length.toString(),
@@ -155,7 +155,7 @@ export class DashboardComponent {
   );
   readonly incidentsColumnDef: Column<IncidentDTO>[] = [
     new Column({
-      header: 'UI.LABEL.TITLE.SINGULAR',
+      header: 'LABEL.TITLE.SINGULAR',
       accessorKey: 'Title',
     }),
     new Column({
@@ -167,12 +167,12 @@ export class DashboardComponent {
       accessorKey: 'Address',
     }),
     new Column({
-      header: 'UI.LABEL.UNIT.PLURAL',
+      header: 'LABEL.UNIT.PLURAL',
       valueResolver: item => item.Units.join(', '),
     }),
     new Column({
-      header: 'UI.LABEL.TYPE.SINGULAR',
-      valueResolver: item => this._localization.translate(item.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR'),
+      header: 'LABEL.TYPE.SINGULAR',
+      valueResolver: item => this._localization.translate(item.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'LABEL.TRAFFIC_STOP.SINGULAR'),
     }),
     new Column({
       header: 'LABEL.PRIORITY.SINGULAR',
@@ -204,7 +204,7 @@ export class DashboardComponent {
         },
         {
           type: 'button',
-          label: this._localization.translate('UI.LABEL.INCIDENT.SELF_ASSIGN.TITLE'),
+          label: this._localization.translate('LABEL.INCIDENT.SELF_ASSIGN.TITLE'),
           show: incident => !!this.user?.UnitCallsign && incident.Units.every(x => x !== this.user?.UnitCallsign),
           onClick: incident => {
             this._incidentService.selfAssign(incident).subscribe(res => {
