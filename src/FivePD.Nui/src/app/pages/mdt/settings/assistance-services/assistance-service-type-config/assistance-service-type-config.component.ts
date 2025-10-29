@@ -61,18 +61,18 @@ export class AssistanceServiceTypeConfigComponent {
   readonly spawnTypes = [
     {
       value: AssistanceServiceTypeConfigSpawnTypes.AUTO,
-      label: 'UI.LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.AUTO.TITLE',
-      helpLabel: 'UI.LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.AUTO.HELP_LABEL',
+      label: 'LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.AUTO.TITLE',
+      helpLabel: 'LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.AUTO.HELP_LABEL',
     },
     {
       value: AssistanceServiceTypeConfigSpawnTypes.MANUAL,
-      label: 'UI.LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.MANUAL.TITLE',
-      helpLabel: 'UI.LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.MANUAL.HELP_LABEL',
+      label: 'LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.MANUAL.TITLE',
+      helpLabel: 'LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.MANUAL.HELP_LABEL',
     },
     {
       value: AssistanceServiceTypeConfigSpawnTypes.STATION,
-      label: 'UI.LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.STATION.TITLE',
-      helpLabel: 'UI.LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.STATION.HELP_LABEL',
+      label: 'LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.STATION.TITLE',
+      helpLabel: 'LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TYPE.STATION.HELP_LABEL',
     },
   ]
 
@@ -134,7 +134,7 @@ export class AssistanceServiceTypeConfigComponent {
     this._modalFormService.open({
       title: 'Add position',
       buttons: {
-        submit: {variant: 'primary', label: 'UI.ACTION.ADD'},
+        submit: {variant: 'primary', label: 'ACTION.ADD.TITLE'},
       },
       fields: () => [new PositionField({
         key: 'position',

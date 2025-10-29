@@ -12,7 +12,7 @@ import { EntityValue, EntityValueLink } from "@services/variable-data/variable-d
       <div class="w-full flex flex-row items-center justify-between">
         <p class="common-title">{{ title | translate }}</p>
         @if (showCreateButton) {
-          <app-button [label]="'UI.ACTION.CREATE' | translate"
+          <app-button [label]="'ACTION.CREATE.TITLE' | translate"
                       (onClick)="createButtonClick.emit()"
                       variant="secondary"/>
         }
@@ -41,7 +41,7 @@ import { EntityValue, EntityValueLink } from "@services/variable-data/variable-d
             }
           </div>
         } @empty {
-          <p class="text-zinc-400 block">{{ 'UI.LABEL.NO_RESULTS' | translate }}</p>
+          <p class="text-zinc-400 block">{{ 'LABEL.NO_RESULTS' | translate }}</p>
         }
       </div>
     </div>`,

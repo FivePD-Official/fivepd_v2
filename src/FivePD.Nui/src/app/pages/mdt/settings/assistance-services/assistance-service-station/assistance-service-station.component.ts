@@ -63,31 +63,31 @@ export class AssistanceServiceStationComponent {
   );
   readonly typeConfigsColumn: Column<AssistanceServiceStationTypeConfig>[] = [
     new Column({
-      header: 'UI.LABEL.TYPE_NAME.SINGULAR',
+      header: 'LABEL.TYPE_NAME.SINGULAR',
       valueResolver: item => item.TypeConfig.TypeName,
       show: () => true,
     }),
     new Column({
-      header: 'UI.LABEL.ASSEMBLY_NAME.SINGULAR',
+      header: 'LABEL.ASSEMBLY_NAME.SINGULAR',
       valueResolver: item => item.TypeConfig.AssemblyName,
       show: () => true,
     }),
     new Column({
       valueResolver: item => item.Capacity.toString(),
-      header: 'UI.LABEL.CAPACITY.SINGULAR',
+      header: 'LABEL.CAPACITY.SINGULAR',
       show: () => true,
     }),
     new Column({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       show: () => true,
       actions: [
         {
           type: 'button',
-          label: this._localizationService.translate('UI.ACTION.EDIT'),
+          label: this._localizationService.translate('ACTION.EDIT.TITLE'),
           onClick: stationTypeConfig => this._modalFormService.open({
-            title: 'UI.ACTION.EDIT',
+            title: 'ACTION.EDIT.TITLE',
             buttons: {
-              submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+              submit: {variant: 'primary', label: 'ACTION.SAVE.TITLE'},
             },
             valueResolver: new ValueResolver(stationTypeConfig, this._assistanceServiceStationService.getTypeConfig(stationTypeConfig.Id)),
             fields: (updatedStationTypeConfig) => {
@@ -105,7 +105,7 @@ export class AssistanceServiceStationComponent {
                 }),
                 new NumberField({
                   key: 'capacity',
-                  label: 'UI.LABEL.CAPACITY.SINGULAR',
+                  label: 'LABEL.CAPACITY.SINGULAR',
                   required: true,
                   value: c.Capacity,
                 }),
@@ -123,13 +123,13 @@ export class AssistanceServiceStationComponent {
         },
         {
           type: 'button',
-          label: 'UI.ACTION.DELETE',
+          label: 'ACTION.DELETE.TITLE',
           onClick: stationTypeConfig => {
             this._modalConfirmService.open({
-              title: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.DELETE.TITLE',
-              description: this._localizationService.translate('UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.DELETE.DESCRIPTION'),
+              title: 'LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.DELETE.TITLE',
+              description: this._localizationService.translate('LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.DELETE.DESCRIPTION'),
               buttons: {
-                submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
               },
             }).result
               .pipe(
@@ -145,14 +145,14 @@ export class AssistanceServiceStationComponent {
   readonly typeConfigsButtons: Button[] = [
     {
       type: 'button',
-      label: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.ADD.TITLE',
+      label: 'LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.ADD.TITLE',
       show: () => true,
       variant: 'secondary',
       disabled: () => false,
       onClick: () => this._modalFormService.open({
-        title: 'UI.LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.ADD.TITLE',
+        title: 'LABEL.ASSISTANCE_SERVICE.STATION.TYPE_CONFIG.ADD.TITLE',
         buttons: {
-          submit: {variant: 'primary', label: 'UI.ACTION.ADD'},
+          submit: {variant: 'primary', label: 'ACTION.ADD.TITLE'},
         },
         dataResolver: new DataResolver([] as AssistanceServiceTypeConfig[], this._assistanceServiceStationService.getAvailableStationTypeConfigs(this.stationId$.value)),
         fields: (_, assistanceServiceTypeConfigs) => [
@@ -161,7 +161,7 @@ export class AssistanceServiceStationComponent {
             size: 'normal',
             variant: 'secondary',
             key: 'typeConfigId',
-            label: 'UI.LABEL.ASSISTANCE_SERVICE.TITLE.SINGULAR',
+            label: 'LABEL.ASSISTANCE_SERVICE.TITLE.SINGULAR',
             required: true,
             items: () => (assistanceServiceTypeConfigs ?? []).map(x => ({
               key: x.Id,
@@ -170,7 +170,7 @@ export class AssistanceServiceStationComponent {
           }),
           new NumberField({
             key: 'capacity',
-            label: 'UI.LABEL.CAPACITY.SINGULAR',
+            label: 'LABEL.CAPACITY.SINGULAR',
             required: true,
           }),
         ]

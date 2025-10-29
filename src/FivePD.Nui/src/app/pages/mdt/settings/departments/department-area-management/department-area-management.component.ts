@@ -65,24 +65,24 @@ export class DepartmentAreaManagementComponent implements OnInit {
   user?: User;
 
   get guide1Text() {
-    return this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.A', {
-      edit: `<span class="italic">${this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.EDIT')}</span>`,
-      addAreaCoordinates: `<span class="italic">${this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.ADD_AREA_COORDINATES')}</span>`,
+    return this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.PART_1', {
+      edit: `<span class="italic">${this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.EDIT')}</span>`,
+      addAreaCoordinates: `<span class="italic">${this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.ADD.TITLE_AREA_COORDINATES')}</span>`,
     }, false);
   }
 
   get guide2Text() {
-    return this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.B');
+    return this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.PART_2');
   }
 
   get guide3Text() {
-    return this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.C', {
-      edit: `<span class="italic">${this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.EDIT')}</span>`,
+    return this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.PART_3', {
+      edit: `<span class="italic">${this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.ACTION.EDIT')}</span>`,
     }, false);
   }
 
   get guide4Text() {
-    return this._localizationService.translate('UI.LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.D', {
+    return this._localizationService.translate('LABEL.DEPARTMENT.AREA_MANAGEMENT.GUIDE.PART_4', {
       number: MIN_AREA_COORDINATES.toString(),
     }, false);
   }

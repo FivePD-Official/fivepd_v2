@@ -57,11 +57,11 @@
         <app-button type="button"
                     variant="secondary"
                     (onClick)="revert()"
-                    [label]="'UI.ACTION.REVERT' | translate"
+                    [label]="'ACTION.REVERT.TITLE' | translate"
                     [disabled]="disableSubmitWithOriginalValue && form.pristine"/>
       }
       <app-button type="submit"
-                  [label]="submitButtonLabel || ('UI.ACTION.SAVE' | translate)"
+                  [label]="submitButtonLabel || ('ACTION.SAVE.TITLE' | translate)"
                   [disabled]="form.invalid || (disableSubmitWithOriginalValue && form.pristine)"/>
     </div>
   }

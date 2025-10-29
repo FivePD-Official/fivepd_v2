@@ -1,33 +1,33 @@
-<app-page-header [title]="'UI.LABEL.DASHBOARD' | translate"/>
+<app-page-header [title]="'LABEL.DASHBOARD.TITLE' | translate"/>
 
 <app-container [rows]="2">
   <app-container [columns]="2">
     <div class="grid-item grid-item--details">
       <p class="common-title">
-        {{ 'UI.LABEL.MY_DETAILS' | translate }}
+        {{ 'LABEL.MY_DETAILS' | translate }}
       </p>
       <div class="grid-item--content">
         <ul
           class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-[repeat(2,1fr)] items-start gap-4">
           <li>
-            <p>{{ 'UI.LABEL.DEPARTMENT.SINGULAR' | translate }}</p>
+            <p>{{ 'LABEL.DEPARTMENT.SINGULAR' | translate }}</p>
             <p>{{ user?.User?.Department?.Name ?? '-' }}</p>
           </li>
           <li>
-            <p>{{ 'UI.LABEL.DIVISION.SINGULAR' | translate }}</p>
+            <p>{{ 'LABEL.DIVISION.SINGULAR' | translate }}</p>
             <p>{{ user?.User?.Division?.Name ?? '-' }}</p>
           </li>
           <li>
-            <p>{{ 'UI.LABEL.RANK.SINGULAR' | translate }}</p>
+            <p>{{ 'LABEL.RANK.SINGULAR' | translate }}</p>
             <p>{{ user?.User?.Rank?.Name ?? '-' }}</p>
           </li>
           <li>
-            <p>{{ 'UI.LABEL.CALLSIGN.TITLE' | translate }}</p>
+            <p>{{ 'LABEL.CALLSIGN.TITLE' | translate }}</p>
             <p>{{ user?.User?.Callsign ?? '-' }}</p>
           </li>
           @if (generalConfig?.config?.Features?.ProgressionSystem) {
             <li>
-              <p>{{ 'UI.LABEL.XP.SHORT' | translate }}</p>
+              <p>{{ 'LABEL.XP.SHORT' | translate }}</p>
               <p>{{ user?.User?.Xp ?? '-' }}</p>
             </li>
           }
@@ -37,28 +37,28 @@
 
     <div class="grid-item grid-item--details">
       <p class="common-title">
-        {{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}
+        {{ 'LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}
       </p>
       <div class="grid-item--content">
         @if (!(assignedIncident$ | async)) {
           <p class="no-data">
-            {{ 'UI.LABEL.ACTIVE_INCIDENT.NONE' | translate }}
+            {{ 'LABEL.ACTIVE_INCIDENT.NONE' | translate }}
           </p>
         } @else {
           <ul class="w-full h-full list-none p-0 grid grid-rows-[repeat(2,1fr)] grid-cols-1 items-start gap-4">
             <div class="grid grid-rows-[repeat(2,1fr)] grid-cols-1 gap-4">
               <li>
-                <p>{{ 'UI.LABEL.TITLE.SINGULAR' | translate }}</p>
+                <p>{{ 'LABEL.TITLE.SINGULAR' | translate }}</p>
                 <p>{{ (assignedIncident$ | async)?.Incident?.Title }}</p>
               </li>
               <li>
-                <p>{{ 'UI.LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
+                <p>{{ 'LABEL.DESCRIPTION.SINGULAR' | translate }}</p>
                 <p>{{ (assignedIncident$ | async)?.Incident?.Description }}</p>
               </li>
             </div>
             <div class="grid grid-rows-1 grid-cols-[repeat(3,1fr)] gap-4">
               <li>
-                <p>{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+                <p>{{ 'LABEL.ADDRESS.SINGULAR' | translate }}</p>
                 <p>{{ (assignedIncident$ | async)?.Address }}</p>
               </li>
               <li>
@@ -66,8 +66,8 @@
                 <p>{{ (priorityLabel$ | async)! | translate }}</p>
               </li>
               <li>
-                <p>{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
-                <p>{{ ((assignedIncident$ | async)?.Incident?.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate }}</p>
+                <p>{{ 'LABEL.TYPE.SINGULAR' | translate }}</p>
+                <p>{{ ((assignedIncident$ | async)?.Incident?.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'LABEL.TRAFFIC_STOP.SINGULAR') | translate }}</p>
               </li>
             </div>
           </ul>
@@ -76,17 +76,17 @@
     </div>
   </app-container>
 
-  <app-grid [title]="'UI.LABEL.ACTIVE_INCIDENT.PLURAL' | translate"
+  <app-grid [title]="'LABEL.ACTIVE_INCIDENT.PLURAL' | translate"
             [data]="incidents$ | async"
             [columns]="incidentsColumnDef"
             [showPagination]="false"/>
 
-  <app-grid [title]="'UI.LABEL.UNIT.PLURAL' | translate"
+  <app-grid [title]="'LABEL.UNIT.PLURAL' | translate"
             [data]="units$ | async"
             [columns]="unitsColumnDef"
             [showPagination]="false"/>
 
-  <app-grid [title]="'UI.LABEL.DEPARTMENT.PLURAL' | translate"
+  <app-grid [title]="'LABEL.DEPARTMENT.PLURAL' | translate"
             [data]="departments$ | async"
             [rowLinkResolver]="departmentsRowLinkResolver"
             [columns]="departmentsColumnDef"

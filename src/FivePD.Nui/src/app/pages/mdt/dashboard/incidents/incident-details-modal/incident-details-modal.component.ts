@@ -49,8 +49,8 @@ export class IncidentDetailsModalComponent {
       this.modalRef.close({value: {close: true}, success: true});
       this.notificationService.show({
         type: 'error',
-        title: this.localizationService.translate('UI.LABEL.INCIDENT.ERROR.UNAVAILABLE.TITLE'),
-        description: this.localizationService.translate('UI.LABEL.INCIDENT.ERROR.UNAVAILABLE.DESCRIPTION'),
+        title: this.localizationService.translate('LABEL.INCIDENT.ERROR.UNAVAILABLE.TITLE'),
+        description: this.localizationService.translate('LABEL.INCIDENT.ERROR.UNAVAILABLE.DESCRIPTION'),
       });
     }),
     shareReplay(),

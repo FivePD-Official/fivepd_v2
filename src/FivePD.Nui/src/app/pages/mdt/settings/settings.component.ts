@@ -21,13 +21,13 @@ export class SettingsComponent {
 
   readonly routes: Routes = [
     {
-      title: 'UI.LABEL.USER.PLURAL',
+      title: 'LABEL.USER.PLURAL',
       path: () => `/mdt/settings/users`,
       icon: IconType.Users,
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.DEPARTMENT.PLURAL',
+      title: 'LABEL.DEPARTMENT.PLURAL',
       path: () => `/mdt/settings/departments`,
       icon: IconType.Building2,
       show: () => true,
@@ -39,37 +39,37 @@ export class SettingsComponent {
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.CALLOUT.PLURAL',
+      title: 'LABEL.CALLOUT.PLURAL',
       path: () => `/mdt/settings/callouts`,
       icon: IconType.Megaphone,
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.ATTRIBUTE.PLURAL',
+      title: 'LABEL.ATTRIBUTE.PLURAL',
       path: () => `/mdt/settings/attributes`,
       icon: IconType.AtSymbol,
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.VEHICLE.PLURAL',
+      title: 'LABEL.VEHICLE.PLURAL',
       path: () => '/mdt/settings/vehicles',
       icon: IconType.Truck,
       show: () => this.userService.userIsDepartmentManagerOrAdmin(),
     },
     {
-      title: 'UI.LABEL.LOCATION.PLURAL',
+      title: 'LABEL.LOCATION.PLURAL',
       path: () => '/mdt/settings/locations',
       icon: IconType.MapPin,
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.LOADOUT.PLURAL',
+      title: 'LABEL.LOADOUT.PLURAL',
       path: () => '/mdt/settings/loadouts',
       icon: IconType.Briefcase,
       show: () => this.userService.userHasRole(UserRole.Admin),
     },
     {
-      title: 'UI.LABEL.ASSISTANCE_SERVICE.TITLE.PLURAL',
+      title: 'LABEL.ASSISTANCE_SERVICE.TITLE.PLURAL',
       path: () => '/mdt/settings/assistance-services',
       icon: IconType.Lifebuoy,
       show: () => this.userService.userHasRole(UserRole.Admin),

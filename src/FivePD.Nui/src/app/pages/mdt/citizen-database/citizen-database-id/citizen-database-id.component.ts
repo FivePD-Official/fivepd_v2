@@ -53,7 +53,7 @@ export class CitizenDatabaseIdComponent {
       routerLink: '',
     },
     {
-      label: 'UI.LABEL.ARREST_REPORT.PLURAL',
+      label: 'LABEL.ARREST_REPORT.PLURAL',
       disabled: () => false,
       routerLink: '',
     },
@@ -143,9 +143,9 @@ export class CitizenDatabaseIdComponent {
         }),
         switchMap(attributes => {
           return this._modalFormService.open({
-            title: 'UI.ACTION.CREATE',
+            title: 'ACTION.CREATE.TITLE',
             buttons: {
-              submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+              submit: {variant: 'primary', label: 'ACTION.CREATE.TITLE'},
             },
             fields: (_, _2, coreAttributeDropdownItems) => mapCoreAttributesToFields({attributes, coreAttributeDropdownItems}),
           }).result.pipe(res => {

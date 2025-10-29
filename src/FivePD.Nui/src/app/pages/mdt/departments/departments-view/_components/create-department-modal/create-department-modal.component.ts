@@ -29,20 +29,20 @@ export class CreateDepartmentModalComponent {
     new TextField({
       key: 'Name',
       required: true,
-      label: 'UI.LABEL.NAME.SINGULAR',
+      label: 'LABEL.NAME.SINGULAR',
       asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value))],
     }),
     new TextField({
       key: 'Callsign',
-      label: 'UI.LABEL.CALLSIGN.TITLE',
-      helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
+      label: 'LABEL.CALLSIGN.TITLE',
+      helpLabel: 'LABEL.CALLSIGN.HELP_LABEL',
       validators: [CustomValidators.onlyLetters()],
     }),
     new NumberField({
       key: 'MaxUsers',
       required: true,
-      label: 'UI.LABEL.MAX_MEMBERS.TITLE',
-      helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
+      label: 'LABEL.MAX_MEMBERS.TITLE',
+      helpLabel: 'LABEL.MAX_MEMBERS.HELP_LABEL',
       validators: [Validators.min(0)],
       options: {
         min: 0,

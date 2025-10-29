@@ -1,9 +1,9 @@
-<app-page-header [title]="'UI.LABEL.CITIZEN_DATABASE.TITLE' | translate"/>
+<app-page-header [title]="'LABEL.CITIZEN_DATABASE.TITLE' | translate"/>
 <div class="grid grid-rows-1 grid-cols-[300px_1fr] gap-10 z-0">
   <div class="flex flex-col gap-10">
-    <app-dynamic-form [title]="'UI.LABEL.CITIZEN_DATABASE.SEARCH.TITLE' | translate"
-                      [subtitle]="'UI.LABEL.CITIZEN_DATABASE.SEARCH.SUBTITLE' | translate"
-                      [submitButtonLabel]="'UI.ACTION.SEARCH' | translate"
+    <app-dynamic-form [title]="'LABEL.CITIZEN_DATABASE.SEARCH.TITLE' | translate"
+                      [subtitle]="'LABEL.CITIZEN_DATABASE.SEARCH.SUBTITLE' | translate"
+                      [submitButtonLabel]="'ACTION.SEARCH.TITLE' | translate"
                       buttonAlignment="full"
                       [formFields]="formFields"
                       (onSubmit)="collation$.next({Page:1,Filters:$event.value})"
@@ -11,7 +11,7 @@
     @if ((recentlyViewedPedsCount | async) ?? 0 > 0) {
       <div class="flex flex-col gap-2">
         <p class="text-sm font-medium text-zinc-400 uppercase">
-          {{ 'UI.LABEL.RECENTLY_VIEWED' | translate }}
+          {{ 'LABEL.RECENTLY_VIEWED' | translate }}
         </p>
         @for (ped of recentlyViewedPeds | async; track ped) {
           <div [routerLink]="'/mdt/citizen-database/' + ped.Id"

@@ -42,41 +42,41 @@ export class RankOptions {
   }): Column<FormattedRank>[] {
     const columns: Column<FormattedRank>[] = [
       new Column({
-        header: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
+        header: this._localizationService.translate('LABEL.NAME.SINGULAR'),
         accessorKey: 'Name',
         filter: {
-          label: this._localizationService.translate('UI.LABEL.SEARCH_BY.NAME'),
+          label: this._localizationService.translate('LABEL.SEARCH_BY.NAME'),
         },
       }),
       new Column({
-        header: this._localizationService.translate('UI.LABEL.PERMISSIONS'),
+        header: this._localizationService.translate('LABEL.PERMISSIONS'),
         accessorKey: 'Permissions',
       }),
     ];
 
     if (options.generalConfig.config.Features.ProgressionSystem) {
       columns.push(new Column({
-        header: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
+        header: this._localizationService.translate('LABEL.REQUIRED_XP'),
         accessorKey: 'RequiredXp',
       }));
     }
 
     if (options.showActionsColumn) {
       columns.push(new Column({
-        header: this._localizationService.translate('UI.LABEL.ACTION.PLURAL'),
+        header: this._localizationService.translate('LABEL.ACTION.PLURAL'),
         actions: [
           {
             type: 'button',
-            label: this._localizationService.translate('UI.ACTION.EDIT'),
+            label: this._localizationService.translate('ACTION.EDIT.TITLE'),
             onClick: rank => {
               this._modalFormService.open<FormattedRank>({
-                title: 'UI.LABEL.RANK.EDIT',
+                title: 'LABEL.RANK.EDIT',
                 fields: updatedRank => {
                   const fields: FormInputBase<any>[] = [
                     new TextField({
                       key: 'Name',
-                      label: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
-                      placeholder: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
+                      label: this._localizationService.translate('LABEL.NAME.SINGULAR'),
+                      placeholder: this._localizationService.translate('LABEL.NAME.SINGULAR'),
                       required: true,
                       value: updatedRank?.Name,
                     }),
@@ -85,8 +85,8 @@ export class RankOptions {
                   if (options.generalConfig.config.Features.ProgressionSystem) {
                     fields.push(new NumberField({
                       key: 'RequiredXp',
-                      label: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
-                      placeholder: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
+                      label: this._localizationService.translate('LABEL.REQUIRED_XP'),
+                      placeholder: this._localizationService.translate('LABEL.REQUIRED_XP'),
                       required: true,
                       value: updatedRank?.RequiredXp,
                     }))
@@ -94,25 +94,25 @@ export class RankOptions {
 
                   fields.push(new CheckboxField({
                     key: 'DepartmentManager',
-                    label: this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
-                    helpLabel: this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
+                    label: this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
+                    helpLabel: this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
                     value: updatedRank?.Permission?.DepartmentManager,
                   }));
                   fields.push(new CheckboxField({
                     key: 'Kick',
-                    label: this._localizationService.translate('UI.RANK.PERMISSION.KICK.TITLE'),
+                    label: this._localizationService.translate('LABEL.RANK.PERMISSION.KICK.TITLE'),
                     value: updatedRank?.Permission?.Kick,
                     show: form => !form.value['DepartmentManager'],
                   }));
                   fields.push(new CheckboxField({
                     key: 'SetRank',
-                    label: this._localizationService.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'),
+                    label: this._localizationService.translate('LABEL.RANK.PERMISSION.SET_RANK.TITLE'),
                     value: updatedRank?.Permission?.SetRank,
                     show: form => !form.value['DepartmentManager'],
                   }));
                   fields.push(new CheckboxField({
                     key: 'SetDivision',
-                    label: this._localizationService.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'),
+                    label: this._localizationService.translate('LABEL.RANK.PERMISSION.SET_DIVISION.TITLE'),
                     value: updatedRank?.Permission?.SetDivision,
                     show: form => !form.value['DepartmentManager'],
                   }));
@@ -121,7 +121,7 @@ export class RankOptions {
                 },
                 valueResolver: new ValueResolver(rank, this._rankService.get(rank.Id)),
                 buttons: {
-                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                  submit: {variant: 'primary', label: 'ACTION.SAVE.TITLE'},
                 },
               }).result
                 .pipe(
@@ -131,13 +131,13 @@ export class RankOptions {
           },
           {
             type: 'button',
-            label: this._localizationService.translate('UI.ACTION.DELETE'),
+            label: this._localizationService.translate('ACTION.DELETE.TITLE'),
             onClick: rank => {
               this._modalConfirmService.open({
-                title: 'UI.LABEL.RANK.DELETE.TITLE',
-                description: this._localizationService.translate('UI.LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
+                title: 'LABEL.RANK.DELETE.TITLE',
+                description: this._localizationService.translate('LABEL.RANK.DELETE.DESCRIPTION', {rank: `<b>${rank.Name}</b>`}),
                 buttons: {
-                  submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                  submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
                 },
               }).result
                 .pipe(
@@ -163,17 +163,17 @@ export class RankOptions {
 
     if (options.showCreateButton) {
       buttons.push({
-        label: this._localizationService.translate('UI.ACTION.CREATE_RANK'),
+        label: this._localizationService.translate('ACTION.CREATE.RANK.TITLE'),
         show: () => true,
         disabled: () => false,
         onClick: () => this._modalFormService.open({
-          title: 'UI.ACTION.CREATE_RANK',
+          title: 'ACTION.CREATE.RANK.TITLE',
           fields: () => {
             const fields: FormInputBase<any>[] = [
               new TextField({
                 key: 'Name',
-                label: 'UI.LABEL.NAME.SINGULAR',
-                placeholder: 'UI.LABEL.NAME.SINGULAR',
+                label: 'LABEL.NAME.SINGULAR',
+                placeholder: 'LABEL.NAME.SINGULAR',
                 required: true,
               }),
             ];
@@ -181,30 +181,30 @@ export class RankOptions {
             if (options.generalConfig.config.Features.ProgressionSystem) {
               fields.push(new NumberField({
                 key: 'RequiredXp',
-                label: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
-                placeholder: this._localizationService.translate('UI.LABEL.REQUIRED_XP'),
+                label: this._localizationService.translate('LABEL.REQUIRED_XP'),
+                placeholder: this._localizationService.translate('LABEL.REQUIRED_XP'),
                 required: true,
               }));
             }
 
             fields.push(new CheckboxField({
               key: 'DepartmentManager',
-              label: this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
-              helpLabel: this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
+              label: this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
+              helpLabel: this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
             }));
             fields.push(new CheckboxField({
               key: 'Kick',
-              label: this._localizationService.translate('UI.RANK.PERMISSION.KICK.TITLE'),
+              label: this._localizationService.translate('LABEL.RANK.PERMISSION.KICK.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
             fields.push(new CheckboxField({
               key: 'SetRank',
-              label: this._localizationService.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'),
+              label: this._localizationService.translate('LABEL.RANK.PERMISSION.SET_RANK.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
             fields.push(new CheckboxField({
               key: 'SetDivision',
-              label: this._localizationService.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'),
+              label: this._localizationService.translate('LABEL.RANK.PERMISSION.SET_DIVISION.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
 
@@ -213,7 +213,7 @@ export class RankOptions {
           buttons: {
             submit: {
               variant: 'primary',
-              label: 'UI.ACTION.CREATE',
+              label: 'ACTION.CREATE.TITLE',
             },
           },
         }).result
@@ -241,16 +241,16 @@ export class RankOptions {
     const permissions: string[] = [];
 
     if (rank.Permission.Kick) {
-      permissions.push(this._localizationService.translate('UI.RANK.PERMISSION.KICK.TITLE'));
+      permissions.push(this._localizationService.translate('LABEL.RANK.PERMISSION.KICK.TITLE'));
     }
     if (rank.Permission.SetRank) {
-      permissions.push(this._localizationService.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'));
+      permissions.push(this._localizationService.translate('LABEL.RANK.PERMISSION.SET_RANK.TITLE'));
     }
     if (rank.Permission.SetDivision) {
-      permissions.push(this._localizationService.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'));
+      permissions.push(this._localizationService.translate('LABEL.RANK.PERMISSION.SET_DIVISION.TITLE'));
     }
     if (rank.Permission.DepartmentManager) {
-      permissions.push(this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'));
+      permissions.push(this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'));
     }
 
     return permissions.length > 0 ? permissions.join(', ') : '-';

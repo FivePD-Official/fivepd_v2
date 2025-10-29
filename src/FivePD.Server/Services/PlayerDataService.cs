@@ -283,14 +283,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 new GameNotificationOptions
                 {
                     Title = "LABEL.DISPATCH",
-                    Message = "PLAYER_STATUS.CHANGE",
+                    Message = "LABEL.PLAYER_STATUS.CHANGE",
                     MessageParams = new Dictionary<string, string>
                     {
                         ["name"] = player.Name,
                         ["status"] = status switch
                         {
-                            FDutyStatus.OffDuty => "PLAYER_STATUS.OFF_DUTY.GENERIC",
-                            FDutyStatus.OnDuty => "PLAYER_STATUS.ON_DUTY.GENERIC",
+                            FDutyStatus.OffDuty => "LABEL.PLAYER_STATUS.OFF_DUTY",
+                            FDutyStatus.OnDuty => "LABEL.PLAYER_STATUS.ON_DUTY",
                             _ => "Unknown",
                         },
                     },
@@ -466,8 +466,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            "UI.LABEL.DIVISION.SUCCESS.CHANGE",
+            "LABEL.SUCCESS.CHANGE",
+            "LABEL.DIVISION.SUCCESS.CHANGE",
             new Dictionary<string, string>
             {
                 { "player", user.Name },
@@ -513,8 +513,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            "UI.LABEL.RANK.SUCCESS.CHANGE",
+            "LABEL.SUCCESS.CHANGE",
+            "LABEL.RANK.SUCCESS.CHANGE",
             new Dictionary<string, string>
             {
                 { "player", user.Name },
@@ -538,8 +538,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            request.FixedRank ? "UI.LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "UI.LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
+            "LABEL.SUCCESS.CHANGE",
+            request.FixedRank ? "LABEL.PLAYER.SUCCESS.CHANGE_FIXED_RANK" : "LABEL.PLAYER.SUCCESS.CHANGE_NOT_FIXED_RANK",
             new Dictionary<string, string>
             {
                 { "name", user.Name },
@@ -574,8 +574,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            "UI.LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
+            "LABEL.SUCCESS.CHANGE",
+            "LABEL.PLAYER.SUCCESS.CHANGE_ROLE",
             new Dictionary<string, string>
             {
                 { "name", user.Name },
@@ -622,7 +622,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
             if (user.Department.Users.Any(x => x.Callsign == callsign))
             {
-                this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.USER.CALLSIGN.EDIT.TITLE", "UI.ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
+                this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.USER.CALLSIGN.EDIT.TITLE", "ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
                 return;
             }
 
@@ -654,6 +654,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CHANGE", "UI.LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CHANGE", "LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
     }
 }

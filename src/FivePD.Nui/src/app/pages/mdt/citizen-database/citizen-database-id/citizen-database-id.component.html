@@ -1,4 +1,4 @@
-<app-page-header [title]="'UI.LABEL.CITIZEN_DATABASE.RECORD' | translate"/>
+<app-page-header [title]="'LABEL.CITIZEN_DATABASE.RECORD' | translate"/>
 
 @if (ped$ | async; as ped) {
   <app-container [rows]="2">
@@ -21,7 +21,7 @@
     <app-container [rows]="1" [columns]="2">
       <div class="grid-item grid-item--details">
         <p class="common-title">
-          {{ 'UI.LABEL.DETAILS' | translate }}
+          {{ 'LABEL.DETAILS.TITLE' | translate }}
         </p>
         <div class="grid-item--content">
           <ul
@@ -112,8 +112,8 @@
                      (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.PedWarning)"/>
       </app-tab>
 
-      <app-tab title="UI.LABEL.ARREST_REPORT.PLURAL">
-        <entity-view title="UI.LABEL.ARREST_REPORT.PLURAL"
+      <app-tab title="LABEL.ARREST_REPORT.PLURAL">
+        <entity-view title="LABEL.ARREST_REPORT.PLURAL"
                      [entities]="(arrestReports$ | async)!"
                      [showCreateButton]="true"
                      (createButtonClick)="tryCreateVariableDataEntity(CoreSetId.ArrestReport)"/>

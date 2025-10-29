@@ -14,11 +14,11 @@ export class DevtoolsViewComponent {
 
   tabs: Tab[] = [
     {
-      label: 'UI.LABEL.GENERAL',
+      label: 'LABEL.GENERAL',
       routerLink: '/mdt/devtools'
     },
     {
-      label: 'UI.LABEL.CALLOUT.PLURAL',
+      label: 'LABEL.CALLOUT.PLURAL',
       routerLink: '/mdt/devtools/callouts'
     },
   ];

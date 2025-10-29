@@ -71,7 +71,7 @@ export class MessagesComponent {
 
   trySendMessage(): void {
     this._modalFormService.open({
-      title: 'UI.LABEL.MESSAGES.ACTION.SEND',
+      title: 'LABEL.MESSAGES.ACTION.SEND',
       fields: (users) => {
         const simpleUsers: SimpleUser[] = Array.isArray(users) ? users : [];
         return [
@@ -82,8 +82,8 @@ export class MessagesComponent {
           }),
           new MultiSelectField({
             key: 'To',
-            label: this.localizationService.translate('UI.LABEL.MESSAGES.SEND_FORM.TO'),
-            defaultItemLabel: this.localizationService.translate('UI.LABEL.MESSAGES.SEND_FORM.TO'),
+            label: this.localizationService.translate('LABEL.MESSAGES.SEND_FORM.TO'),
+            defaultItemLabel: this.localizationService.translate('LABEL.MESSAGES.SEND_FORM.TO'),
             required: true,
             size: 'normal',
             variant: 'secondary',
@@ -95,14 +95,14 @@ export class MessagesComponent {
           }),
           new TextField({
             key: 'Subject',
-            label: this.localizationService.translate('UI.LABEL.MESSAGES.SEND_FORM.SUBJECT'),
+            label: this.localizationService.translate('LABEL.MESSAGES.SEND_FORM.SUBJECT'),
             required: true,
             readonly: false,
             placeholder: '',
           }),
           new TextareaField({
             key: 'Content',
-            label: this.localizationService.translate('UI.LABEL.MESSAGES.SEND_FORM.MESSAGE'),
+            label: this.localizationService.translate('LABEL.MESSAGES.SEND_FORM.MESSAGE'),
             required: true,
             readonly: false,
             placeholder: '',
@@ -112,7 +112,7 @@ export class MessagesComponent {
       buttons: {
         submit: {
           variant: 'primary',
-          label: 'UI.ACTION.SEND',
+          label: 'ACTION.SEND.TITLE',
         }
       },
       valueResolver: new ValueResolver([], this._userService.getAllSimple()),

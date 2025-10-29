@@ -144,7 +144,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
             Options = request.Options,
         });
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CREATE", "LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
     }
@@ -167,7 +167,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
         vehicleConfig.Options = request.Options;
 
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
     }
@@ -185,7 +185,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
 
         this._databaseContext.VehicleConfigs.Remove(entityToRemove);
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
     }

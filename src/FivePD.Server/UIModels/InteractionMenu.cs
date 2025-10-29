@@ -137,7 +137,7 @@ public sealed class InteractionMenu : Menu
                     new GameNotificationOptions
                     {
                         Title = "FivePD",
-                        Message = "UI.ERROR.UNEXPECTED",
+                        Message = "ERROR.UNEXPECTED",
                     });
                 return;
             }
@@ -213,7 +213,7 @@ public sealed class InteractionMenu : Menu
                     new GameNotificationOptions
                     {
                         Title = "FivePD",
-                        Message = "UI.ERROR.UNEXPECTED",
+                        Message = "ERROR.UNEXPECTED",
                     });
                 return;
             }
@@ -276,7 +276,7 @@ public sealed class InteractionMenu : Menu
                     new GameNotificationOptions
                     {
                         Title = "FivePD",
-                        Message = "UI.ERROR.UNEXPECTED",
+                        Message = "ERROR.UNEXPECTED",
                     });
                 return;
             }
@@ -317,7 +317,7 @@ public sealed class InteractionMenu : Menu
                     new GameNotificationOptions
                     {
                         Title = "FivePD",
-                        Message = "UI.ERROR.UNEXPECTED",
+                        Message = "ERROR.UNEXPECTED",
                     });
                 return;
             }

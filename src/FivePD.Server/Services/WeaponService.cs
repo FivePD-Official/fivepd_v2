@@ -103,7 +103,7 @@ public class WeaponService : IWeaponService
         this._databaseContext.Weapons.Add(weapon);
         this._databaseContext.SaveChanges();
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.CREATE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CREATE", "LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.CREATE");
     }
 
     [UIEvent(Events.UI.Weapon.Edit)]
@@ -152,7 +152,7 @@ public class WeaponService : IWeaponService
         }
 
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.Weapon.Delete)]
@@ -169,6 +169,6 @@ public class WeaponService : IWeaponService
 
         this._databaseContext.Weapons.Remove(weapon);
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.DELETE");
     }
 }

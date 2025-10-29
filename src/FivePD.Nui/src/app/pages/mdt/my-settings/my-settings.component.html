@@ -1,4 +1,4 @@
-<app-page-header [title]="'UI.LABEL.MY_SETTINGS.TITLE' | translate"/>
+<app-page-header [title]="'LABEL.MY_SETTINGS.TITLE' | translate"/>
 
 <app-container [rows]="2" [columns]="1">
 
@@ -8,7 +8,7 @@
                       [disableSubmitWithOriginalValue]="true"
                       [showSubmitButton]="true"/>
     @if (department) {
-      <app-button [label]="'UI.ACTION.EDIT_CALLSIGN' | translate"
+      <app-button [label]="'LABEL.CALLSIGN.EDIT' | translate"
                   variant="tertiary"
                   (onClick)="tryEditCallsign()"/>
     }

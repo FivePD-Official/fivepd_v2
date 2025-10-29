@@ -108,7 +108,7 @@ public class MessageService : IMessageService
             new GameNotificationOptions
             {
                 Title = "FivePD",
-                Message = "UI.LABEL.MESSAGES.RECEIVED",
+                Message = "LABEL.MESSAGES.RECEIVED",
                 MessageParams = new Dictionary<string, string>
                 {
                     ["sender"] = message.Sender,
@@ -170,7 +170,7 @@ public class MessageService : IMessageService
             this.Send(user, request.Subject, request.Content, sender.Name);
         }
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.SEND", "UI.LABEL.MESSAGES.SUCCESS.SEND");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.SEND", "LABEL.MESSAGES.SUCCESS.SEND");
     }
 
     [UIEvent(Events.Message.Read)]

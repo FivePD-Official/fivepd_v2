@@ -50,7 +50,7 @@ export class CitizenDatabaseIndexComponent implements OnInit {
     new SingleSelectField({
       key: 'Gender',
       label: 'LABEL.GENDER.TITLE',
-      defaultItemLabel: this._localizationService.translate('UI.LABEL.ALL'),
+      defaultItemLabel: this._localizationService.translate('LABEL.ALL'),
       items: () => [
         {key: FGender.Male, label: this._localizationService.translate('LABEL.GENDER.MALE')},
         {key: FGender.Female, label: this._localizationService.translate('LABEL.GENDER.FEMALE')},

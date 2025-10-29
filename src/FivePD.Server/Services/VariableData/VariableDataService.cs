@@ -601,7 +601,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 
         if (set.Attributes.Any(attr => attr.Name == request.Attribute.Name))
         {
-            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.ATTRIBUTE.CREATE.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.ATTRIBUTE.CREATE.TITLE", "ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -630,8 +630,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CREATE",
-            "UI.LABEL.ATTRIBUTE.SUCCESS.CREATE",
+            "LABEL.SUCCESS.CREATE",
+            "LABEL.ATTRIBUTE.SUCCESS.CREATE",
             new Dictionary<string, string>
             {
                 { "attribute", request.Attribute.Name },
@@ -661,7 +661,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 
         if (set.Attributes.Where(attr => attr.Id != attribute.Id).Any(attr => attr.Name == request.Attribute.Name))
         {
-            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.ATTRIBUTE.EDIT.TITLE", "UI.ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.ATTRIBUTE.EDIT.TITLE", "ERROR.ATTRIBUTE.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -683,8 +683,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
-            "UI.LABEL.ATTRIBUTE.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
+            "LABEL.ATTRIBUTE.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
                 { "attribute", attributeOldName },
@@ -726,7 +726,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         var attributeName = attributeToDelete.Name;
         this._databaseContext.VariableDataAttributes.Remove(attributeToDelete);
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
         {
             { "attribute", attributeName },
         });
@@ -801,7 +801,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.ENTITY.SUCCESS.CREATE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CREATE", "LABEL.ENTITY.SUCCESS.CREATE");
     }
 
     [UIEvent(Events.UI.VariableData.EditEntity)]
@@ -816,7 +816,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         }
 
         this.InternalUpdateEntity(player, request.SetId, request.EntityId, request.Entity);
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.ENTITY.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.ENTITY.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.VariableData.DeleteEntity)]
@@ -848,7 +848,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
                 Entity = entityToDelete,
                 Player = FPlayer.FromPlayer(player),
             });
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.ENTITY.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.ENTITY.SUCCESS.DELETE");
     }
 
     private VariableDataEntity InternalAddEntity(Player player, string setId, VariableDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)

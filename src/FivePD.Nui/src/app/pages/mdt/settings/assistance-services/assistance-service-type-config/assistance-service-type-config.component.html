@@ -1,32 +1,32 @@
-<app-page-header [title]="'UI.LABEL.ASSISTANCE_SERVICE.TITLE.SINGULAR' | translate"/>
+<app-page-header [title]="'LABEL.ASSISTANCE_SERVICE.TITLE.SINGULAR' | translate"/>
 
 <app-container [columns]="1" [rows]="1">
 
   @if (assistanceServiceTypeConfig$ | async; as assistanceServiceTypeConfig) {
     <form [formGroup]="form" (ngSubmit)="onSubmit(assistanceServiceTypeConfig)" class="flex flex-col gap-4">
-      <p class="common-title">{{ 'UI.LABEL.DETAILS' | translate }}</p>
+      <p class="common-title">{{ 'LABEL.DETAILS.TITLE' | translate }}</p>
       <div class="flex flex-col gap-4 max-w-max">
         <div class="grid grid-rows-1 grid-cols-2 gap-8">
-          <p class="font-medium text-zinc-400">{{ 'UI.LABEL.NAME.SINGULAR' | translate }}</p>
+          <p class="font-medium text-zinc-400">{{ 'LABEL.NAME.SINGULAR' | translate }}</p>
           <p class="text-zinc-200">{{ assistanceServiceTypeConfig.TypeName }}</p>
         </div>
         <div class="grid grid-rows-1 grid-cols-2 gap-8">
-          <p class="text-zinc-400">{{ 'UI.LABEL.ASSEMBLY_NAME.SINGULAR' | translate }}</p>
+          <p class="text-zinc-400">{{ 'LABEL.ASSEMBLY_NAME.SINGULAR' | translate }}</p>
           <p class="text-zinc-200">{{ assistanceServiceTypeConfig.AssemblyName }}</p>
         </div>
         <div class="grid grid-rows-1 grid-cols-2 gap-8">
-          <p class="text-zinc-400">{{ 'UI.LABEL.ACTIVE' | translate }}</p>
+          <p class="text-zinc-400">{{ 'LABEL.ACTIVE.TITLE' | translate }}</p>
           <p
-            class="text-zinc-200">{{ (assistanceServiceTypeConfig.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO') | translate }}</p>
+            class="text-zinc-200">{{ (assistanceServiceTypeConfig.Active ? 'LABEL.YES.TITLE' : 'LABEL.NO.TITLE') | translate }}</p>
         </div>
         <div class="grid grid-rows-1 grid-cols-2 gap-8">
-          <p class="text-zinc-400">{{ 'UI.LABEL.ENABLED' | translate }}</p>
+          <p class="text-zinc-400">{{ 'LABEL.ENABLED' | translate }}</p>
           <div class="flex flex-row justify-start">
             <app-checkbox-field [form]="form" [field]="enabledCheckboxField"/>
           </div>
         </div>
         <div class="grid grid-rows-1 grid-cols-2 gap-8">
-          <p class="text-zinc-400">{{ 'UI.LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TITLE' | translate }}</p>
+          <p class="text-zinc-400">{{ 'LABEL.ASSISTANCE_SERVICE.SPAWN_TYPE.TITLE' | translate }}</p>
           <div class="flex flex-col gap-4">
             @for (type of spawnTypes; track type) {
               <div class="flex flex-row gap-2 group relative">
@@ -80,7 +80,7 @@
 
       <div class="w-full flex flex-row items-center justify-end mt-6 gap-4">
         <app-button type="submit"
-                    [label]="'UI.ACTION.SAVE' | translate"
+                    [label]="'ACTION.SAVE.TITLE' | translate"
                     [disabled]="form.invalid || form.pristine"/>
       </div>
     </form>

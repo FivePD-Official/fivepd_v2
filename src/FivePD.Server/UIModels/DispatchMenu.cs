@@ -77,7 +77,7 @@ public sealed class DispatchMenu : Menu
                     if (player.Department is not null)
                     {
                         player.DutyStatus.Value = FDutyStatus.OnDuty;
-                        this.DutyNotification(player, "UI.MENU.DISPATCH.ON_DUTY.NOTIFICATION");
+                        this.DutyNotification(player, "LABEL.MENU.DISPATCH.ON_DUTY.NOTIFICATION");
                     }
                 });
             }
@@ -89,7 +89,7 @@ public sealed class DispatchMenu : Menu
                     if (player.Department is not null)
                     {
                         player.DutyStatus.Value = FDutyStatus.OffDuty;
-                        this.DutyNotification(player, "UI.MENU.DISPATCH.OFF_DUTY.NOTIFICATION");
+                        this.DutyNotification(player, "LABEL.MENU.DISPATCH.OFF_DUTY.NOTIFICATION");
                     }
                 });
             }
@@ -204,7 +204,7 @@ public sealed class DispatchMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.ERROR.UNEXPECTED",
+                    Message = "ERROR.UNEXPECTED",
                 });
             return;
         }
@@ -216,7 +216,7 @@ public sealed class DispatchMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.ERROR.UNEXPECTED",
+                    Message = "ERROR.UNEXPECTED",
                 });
             return;
         }
@@ -229,7 +229,7 @@ public sealed class DispatchMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.ERROR.UNEXPECTED",
+                    Message = "ERROR.UNEXPECTED",
                 });
             return;
         }
@@ -296,7 +296,7 @@ public sealed class DispatchMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.ERROR.UNEXPECTED",
+                    Message = "ERROR.UNEXPECTED",
                 });
             return;
         }
@@ -308,7 +308,7 @@ public sealed class DispatchMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.ERROR.UNEXPECTED",
+                    Message = "ERROR.UNEXPECTED",
                 });
             return;
         }
@@ -321,7 +321,7 @@ public sealed class DispatchMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "UI.ERROR.UNEXPECTED",
+                    Message = "ERROR.UNEXPECTED",
                 });
             return;
         }

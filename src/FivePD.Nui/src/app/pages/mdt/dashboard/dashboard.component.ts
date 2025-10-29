@@ -59,23 +59,23 @@ export class DashboardComponent {
   );
   readonly departmentsColumnDef: Column<Department>[] = [
     new Column<Department>({
-      header: 'UI.LABEL.NAME.SINGULAR',
+      header: 'LABEL.NAME.SINGULAR',
       accessorKey: 'Name',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.NAME',
+        label: 'LABEL.SEARCH_BY.NAME',
       }
     }),
     new Column<Department>({
-      header: 'UI.LABEL.CALLSIGN.TITLE',
+      header: 'LABEL.CALLSIGN.TITLE',
       accessorKey: 'Callsign',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.CALLSIGN',
+        label: 'LABEL.SEARCH_BY.CALLSIGN',
       },
     }),
     new Column<Department>({
-      header: 'UI.LABEL.CAPACITY.SINGULAR',
+      header: 'LABEL.CAPACITY.SINGULAR',
       accessorKey: 'UserCount',
-      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('UI.LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
+      valueResolver: (item) => item.MaxUsers === 0 ? `${item.UserCount} / ${this._localization.translate('LABEL.NO_LIMIT')}` : `${item.UserCount} / ${item.MaxUsers}`,
     }),
   ];
 
@@ -89,21 +89,21 @@ export class DashboardComponent {
   );
   readonly unitsColumnDef: Column<UnitDTO>[] = [
     new Column<UnitDTO>({
-      header: 'UI.LABEL.CALLSIGN.TITLE',
+      header: 'LABEL.CALLSIGN.TITLE',
       accessorKey: 'Callsign',
     }),
     new Column<UnitDTO>({
-      header: 'UI.LABEL.OFFICER.PLURAL',
+      header: 'LABEL.OFFICER.PLURAL',
       valueResolver: item => (this.generalConfig?.config?.Unit?.MaxMembers ?? 0) > 0
         ? `${item.Players.length.toString()} / ${this.generalConfig?.config.Unit.MaxMembers}`
         : item.Players.length.toString(),
     }),
     new Column<UnitDTO>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.JOIN',
+          label: 'ACTION.JOIN.TITLE',
           show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty &&
             (this.generalConfig?.joinFreelyToUnit() ?? false) &&
             unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) &&
@@ -121,7 +121,7 @@ export class DashboardComponent {
         },
         {
           type: 'button',
-          label: 'UI.ACTION.REQUEST_TO_JOIN',
+          label: 'LABEL.UNIT.REQUEST_TO_JOIN.TITLE',
           show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty &&
             (this.generalConfig?.joinByRequestToUnit() ?? false) &&
             unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) &&
@@ -135,7 +135,7 @@ export class DashboardComponent {
         },
         {
           type: 'button',
-          label: 'UI.ACTION.LEAVE',
+          label: 'ACTION.LEAVE.TITLE',
           show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty && unit.Players.some(x => x.NetworkId === this.user?.NetworkId) && (unit.Players.length > 1),
           onClick: unit => {
             this._unitService.leave(unit).subscribe(res => {
@@ -155,24 +155,24 @@ export class DashboardComponent {
   );
   readonly incidentsColumnDef: Column<IncidentDTO>[] = [
     new Column({
-      header: 'UI.LABEL.TITLE.SINGULAR',
+      header: 'LABEL.TITLE.SINGULAR',
       accessorKey: 'Title',
     }),
     new Column({
-      header: 'UI.LABEL.DESCRIPTION.SINGULAR',
+      header: 'LABEL.DESCRIPTION.SINGULAR',
       accessorKey: 'Description',
     }),
     new Column({
-      header: 'UI.LABEL.ADDRESS.SINGULAR',
+      header: 'LABEL.ADDRESS.SINGULAR',
       accessorKey: 'Address',
     }),
     new Column({
-      header: 'UI.LABEL.UNIT.PLURAL',
+      header: 'LABEL.UNIT.PLURAL',
       valueResolver: item => item.Units.join(', '),
     }),
     new Column({
-      header: 'UI.LABEL.TYPE.SINGULAR',
-      valueResolver: item => this._localization.translate(item.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR'),
+      header: 'LABEL.TYPE.SINGULAR',
+      valueResolver: item => this._localization.translate(item.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'LABEL.TRAFFIC_STOP.SINGULAR'),
     }),
     new Column({
       header: 'LABEL.PRIORITY.SINGULAR',
@@ -180,11 +180,11 @@ export class DashboardComponent {
       badgeResolver: item => getPriorityBadgeColor(item.Priority),
     }),
     new Column({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: this._localization.translate('UI.LABEL.DETAILS'),
+          label: this._localization.translate('LABEL.DETAILS.TITLE'),
           show: () => true,
           onClick: incident => {
             this._modalService.openFromSide(IncidentDetailsModalComponent,
@@ -204,7 +204,7 @@ export class DashboardComponent {
         },
         {
           type: 'button',
-          label: this._localization.translate('UI.LABEL.INCIDENT.SELF_ASSIGN.TITLE'),
+          label: this._localization.translate('LABEL.INCIDENT.SELF_ASSIGN.TITLE'),
           show: incident => !!this.user?.UnitCallsign && incident.Units.every(x => x !== this.user?.UnitCallsign),
           onClick: incident => {
             this._incidentService.selfAssign(incident).subscribe(res => {

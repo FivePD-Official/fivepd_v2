@@ -70,11 +70,11 @@ export class MySettingsComponent implements OnInit {
       fields.push(new SingleSelectField({
         key: 'PreferredLanguage',
         value: preferredLanguageIndex !== -1 ? preferredLanguageIndex : defaultLanguageIndex,
-        label: 'UI.LABEL.LANGUAGE.SINGULAR',
+        label: 'LABEL.LANGUAGE.SINGULAR',
         required: true,
         addDefaultItem: false,
         height: 'base',
-        defaultItemLabel: this._localizationService.translate('UI.LABEL.LANGUAGE.SINGULAR'),
+        defaultItemLabel: this._localizationService.translate('LABEL.LANGUAGE.SINGULAR'),
         variant: 'secondary',
         size: 'normal',
         items: () => Object.values(availableLocalizations).map((title, index) => ({
@@ -86,9 +86,9 @@ export class MySettingsComponent implements OnInit {
       fields.push(new NumberField({
         key: 'AudioVolume',
         value: user.AudioVolume,
-        label: 'UI.LABEL.MY_SETTINGS.AUDIO_VOLUME.TITLE',
+        label: 'LABEL.MY_SETTINGS.AUDIO_VOLUME.TITLE',
         required: true,
-        helpLabel: 'UI.LABEL.MY_SETTINGS.AUDIO_VOLUME.HELP_LABEL',
+        helpLabel: 'LABEL.MY_SETTINGS.AUDIO_VOLUME.HELP_LABEL',
         validators: [Validators.min(0), Validators.max(1)],
         options: {
           min: 0,
@@ -124,7 +124,7 @@ export class MySettingsComponent implements OnInit {
 
   tryEditCallsign(): void {
     this._modalService.open(CallsignEditorComponent, {
-        title: 'UI.ACTION.EDIT_CALLSIGN'
+        title: 'LABEL.CALLSIGN.EDIT'
       }, new Map()
         .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
         .set(CALLSIGN_FORMAT_VALUES, this.user?.User?.CallsignFormat.Values)

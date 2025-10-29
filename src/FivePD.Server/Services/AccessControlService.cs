@@ -104,8 +104,8 @@ public class AccessControlService : IAccessControlService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            "UI.LABEL.ACCESS_CONTROL.SUCCESS.GIVE_ACCESS",
+            "LABEL.SUCCESS.CHANGE",
+            "LABEL.ACCESS_CONTROL.SUCCESS.GIVE_ACCESS",
             new Dictionary<string, string>
             {
                 { "name", user.Name },
@@ -128,8 +128,8 @@ public class AccessControlService : IAccessControlService, IOnInit
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CHANGE",
-            "UI.LABEL.ACCESS_CONTROL.SUCCESS.REMOVE_ACCESS",
+            "LABEL.SUCCESS.CHANGE",
+            "LABEL.ACCESS_CONTROL.SUCCESS.REMOVE_ACCESS",
             new Dictionary<string, string>
             {
                 { "name", user.Name },

@@ -420,8 +420,8 @@ public class DepartmentService : IDepartmentService
                 player,
                 guid,
                 true,
-                "UI.LABEL.SUCCESS.CREATE",
-                "UI.LABEL.DEPARTMENT.SUCCESS.CREATE",
+                "LABEL.SUCCESS.CREATE",
+                "LABEL.DEPARTMENT.SUCCESS.CREATE",
                 new Dictionary<string, string>
                 {
                     { "department", request.Name },
@@ -433,8 +433,8 @@ public class DepartmentService : IDepartmentService
                 player,
                 guid,
                 false,
-                "UI.ERROR.DEPARTMENT.CREATE.TITLE",
-                "UI.ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
+                "ERROR.DEPARTMENT.CREATE.TITLE",
+                "ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
         }
     }
 
@@ -465,8 +465,8 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.DELETE",
-            "UI.LABEL.DIVISION.SUCCESS.DELETE",
+            "LABEL.SUCCESS.DELETE",
+            "LABEL.DIVISION.SUCCESS.DELETE",
             new Dictionary<string, string>
             {
                 { "division", divisionToDeleteName },
@@ -496,8 +496,8 @@ public class DepartmentService : IDepartmentService
                 player,
                 guid,
                 false,
-                "UI.ERROR.DIVISION.EDIT.TITLE",
-                "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
+                "ERROR.DIVISION.EDIT.TITLE",
+                "ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -509,8 +509,8 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
-            "UI.LABEL.DIVISION.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
+            "LABEL.DIVISION.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
                 { "division", divisionToEditOldName },
@@ -529,8 +529,8 @@ public class DepartmentService : IDepartmentService
                 player,
                 guid,
                 false,
-                "UI.ERROR.DIVISION.CREATE.TITLE",
-                "UI.ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
+                "ERROR.DIVISION.CREATE.TITLE",
+                "ERROR.DIVISION.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -552,8 +552,8 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.CREATE",
-            "UI.LABEL.DIVISION.SUCCESS.CREATE",
+            "LABEL.SUCCESS.CREATE",
+            "LABEL.DIVISION.SUCCESS.CREATE",
             new Dictionary<string, string>
             {
                 { "division", request.Name },
@@ -581,8 +581,8 @@ public class DepartmentService : IDepartmentService
                 player,
                 guid,
                 false,
-                "UI.ERROR.DEPARTMENT.EDIT.TITLE",
-                "UI.ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
+                "ERROR.DEPARTMENT.EDIT.TITLE",
+                "ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
@@ -621,8 +621,8 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
-            "UI.LABEL.DEPARTMENT.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
+            "LABEL.DEPARTMENT.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
                 { "department", departmentOldName },
@@ -677,8 +677,8 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.EDIT",
-            "UI.LABEL.DEPARTMENT.SUCCESS.EDIT",
+            "LABEL.SUCCESS.EDIT",
+            "LABEL.DEPARTMENT.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
                 { "department", department.Name },
@@ -732,8 +732,8 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.DELETE",
-            "UI.LABEL.DEPARTMENT.SUCCESS.DELETE",
+            "LABEL.SUCCESS.DELETE",
+            "LABEL.DEPARTMENT.SUCCESS.DELETE",
             new Dictionary<string, string>
             {
                 { "department", departmentOldName },
@@ -800,8 +800,8 @@ public class DepartmentService : IDepartmentService
                 player,
                 guid,
                 true,
-                "UI.LABEL.SUCCESS.JOIN",
-                "UI.LABEL.DEPARTMENT.SUCCESS.JOIN",
+                "LABEL.SUCCESS.JOIN",
+                "LABEL.DEPARTMENT.SUCCESS.JOIN",
                 new Dictionary<string, string>
                 {
                     { "department", department!.Name },
@@ -809,7 +809,7 @@ public class DepartmentService : IDepartmentService
         }
         catch (DepartmentFullException)
         {
-            this._networkEventService.TriggerEventWithResponse(player, guid, false, "UI.ERROR.DEPARTMENT.FULL.TITLE", "UI.ERROR.DEPARTMENT.FULL.DESCRIPTION");
+            this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.DEPARTMENT.FULL.TITLE", "ERROR.DEPARTMENT.FULL.DESCRIPTION");
         }
     }
 
@@ -822,8 +822,8 @@ public class DepartmentService : IDepartmentService
             player,
             guid,
             true,
-            "UI.LABEL.SUCCESS.LEAVE",
-            "UI.LABEL.DEPARTMENT.SUCCESS.LEAVE",
+            "LABEL.SUCCESS.LEAVE",
+            "LABEL.DEPARTMENT.SUCCESS.LEAVE",
             new Dictionary<string, string>
             {
                 { "department", playerDepartment!.Name },
@@ -912,6 +912,6 @@ public class DepartmentService : IDepartmentService
 
         this._databaseContext.SaveChanges();
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT");
     }
 }

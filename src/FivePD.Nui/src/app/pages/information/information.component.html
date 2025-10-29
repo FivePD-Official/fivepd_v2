@@ -8,7 +8,7 @@
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-red-500"></span>
           <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
         </span>
-        <p class="font-medium text-red-500">{{ 'UI.LABEL.PANIC_MODE.ACTIVE' | translate }}</p>
+        <p class="font-medium text-red-500">{{ 'LABEL.PANIC_MODE.ACTIVE' | translate }}</p>
       </div>
     }
 
@@ -16,13 +16,13 @@
       <div class="w-full flex flex-col gap-4">
         <div class="w-full grid grid-rows-1 grid-cols-2 gap-4">
           <div class="flex flex-col">
-            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}</p>
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.ACTIVE_INCIDENT.SINGULAR' | translate }}</p>
             <p class="text-zinc-200">
               {{ information.IncidentWrapper.Incident.Title }}
             </p>
           </div>
           <div class="flex flex-col">
-            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.ADDRESS.SINGULAR' | translate }}</p>
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.ADDRESS.SINGULAR' | translate }}</p>
             <p class="text-zinc-200">
               {{ information.IncidentWrapper.Address }}
             </p>
@@ -36,12 +36,12 @@
             </p>
           </div>
           <div class="flex flex-col">
-            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.TYPE.SINGULAR' | translate }}</p>
+            <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.TYPE.SINGULAR' | translate }}</p>
             <p class="text-zinc-200">
               {{
                 (information.IncidentWrapper.Incident.Type === FIncidentType.Callout
-                  ? 'UI.LABEL.CALLOUT.SINGULAR'
-                  : 'UI.LABEL.TRAFFIC_STOP.SINGULAR') | translate
+                  ? 'LABEL.CALLOUT.SINGULAR'
+                  : 'LABEL.TRAFFIC_STOP.SINGULAR') | translate
               }}
             </p>
           </div>
@@ -52,19 +52,19 @@
 
     <div class="w-full grid grid-rows-1 grid-cols-3 gap-4">
       <div class="flex flex-col">
-        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.DUTY_STATUS.SINGULAR' | translate }}</p>
+        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.DUTY_STATUS.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">
-          {{ (information.DutyStatus === FDutyStatus.OnDuty ? 'PLAYER_STATUS.ON_DUTY.GENERIC' : 'PLAYER_STATUS.OFF_DUTY.GENERIC') | translate }}
+          {{ (information.DutyStatus === FDutyStatus.OnDuty ? 'LABEL.PLAYER_STATUS.ON_DUTY' : 'LABEL.PLAYER_STATUS.OFF_DUTY') | translate }}
         </p>
       </div>
       <div class="flex flex-col">
-        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.AVAILABILITY.SINGULAR' | translate }}</p>
+        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.AVAILABILITY.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">
-          {{ (information.Availability === FPlayerAvailability.Receiving ? 'PLAYER_AVAILABILITY.RECEIVING' : 'PLAYER_AVAILABILITY.NOT_RECEIVING') | translate }}
+          {{ (information.Availability === FPlayerAvailability.Receiving ? 'LABEL.PLAYER_AVAILABILITY.RECEIVING' : 'LABEL.PLAYER_AVAILABILITY.NOT_RECEIVING') | translate }}
         </p>
       </div>
       <div class="flex flex-col">
-        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'UI.LABEL.STATUS.SINGULAR' | translate }}</p>
+        <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.STATUS.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">{{ information.Status }}</p>
       </div>
     </div>

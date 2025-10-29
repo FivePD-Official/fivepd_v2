@@ -44,18 +44,18 @@ export class ReportsComponent implements OnInit {
   arrestReportButtons: Button[] = [
     {
       type: 'button',
-      label: this._localization.translate('UI.ACTION.CREATE'),
+      label: this._localization.translate('ACTION.CREATE.TITLE'),
       show: () => true,
       disabled: () => !this.user?.Department,
       tooltip: {
         enabled: () => !this.user?.Department,
-        text: this._localization.translate('UI.LABEL.ARREST_REPORT.CREATE.TOOLTIP'),
+        text: this._localization.translate('LABEL.ARREST_REPORT.CREATE.TOOLTIP'),
         placement: 'left',
       },
       onClick: () => this.modalFormService.open({
-        title: 'UI.ACTION.CREATE',
+        title: 'ACTION.CREATE.TITLE',
         buttons: {
-          submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+          submit: {variant: 'primary', label: 'ACTION.CREATE.TITLE'},
         },
         fields: (_, _2, coreAttributeDropdownItems) => mapCoreAttributesToFields({
           attributes: this._variableDataService.getSetAttributes(CoreSetId.ArrestReport),
@@ -81,18 +81,18 @@ export class ReportsComponent implements OnInit {
   incidentReportButtons: Button[] = [
     {
       type: 'button',
-      label: this._localization.translate('UI.ACTION.CREATE'),
+      label: this._localization.translate('ACTION.CREATE.TITLE'),
       show: () => true,
       disabled: () => !this.user?.Department,
       tooltip: {
         enabled: () => !this.user?.Department,
-        text: this._localization.translate('UI.LABEL.ARREST_REPORT.CREATE.TOOLTIP'),
+        text: this._localization.translate('LABEL.ARREST_REPORT.CREATE.TOOLTIP'),
         placement: 'left',
       },
       onClick: () => this.modalFormService.open({
-        title: 'UI.ACTION.CREATE',
+        title: 'ACTION.CREATE.TITLE',
         buttons: {
-          submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+          submit: {variant: 'primary', label: 'ACTION.CREATE.TITLE'},
         },
         fields: (_, _2, coreAttributeDropdownItems) => mapCoreAttributesToFields({
           attributes: this._variableDataService.getSetAttributes(CoreSetId.IncidentReport),
@@ -142,7 +142,7 @@ export class ReportsComponent implements OnInit {
         {
           index: 0,
           item: new Column<MappedVariableDataEntity>({
-            header: 'UI.LABEL.ID.SHORT.SINGULAR',
+            header: 'LABEL.ID.SHORT.SINGULAR',
             valueResolver: item => item.Id.toString(),
           }),
         },
@@ -154,11 +154,11 @@ export class ReportsComponent implements OnInit {
           actions: [
             {
               type: 'button',
-              label: this._localization.translate('UI.ACTION.VIEW'),
+              label: this._localization.translate('ACTION.VIEW.TITLE'),
               show: () => true,
               onClick: entity => {
                 this._modal.open(ModalEntityViewComponent, {
-                  title: 'UI.LABEL.ARREST_REPORT.SINGULAR',
+                  title: 'LABEL.ARREST_REPORT.SINGULAR',
                   columns: 2,
                 }, new Map().set(ENTITY, entity).set(ATTRIBUTES, wrapper.attributes))
                   .result
@@ -168,13 +168,13 @@ export class ReportsComponent implements OnInit {
             },
             {
               type: 'button',
-              label: this._localization.translate('UI.ACTION.EDIT'),
+              label: this._localization.translate('ACTION.EDIT.TITLE'),
               show: () => this._userService.userIsDepartmentManagerOrAdmin(),
               onClick: entity => {
                 this.modalFormService.open({
-                    title: 'UI.ACTION.EDIT',
+                    title: 'ACTION.EDIT.TITLE',
                     buttons: {
-                      submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                      submit: {variant: 'primary', label: 'ACTION.SAVE.TITLE'},
                     },
                     columns: 2,
                     fields: (updatedEntity, _, coreAttributeDropdownItems) => mapCoreAttributesToFields({
@@ -195,14 +195,14 @@ export class ReportsComponent implements OnInit {
             },
             {
               type: 'button',
-              label: this._localization.translate('UI.ACTION.DELETE'),
+              label: this._localization.translate('ACTION.DELETE.TITLE'),
               show: () => this._userService.userIsDepartmentManagerOrAdmin(),
               onClick: item => {
                 this.modalConfirmService.open({
-                  title: 'UI.LABEL.ARREST_REPORT.DELETE.TITLE',
-                  description: this._localization.translate('UI.LABEL.ARREST_REPORT.DELETE.DESCRIPTION'),
+                  title: 'LABEL.ARREST_REPORT.DELETE.TITLE',
+                  description: this._localization.translate('LABEL.ARREST_REPORT.DELETE.DESCRIPTION'),
                   buttons: {
-                    submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                    submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
                   },
                 }).result
                   .pipe(
@@ -230,7 +230,7 @@ export class ReportsComponent implements OnInit {
         {
           index: 0,
           item: new Column<MappedVariableDataEntity>({
-            header: 'UI.LABEL.ID.SHORT.SINGULAR',
+            header: 'LABEL.ID.SHORT.SINGULAR',
             valueResolver: item => item.Id.toString(),
           }),
         },
@@ -249,11 +249,11 @@ export class ReportsComponent implements OnInit {
           actions: [
             {
               type: 'button',
-              label: this._localization.translate('UI.ACTION.VIEW'),
+              label: this._localization.translate('ACTION.VIEW.TITLE'),
               show: () => true,
               onClick: entity => {
                 this._modal.open(ModalEntityViewComponent, {
-                  title: 'UI.LABEL.INCIDENT_REPORT.SINGULAR',
+                  title: 'LABEL.INCIDENT_REPORT.SINGULAR',
                 }, new Map().set(ENTITY, entity).set(ATTRIBUTES, wrapper.attributes))
                   .result
                   .pipe(this._modal.close())
@@ -262,13 +262,13 @@ export class ReportsComponent implements OnInit {
             },
             {
               type: 'button',
-              label: this._localization.translate('UI.ACTION.EDIT'),
+              label: this._localization.translate('ACTION.EDIT.TITLE'),
               show: () => this._userService.userIsDepartmentManagerOrAdmin(),
               onClick: entity => {
                 this.modalFormService.open({
-                    title: 'UI.ACTION.EDIT',
+                    title: 'ACTION.EDIT.TITLE',
                     buttons: {
-                      submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                      submit: {variant: 'primary', label: 'ACTION.SAVE.TITLE'},
                     },
                     fields: (updatedEntity, _, coreAttributeDropdownItems) => mapCoreAttributesToFields({
                       attributes: this._variableDataService.getSetAttributes(entity.SetId),
@@ -288,14 +288,14 @@ export class ReportsComponent implements OnInit {
             },
             {
               type: 'button',
-              label: this._localization.translate('UI.ACTION.DELETE'),
+              label: this._localization.translate('ACTION.DELETE.TITLE'),
               show: () => this._userService.userIsDepartmentManagerOrAdmin(),
               onClick: item => {
                 this.modalConfirmService.open({
-                  title: 'UI.LABEL.INCIDENT_REPORT.DELETE.TITLE',
-                  description: this._localization.translate('UI.LABEL.INCIDENT_REPORT.DELETE.DESCRIPTION'),
+                  title: 'LABEL.INCIDENT_REPORT.DELETE.TITLE',
+                  description: this._localization.translate('LABEL.INCIDENT_REPORT.DELETE.DESCRIPTION'),
                   buttons: {
-                    submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                    submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
                   },
                 }).result
                   .pipe(

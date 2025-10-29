@@ -27,16 +27,16 @@ export class CalloutsComponent {
 
   readonly columns: Column<CalloutDetails>[] = [
     new Column({
-      header: 'UI.LABEL.NAME.SINGULAR',
+      header: 'LABEL.NAME.SINGULAR',
       accessorKey: 'TypeName',
     }),
     new Column({
-      header: 'UI.LABEL.ASSEMBLY_NAME.SINGULAR',
+      header: 'LABEL.ASSEMBLY_NAME.SINGULAR',
       accessorKey: 'AssemblyName',
     }),
     new Column({
-      header: 'UI.LABEL.ACTIVE',
-      valueResolver: item => this._localizationService.translate(item.Active ? 'UI.LABEL.YES' : 'UI.LABEL.NO'),
+      header: 'LABEL.ACTIVE.TITLE',
+      valueResolver: item => this._localizationService.translate(item.Active ? 'LABEL.YES.TITLE' : 'LABEL.NO.TITLE'),
       badgeResolver: item => item.Active ? 'green' : 'red'
     }),
   ];

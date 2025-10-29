@@ -23,79 +23,79 @@ export class AttributeGridOptions {
   private readonly _modalConfirmService = inject(ModalConfirmService);
   private readonly _localizationService = inject(LocalizationService);
 
-  valueResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): string => this._localizationService.translate(item[key] ? 'UI.LABEL.YES' : 'UI.LABEL.NO');
+  valueResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): string => this._localizationService.translate(item[key] ? 'LABEL.YES.TITLE' : 'UI.LABEL.NO');
   badgeResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): BadgeVariants => item[key] ? 'green' : 'gray';
 
   createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<VariableDataAttribute>[] {
     return [
       {
-        header: this._localizationService.translate('UI.LABEL.NAME.SINGULAR'),
+        header: this._localizationService.translate('LABEL.NAME.SINGULAR'),
         show: () => true,
         accessorKey: 'Name',
       },
       {
-        header: this._localizationService.translate('UI.LABEL.TYPE.SINGULAR'),
+        header: this._localizationService.translate('LABEL.TYPE.SINGULAR'),
         show: () => true,
         valueResolver: attr => {
           switch (attr.DataType) {
             case AttributeDataType.ShortString:
-              return this._localizationService.translate('UI.LABEL.SHORT_TEXT.SINGULAR');
+              return this._localizationService.translate('LABEL.SHORT_TEXT.SINGULAR');
             case AttributeDataType.LongString:
-              return this._localizationService.translate('UI.LABEL.LONG_TEXT.SINGULAR');
+              return this._localizationService.translate('LABEL.LONG_TEXT.SINGULAR');
             case AttributeDataType.Integer:
-              return this._localizationService.translate('UI.LABEL.WHOLE_NUMBER.SINGULAR');
+              return this._localizationService.translate('LABEL.WHOLE_NUMBER.SINGULAR');
             case AttributeDataType.Bool:
-              return this._localizationService.translate('UI.LABEL.CHECKBOX.SINGULAR');
+              return this._localizationService.translate('LABEL.CHECKBOX.SINGULAR');
             case AttributeDataType.Date:
-              return this._localizationService.translate('UI.LABEL.DATE.SINGULAR');
+              return this._localizationService.translate('LABEL.DATE.TITLE.SINGULAR');
             case AttributeDataType.IntegerList:
-              return this._localizationService.translate('UI.LABEL.WHOLE_NUMBER_LIST.SINGULAR');
+              return this._localizationService.translate('LABEL.WHOLE_NUMBER_LIST.SINGULAR');
             default:
               return '-';
           }
         },
       },
       {
-        header: this._localizationService.translate('UI.LABEL.HIDDEN.TITLE'),
+        header: this._localizationService.translate('LABEL.HIDDEN.TITLE'),
         show: () => true,
         valueResolver: item => this.valueResolver(item, 'Hidden'),
         badgeResolver: item => this.badgeResolver(item, 'Hidden'),
       },
       {
-        header: this._localizationService.translate('UI.LABEL.READONLY.TITLE'),
+        header: this._localizationService.translate('LABEL.READONLY.TITLE'),
         show: () => true,
         valueResolver: item => this.valueResolver(item, 'Readonly'),
         badgeResolver: item => this.badgeResolver(item, 'Readonly'),
       },
       {
-        header: this._localizationService.translate('UI.LABEL.REQUIRED'),
+        header: this._localizationService.translate('LABEL.REQUIRED.TITLE'),
         show: () => true,
         valueResolver: item => this.valueResolver(item, 'Required'),
         badgeResolver: item => this.badgeResolver(item, 'Required'),
       },
       {
-        header: this._localizationService.translate('UI.LABEL.SHOW_IN_GRID.TITLE'),
+        header: this._localizationService.translate('LABEL.SHOW_IN_GRID.TITLE'),
         show: () => true,
         valueResolver: item => this.valueResolver(item, 'ShowInGrid'),
         badgeResolver: item => this.badgeResolver(item, 'ShowInGrid'),
       },
       {
-        header: this._localizationService.translate('UI.LABEL.ADDED_BY'),
+        header: this._localizationService.translate('LABEL.ADDED_BY'),
         show: () => true,
         accessorKey: 'AddonId',
       },
       {
-        header: this._localizationService.translate('UI.LABEL.ACTION.PLURAL'),
+        header: this._localizationService.translate('LABEL.ACTION.PLURAL'),
         show: () => this._userService.userHasRole(UserRole.Admin),
         actions: [
           {
             type: 'button',
-            label: this._localizationService.translate('UI.ACTION.EDIT'),
+            label: this._localizationService.translate('ACTION.EDIT.TITLE'),
             onClick: attribute => {
               this._modalFormService.open({
-                title: 'UI.LABEL.ATTRIBUTE.EDIT',
+                title: 'LABEL.ATTRIBUTE.EDIT',
                 buttons: {
-                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                  submit: {variant: 'primary', label: 'ACTION.SAVE.TITLE'},
                 },
                 fields: updatedAttribute => createAttributesFormFields(this._localizationService, updatedAttribute),
                 valueResolver: new ValueResolver<VariableDataAttribute>(attribute, this._variableDataService.getSetAttribute(set, attribute.Id))
@@ -119,16 +119,16 @@ export class AttributeGridOptions {
           },
           {
             type: 'button',
-            label: this._localizationService.translate('UI.ACTION.DELETE'),
+            label: this._localizationService.translate('ACTION.DELETE.TITLE'),
             onClick: item => {
               this._modalConfirmService.open({
-                title: 'UI.LABEL.ATTRIBUTE.DELETE.TITLE',
-                description: this._localizationService.translate('UI.LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {
+                title: 'LABEL.ATTRIBUTE.DELETE.TITLE',
+                description: this._localizationService.translate('LABEL.ATTRIBUTE.DELETE.DESCRIPTION', {
                   attribute: item.Name,
                   set
                 }),
                 buttons: {
-                  submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                  submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
                 },
               }).result
                 .pipe(
@@ -146,16 +146,16 @@ export class AttributeGridOptions {
   createButtons(set: string, onCreate: () => void): Button[] {
     return [
       {
-        label: this._localizationService.translate('UI.ACTION.CREATE_ATTRIBUTE.TITLE'),
+        label: this._localizationService.translate('LABEL.ATTRIBUTE.CREATE.TITLE'),
         show: () => true,
         disabled: () => false,
         onClick: () => {
           this._modalFormService.open({
-            title: 'UI.ACTION.CREATE_ATTRIBUTE.TITLE',
-            description: this._localizationService.translate('UI.ACTION.CREATE_ATTRIBUTE.DESCRIPTION', {set}, false),
+            title: 'LABEL.ATTRIBUTE.CREATE.TITLE',
+            description: this._localizationService.translate('LABEL.ATTRIBUTE.TITLE.DESCRIPTION', {set}, false),
             columns: 2,
             buttons: {
-              submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+              submit: {variant: 'primary', label: 'ACTION.CREATE.TITLE'},
             },
             fields: () => createAttributesFormFields(this._localizationService)
           }).result

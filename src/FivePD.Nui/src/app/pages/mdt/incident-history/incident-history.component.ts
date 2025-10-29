@@ -23,28 +23,28 @@ export class IncidentHistoryComponent implements OnInit {
   };
   incidentHistoryPageColumnDef: Column<IncidentHistory>[] = [
     new Column({
-      header: 'UI.LABEL.ID.SHORT.SINGULAR',
+      header: 'LABEL.ID.SHORT.SINGULAR',
       accessorKey: 'Id',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.ID',
+        label: 'LABEL.SEARCH_BY.ID',
       }
     }),
     new Column({
-      header: 'UI.LABEL.TITLE.SINGULAR',
+      header: 'LABEL.TITLE.SINGULAR',
       accessorKey: 'Title',
       filter: {
-        label: 'UI.LABEL.SEARCH_BY.TITLE',
+        label: 'LABEL.SEARCH_BY.TITLE',
       },
     }),
     new Column({
-      header: 'UI.LABEL.TYPE.SINGULAR',
+      header: 'LABEL.TYPE.SINGULAR',
       accessorKey: 'Type',
-      valueResolver: item => this._localizationService.translate(item.Type === FIncidentType.Callout ? 'UI.LABEL.CALLOUT.SINGULAR' : 'UI.LABEL.TRAFFIC_STOP.SINGULAR'),
+      valueResolver: item => this._localizationService.translate(item.Type === FIncidentType.Callout ? 'LABEL.CALLOUT.SINGULAR' : 'LABEL.TRAFFIC_STOP.SINGULAR'),
       filter: {
-        label: this._localizationService.translate('UI.LABEL.SEARCH_BY.TYPE'),
+        label: this._localizationService.translate('LABEL.SEARCH_BY.TYPE'),
         dropdown: [
-          {key: FIncidentType.Callout, label: this._localizationService.translate('UI.LABEL.CALLOUT.SINGULAR')},
-          {key: FIncidentType.TrafficStop, label: this._localizationService.translate('UI.LABEL.TRAFFIC_STOP.SINGULAR')},
+          {key: FIncidentType.Callout, label: this._localizationService.translate('LABEL.CALLOUT.SINGULAR')},
+          {key: FIncidentType.TrafficStop, label: this._localizationService.translate('LABEL.TRAFFIC_STOP.SINGULAR')},
         ]
       }
     }),
@@ -54,11 +54,11 @@ export class IncidentHistoryComponent implements OnInit {
     //   actions: [
     //     {
     //       type: 'button',
-    //       label: this._localizationService.translate('UI.ACTION.VIEW'),
+    //       label: this._localizationService.translate('ACTION.VIEW.TITLE'),
     //       show: () => true,
     //       onClick: entity => {
     //         this._modalService.open(ModalEntityViewComponent, {
-    //           title: 'UI.LABEL.ARREST_REPORT.SINGULAR',
+    //           title: 'LABEL.ARREST_REPORT.SINGULAR',
     //           columns: 2,
     //         }, new Map().set(ENTITY, entity).set(ATTRIBUTES, wrapper.attributes));
     //       }

@@ -69,8 +69,8 @@ public sealed class LoadoutSelectorMenu : Menu
         var items = new List<MenuItem>();
 
         this.LoadoutItem = new MenuListItem(
-            "UI.MENU.LOADOUT.GET.TITLE",
-            "UI.MENU.LOADOUT.GET.DESCRIPTION",
+            "LABEL.MENU.LOADOUT.GET.TITLE",
+            "LABEL.MENU.LOADOUT.GET.DESCRIPTION",
             this._loadoutConfigService.GetAll().Select(loadout => new MenuListOption(loadout.Name)).ToList());
         this.LoadoutItem.OnSelect += async (player, index) =>
         {

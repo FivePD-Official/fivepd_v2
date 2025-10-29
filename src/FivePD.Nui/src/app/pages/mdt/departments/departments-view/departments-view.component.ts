@@ -205,36 +205,36 @@ export class DepartmentsViewComponent implements OnInit {
   private createDivisionsColumns(): Column<Division>[] {
     const columns: Column<Division>[] = [
       new Column<Division>({
-        header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+        header: this._localization.translate('LABEL.NAME.SINGULAR'),
         accessorKey: 'Name',
         filter: {
-          label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
+          label: this._localization.translate('LABEL.SEARCH_BY.NAME'),
         },
       }),
     ];
 
     if (this.mode === 'edit' && this.userService.userIsDepartmentManagerOrAdmin()) {
       columns.push(new Column<Division>({
-        header: this._localization.translate('UI.LABEL.ACTION.PLURAL'),
+        header: this._localization.translate('LABEL.ACTION.PLURAL'),
         actions: [
           {
             type: 'button',
-            label: this._localization.translate('UI.ACTION.EDIT'),
+            label: this._localization.translate('ACTION.EDIT.TITLE'),
             onClick: division => {
               this._modalFormService.open<Division>({
-                title: 'UI.LABEL.DIVISION.EDIT',
+                title: 'LABEL.DIVISION.EDIT',
                 fields: updatedDivision => [
                   new TextField({
                     key: 'Name',
-                    label: 'UI.LABEL.NAME.SINGULAR',
-                    placeholder: 'UI.LABEL.NAME.SINGULAR',
+                    label: 'LABEL.NAME.SINGULAR',
+                    placeholder: 'LABEL.NAME.SINGULAR',
                     required: true,
                     value: updatedDivision?.Name,
                   })
                 ],
                 valueResolver: new ValueResolver(division, this._departmentService.getDivision(division.Id)),
                 buttons: {
-                  submit: {variant: 'primary', label: 'UI.ACTION.SAVE'},
+                  submit: {variant: 'primary', label: 'ACTION.SAVE.TITLE'},
                 },
               }).result
                 .pipe(
@@ -249,13 +249,13 @@ export class DepartmentsViewComponent implements OnInit {
           },
           {
             type: 'button',
-            label: this._localization.translate('UI.ACTION.DELETE'),
+            label: this._localization.translate('ACTION.DELETE.TITLE'),
             onClick: division => {
               this._modalConfirmService.open({
-                title: 'UI.LABEL.DIVISION.DELETE.TITLE',
-                description: this._localization.translate('UI.LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
+                title: 'LABEL.DIVISION.DELETE.TITLE',
+                description: this._localization.translate('LABEL.DIVISION.DELETE.DESCRIPTION', {division: `<b>${division.Name}</b>`}),
                 buttons: {
-                  submit: {variant: 'danger', label: 'UI.ACTION.DELETE'},
+                  submit: {variant: 'danger', label: 'ACTION.DELETE.TITLE'},
                 },
               }).result
                 .pipe(
@@ -277,22 +277,22 @@ export class DepartmentsViewComponent implements OnInit {
 
     if (this.mode === 'edit' && this.userService.userIsDepartmentManagerOrAdmin()) {
       buttons.push({
-        label: this._localization.translate('UI.ACTION.CREATE_DIVISION'),
+        label: this._localization.translate('LABEL.DIVISION.CREATE'),
         show: () => true,
         disabled: () => false,
         onClick: () => {
           this._modalFormService.open({
-            title: 'UI.ACTION.CREATE_DIVISION',
+            title: 'LABEL.DIVISION.CREATE',
             fields: () => [
               new TextField({
                 key: 'Name',
-                label: 'UI.LABEL.NAME.SINGULAR',
-                placeholder: 'UI.LABEL.NAME.SINGULAR',
+                label: 'LABEL.NAME.SINGULAR',
+                placeholder: 'LABEL.NAME.SINGULAR',
                 required: true,
               })
             ],
             buttons: {
-              submit: {variant: 'primary', label: 'UI.ACTION.CREATE'},
+              submit: {variant: 'primary', label: 'ACTION.CREATE.TITLE'},
             },
           }).result
             .pipe(
@@ -313,17 +313,17 @@ export class DepartmentsViewComponent implements OnInit {
   private createUsersColumns(): Column<FormattedUser>[] {
     const columns = [
       new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.NAME.SINGULAR'),
+        header: this._localization.translate('LABEL.NAME.SINGULAR'),
         accessorKey: 'Name',
         filter: {
-          label: this._localization.translate('UI.LABEL.SEARCH_BY.NAME'),
+          label: this._localization.translate('LABEL.SEARCH_BY.NAME'),
         },
       })
     ];
 
     if (this.userService.userIsDepartmentManagerOrAdmin()) {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+        header: this._localization.translate('LABEL.CALLSIGN.TITLE'),
         accessorKey: 'Callsign',
         cellAction: {
           icon: IconType.Pencil,
@@ -353,18 +353,18 @@ export class DepartmentsViewComponent implements OnInit {
       }))
     } else {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.CALLSIGN.TITLE'),
+        header: this._localization.translate('LABEL.CALLSIGN.TITLE'),
         accessorKey: 'Callsign',
       }))
     }
 
     if (this.userService.userIsDepartmentManagerOrAdmin() || this.user?.User?.Rank?.Permission.SetRank) {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
+        header: this._localization.translate('LABEL.RANK.SINGULAR'),
         actions: [
           {
             type: 'singleSelect',
-            label: this._localization.translate('UI.LABEL.NO_RANK'),
+            label: this._localization.translate('LABEL.NO_RANK'),
             value: user => user?.RankId ?? -1,
             items: () => this.ranksDropdown,
             onSelect: (user, selectedId) => {
@@ -378,18 +378,18 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     } else {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.RANK.SINGULAR'),
+        header: this._localization.translate('LABEL.RANK.SINGULAR'),
         accessorKey: 'RankName',
       }));
     }
 
     if (this.userService.userIsDepartmentManagerOrAdmin() || this.user?.User?.Rank?.Permission.SetDivision) {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
+        header: this._localization.translate('LABEL.DIVISION.SINGULAR'),
         actions: [
           {
             type: 'singleSelect',
-            label: this._localization.translate('UI.LABEL.NO_DIVISION'),
+            label: this._localization.translate('LABEL.NO_DIVISION'),
             value: user => user?.DivisionId ?? -1,
             items: () => this.divisionsDropdown,
             onSelect: (user, selectedId) => {
@@ -403,14 +403,14 @@ export class DepartmentsViewComponent implements OnInit {
       }));
     } else {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.DIVISION.SINGULAR'),
+        header: this._localization.translate('LABEL.DIVISION.SINGULAR'),
         accessorKey: 'DivisionName',
       }));
     }
 
     if (this.generalConfig?.config.Features.ProgressionSystem) {
       columns.push(new Column<FormattedUser>({
-        header: this._localization.translate('UI.LABEL.RANK.FIXED'),
+        header: this._localization.translate('LABEL.RANK.FIXED'),
         show: () => this.userService.userIsDepartmentManagerOrAdmin(),
         actions: [
           {
@@ -434,14 +434,14 @@ export class DepartmentsViewComponent implements OnInit {
         actions: [
           {
             type: 'button',
-            label: this._localization.translate('UI.ACTION.KICK'),
+            label: this._localization.translate('ACTION.KICK.TITLE'),
             disabled: user => user ? user.Id === this.user?.User.Id : false,
             onClick: user => {
               this._modalConfirmService.open({
-                title: 'UI.ACTION.KICK',
-                description: this._localization.translate('UI.LABEL.DEPARTMENT.KICK_CONFIRMATION'),
+                title: 'ACTION.KICK.TITLE',
+                description: this._localization.translate('LABEL.DEPARTMENT.KICK_CONFIRMATION'),
                 buttons: {
-                  submit: {variant: 'danger', label: 'UI.ACTION.KICK'},
+                  submit: {variant: 'danger', label: 'ACTION.KICK.TITLE'},
                 },
               }).result
                 .pipe(
@@ -614,23 +614,23 @@ export class DepartmentsViewComponent implements OnInit {
       new TextField({
         key: 'Name',
         required: true,
-        label: 'UI.LABEL.NAME.SINGULAR',
+        label: 'LABEL.NAME.SINGULAR',
         asyncValidators: [CustomValidators.nameShouldNotBeTaken(value => this._departmentService.checkIfDepartmentNameTaken(value, this.department!.Id, true))],
         value: this.department.Name,
       }),
       new NumberField({
         key: 'MaxUsers',
-        label: 'UI.LABEL.MAX_MEMBERS.TITLE',
+        label: 'LABEL.MAX_MEMBERS.TITLE',
         required: true,
         value: this.department.MaxUsers,
-        helpLabel: 'UI.LABEL.MAX_MEMBERS.HELP_LABEL',
+        helpLabel: 'LABEL.MAX_MEMBERS.HELP_LABEL',
       }),
       new SingleSelectField({
         key: 'DefaultRankId',
-        label: 'UI.LABEL.DEFAULT_RANK.TITLE',
+        label: 'LABEL.DEFAULT_RANK.TITLE',
         required: false,
-        helpLabel: 'UI.LABEL.DEFAULT_RANK.DESCRIPTION',
-        defaultItemLabel: this._localization.translate('UI.LABEL.NO_DEFAULT_RANK'),
+        helpLabel: 'LABEL.DEFAULT_RANK.DESCRIPTION',
+        defaultItemLabel: this._localization.translate('LABEL.NO_DEFAULT_RANK'),
         value: this.department?.DefaultRankId ?? -1,
         items: () => this.ranksDropdown,
         size: 'normal',
@@ -638,8 +638,8 @@ export class DepartmentsViewComponent implements OnInit {
       }),
       new TextField({
         key: 'Callsign',
-        label: 'UI.LABEL.CALLSIGN.TITLE',
-        helpLabel: 'UI.LABEL.CALLSIGN.HELP_LABEL',
+        label: 'LABEL.CALLSIGN.TITLE',
+        helpLabel: 'LABEL.CALLSIGN.HELP_LABEL',
         validators: [CustomValidators.onlyLetters()],
         value: this.department.Callsign,
       }),

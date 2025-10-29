@@ -35,22 +35,22 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
   return [
     new TextField({
       key: 'Name',
-      label: 'UI.LABEL.NAME.SINGULAR',
-      helpLabel: 'UI.LABEL.VEHICLE_CONFIG.NAME.HELP_LABEL',
+      label: 'LABEL.NAME.SINGULAR',
+      helpLabel: 'LABEL.VEHICLE_CONFIG.NAME.HELP_LABEL',
       required: true,
       value: vehicleConfig?.Name,
     }),
     new TextField({
       key: 'Model',
-      label: 'UI.LABEL.MODEL.SINGULAR',
-      helpLabel: 'UI.LABEL.VEHICLE_CONFIG.MODEL.HELP_LABEL',
+      label: 'LABEL.MODEL.SINGULAR',
+      helpLabel: 'LABEL.VEHICLE_CONFIG.MODEL.HELP_LABEL',
       required: true,
       value: vehicleConfig?.Model,
     }),
     new NumberField({
       key: 'Livery',
-      label: 'UI.LABEL.LIVERY.SINGULAR',
-      helpLabel: 'UI.LABEL.VEHICLE_CONFIG.LIVERY.HELP_LABEL',
+      label: 'LABEL.LIVERY.SINGULAR',
+      helpLabel: 'LABEL.VEHICLE_CONFIG.LIVERY.HELP_LABEL',
       required: false,
       value: vehicleConfig?.Livery,
       validators: [Validators.min(0)],
@@ -60,7 +60,7 @@ function createBaseFields(vehicleConfig?: VehicleConfig): FormInputBase<any>[] {
     }),
     new MultiSelectField({
       key: 'Extras',
-      label: 'UI.LABEL.EXTRA.PLURAL',
+      label: 'LABEL.EXTRA.PLURAL',
       defaultItemLabel: '',
       addDefaultItem: false,
       value: vehicleConfig?.Extras,
@@ -85,14 +85,14 @@ function createTowTruckFields(localizationService: LocalizationService, vehicleC
     ...createBaseFields(vehicleConfig),
     new CheckboxField({
       key: 'SirenActive',
-      label: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.SIREN_ACTIVE.LABEL'),
-      helpLabel: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.SIREN_ACTIVE.HELP_LABEL'),
+      label: localizationService.translate('LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.SIREN_ACTIVE.LABEL'),
+      helpLabel: localizationService.translate('LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.SIREN_ACTIVE.HELP_LABEL'),
       required: true,
       value: vehicleConfig?.Options['SirenActive'],
     }),
     new PositionField({
       key: 'TowedVehiclePositionOffset',
-      label: localizationService.translate('UI.LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.TOWED_VEHICLE_POSITION_OFFSET.LABEL'),
+      label: localizationService.translate('LABEL.VEHICLE_CONFIG.TYPE.TOW.OPTIONS.TOWED_VEHICLE_POSITION_OFFSET.LABEL'),
       required: true,
       validators: [CustomValidators.positionComponentsRequired()],
       value: towedVehiclePositionOffset ? towedVehiclePositionOffset : undefined,
@@ -132,17 +132,17 @@ export class VehicleSettingsComponent {
   private readonly _localizationService = inject(LocalizationService);
 
   readonly nameColumn = new Column<VehicleConfig>({
-    header: 'UI.LABEL.NAME.SINGULAR',
+    header: 'LABEL.NAME.SINGULAR',
     accessorKey: "Name",
     filter: {
-      label: 'UI.LABEL.SEARCH_BY.NAME',
+      label: 'LABEL.SEARCH_BY.NAME',
     }
   });
   readonly modelColumn = new Column<VehicleConfig>({
-    header: 'UI.LABEL.MODEL.SINGULAR',
+    header: 'LABEL.MODEL.SINGULAR',
     accessorKey: "Model",
     filter: {
-      label: 'UI.LABEL.SEARCH_BY.MODEL',
+      label: 'LABEL.SEARCH_BY.MODEL',
     }
   });
 
@@ -163,14 +163,14 @@ export class VehicleSettingsComponent {
     this.createActionsColumn(createBaseFields, () => this.policeVehicleConfigCollation$.next(this.policeVehicleConfigCollation$.value)),
     // TODO
     // new Column<VehicleConfig>({
-    //   header: 'UI.LABEL.DEPARTMENT.SINGULAR',
+    //   header: 'LABEL.DEPARTMENT.SINGULAR',
     //   accessorKey: "Department",
     //   filter: {
-    //     label: 'UI.LABEL.SEARCH_BY.DEPARTMENT',
+    //     label: 'LABEL.SEARCH_BY.DEPARTMENT',
     //   }
     // }),
     // new Column<VehicleConfig>({
-    //   header: 'UI.LABEL.DIVISION.SINGULAR',
+    //   header: 'LABEL.DIVISION.SINGULAR',
     //   accessorKey: "Division",
     // }),
   ];
@@ -214,22 +214,22 @@ export class VehicleSettingsComponent {
 
   private createActionsColumn(fields: (vehicleConfig: VehicleConfig | undefined) => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<VehicleConfig> {
     return new Column<VehicleConfig>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.EDIT',
+          label: 'ACTION.EDIT.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: vehicleConfig => {
             this._modalFormService.open({
-              title: 'UI.LABEL.VEHICLE_CONFIG.EDIT.TITLE',
+              title: 'LABEL.VEHICLE_CONFIG.EDIT.TITLE',
               fields: updatedVehicleConfig => fields(updatedVehicleConfig),
               valueResolver: new ValueResolver(vehicleConfig, this._vehicleConfigService.get(vehicleConfig.Id)),
               buttons: {
                 submit: {
                   variant: 'primary',
-                  label: 'UI.ACTION.SAVE',
+                  label: 'ACTION.SAVE.TITLE',
                 },
               },
             }).result
@@ -246,16 +246,16 @@ export class VehicleSettingsComponent {
         },
         {
           type: 'button',
-          label: 'UI.ACTION.DELETE',
+          label: 'ACTION.DELETE.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: vehicleConfig => this._modalConfirmService.open({
-            title: 'UI.LABEL.VEHICLE_CONFIG.DELETE.TITLE',
-            description: this._localizationService.translate('UI.LABEL.VEHICLE_CONFIG.DELETE.DESCRIPTION', {name: vehicleConfig.Name}),
+            title: 'LABEL.VEHICLE_CONFIG.DELETE.TITLE',
+            description: this._localizationService.translate('LABEL.VEHICLE_CONFIG.DELETE.DESCRIPTION', {name: vehicleConfig.Name}),
             buttons: {
               submit: {
                 variant: 'danger',
-                label: 'UI.ACTION.DELETE',
+                label: 'ACTION.DELETE.TITLE',
               },
             },
           }).result
@@ -271,16 +271,16 @@ export class VehicleSettingsComponent {
 
   private createAddVehicleButton(type: VehicleConfigType, fields: () => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Button {
     return {
-      label: this._localizationService.translate('UI.LABEL.VEHICLE_CONFIG.CREATE.TITLE'),
+      label: this._localizationService.translate('LABEL.VEHICLE_CONFIG.CREATE.TITLE'),
       show: () => true,
       disabled: () => false,
       onClick: () => this._modalFormService.open({
-        title: 'UI.LABEL.VEHICLE_CONFIG.CREATE.TITLE',
+        title: 'LABEL.VEHICLE_CONFIG.CREATE.TITLE',
         fields,
         buttons: {
           submit: {
             variant: 'primary',
-            label: 'UI.ACTION.CREATE',
+            label: 'ACTION.CREATE.TITLE',
           },
         },
       }).result

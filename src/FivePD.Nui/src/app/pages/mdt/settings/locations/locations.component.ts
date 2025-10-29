@@ -33,10 +33,10 @@ export class LocationsComponent implements OnInit {
   protected generalConfig?: GeneralConfig;
 
   readonly nameColumn = new Column<Location>({
-    header: 'UI.LABEL.NAME.SINGULAR',
+    header: 'LABEL.NAME.SINGULAR',
     accessorKey: "Name",
     filter: {
-      label: 'UI.LABEL.SEARCH_BY.NAME',
+      label: 'LABEL.SEARCH_BY.NAME',
     }
   });
   readonly positionXColumn = new Column<Location>({
@@ -110,22 +110,22 @@ export class LocationsComponent implements OnInit {
 
   private createActionsColumn(onResponse: () => void): Column<Location> {
     return new Column<Location>({
-      header: 'UI.LABEL.ACTION.PLURAL',
+      header: 'LABEL.ACTION.PLURAL',
       actions: [
         {
           type: 'button',
-          label: 'UI.ACTION.DELETE',
+          label: 'ACTION.DELETE.TITLE',
           show: () => true,
           disabled: () => false,
           onClick: location => this._modalConfirmService.open({
-            title: 'UI.LABEL.LOCATION.DELETE.TITLE',
-            description: this._localizationService.translate('UI.LABEL.LOCATION.DELETE.DESCRIPTION', {
+            title: 'LABEL.LOCATION.DELETE.TITLE',
+            description: this._localizationService.translate('LABEL.LOCATION.DELETE.DESCRIPTION', {
               name: location.Name,
             }),
             buttons: {
               submit: {
                 variant: 'danger',
-                label: 'UI.ACTION.DELETE',
+                label: 'ACTION.DELETE.TITLE',
               },
             },
           }).result
@@ -141,13 +141,13 @@ export class LocationsComponent implements OnInit {
 
   private createAddLocationButton(type: LocationType, onResponse: () => void): Button {
     return {
-      label: 'UI.LABEL.LOCATION.CREATE.TITLE',
+      label: 'LABEL.LOCATION.CREATE.TITLE',
       show: () => true,
       disabled: () => false,
       onClick: () => this._devToolsService.getCurrentPlayerPosition().pipe(
         switchMap(playerPosition => this._modalFormService.open({
-          title: 'UI.LABEL.LOCATION.CREATE.TITLE',
-          description: this._localizationService.translate('UI.LABEL.LOCATION.CREATE.DESCRIPTION'),
+          title: 'LABEL.LOCATION.CREATE.TITLE',
+          description: this._localizationService.translate('LABEL.LOCATION.CREATE.DESCRIPTION'),
           fields: () => [
             new TextField({
               key: 'Name',
@@ -176,7 +176,7 @@ export class LocationsComponent implements OnInit {
           buttons: {
             submit: {
               variant: 'primary',
-              label: 'UI.ACTION.CREATE',
+              label: 'ACTION.CREATE.TITLE',
             },
           },
         }).result),

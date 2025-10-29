@@ -108,7 +108,7 @@ public class LoadoutConfigService : ILoadoutConfigService
         this._databaseContext.LoadoutConfigs.Add(loadoutConfig);
         this._databaseContext.SaveChanges();
 
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.CREATE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.CREATE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CREATE", "LABEL.LOADOUT_CONFIG.SUCCESS.CREATE");
         this.SendNewMenuItems();
     }
 
@@ -157,7 +157,7 @@ public class LoadoutConfigService : ILoadoutConfigService
         }
 
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.EDIT", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.EDIT");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.LOADOUT_CONFIG.SUCCESS.EDIT");
         this.SendNewMenuItems();
     }
 
@@ -175,7 +175,7 @@ public class LoadoutConfigService : ILoadoutConfigService
 
         this._databaseContext.LoadoutConfigs.Remove(loadout);
         this._databaseContext.SaveChanges();
-        this._networkEventService.TriggerEventWithResponse(player, guid, true, "UI.LABEL.SUCCESS.DELETE", "UI.LABEL.LOADOUT_CONFIG.SUCCESS.DELETE");
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.LOADOUT_CONFIG.SUCCESS.DELETE");
         this.SendNewMenuItems();
     }
     
