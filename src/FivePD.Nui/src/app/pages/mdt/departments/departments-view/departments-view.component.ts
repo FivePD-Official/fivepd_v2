@@ -277,12 +277,12 @@ export class DepartmentsViewComponent implements OnInit {
 
     if (this.mode === 'edit' && this.userService.userIsDepartmentManagerOrAdmin()) {
       buttons.push({
-        label: this._localization.translate('ACTION.CREATE.DIVISION.TITLE'),
+        label: this._localization.translate('LABEL.DIVISION.CREATE'),
         show: () => true,
         disabled: () => false,
         onClick: () => {
           this._modalFormService.open({
-            title: 'ACTION.CREATE.DIVISION.TITLE',
+            title: 'LABEL.DIVISION.CREATE',
             fields: () => [
               new TextField({
                 key: 'Name',

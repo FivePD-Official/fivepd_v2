@@ -94,25 +94,25 @@ export class RankOptions {
 
                   fields.push(new CheckboxField({
                     key: 'DepartmentManager',
-                    label: this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
-                    helpLabel: this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
+                    label: this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
+                    helpLabel: this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
                     value: updatedRank?.Permission?.DepartmentManager,
                   }));
                   fields.push(new CheckboxField({
                     key: 'Kick',
-                    label: this._localizationService.translate('UI.RANK.PERMISSION.KICK.TITLE'),
+                    label: this._localizationService.translate('LABEL.RANK.PERMISSION.KICK.TITLE'),
                     value: updatedRank?.Permission?.Kick,
                     show: form => !form.value['DepartmentManager'],
                   }));
                   fields.push(new CheckboxField({
                     key: 'SetRank',
-                    label: this._localizationService.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'),
+                    label: this._localizationService.translate('LABEL.RANK.PERMISSION.SET_RANK.TITLE'),
                     value: updatedRank?.Permission?.SetRank,
                     show: form => !form.value['DepartmentManager'],
                   }));
                   fields.push(new CheckboxField({
                     key: 'SetDivision',
-                    label: this._localizationService.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'),
+                    label: this._localizationService.translate('LABEL.RANK.PERMISSION.SET_DIVISION.TITLE'),
                     value: updatedRank?.Permission?.SetDivision,
                     show: form => !form.value['DepartmentManager'],
                   }));
@@ -189,22 +189,22 @@ export class RankOptions {
 
             fields.push(new CheckboxField({
               key: 'DepartmentManager',
-              label: this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
-              helpLabel: this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
+              label: this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'),
+              helpLabel: this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.HELP_LABEL'),
             }));
             fields.push(new CheckboxField({
               key: 'Kick',
-              label: this._localizationService.translate('UI.RANK.PERMISSION.KICK.TITLE'),
+              label: this._localizationService.translate('LABEL.RANK.PERMISSION.KICK.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
             fields.push(new CheckboxField({
               key: 'SetRank',
-              label: this._localizationService.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'),
+              label: this._localizationService.translate('LABEL.RANK.PERMISSION.SET_RANK.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
             fields.push(new CheckboxField({
               key: 'SetDivision',
-              label: this._localizationService.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'),
+              label: this._localizationService.translate('LABEL.RANK.PERMISSION.SET_DIVISION.TITLE'),
               show: form => !form.value['DepartmentManager'],
             }));
 
@@ -241,16 +241,16 @@ export class RankOptions {
     const permissions: string[] = [];
 
     if (rank.Permission.Kick) {
-      permissions.push(this._localizationService.translate('UI.RANK.PERMISSION.KICK.TITLE'));
+      permissions.push(this._localizationService.translate('LABEL.RANK.PERMISSION.KICK.TITLE'));
     }
     if (rank.Permission.SetRank) {
-      permissions.push(this._localizationService.translate('UI.RANK.PERMISSION.SET_RANK.TITLE'));
+      permissions.push(this._localizationService.translate('LABEL.RANK.PERMISSION.SET_RANK.TITLE'));
     }
     if (rank.Permission.SetDivision) {
-      permissions.push(this._localizationService.translate('UI.RANK.PERMISSION.SET_DIVISION.TITLE'));
+      permissions.push(this._localizationService.translate('LABEL.RANK.PERMISSION.SET_DIVISION.TITLE'));
     }
     if (rank.Permission.DepartmentManager) {
-      permissions.push(this._localizationService.translate('UI.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'));
+      permissions.push(this._localizationService.translate('LABEL.RANK.PERMISSION.DEPARTMENT_MANAGER.TITLE'));
     }
 
     return permissions.length > 0 ? permissions.join(', ') : '-';

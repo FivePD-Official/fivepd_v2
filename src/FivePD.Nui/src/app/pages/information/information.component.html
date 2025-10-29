@@ -54,13 +54,13 @@
       <div class="flex flex-col">
         <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.DUTY_STATUS.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">
-          {{ (information.DutyStatus === FDutyStatus.OnDuty ? 'PLAYER_STATUS.ON_DUTY.GENERIC' : 'PLAYER_STATUS.OFF_DUTY.GENERIC') | translate }}
+          {{ (information.DutyStatus === FDutyStatus.OnDuty ? 'LABEL.PLAYER_STATUS.ON_DUTY' : 'LABEL.PLAYER_STATUS.OFF_DUTY') | translate }}
         </p>
       </div>
       <div class="flex flex-col">
         <p class="font-medium text-sm text-zinc-400 mb-1">{{ 'LABEL.AVAILABILITY.SINGULAR' | translate }}</p>
         <p class="text-zinc-200">
-          {{ (information.Availability === FPlayerAvailability.Receiving ? 'PLAYER_AVAILABILITY.RECEIVING' : 'PLAYER_AVAILABILITY.NOT_RECEIVING') | translate }}
+          {{ (information.Availability === FPlayerAvailability.Receiving ? 'LABEL.PLAYER_AVAILABILITY.RECEIVING' : 'LABEL.PLAYER_AVAILABILITY.NOT_RECEIVING') | translate }}
         </p>
       </div>
       <div class="flex flex-col">

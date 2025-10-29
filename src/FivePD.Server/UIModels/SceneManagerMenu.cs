@@ -85,7 +85,7 @@ public class SceneManagerMenu : Menu
 
     private List<MenuItem> CreateSpeedZoneItems()
     {
-        var items = new List<MenuItem> { new MenuDividerItem("UI.MENU.SCENE_MANAGER.SPEED_ZONE.TITLE") };
+        var items = new List<MenuItem> { new MenuDividerItem("LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.TITLE") };
 
         var speedList = this._configService.GeneralConfig.Menu.SceneManager.SpeedZone.Speed;
         var radiusList = this._configService.GeneralConfig.Menu.SceneManager.SpeedZone.Radius;
@@ -94,8 +94,8 @@ public class SceneManagerMenu : Menu
         this._selectedSpeedZoneRadius = radiusList.Count > 0 ? radiusList[0] : 0;
 
         var speedSelector = new MenuListItem(
-            "UI.MENU.SCENE_MANAGER.SPEED_ZONE.SPEED.TITLE",
-            "UI.MENU.SCENE_MANAGER.SPEED_ZONE.SPEED.DESCRIPTION",
+            "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.SPEED.TITLE",
+            "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.SPEED.DESCRIPTION",
             speedList.Select(x => new MenuListOption(x.ToString())).ToList());
         speedSelector.OnIndexChange += (_, index) =>
         {
@@ -105,8 +105,8 @@ public class SceneManagerMenu : Menu
         items.Add(speedSelector);
 
         var radiusSelector = new MenuListItem(
-            "UI.MENU.SCENE_MANAGER.SPEED_ZONE.RADIUS.TITLE",
-            "UI.MENU.SCENE_MANAGER.SPEED_ZONE.RADIUS.DESCRIPTION",
+            "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.RADIUS.TITLE",
+            "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.RADIUS.DESCRIPTION",
             radiusList.Select(x => new MenuListOption(x.ToString())).ToList());
         radiusSelector.OnIndexChange += (_, index) =>
         {
@@ -115,7 +115,7 @@ public class SceneManagerMenu : Menu
         };
         items.Add(radiusSelector);
 
-        this.CreateSpeedZone = new MenuButtonItem("UI.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.TITLE", "UI.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.DESCRIPTION");
+        this.CreateSpeedZone = new MenuButtonItem("LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.TITLE", "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.CREATE.DESCRIPTION");
         this.CreateSpeedZone.OnSelect += player =>
         {
             this._currentPlayer = player;
@@ -132,8 +132,8 @@ public class SceneManagerMenu : Menu
         items.Add(this.CreateSpeedZone);
 
         this.DeleteSpeedZone = new MenuButtonItem(
-            "UI.MENU.SCENE_MANAGER.SPEED_ZONE.DELETE.TITLE",
-            "UI.MENU.SCENE_MANAGER.SPEED_ZONE.DELETE.DESCRIPTION",
+            "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.DELETE.TITLE",
+            "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.DELETE.DESCRIPTION",
             false);
         this.DeleteSpeedZone.OnSelect += player =>
         {
@@ -148,8 +148,8 @@ public class SceneManagerMenu : Menu
         items.Add(this.DeleteSpeedZone);
 
         this.ReleaseTraffic = new MenuButtonItem(
-            "UI.MENU.SCENE_MANAGER.SPEED_ZONE.RELEASE.TITLE",
-            "UI.MENU.SCENE_MANAGER.SPEED_ZONE.RELEASE.DESCRIPTION",
+            "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.RELEASE.TITLE",
+            "LABEL.MENU.SCENE_MANAGER.SPEED_ZONE.RELEASE.DESCRIPTION",
             false);
         this.ReleaseTraffic.OnSelect += p =>
         {
@@ -174,10 +174,10 @@ public class SceneManagerMenu : Menu
 
     private List<MenuItem> CreateObjectPlacementItems()
     {
-        var items = new List<MenuItem> { new MenuDividerItem("UI.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.TITLE") };
+        var items = new List<MenuItem> { new MenuDividerItem("LABEL.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.TITLE") };
 
         var objects = this._configService.GeneralConfig.Menu.SceneManager.ObjectPlacement.Objects;
-        var speedSelector = new MenuListItem("UI.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.SPAWN.TITLE", string.Empty, objects
+        var speedSelector = new MenuListItem("LABEL.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.SPAWN.TITLE", string.Empty, objects
             .Select(x => new MenuListOption(x.Name.ToString()))
             .ToList());
         speedSelector.OnSelect += async (player, index) =>
@@ -192,7 +192,7 @@ public class SceneManagerMenu : Menu
         };
         items.Add(speedSelector);
 
-        var place = new MenuButtonItem("UI.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.DELETE_ALL.TITLE", string.Empty);
+        var place = new MenuButtonItem("LABEL.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.DELETE_ALL.TITLE", string.Empty);
         place.OnSelect += _ =>
         {
             foreach (var prop in this._props)
@@ -206,7 +206,7 @@ public class SceneManagerMenu : Menu
         };
         items.Add(place);
 
-        var remove = new MenuButtonItem("UI.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.DELETE_PREVIOUS.TITLE", string.Empty);
+        var remove = new MenuButtonItem("LABEL.MENU.SCENE_MANAGER.OBJECT_PLACEMENT.DELETE_PREVIOUS.TITLE", string.Empty);
         remove.OnSelect += _ =>
         {
             var lastProp = this._props.LastOrDefault();

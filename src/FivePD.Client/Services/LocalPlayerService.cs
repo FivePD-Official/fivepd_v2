@@ -221,8 +221,8 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
 
         var status = this.Information.DutyStatus switch
         {
-            FDutyStatus.OffDuty => this._localizationService.Get("PLAYER_STATUS.OFF_DUTY.GENERIC"),
-            FDutyStatus.OnDuty => this._localizationService.Get("PLAYER_STATUS.ON_DUTY.GENERIC"),
+            FDutyStatus.OffDuty => this._localizationService.Get("LABEL.PLAYER_STATUS.OFF_DUTY"),
+            FDutyStatus.OnDuty => this._localizationService.Get("LABEL.PLAYER_STATUS.ON_DUTY"),
             _ => "Unknown",
         };
         Cfx.API.SetRichPresence(status);

@@ -121,7 +121,7 @@ export class DashboardComponent {
         },
         {
           type: 'button',
-          label: 'ACTION.REQUEST_TO_JOIN.TITLE',
+          label: 'LABEL.UNIT.REQUEST_TO_JOIN.TITLE',
           show: unit => this.user?.DutyStatus !== FDutyStatus.OffDuty &&
             (this.generalConfig?.joinByRequestToUnit() ?? false) &&
             unit.Players.every(x => x.NetworkId !== this.user?.NetworkId) &&

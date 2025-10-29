@@ -146,13 +146,13 @@ export class AttributeGridOptions {
   createButtons(set: string, onCreate: () => void): Button[] {
     return [
       {
-        label: this._localizationService.translate('ACTION.CREATE.ATTRIBUTE.TITLE'),
+        label: this._localizationService.translate('LABEL.ATTRIBUTE.CREATE.TITLE'),
         show: () => true,
         disabled: () => false,
         onClick: () => {
           this._modalFormService.open({
-            title: 'ACTION.CREATE.ATTRIBUTE.TITLE',
-            description: this._localizationService.translate('ACTION.CREATE.ATTRIBUTE.DESCRIPTION', {set}, false),
+            title: 'LABEL.ATTRIBUTE.CREATE.TITLE',
+            description: this._localizationService.translate('LABEL.ATTRIBUTE.TITLE.DESCRIPTION', {set}, false),
             columns: 2,
             buttons: {
               submit: {variant: 'primary', label: 'ACTION.CREATE.TITLE'},

@@ -5,19 +5,19 @@
 internal sealed record Controls
 {
     // Menus
-    public static readonly Control VehicleSelectorMenu = new("fivepd::vehicleSelectorMenu", "F10", "UI.MENU.VEHICLE.TITLE");
+    public static readonly Control VehicleSelectorMenu = new("fivepd::vehicleSelectorMenu", "F10", "LABEL.MENU.VEHICLE.TITLE");
 
-    public static readonly Control LoadoutSelectorMenu = new("fivepd::loadoutSelectorMenu", "F11", "UI.MENU.LOADOUT.TITLE");
+    public static readonly Control LoadoutSelectorMenu = new("fivepd::loadoutSelectorMenu", "F11", "LABEL.MENU.LOADOUT.TITLE");
 
-    public static readonly Control DispatchMenu = new("fivepd::dispatchMenu", "F4", "UI.MENU.DISPATCH.TITLE");
+    public static readonly Control DispatchMenu = new("fivepd::dispatchMenu", "F4", "LABEL.MENU.DISPATCH.TITLE");
 
-    public static readonly Control AssistanceMenu = new("fivepd::assistanceMenu", "F5", "UI.MENU.ASSISTANCE.TITLE");
+    public static readonly Control AssistanceMenu = new("fivepd::assistanceMenu", "F5", "LABEL.MENU.ASSISTANCE.TITLE");
 
-    public static readonly Control InteractionMenu = new("fivepd::interactionMenu", "X", "UI.MENU.INTERACTION.TITLE");
+    public static readonly Control InteractionMenu = new("fivepd::interactionMenu", "X", "LABEL.MENU.INTERACTION.TITLE");
 
-    public static readonly Control SceneManagerMenu = new("fivepd::sceneManagerMenu", "F9", "UI.MENU.SCENE_MANAGER.TITLE");
+    public static readonly Control SceneManagerMenu = new("fivepd::sceneManagerMenu", "F9", "LABEL.MENU.SCENE_MANAGER.TITLE");
 
-    public static readonly Control QuestioningMenu = new("fivepd::questioningMenu", "Q", "UI.MENU.QUESTIONING.TITLE");
+    public static readonly Control QuestioningMenu = new("fivepd::questioningMenu", "Q", "LABEL.MENU.QUESTIONING.TITLE");
 
     // Other
     public static readonly MomentaryControl EnterVehicleAsPassenger = new("fivepd::enterVehicleAsPassenger", "G", "Enter vehicle as passenger", "Entering vehicle as passenger...", 500);

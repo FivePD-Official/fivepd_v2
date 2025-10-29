@@ -62,12 +62,12 @@ export class DepartmentsComponent implements OnInit {
       onClick: () => this._router.navigate(['mdt', 'settings', 'departments', 'area-management']),
     },
     {
-      label: 'ACTION.CREATE.DEPARTMENT.TITLE',
+      label: 'LABEL.DEPARTMENT.CREATE',
       show: () => this._userService.userHasRole(UserRole.Admin),
       disabled: () => false,
       onClick: () => {
         this._modalService.open(CreateDepartmentModalComponent, {
-          title: 'ACTION.CREATE.DEPARTMENT.TITLE'
+          title: 'LABEL.DEPARTMENT.CREATE'
         }).result
           .pipe(
             filter(res => res.success),

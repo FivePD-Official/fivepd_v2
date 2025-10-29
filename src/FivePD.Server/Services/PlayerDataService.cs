@@ -283,14 +283,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 new GameNotificationOptions
                 {
                     Title = "LABEL.DISPATCH",
-                    Message = "PLAYER_STATUS.CHANGE",
+                    Message = "LABEL.PLAYER_STATUS.CHANGE",
                     MessageParams = new Dictionary<string, string>
                     {
                         ["name"] = player.Name,
                         ["status"] = status switch
                         {
-                            FDutyStatus.OffDuty => "PLAYER_STATUS.OFF_DUTY.GENERIC",
-                            FDutyStatus.OnDuty => "PLAYER_STATUS.ON_DUTY.GENERIC",
+                            FDutyStatus.OffDuty => "LABEL.PLAYER_STATUS.OFF_DUTY",
+                            FDutyStatus.OnDuty => "LABEL.PLAYER_STATUS.ON_DUTY",
                             _ => "Unknown",
                         },
                     },

@@ -317,7 +317,7 @@ public class UnitManagerService : IUnitManagerService, IInternalUnitManagerServi
                 new ConfirmationProperties
                 {
                     Title = "FivePD",
-                    Message = "UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
+                    Message = "LABEL.UNIT.REQUEST_TO_JOIN.NOT_PLAYER.NOTIFICATION",
                     MessageParams = new Dictionary<string, string>
                     {
                         ["name"] = player.Name,
