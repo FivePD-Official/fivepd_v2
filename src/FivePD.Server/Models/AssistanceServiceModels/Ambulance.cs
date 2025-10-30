@@ -139,8 +139,8 @@ public class Ambulance : AssistanceService
                     this.RequestedBy,
                     new GameNotificationOptions
                     {
-                        Title = "FivePD",
-                        Message = "No available dead peds in the area to assist.",
+                        Title = "LABEL.ASSISTANCE_SERVICE.AMBULANCE.TITLE",
+                        Message = "LABEL.ASSISTANCE_SERVICE.AMBULANCE.NO_DEAD_PEDS",
                     });
                 break;
             }
@@ -190,8 +190,8 @@ public class Ambulance : AssistanceService
                 this.RequestedBy,
                 new GameNotificationOptions
                 {
-                    Title = "FivePD",
-                    Message = "Patient revived!",
+                    Title = "LABEL.ASSISTANCE_SERVICE.AMBULANCE.TITLE",
+                    Message = "LABEL.ASSISTANCE_SERVICE.AMBULANCE.PATIENT_REVIVED",
                 });
         }
         else
@@ -200,8 +200,8 @@ public class Ambulance : AssistanceService
                 this.RequestedBy,
                 new GameNotificationOptions
                 {
-                    Title = "FivePD",
-                    Message = "Patient could not be revived.",
+                    Title = "LABEL.ASSISTANCE_SERVICE.AMBULANCE.TITLE",
+                    Message = "LABEL.ASSISTANCE_SERVICE.AMBULANCE.PATIENT_NOT_REVIVED",
                 });
         }
 

@@ -76,12 +76,12 @@ public class RideShare : AssistanceService
     {
         this._requestedForPlayer = await this._confirmationService.TriggerConfirmationAsync(this.RequestedBy, new ConfirmationProperties
         {
-            Title = "Ride share",
-            Message = "Who is the ride for?",
+            Title = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.TITLE",
+            Message = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.WHO_FOR",
             Keys = new Dictionary<string, string>
             {
-                ["F1"] = "You",
-                ["F2"] = "Closest pedestrian",
+                ["F1"] = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.FOR_YOU",
+                ["F2"] = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.FOR_CLOSEST_PED",
             },
         });
 
@@ -149,8 +149,8 @@ public class RideShare : AssistanceService
                 this.RequestedBy.GetUnderlyingPlayer(),
                 new GameNotificationOptions
                 {
-                    Title = "Ride share",
-                    Message = "Your ride has arrived. Please enter the vehicle and select your destination within 60 seconds.",
+                    Title = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.TITLE",
+                    Message = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.RIDE_ARRIVED",
                 });
 
             var waypointSelected = await TaskHelpers.DelayUntilAsync(
@@ -177,8 +177,8 @@ public class RideShare : AssistanceService
                 this.RequestedBy.GetUnderlyingPlayer(),
                 new GameNotificationOptions
                 {
-                    Title = "Ride share",
-                    Message = "You have arrived at your destination. The driver will depart shortly.",
+                    Title = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.TITLE",
+                    Message = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.DESTINATION_ARRIVED",
                 });
 
             await Task.Delay(60000);

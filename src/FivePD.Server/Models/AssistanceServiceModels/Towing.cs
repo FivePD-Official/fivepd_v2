@@ -76,8 +76,8 @@ public class Towing : AssistanceService
             this.RequestedBy,
             new GameNotificationOptions
             {
-                Title = "FivePD",
-                Message = "No vehicle found to tow.",
+                Title = "LABEL.ASSISTANCE_SERVICE.TOWING.TITLE",
+                Message = "LABEL.ASSISTANCE_SERVICE.TOWING.NO_VEHICLE_FOUND",
             });
         return Task.FromResult(false);
     }
@@ -144,8 +144,8 @@ public class Towing : AssistanceService
                 this.RequestedBy,
                 new GameNotificationOptions
                 {
-                    Title = "FivePD",
-                    Message = "Towing has been canceled. The target vehicle has moved or is missing.",
+                    Title = "LABEL.ASSISTANCE_SERVICE.TOWING.TITLE",
+                    Message = "LABEL.ASSISTANCE_SERVICE.TOWING.CANCELED",
                 });
             return;
         }

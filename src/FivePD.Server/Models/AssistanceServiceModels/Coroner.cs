@@ -141,8 +141,8 @@ public class Coroner : AssistanceService
                         this.RequestedBy,
                         new GameNotificationOptions
                         {
-                            Title = "LABEL.ASSISTANCE_SERVICE.OFFICIAL.CORONER.TITLE",
-                            Message = "LABEL.ASSISTANCE_SERVICE.OFFICIAL.CORONER.NO_DECEASED_FOUND",
+                            Title = "LABEL.ASSISTANCE_SERVICE.CORONER.TITLE",
+                            Message = "LABEL.ASSISTANCE_SERVICE.CORONER.NO_DECEASED_FOUND",
                         });
                 }
                 else
@@ -151,8 +151,8 @@ public class Coroner : AssistanceService
                         this.RequestedBy,
                         new GameNotificationOptions
                         {
-                            Title = "LABEL.ASSISTANCE_SERVICE.OFFICIAL.CORONER.TITLE",
-                            Message = "LABEL.ASSISTANCE_SERVICE.OFFICIAL.CORONER.ALL_TRANSPORTED",
+                            Title = "LABEL.ASSISTANCE_SERVICE.CORONER.TITLE",
+                            Message = "LABEL.ASSISTANCE_SERVICE.CORONER.ALL_TRANSPORTED",
                         });
                 }
 

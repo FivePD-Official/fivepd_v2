@@ -68,26 +68,26 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     {
         this._assistanceServiceConfigService.Register<Ambulance>(new AssistanceServiceOptions
         {
-            RequestLabel = "Request ambulance",
-            CancelLabel = "Cancel ambulance",
+            RequestLabel = "LABEL.ASSISTANCE_SERVICE.AMBULANCE.REQUEST",
+            CancelLabel = "LABEL.ASSISTANCE_SERVICE.AMBULANCE.CANCEL",
         });
 
         this._assistanceServiceConfigService.Register<Coroner>(new AssistanceServiceOptions
         {
-            RequestLabel = "Request coroner",
-            CancelLabel = "Cancel coroner",
+            RequestLabel = "LABEL.ASSISTANCE_SERVICE.CORONER.REQUEST",
+            CancelLabel = "LABEL.ASSISTANCE_SERVICE.CORONER.CANCEL",
         });
 
         this._assistanceServiceConfigService.Register<Towing>(new AssistanceServiceOptions
         {
-            RequestLabel = "Request tow",
-            CancelLabel = "Cancel tow",
+            RequestLabel = "LABEL.ASSISTANCE_SERVICE.TOWING.REQUEST",
+            CancelLabel = "LABEL.ASSISTANCE_SERVICE.TOWING.CANCEL",
         });
 
         this._assistanceServiceConfigService.Register<RideShare>(new AssistanceServiceOptions
         {
-            RequestLabel = "Request ride share",
-            CancelLabel = "Cancel ride share",
+            RequestLabel = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.REQUEST",
+            CancelLabel = "LABEL.ASSISTANCE_SERVICE.RIDE_SHARE.CANCEL",
         });
     }
 
