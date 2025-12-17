@@ -26,6 +26,7 @@ public class LocalizationService : ILocalizationService, IOnInit
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
+    private readonly PlayerList _playerList;
 
     private readonly Dictionary<string, string> _localizationCache = new();
     private readonly Dictionary<string, string> _availableLocalizations = new();
@@ -36,18 +37,21 @@ public class LocalizationService : ILocalizationService, IOnInit
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     public LocalizationService(
         EventHandlerDictionary eventHandlerDictionary,
         INetworkEventService networkEventService,
         IPlayerHandlerService playerHandlerService,
         IConfigService configService,
-        ILogger logger)
+        ILogger logger,
+        PlayerList playerList)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._networkEventService = networkEventService;
         this._playerHandlerService = playerHandlerService;
         this._configService = configService;
         this._logger = logger;
+        this._playerList = playerList;
     }
 
     /// <inheritdoc />
@@ -106,10 +110,26 @@ public class LocalizationService : ILocalizationService, IOnInit
                 this._availableLocalizations[locale] = title;
                 this._localizationCache[locale] = serializedLocalization;
             }
+
+            this.UpdateLocalizationForPlayers();
         }
         catch (Exception e)
         {
             this._logger.Warning("Could not load localizations: {Error}", e);
+        }
+    }
+
+    private void UpdateLocalizationForPlayers()
+    {
+        foreach (var player in this._playerList)
+        {
+            var user = this._playerHandlerService.FindUserOfPlayer(player);
+            if (user is null)
+            {
+                continue;
+            }
+
+            player.TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationCache[user.PreferredLanguage]);
         }
     }
 }
