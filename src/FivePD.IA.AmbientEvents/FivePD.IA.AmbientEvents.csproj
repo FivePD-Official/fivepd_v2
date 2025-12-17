@@ -12,7 +12,7 @@
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
         <OutputPath>$(SolutionDir)/dev/FXServer-Data/resources/fivepd/Libraries/Addons/AmbientEvents</OutputPath>
-        <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\scripts\RestartLocalFXServer.ps1</PostBuildEvent>
+        <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe -NoProfile $(SolutionDir)\scripts\RestartLocalFXServer.ps1</PostBuildEvent>
     </PropertyGroup>
     
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">

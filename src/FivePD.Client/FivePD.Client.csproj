@@ -19,7 +19,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>$(SolutionDir)/dev/FXServer-Data/resources/fivepd/Libraries/FivePD.Client</OutputPath>
-    <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe $(SolutionDir)\scripts\RestartLocalFXServer.ps1</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">powershell.exe -NoProfile $(SolutionDir)\scripts\RestartLocalFXServer.ps1</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>$(SolutionDir)/build-public/Libraries/FivePD.Client</OutputPath>
