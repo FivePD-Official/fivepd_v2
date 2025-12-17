@@ -102,7 +102,7 @@ public abstract class AssistanceService : IInternalAssistanceService
                 if (entity.Value is not null)
                 {
                     var castVehicle = (FVehicle)entity.Value;
-                    castEntity?.Task.CruiseWithVehicle(castVehicle.GetUnderlyingVehicle, 12f, (int)FDrivingStyle.Normal);
+                    castEntity?.Task.CruiseWithVehicle(castVehicle.GetUnderlyingVehicle.NetworkId, 12f, (int)FDrivingStyle.Normal);
                 }
             }
             else if (entity.Key.GetType() == typeof(FVehicle))

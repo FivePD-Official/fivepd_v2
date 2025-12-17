@@ -134,13 +134,13 @@ public sealed class FPedTasks
     /// <summary>
     /// Invokes the "ped.Task.CruiseWithVehicle" native.
     /// </summary>
-    /// <param name="vehicle">The vehicle.</param>
+    /// <param name="vehicleNetworkId">The network id of the vehicle.</param>
     /// <param name="speed">The speed.</param>
     /// <param name="drivingstyle">The drivingstyle.</param>
-    public void CruiseWithVehicle(Vehicle vehicle, float speed, int drivingstyle = 0) =>
+    public void CruiseWithVehicle(int vehicleNetworkId, float speed, int drivingstyle = 0) =>
         this.SetTask(
             FPedTasksDTO.Events.CruiseWithVehicle,
-            new FPedTasksDTO.CruiseWithVehicle { VehicleNetworkId = vehicle.NetworkId, Speed = speed, DrivingStyle = drivingstyle });
+            new FPedTasksDTO.CruiseWithVehicle { VehicleNetworkId = vehicleNetworkId, Speed = speed, DrivingStyle = drivingstyle });
 
     /// <summary>
     /// Invokes the "ped.Task.DriveTo" native.

@@ -399,7 +399,6 @@ public sealed class InteractionMenu : Menu
             if (fPed.Detained.Value)
             {
                 fPed.Detained.Value = false;
-                // TODO: add a custom tooltip in the UI? the native is hidden by the menu
                 this._gameNotificationService.Notify(
                     player,
                     new GameNotificationOptions
@@ -445,14 +444,12 @@ public sealed class InteractionMenu : Menu
             Cfx.API.SetEntityDistanceCullingRadius(fPed.GetUnderlyingPed.Handle, 500f);
             fPed.Properties.SetAlwaysKeepTask(false);
             fPed.Properties.SetBlockPermanentEvents(false);
-            fPed.Task.ClearAllImmediately();
             fPed.Properties.RemoveBlips();
             if (fPed.Properties.IsInVehicle)
             {
-                // TODO: test
                 var vehicleHandle = Cfx.API.GetVehiclePedIsIn(fPed.GetUnderlyingPed.Handle, false);
                 var vehicleNetId = Cfx.API.NetworkGetNetworkIdFromEntity(vehicleHandle);
-                fPed.Task.CruiseWithVehicle(new Vehicle(vehicleNetId), 15f);
+                fPed.Task.CruiseWithVehicle(vehicleNetId, 15f);
             }
             else
             {
@@ -471,6 +468,7 @@ public sealed class InteractionMenu : Menu
             }
 
             fPed.Task.LeaveVehicle();
+            fPed.Task.StandStill(-1);
         };
         items.Add(this.StepOutOfVehicle);
 

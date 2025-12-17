@@ -255,7 +255,6 @@ internal class InteractionService : IInteractionService, IOnInit
             return;
         }
 
-        // Handle on foot
         if (!Game.PlayerPed.IsInVehicle())
         {
             var closestVehicle = World.GetAllVehicles()
@@ -263,33 +262,81 @@ internal class InteractionService : IInteractionService, IOnInit
                 .FirstOrDefault(x =>
                     Cfx.API.NetworkGetEntityIsNetworked(x.Handle) && x.NetworkId != Game.PlayerPed.NetworkId &&
                     x.IsInRangeOf(Game.PlayerPed.Position, BaseInteractionDistance));
+
             if (closestVehicle?.Driver is null)
             {
                 return;
             }
 
-            var fVehicle = this._vehicleService.GenerateVehicle(closestVehicle);
-            if (fVehicle is null || fVehicle.Stopped.Value)
+            if (!this.TryGenerateVehicleData(closestVehicle, out var driver))
             {
                 return;
             }
 
-            BaseScript.TriggerServerEvent(Events.Vehicle.OnAlerted, JsonConvert.SerializeObject(new OnVehicleAlertedDTO
-            {
-                AlertedOnFoot = true,
-                VehicleNetworkId = closestVehicle.NetworkId,
-                OccupantNetworkIds = closestVehicle.Occupants.Where(x => Cfx.API.NetworkGetEntityIsNetworked(x.Handle)).Select(x => x.NetworkId).ToList(),
-                DriverPedNetworkId = closestVehicle.Driver.NetworkId,
-                CreateTrafficStopInstance = this._localPlayerService.Information.IncidentWrapper is null,
-            }));
+            this.TriggerVehicleOnAlertedEvent(closestVehicle, driver, true);
             return;
         }
 
-        // Handle in vehicle
-        if (Game.PlayerPed.CurrentVehicle is not null && Game.PlayerPed.CurrentVehicle.GetPedOnSeat(VehicleSeat.Driver) != Game.PlayerPed)
+        var forwardPosition = Game.PlayerPed.Position + Game.PlayerPed.ForwardVector * 12f;
+        var target = World.GetAllVehicles()
+            .Where(v => Game.PlayerPed.CurrentVehicle is null || v.NetworkId != Game.PlayerPed.CurrentVehicle.NetworkId)
+            .Where(v => v.IsInRangeOf(forwardPosition, 8f))
+            .Select(v =>
+            {
+                if (v.IsAttached() && v.GetEntityAttachedTo().Model.IsVehicle)
+                {
+                    return (Vehicle)v.GetEntityAttachedTo();
+                }
+                return v;
+            })
+            .FirstOrDefault();
+
+        if (target is null)
         {
             return;
         }
+
+        if (!this.TryGenerateVehicleData(target, out var targetDriver))
+        {
+            return;
+        }
+
+        this.TriggerVehicleOnAlertedEvent(target, targetDriver, alertedOnFoot: false);
+    }
+
+    private bool TryGenerateVehicleData(Vehicle vehicle, out Ped driverPed)
+    {
+        driverPed = vehicle.GetPedOnSeat(VehicleSeat.Driver);
+
+        if (driverPed is null)
+        {
+            return false;
+        }
+
+        if (Cfx.API.IsPedAPlayer(driverPed.Handle) || driverPed.NetworkId == 0)
+        {
+            return false;
+        }
+
+        var fVehicle = this._vehicleService.GenerateVehicle(vehicle);
+        if (fVehicle is null || fVehicle.Stopped.Value)
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
+    private void TriggerVehicleOnAlertedEvent(Vehicle vehicle, Ped driverPed, bool alertedOnFoot)
+    {
+        BaseScript.TriggerServerEvent(Events.Vehicle.OnAlerted, JsonConvert.SerializeObject(new OnVehicleAlertedDTO
+        {
+            AlertedOnFoot = alertedOnFoot,
+            VehicleNetworkId = vehicle.NetworkId,
+            OccupantNetworkIds = vehicle.Occupants.Where(x => Cfx.API.NetworkGetEntityIsNetworked(x.Handle)).Select(x => x.NetworkId).ToList(),
+            DriverPedNetworkId = driverPed.NetworkId,
+            CreateTrafficStopInstance = this._localPlayerService.Information.IncidentWrapper is null,
+        }));
     }
 
     private void EnterVehicleAsPassenger()

@@ -114,7 +114,7 @@ public class SceneManagementService : ISceneManagementService, IInternalSceneMan
 
             var fped = FPed.FromPed(ped);
             this._cfxService.SetEntityAsMissionEntity(fped.GetUnderlyingPed.NetworkId, true, true);
-            fped.Task.CruiseWithVehicle(vehicle, 10f);
+            fped.Task.CruiseWithVehicle(vehicle.NetworkId, 10f);
             this._cfxService.SetEntityAsMissionEntity(fped.GetUnderlyingPed.NetworkId, false, false);
         }
     }
