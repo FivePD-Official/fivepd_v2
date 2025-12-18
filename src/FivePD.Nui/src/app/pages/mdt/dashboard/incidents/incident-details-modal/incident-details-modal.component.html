@@ -28,23 +28,24 @@
       </div>
 
     </div>
-    <div class="mt-10 flex flex-col gap-1">
-      <p class="text-zinc-200 font-medium text-lg">{{ 'LABEL.ACTION.PLURAL' | translate }}</p>
-      <div class="flex flex-row gap-4">
-        @if (isUnitAssignedToIncident$ | async) {
-          <app-button [label]="'LABEL.INCIDENT.SELF_UNASSIGN.TITLE' | translate"
-                      variant="tertiary-bg"
-                      (onClick)="onSelfUnassignClick()"/>
-          <app-button [label]="'LABEL.INCIDENT.COMPLETE.TITLE' | translate"
-                      variant="tertiary-bg"
-                      (onClick)="onCompleteClick()"/>
-        } @else {
-          <app-button [label]="'LABEL.INCIDENT.SELF_ASSIGN.TITLE' | translate"
-                      variant="tertiary-bg"
-                      (onClick)="onSelfAssignClick()"/>
-        }
+    @if (userInUnit$ | async) {
+      <div class="mt-10 flex flex-col gap-1">
+        <p class="text-zinc-200 font-medium text-lg">{{ 'LABEL.ACTION.PLURAL' | translate }}</p>
+        <div class="flex flex-row gap-4">
+          @if (isUnitAssignedToIncident$ | async) {
+            <app-button [label]="'LABEL.INCIDENT.SELF_UNASSIGN.TITLE' | translate"
+                        variant="tertiary-bg"
+                        (onClick)="onSelfUnassignClick()"/>
+            <app-button [label]="'LABEL.INCIDENT.COMPLETE.TITLE' | translate"
+                        variant="tertiary-bg"
+                        (onClick)="onCompleteClick()"/>
+          } @else {
+            <app-button [label]="'LABEL.INCIDENT.SELF_ASSIGN.TITLE' | translate"
+                        variant="tertiary-bg"
+                        (onClick)="onSelfAssignClick()"/>
+          }
+        </div>
       </div>
-    </div>
+    }
   </div>
 }
-

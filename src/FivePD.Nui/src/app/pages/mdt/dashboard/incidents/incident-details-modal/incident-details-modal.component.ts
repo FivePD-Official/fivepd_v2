@@ -57,6 +57,9 @@ export class IncidentDetailsModalComponent {
   );
   readonly user$ = this.store.select('user', 'details').pipe(takeUntilDestroyed());
 
+  readonly userInUnit$ = this.user$.pipe(
+    map(user => !!user.UnitCallsign),
+  );
   readonly isUnitAssignedToIncident$ = combineLatest([this.incident$, this.user$]).pipe(
     map(([incident, user]) => {
       return !!user?.UnitCallsign && incident.Units.some(x => x === user?.UnitCallsign);
