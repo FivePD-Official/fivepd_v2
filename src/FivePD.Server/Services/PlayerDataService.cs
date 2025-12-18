@@ -257,13 +257,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
     private void SubscribeToOnDutyStatusChange(Player player)
     {
-        if (!this._configService.GeneralConfig.Features.DutyNotification)
-        {
-            return;
-        }
-
         var fPlayer = FPlayer.FromNetId(player.Handle);
-        fPlayer.DutyStatus.Value = FDutyStatus.OffDuty;
         fPlayer.DutyStatus.Subscribe(status => this.OnPlayerDutyStatusChanged(player, status), false);
     }
 
@@ -275,9 +269,21 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             return;
         }
 
+        this.PlayerDutyStatusChanged?.Invoke(
+            this,
+            new PlayerDutyStatusChangeEventArgs
+            {
+                Player = fPlayer,
+                Status = status,
+            });
+
+        if (!this._configService.GeneralConfig.Features.DutyNotification)
+        {
+            return;
+        }
+
         foreach (var p in this._playerList.Where(p => p.Handle != player.Handle))
         {
-            // TODO: replace with gamenotificationservice
             this._notificationService.Notify(
                 p,
                 new GameNotificationOptions
@@ -296,14 +302,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                     },
                 });
         }
-
-        this.PlayerDutyStatusChanged?.Invoke(
-            this,
-            new PlayerDutyStatusChangeEventArgs
-            {
-                Player = fPlayer,
-                Status = status,
-            });
     }
 
     private void CreatePlayerData(Player player)

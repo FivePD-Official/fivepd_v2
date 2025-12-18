@@ -1,12 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { EventService } from "@services/event/event.service";
 import { InformationUpdateDTO } from "@models";
 import { FDutyStatus, FIncidentType, FUnitAvailability } from "@enums";
 import { Store } from "@ngrx/store";
 import { GlobalState } from "@store";
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { getPriorityLabel } from "../../helpers/fpriority-helpers";
-import { UserActions } from "@store/user.actions";
 import { injectDestroy } from "../../helpers/destroy-ref";
 import { takeUntil } from "rxjs";
 
@@ -27,29 +25,14 @@ export class InformationComponent implements OnInit {
   };
 
   private readonly destroy$ = injectDestroy();
-  private readonly _eventService = inject(EventService);
   private readonly _store = inject<Store<GlobalState>>(Store);
 
   ngOnInit(): void {
-    this._eventService.onEvent<InformationUpdateDTO>('fivepd:information:update')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(information => {
-        this._store.dispatch(UserActions.setInformation({information}));
-      });
-
     this._store.select('user', 'information')
       .pipe(takeUntil(this.destroy$))
       .subscribe(information => {
         this.information = information;
       });
-  }
-
-  get FDutyStatus() {
-    return FDutyStatus;
-  }
-
-  get FPlayerAvailability() {
-    return FUnitAvailability;
   }
 
   get priorityLabel(): string {
@@ -61,4 +44,8 @@ export class InformationComponent implements OnInit {
   }
 
   protected readonly FIncidentType = FIncidentType;
+
+  protected readonly FDutyStatus = FDutyStatus;
+
+  protected readonly FUnitAvailability = FUnitAvailability;
 }

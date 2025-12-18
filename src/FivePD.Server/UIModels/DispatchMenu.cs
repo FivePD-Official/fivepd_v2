@@ -296,7 +296,7 @@ public sealed class DispatchMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "ERROR.UNEXPECTED",
+                    Message = "No vehicle in range for license plate check.",
                 });
             return;
         }

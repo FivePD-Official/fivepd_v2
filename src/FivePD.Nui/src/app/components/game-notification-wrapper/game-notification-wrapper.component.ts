@@ -6,6 +6,7 @@ import { TranslatePipe } from "../../pipes/translate.pipe";
 import { AudioService } from "@services/audio/audio.service";
 import { LocalizationService } from "@services/localization/localization.service";
 import { DomSanitizer } from "@angular/platform-browser";
+import { injectDestroy } from "../../helpers/destroy-ref";
 
 interface GameNotification {
   notification: GameNotificationOptions;
@@ -24,6 +25,7 @@ interface GameNotification {
 })
 export class GameNotificationWrapperComponent implements OnInit {
 
+  private readonly destroy$ = injectDestroy();
   private readonly _eventService = inject(EventService);
   private readonly _audioService = inject(AudioService);
   private readonly _localizationService = inject(LocalizationService);
@@ -42,6 +44,7 @@ export class GameNotificationWrapperComponent implements OnInit {
           delay(400),
           tap(() => this.notifications = this.notifications.filter(x => x.notification !== notification)),
         )),
+        takeUntil(this.destroy$),
       )
       .subscribe();
   }

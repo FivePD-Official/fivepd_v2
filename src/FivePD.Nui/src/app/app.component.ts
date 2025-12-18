@@ -3,7 +3,7 @@ import { EventService } from '@services/event/event.service';
 import { WindowService } from '@services/window/window.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, takeUntil } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { AppActions } from '@store/app.actions';
@@ -11,9 +11,10 @@ import { MenuService } from '@services/menu/menu.service';
 import { ConfigService } from "@services/config/config.service";
 import { AudioService } from "@services/audio/audio.service";
 import { FeedbackService } from "@services/feedback/feedback.service";
-import { BaseNuiEvent } from "@models";
+import { BaseNuiEvent, InformationUpdateDTO } from "@models";
 import { UserService } from "@services/user/user.service";
 import { environment } from "../environments/environment";
+import { UserActions } from "@store/user.actions";
 
 @Component({
     selector: 'app-root',
@@ -56,6 +57,11 @@ export class AppComponent implements OnInit {
       this._menuService.load();
       this._userService.refreshData();
     });
+
+    this._eventService.onEvent<InformationUpdateDTO>('fivepd:information:update')
+      .subscribe(information => {
+        this._store.dispatch(UserActions.setInformation({information}));
+      });
 
     this._configService.getSafeZoneSize().subscribe(safeZoneSize => {
       const safeZone = safeZoneSize * 0.5;

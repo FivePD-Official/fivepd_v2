@@ -40,7 +40,8 @@ public class FStateBagObservable<T> : IDisposable
         this._stateBag = ((IFStatefulContainer)container).GetStateBag();
         this._key = key;
 
-        if (this._stateBag is not null && this._stateBag[this._key] is null)
+        // if (this._stateBag is not null && this._stateBag[this._key] is null)
+        if (this._stateBag is not null)
         {
             this._stateBag[this._key] = defaultValue;
         }
@@ -103,14 +104,14 @@ public class FStateBagObservable<T> : IDisposable
     /// of the returned <see cref="IDisposable"/>
     /// will unsubscribe the observer.</summary>
     /// <param name="observer">The action to subscribe.</param>
-    /// <param name="emitLastEventOnSubscription">Sets whether the last event should be emitted on subscription.</param>
+    /// <param name="emitValueOnSubscription">Sets whether the last event should be emitted on subscription.</param>
     /// <returns>An <see cref="IDisposable"/> to
     /// use to unsubscribe.</returns>
-    public IDisposable Subscribe(Action<T> observer, bool emitLastEventOnSubscription = true)
+    public IDisposable Subscribe(Action<T> observer, bool emitValueOnSubscription = true)
     {
         this._observers.Add(observer);
 
-        if (emitLastEventOnSubscription)
+        if (emitValueOnSubscription)
         {
             observer.Invoke(this.Value);
         }
