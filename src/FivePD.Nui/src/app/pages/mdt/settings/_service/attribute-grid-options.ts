@@ -23,7 +23,7 @@ export class AttributeGridOptions {
   private readonly _modalConfirmService = inject(ModalConfirmService);
   private readonly _localizationService = inject(LocalizationService);
 
-  valueResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): string => this._localizationService.translate(item[key] ? 'LABEL.YES.TITLE' : 'UI.LABEL.NO');
+  valueResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): string => this._localizationService.translate(item[key] ? 'LABEL.YES.TITLE' : 'LABEL.NO.TITLE');
   badgeResolver = (item: VariableDataAttribute, key: keyof VariableDataAttribute): BadgeVariants => item[key] ? 'green' : 'gray';
 
   createColumnList(set: string, onEdit: () => void, onDelete: () => void): Column<VariableDataAttribute>[] {

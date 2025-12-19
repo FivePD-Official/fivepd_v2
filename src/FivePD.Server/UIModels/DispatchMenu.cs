@@ -204,7 +204,7 @@ public sealed class DispatchMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "ERROR.UNEXPECTED",
+                    Message = "No citizen in range for ID check.",
                 });
             return;
         }
