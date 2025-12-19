@@ -7,6 +7,7 @@ using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
+using Serilog.Core;
 
 namespace FivePD.Server.Services;
 
@@ -18,6 +19,7 @@ public class EventService : IEventService, IOnInit
     private readonly PlayerList _players;
     private readonly ConcurrentDictionary<string, Action<string>> _events = new();
     private readonly IRandomService _randomService;
+    private readonly Logger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventService"/> class.
@@ -25,11 +27,13 @@ public class EventService : IEventService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="players">The <see cref="PlayerList"/> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
-    public EventService(EventHandlerDictionary eventHandlerDictionary, PlayerList players, IRandomService randomService)
+    /// <param name="logger">The <see cref="Logger"/> to use.</param>
+    public EventService(EventHandlerDictionary eventHandlerDictionary, PlayerList players, IRandomService randomService, Logger logger)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._players = players;
         this._randomService = randomService;
+        this._logger = logger;
     }
 
     /// <inheritdoc />
@@ -71,12 +75,24 @@ public class EventService : IEventService, IOnInit
     /// <inheritdoc />
     public void TriggerEventStrictWithoutCallback(Player player, string eventName, params object[] args)
     {
+        if (player is null)
+        {
+            this._logger?.Warning($"Tried to trigger event with name \"{eventName}\", but \"player\" was null.");
+            return;
+        }
+
         BaseScript.TriggerClientEvent(player, eventName, args);
     }
 
     /// <inheritdoc />
     public void TriggerEventStrict(Player player, string eventName, Action<string> callback, params object[] args)
     {
+        if (player is null)
+        {
+            this._logger?.Warning($"Tried to trigger event with name \"{eventName}\", but \"player\" was null.");
+            return;
+        }
+
         var guid = Guid.NewGuid().ToString();
         this._events.TryAdd(guid, callback);
         var newArgs = new object[args.Length + 1];
@@ -102,6 +118,11 @@ public class EventService : IEventService, IOnInit
 
     private Player GetRandomPlayer()
     {
+        if (this._players is null || !this._players.Any())
+        {
+            return null;
+        }
+
         var index = this._randomService.Random.Next(0, this._players.Count());
         return this._players.ElementAt(index);
     }
