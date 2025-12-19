@@ -21,11 +21,12 @@ import { parseId } from "../../../../helpers/parse-id";
 import { VariableDataService } from "@services/variable-data/variable-data.service";
 import { Tab, TabsComponent } from "../../../../components/tabs/tabs.component";
 import { TabComponent } from "../../../../components/tabs/tab/tab.component";
+import { CoreAttributes } from "../../../../helpers/core-attributes";
 
 @Component({
-    selector: 'app-citizen-database-id',
-    templateUrl: './citizen-database-id.component.html',
-    styleUrls: ['./citizen-database-id.component.sass'],
+  selector: 'app-citizen-database-id',
+  templateUrl: './citizen-database-id.component.html',
+  styleUrls: ['./citizen-database-id.component.sass'],
   imports: [PageHeaderComponent, ContainerComponent, IconComponent, DatePipe, TranslatePipe, EntityViewComponent, AsyncPipe, RouterLink, TabsComponent, TabComponent, TabComponent]
 })
 export class CitizenDatabaseIdComponent {
@@ -147,7 +148,16 @@ export class CitizenDatabaseIdComponent {
             buttons: {
               submit: {variant: 'primary', label: 'ACTION.CREATE.TITLE'},
             },
-            fields: (_, _2, coreAttributeDropdownItems) => mapCoreAttributesToFields({attributes, coreAttributeDropdownItems}),
+            fields: (_, _2, coreAttributeDropdownItems) => {
+              const entity = setId === CoreSetId.ArrestReport
+                ? {[CoreAttributes.PedHistoryIds]: [this.id$.value]}
+                : {[CoreAttributes.PedHistoryId]: this.id$.value};
+              return mapCoreAttributesToFields({
+                attributes,
+                coreAttributeDropdownItems,
+                entity: entity as any
+              });
+            },
           }).result.pipe(res => {
             return res;
           })

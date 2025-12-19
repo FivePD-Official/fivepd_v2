@@ -51,7 +51,7 @@ export class TabsComponent implements OnInit, AfterContentInit {
   }
 
   private setTabVisibility(): void {
-    const selectedTab = this.tabComponents.toArray().find(t => t.title === this.activeTab?.label);
+    const selectedTab = this.tabComponents?.toArray().find(t => t.title === this.activeTab?.label);
     if (selectedTab) {
       this.tabComponents.forEach(tab => tab.hidden = true);
       selectedTab.hidden = false;

@@ -102,7 +102,6 @@ export function mapCoreAttributesToFields(options: MapAttributesToFieldsOptions)
   }
 
   const singleIncidentHistory = options.attributes.find(x => x.Name === CoreAttributes.IncidentHistoryId);
-  console.log('options.coreAttributeDropdownItems', options.coreAttributeDropdownItems?.incidentHistoryIds)
   if (singleIncidentHistory && !singleIncidentHistory.Hidden) {
     fields.push(new SingleSelectField({
       key: CoreAttributes.IncidentHistoryId,
