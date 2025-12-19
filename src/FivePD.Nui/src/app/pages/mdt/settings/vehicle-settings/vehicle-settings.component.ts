@@ -212,6 +212,42 @@ export class VehicleSettingsComponent {
     this.createActionsColumn(vehicleConfig => createTowTruckFields(this._localizationService, vehicleConfig), () => this.towTruckVehicleConfigCollation$.next(this.towTruckVehicleConfigCollation$.value), mapTowTruckFields),
   ];
 
+  readonly rideShareVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
+  readonly rideShareVehicleConfigPage$ = this.rideShareVehicleConfigCollation$.pipe(
+    filter(() => this._userService.userHasRole(UserRole.Admin)),
+    switchMap(collation => this._vehicleConfigService.getPage(collationWithAdditionalFilters(collation, {Type: VehicleConfigType.RideShare})))
+  );
+  readonly rideShareVehicleConfigButtons: Button[] = [
+    this.createAddVehicleButton(
+      VehicleConfigType.RideShare,
+      createBaseFields,
+      () => this.rideShareVehicleConfigCollation$.next(this.rideShareVehicleConfigCollation$.value)
+    ),
+  ];
+  readonly rideShareVehicleConfigColumns: Column<VehicleConfig>[] = [
+    this.nameColumn,
+    this.modelColumn,
+    this.createActionsColumn(createBaseFields, () => this.rideShareVehicleConfigCollation$.next(this.rideShareVehicleConfigCollation$.value)),
+  ];
+
+  readonly coronerVehicleConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
+  readonly coronerVehicleConfigPage$ = this.coronerVehicleConfigCollation$.pipe(
+    filter(() => this._userService.userHasRole(UserRole.Admin)),
+    switchMap(collation => this._vehicleConfigService.getPage(collationWithAdditionalFilters(collation, {Type: VehicleConfigType.Coroner})))
+  );
+  readonly coronerVehicleConfigButtons: Button[] = [
+    this.createAddVehicleButton(
+      VehicleConfigType.Coroner,
+      createBaseFields,
+      () => this.coronerVehicleConfigCollation$.next(this.coronerVehicleConfigCollation$.value)
+    ),
+  ];
+  readonly coronerVehicleConfigColumns: Column<VehicleConfig>[] = [
+    this.nameColumn,
+    this.modelColumn,
+    this.createActionsColumn(createBaseFields, () => this.coronerVehicleConfigCollation$.next(this.coronerVehicleConfigCollation$.value)),
+  ];
+
   private createActionsColumn(fields: (vehicleConfig: VehicleConfig | undefined) => FormInputBase<any>[], onResponse: () => void, mapBeforeRequest?: (value: ModalResponse['value']) => ModalResponse['value']): Column<VehicleConfig> {
     return new Column<VehicleConfig>({
       header: 'LABEL.ACTION.PLURAL',

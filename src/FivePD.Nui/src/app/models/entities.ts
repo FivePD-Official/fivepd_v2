@@ -123,6 +123,8 @@ export enum VehicleConfigType {
   Police,
   Ambulance,
   TowTruck,
+  RideShare,
+  Coroner,
 }
 
 export interface Location extends WithId {

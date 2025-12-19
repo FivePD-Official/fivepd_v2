@@ -63,7 +63,6 @@ public class Coroner : AssistanceService
     public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
         var a = this._entityService.GetClosestFPedToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
-        Debug.WriteLine($"closest: {a?.GetUnderlyingPed.Handle} - {Cfx.API.GetEntityHealth(a.GetUnderlyingPed.Handle)}");
         this._target = this.RequestedBy.GetUnderlyingPlayer().Character.Position;
         await Task.CompletedTask;
     }

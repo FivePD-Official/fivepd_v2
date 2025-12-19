@@ -184,10 +184,12 @@ internal static class DatabaseHandler
         var ambulance = DefaultVehicleConfigs.Ambulance;
         var police = DefaultVehicleConfigs.Police;
         var towTruck = VehicleConfigOptionsConverter.ConvertOptionsToDictionary(DefaultVehicleConfigs.TowTruck);
+        var rideShare = DefaultVehicleConfigs.RideShare;
+        var coroner = DefaultVehicleConfigs.Coroner;
 
-        var towTrucks = new List<VehicleConfig<Dictionary<string, object>>>() { ambulance, police, towTruck };
+        var vehicleConfigs = new List<VehicleConfig<Dictionary<string, object>>>() { ambulance, police, towTruck, rideShare, coroner };
 
-        _databaseContext.VehicleConfigs.AddRange(towTrucks);
+        _databaseContext.VehicleConfigs.AddRange(vehicleConfigs);
         _databaseContext.SaveChanges();
         _logger?.Information("Created sample vehicle configs.");
     }

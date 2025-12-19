@@ -18,5 +18,17 @@
               [buttons]="towTruckVehicleConfigButtons"
               [columns]="towTruckVehicleConfigColumns"
               (onCollationChange)="towTruckVehicleConfigCollation$.next($event)"/>
+
+    <app-grid [title]="'LABEL.VEHICLE_CONFIG.TYPE.RIDE_SHARE.TITLE' | translate"
+              [data]="rideShareVehicleConfigPage$ | async"
+              [buttons]="rideShareVehicleConfigButtons"
+              [columns]="rideShareVehicleConfigColumns"
+              (onCollationChange)="rideShareVehicleConfigCollation$.next($event)"/>
+
+    <app-grid [title]="'LABEL.VEHICLE_CONFIG.TYPE.CORONER.TITLE' | translate"
+              [data]="coronerVehicleConfigPage$ | async"
+              [buttons]="coronerVehicleConfigButtons"
+              [columns]="coronerVehicleConfigColumns"
+              (onCollationChange)="coronerVehicleConfigCollation$.next($event)"/>
   }
 </app-container>
