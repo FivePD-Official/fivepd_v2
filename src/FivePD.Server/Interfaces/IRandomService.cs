@@ -14,7 +14,7 @@ public interface IRandomService
     public Random Random { get; }
 
     /// <summary>
-    /// Gets a random number between 0 and 100. Both inclusive.
+    /// Gets a random number between 0 and 99 (inclusive).
     /// </summary>
     public int GetRandomChance { get; }
 

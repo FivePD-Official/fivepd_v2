@@ -12,7 +12,7 @@ public class RandomService : IRandomService
     public Random Random { get; private set; } = new(Guid.NewGuid().GetHashCode());
 
     /// <inheritdoc />
-    public int GetRandomChance => this.Random.Next(0, 101);
+    public int GetRandomChance => this.Random.Next(0, 100);
 
     /// <inheritdoc />
     public int Next(int minValue, int maxValue)

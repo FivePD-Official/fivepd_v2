@@ -256,12 +256,12 @@ public class FPedBuilder : CommonFPedBuilder
     /// <returns>The current builder instance.</returns>
     public FPedBuilder WithAlcoholLevel(AlcoholConfig alcoholConfig)
     {
-        if (Random.Next(0, 101) > alcoholConfig.ChanceToHave)
+        if (Random.Next(0, 100) > alcoholConfig.ChanceToHave)
         {
             return this;
         }
 
-        if (Random.Next(0, 101) <= alcoholConfig.ChanceForOverLegalLimit)
+        if (Random.Next(0, 100) <= alcoholConfig.ChanceForOverLegalLimit)
         {
             var minValue = alcoholConfig.LegalLimit;
             const double maxValue = 0.2;
@@ -293,7 +293,7 @@ public class FPedBuilder : CommonFPedBuilder
     {
         this.Drugs ??= new();
 
-        foreach (var drug in drugsConfig.Where(drug => Random.Next(0, 101) <= drug.ChanceToHave))
+        foreach (var drug in drugsConfig.Where(drug => Random.Next(0, 100) <= drug.ChanceToHave))
         {
             this.Drugs.Add(new Drug
             {
@@ -323,13 +323,13 @@ public class FPedBuilder : CommonFPedBuilder
 
         foreach (var config in licenseConfigs)
         {
-            if (Random.Next(0, 101) >= config.Value.ChanceToHave)
+            if (Random.Next(0, 100) >= config.Value.ChanceToHave)
             {
                 continue;
             }
 
             var now = DateTime.Now;
-            var expired = Random.Next(0, 101) < config.Value.ChanceForExpired;
+            var expired = Random.Next(0, 100) < config.Value.ChanceForExpired;
             DateTime issueDate;
             DateTime expirationDate;
             if (expired)

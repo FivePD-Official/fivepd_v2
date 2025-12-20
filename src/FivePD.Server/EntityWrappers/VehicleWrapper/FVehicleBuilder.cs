@@ -94,13 +94,13 @@ public class FVehicleBuilder : CommonFVehicleBuilder
 
         foreach (var config in documentConfigs)
         {
-            if (Random.Next(0, 101) >= config.Value.ChanceToHave)
+            if (Random.Next(0, 100) >= config.Value.ChanceToHave)
             {
                 continue;
             }
 
             var now = DateTime.Now;
-            var expired = Random.Next(0, 101) < config.Value.ChanceForExpired;
+            var expired = Random.Next(0, 100) < config.Value.ChanceForExpired;
             DateTime issueDate;
             DateTime expirationDate;
             if (expired)
