@@ -27,6 +27,8 @@ public class Towing : AssistanceService
     private readonly ICfxService _cfxService;
     private readonly IGameNotificationService _gameNotificationService;
     private readonly IVehicleConfigService _vehicleConfigService;
+    private readonly IProgressionSystemService _progressionSystemService;
+    private readonly IConfigService _configService;
 
     private FPed _driver;
     private FVehicle _towTruck;
@@ -42,18 +44,24 @@ public class Towing : AssistanceService
     /// <param name="cfxService">The cfx service.</param>
     /// <param name="gameNotificationService">The game notification service.</param>
     /// <param name="vehicleConfigService">The vehicle configuration service.</param>
+    /// <param name="progressionSystemService">The progression system service.</param>
+    /// <param name="configService">The configuration service.</param>
     public Towing(
         IEntityService entityService,
         IRandomService randomService,
         ICfxService cfxService,
         IGameNotificationService gameNotificationService,
-        IVehicleConfigService vehicleConfigService)
+        IVehicleConfigService vehicleConfigService,
+        IProgressionSystemService progressionSystemService,
+        IConfigService configService)
     {
         this._entityService = entityService;
         this._randomService = randomService;
         this._cfxService = cfxService;
         this._gameNotificationService = gameNotificationService;
         this._vehicleConfigService = vehicleConfigService;
+        this._progressionSystemService = progressionSystemService;
+        this._configService = configService;
     }
 
     /// <inheritdoc />
@@ -166,6 +174,7 @@ public class Towing : AssistanceService
             false,
             0,
             true);
+        this._progressionSystemService.AddExperiencePoints(this.RequestedBy, this._configService.GeneralConfig.ProgressionSystem.ExperiencePoints.VehicleImpounded);
     }
 
     /// <inheritdoc />

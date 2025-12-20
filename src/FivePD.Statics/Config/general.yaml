@@ -177,7 +177,7 @@ Peds:
     Hunting:
       ChanceToHave: 100
       ChanceForExpired: 50
-    CCW:
+    Ccw:
       ChanceToHave: 50
       ChanceForExpired: 0
   Warrants:
@@ -205,13 +205,9 @@ Vehicles:
 
 ProgressionSystem:
   ExperiencePoints:
-    Arrest: 100  # TODO: not implemented yet
     CalloutCompleted: 100
     TrafficStopCompleted: 100
-    Citation: 50  # TODO: not implemented yet
-    Fine: 50  # TODO: not implemented yet
-    Death: -50  # TODO: not implemented yet
-    VehicleImpounded: 50  # TODO: not implemented yet
+    VehicleImpounded: 50
 
 Messages:
   CanSend: ALL # ALL = everyone can send messages, ADMIN = only admins can send messages
