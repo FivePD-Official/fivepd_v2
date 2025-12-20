@@ -30,14 +30,14 @@ Audio:
     AlprToggle: "notification.mp3"
 
 Unit:
-  MaxMembers: 0 # 0 = unlimited, 1+ = limited
-  Join: FREE # FREE = anyone can join, REQUEST = players have to request to join
+  MaxMembers: 0 # 0 = unlimited
+  Join: FREE # FREE = anyone can join, REQUEST = players must request to join
 
 Callout:
   DispatchType: AUTO # AUTO = automatic dispatch, MANUAL = manual dispatch
   MinIntervalInMs: 4000
   MaxIntervalInMs: 5000
-  MaxActiveCallouts: 2 # 0 = unlimited, 0+ = limited
+  MaxActiveCallouts: 2 # 0 = unlimited
   AreaBasedDispatch: false # true = callouts will be dispatched to a unit only if the callout is within its department's area, false = callouts will be dispatched to a unit regardless of the callout's location
   AutoRemove: # describes when callouts will be removed from the active callouts list
     Enabled: false # toggle removal of callouts from the active list
@@ -49,7 +49,7 @@ Callout:
     Radius: 200 # radius measured from callout position
 
 Mdt:
-  Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE, ONLY_SPECIFIC_LOCATIONS, ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS - admins can access the MDT anywhere and can add locations in the settings 
+  Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE, ONLY_SPECIFIC_LOCATIONS, ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS - admins can access the MDT anywhere and can add locations in the settings
 
 Menu:
   VehicleSelector:
@@ -127,10 +127,10 @@ Menu:
     Enabled: true
 
 Peds:
-  ChanceToReuseData: 20 # should be between 0-100. the higher the number, the more likely that you'll "meet" with the same peds again
+  ChanceToReuseData: 20 # 0-100. Higher values increase the likelihood of "meeting" the same peds again
   Behavior:
-    MinIntervalInMs: 5000 # The minimum time (in milliseconds) between behavior "think" cycles
-    MaxIntervalInMs: 30000 # The maximum time (in milliseconds) between behavior "think" cycles
+    MinIntervalInMs: 5000 # Minimum time between behavior "think" cycles
+    MaxIntervalInMs: 30000 # Maximum time between behavior "think" cycles
     # Chances are calculated cumulatively from 0 to 100.
     # Logic: The system picks a random number (0-100).
     # It checks each chance in order. If the number is LESS than the current total, that action happens.
@@ -155,34 +155,34 @@ Peds:
         DriveVehicleFlee: 25
         DoNothing: 0
   Alcohol:
-    ChanceToHave: 100 # 0-100;
-    ChanceForOverLegalLimit: 50 # 0-100;
-    LegalLimit: 0.08 # the legal limit of alcohol in blood
+    ChanceToHave: 100 # 0-100
+    ChanceForOverLegalLimit: 50 # 0-100
+    LegalLimit: 0.08 # Legal limit of alcohol in blood
   Drugs:
     - Name: Marijuana
-      ChanceToHave: 100 # 0-100;
+      ChanceToHave: 100 # 0-100
     - Name: Cocaine
-      ChanceToHave: 100 # 0-100;
+      ChanceToHave: 100 # 0-100
     - Name: Meth
-      ChanceToHave: 100 # 0-100;
+      ChanceToHave: 100 # 0-100
     - Name: Heroin
-      ChanceToHave: 100 # 0-100;  
+      ChanceToHave: 100 # 0-100
   Licenses:
     Driving:
-      ChanceToHave: 100 # should be between 0-100. the higher the number, the more likely that a ped has a driving license
-      ChanceForExpired: 10 # should be between 0-100. the higher the number, the more likely that a ped has an invalid driving license
+      ChanceToHave: 100 # 0-100. Higher values increase the likelihood that a ped has a driving license
+      ChanceForExpired: 10 # 0-100. Higher values increase the likelihood that a ped has an expired driving license
     Fishing:
       ChanceToHave: 100
       ChanceForExpired: 100
     Hunting:
       ChanceToHave: 100
       ChanceForExpired: 50
-    Ccw:
+    CCW:
       ChanceToHave: 50
       ChanceForExpired: 0
   Warrants:
-    ChanceToHaveAny: 10 # should be between 0-100. the higher the number, the more likely that a ped has a warrant
-    MaxAmount: 2 # the maximum amount of warrants a ped can have
+    ChanceToHaveAny: 10 # 0-100. Higher values increase the likelihood that a ped has a warrant
+    MaxAmount: 2 # Maximum amount of warrants a ped can have
     Items:
       - Arrest Warrant
       - Search Warrant
@@ -197,8 +197,8 @@ Peds:
 Vehicles:
   Documents:
     Insurance:
-      ChanceToHave: 100 # should be between 0-100. the higher the number, the more likely that a ped has a driving license
-      ChanceForExpired: 10 # should be between 0-100. the higher the number, the more likely that a ped has an invalid driving license
+      ChanceToHave: 100 # 0-100. Higher values increase the likelihood that a vehicle is insured
+      ChanceForExpired: 10 # 0-100. Higher values increase the likelihood that a vehicle's insurance is expired
     Registration:
       ChanceToHave: 100
       ChanceForExpired: 100
