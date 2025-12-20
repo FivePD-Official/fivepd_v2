@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -7,7 +6,6 @@ using FivePD.Common.Builders;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
@@ -86,6 +84,17 @@ public class VehicleService : IVehicleService, IOnInit
             Color = fVehicleBuilder.Color,
             PedDataId = pedData?.Id
         });
+
+        if (pedData is not null)
+        {
+            var existingVehicleData = this._databaseContext.VehicleData.FirstOrDefault(x => x.PedDataId == pedData.Id);
+            if (existingVehicleData is not null)
+            {
+                existingVehicleData.PedDataId = null;
+                this._databaseContext.SaveChanges();
+            }
+        }
+
         this._databaseContext.SaveChanges();
 
         if (pedData is not null)
