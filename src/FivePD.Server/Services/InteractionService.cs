@@ -24,6 +24,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ICfxService _cfxService;
     private readonly ITrafficStopService _trafficStopService;
+    private readonly IPedBehaviorService _pedBehaviorService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InteractionService"/> class.
@@ -33,13 +34,15 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="cfxService">The <see cref="ICfxService"/> to use.</param>
     /// <param name="trafficStopService">The <see cref="ITrafficStopService"/> to use.</param>
+    /// <param name="pedBehaviorService"></param>
     public InteractionService(
         IPedStorageService pedStorageService,
         IVehicleStorageService vehicleStorageService,
         IEventService eventService,
         EventHandlerDictionary eventHandlerDictionary,
         ICfxService cfxService,
-        ITrafficStopService trafficStopService)
+        ITrafficStopService trafficStopService,
+        IPedBehaviorService pedBehaviorService)
     {
         this._pedStorageService = pedStorageService;
         this._vehicleStorageService = vehicleStorageService;
@@ -47,6 +50,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._cfxService = cfxService;
         this._trafficStopService = trafficStopService;
+        this._pedBehaviorService = pedBehaviorService;
     }
 
     /// <inheritdoc />
@@ -56,7 +60,7 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
         this._eventHandlerDictionary[Events.Vehicle.OnAlerted] += new Action<Player, string>(this.OnVehicleAlerted);
     }
 
-    private async void OnPedAlerted([FromSource] Player player, int pedNetworkId)
+    private void OnPedAlerted([FromSource] Player player, int pedNetworkId)
     {
         var ped = this._pedStorageService.TryGetPed(pedNetworkId);
         if (ped is null)
@@ -64,25 +68,19 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
             return;
         }
 
-        if (ped.Properties.IsInVehicle || ped.Stopped.Value)
+        if (ped.Stopped.Value)
         {
             return;
         }
 
         ped.Stopped.Value = true;
 
-        Cfx.API.SetEntityDistanceCullingRadius(ped.GetUnderlyingPed.Handle, 10000f);
-
-        ped.Properties.SetAlwaysKeepTask(true);
-        ped.Properties.SetBlockPermanentEvents(true);
-
-        ped.Task.StandStill(-1);
-        ped.Task.TurnTo(player.Character);
-
-        Debug.WriteLine($"Player with net ID of {player.Character.NetworkId} alerted ped with net ID of {ped.NetworkId}");
+        var fPlayer = FPlayer.FromPlayer(player);
+        _pedBehaviorService.StartBehavior(fPlayer, ped);
+        Debug.WriteLine($"Player with net ID of {player.Character.NetworkId} alerted ped with net ID of {ped.NetworkId}.");
     }
 
-    private async void OnVehicleAlerted([FromSource] Player player, string serializedRequest)
+    private void OnVehicleAlerted([FromSource] Player player, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<OnVehicleAlertedDTO>(serializedRequest);
         if (request is null)
@@ -96,7 +94,6 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
             return;
         }
 
-        Cfx.API.SetEntityDistanceCullingRadius(fVehicle.GetUnderlyingVehicle.Handle, 10000f);
         fVehicle.Stopped.Value = true;
 
         foreach (var pedNetworkId in request.OccupantNetworkIds)
@@ -107,10 +104,9 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
                 continue;
             }
 
-            Cfx.API.SetEntityDistanceCullingRadius(ped.GetUnderlyingPed.Handle, 10000f);
-
             ped.Properties.SetAlwaysKeepTask(true);
             ped.Properties.SetBlockPermanentEvents(true);
+            Cfx.API.SetEntityDistanceCullingRadius(ped.GetUnderlyingPed.Handle, 10000f);
         }
 
         var driverPed = this._pedStorageService.TryGetPed(request.DriverPedNetworkId);
@@ -119,14 +115,14 @@ public class InteractionService : IInteractionService, IInternalInteractionServi
             return;
         }
 
-        driverPed.Task.ClearAll();
-        this._cfxService.TaskVehicleTempAction(driverPed.NetworkId, fVehicle.NetworkId, 24, int.MaxValue);
+        var fPlayer = FPlayer.FromPlayer(player);
 
         if (request.CreateTrafficStopInstance)
         {
-            var fPlayer = FPlayer.FromPlayer(player);
             this._trafficStopService.GenerateTrafficStop(fPlayer.Unit, fVehicle);
         }
+
+        _pedBehaviorService.StartBehavior(fPlayer, driverPed);
 
         Debug.WriteLine($"Player with net ID of {player.Character.NetworkId} alerted vehicle with net ID of {request.VehicleNetworkId}");
     }

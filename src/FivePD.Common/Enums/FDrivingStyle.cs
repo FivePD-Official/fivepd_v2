@@ -21,5 +21,5 @@ public enum FDrivingStyle
 
     Normal = StopBeforeVehicles | StopBeforePeds | AvoidObjects | AvoidPeds | StopAtTrafficLights,
     Emergency = TakeShortestPath | AllowOvertake | AllowWrongWay | AvoidVehicles | AvoidEmptyVehicles | AvoidObjects | AvoidPeds,
-    Flee =  StopBeforeVehicles | StopBeforePeds | AvoidVehicles | AvoidEmptyVehicles | AvoidObjects | AvoidPeds | TakeShortestPath | AllowOvertake | AllowWrongWay | IgnoreRoads | IgnorePath
+    Flee =  AvoidVehicles | AvoidEmptyVehicles | AvoidObjects | AvoidPeds | TakeShortestPath | AllowOvertake | AllowWrongWay | IgnoreRoads | IgnorePath
 }

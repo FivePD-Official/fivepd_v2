@@ -33,6 +33,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private readonly IRandomService _randomService;
     private readonly ITickQueueService _tickQueueService;
     private readonly INetworkEventService _networkEventService;
+    private readonly IPedBehaviorService _pedBehaviorService;
 
     private Guid _checkPedsId;
 
@@ -47,6 +48,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService" /> to use.</param>
+    /// <param name="pedBehaviorService">The <see cref="IPedBehaviorService" /> to use.</param>
     public PedService(
         IPedStorageService pedStorageService,
         IVehicleStorageService vehicleStorageService,
@@ -55,7 +57,8 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         DatabaseContext databaseContext,
         IRandomService randomService,
         ITickQueueService tickQueueService,
-        INetworkEventService networkEventService)
+        INetworkEventService networkEventService,
+        IPedBehaviorService pedBehaviorService)
     {
         this._pedStorageService = (IInternalPedStorageService)pedStorageService;
         this._vehicleStorageService = vehicleStorageService;
@@ -65,6 +68,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         this._randomService = randomService;
         this._tickQueueService = tickQueueService;
         this._networkEventService = networkEventService;
+        this._pedBehaviorService = pedBehaviorService;
     }
 
     /// <inheritdoc/>
@@ -85,8 +89,13 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         foreach (var keyValuePair in this._pedStorageService.InternalPeds)
         {
             var underlyingPed = keyValuePair.Value.GetUnderlyingPed;
-            if (underlyingPed is null || !Cfx.API.DoesEntityExist(underlyingPed.Handle))
+            if (underlyingPed is null || Cfx.API.GetEntityHealth(underlyingPed.Handle) <= 0 || !Cfx.API.DoesEntityExist(underlyingPed.Handle))
             {
+                if (underlyingPed is not null)
+                {
+                    this._pedBehaviorService.StopBehavior(underlyingPed.NetworkId);
+                }
+
                 this._pedStorageService.InternalPeds.TryRemove(keyValuePair.Key, out _);
             }
         }

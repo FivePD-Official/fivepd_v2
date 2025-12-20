@@ -393,9 +393,8 @@ public sealed class InteractionMenu : Menu
                 return;
             }
 
-            fPed.Task.AchieveHeading(player.GetUnderlyingPlayer().Character.Heading);
-            await Task.Delay(1000);
-            fPed.Task.StandStill(-1);
+            fPed.ChangeState(new FPedTurnToHeadingThenStandStillState(fPed, player.GetUnderlyingPlayer().Character.Heading));
+
             if (fPed.Detained.Value)
             {
                 fPed.Detained.Value = false;

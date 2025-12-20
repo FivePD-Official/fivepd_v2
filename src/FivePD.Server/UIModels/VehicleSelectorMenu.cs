@@ -83,10 +83,10 @@ public sealed class VehicleSelectorMenu : Menu
             this._vehicleConfigService.GetAll(VehicleConfigType.Police).Select(vehicle => new MenuListOption(vehicle.Name)).ToList());
         this.VehicleSpawnerItem.OnSelect += async (player, index) =>
         {
-            var lastVehicle = Cfx.API.GetVehiclePedIsIn(player.GetUnderlyingPlayer().Character.Handle, false);
-            if (lastVehicle != 0)
+            var currentVehicle = Cfx.API.GetVehiclePedIsIn(player.GetUnderlyingPlayer().Character.Handle, false);
+            if (currentVehicle != 0)
             {
-                Cfx.API.DeleteEntity(lastVehicle);
+                Cfx.API.DeleteEntity(currentVehicle);
             }
 
             var policeVehicle = this._vehicleConfigService.GetAll(VehicleConfigType.Police).ElementAt(index);

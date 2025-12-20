@@ -1,4 +1,6 @@
-﻿using FivePD.Common.Enums;
+﻿using System.Threading.Tasks;
+using CitizenFX.Core;
+using FivePD.Common.Enums;
 
 namespace FivePD.Server.EntityWrappers.PedWrapper.States;
 
@@ -6,18 +8,22 @@ namespace FivePD.Server.EntityWrappers.PedWrapper.States;
 
 public class FPedStandStillState : FPedState
 {
-    public FPedStandStillState(FPed ped)
-        : base(ped)
+    public FPedStandStillState(FPed fPed)
+        : base(fPed)
     {
     }
 
-    public override void Enter()
+    public override Task Enter()
     {
-        this.Ped.Movement.Value = FPedMovement.None;
-        this.Ped.Task.StandStill(-1);
+        Debug.WriteLine($"Ped with network id of {this.FPed.NetworkId} entering FPedStandStillState.");
+        this.FPed.Stopped.Value = true;
+        this.FPed.Movement.Value = FPedMovement.None;
+        this.FPed.Task.StandStill(-1);
+        return Task.CompletedTask;
     }
 
-    public override void Exit()
+    public override Task Exit()
     {
+        return Task.CompletedTask;
     }
 }

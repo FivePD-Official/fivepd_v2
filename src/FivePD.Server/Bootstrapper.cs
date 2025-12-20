@@ -345,6 +345,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<EventService>());
 
+        services.AddSingleton<PedBehaviorService>();
+        services.AddSingleton<IPedBehaviorService>(provider => provider.GetRequiredService<PedBehaviorService>());
+
         services.AddSingleton<InteractionService>();
         services.AddSingleton<IInteractionService>(provider => provider.GetRequiredService<InteractionService>());
         services.AddSingleton<IInternalInteractionService>(provider => provider.GetRequiredService<InteractionService>());

@@ -7,7 +7,7 @@ using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
-using Serilog.Core;
+using Serilog;
 
 namespace FivePD.Server.Services;
 
@@ -19,7 +19,7 @@ public class EventService : IEventService, IOnInit
     private readonly PlayerList _players;
     private readonly ConcurrentDictionary<string, Action<string>> _events = new();
     private readonly IRandomService _randomService;
-    private readonly Logger _logger;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventService"/> class.
@@ -27,8 +27,8 @@ public class EventService : IEventService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="players">The <see cref="PlayerList"/> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
-    /// <param name="logger">The <see cref="Logger"/> to use.</param>
-    public EventService(EventHandlerDictionary eventHandlerDictionary, PlayerList players, IRandomService randomService, Logger logger)
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    public EventService(EventHandlerDictionary eventHandlerDictionary, PlayerList players, IRandomService randomService, ILogger logger)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._players = players;
