@@ -442,7 +442,7 @@ internal class InteractionService : IInteractionService, IOnInit
                 this._currentlyFollowingPed.Task.RunTo(Game.PlayerPed.Position);
             }
 
-            await BaseScript.Delay(200);
+            await Task.Delay(200);
         }
     }
 }

@@ -176,7 +176,7 @@ internal class VehicleService : IVehicleService, IOnInit
     {
         while (!Cfx.API.NetworkDoesEntityExistWithNetworkId(networkId))
         {
-            await BaseScript.Delay(10);
+            await Task.Delay(10);
         }
 
         return Entity.FromNetworkId(networkId) as Vehicle;

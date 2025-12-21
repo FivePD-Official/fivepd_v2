@@ -859,7 +859,7 @@ internal class PedService : IPedService, IOnInit
                     Cfx.API.RequestAnimDict(args.AnimDict);
                     while (!Cfx.API.HasAnimDictLoaded(args.AnimDict))
                     {
-                        await BaseScript.Delay(0);
+                        await Task.Delay(0);
                     }
 
                     ped.Task.PlayAnimation(args.AnimDict, args.AnimName);
@@ -1246,7 +1246,7 @@ internal class PedService : IPedService, IOnInit
                 return null;
             }
 
-            await BaseScript.Delay(10);
+            await Task.Delay(10);
         }
 
         return Entity.FromNetworkId(networkId) as Ped;
