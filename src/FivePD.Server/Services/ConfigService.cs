@@ -41,9 +41,6 @@ public class ConfigService : IConfigService, IOnInit
     public List<Item> Items => this.InternalLoadFile<List<Item>>("/Config/items");
 
     /// <inheritdoc />
-    public List<Loadout> LoadoutsConfig => this.InternalLoadFile<List<Loadout>>("/Config/loadouts");
-
-    /// <inheritdoc />
     public GeneralConfig GeneralConfig => this.InternalLoadFile<GeneralConfig>("/Config/general");
 
     /// <inheritdoc />
