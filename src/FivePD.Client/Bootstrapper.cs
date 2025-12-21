@@ -177,6 +177,7 @@ internal class Bootstrapper : BaseScript
             .RegisterType<LocalizationService>()
             .As<ILocalizationService>()
             .As<IOnInit>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         services
@@ -213,12 +214,14 @@ internal class Bootstrapper : BaseScript
             .RegisterType<UIManagerService>()
             .As<IUIManagerService>()
             .As<IOnInit>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         services
             .RegisterType<UIService>()
             .As<IUIService>()
             .As<IOnInit>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         services
@@ -232,12 +235,14 @@ internal class Bootstrapper : BaseScript
             .As<IControlService>()
             .As<IOnInit>()
             .As<IOnDestroy>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         services
             .RegisterType<MenuService>()
             .As<IMenuService>()
             .As<IOnInit>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         // TODO: I'm not sure about radial menus.
@@ -268,6 +273,7 @@ internal class Bootstrapper : BaseScript
             .As<ILocalPlayerService>()
             .As<IOnInit>()
             .As<IOnDestroy>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         services
@@ -363,6 +369,7 @@ internal class Bootstrapper : BaseScript
             .RegisterType<VehicleConfigService>()
             .As<IVehicleConfigService>()
             .As<IOnInit>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         services
@@ -399,6 +406,7 @@ internal class Bootstrapper : BaseScript
             .RegisterType<AlprService>()
             .As<IAlprService>()
             .As<IOnInit>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         services
@@ -411,6 +419,7 @@ internal class Bootstrapper : BaseScript
             .RegisterType<AccessControlService>()
             .As<IAccessControlService>()
             .As<IOnInit>()
+            .As<IOnServerBootstrapped>()
             .IsSingleton();
 
         services
@@ -461,6 +470,8 @@ internal class Bootstrapper : BaseScript
                 this._bootstrapLogger.Error(e.Message);
             }
         }
+
+        LifecycleHandler.TriggerOnServerBootstrapped();
     }
 
     private void OnTickAdd(Func<Task> task)

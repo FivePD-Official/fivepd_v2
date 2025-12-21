@@ -9,7 +9,7 @@ namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class AccessControlService : IAccessControlService, IOnInit
+internal class AccessControlService : IAccessControlService, IOnInit, IOnServerBootstrapped
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly INetworkEventService _networkEventService;
@@ -22,6 +22,12 @@ internal class AccessControlService : IAccessControlService, IOnInit
 
     public void OnInit()
     {
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.GiveAccessUI);
+        this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.RemoveAccessUI);
+    }
+
+    public void OnServerBootstrapped()
+    {
         this._networkEventService.TriggerServerEvent(Events.AccessControl.HasAccess, new Action<bool>(allowed =>
         {
             if (allowed)
@@ -31,8 +37,5 @@ internal class AccessControlService : IAccessControlService, IOnInit
 
             LifecycleHandler.Stop("You do not have access to use FivePD. Stopping FivePD.");
         }));
-
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.GiveAccessUI);
-        this._eventHandlerDictionary.AddUIToServerEvent(Events.AccessControl.RemoveAccessUI);
     }
 }

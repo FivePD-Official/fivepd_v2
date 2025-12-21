@@ -13,7 +13,7 @@ namespace FivePD.Client.Services;
 #pragma warning disable
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IAlprService" />
-internal class AlprService : IAlprService, IOnInit
+internal class AlprService : IAlprService, IOnInit, IOnServerBootstrapped
 {
     private readonly IControlService _controlService;
     private readonly IGameNotificationService _gameNotificationService;
@@ -51,16 +51,20 @@ internal class AlprService : IAlprService, IOnInit
         this._tickService = tickService;
         this._vehicleService = vehicleService;
         this._configService = configService;
-
-#pragma warning disable CS4014
-        this.GetGeneralConfigAsync();
-#pragma warning restore CS4014
     }
 
     /// <inheritdoc/>
     public void OnInit()
     {
         this._controlService.RegisterKeybind(Controls.ToggleAlpr.Id, Controls.ToggleAlpr.Key, Controls.ToggleAlpr.Title, this.OnToggle);
+    }
+
+    /// <inheritdoc/>
+    public void OnServerBootstrapped()
+    {
+#pragma warning disable CS4014
+        this.GetGeneralConfigAsync();
+#pragma warning restore CS4014
     }
 
 #pragma warning disable S3241
