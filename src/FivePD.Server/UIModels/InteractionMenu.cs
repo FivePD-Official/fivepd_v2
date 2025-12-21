@@ -27,6 +27,7 @@ public sealed class InteractionMenu : Menu
     private readonly IConfigService _configService;
     private readonly IInternalInteractionService _interactionService;
     private readonly IPedStorageService _pedStorageService;
+    private readonly IPedBehaviorService _pedBehaviorService;
 
     public InteractionMenu(
         IGameNotificationService gameNotificationService,
@@ -34,7 +35,8 @@ public sealed class InteractionMenu : Menu
         ICfxService cfxService,
         IConfigService configService,
         IInteractionService interactionService,
-        IPedStorageService pedStorageService)
+        IPedStorageService pedStorageService,
+        IPedBehaviorService pedBehaviorService)
         : base(Controls.InteractionMenu.Id, Controls.InteractionMenu.Title, Controls.InteractionMenu.Key)
     {
         this._gameNotificationService = gameNotificationService;
@@ -43,6 +45,7 @@ public sealed class InteractionMenu : Menu
         this._configService = configService;
         this._interactionService = (IInternalInteractionService)interactionService;
         this._pedStorageService = pedStorageService;
+        this._pedBehaviorService = pedBehaviorService;
     }
 
     internal MenuButtonItem SearchPed { get; private set; }
@@ -418,6 +421,7 @@ public sealed class InteractionMenu : Menu
                         Message = "The ped is being detained.",
                     });
                 this._cfxService.SetEnableHandcuffs(fPed.GetUnderlyingPed.NetworkId, true);
+                this._pedBehaviorService.StopBehavior(fPed);
             }
         };
         items.Add(this.DetainOrRelease);
