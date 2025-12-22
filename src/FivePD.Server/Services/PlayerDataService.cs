@@ -250,6 +250,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
     private void OnPlayerConnected([FromSource] Player player)
     {
+        player.TriggerEvent(Events.Lifecycle.ServerBootstrapped);
         this.CreatePlayerData(player);
         this.SubscribeToOnDutyStatusChange(player);
         this._internalPedStorageService.InternalPeds[player.Character.NetworkId] = new FPed(new FPedBuilder(new CommonFPedBuilder(player.Character.NetworkId)));
