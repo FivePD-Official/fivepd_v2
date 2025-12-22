@@ -21,7 +21,6 @@ namespace FivePD.Server.Models.AssistanceServiceModels;
 /// </summary>
 public class Ambulance : AssistanceService
 {
-    private const float SlowingDistance = 125f;
     private const float MaximumSpeed = 30f;
     private const float MinimumSpeed = 5f;
 
@@ -101,23 +100,7 @@ public class Ambulance : AssistanceService
         this._driver.Properties.SetIntoVehicle(this._ambulance.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
 
-        this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
-
-        while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance * SlowingDistance)
-        {
-            if (cancellationTokenSource.IsCancellationRequested)
-            {
-                return;
-            }
-
-            var distanceSquared = this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target);
-            var distanceRatio = MathHelper.Clamp(((float)Math.Sqrt(distanceSquared) - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
-            var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-
-            this._driver.Properties.SetDrivingSpeed(currentSpeed);
-
-            await Task.Delay(500);
-        }
+        await this.DriveToTargetWithSlowingAsync(this._driver, this._ambulance, this._target, MinimumSpeed, MaximumSpeed, cancellationTokenSource);
 
         this._driver.Task.LeaveVehicle(FLeaveVehicleFlags.LeaveDoorOpen);
 

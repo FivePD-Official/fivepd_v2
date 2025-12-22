@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
@@ -19,7 +20,6 @@ namespace FivePD.Server.Models.AssistanceServiceModels;
 /// </summary>
 public class Towing : AssistanceService
 {
-    private const float SlowingDistance = 125f;
     private const float MaximumSpeed = 25f;
     private const float MinimumSpeed = 5f;
 
@@ -117,23 +117,7 @@ public class Towing : AssistanceService
         this._driver.Properties.SetIntoVehicle(this._towTruck.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
 
-        this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
-
-        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= SlowingDistance * SlowingDistance)
-        {
-            if (cancellationTokenSource.IsCancellationRequested)
-            {
-                return;
-            }
-
-            var distanceSquared = this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition);
-            var distanceRatio = MathHelper.Clamp(((float)Math.Sqrt(distanceSquared) - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
-            var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-
-            this._driver.Properties.SetDrivingSpeed(currentSpeed);
-
-            await Task.Delay(500);
-        }
+        await this.DriveToTargetWithSlowingAsync(this._driver, this._towTruck, this._targetPosition, MinimumSpeed, MaximumSpeed, cancellationTokenSource);
 
         this._driver.Task.ClearAll();
 
@@ -146,7 +130,7 @@ public class Towing : AssistanceService
 
         await Task.Delay(2000);
 
-        if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= 150f)
+        if (this._targetVehicle.GetUnderlyingVehicle is null || this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= SquaredDistances._200)
         {
             cancellationTokenSource.Cancel();
             this._gameNotificationService.Notify(

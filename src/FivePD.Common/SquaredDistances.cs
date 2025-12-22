@@ -13,6 +13,8 @@ internal readonly record struct SquaredDistances
 
     public const float _15 = 15f * 15f;
 
+    public const float _35 = 35f * 35f;
+    
     public const float _50 = 50f * 50f;
 
     public const float _100 = 100f * 100f;

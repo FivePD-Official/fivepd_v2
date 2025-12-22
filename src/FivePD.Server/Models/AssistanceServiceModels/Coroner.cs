@@ -23,7 +23,6 @@ namespace FivePD.Server.Models.AssistanceServiceModels;
 /// </summary>
 public class Coroner : AssistanceService
 {
-    private const float SlowingDistance = 125f;
     private const float MaximumSpeed = 30f;
     private const float MinimumSpeed = 5f;
 
@@ -95,23 +94,7 @@ public class Coroner : AssistanceService
         this._coroner1.Properties.SetIntoVehicle(this._van.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._coroner1.Properties.SetBlockPermanentEvents(true);
 
-        this._coroner1.Task.DriveTo(this._van.GetUnderlyingVehicle, this._target, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
-
-        while (this._van.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance * SlowingDistance)
-        {
-            if (cancellationTokenSource.IsCancellationRequested)
-            {
-                return;
-            }
-
-            var distanceSquared = this._van.GetUnderlyingVehicle.Position.DistanceToSquared(this._target);
-            var distanceRatio = MathHelper.Clamp(((float)Math.Sqrt(distanceSquared) - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
-            var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-
-            this._coroner1.Properties.SetDrivingSpeed(currentSpeed);
-
-            await Task.Delay(500);
-        }
+        await this.DriveToTargetWithSlowingAsync(this._coroner1, this._van, this._target, MinimumSpeed, MaximumSpeed, cancellationTokenSource);
 
         this._coroner1.Task.LeaveVehicle(FLeaveVehicleFlags.LeaveDoorOpen);
 
@@ -189,7 +172,7 @@ public class Coroner : AssistanceService
     {
         this._coroner1.Task.RunTo(ped.Position);
 
-        while (this._coroner1.GetUnderlyingPed.Position.DistanceToSquared(ped.Position) > 4.0f)
+        while (this._coroner1.GetUnderlyingPed.Position.DistanceToSquared(ped.Position) > SquaredDistances._5)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
