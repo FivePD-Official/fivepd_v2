@@ -32,7 +32,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     private readonly IUnitService _unitService;
     private readonly PlayerList _playerList;
     private readonly IIncidentService _incidentService;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IInternalDispatcherManagerService _dispatcherManagerService;
 
     /// <summary>
@@ -44,7 +44,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="dispatcherManagerService">The <see cref="IDispatcherManagerService"/> to use.</param>
     public CalloutDistributionService(
         ILogger logger,
@@ -53,7 +53,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         IUnitService unitService,
         PlayerList playerList,
         IIncidentService incidentService,
-        DatabaseContext databaseContext,
+        IDatabaseContextFactory dbContextFactory,
         IDispatcherManagerService dispatcherManagerService)
     {
         this._logger = logger;
@@ -62,7 +62,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
         this._unitService = unitService;
         this._playerList = playerList;
         this._incidentService = incidentService;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._dispatcherManagerService = (IInternalDispatcherManagerService)dispatcherManagerService;
     }
 
@@ -167,7 +167,8 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
             .ToList();
 
-        var calloutDetails = this._databaseContext.CalloutDetails
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var calloutDetails = databaseContext.CalloutDetails
             .Include(x => x.CalloutDetailsDepartments)
             .FirstOrDefault(x => x.TypeName == internalCallout.Type.Name && x.AssemblyName == internalCallout.Type.Assembly.GetName().Name);
         if (calloutDetails is not null)
@@ -193,7 +194,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             var valueTuples = filteredUnits.Select(unit => (unit, unit.Players[0].Department)).ToList();
             foreach (var (_, department) in valueTuples)
             {
-                this._databaseContext
+                databaseContext
                     .Entry(department)
                     .Collection(x => x.AreaCoordinates)
                     .Load();

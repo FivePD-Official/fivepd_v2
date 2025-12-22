@@ -13,17 +13,17 @@ namespace FivePD.Server.Services;
 public class PlayerHandlerService : IPlayerHandlerService
 {
     private readonly PlayerList _playerList;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerHandlerService"/> class.
     /// </summary>
     /// <param name="playerList">The player list.</param>
-    /// <param name="databaseContext">The database context.</param>
-    public PlayerHandlerService(PlayerList playerList, DatabaseContext databaseContext)
+    /// <param name="dbContextFactory">The database context factory.</param>
+    public PlayerHandlerService(PlayerList playerList, IDatabaseContextFactory dbContextFactory)
     {
         this._playerList = playerList;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
     }
 
     /// <inheritdoc />
@@ -48,7 +48,8 @@ public class PlayerHandlerService : IPlayerHandlerService
     /// <inheritdoc />
     public User FindUserOfPlayer(Player player)
     {
-        return this._databaseContext.Users
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        return databaseContext.Users
             .WhereAnyIdMatches(player)
             .FirstOrDefault();
     }

@@ -22,7 +22,7 @@ public class AlprService : IAlprService, IOnInit
     private readonly IPedStorageService _pedStorageService;
     private readonly IGameNotificationService _gameNotificationService;
     private readonly IConfigService _configService;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AlprService"/> class.
@@ -39,14 +39,14 @@ public class AlprService : IAlprService, IOnInit
         IPedStorageService pedStorageService,
         IGameNotificationService gameNotificationService,
         IConfigService configService,
-        DatabaseContext databaseContext)
+        IDatabaseContextFactory dbContextFactory)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._vehicleStorageService = vehicleStorageService;
         this._pedStorageService = pedStorageService;
         this._gameNotificationService = gameNotificationService;
         this._configService = configService;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
     }
 
     /// <inheritdoc/>
@@ -107,7 +107,8 @@ public class AlprService : IAlprService, IOnInit
             return;
         }
 
-        this._databaseContext.Entry(ownerPed)
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        databaseContext.Entry(ownerPed)
             .Collection(x => x.Licenses)
             .Load();
 

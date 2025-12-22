@@ -20,20 +20,21 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class WeaponService : IWeaponService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly INetworkEventService _networkEventService;
 
-    public WeaponService(DatabaseContext databaseContext, INetworkEventService networkEventService)
+    public WeaponService(IDatabaseContextFactory dbContextFactory, INetworkEventService networkEventService)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._networkEventService = networkEventService;
     }
 
     [UIEvent(Events.UI.Weapon.Get)]
     private void GetById([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var weapon = this._databaseContext.Weapons
+        var weapon = databaseContext.Weapons
             .Include(x => x.WeaponWeaponComponents)
             .Select(x => new
             {
@@ -57,6 +58,7 @@ public class WeaponService : IWeaponService
     [UIEvent(Events.UI.Weapon.GetAllPageable)]
     private void GetAllPageable([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<WeaponsRequest>(serializedRequest);
         var filters = new Filters<Weapon>();
         filters.Add(
@@ -65,7 +67,7 @@ public class WeaponService : IWeaponService
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Model),
             weapon => weapon.Model.ToLower().Contains(request.Filters.Model.ToLower()));
-        var page = this._databaseContext.Weapons
+        var page = databaseContext.Weapons
             .Include(x => x.WeaponWeaponComponents)
             .AsNoTracking()
             .Paginate(request.Page, filters);
@@ -76,7 +78,8 @@ public class WeaponService : IWeaponService
     [UIEvent(Events.UI.Weapon.GetAllSimple)]
     private void GetAllSimple([FromSource] Player player, string guid, string serializedRequest)
     {
-        this._networkEventService.TriggerEventSerialized(player, guid, this._databaseContext.Weapons.Select(x => new
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        this._networkEventService.TriggerEventSerialized(player, guid, databaseContext.Weapons.Select(x => new
         {
             Id = x.Id,
             Name = x.Name,
@@ -86,13 +89,14 @@ public class WeaponService : IWeaponService
     [UIEvent(Events.UI.Weapon.Create)]
     private void Create([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<AddWeaponRequest>(serializedRequest);
 
         var weapon = new Weapon() { Name = request.Name, Model = request.Model };
 
         foreach (var weaponComponentHashKey in request.WeaponComponentHashes)
         {
-            var component = this._databaseContext.WeaponComponents.FirstOrDefault(x => x.HashKey == weaponComponentHashKey);
+            var component = databaseContext.WeaponComponents.FirstOrDefault(x => x.HashKey == weaponComponentHashKey);
 
             if (component is not null)
             {
@@ -100,8 +104,8 @@ public class WeaponService : IWeaponService
             }
         }
 
-        this._databaseContext.Weapons.Add(weapon);
-        this._databaseContext.SaveChanges();
+        databaseContext.Weapons.Add(weapon);
+        databaseContext.SaveChanges();
 
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CREATE", "LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.CREATE");
     }
@@ -109,8 +113,9 @@ public class WeaponService : IWeaponService
     [UIEvent(Events.UI.Weapon.Edit)]
     private void Edit([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditWeaponRequest>(serializedRequest);
-        var weapon = this._databaseContext.Weapons.Include(x => x.WeaponWeaponComponents).FirstOrDefault(x => x.Id == request.Id);
+        var weapon = databaseContext.Weapons.Include(x => x.WeaponWeaponComponents).FirstOrDefault(x => x.Id == request.Id);
 
         if (weapon is null)
         {
@@ -127,7 +132,7 @@ public class WeaponService : IWeaponService
 
         foreach (var weaponComponentHash in weaponComponentsToAdd)
         {
-            var weaponComponent = this._databaseContext.WeaponComponents.FirstOrDefault(x => x.HashKey == weaponComponentHash);
+            var weaponComponent = databaseContext.WeaponComponents.FirstOrDefault(x => x.HashKey == weaponComponentHash);
 
             if (weaponComponent is null)
             {
@@ -140,7 +145,7 @@ public class WeaponService : IWeaponService
 
         foreach (var weaponWeaponComponent in weaponComponentsToRemove)
         {
-            var weaponComponent = this._databaseContext.WeaponComponents.Find(weaponWeaponComponent.WeaponComponentId);
+            var weaponComponent = databaseContext.WeaponComponents.Find(weaponWeaponComponent.WeaponComponentId);
 
             if (weaponComponent is null)
             {
@@ -151,15 +156,16 @@ public class WeaponService : IWeaponService
             weapon.RemoveComponent(weaponWeaponComponent);
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.EDIT");
     }
 
     [UIEvent(Events.UI.Weapon.Delete)]
     private void Delete([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var weapon = this._databaseContext.Weapons.FirstOrDefault(x => x.Id == request.Id);
+        var weapon = databaseContext.Weapons.FirstOrDefault(x => x.Id == request.Id);
 
         if (weapon is null)
         {
@@ -167,8 +173,8 @@ public class WeaponService : IWeaponService
             return;
         }
 
-        this._databaseContext.Weapons.Remove(weapon);
-        this._databaseContext.SaveChanges();
+        databaseContext.Weapons.Remove(weapon);
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.LOADOUT_CONFIG.WEAPON.SUCCESS.DELETE");
     }
 }

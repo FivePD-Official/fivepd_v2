@@ -21,17 +21,17 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class RankService : IRankService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RankService"/> class.
     /// </summary>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
-    public RankService(DatabaseContext databaseContext, INetworkEventService networkEventService)
+    public RankService(IDatabaseContextFactory dbContextFactory, INetworkEventService networkEventService)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._networkEventService = networkEventService;
     }
 
@@ -47,8 +47,9 @@ public class RankService : IRankService
     /// <inheritdoc />
     public Rank CreateRank(Rank rank)
     {
-        var entityEntry = this._databaseContext.Ranks.Add(rank);
-        this._databaseContext.SaveChanges();
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var entityEntry = databaseContext.Ranks.Add(rank);
+        databaseContext.SaveChanges();
         this.RankCreated?.Invoke(this, rank);
         return entityEntry.Entity;
     }
@@ -56,7 +57,8 @@ public class RankService : IRankService
     /// <inheritdoc />
     public Rank UpdateRank(Rank rank)
     {
-        var rankEntity = this._databaseContext.Ranks.FirstOrDefault(x => x.Id == rank.Id);
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var rankEntity = databaseContext.Ranks.FirstOrDefault(x => x.Id == rank.Id);
         if (rankEntity is null)
         {
             return null;
@@ -69,7 +71,7 @@ public class RankService : IRankService
         rankEntity.Permission = rank.Permission;
         rankEntity.Users = rank.Users;
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this.RankUpdated?.Invoke(this, rank);
         return rankEntity;
     }
@@ -77,22 +79,24 @@ public class RankService : IRankService
     /// <inheritdoc />
     public void DeleteRank(Rank rank)
     {
-        var rankEntity = this._databaseContext.Ranks.FirstOrDefault(x => x.Id == rank.Id);
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var rankEntity = databaseContext.Ranks.FirstOrDefault(x => x.Id == rank.Id);
         if (rankEntity is null)
         {
             return;
         }
 
-        this._databaseContext.Ranks.Remove(rankEntity);
-        this._databaseContext.SaveChanges();
+        databaseContext.Ranks.Remove(rankEntity);
+        databaseContext.SaveChanges();
         this.RankDeleted?.Invoke(this, rank);
     }
 
     [UIEvent(Events.Rank.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var rank = this._databaseContext.Ranks
+        var rank = databaseContext.Ranks
             .AsNoTracking()
             .FirstOrDefault(rank => rank.Id == request.Id);
         this._networkEventService.TriggerEventSerialized(player, guid, rank);
@@ -101,7 +105,8 @@ public class RankService : IRankService
     [UIEvent(Events.Rank.GetAllGlobal)]
     private void GetAllGlobalUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var rank = this._databaseContext.Ranks
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var rank = databaseContext.Ranks
             .AsNoTracking()
             .Where(rank => rank.Global);
         this._networkEventService.TriggerEventSerialized(player, guid, rank);
@@ -110,6 +115,7 @@ public class RankService : IRankService
     [UIEvent(Events.Rank.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<GetRanksPageRequest>(serializedRequest);
 
         var filters = new Filters<Rank>();
@@ -119,15 +125,16 @@ public class RankService : IRankService
             !string.IsNullOrEmpty(request.Filters.Name),
             department => department.Name.ToLower().Contains(request.Filters.Name.ToLower()));
 
-        var page = this._databaseContext.Ranks.AsNoTracking().Include(x => x.DepartmentRanks).Paginate(request.Page, filters);
+        var page = databaseContext.Ranks.AsNoTracking().Include(x => x.DepartmentRanks).Paginate(request.Page, filters);
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.Rank.Create)]
     private void CreateUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<CreateRankRequest>(serializedRequest);
-        var rankWithSameName = this._databaseContext.Ranks
+        var rankWithSameName = databaseContext.Ranks
             .Include(rank => rank.DepartmentRanks)
             .FirstOrDefault(rank => rank.Name == request.Name && !rank.Global);
 
@@ -138,14 +145,14 @@ public class RankService : IRankService
             return;
         }
 
-        var department = this._databaseContext.Departments.Include(x => x.DepartmentRanks).FirstOrDefault(x => x.Id == request.DepartmentId);
+        var department = databaseContext.Departments.Include(x => x.DepartmentRanks).FirstOrDefault(x => x.Id == request.DepartmentId);
         if (department is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        var createdRankEntry = this._databaseContext.Ranks.Add(new Rank
+        var createdRankEntry = databaseContext.Ranks.Add(new Rank
         {
             Global = false,
             Name = request.Name,
@@ -154,33 +161,34 @@ public class RankService : IRankService
         });
         var departmentRank = new DepartmentRank { Rank = createdRankEntry.Entity, Department = department };
         department.DepartmentRanks.Add(departmentRank);
-        this.CreateRankUI(player, guid, createdRankEntry.Entity);
+        this.CreateRankUI(player, databaseContext, guid, createdRankEntry.Entity);
     }
 
     [UIEvent(Events.Rank.CreateGlobal)]
     private void CreateGlobalUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<CreateGlobalRankRequest>(serializedRequest);
-        var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == request.Name && rank.Global);
+        var rankExistsWithName = databaseContext.Ranks.FirstOrDefault(rank => rank.Name == request.Name && rank.Global);
         if (rankExistsWithName is not null)
         {
             this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.RANK.CREATE.TITLE", "ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
             return;
         }
 
-        var createdRankEntry = this._databaseContext.Ranks.Add(new Rank
+        var createdRankEntry = databaseContext.Ranks.Add(new Rank
         {
             Global = true,
             Name = request.Name,
             Permission = request.Permission,
             RequiredXp = request.RequiredXp,
         });
-        this.CreateRankUI(player, guid, createdRankEntry.Entity);
+        this.CreateRankUI(player, databaseContext, guid, createdRankEntry.Entity);
     }
 
-    private void CreateRankUI(Player player, string guid, Rank rank)
+    private void CreateRankUI(Player player, DatabaseContext databaseContext, string guid, Rank rank)
     {
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this.RankCreated?.Invoke(this, rank);
         this._networkEventService.TriggerEventWithResponse(
             player,
@@ -197,15 +205,16 @@ public class RankService : IRankService
     [UIEvent(Events.Rank.Edit)]
     private void EditUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditRankRequest>(serializedRequest);
-        var rankToEdit = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.RankId);
+        var rankToEdit = databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.RankId);
         if (rankToEdit is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        var rankWithSameName = this._databaseContext.Ranks
+        var rankWithSameName = databaseContext.Ranks
             .Include(rank => rank.DepartmentRanks)
             .FirstOrDefault(rank => rank.Name == request.Name && !rank.Global && rank.Id != rankToEdit.Id);
 
@@ -216,7 +225,7 @@ public class RankService : IRankService
             return;
         }
 
-        var department = this._databaseContext.Departments.Include(x => x.DepartmentRanks).FirstOrDefault(x => x.Id == request.DepartmentId);
+        var department = databaseContext.Departments.Include(x => x.DepartmentRanks).FirstOrDefault(x => x.Id == request.DepartmentId);
         if (department is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -227,21 +236,22 @@ public class RankService : IRankService
         rankToEdit.Name = request.Name;
         rankToEdit.Permission = request.Permission;
         rankToEdit.RequiredXp = request.RequiredXp;
-        this.EditRankUI(player, guid, rankToEdit, rankToEditOldName);
+        this.EditRankUI(player, databaseContext, guid, rankToEdit, rankToEditOldName);
     }
 
     [UIEvent(Events.Rank.EditGlobal)]
     private void EditGlobalUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditGlobalRankRequest>(serializedRequest);
-        var rankToEdit = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.RankId);
+        var rankToEdit = databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.RankId);
         if (rankToEdit is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        var rankExistsWithName = this._databaseContext.Ranks.FirstOrDefault(rank => rank.Name == request.Name && rank.Global && rank.Id != rankToEdit.Id);
+        var rankExistsWithName = databaseContext.Ranks.FirstOrDefault(rank => rank.Name == request.Name && rank.Global && rank.Id != rankToEdit.Id);
         if (rankExistsWithName is not null)
         {
             this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.RANK.EDIT.TITLE", "ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
@@ -252,12 +262,12 @@ public class RankService : IRankService
         rankToEdit.Name = request.Name;
         rankToEdit.Permission = request.Permission;
         rankToEdit.RequiredXp = request.RequiredXp;
-        this.EditRankUI(player, guid, rankToEdit, rankToEditOldName);
+        this.EditRankUI(player, databaseContext, guid, rankToEdit, rankToEditOldName);
     }
 
-    private void EditRankUI(Player player, string guid, Rank rank, string oldName)
+    private void EditRankUI(Player player, DatabaseContext databaseContext, string guid, Rank rank, string oldName)
     {
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this.RankUpdated?.Invoke(this, rank);
         this._networkEventService.TriggerEventWithResponse(
             player,
@@ -274,8 +284,9 @@ public class RankService : IRankService
     [UIEvent(Events.Rank.Delete)]
     private void DeleteUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var rankToDelete = this._databaseContext.Ranks
+        var rankToDelete = databaseContext.Ranks
             .Include(rank => rank.Users)
             .FirstOrDefault(rank => rank.Id == request.Id);
         if (rankToDelete is null)
@@ -290,8 +301,8 @@ public class RankService : IRankService
             user.RankId = null;
         }
 
-        this._databaseContext.Ranks.Remove(rankToDelete);
-        this._databaseContext.SaveChanges();
+        databaseContext.Ranks.Remove(rankToDelete);
+        databaseContext.SaveChanges();
         this.RankDeleted?.Invoke(this, rankToDelete);
         this._networkEventService.TriggerEventWithResponse(
             player,

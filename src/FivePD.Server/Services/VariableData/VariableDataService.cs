@@ -28,7 +28,7 @@ namespace FivePD.Server.Services.VariableData;
 [Obfuscate]
 public class VariableDataService : IVariableDataService, IInternalVariableDataService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly INetworkEventService _networkEventService;
 
@@ -39,12 +39,15 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     /// <summary>
     /// Initializes a new instance of the <see cref="VariableDataService"/> class.
     /// </summary>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
-    public VariableDataService(DatabaseContext databaseContext, IPlayerHandlerService playerHandlerService, INetworkEventService networkEventService)
+    public VariableDataService(
+        IDatabaseContextFactory dbContextFactory,
+        IPlayerHandlerService playerHandlerService,
+        INetworkEventService networkEventService)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._playerHandlerService = playerHandlerService;
         this._networkEventService = networkEventService;
     }
@@ -114,7 +117,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        var set = this._databaseContext.VariableDataSets
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var set = databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .Include(set => set.Entities)
             .ThenInclude(entities => entities.Values)
@@ -123,7 +127,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         {
             set = Activator.CreateInstance<TS>();
             set.Id = setIdAttr.Id;
-            this._databaseContext.VariableDataSets.Add(set);
+            databaseContext.VariableDataSets.Add(set);
         }
 
         foreach (var attr in attributes)
@@ -136,8 +140,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             foreach (var attr in attributes.Where(attr => set.Attributes.All(setAttr => setAttr.Name != attr.Name)))
             {
                 attr.Set = set;
-                var addedAttributeEntry = this._databaseContext.VariableDataAttributes.Add(attr);
-                this._databaseContext.SaveChanges();
+                var addedAttributeEntry = databaseContext.VariableDataAttributes.Add(attr);
+                databaseContext.SaveChanges();
                 foreach (var entity in set.Entities)
                 {
                     var value = new VariableDataValue
@@ -149,7 +153,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
                                 ? DateTime.Now
                                 : null),
                     };
-                    this._databaseContext.VariableDataValues.Add(value);
+                    databaseContext.VariableDataValues.Add(value);
                 }
             }
         }
@@ -158,7 +162,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             set.Attributes = attributes;
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
     }
 
     /// <inheritdoc />
@@ -183,7 +187,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        var attributeToUpdate = this._databaseContext.VariableDataAttributes
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var attributeToUpdate = databaseContext.VariableDataAttributes
             .FirstOrDefault(attr => attr.Name == attributeName);
         if (attributeToUpdate is null)
         {
@@ -204,7 +209,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         attributeToUpdate.Required = newAttributeValues.Required;
         attributeToUpdate.Order = newAttributeValues.Order;
         attributeToUpdate.ShowInGrid = newAttributeValues.ShowInGrid;
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
     }
 
     /// <inheritdoc />
@@ -229,7 +234,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        var attributeToDelete = this._databaseContext.VariableDataAttributes
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var attributeToDelete = databaseContext.VariableDataAttributes
             .FirstOrDefault(attr => attr.Name == attributeName);
         if (attributeToDelete is null)
         {
@@ -241,12 +247,12 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             throw new ArgumentException("Can't delete attribute of a different addon");
         }
 
-        var valuesToDelete = this._databaseContext.VariableDataValues
+        var valuesToDelete = databaseContext.VariableDataValues
             .Include(value => value.Attribute)
             .Where(value => value.Attribute.Id == attributeToDelete.Id);
-        this._databaseContext.VariableDataValues.RemoveRange(valuesToDelete);
-        this._databaseContext.VariableDataAttributes.Remove(attributeToDelete);
-        this._databaseContext.SaveChanges();
+        databaseContext.VariableDataValues.RemoveRange(valuesToDelete);
+        databaseContext.VariableDataAttributes.Remove(attributeToDelete);
+        databaseContext.SaveChanges();
     }
 
     /// <inheritdoc />
@@ -303,7 +309,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     /// <inheritdoc />
     public void DeleteEntity(VariableDataEntity entityToDelete)
     {
-        var entity = this._databaseContext.VariableDataEntities
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var entity = databaseContext.VariableDataEntities
             .Include(entity => entity.Values)
             .Include(entity => entity.Set)
             .FirstOrDefault(entity => entity.Id == entityToDelete.Id);
@@ -312,8 +319,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        this._databaseContext.VariableDataEntities.Remove(entity);
-        this._databaseContext.SaveChanges();
+        databaseContext.VariableDataEntities.Remove(entity);
+        databaseContext.SaveChanges();
         this.InvokeEvent(
             VariableDataEntityObservableType.Delete,
             this.FindSetTypeById(entity.Set.Id),
@@ -326,7 +333,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 
     private VariableDataEntity InternalGetEntity(string id, bool withTracking = false, bool queryCoreAttributeValue = false)
     {
-        var query = withTracking ? this._databaseContext.VariableDataEntities : this._databaseContext.VariableDataEntities.AsNoTracking();
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var query = withTracking ? databaseContext.VariableDataEntities : databaseContext.VariableDataEntities.AsNoTracking();
         var entity = query
             .Include(entity => entity.Values)
             .ThenInclude(values => values.Attribute)
@@ -351,7 +359,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return new List<VariableDataEntity>();
         }
 
-        var query = withTracking ? this._databaseContext.VariableDataEntities : this._databaseContext.VariableDataEntities.AsNoTracking();
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var query = withTracking ? databaseContext.VariableDataEntities : databaseContext.VariableDataEntities.AsNoTracking();
         var entities = query
             .Include(entity => entity.Values)
             .ThenInclude(v => v.Attribute)
@@ -421,7 +430,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return new Page<VariableDataEntity>();
         }
 
-        var page = this._databaseContext.VariableDataEntities
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var page = databaseContext.VariableDataEntities
             .Include(entity => entity.Values)
             .Include(entity => entity.Set)
             .ThenInclude(set => set.Attributes)
@@ -436,7 +446,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     {
         if (entity.Set?.Attributes is null || entity.Values is null)
         {
-            return default;
+            return null;
         }
 
         entity.MappedValues = new Dictionary<string, object>();
@@ -447,63 +457,66 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             entity.MappedValues[value.Attribute.Name] = deserializedValue;
         }
 
-        if (queryCoreAttributeValues)
+        if (!queryCoreAttributeValues)
         {
-            if (entity.MappedValues.ContainsKey("DepartmentId"))
-            {
-                var value = this._databaseContext.Departments.AsNoTracking()
-                    .FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
-                entity.MappedValues["Department"] = value;
-            }
+            return null;
+        }
 
-            if (entity.MappedValues.ContainsKey("DepartmentIds"))
-            {
-                var ids = (entity.MappedValues["DepartmentIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-                var value = this._databaseContext.Departments.AsNoTracking().Where(department => ids.Contains(department.Id)).ToList();
-                entity.MappedValues["DepartmentIds"] = value;
-            }
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
 
-            if (entity.MappedValues.ContainsKey("UserId"))
-            {
-                var value = this._databaseContext.Users.AsNoTracking().FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
-                entity.MappedValues["User"] = value;
-            }
+        if (entity.MappedValues.ContainsKey("DepartmentId"))
+        {
+            var value = databaseContext.Departments.AsNoTracking()
+                .FirstOrDefault(dept => dept.Id == (entity.MappedValues["DepartmentId"] as long? ?? 0));
+            entity.MappedValues["Department"] = value;
+        }
 
-            if (entity.MappedValues.ContainsKey("UserIds"))
-            {
-                var ids = (entity.MappedValues["UserIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-                var value = this._databaseContext.Users.AsNoTracking().Where(user => ids.Contains(user.Id)).ToList();
-                entity.MappedValues["Users"] = value;
-            }
+        if (entity.MappedValues.ContainsKey("DepartmentIds"))
+        {
+            var ids = (entity.MappedValues["DepartmentIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+            var value = databaseContext.Departments.AsNoTracking().Where(department => ids.Contains(department.Id)).ToList();
+            entity.MappedValues["DepartmentIds"] = value;
+        }
 
-            if (entity.MappedValues.ContainsKey("IncidentHistoryId"))
-            {
-                var value = this._databaseContext.IncidentHistories.AsNoTracking()
-                    .FirstOrDefault(user => user.Id == entity.MappedValues["IncidentHistoryId"] as string);
-                entity.MappedValues["IncidentHistory"] = value;
-            }
+        if (entity.MappedValues.ContainsKey("UserId"))
+        {
+            var value = databaseContext.Users.AsNoTracking().FirstOrDefault(user => user.Id == (entity.MappedValues["UserId"] as long? ?? 0));
+            entity.MappedValues["User"] = value;
+        }
 
-            if (entity.MappedValues.ContainsKey("IncidentHistoryIds"))
-            {
-                var ids = (entity.MappedValues["IncidentHistoryIds"] as JArray)?.Select(x => x.ToString()).ToList();
-                var value = this._databaseContext.IncidentHistories.AsNoTracking().Where(incidentHistory => ids.Contains(incidentHistory.Id)).ToList();
-                entity.MappedValues["IncidentHistories"] = value;
-            }
+        if (entity.MappedValues.ContainsKey("UserIds"))
+        {
+            var ids = (entity.MappedValues["UserIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+            var value = databaseContext.Users.AsNoTracking().Where(user => ids.Contains(user.Id)).ToList();
+            entity.MappedValues["Users"] = value;
+        }
 
-            if (entity.MappedValues.ContainsKey("PedHistoryId"))
-            {
-                var value = this._databaseContext.PedData.AsNoTracking()
-                    .FirstOrDefault(pedHistory => pedHistory.Id == (entity.MappedValues["PedHistoryId"] as long? ?? 0));
-                entity.MappedValues["PedHistory"] = value;
-            }
+        if (entity.MappedValues.ContainsKey("IncidentHistoryId"))
+        {
+            var value = databaseContext.IncidentHistories.AsNoTracking()
+                .FirstOrDefault(user => user.Id == entity.MappedValues["IncidentHistoryId"] as string);
+            entity.MappedValues["IncidentHistory"] = value;
+        }
 
-            Debug.WriteLine($"AAAA: {entity.MappedValues.ContainsKey("PedHistoryIds")}");
-            if (entity.MappedValues.ContainsKey("PedHistoryIds"))
-            {
-                var ids = (entity.MappedValues["PedHistoryIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
-                var value = this._databaseContext.PedData.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
-                entity.MappedValues["PedHistories"] = value;
-            }
+        if (entity.MappedValues.ContainsKey("IncidentHistoryIds"))
+        {
+            var ids = (entity.MappedValues["IncidentHistoryIds"] as JArray)?.Select(x => x.ToString()).ToList();
+            var value = databaseContext.IncidentHistories.AsNoTracking().Where(incidentHistory => ids.Contains(incidentHistory.Id)).ToList();
+            entity.MappedValues["IncidentHistories"] = value;
+        }
+
+        if (entity.MappedValues.ContainsKey("PedHistoryId"))
+        {
+            var value = databaseContext.PedData.AsNoTracking()
+                .FirstOrDefault(pedHistory => pedHistory.Id == (entity.MappedValues["PedHistoryId"] as long? ?? 0));
+            entity.MappedValues["PedHistory"] = value;
+        }
+
+        if (entity.MappedValues.ContainsKey("PedHistoryIds"))
+        {
+            var ids = (entity.MappedValues["PedHistoryIds"] as JArray)?.Select(x => long.Parse(x.ToString())).ToList();
+            var value = databaseContext.PedData.AsNoTracking().Where(pedHistory => ids.Contains(pedHistory.Id)).ToList();
+            entity.MappedValues["PedHistories"] = value;
         }
 
         return entity;
@@ -512,8 +525,9 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     [UIEvent(Events.UI.VariableData.GetSetAttribute)]
     private void GetSetAttributeFromNui(Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var attribute = this._databaseContext.VariableDataAttributes
+        var attribute = databaseContext.VariableDataAttributes
             .AsNoTracking()
             .FirstOrDefault(set => set.Id == request.Id);
 
@@ -530,8 +544,9 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     [UIEvent(Events.UI.VariableData.GetSetAttributes)]
     private void GetSetAttributesFromNui(Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<GetSetRequest>(serializedRequest);
-        var set = this._databaseContext.VariableDataSets
+        var set = databaseContext.VariableDataSets
             .AsNoTracking()
             .Include(set => set.Attributes)
             .FirstOrDefault(set => set.Id == request.SetId);
@@ -553,8 +568,9 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     [UIEvent(Events.UI.VariableData.GetSetAttributesPageable)]
     private void GetSetAttributesPageableFromNui(Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<GetSetRequest>(serializedRequest);
-        var page = this._databaseContext.VariableDataAttributes
+        var page = databaseContext.VariableDataAttributes
             .AsNoTracking()
             .Include(attr => attr.Set)
             .Where(attr => attr.Set.Id == request.SetId)
@@ -566,8 +582,9 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     [UIEvent(Events.UI.VariableData.AddSetAttribute)]
     private void AddSetAttributeFromNui(Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<AddSetAttributeRequest>(serializedRequest);
-        var set = this._databaseContext.VariableDataSets
+        var set = databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .Include(set => set.Entities)
             .ThenInclude(entities => entities.Values)
@@ -608,8 +625,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         request.Attribute.AddonId = VariableDataAttribute.AddedByAdminAddonId;
         request.Attribute.Set = set;
 
-        var addedAttributeEntry = this._databaseContext.VariableDataAttributes.Add(request.Attribute);
-        this._databaseContext.SaveChanges();
+        var addedAttributeEntry = databaseContext.VariableDataAttributes.Add(request.Attribute);
+        databaseContext.SaveChanges();
 
         foreach (var entity in set.Entities)
         {
@@ -622,10 +639,10 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
                         ? DateTime.Now
                         : null),
             };
-            this._databaseContext.VariableDataValues.Add(value);
+            databaseContext.VariableDataValues.Add(value);
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -641,9 +658,10 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     [UIEvent(Events.UI.VariableData.EditSetAttribute)]
     private void EditSetAttributeFromNui(Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditSetAttributeRequest>(serializedRequest);
 
-        var set = this._databaseContext.VariableDataSets
+        var set = databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .FirstOrDefault(set => set.Id == request.SetId);
         if (set is null)
@@ -652,7 +670,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        var attribute = this._databaseContext.VariableDataAttributes.FirstOrDefault(attr => attr.Id == request.Attribute.Id);
+        var attribute = databaseContext.VariableDataAttributes.FirstOrDefault(attr => attr.Id == request.Attribute.Id);
         if (attribute is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -678,7 +696,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         attribute.Readonly = request.Attribute.Readonly;
         attribute.Hidden = request.Attribute.Hidden;
         attribute.ShowInGrid = request.Attribute.ShowInGrid;
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -694,8 +712,9 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     [UIEvent(Events.UI.VariableData.DeleteSetAttribute)]
     private void DeleteSetAttributeFromNui(Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<DeleteSetAttributeRequest>(serializedRequest);
-        var set = this._databaseContext.VariableDataSets
+        var set = databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .Include(set => set.Entities)
             .ThenInclude(entities => entities.Values)
@@ -707,7 +726,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        var attributeToDelete = this._databaseContext.VariableDataAttributes
+        var attributeToDelete = databaseContext.VariableDataAttributes
             .FirstOrDefault(attr => attr.Id == request.AttributeId);
         if (attributeToDelete is null)
         {
@@ -719,13 +738,13 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         {
             foreach (var value in entity.Values.Where(value => value.Attribute.Id == request.AttributeId))
             {
-                this._databaseContext.VariableDataValues.Remove(value);
+                databaseContext.VariableDataValues.Remove(value);
             }
         }
 
         var attributeName = attributeToDelete.Name;
-        this._databaseContext.VariableDataAttributes.Remove(attributeToDelete);
-        this._databaseContext.SaveChanges();
+        databaseContext.VariableDataAttributes.Remove(attributeToDelete);
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.ATTRIBUTE.SUCCESS.DELETE", new Dictionary<string, string>
         {
             { "attribute", attributeName },
@@ -830,7 +849,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        var entityToDelete = this._databaseContext.VariableDataEntities
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var entityToDelete = databaseContext.VariableDataEntities
             .FirstOrDefault(entity => entity.Id == request.Id);
         if (entityToDelete is null)
         {
@@ -838,8 +858,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             return;
         }
 
-        this._databaseContext.VariableDataEntities.Remove(entityToDelete);
-        this._databaseContext.SaveChanges();
+        databaseContext.VariableDataEntities.Remove(entityToDelete);
+        databaseContext.SaveChanges();
         this.InvokeEvent(
             VariableDataEntityObservableType.Delete,
             setType,
@@ -853,7 +873,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 
     private VariableDataEntity InternalAddEntity(Player player, string setId, VariableDataEntity entityToAdd, Dictionary<string, object> valuesToAdd)
     {
-        var set = this._databaseContext.VariableDataSets
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var set = databaseContext.VariableDataSets
             .Include(s => s.Attributes)
             .FirstOrDefault(s => s.Id == setId);
         if (set is null)
@@ -903,9 +924,9 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             .ToList();
 
         entityToAdd.Set = set;
-        this._databaseContext.VariableDataValues.AddRange(values);
-        var entityEntry = this._databaseContext.VariableDataEntities.Add(entityToAdd);
-        this._databaseContext.SaveChanges();
+        databaseContext.VariableDataValues.AddRange(values);
+        var entityEntry = databaseContext.VariableDataEntities.Add(entityToAdd);
+        databaseContext.SaveChanges();
         this.InvokeEvent(
             VariableDataEntityObservableType.Add,
             this.FindSetTypeById(setId),
@@ -919,7 +940,8 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
 
     private void InternalUpdateEntity(Player player, string setId, string entityId, Dictionary<string, object> newValues)
     {
-        var set = this._databaseContext.VariableDataSets
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var set = databaseContext.VariableDataSets
             .Include(set => set.Attributes)
             .FirstOrDefault(set => set.Id == setId);
         if (set is null)
@@ -944,7 +966,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             attributeValueMap[attribute.Name] = value.Value;
         }
 
-        var entityValues = this._databaseContext.VariableDataValues
+        var entityValues = databaseContext.VariableDataValues
             .Include(value => value.Entity)
             .Include(value => value.Attribute)
             .Where(value => value.Entity.Id == entityId)
@@ -954,7 +976,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
             dataValue.Value = JsonConvert.SerializeObject(attributeValueMap[dataValue.Attribute.Name]);
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this.InvokeEvent(
             VariableDataEntityObservableType.Update,
             this.FindSetTypeById(setId),

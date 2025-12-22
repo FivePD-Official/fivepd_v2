@@ -25,15 +25,20 @@ namespace FivePD.Server.Services;
 public class LoadoutConfigService : ILoadoutConfigService
 {
     private readonly ILogger _logger;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IMenuService _menuService;
     private readonly PlayerList _playerList;
     private readonly INetworkEventService _networkEventService;
 
-    public LoadoutConfigService(ILogger logger, DatabaseContext databaseContext, IMenuService menuService, PlayerList playerList, INetworkEventService networkEventService)
+    public LoadoutConfigService(
+        ILogger logger, 
+        IDatabaseContextFactory dbContextFactory, 
+        IMenuService menuService, 
+        PlayerList playerList, 
+        INetworkEventService networkEventService)
     {
         this._logger = logger;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._menuService = menuService;
         this._playerList = playerList;
         this._networkEventService = networkEventService;
@@ -41,7 +46,8 @@ public class LoadoutConfigService : ILoadoutConfigService
 
     public List<LoadoutConfig> GetAll()
     {
-        return this._databaseContext.LoadoutConfigs
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        return databaseContext.LoadoutConfigs
             .Include(x => x.LoadoutWeapons)
             .ThenInclude(x => x.Weapon)
             .ThenInclude(x => x.WeaponWeaponComponents)
@@ -52,8 +58,9 @@ public class LoadoutConfigService : ILoadoutConfigService
     [UIEvent(Events.UI.LoadoutConfig.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var loadoutConfig = this._databaseContext.LoadoutConfigs
+        var loadoutConfig = databaseContext.LoadoutConfigs
             .Include(x => x.LoadoutWeapons)
             .Select(x => new
             {
@@ -75,12 +82,13 @@ public class LoadoutConfigService : ILoadoutConfigService
     [UIEvent(Events.UI.LoadoutConfig.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<LoadoutConfigsRequest>(serializedRequest);
         var filters = new Filters<LoadoutConfig>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Name),
             loadoutConfig => loadoutConfig.Name.ToLower().Contains(request.Filters.Name.ToLower()));
-        var page = this._databaseContext.LoadoutConfigs
+        var page = databaseContext.LoadoutConfigs
             .Include(x => x.LoadoutWeapons)
             .AsNoTracking()
             .Paginate(request.Page, filters);
@@ -91,13 +99,14 @@ public class LoadoutConfigService : ILoadoutConfigService
     [UIEvent(Events.UI.LoadoutConfig.Create)]
     private void CreateLoadoutConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<AddLoadoutConfigRequest>(serializedRequest);
 
         var loadoutConfig = new LoadoutConfig { Name = request.Name };
 
         foreach (var weaponId in request.WeaponIds)
         {
-            var weapon = this._databaseContext.Weapons.FirstOrDefault(x => x.Id == weaponId);
+            var weapon = databaseContext.Weapons.FirstOrDefault(x => x.Id == weaponId);
 
             if (weapon is not null)
             {
@@ -105,8 +114,8 @@ public class LoadoutConfigService : ILoadoutConfigService
             }
         }
 
-        this._databaseContext.LoadoutConfigs.Add(loadoutConfig);
-        this._databaseContext.SaveChanges();
+        databaseContext.LoadoutConfigs.Add(loadoutConfig);
+        databaseContext.SaveChanges();
 
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CREATE", "LABEL.LOADOUT_CONFIG.SUCCESS.CREATE");
         this.SendNewMenuItems();
@@ -115,8 +124,9 @@ public class LoadoutConfigService : ILoadoutConfigService
     [UIEvent(Events.UI.LoadoutConfig.Edit)]
     private void EditLoadoutConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditLoadoutConfigRequest>(serializedRequest);
-        var loadout = this._databaseContext.LoadoutConfigs.Include(x => x.LoadoutWeapons).FirstOrDefault(x => x.Id == request.Id);
+        var loadout = databaseContext.LoadoutConfigs.Include(x => x.LoadoutWeapons).FirstOrDefault(x => x.Id == request.Id);
         
         if (loadout is null)
         {
@@ -132,7 +142,7 @@ public class LoadoutConfigService : ILoadoutConfigService
 
         foreach (var weaponId in weaponsToAdd)
         {
-            var weapon = this._databaseContext.Weapons.Find(weaponId);
+            var weapon = databaseContext.Weapons.Find(weaponId);
 
             if (weapon is null)
             {
@@ -145,7 +155,7 @@ public class LoadoutConfigService : ILoadoutConfigService
         
         foreach (var loadoutWeapon in weaponsToRemove)
         {
-            var weapon = this._databaseContext.Weapons.Find(loadoutWeapon.WeaponId);
+            var weapon = databaseContext.Weapons.Find(loadoutWeapon.WeaponId);
 
             if (weapon is null)
             {
@@ -156,7 +166,7 @@ public class LoadoutConfigService : ILoadoutConfigService
             loadout.RemoveWeapon(loadoutWeapon);
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.LOADOUT_CONFIG.SUCCESS.EDIT");
         this.SendNewMenuItems();
     }
@@ -164,8 +174,9 @@ public class LoadoutConfigService : ILoadoutConfigService
     [UIEvent(Events.UI.LoadoutConfig.Delete)]
     private void DeleteLoadoutConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var loadout = this._databaseContext.LoadoutConfigs.FirstOrDefault(x => x.Id == request.Id);
+        var loadout = databaseContext.LoadoutConfigs.FirstOrDefault(x => x.Id == request.Id);
         
         if (loadout is null)
         {
@@ -173,8 +184,8 @@ public class LoadoutConfigService : ILoadoutConfigService
             return;
         }
 
-        this._databaseContext.LoadoutConfigs.Remove(loadout);
-        this._databaseContext.SaveChanges();
+        databaseContext.LoadoutConfigs.Remove(loadout);
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.LOADOUT_CONFIG.SUCCESS.DELETE");
         this.SendNewMenuItems();
     }

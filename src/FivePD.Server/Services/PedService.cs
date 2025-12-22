@@ -29,7 +29,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private readonly IVehicleStorageService _vehicleStorageService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IRandomService _randomService;
     private readonly ITickQueueService _tickQueueService;
     private readonly INetworkEventService _networkEventService;
@@ -44,7 +44,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     /// <param name="vehicleStorageService">The <see cref="IVehicleStorageService" /> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
-    /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory" /> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService" /> to use.</param>
@@ -54,7 +54,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         IVehicleStorageService vehicleStorageService,
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
-        DatabaseContext databaseContext,
+        IDatabaseContextFactory dbContextFactory,
         IRandomService randomService,
         ITickQueueService tickQueueService,
         INetworkEventService networkEventService,
@@ -64,7 +64,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         this._vehicleStorageService = vehicleStorageService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._randomService = randomService;
         this._tickQueueService = tickQueueService;
         this._networkEventService = networkEventService;
@@ -105,6 +105,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
 
     private void GeneratePed(string serializedFPedBuilder)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var commonFPedBuilder = JsonConvert.DeserializeObject<CommonFPedBuilder>(serializedFPedBuilder);
         if (commonFPedBuilder is null || this._pedStorageService.InternalPeds.ContainsKey(commonFPedBuilder.NetworkId))
         {
@@ -116,13 +117,13 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         var owningFVehicle = this._vehicleStorageService.TryGetVehicle(commonFPedBuilder.OwningVehicleNetworkId);
         var vehicleData = owningFVehicle is null
             ? null
-            : this._databaseContext.VehicleData.FirstOrDefault(x => x.Id == owningFVehicle.VehicleDataId);
+            : databaseContext.VehicleData.FirstOrDefault(x => x.Id == owningFVehicle.VehicleDataId);
 
         FPed fPed = null;
         if (this._configService.GeneralConfig.Peds.ChanceToReuseData != 0 &&
             this._randomService.GetRandomChance <= this._configService.GeneralConfig.Peds.ChanceToReuseData)
         {
-            var pedData = this._databaseContext.PedData
+            var pedData = databaseContext.PedData
                 .OrderBy(_ => Guid.NewGuid())
                 .Include(pedHistory => pedHistory.Licenses)
                 .FirstOrDefault(ped => ped.Gender == commonFPedBuilder.Gender);
@@ -148,7 +149,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 if (vehicleData is not null)
                 {
                     vehicleData.PedDataId = pedData.Id;
-                    this._databaseContext.SaveChanges();
+                    databaseContext.SaveChanges();
                 }
             }
         }
@@ -171,7 +172,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 .WithRandomLicenses(this._configService.GeneralConfig.Peds.Licenses)
                 .WithAlcoholLevel(this._configService.GeneralConfig.Peds.Alcohol)
                 .WithDrugs(this._configService.GeneralConfig.Peds.Drugs);
-            var entry = this._databaseContext.PedData.Add(new PedData
+            var entry = databaseContext.PedData.Add(new PedData
             {
                 Firstname = fPedBuilder.Firstname,
                 Lastname = fPedBuilder.Lastname,
@@ -184,12 +185,12 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 Drugs = fPedBuilder.Drugs,
                 VehicleDataId = vehicleData?.Id,
             });
-            this._databaseContext.SaveChanges();
+            databaseContext.SaveChanges();
 
             if (vehicleData is not null)
             {
                 vehicleData.PedDataId = entry.Entity.Id;
-                this._databaseContext.SaveChanges();
+                databaseContext.SaveChanges();
             }
 
             fPed = fPedBuilder
@@ -208,6 +209,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     [UIEvent(Events.PedHistory.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<PedHistoryGetAllRequest>(serializedRequest);
 
         var filters = new Filters<PedData>();
@@ -221,7 +223,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             request.Filters.Gender != -1,
             pedHistory => pedHistory.Gender == (FGender)request.Filters.Gender);
 
-        var page = this._databaseContext.PedData
+        var page = databaseContext.PedData
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
@@ -231,8 +233,9 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     [UIEvent(Events.PedHistory.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var pedData = this._databaseContext.PedData
+        var pedData = databaseContext.PedData
             .AsNoTracking()
             .Include(x => x.VehicleData)
             .Include(x => x.Licenses)
@@ -243,7 +246,8 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     [UIEvent(Events.PedHistory.GetAllSimple)]
     private void GetAllSimpleUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var simplePedHistories = this._databaseContext.PedData
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var simplePedHistories = databaseContext.PedData
             .AsNoTracking()
             .Select(x => new SimplePedHistoryDTO
             {

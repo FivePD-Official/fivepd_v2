@@ -19,20 +19,21 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class CalloutDetailService : ICalloutDetailService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly INetworkEventService _networkEventService;
 
-    public CalloutDetailService(DatabaseContext databaseContext, INetworkEventService networkEventService)
+    public CalloutDetailService(IDatabaseContextFactory dbContextFactory, INetworkEventService networkEventService)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._networkEventService = networkEventService;
     }
 
     [UIEvent(Events.UI.CalloutDetails.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<CalloutDetailsRequest>(serializedRequest);
-        var page = this._databaseContext.CalloutDetails
+        var page = databaseContext.CalloutDetails
             .AsNoTracking()
             .Paginate(request.Page, new Filters<CalloutDetails>());
         this._networkEventService.TriggerEventSerialized(player, guid, page);
@@ -41,8 +42,9 @@ public class CalloutDetailService : ICalloutDetailService
     [UIEvent(Events.UI.CalloutDetails.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var calloutDetails = this._databaseContext.CalloutDetails
+        var calloutDetails = databaseContext.CalloutDetails
             .AsNoTracking()
             .Include(x => x.CalloutDetailsDepartments)
             .FirstOrDefault(x => x.Id == request.Id);
@@ -52,8 +54,9 @@ public class CalloutDetailService : ICalloutDetailService
     [UIEvent(Events.UI.CalloutDetails.UpdateRuleset)]
     private void UpdateRulesetUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<CalloutDetailsUpdateRulesetRequest>(serializedRequest);
-        var calloutDetails = this._databaseContext.CalloutDetails
+        var calloutDetails = databaseContext.CalloutDetails
             .Include(x => x.CalloutDetailsDepartments)
             .FirstOrDefault(x => x.Id == request.Id);
         if (calloutDetails is null)
@@ -68,23 +71,23 @@ public class CalloutDetailService : ICalloutDetailService
         {
             if (!request.Departments.Contains(calloutDetailsDepartment.DepartmentId))
             {
-                this._databaseContext.CalloutDetailsDepartments.Remove(calloutDetailsDepartment);
+                databaseContext.CalloutDetailsDepartments.Remove(calloutDetailsDepartment);
             }
         }
 
-        foreach (var a in request.Departments)
+        foreach (var id in request.Departments)
         {
-            if (calloutDetails.CalloutDetailsDepartments.All(x => x.DepartmentId != a))
+            if (calloutDetails.CalloutDetailsDepartments.All(x => x.DepartmentId != id))
             {
-                this._databaseContext.CalloutDetailsDepartments.Add(new CalloutDetailsDepartment
+                databaseContext.CalloutDetailsDepartments.Add(new CalloutDetailsDepartment
                 {
                     CalloutDetailsId = calloutDetails.Id,
-                    DepartmentId = a
+                    DepartmentId = id
                 });
             }
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         // TODO: This needs to be localized
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "Successful update", "Ruleset has been updated.");
     }

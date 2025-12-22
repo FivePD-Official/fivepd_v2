@@ -26,7 +26,7 @@ public class VehicleService : IVehicleService, IOnInit
     private readonly IPedStorageService _pedStorageService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly INetworkEventService _networkEventService;
 
     /// <summary>
@@ -36,21 +36,21 @@ public class VehicleService : IVehicleService, IOnInit
     /// <param name="pedService">The <see cref="IPedStorageService" /> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
-    /// <param name="databaseContext">The <see cref="DatabaseContext" /> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory" /> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService" /> to use.</param>
     public VehicleService(
         IVehicleStorageService vehicleStorageService,
         IPedStorageService pedStorageService,
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
-        DatabaseContext databaseContext,
+        IDatabaseContextFactory dbContextFactory,
         INetworkEventService networkEventService)
     {
         this._vehicleStorageService = (IInternalVehicleStorageService)vehicleStorageService;
         this._pedStorageService = pedStorageService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._networkEventService = networkEventService;
     }
 
@@ -68,14 +68,15 @@ public class VehicleService : IVehicleService, IOnInit
             return;
         }
 
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var ownerFPed = this._pedStorageService.TryGetPed(fVehicleBuilderDto.OwnerNetworkId);
-        var pedData = ownerFPed is null ? null : this._databaseContext.PedData.FirstOrDefault(x => x.Id == ownerFPed.PedDataId);
+        var pedData = ownerFPed is null ? null : databaseContext.PedData.FirstOrDefault(x => x.Id == ownerFPed.PedDataId);
         var fVehicleBuilder = new FVehicleBuilder(fVehicleBuilderDto)
             .WithItems(this._configService.Items)
             .WithRandomDocuments(this._configService.GeneralConfig.Vehicles.Documents)
             .WithPedHistory(pedData);
 
-        var entry = this._databaseContext.VehicleData.Add(new VehicleData
+        var entry = databaseContext.VehicleData.Add(new VehicleData
         {
             Items = fVehicleBuilder.Items,
             LicensePlate = fVehicleBuilder.LicensePlate,
@@ -87,20 +88,20 @@ public class VehicleService : IVehicleService, IOnInit
 
         if (pedData is not null)
         {
-            var existingVehicleData = this._databaseContext.VehicleData.FirstOrDefault(x => x.PedDataId == pedData.Id);
+            var existingVehicleData = databaseContext.VehicleData.FirstOrDefault(x => x.PedDataId == pedData.Id);
             if (existingVehicleData is not null)
             {
                 existingVehicleData.PedDataId = null;
-                this._databaseContext.SaveChanges();
+                databaseContext.SaveChanges();
             }
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
 
         if (pedData is not null)
         {
             pedData.VehicleDataId = entry.Entity.Id;
-            this._databaseContext.SaveChanges();
+            databaseContext.SaveChanges();
         }
 
         var fVehicle = fVehicleBuilder
@@ -116,8 +117,9 @@ public class VehicleService : IVehicleService, IOnInit
     [UIEvent(Events.Vehicle.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var vehicleData = this._databaseContext.VehicleData
+        var vehicleData = databaseContext.VehicleData
             .AsNoTracking()
             .Include(x => x.PedData)
             .Include(x => x.Documents)
@@ -129,6 +131,7 @@ public class VehicleService : IVehicleService, IOnInit
     [UIEvent(Events.Vehicle.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<VehicleHistoryGetAllRequest>(serializedRequest);
 
         var filters = new Filters<VehicleData>();
@@ -142,7 +145,7 @@ public class VehicleService : IVehicleService, IOnInit
             !string.IsNullOrEmpty(request.Filters.Brand),
             pedHistory => pedHistory.Brand.ToLower().Contains(request.Filters.Brand.ToLower()));
 
-        var page = this._databaseContext.VehicleData
+        var page = databaseContext.VehicleData
             .AsNoTracking()
             .Include(x => x.PedData)
             .Paginate(request.Page, filters);

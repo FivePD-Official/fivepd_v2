@@ -16,15 +16,15 @@ public class VehicleStorageService : IVehicleStorageService, IInternalVehicleSto
 {
     private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new();
     
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     
     public ReadOnlyDictionary<int, FVehicle> Vehicles => new(this._vehicles);
 
     ConcurrentDictionary<int, FVehicle> IInternalVehicleStorageService.InternalVehicles => this._vehicles;
 
-    public VehicleStorageService(DatabaseContext databaseContext)
+    public VehicleStorageService(IDatabaseContextFactory dbContextFactory)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
     }
 
     public FVehicle TryGetVehicle(int networkId)
@@ -43,6 +43,12 @@ public class VehicleStorageService : IVehicleStorageService, IInternalVehicleSto
     
     public VehicleData GetVehicleData(FVehicle vehicle)
     {
-        return vehicle is null ? null : this._databaseContext.VehicleData.FirstOrDefault(x => x.Id == vehicle.VehicleDataId);
+        if (vehicle is null)
+        {
+            return null;
+        }
+        
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        return databaseContext.VehicleData.FirstOrDefault(x => x.Id == vehicle.VehicleDataId);
     }
 }

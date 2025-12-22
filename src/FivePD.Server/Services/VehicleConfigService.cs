@@ -27,7 +27,7 @@ namespace FivePD.Server.Services;
 public class VehicleConfigService : IVehicleConfigService, IOnInit
 {
     private readonly ILogger _logger;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IMenuService _menuService;
     private readonly PlayerList _playerList;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
@@ -37,21 +37,21 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     /// Initializes a new instance of the <see cref="VehicleConfigService"/> class.
     /// </summary>
     /// <param name="logger">The logger instance.</param>
-    /// <param name="databaseContext">The database context.</param>
+    /// <param name="dbContextFactory">The database context factory.</param>
     /// <param name="menuService">The menu service.</param>
     /// <param name="playerList">The player list.</param>
     /// <param name="eventHandlerDictionary">The event handler dictionary.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public VehicleConfigService(
         ILogger logger,
-        DatabaseContext databaseContext,
+        IDatabaseContextFactory dbContextFactory,
         IMenuService menuService,
         PlayerList playerList,
         EventHandlerDictionary eventHandlerDictionary,
         INetworkEventService networkEventService)
     {
         this._logger = logger;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._menuService = menuService;
         this._playerList = playerList;
         this._eventHandlerDictionary = eventHandlerDictionary;
@@ -67,13 +67,15 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     /// <inheritdoc />
     public List<VehicleConfig<Dictionary<string, object>>> GetAll(VehicleConfigType type)
     {
-        return this._databaseContext.VehicleConfigs.Where(x => x.Type == type).ToList();
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        return databaseContext.VehicleConfigs.Where(x => x.Type == type).ToList();
     }
 
     /// <inheritdoc />
     public List<VehicleConfig<TOptions>> GetAll<TOptions>(VehicleConfigType type)
     {
-        var vehicleConfigs = this._databaseContext.VehicleConfigs.Where(x => x.Type == type).ToList();
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var vehicleConfigs = databaseContext.VehicleConfigs.Where(x => x.Type == type).ToList();
 
         try
         {
@@ -100,8 +102,9 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     [UIEvent(Events.UI.VehicleConfig.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var vehicleConfig = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
+        var vehicleConfig = databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
         if (vehicleConfig is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -114,6 +117,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     [UIEvent(Events.UI.VehicleConfig.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<VehicleConfigsRequest>(serializedRequest);
         var filters = new Filters<VehicleConfig<Dictionary<string, object>>>();
         filters.Add(
@@ -123,7 +127,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
             !string.IsNullOrEmpty(request.Filters.Model),
             vehicleConfig => vehicleConfig.Model.ToLower().Contains(request.Filters.Model.ToLower()));
         filters.Add(request.Filters.Type != -1, vehicleConfig => vehicleConfig.Type == (VehicleConfigType)request.Filters.Type);
-        var page = this._databaseContext.VehicleConfigs
+        var page = databaseContext.VehicleConfigs
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
@@ -133,8 +137,9 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     [UIEvent(Events.UI.VehicleConfig.Create)]
     private void CreateVehicleConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<AddVehicleConfigRequest>(serializedRequest);
-        this._databaseContext.VehicleConfigs.Add(new VehicleConfig<Dictionary<string, object>>
+        databaseContext.VehicleConfigs.Add(new VehicleConfig<Dictionary<string, object>>
         {
             Type = request.Type,
             Name = request.Name,
@@ -143,7 +148,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
             Extras = request.Extras,
             Options = request.Options,
         });
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CREATE", "LABEL.VEHICLE_CONFIG.SUCCESS.CREATE");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
@@ -152,8 +157,9 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     [UIEvent(Events.UI.VehicleConfig.Edit)]
     private void EditVehicleConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditVehicleConfigRequest>(serializedRequest);
-        var vehicleConfig = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
+        var vehicleConfig = databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
         if (vehicleConfig is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -166,7 +172,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
         vehicleConfig.Extras = request.Extras;
         vehicleConfig.Options = request.Options;
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.VEHICLE_CONFIG.SUCCESS.EDIT");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
@@ -175,16 +181,17 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     [UIEvent(Events.UI.VehicleConfig.Delete)]
     private void DeleteVehicleConfigUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var entityToRemove = this._databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
+        var entityToRemove = databaseContext.VehicleConfigs.FirstOrDefault(x => x.Id == request.Id);
         if (entityToRemove is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        this._databaseContext.VehicleConfigs.Remove(entityToRemove);
-        this._databaseContext.SaveChanges();
+        databaseContext.VehicleConfigs.Remove(entityToRemove);
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.VEHICLE_CONFIG.SUCCESS.DELETE");
         this.SendNewMenuItems();
         this.SendPoliceVehicleConfigUpdatesToAllClients();
@@ -222,7 +229,8 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
 
     private List<string> GetAllPoliceVehicleModelNames()
     {
-        return this._databaseContext.VehicleConfigs
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        return databaseContext.VehicleConfigs
             .AsNoTracking()
             .Where(x => x.Type == VehicleConfigType.Police)
             .Select(x => x.Model)

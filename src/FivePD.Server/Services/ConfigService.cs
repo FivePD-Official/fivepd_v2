@@ -60,15 +60,16 @@ public class ConfigService : IConfigService, IOnInit
 
     private void OnGetConfig([FromSource] Player player, string guid, string path)
     {
-        var config = this.InternalLoadFile<object>(path);
-
         if (path == "/Config/general")
         {
-            var generalConfig = (IInternalGeneralConfig)(GeneralConfig)config;
-            generalConfig.Database = null;
+            var config = this.InternalLoadFile<GeneralConfig>(path);
+            var clientConfig = config with { Database = new() };
+            this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(clientConfig));
+            return;
         }
 
-        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(config));
+        var otherConfig = this.InternalLoadFile<object>(path);
+        this._networkEventService.TriggerEvent(player, guid, JsonConvert.SerializeObject(otherConfig));
     }
 
     private T InternalLoadFile<T>(string path, bool useCache = true)
