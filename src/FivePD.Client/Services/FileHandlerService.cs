@@ -55,7 +55,7 @@ internal class FileHandlerService : IFileHandlerService
 
         while (!gotResponse)
         {
-            await Task.Delay(100);
+            await BaseScript.Delay(100);
         }
 
         return deserializedObject;

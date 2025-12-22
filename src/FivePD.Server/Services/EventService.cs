@@ -104,21 +104,16 @@ public class EventService : IEventService, IOnInit
     /// <inheritdoc />
     public async Task<string> TriggerEventStrictAsync(Player player, string eventName, params object[] args)
     {
-        var tcs = new TaskCompletionSource<string>();
-        this.TriggerEventStrict(player, eventName, s => tcs.TrySetResult(s), args);
+        var value = string.Empty;
+        this.TriggerEventStrict(player, eventName, s => { value = s; }, args);
 
-        var completedTask = await Task.WhenAny(tcs.Task, Task.Delay(5000));
-        if (completedTask == tcs.Task)
+        // TODO: wait only few seconds, also I'm not sure if this blocks the thread or not, maybe run it in a tick (ITickQueueService)?
+        while (value.Length == 0)
         {
-            return await tcs.Task;
+            await BaseScript.Delay(0);
         }
 
-        this._logger?.Warning(
-            "Event \"{EventName}\" timed out after 5 seconds for player \"{PlayerName}\". (Player handle: \"{PlayerHandle}\").",
-            eventName,
-            player?.Name ?? "unknown",
-            player?.Handle ?? "unknown");
-        return string.Empty;
+        return value;
     }
 
     private Player GetRandomPlayer()

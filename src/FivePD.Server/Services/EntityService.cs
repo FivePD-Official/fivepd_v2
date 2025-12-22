@@ -49,7 +49,8 @@ public class EntityService : IEntityService
 
         while (!Cfx.API.DoesEntityExist(handle))
         {
-            await Task.Delay(100);
+            // TODO: maybe use Task instead of BaseScript.Delay?
+            await BaseScript.Delay(100);
         }
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
@@ -69,7 +70,7 @@ public class EntityService : IEntityService
 
         while (!Cfx.API.DoesEntityExist(handle))
         {
-            await Task.Delay(100);
+            await BaseScript.Delay(100);
         }
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
@@ -88,7 +89,7 @@ public class EntityService : IEntityService
 
         while (!Cfx.API.DoesEntityExist(handle))
         {
-            await Task.Delay(100);
+            await BaseScript.Delay(100);
         }
 
         Cfx.API.SetEntityDistanceCullingRadius(handle, 10000f);
