@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
@@ -62,7 +64,6 @@ public class Coroner : AssistanceService
     /// <inheritdoc />
     public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
-        var a = this._entityService.GetClosestFPedToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
         this._target = this.RequestedBy.GetUnderlyingPlayer().Character.Position;
         await Task.CompletedTask;
     }
@@ -96,15 +97,15 @@ public class Coroner : AssistanceService
 
         this._coroner1.Task.DriveTo(this._van.GetUnderlyingVehicle, this._target, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
-        while (this._van.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance)
+        while (this._van.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance * SlowingDistance)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
                 return;
             }
 
-            var distance = Vector3.Distance(this._van.GetUnderlyingVehicle.Position, this._target);
-            var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
+            var distanceSquared = this._van.GetUnderlyingVehicle.Position.DistanceToSquared(this._target);
+            var distanceRatio = MathHelper.Clamp(((float)Math.Sqrt(distanceSquared) - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
 
             this._coroner1.Properties.SetDrivingSpeed(currentSpeed);
@@ -116,7 +117,7 @@ public class Coroner : AssistanceService
 
         await Task.Delay(2000);
 
-        var nearbyDeadPeds = this._entityService.GetPedsInRangeOfEntity(this._van.GetUnderlyingVehicle, 100f)
+        var nearbyDeadPeds = this._entityService.GetPedsInRangeOfEntity(this._van.GetUnderlyingVehicle, SquaredDistances._100)
             .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0)
             .ToList();
         this._syncService.AddEntities(typeof(Coroner), nearbyDeadPeds, this._target);

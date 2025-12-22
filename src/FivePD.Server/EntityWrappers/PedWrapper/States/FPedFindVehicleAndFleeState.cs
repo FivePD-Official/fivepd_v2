@@ -29,7 +29,7 @@ public class FPedFindVehicleAndFleeState : FPedState
         var vehicles = this._entityService.GetAllVehicles();
         var closestVehicle = vehicles
             .Where(v => Cfx.API.DoesEntityExist(v.Handle))
-            .OrderBy(v => Vector3.Distance(v.Position, pedPosition))
+            .OrderBy(v => v.Position.DistanceToSquared(pedPosition))
             .FirstOrDefault();
 
         if (closestVehicle is not null && Cfx.API.DoesEntityExist(closestVehicle.Handle))

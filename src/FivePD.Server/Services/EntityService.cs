@@ -119,31 +119,31 @@ public class EntityService : IEntityService
     }
 
     /// <inheritdoc />
-    public Ped GetClosestPedToEntity(Entity entity, float range = 15f)
+    public Ped GetClosestPedToEntity(Entity entity, float rangeSquared = SquaredDistances._15)
     {
         return this.GetAllPeds()
             .OrderBy(x => x.Position.DistanceToSquared(entity.Position))
-            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && x.Position.DistanceToSquared(entity.Position) <= range);
+            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && x.Position.DistanceToSquared(entity.Position) <= rangeSquared);
     }
 
     /// <inheritdoc />
-    public FPed GetClosestFPedToEntity(Entity entity, float range = 15f)
+    public FPed GetClosestFPedToEntity(Entity entity, float rangeSquared = SquaredDistances._15)
     {
-        var ped = this.GetClosestPedToEntity(entity, range);
+        var ped = this.GetClosestPedToEntity(entity, rangeSquared);
         return ped is null ? null : this._pedStorageService.TryGetPed(ped.NetworkId);
     }
 
     /// <inheritdoc />
-    public List<Ped> GetPedsInRangeOfPosition(Vector3 pos, float range = 15f)
+    public List<Ped> GetPedsInRangeOfPosition(Vector3 pos, float rangeSquared = SquaredDistances._15)
     {
         return this.GetAllPeds()
-            .Where(x => x.Position.DistanceToSquared(pos) <= range).ToList();
+            .Where(x => x.Position.DistanceToSquared(pos) <= rangeSquared).ToList();
     }
 
     /// <inheritdoc />
-    public List<Ped> GetPedsInRangeOfEntity(Entity entity, float range = 15f)
+    public List<Ped> GetPedsInRangeOfEntity(Entity entity, float rangeSquared = SquaredDistances._15)
     {
-        return this.GetPedsInRangeOfPosition(entity.Position, range);
+        return this.GetPedsInRangeOfPosition(entity.Position, rangeSquared);
     }
 
     /// <inheritdoc />
@@ -169,31 +169,31 @@ public class EntityService : IEntityService
     }
 
     /// <inheritdoc />
-    public Vehicle GetClosestVehicleToEntity(Entity entity, float range = 15f)
+    public Vehicle GetClosestVehicleToEntity(Entity entity, float rangeSquared = SquaredDistances._15)
     {
         return this.GetAllVehicles()
             .OrderBy(x => x.Position.DistanceToSquared(entity.Position))
-            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && Math.Sqrt(x.Position.DistanceToSquared(entity.Position)) <= range);
+            .FirstOrDefault(x => x.NetworkId != entity.NetworkId && x.Position.DistanceToSquared(entity.Position) <= rangeSquared);
     }
 
     /// <inheritdoc />
-    public FVehicle GetClosestFVehicleToEntity(Entity entity, float range = 15f)
+    public FVehicle GetClosestFVehicleToEntity(Entity entity, float rangeSquared = SquaredDistances._15)
     {
-        var vehicle = this.GetClosestVehicleToEntity(entity, range);
+        var vehicle = this.GetClosestVehicleToEntity(entity, rangeSquared);
         return vehicle is null ? null : this._vehicleStorageService.TryGetVehicle(vehicle.NetworkId);
     }
 
     /// <inheritdoc />
-    public List<Vehicle> GetVehiclesInRangeOfPosition(Vector3 pos, float range = 15f)
+    public List<Vehicle> GetVehiclesInRangeOfPosition(Vector3 pos, float rangeSquared = SquaredDistances._15)
     {
         return this.GetAllVehicles()
-            .Where(x => Math.Sqrt(x.Position.DistanceToSquared(pos)) <= range).ToList();
+            .Where(x => x.Position.DistanceToSquared(pos) <= rangeSquared).ToList();
     }
 
     /// <inheritdoc />
-    public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float range = 15f)
+    public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float rangeSquared = SquaredDistances._15)
     {
-        return this.GetVehiclesInRangeOfPosition(entity.Position, range);
+        return this.GetVehiclesInRangeOfPosition(entity.Position, rangeSquared);
     }
 
     /// <inheritdoc />
@@ -232,7 +232,7 @@ public class EntityService : IEntityService
     }
 
     /// <inheritdoc />
-    public void ClearArea(Vector3 pos, float radius = 5f)
+    public void ClearArea(Vector3 pos, float radius = SquaredDistances._15)
     {
         foreach (var ped in this.GetPedsInRangeOfPosition(pos, radius).Where(ped => !Cfx.API.IsPedAPlayer(ped.Handle)))
         {

@@ -167,7 +167,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                     .Include(x => x.TypeConfigs)
                     .ThenInclude(x => x.TypeConfig)
                     .ToList();
-                var orderedStations = stations.OrderBy(s => Vector3.Distance(s.Position, requestedBy.GetUnderlyingPlayer().Character.Position));
+                var orderedStations = stations.OrderBy(s => s.Position.DistanceToSquared(requestedBy.GetUnderlyingPlayer().Character.Position));
 
                 foreach (var station in orderedStations)
                 {
@@ -193,7 +193,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 else
                 {
                     selectedStationTypeConfig.ActiveCapacity++;
-                    this._databaseContext.SaveChanges();
+                    await this._databaseContext.SaveChangesAsync();
 
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = selectedStation.Position;
                     ((IInternalAssistanceService)assistanceService).SpawnHeading = 0f; // TODO

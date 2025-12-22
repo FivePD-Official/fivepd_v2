@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
@@ -59,34 +60,34 @@ public interface IEntityService
     /// !! Use this if you do not need generated data for the closest ped.
     /// </summary>
     /// <param name="entity">The entity to use.</param>
-    /// <param name="range">The range to use.</param>
+    /// <param name="rangeSquared">The squared range to use.</param>
     /// <returns>The closest ped.</returns>
-    public Ped GetClosestPedToEntity(Entity entity, float range = 15f);
+    public Ped GetClosestPedToEntity(Entity entity, float rangeSquared = SquaredDistances._15);
 
     /// <summary>
     /// Gets the closest ped to the specified entity.
     /// !! Use this if you do not need generated data for the closest ped.
     /// </summary>
     /// <param name="entity">The entity to use.</param>
-    /// <param name="range">The range to use.</param>
+    /// <param name="rangeSquared">The squared range to use.</param>
     /// <returns>The closest ped.</returns>
-    public FPed GetClosestFPedToEntity(Entity entity, float range = 15f);
+    public FPed GetClosestFPedToEntity(Entity entity, float rangeSquared = SquaredDistances._15);
 
     /// <summary>
     /// Gets all peds in range of the specified position.
     /// </summary>
     /// <param name="pos">The position to use.</param>
-    /// <param name="range">The range to use.</param>
+    /// <param name="rangeSquared">The squared range to use.</param>
     /// <returns>The peds.</returns>
-    public List<Ped> GetPedsInRangeOfPosition(Vector3 pos, float range = 15f);
+    public List<Ped> GetPedsInRangeOfPosition(Vector3 pos, float rangeSquared = SquaredDistances._15);
 
     /// <summary>
     /// Gets all peds in range of the specified entity.
     /// </summary>
     /// <param name="entity">The entity to use.</param>
-    /// <param name="range">The range to use.</param>
+    /// <param name="rangeSquared">The squared range to use.</param>
     /// <returns>The peds.</returns>
-    public List<Ped> GetPedsInRangeOfEntity(Entity entity, float range = 15f);
+    public List<Ped> GetPedsInRangeOfEntity(Entity entity, float rangeSquared = SquaredDistances._15);
 
     /// <summary>
     /// Gets all vehicles.
@@ -105,34 +106,34 @@ public interface IEntityService
     /// !! Use this if you do not need generated data for the closest vehicle.
     /// </summary>
     /// <param name="entity">The entity to use.</param>
-    /// <param name="range">The range to use.</param>
+    /// <param name="rangeSquared">The squared range to use.</param>
     /// <returns>The closest vehicle.</returns>
-    public Vehicle GetClosestVehicleToEntity(Entity entity, float range = 15f);
+    public Vehicle GetClosestVehicleToEntity(Entity entity, float rangeSquared = SquaredDistances._15);
 
     /// <summary>
     /// Gets the closest vehicle to the specified entity.
     /// !! Use this if you do not need generated data for the closest vehicle.
     /// </summary>
     /// <param name="entity">The entity to use.</param>
-    /// <param name="range">The range to use.</param>
+    /// <param name="rangeSquared">The squared range to use.</param>
     /// <returns>The closest vehicle.</returns>
-    public FVehicle GetClosestFVehicleToEntity(Entity entity, float range = 15f);
+    public FVehicle GetClosestFVehicleToEntity(Entity entity, float rangeSquared = SquaredDistances._15);
 
     /// <summary>
     /// Gets all vehicles in range of the specified position.
     /// </summary>
     /// <param name="pos">The position to use.</param>
-    /// <param name="range">The range to use.</param>
+    /// <param name="rangeSquared">The squared range to use.</param>
     /// <returns>The vehicles.</returns>
-    public List<Vehicle> GetVehiclesInRangeOfPosition(Vector3 pos, float range = 15f);
+    public List<Vehicle> GetVehiclesInRangeOfPosition(Vector3 pos, float rangeSquared = SquaredDistances._15);
 
     /// <summary>
     /// Gets all vehicles in range of the specified entity.
     /// </summary>
     /// <param name="entity">The entity to use.</param>
-    /// <param name="range">The range to use.</param>
+    /// <param name="rangeSquared">The squared range to use.</param>
     /// <returns>The vehicles.</returns>
-    public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float range = 15f);
+    public List<Vehicle> GetVehiclesInRangeOfEntity(Entity entity, float rangeSquared = SquaredDistances._15);
 
     /// <summary>
     /// Gets the closest entity to a player.
@@ -149,5 +150,5 @@ public interface IEntityService
     /// </summary>
     /// <param name="pos">The position to use.</param>
     /// <param name="radius">The radius to use.</param>
-    public void ClearArea(Vector3 pos, float radius = 5f);
+    public void ClearArea(Vector3 pos, float radius = SquaredDistances._15);
 }

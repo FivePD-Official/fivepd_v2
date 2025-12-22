@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -118,15 +119,15 @@ public class Towing : AssistanceService
 
         this._driver.Task.DriveTo(this._towTruck.GetUnderlyingVehicle, this._targetPosition, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
-        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= SlowingDistance)
+        while (this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition) >= SlowingDistance * SlowingDistance)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
                 return;
             }
 
-            var distance = Vector3.Distance(this._towTruck.GetUnderlyingVehicle.Position, this._targetPosition);
-            var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
+            var distanceSquared = this._towTruck.GetUnderlyingVehicle.Position.DistanceToSquared(this._targetPosition);
+            var distanceRatio = MathHelper.Clamp(((float)Math.Sqrt(distanceSquared) - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
 
             this._driver.Properties.SetDrivingSpeed(currentSpeed);

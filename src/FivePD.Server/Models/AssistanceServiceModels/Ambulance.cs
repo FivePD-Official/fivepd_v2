@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
@@ -101,15 +103,15 @@ public class Ambulance : AssistanceService
 
         this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
-        while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance)
+        while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance * SlowingDistance)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {
                 return;
             }
 
-            var distance = Vector3.Distance(this._ambulance.GetUnderlyingVehicle.Position, this._target);
-            var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
+            var distanceSquared = this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target);
+            var distanceRatio = MathHelper.Clamp(((float)Math.Sqrt(distanceSquared) - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
             var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
 
             this._driver.Properties.SetDrivingSpeed(currentSpeed);
@@ -121,7 +123,7 @@ public class Ambulance : AssistanceService
 
         await Task.Delay(2000);
 
-        var nearbyInjuredPeds = this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, 200f)
+        var nearbyInjuredPeds = this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, SquaredDistances._200)
             .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0)
             .ToList();
 

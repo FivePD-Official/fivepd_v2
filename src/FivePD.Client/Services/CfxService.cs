@@ -107,10 +107,6 @@ internal class CfxService : ICfxService, IOnInit
 
         this._eventHandlerDictionary[Events.Cfx.GetClosestVehicle] += new Action<string, Vector3, float>((callbackId, location, radius) =>
         {
-            Debug.WriteLine("asdasd");
-            Debug.WriteLine($"{callbackId}");
-            Debug.WriteLine($"{location}");
-            Debug.WriteLine($"{radius}");
             var closestVehicle = World.GetAllVehicles().FirstOrDefault(x => World.GetDistance(x.Position, location) <= radius);
             BaseScript.TriggerServerEvent(Events.Generic.Callback, callbackId, closestVehicle?.NetworkId ?? 0);
         });
