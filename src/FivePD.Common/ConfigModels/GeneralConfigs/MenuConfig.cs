@@ -45,6 +45,10 @@ public sealed record MenusConfig
         {
             return this.Access.ToUpper() == "ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS";
         }
+        
+        public bool MustBeOnDuty { get; init; } = false;
+        
+        public bool MustBeInDepartment { get; init; } = false;
     }
 
     public sealed record DispatchMenuConfig : MenuConfig
