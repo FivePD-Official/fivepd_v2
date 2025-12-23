@@ -195,6 +195,12 @@ internal class Bootstrapper : BaseScript
             .IsSingleton();
 
         services
+            .RegisterType<DebugService>()
+            .As<IDebugService>()
+            .As<IOnInit>()
+            .IsSingleton();
+
+        services
             .RegisterType<ConfigService>()
             .As<IConfigService>();
 

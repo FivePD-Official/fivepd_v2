@@ -265,6 +265,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<DevToolsService>();
         services.AddSingleton<IDevToolsService>(provider => provider.GetRequiredService<DevToolsService>());
 
+        services.AddSingleton<DebugService>();
+        services.AddSingleton<IDebugService>(provider => provider.GetRequiredService<DebugService>());
+
         services.AddSingleton<DepartmentService>();
         services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
 

@@ -1,0 +1,21 @@
+﻿<div class="flex flex-col gap-2">
+  <p class="text-zinc-400 text-sm italic">
+    These are debug values. Please provide them when asking for support or reporting an issue.
+  </p>
+
+  <div class="flex gap-2">
+    <button
+      type="button"
+      (click)="copyText()"
+      class="px-3 py-1 bg-zinc-700 text-zinc-300 rounded hover:bg-zinc-600 transition"
+    >
+      Copy
+    </button>
+  </div>
+
+  <textarea
+    #ta
+    [value]="debugInfo$ | async"
+    readonly
+    class="min-h-[100px] max-h-[250px] p-3 resize-none w-full border border-zinc-600 bg-transparent rounded-md text-zinc-300 placeholder:text-zinc-400 overflow-hidden"  ></textarea>
+</div>
