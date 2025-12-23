@@ -1,61 +1,68 @@
 <div
   #modalBackdrop
-  class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col animate-fadeIn justify-center"
+  class="absolute inset-0 w-full h-full bg-zinc-900/90 z-50 rounded-xl flex flex-col animate-fadeIn justify-center overflow-hidden"
   [ngClass]="{
     'items-center': position === 'center',
     'items-end': position === 'side'
   }">
-  <div #modalContainer
-       class="main-modal-container py-4 rounded-lg bg-zinc-800 overflow-hidden"
+  <div class="absolute inset-0 h-full w-full  flex flex-col"
        [ngClass]="{
+  'items-center justify-start py-20 overflow-x-auto': position === 'center',
+  'items-end justify-start py-4 overflow-x-hidden': position === 'side'
+  }">
+    <div #modalContainer
+         class="main-modal-container py-4 rounded-lg bg-zinc-800"
+         [ngClass]="{
         'min-w-[500px]': position === 'side' ? false : (modalRef.options.columns || 1) === 1,
         'min-w-[30vw] max-w-[60vw]': position === 'side' ? false : (modalRef.options.columns || 1) > 1,
-        'animate-modalCenter w-max max-h-[70vh]': position === 'center',
-        'animate-modalSide h-[calc(100%-40px)] w-3/12 mr-[20px]': position === 'side'
+        'animate-modalCenter w-max': position === 'center',
+        'animate-modalSide w-3/12 h-full mr-[20px]': position === 'side'
        }">
-    <div class="h-full overflow-x-auto px-6">
-      <div class="mb-6">
-        <div class="flex flex-row items-center justify-between">
-          <p class="text-2xl font-bold text-zinc-100">{{ modalRef.options.title | translate }}</p>
-          <button (click)="close()"
-                  class="group flex flex-row items-center justify-between p-4 py-2 pr-0 rounded-full border-none cursor-pointer">
-            <div app-icon
-                 name="XMark"
-                 className="h-[22px] text-zinc-400 group-hover:text-white">
-            </div>
-          </button>
-        </div>
-        @if (modalRef.options.description) {
-          <p class="text-zinc-400 text-lg mt-1" [innerHtml]="modalRef.options.description! | safeHtml"></p>
-        }
-      </div>
-      <div>
-        <div #modalContent></div>
-        <div class="w-full flex flex-row items-center justify-between"
-             [ngClass]="{'mt-7': loader || modalRef.options.buttons}">
-          @if (loader) {
-            <div
-              class="flex flex-row items-center gap-3">
-              <div class="w-[20px] h-[20px] rounded-full border-2 border-zinc-600 border-b-zinc-200 animate-spin"></div>
-              <p class="text-zinc-300">{{ loader!.label }}</p>
-            </div>
-          } @else {
-            <div></div>
+      <div class="h-full px-6">
+        <div class="mb-6">
+          <div class="flex flex-row items-center justify-between">
+            <p class="text-2xl font-bold text-zinc-100">{{ modalRef.options.title | translate }}</p>
+            <button (click)="close()"
+                    class="group flex flex-row items-center justify-between p-4 py-2 pr-0 rounded-full border-none cursor-pointer">
+              <div app-icon
+                   name="XMark"
+                   className="h-[22px] text-zinc-400 group-hover:text-white">
+              </div>
+            </button>
+          </div>
+          @if (modalRef.options.description) {
+            <p class="text-zinc-400 text-lg mt-1" [innerHtml]="modalRef.options.description! | safeHtml"></p>
           }
+        </div>
+        <div>
+          <div #modalContent></div>
+          <div class="w-full flex flex-row items-center justify-between"
+               [ngClass]="{'mt-7': loader || modalRef.options.buttons}">
+            @if (loader) {
+              <div
+                class="flex flex-row items-center gap-3">
+                <div
+                  class="w-[20px] h-[20px] rounded-full border-2 border-zinc-600 border-b-zinc-200 animate-spin"></div>
+                <p class="text-zinc-300">{{ loader!.label }}</p>
+              </div>
+            } @else {
+              <div></div>
+            }
 
-          <div class="flex flex-row items-center justify-end gap-2.5">
-            @if (modalRef.options.buttons?.cancel) {
-              <app-button type="button"
-                          [variant]="modalRef.options.buttons!.cancel.variant"
-                          [label]="modalRef.options.buttons!.cancel.label | translate"
-                          (onClick)="close()"/>
-            }
-            @if (modalRef.options.buttons?.submit) {
-              <app-button [variant]="modalRef.options.buttons!.submit.variant"
-                          [label]="modalRef.options.buttons!.submit.label | translate"
-                          [disabled]="!!loader"
-                          (onClick)="submit()"/>
-            }
+            <div class="flex flex-row items-center justify-end gap-2.5">
+              @if (modalRef.options.buttons?.cancel) {
+                <app-button type="button"
+                            [variant]="modalRef.options.buttons!.cancel.variant"
+                            [label]="modalRef.options.buttons!.cancel.label | translate"
+                            (onClick)="close()"/>
+              }
+              @if (modalRef.options.buttons?.submit) {
+                <app-button [variant]="modalRef.options.buttons!.submit.variant"
+                            [label]="modalRef.options.buttons!.submit.label | translate"
+                            [disabled]="!!loader"
+                            (onClick)="submit()"/>
+              }
+            </div>
           </div>
         </div>
       </div>
