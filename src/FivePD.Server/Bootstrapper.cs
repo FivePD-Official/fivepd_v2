@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -27,10 +23,8 @@ using FivePD.Server.Services.Dispatcher;
 using FivePD.Server.Services.TrafficStopServices;
 using FivePD.Server.Services.VariableData;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
-using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
 
@@ -225,7 +219,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton(Log.Logger);
         services.AddSingleton(this.EventHandlers);
         services.AddSingleton(this.Players);
-        services.AddDbContext<DatabaseContext>();
+        services.AddDbContext<DatabaseContext>(ServiceLifetime.Scoped);
 
         services.AddTransient<NetworkEventService>();
         services.AddTransient<INetworkEventService>(provider => provider.GetRequiredService<NetworkEventService>());
