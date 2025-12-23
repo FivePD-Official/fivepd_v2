@@ -4,11 +4,13 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Common.Utilities;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.EntityWrappers.PedWrapper.States;
+using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
@@ -63,6 +65,8 @@ public sealed class InteractionMenu : Menu
     internal MenuButtonItem StepOutOfVehicle { get; private set; }
 
     internal MenuListItem Movement { get; private set; }
+
+    internal MenuButtonItem EnterVehicleAsPassenger { get; private set; }
 
     public override bool CanOpen(FPlayer player)
     {
@@ -390,6 +394,7 @@ public sealed class InteractionMenu : Menu
                 return;
             }
 
+            this._pedBehaviorService.StopBehavior(fPed);
             var playerPed = FPed.FromFPlayer(player);
 
             switch (index)
@@ -469,6 +474,7 @@ public sealed class InteractionMenu : Menu
                     Message = "The ped has been let go.",
                 });
 
+            this._pedBehaviorService.StopBehavior(fPed);
             fPed.Stopped.Value = false;
             Cfx.API.SetEntityDistanceCullingRadius(fPed.GetUnderlyingPed.Handle, 500f);
             fPed.Properties.SetAlwaysKeepTask(false);
@@ -478,11 +484,11 @@ public sealed class InteractionMenu : Menu
             {
                 var vehicleHandle = Cfx.API.GetVehiclePedIsIn(fPed.GetUnderlyingPed.Handle, false);
                 var vehicleNetId = Cfx.API.NetworkGetNetworkIdFromEntity(vehicleHandle);
-                fPed.Task.CruiseWithVehicle(vehicleNetId, 15f);
+                fPed.ChangeState(new FPedCruiseWithVehicleState(fPed, vehicleNetId));
             }
             else
             {
-                fPed.Task.WanderAround();
+                fPed.ChangeState(new FPedWanderAroundState(fPed));
             }
         };
         items.Add(this.LetGo);
@@ -496,10 +502,31 @@ public sealed class InteractionMenu : Menu
                 return;
             }
 
-            fPed.Task.LeaveVehicle();
-            fPed.Task.StandStill(-1);
+            this._pedBehaviorService.StopBehavior(fPed);
+            fPed.ChangeState(new FPedStepOutVehicleThenStandStillState(fPed));
         };
         items.Add(this.StepOutOfVehicle);
+
+        this.EnterVehicleAsPassenger = new MenuButtonItem("Order ped to enter vehicle", "");
+        this.EnterVehicleAsPassenger.OnSelect += async player =>
+        {
+            var pedTask = this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
+            var vehicleTask = this._entityService.GetClosestEntityToPlayerAsync<FVehicle>(player.GetUnderlyingPlayer());
+
+            await Task.WhenAll(pedTask, vehicleTask);
+
+            var fPed = await pedTask;
+            var fVehicle = await vehicleTask;
+
+            if (fPed is null || fPed.Properties.IsDead || fPed.Properties.IsInVehicle || fVehicle is null)
+            {
+                return;
+            }
+
+            this._pedBehaviorService.StopBehavior(fPed);
+            fPed.ChangeState(new FPedEnterVehicleAsPassengerState(fPed, fVehicle));
+        };
+        items.Add(this.EnterVehicleAsPassenger);
 
         return items;
     }

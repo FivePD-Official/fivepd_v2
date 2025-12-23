@@ -661,5 +661,8 @@ internal readonly record struct Events
      
         // bool PlaceObjectOnGroundProperly(int _object);
         public const string PlaceObjectOnGroundProperly = "fivepd:cfx:PlaceObjectOnGroundProperly";
+        
+        // void TaskShootAtEntity(int entity,int target,int duration,uint firingPattern);
+        public const string TaskShootAtEntity = "fivepd:cfx:TaskShootAtEntity";
     }
 }

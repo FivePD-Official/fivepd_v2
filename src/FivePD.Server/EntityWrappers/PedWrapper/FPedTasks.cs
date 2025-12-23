@@ -28,6 +28,20 @@ public sealed class FPedTasks
     }
 
     /// <summary>
+    /// Custom wrapper around the native Task.EnterVehicle.
+    /// Tasks the ped to enter the vehicle into the preferred seat or any available seat.
+    /// </summary>
+    /// <param name="vehicle">The vehicle.</param>
+    /// <param name="preferredSeat">The seat.</param>
+    /// <param name="timeout">The timeout.</param>
+    /// <param name="speed">The speed.</param>
+    /// <param name="flag">The flag.</param>
+    public void FEnterVehicle(Vehicle vehicle, FVehicleSeat preferredSeat = FVehicleSeat.Any, int timeout = -1, float speed = 0.0f, int flag = 0) =>
+        this.SetTask(
+            FPedTasksDTO.Events.FivePD.FEnterVehicle,
+            new FPedTasksDTO.EnterVehicle { VehicleNetworkId = vehicle.NetworkId, Speed = speed, Seat = preferredSeat, Flag = flag, Timeout = timeout });
+
+    /// <summary>
     /// Invokes the "ped.Task.AchieveHeading" native.
     /// </summary>
     /// <param name="heading">The heading.</param>

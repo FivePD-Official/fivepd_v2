@@ -238,6 +238,18 @@ internal class CfxService : ICfxService, IOnInit
 
             this._queueService.Queue(() => Cfx.API.PlaceObjectOnGroundProperly(entity.Handle));
         });
+
+        this._eventHandlerDictionary[Events.Cfx.TaskShootAtEntity] += new Action<int, int, int, uint>((entityNetId, targetNetId, duration, firingPattern) =>
+        {
+            var entity = this.GetEntity(entityNetId);
+            var target = this.GetEntity(targetNetId);
+            if (entity is null || target is null)
+            {
+                return;
+            }
+
+            this._queueService.Queue(() => Cfx.API.TaskShootAtEntity(entity.Handle, target.Handle, duration, firingPattern));
+        });
     }
 
     private Entity GetEntity(int networkId)

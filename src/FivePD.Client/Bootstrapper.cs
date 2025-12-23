@@ -263,6 +263,11 @@ internal class Bootstrapper : BaseScript
             .IsSingleton();
 
         services
+            .RegisterType<TaskService>()
+            .As<ITaskService>()
+            .IsSingleton();
+
+        services
             .RegisterType<NotificationService>()
             .As<INotificationService>()
             .As<IOnInit>()

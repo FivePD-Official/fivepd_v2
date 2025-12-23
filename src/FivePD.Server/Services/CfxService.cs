@@ -140,4 +140,9 @@ public class CfxService : ICfxService
     {
         this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.PlaceObjectOnGroundProperly, entity);
     }
+
+    public void TaskShootAtEntity(int entity, int target, int duration, uint firingPattern)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.TaskShootAtEntity, entity, target, duration, firingPattern);
+    }
 }

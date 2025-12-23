@@ -91,11 +91,8 @@ public class PedService : IPedService, IOnInit, IOnDestroy
             var underlyingPed = keyValuePair.Value.GetUnderlyingPed;
             if (underlyingPed is null || Cfx.API.GetEntityHealth(underlyingPed.Handle) <= 0 || !Cfx.API.DoesEntityExist(underlyingPed.Handle))
             {
-                if (underlyingPed is not null)
-                {
-                    this._pedBehaviorService.StopBehavior(underlyingPed.NetworkId);
-                }
-
+                this._pedBehaviorService.StopBehavior(keyValuePair.Value.NetworkId);
+                keyValuePair.Value.Properties.RemoveBlips();
                 this._pedStorageService.InternalPeds.TryRemove(keyValuePair.Key, out _);
             }
         }

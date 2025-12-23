@@ -124,4 +124,9 @@ public interface ICfxService
     /// Please refer to the FiveM API documentation. This method invokes the same method on the client side.
     /// </summary>
     public void PlaceObjectOnGroundProperly(int entity);
+
+    /// <summary>
+    /// Please refer to the FiveM API documentation. This method invokes the same method on the client side.
+    /// </summary>
+    public void TaskShootAtEntity(int entity, int target, int duration, uint firingPattern);
 }

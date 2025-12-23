@@ -27,6 +27,7 @@ internal class InteractionService : IInteractionService, IOnInit
     private readonly ILocalPlayerService _localPlayerService;
     private readonly IGameNotificationService _gameNotificationService;
     private readonly IVehicleConfigService _vehicleConfigService;
+    private readonly ITaskService _taskService;
 
     private Ped _currentlyFollowingPed;
 
@@ -42,6 +43,7 @@ internal class InteractionService : IInteractionService, IOnInit
     /// <param name="localPlayerService">The <see cref="ILocalPlayerService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="vehicleConfigService">The <see cref="IVehicleConfigService"/> to use.</param>
+    /// <param name="taskService">The <see cref="ITaskService"/> to use.</param>
     public InteractionService(
         IPedService pedService,
         IVehicleService vehicleService,
@@ -50,7 +52,8 @@ internal class InteractionService : IInteractionService, IOnInit
         ITickService tickService,
         ILocalPlayerService localPlayerService,
         IGameNotificationService gameNotificationService,
-        IVehicleConfigService vehicleConfigService)
+        IVehicleConfigService vehicleConfigService,
+        ITaskService taskService)
     {
         this._pedService = pedService;
         this._vehicleService = vehicleService;
@@ -60,6 +63,7 @@ internal class InteractionService : IInteractionService, IOnInit
         this._localPlayerService = localPlayerService;
         this._gameNotificationService = gameNotificationService;
         this._vehicleConfigService = vehicleConfigService;
+        this._taskService = taskService;
     }
 
     /// <inheritdoc />
@@ -352,50 +356,14 @@ internal class InteractionService : IInteractionService, IOnInit
             return;
         }
 
-        var preferredPassengerSeats = new List<VehicleSeat>
+        if (this._taskService.EnterVehicle(Game.PlayerPed, closestVehicle) == 0)
         {
-            VehicleSeat.LeftRear,
-            VehicleSeat.RightRear,
-            VehicleSeat.ExtraSeat1,
-            VehicleSeat.ExtraSeat2,
-            VehicleSeat.ExtraSeat3,
-            VehicleSeat.ExtraSeat4,
-            VehicleSeat.ExtraSeat5,
-            VehicleSeat.ExtraSeat6,
-            VehicleSeat.ExtraSeat7,
-            VehicleSeat.ExtraSeat8,
-            VehicleSeat.ExtraSeat9,
-            VehicleSeat.ExtraSeat10,
-            VehicleSeat.ExtraSeat11,
-            VehicleSeat.ExtraSeat12,
-        };
-
-        var seatToEnter = VehicleSeat.Any;
-        foreach (var seat in preferredPassengerSeats)
-        {
-            if (closestVehicle.IsSeatFree(seat))
+            this._gameNotificationService.Notify(new GameNotificationOptions
             {
-                seatToEnter = seat;
-                break;
-            }
+                Title = "FivePD",
+                Message = "No free passenger seats available in this vehicle.",
+            });
         }
-
-        if (seatToEnter == VehicleSeat.Any && closestVehicle.IsSeatFree(VehicleSeat.Passenger))
-        {
-            seatToEnter = VehicleSeat.Passenger;
-        }
-
-        if (seatToEnter != VehicleSeat.Any)
-        {
-            Game.PlayerPed.Task.EnterVehicle(closestVehicle, seatToEnter);
-            return;
-        }
-
-        this._gameNotificationService.Notify(new GameNotificationOptions
-        {
-            Title = "FivePD",
-            Message = "No free passenger seats available in this vehicle.",
-        });
     }
 
     private void ToggleFollowPlayer(int networkId, bool follow)

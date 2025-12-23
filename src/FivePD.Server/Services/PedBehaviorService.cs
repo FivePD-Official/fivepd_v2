@@ -64,9 +64,11 @@ public class PedBehaviorService : IPedBehaviorService
 
         ped.ChangeState(null);
 
-        ped.Properties.SetAlwaysKeepTask(false);
-        ped.Properties.SetBlockPermanentEvents(false);
-        Cfx.API.SetEntityDistanceCullingRadius(ped.GetUnderlyingPed.Handle, 500f);
+#pragma warning disable
+        // ped.Properties.SetAlwaysKeepTask(false);
+        // ped.Properties.SetBlockPermanentEvents(false);
+        // Cfx.API.SetEntityDistanceCullingRadius(ped.GetUnderlyingPed.Handle, 500f);
+#pragma warning restore
 
         this.StopBehavior(ped.NetworkId);
     }

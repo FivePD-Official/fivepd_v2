@@ -6,6 +6,7 @@ using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Server.Interfaces;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.EntityWrappers.PedWrapper.States;
 
@@ -15,6 +16,7 @@ public class FPedShootAtTargetsState : FPedState
 {
     private readonly List<FPed> _targets;
     private readonly IRandomService _randomService;
+    private readonly ICfxService _cfxService;
     private CancellationTokenSource _cts;
 
     public FPedShootAtTargetsState(FPed fPed, List<FPed> targets)
@@ -22,6 +24,7 @@ public class FPedShootAtTargetsState : FPedState
     {
         this._targets = targets;
         this._randomService = ServiceLocator.GetService<IRandomService>();
+        this._cfxService = ServiceLocator.GetService<ICfxService>();
     }
 
     public override Task Enter()
@@ -63,6 +66,7 @@ public class FPedShootAtTargetsState : FPedState
             {
                 var target = nearbyTargets[this._randomService.Next(0, nearbyTargets.Count)];
                 this.FPed.Task.FightAgainst(target.GetUnderlyingPed, -1);
+                this._cfxService.TaskShootAtEntity(this.FPed.NetworkId, target.NetworkId, 10000, (uint)Cfx.API.GetHashKey("FIRING_PATTERN_FULL_AUTO"));
             }
 
             try

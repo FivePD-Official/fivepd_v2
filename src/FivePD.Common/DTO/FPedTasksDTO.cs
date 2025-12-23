@@ -410,6 +410,11 @@ internal sealed record FPedTasksDTO
 
     public sealed record Events
     {
+        public sealed record FivePD
+        {
+            public const string FEnterVehicle = "FEnterVehicle";
+        }
+        
         public const string AchieveHeading = "AchieveHeading";
 
         public const string AimAt = "AimAt";

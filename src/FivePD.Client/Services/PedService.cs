@@ -22,16 +22,19 @@ internal class PedService : IPedService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IQueueService _queueService;
+    private readonly ITaskService _taskService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PedService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="queueService">The <see cref="IQueueService"/> to use.</param>
-    public PedService(EventHandlerDictionary eventHandlerDictionary, IQueueService queueService)
+    /// <param name="taskService">The <see cref="ITaskService"/> to use.</param>
+    public PedService(EventHandlerDictionary eventHandlerDictionary, IQueueService queueService, ITaskService taskService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._queueService = queueService;
+        this._taskService = taskService;
     }
 
     /// <inheritdoc />
@@ -486,6 +489,18 @@ internal class PedService : IPedService, IOnInit
 
         switch (request.Task)
         {
+            case FPedTasksDTO.Events.FivePD.FEnterVehicle:
+            {
+                var args = JsonConvert.DeserializeObject<FPedTasksDTO.EnterVehicle>(request.Args);
+                if (Entity.FromHandle(args.VehicleNetworkId) is not Vehicle vehicle)
+                {
+                    return;
+                }
+
+                this._taskService.EnterVehicle(ped, vehicle, (VehicleSeat)args.Seat, args.Timeout, args.Speed, args.Flag);
+                break;
+            }
+
             case FPedTasksDTO.Events.AchieveHeading:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.AchieveHeading>(request.Args);
