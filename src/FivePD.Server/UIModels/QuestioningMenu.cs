@@ -41,12 +41,39 @@ public sealed class QuestioningMenu : Menu
 
     public override bool CanOpen(FPlayer player)
     {
-        if (player.FPed.Properties.IsInVehicle)
+        var config = this._configService.GeneralConfig.Menu.Questioning;
+        if (config.MustBeOnDuty && !player.IsOnDuty)
         {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "ERROR.USER.NOT_ON_DUTY"
+                });
+
             return false;
         }
 
-        return true;
+        if (config.MustBeInDepartment && !player.IsInDepartment)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "ERROR.USER.NOT_IN_DEPARTMENT"
+                });
+            
+            return false;
+        }
+        
+        if (config.AccessEverywhere())
+        {
+            return true;
+        }
+        
+        return false;
     }
 
     protected override List<MenuItem> CreateItems()
