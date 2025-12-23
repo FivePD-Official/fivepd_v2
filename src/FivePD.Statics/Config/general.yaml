@@ -1,8 +1,8 @@
 Database:
-  Type: mysql # mysql or mariadb
+  Type: mariadb # mysql or mariadb
   Name: fivepd
   Address: 127.0.0.1
-  Port: 3306 # MySQL: 3306, MariaDB: 3307
+  Port: 3307 # MySQL: 3306, MariaDB: 3307
   User: root
   Password: root
 
@@ -50,17 +50,25 @@ Callout:
 
 Mdt:
   Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE, ONLY_SPECIFIC_LOCATIONS, ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS - admins can access the MDT anywhere and can add locations in the settings
+  MustBeOnDuty: false
+  MustBeInDepartment: false
 
 Menu:
   VehicleSelector:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE, ONLY_SPECIFIC_LOCATIONS, ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS 
+    MustBeOnDuty: true
+    MustBeInDepartment: true
   LoadoutSelector:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE, ONLY_SPECIFIC_LOCATIONS, ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS 
+    MustBeOnDuty: true
+    MustBeInDepartment: true
   Dispatch:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE 
+    MustBeOnDuty: true
+    MustBeInDepartment: true
     Items:
       - Title: Request ID check from dispatch
         OnSelect: [ REQUEST_ID_CHECK ]
@@ -94,12 +102,18 @@ Menu:
   Assistance:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE
+    MustBeOnDuty: true
+    MustBeInDepartment: true
   Interaction:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE
+    MustBeOnDuty: true
+    MustBeInDepartment: true
   SceneManager:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE
+    MustBeOnDuty: true
+    MustBeInDepartment: true
     SpeedZone:
       Enabled: true
       Speed: [ 0,5,10,20,30,40,50 ]
@@ -125,6 +139,9 @@ Menu:
           Model: prop_barrier_work06a
   Questioning:
     Enabled: true
+    Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE
+    MustBeOnDuty: true
+    MustBeInDepartment: true
 
 Peds:
   ChanceToReuseData: 20 # 0-100. Higher values increase the likelihood of "meeting" the same peds again

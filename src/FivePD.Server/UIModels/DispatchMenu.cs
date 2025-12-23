@@ -272,6 +272,32 @@ public sealed class DispatchMenu : Menu
     public override bool CanOpen(FPlayer player)
     {
         var config = this._configService.GeneralConfig.Menu.Dispatch;
+        if (config.MustBeOnDuty && !player.IsOnDuty)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "ERROR.USER.NOT_ON_DUTY"
+                });
+
+            return false;
+        }
+
+        if (config.MustBeInDepartment && !player.IsInDepartment)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "ERROR.USER.NOT_IN_DEPARTMENT"
+                });
+            
+            return false;
+        }
+        
         if (config.AccessEverywhere())
         {
             return true;

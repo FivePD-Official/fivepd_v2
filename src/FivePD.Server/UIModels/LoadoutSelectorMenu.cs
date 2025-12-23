@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using FivePD.Common;
 using FivePD.Common.Enums;
+using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
@@ -21,14 +22,16 @@ namespace FivePD.Server.UIModels;
 public sealed class LoadoutSelectorMenu : Menu
 {
     private readonly IConfigService _configService;
+    private readonly IGameNotificationService _gameNotificationService;
     private readonly ILoadoutConfigService _loadoutConfigService;
     private readonly ILocationService _locationService;
     private MenuListItem _changeLanguageListItem;
 
-    public LoadoutSelectorMenu(IConfigService configService, ILoadoutConfigService loadoutConfigService, ILocationService locationService)
+    public LoadoutSelectorMenu(IConfigService configService, IGameNotificationService gameNotificationService, ILoadoutConfigService loadoutConfigService, ILocationService locationService)
         : base(Controls.LoadoutSelectorMenu.Id, Controls.LoadoutSelectorMenu.Title, Controls.LoadoutSelectorMenu.Key)
     {
         this._configService = configService;
+        this._gameNotificationService = gameNotificationService;
         this._loadoutConfigService = loadoutConfigService;
         this._locationService = locationService;
     }
@@ -38,6 +41,32 @@ public sealed class LoadoutSelectorMenu : Menu
     public override bool CanOpen(FPlayer player)
     {
         var config = this._configService.GeneralConfig.Menu.LoadoutSelector;
+        if (config.MustBeOnDuty && !player.IsOnDuty)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "ERROR.USER.NOT_ON_DUTY"
+                });
+
+            return false;
+        }
+
+        if (config.MustBeInDepartment && !player.IsInDepartment)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "ERROR.USER.NOT_IN_DEPARTMENT"
+                });
+            
+            return false;
+        }
+        
         if (config.AccessEverywhere())
         {
             return true;

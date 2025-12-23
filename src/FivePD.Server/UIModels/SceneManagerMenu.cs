@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using FivePD.Common;
+using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.UIModels.MenuModels;
@@ -16,6 +17,7 @@ namespace FivePD.Server.UIModels;
 public class SceneManagerMenu : Menu
 {
     private readonly IConfigService _configService;
+    private readonly IGameNotificationService _gameNotificationService;
     private readonly ISceneManagementService _sceneManagementService;
     private readonly IMenuService _menuService;
     private readonly IEntityService _entityService;
@@ -32,6 +34,7 @@ public class SceneManagerMenu : Menu
 
     public SceneManagerMenu(
         IConfigService configService,
+        IGameNotificationService gameNotificationService,
         ISceneManagementService sceneManagementService,
         IMenuService menuService,
         IEntityService entityService,
@@ -40,6 +43,7 @@ public class SceneManagerMenu : Menu
         : base(Controls.SceneManagerMenu.Id, Controls.SceneManagerMenu.Title, Controls.SceneManagerMenu.Key)
     {
         this._configService = configService;
+        this._gameNotificationService = gameNotificationService;
         this._sceneManagementService = sceneManagementService;
         this._menuService = menuService;
         this._entityService = entityService;
@@ -63,7 +67,45 @@ public class SceneManagerMenu : Menu
 
     public override bool CanOpen(FPlayer player)
     {
-        return true;
+        var config = this._configService.GeneralConfig.Menu.SceneManager;
+        if (config.MustBeOnDuty && !player.IsOnDuty)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "ERROR.USER.NOT_ON_DUTY"
+                });
+
+            return false;
+        }
+
+        if (config.MustBeInDepartment && !player.IsInDepartment)
+        {
+            this._gameNotificationService.Notify(
+                player,
+                new GameNotificationOptions
+                {
+                    Title = "FivePD",
+                    Message = "ERROR.USER.NOT_IN_DEPARTMENT"
+                });
+            
+            return false;
+        }
+
+        if (config.AccessEverywhere())
+        {
+            return true;
+        }
+
+        var playerIsInVehicle = player.FPed.Properties.IsInVehicle;
+        if (config.AccessOnlyVehicle() && playerIsInVehicle)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     protected override List<MenuItem> CreateItems()

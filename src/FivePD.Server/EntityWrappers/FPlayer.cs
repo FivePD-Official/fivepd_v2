@@ -50,6 +50,11 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     public Department Department => ServiceLocator.GetService<IDepartmentService>().GetPlayerDepartment(this);
 
     /// <summary>
+    /// Gets a value indicating whether the player is in a department.
+    /// </summary>
+    public bool IsInDepartment => this.Department is not null;
+
+    /// <summary>
     /// Gets the player's unit.
     /// </summary>
     /// <returns>A unit.</returns>
@@ -71,6 +76,11 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the player's duty status observable.
     /// </summary>
     public FStateBagObservable<FDutyStatus> DutyStatus { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the player is on duty.
+    /// </summary>
+    public bool IsOnDuty => this.DutyStatus.Value != FDutyStatus.OffDuty;
 
     /// <summary>
     /// Gets the player's observable with a value indicating if the player is in dispatcher mode.
