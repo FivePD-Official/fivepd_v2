@@ -326,6 +326,7 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             {
                 Id = callout.Callout.Id.ToString(),
                 Type = FIncidentType.Callout,
+                Priority = callout.Callout.Priority,
                 Title = callout.Callout.Title,
                 Description = callout.Callout.Description,
                 Location = callout.Callout.Location,
@@ -333,18 +334,19 @@ public class IncidentService : IIncidentService, IInternalIncidentService
             };
         }
 
-        var trafficStops = this._trafficStops.FirstOrDefault(x => x.Id == id);
-        if (trafficStops is not null)
+        var trafficStop = this._trafficStops.FirstOrDefault(x => x.Id == id);
+        if (trafficStop is not null)
         {
             found = true;
             incident = new IncidentDTOs.IncidentToClientDTO
             {
-                Id = trafficStops.Id.ToString(),
+                Id = trafficStop.Id.ToString(),
                 Type = FIncidentType.TrafficStop,
-                Title = trafficStops.Title,
-                Description = trafficStops.Description,
-                Location = trafficStops.Location,
-                Units = trafficStops.Units.Select(p => p.Callsign).ToList(),
+                Priority = trafficStop.Priority,
+                Title = trafficStop.Title,
+                Description = trafficStop.Description,
+                Location = trafficStop.Location,
+                Units = trafficStop.Units.Select(p => p.Callsign).ToList(),
             };
         }
 

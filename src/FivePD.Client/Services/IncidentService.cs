@@ -68,6 +68,7 @@ internal class IncidentService : IIncidentService, IOnInit, IOnDestroy
                 {
                     Id = incident.Id,
                     Type = incident.Type,
+                    Priority = incident.Priority,
                     Title = incident.Title,
                     Description = incident.Description,
                     Units = incident.Units,
