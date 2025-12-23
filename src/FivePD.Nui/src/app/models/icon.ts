@@ -34,4 +34,5 @@
   Briefcase = 'Briefcase',
   Star = 'Star',
   Lifebuoy = 'Lifebuoy',
+  Debug = 'Debug',
 }

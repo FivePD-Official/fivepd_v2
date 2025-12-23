@@ -26,6 +26,10 @@
   <div class="flex flex-row items-center h-full">
     <p class="text-zinc-200 px-8" [innerHTML]="loggedInAsText"></p>
     <button class="group w-[80px] h-full flex flex-col items-center justify-center border-l border-color cursor-pointer"
+            (click)="window.openDebugView()">
+      <div app-icon name="Debug" className="h-[30px] text-zinc-500 group-hover:text-white"></div>
+    </button>
+    <button class="group w-[80px] h-full flex flex-col items-center justify-center border-l border-color cursor-pointer"
             (click)="toggleMaximizedWindow()">
       @if (!windowMaximized) {
         <div app-icon

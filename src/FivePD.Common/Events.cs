@@ -424,6 +424,11 @@ internal readonly record struct Events
         public const string GetCurrentPlayerCoordinate = "fivepd:devtools:getCurrentPlayerCoordinate";
     }
 
+    public readonly record struct Debug
+    {
+        public const string Information = "fivepd:debug:information";
+    }
+
     public readonly record struct Control
     {
         public const string GetAll = "fivepd:control:getAll";
