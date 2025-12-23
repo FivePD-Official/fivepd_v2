@@ -133,7 +133,7 @@ public class RideShare : AssistanceService
         this._driver.Task.DriveTo(this._vehicle.GetUnderlyingVehicle, this._target, 5f, MaximumSpeed, (int)FDrivingStyle.Emergency);
 
         await TaskHelpers.DelayUntilAsync(
-            () => this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) <= 60f,
+            () => this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) <= SquaredDistances._100,
             TimeSpan.FromMinutes(5),
             TimeSpan.FromMilliseconds(500),
             cancellationTokenSource);
@@ -166,7 +166,7 @@ public class RideShare : AssistanceService
 
             this._driver.Task.DriveTo(this._vehicle.GetUnderlyingVehicle, this._selectedWaypointToDrive, 5f, MaximumSpeed, (int)FDrivingStyle.Emergency);
             await TaskHelpers.DelayUntilAsync(
-                () => this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._selectedWaypointToDrive) <= 60f,
+                () => this._vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(this._selectedWaypointToDrive) <= SquaredDistances._100,
                 TimeSpan.FromMinutes(5),
                 TimeSpan.FromMilliseconds(500),
                 cancellationTokenSource);

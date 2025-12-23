@@ -16,15 +16,15 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
 {
     private readonly ConcurrentDictionary<int, FPed> _peds = new();
 
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
 
     public ReadOnlyDictionary<int, FPed> Peds => new(this._peds);
 
     ConcurrentDictionary<int, FPed> IInternalPedStorageService.InternalPeds => this._peds;
 
-    public PedStorageService(DatabaseContext databaseContext)
+    public PedStorageService(IDatabaseContextFactory dbContextFactory)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
     }
 
     /// <inheritdoc/>
@@ -45,6 +45,12 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
     /// <inheritdoc/>
     public PedData GetPedData(FPed ped)
     {
-        return ped is null ? null : this._databaseContext.PedData.FirstOrDefault(x => x.Id == ped.PedDataId);
+        if (ped is null)
+        {
+            return null;
+        }
+        
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        return databaseContext.PedData.FirstOrDefault(x => x.Id == ped.PedDataId);
     }
 }

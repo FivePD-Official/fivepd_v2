@@ -20,7 +20,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="IUIService" />
-internal class UIService : IUIService, IOnInit
+internal class UIService : IUIService, IOnInit, IOnServerBootstrapped
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
@@ -58,10 +58,6 @@ internal class UIService : IUIService, IOnInit
         this._uiManagerService = uiManagerService;
         this._locationService = locationService;
         this._localPlayerService = localPlayerService;
-
-#pragma warning disable CS4014
-        this.GetGeneralConfigAsync();
-#pragma warning restore CS4014
     }
 
     /// <inheritdoc />
@@ -100,6 +96,14 @@ internal class UIService : IUIService, IOnInit
                     ["SafeZoneSize"] = Cfx.API.GetSafeZoneSize(),
                 }));
             }));
+    }
+
+    /// <inheritdoc />
+    public void OnServerBootstrapped()
+    {
+#pragma warning disable CS4014
+        this.GetGeneralConfigAsync();
+#pragma warning restore CS4014
     }
 
     /// <inheritdoc />

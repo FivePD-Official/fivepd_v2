@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
@@ -19,7 +21,6 @@ namespace FivePD.Server.Models.AssistanceServiceModels;
 /// </summary>
 public class Ambulance : AssistanceService
 {
-    private const float SlowingDistance = 125f;
     private const float MaximumSpeed = 30f;
     private const float MinimumSpeed = 5f;
 
@@ -99,29 +100,13 @@ public class Ambulance : AssistanceService
         this._driver.Properties.SetIntoVehicle(this._ambulance.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._driver.Properties.SetBlockPermanentEvents(true);
 
-        this._driver.Task.DriveTo(this._ambulance.GetUnderlyingVehicle, this._target, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
-
-        while (this._ambulance.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance)
-        {
-            if (cancellationTokenSource.IsCancellationRequested)
-            {
-                return;
-            }
-
-            var distance = Vector3.Distance(this._ambulance.GetUnderlyingVehicle.Position, this._target);
-            var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
-            var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-
-            this._driver.Properties.SetDrivingSpeed(currentSpeed);
-
-            await Task.Delay(500);
-        }
+        await this.DriveToTargetWithSlowingAsync(this._driver, this._ambulance, this._target, MinimumSpeed, MaximumSpeed, cancellationTokenSource);
 
         this._driver.Task.LeaveVehicle(FLeaveVehicleFlags.LeaveDoorOpen);
 
         await Task.Delay(2000);
 
-        var nearbyInjuredPeds = this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, 200f)
+        var nearbyInjuredPeds = this._entityService.GetPedsInRangeOfEntity(this._ambulance.GetUnderlyingVehicle, SquaredDistances._200)
             .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0)
             .ToList();
 

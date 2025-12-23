@@ -35,7 +35,7 @@ public class DatabaseContext : DbContext
     /// <summary>
     /// Initializes a new instance of the <see cref="DatabaseContext"/> class.
     /// </summary>
-    /// <param name="options">asd.</param>
+    /// <param name="options">The <see cref="DbContextOptions"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     public DatabaseContext(DbContextOptions<DatabaseContext> options, IConfigService configService)
         : base(options)

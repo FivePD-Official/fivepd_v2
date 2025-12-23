@@ -19,24 +19,25 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class IncidentHistoryService : IIncidentHistoryService, IInternalIncidentHistoryService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly INetworkEventService _networkEventService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IncidentHistoryService"/> class.
     /// </summary>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
-    public IncidentHistoryService(DatabaseContext databaseContext, INetworkEventService networkEventService)
+    public IncidentHistoryService(IDatabaseContextFactory dbContextFactory, INetworkEventService networkEventService)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._networkEventService = networkEventService;
     }
 
     /// <inheritdoc/>
     public void AddUnitToIncidentHistory(IIncident incident, FIncidentType incidentType, Unit unit)
     {
-        var incidentHistory = this._databaseContext.IncidentHistories
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var incidentHistory = databaseContext.IncidentHistories
             .FirstOrDefault(x => x.IncidentId == incident.Id.ToString());
         if (incidentHistory is null)
         {
@@ -66,18 +67,20 @@ public class IncidentHistoryService : IIncidentHistoryService, IInternalIncident
             });
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
     }
 
     private void Create(IncidentHistory incidentHistory)
     {
-        this._databaseContext.IncidentHistories.Add(incidentHistory);
-        this._databaseContext.SaveChanges();
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        databaseContext.IncidentHistories.Add(incidentHistory);
+        databaseContext.SaveChanges();
     }
 
     [UIEvent(Events.IncidentHistory.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IncidentHistoryGetAllRequest>(serializedRequest);
 
         var filters = new Filters<IncidentHistory>();
@@ -91,7 +94,7 @@ public class IncidentHistoryService : IIncidentHistoryService, IInternalIncident
             request.Filters.Type != -1,
             incidentHistory => incidentHistory.Type == (FIncidentType)request.Filters.Type);
 
-        var page = this._databaseContext.IncidentHistories
+        var page = databaseContext.IncidentHistories
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
@@ -101,8 +104,9 @@ public class IncidentHistoryService : IIncidentHistoryService, IInternalIncident
     [UIEvent(Events.IncidentHistory.GetAllOfUser)]
     private void GetIncidentsOfUser([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var incidentHistories = this._databaseContext.IncidentHistories
+        var incidentHistories = databaseContext.IncidentHistories
             .Where(x => x.Users.Any(y => y.User.Id == request.Id))
             .Select(x => new SimpleIncidentHistoryDTO
             {

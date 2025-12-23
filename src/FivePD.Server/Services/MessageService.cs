@@ -21,7 +21,7 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class MessageService : IMessageService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly IGameNotificationService _gameNotificationService;
@@ -30,19 +30,19 @@ public class MessageService : IMessageService
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageService"/> class.
     /// </summary>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public MessageService(
-        DatabaseContext databaseContext,
+        IDatabaseContextFactory dbContextFactory,
         IAddonMetadataService addonMetadataService,
         IPlayerHandlerService playerHandlerService,
         IGameNotificationService gameNotificationService,
         INetworkEventService networkEventService)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
         this._playerHandlerService = playerHandlerService;
         this._gameNotificationService = gameNotificationService;
@@ -73,7 +73,8 @@ public class MessageService : IMessageService
             sender = addonDefinition?.Name ?? "Unknown";
         }
 
-        var entry = this._databaseContext.Messages.Add(new Message
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        var entry = databaseContext.Messages.Add(new Message
         {
             User = to,
             Subject = subject,
@@ -81,7 +82,7 @@ public class MessageService : IMessageService
             Sender = sender,
             SentAt = DateTime.Now,
         });
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
 
         this.NotifyUser(to, entry.Entity);
 
@@ -119,6 +120,7 @@ public class MessageService : IMessageService
     [UIEvent(Events.Message.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
 
         var user = this._playerHandlerService.FindUserOfPlayer(player);
@@ -127,7 +129,7 @@ public class MessageService : IMessageService
             return;
         }
 
-        var message = this._databaseContext.Messages
+        var message = databaseContext.Messages
             .AsNoTracking()
             .FirstOrDefault(x => x.Id == request.Id);
         this._networkEventService.TriggerEventSerialized(player, guid, message);
@@ -136,6 +138,7 @@ public class MessageService : IMessageService
     [UIEvent(Events.Message.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<MessageGetAllPageableRequest>(serializedRequest);
 
         var user = this._playerHandlerService.FindUserOfPlayer(player);
@@ -145,7 +148,7 @@ public class MessageService : IMessageService
         }
 
         var filters = new Filters<Message>();
-        var page = this._databaseContext.Messages
+        var page = databaseContext.Messages
             .AsNoTracking()
             .Where(u => u.User.Id == user.Id)
             .OrderByDescending(x => x.SentAt)
@@ -156,6 +159,7 @@ public class MessageService : IMessageService
     [UIEvent(Events.Message.Send)]
     private void SendUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<SendMessageRequest>(serializedRequest);
         var sender = this._playerHandlerService.FindUserOfPlayer(player);
         if (sender is null)
@@ -163,7 +167,7 @@ public class MessageService : IMessageService
             return;
         }
 
-        var users = this._databaseContext.Users;
+        var users = databaseContext.Users;
         var to = request.SendToEveryone ? users.Where(x => x.Id != sender.Id) : users.Where(x => request.To.Contains(x.Id));
         foreach (var user in to.ToList())
         {
@@ -176,6 +180,7 @@ public class MessageService : IMessageService
     [UIEvent(Events.Message.Read)]
     private void ReadUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
 
         var user = this._playerHandlerService.FindUserOfPlayer(player);
@@ -184,11 +189,11 @@ public class MessageService : IMessageService
             return;
         }
 
-        var message = this._databaseContext.Messages.FirstOrDefault(x => x.Id == request.Id);
+        var message = databaseContext.Messages.FirstOrDefault(x => x.Id == request.Id);
         if (message is not null)
         {
             message.Read = true;
-            this._databaseContext.SaveChanges();
+            databaseContext.SaveChanges();
         }
 
         this._networkEventService.TriggerEventSerialized(player, guid, message);

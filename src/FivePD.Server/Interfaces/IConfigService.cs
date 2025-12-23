@@ -33,12 +33,6 @@ public interface IConfigService
     public List<string> Lastnames { get; }
 
     /// <summary>
-    /// Gets the "menu.json" file's content.
-    /// </summary>
-    /// <returns>Returns a deserialized a list of <see cref="Loadout"/> objects.</returns>
-    public List<Loadout> LoadoutsConfig { get; }
-
-    /// <summary>
     /// Gets the "general-settings.json" file's content.
     /// </summary>
     public GeneralConfig GeneralConfig { get; }

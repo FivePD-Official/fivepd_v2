@@ -12,7 +12,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IVehicleConfigService" />
-internal class VehicleConfigService : IVehicleConfigService, IOnInit
+internal class VehicleConfigService : IVehicleConfigService, IOnInit, IOnServerBootstrapped
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly INetworkEventService _networkEventService;
@@ -40,6 +40,11 @@ internal class VehicleConfigService : IVehicleConfigService, IOnInit
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.VehicleConfig.Edit);
 
         this._eventHandlerDictionary[Events.VehicleConfig.UpdatePoliceVehicleModels] += new Action<string>(this.SetPoliceVehicleModels);
+    }
+
+    /// <inheritdoc/>
+    public void OnServerBootstrapped()
+    {
         this._networkEventService.TriggerServerEvent(Events.VehicleConfig.RequestPoliceVehicleModels, new Action<string>(this.SetPoliceVehicleModels));
     }
 

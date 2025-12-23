@@ -27,7 +27,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     private readonly IRandomService _randomService;
     private readonly IVector3Service _vector3Service;
     private readonly IAssistanceServiceConfigService _assistanceServiceConfigService;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
 
     private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _activeServices = new();
 
@@ -40,7 +40,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
     /// <param name="vector3Service">The <see cref="IVector3Service"/> to use.</param>
     /// <param name="assistanceServiceConfigService">The <see cref="IAssistanceServiceConfigService"/> to use.</param>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     public AssistanceServiceManagerService(
         IServiceProvider serviceProvider,
         ITickQueueService tickQueueService,
@@ -48,7 +48,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
         IRandomService randomService,
         IVector3Service vector3Service,
         IAssistanceServiceConfigService assistanceServiceConfigService,
-        DatabaseContext databaseContext)
+        IDatabaseContextFactory dbContextFactory)
     {
         this._serviceProvider = serviceProvider;
         this._tickQueueService = tickQueueService;
@@ -56,7 +56,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
         this._randomService = randomService;
         this._vector3Service = vector3Service;
         this._assistanceServiceConfigService = assistanceServiceConfigService;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
     }
 
     /// <inheritdoc />
@@ -133,7 +133,10 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
 
             var typeName = type.Name;
             var assemblyName = type.Assembly.GetName().Name;
-            var assistanceServiceVehicleConfig = this._databaseContext.AssistanceServiceTypeConfigs
+
+            await using var databaseContext = this._dbContextFactory.CreateScope().Context;
+
+            var assistanceServiceVehicleConfig = databaseContext.AssistanceServiceTypeConfigs
                 .FirstOrDefault(x => x.TypeName == typeName && x.AssemblyName == assemblyName);
             if (assistanceServiceVehicleConfig is null)
             {
@@ -163,11 +166,11 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             }
             else if (assistanceServiceVehicleConfig.SpawnTypeStation())
             {
-                var stations = this._databaseContext.AssistanceServiceStations
+                var stations = databaseContext.AssistanceServiceStations
                     .Include(x => x.TypeConfigs)
                     .ThenInclude(x => x.TypeConfig)
                     .ToList();
-                var orderedStations = stations.OrderBy(s => Vector3.Distance(s.Position, requestedBy.GetUnderlyingPlayer().Character.Position));
+                var orderedStations = stations.OrderBy(s => s.Position.DistanceToSquared(requestedBy.GetUnderlyingPlayer().Character.Position));
 
                 foreach (var station in orderedStations)
                 {
@@ -193,7 +196,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 else
                 {
                     selectedStationTypeConfig.ActiveCapacity++;
-                    this._databaseContext.SaveChanges();
+                    await databaseContext.SaveChangesAsync();
 
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = selectedStation.Position;
                     ((IInternalAssistanceService)assistanceService).SpawnHeading = 0f; // TODO
@@ -271,7 +274,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             return activeService;
         }
 
-        var assistanceServiceVehicleConfig = this._databaseContext.AssistanceServiceStationTypeConfigs
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+
+        var assistanceServiceVehicleConfig = databaseContext.AssistanceServiceStationTypeConfigs
             .FirstOrDefault(x => x.Id == activeService.StationTypeConfig.Id);
         if (assistanceServiceVehicleConfig is null)
         {
@@ -285,7 +290,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             assistanceServiceVehicleConfig.ActiveCapacity = 0;
         }
 
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         return activeService;
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Server.Attributes;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
@@ -55,7 +56,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
     }
 
     /// <inheritdoc />
-    public void AddEntity(Type assistanceServiceType, Entity entity, Vector3 serviceLocation, float maxRadius = 200f)
+    public void AddEntity(Type assistanceServiceType, Entity entity, Vector3 serviceLocation, float maxRadius = SquaredDistances._200)
     {
         if (assistanceServiceType is null)
         {
@@ -97,7 +98,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
     }
 
     /// <inheritdoc />
-    public void AddEntities(Type assistanceServiceType, IEnumerable<Entity> entities, Vector3 serviceLocation, float maxRadius = 200f)
+    public void AddEntities(Type assistanceServiceType, IEnumerable<Entity> entities, Vector3 serviceLocation, float maxRadius = SquaredDistances._200)
     {
         if (assistanceServiceType is null || entities is null)
         {
@@ -138,7 +139,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
     }
 
     /// <inheritdoc />
-    public Entity GetFirstEntityOnWhichWorkHasNotStartedYet(Type assistanceServiceType, Vector3 serviceLocation, float maxRadius = 200f)
+    public Entity GetFirstEntityOnWhichWorkHasNotStartedYet(Type assistanceServiceType, Vector3 serviceLocation, float maxRadius = SquaredDistances._200)
     {
         if (assistanceServiceType is null)
         {
@@ -154,7 +155,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
         var availableEntity = entities
             .Where(e => !e.WorkStarted)
             .Where(e => this.IsWithinRadius(serviceLocation, e.ServiceLocation, Math.Min(maxRadius, e.MaxRadius)))
-            .OrderBy(e => Vector3.Distance(serviceLocation, e.Entity.Position))
+            .OrderBy(e => serviceLocation.DistanceToSquared(e.Entity.Position))
             .FirstOrDefault();
 
         return availableEntity?.Entity;
@@ -186,7 +187,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
     }
 
     /// <inheritdoc />
-    public List<(Entity Entity, bool WorkStarted)> GetEntitiesInRadius(Type assistanceServiceType, Vector3 serviceLocation, float maxRadius = 200f)
+    public List<(Entity Entity, bool WorkStarted)> GetEntitiesInRadius(Type assistanceServiceType, Vector3 serviceLocation, float maxRadius = SquaredDistances._200)
     {
         if (assistanceServiceType is null)
         {
@@ -262,7 +263,7 @@ public class GeneralAssistanceServiceSyncService : IGeneralAssistanceServiceSync
     /// <returns>True if within radius, false otherwise.</returns>
     private bool IsWithinRadius(Vector3 location1, Vector3 location2, float maxRadius)
     {
-        return Vector3.Distance(location1, location2) <= maxRadius;
+        return location1.DistanceToSquared(location2) <= maxRadius;
     }
 
     /// <summary>

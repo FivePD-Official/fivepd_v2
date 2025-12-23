@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
@@ -79,6 +81,52 @@ public abstract class AssistanceService : IInternalAssistanceService
     /// </summary>
     /// <returns>A Task.</returns>
     public abstract Task OnCompletedAsync();
+
+    /// <summary>
+    /// Drives the vehicle to the target position, slowing down within a given radius.
+    /// </summary>
+    /// <param name="driver">The driver ped.</param>
+    /// <param name="vehicle">The vehicle.</param>
+    /// <param name="target">The target position.</param>
+    /// <param name="minSpeed">The minimum speed.</param>
+    /// <param name="maxSpeed">The maximum speed.</param>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
+    /// <param name="stoppingDistance">The stopping distance squared.</param>
+    /// <returns>A task.</returns>
+    protected async Task DriveToTargetWithSlowingAsync(
+        FPed driver,
+        FVehicle vehicle,
+        Vector3 target,
+        float minSpeed,
+        float maxSpeed,
+        CancellationTokenSource cancellationTokenSource,
+        float stoppingDistance = SquaredDistances._35)
+    {
+        const float slowingDistance = 200f;
+        const float slowingDistanceSquared = SquaredDistances._200;
+
+        driver.Task.DriveTo(vehicle.GetUnderlyingVehicle, target, 0f, maxSpeed, (int)FDrivingStyle.Emergency);
+
+        while (vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(target) >= stoppingDistance)
+        {
+            if (cancellationTokenSource.IsCancellationRequested)
+            {
+                return;
+            }
+
+            var distanceSquared = vehicle.GetUnderlyingVehicle.Position.DistanceToSquared(target);
+            if (distanceSquared < slowingDistanceSquared)
+            {
+                var distance = (float)Math.Sqrt(distanceSquared);
+                var distanceRatio = Math.Min(Math.Max(distance / slowingDistance, 0f), 1f);
+                var currentSpeed = minSpeed + ((maxSpeed - minSpeed) * distanceRatio);
+
+                driver.Properties.SetDrivingSpeed(currentSpeed);
+            }
+
+            await Task.Delay(500);
+        }
+    }
 
     /// <summary>
     /// Called to relinquish the script control of entities.

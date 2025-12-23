@@ -19,7 +19,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.ILocalPlayerService" />
-internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
+internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy, IOnServerBootstrapped
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILocalizationService _localizationService;
@@ -85,10 +85,6 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
     /// <inheritdoc/>
     public void OnInit()
     {
-#pragma warning disable CS4014
-        this.GetGeneralConfigAsync();
-#pragma warning restore CS4014
-
         this.Player.DutyStatus.Subscribe(this.ListenForDutyStatusChanges);
 
         BaseScript.TriggerServerEvent(Events.Player.OnConnected);
@@ -107,6 +103,14 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy
         this._eventHandlerDictionary.AddUIToServerEvent(Events.User.GetAllSimple);
 
         this._networkEventService.TriggerServerEvent(Events.Player.GetRole, new Action<int>(role => { this.Role = role; }));
+    }
+
+    /// <inheritdoc/>
+    public void OnServerBootstrapped()
+    {
+#pragma warning disable CS4014
+        this.GetGeneralConfigAsync();
+#pragma warning restore CS4014
     }
 
     /// <inheritdoc/>

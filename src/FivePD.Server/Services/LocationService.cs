@@ -25,7 +25,7 @@ public class LocationService : ILocationService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly PlayerList _playerList;
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IMarkerService _markerService;
     private readonly INetworkEventService _networkEventService;
 
@@ -37,19 +37,19 @@ public class LocationService : ILocationService, IOnInit
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="markerService">The <see cref="IMarkerService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public LocationService(
         EventHandlerDictionary eventHandlerDictionary,
         PlayerList playerList,
-        DatabaseContext databaseContext,
+        IDatabaseContextFactory dbContextFactory,
         IMarkerService markerService,
         INetworkEventService networkEventService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerList = playerList;
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._markerService = markerService;
         this._networkEventService = networkEventService;
     }
@@ -59,7 +59,8 @@ public class LocationService : ILocationService, IOnInit
     {
         this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
 
-        this._cachedLocations = this._databaseContext.Locations.ToList();
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        this._cachedLocations = databaseContext.Locations.ToList();
 
         foreach (var player in this._playerList)
         {
@@ -86,14 +87,15 @@ public class LocationService : ILocationService, IOnInit
     [UIEvent(Events.UI.Location.Create)]
     private void CreateLocationUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<CreateLocationRequest>(serializedRequest);
-        this._databaseContext.Locations.Add(new Location
+        databaseContext.Locations.Add(new Location
         {
             Name = request.Name,
             Type = request.Type,
             Position = request.Position,
         });
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CREATE", "LABEL.LOCATION.SUCCESS.CREATE");
         this.UpdateMarkersForAllPlayers();
     }
@@ -101,13 +103,14 @@ public class LocationService : ILocationService, IOnInit
     [UIEvent(Events.UI.Location.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<GetLocationRequest>(serializedRequest);
         var filters = new Filters<Location>();
         filters.Add(
             !string.IsNullOrEmpty(request.Filters.Name),
             location => location.Name.ToLower().Contains(request.Filters.Name.ToLower()));
         filters.Add(request.Filters.Type != -1, location => location.Type == (LocationType)request.Filters.Type);
-        var page = this._databaseContext.Locations
+        var page = databaseContext.Locations
             .AsNoTracking()
             .Paginate(request.Page, filters);
 
@@ -117,23 +120,25 @@ public class LocationService : ILocationService, IOnInit
     [UIEvent(Events.UI.Location.Delete)]
     private void DeleteLocationUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var entityToRemove = this._databaseContext.Locations.FirstOrDefault(x => x.Id == request.Id);
+        var entityToRemove = databaseContext.Locations.FirstOrDefault(x => x.Id == request.Id);
         if (entityToRemove is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        this._databaseContext.Locations.Remove(entityToRemove);
-        this._databaseContext.SaveChanges();
+        databaseContext.Locations.Remove(entityToRemove);
+        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.DELETE", "LABEL.LOCATION.SUCCESS.DELETE");
         this.UpdateMarkersForAllPlayers();
     }
 
     private void UpdateMarkersForAllPlayers()
     {
-        this._cachedLocations = this._databaseContext.Locations.ToList();
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        this._cachedLocations = databaseContext.Locations.ToList();
 
         foreach (var guid in this._markers)
         {

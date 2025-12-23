@@ -21,7 +21,7 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class AccessControlService : IAccessControlService, IOnInit
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly INetworkEventService _networkEventService;
@@ -33,12 +33,12 @@ public class AccessControlService : IAccessControlService, IOnInit
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="PlayerHandlerService"/> to use.</param>
     public AccessControlService(
-        DatabaseContext databaseContext,
+        IDatabaseContextFactory dbContextFactory,
         EventHandlerDictionary eventHandlerDictionary,
         IPlayerHandlerService playerHandlerService,
         INetworkEventService networkEventService)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerHandlerService = playerHandlerService;
         this._networkEventService = networkEventService;
@@ -69,8 +69,10 @@ public class AccessControlService : IAccessControlService, IOnInit
             return;
         }
 
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+        databaseContext.Users.Attach(user);
         user.AccessFivePD = access;
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
 
         var player = this._playerHandlerService.FindPlayerOfUser(user);
         player?.TriggerEvent(access ? Events.AccessControl.GiveAccess : Events.AccessControl.RemoveAccess);
@@ -91,8 +93,10 @@ public class AccessControlService : IAccessControlService, IOnInit
     [UIEvent(Events.AccessControl.GiveAccessUI)]
     private void AllowUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
+        var user = databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -115,8 +119,10 @@ public class AccessControlService : IAccessControlService, IOnInit
     [UIEvent(Events.AccessControl.RemoveAccessUI)]
     private void DisallowUI([FromSource] Player player, string guid, string serializedRequest)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
+
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var user = this._databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
+        var user = databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);

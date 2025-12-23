@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Server.Interfaces;
 
@@ -44,8 +45,8 @@ public class FPedShootAtTargetsState : FPedState
     {
         while (!token.IsCancellationRequested)
         {
-            Ped ped = this.FPed.GetUnderlyingPed;
-            if (ped == null)
+            var ped = this.FPed.GetUnderlyingPed;
+            if (ped is null)
             {
                 break;
             }
@@ -53,8 +54,8 @@ public class FPedShootAtTargetsState : FPedState
             var nearbyTargets = this._targets
                 .Where(target =>
                 {
-                    Ped targetPed = target.GetUnderlyingPed;
-                    return targetPed != null && Vector3.Distance(ped.Position, targetPed.Position) <= 200f;
+                    var targetPed = target.GetUnderlyingPed;
+                    return targetPed is not null && ped.Position.DistanceToSquared(targetPed.Position) <= SquaredDistances._200;
                 })
                 .ToList();
 

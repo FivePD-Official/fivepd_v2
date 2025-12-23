@@ -10,17 +10,17 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class ProgressionSystemService : IProgressionSystemService
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IPlayerDataService _playerDataService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProgressionSystemService"/> class.
     /// </summary>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
+    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
-    public ProgressionSystemService(DatabaseContext databaseContext, IPlayerDataService playerDataService)
+    public ProgressionSystemService(IDatabaseContextFactory dbContextFactory, IPlayerDataService playerDataService)
     {
-        this._databaseContext = databaseContext;
+        this._dbContextFactory = dbContextFactory;
         this._playerDataService = playerDataService;
     }
 
@@ -36,10 +36,11 @@ public class ProgressionSystemService : IProgressionSystemService
     /// <inheritdoc />
     public void AddExperiencePoints(FPlayer player, int experiencePoints)
     {
+        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var user = player.User;
         var previousXp = user.Xp;
         user.Xp += experiencePoints;
-        this._databaseContext.SaveChanges();
+        databaseContext.SaveChanges();
 
         if (user.Xp >= previousXp)
         {

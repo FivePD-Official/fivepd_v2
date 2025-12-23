@@ -16,7 +16,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.ILocalizationService" />
-internal class LocalizationService : ILocalizationService, IOnInit
+internal class LocalizationService : ILocalizationService, IOnInit, IOnServerBootstrapped
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly INetworkEventService _networkEventService;
@@ -56,7 +56,11 @@ internal class LocalizationService : ILocalizationService, IOnInit
                 { "Data", localization },
             }));
         });
+    }
 
+    /// <inheritdoc />
+    public void OnServerBootstrapped()
+    {
         this.LoadLocalization();
     }
 

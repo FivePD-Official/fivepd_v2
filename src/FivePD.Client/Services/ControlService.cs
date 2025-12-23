@@ -19,7 +19,7 @@ using Cfx = CitizenFX.Core.Native;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="FivePD.Client.Interfaces.IControlService" />
-internal class ControlService : IControlService, IOnInit, IOnDestroy
+internal class ControlService : IControlService, IOnInit, IOnDestroy, IOnServerBootstrapped
 {
     private readonly ITickService _tickService;
     private readonly IUIManagerService _uiManagerService;
@@ -39,7 +39,6 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
         this._tickService = tickService;
         this._uiManagerService = uiManagerService;
         this._networkEventService = networkEventService;
-        this.RegisterServerControls();
     }
 
     /// <inheritdoc />
@@ -76,6 +75,12 @@ internal class ControlService : IControlService, IOnInit, IOnDestroy
         }
 
         this._tickService.OnTick += this.WaitForHoldAsync;
+    }
+
+    /// <inheritdoc />
+    public void OnServerBootstrapped()
+    {
+        this.RegisterServerControls();
     }
 
     /// <inheritdoc/>

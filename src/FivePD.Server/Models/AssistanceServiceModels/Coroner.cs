@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using FivePD.Common;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers;
@@ -21,7 +23,6 @@ namespace FivePD.Server.Models.AssistanceServiceModels;
 /// </summary>
 public class Coroner : AssistanceService
 {
-    private const float SlowingDistance = 125f;
     private const float MaximumSpeed = 30f;
     private const float MinimumSpeed = 5f;
 
@@ -62,7 +63,6 @@ public class Coroner : AssistanceService
     /// <inheritdoc />
     public override async Task SetupAsync(CancellationTokenSource cancellationTokenSource)
     {
-        var a = this._entityService.GetClosestFPedToEntity(this.RequestedBy.GetUnderlyingPlayer().Character);
         this._target = this.RequestedBy.GetUnderlyingPlayer().Character.Position;
         await Task.CompletedTask;
     }
@@ -94,29 +94,13 @@ public class Coroner : AssistanceService
         this._coroner1.Properties.SetIntoVehicle(this._van.GetUnderlyingVehicle, FVehicleSeat.Driver);
         this._coroner1.Properties.SetBlockPermanentEvents(true);
 
-        this._coroner1.Task.DriveTo(this._van.GetUnderlyingVehicle, this._target, 0f, MaximumSpeed, (int)FDrivingStyle.Emergency);
-
-        while (this._van.GetUnderlyingVehicle.Position.DistanceToSquared(this._target) >= SlowingDistance)
-        {
-            if (cancellationTokenSource.IsCancellationRequested)
-            {
-                return;
-            }
-
-            var distance = Vector3.Distance(this._van.GetUnderlyingVehicle.Position, this._target);
-            var distanceRatio = MathHelper.Clamp((distance - SlowingDistance) / (MaximumSpeed - SlowingDistance), 0f, 1f);
-            var currentSpeed = MaximumSpeed - ((MaximumSpeed - MinimumSpeed) * distanceRatio);
-
-            this._coroner1.Properties.SetDrivingSpeed(currentSpeed);
-
-            await Task.Delay(500);
-        }
+        await this.DriveToTargetWithSlowingAsync(this._coroner1, this._van, this._target, MinimumSpeed, MaximumSpeed, cancellationTokenSource);
 
         this._coroner1.Task.LeaveVehicle(FLeaveVehicleFlags.LeaveDoorOpen);
 
         await Task.Delay(2000);
 
-        var nearbyDeadPeds = this._entityService.GetPedsInRangeOfEntity(this._van.GetUnderlyingVehicle, 100f)
+        var nearbyDeadPeds = this._entityService.GetPedsInRangeOfEntity(this._van.GetUnderlyingVehicle, SquaredDistances._100)
             .Where(x => Cfx.API.GetEntityHealth(x.Handle) <= 0)
             .ToList();
         this._syncService.AddEntities(typeof(Coroner), nearbyDeadPeds, this._target);
@@ -188,7 +172,7 @@ public class Coroner : AssistanceService
     {
         this._coroner1.Task.RunTo(ped.Position);
 
-        while (this._coroner1.GetUnderlyingPed.Position.DistanceToSquared(ped.Position) > 4.0f)
+        while (this._coroner1.GetUnderlyingPed.Position.DistanceToSquared(ped.Position) > SquaredDistances._5)
         {
             if (cancellationTokenSource.IsCancellationRequested)
             {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CitizenFX.Core;
+using FivePD.Common;
 
 namespace FivePD.Server.Interfaces;
 
@@ -16,7 +17,7 @@ public interface IGeneralAssistanceServiceSyncService
     /// <param name="entity">The entity to add.</param>
     /// <param name="serviceLocation">The location of the assistance service instance.</param>
     /// <param name="maxRadius">The maximum radius for this service instance (optional, defaults to 200).</param>
-    void AddEntity(Type assistanceServiceType, Entity entity, Vector3 serviceLocation, float maxRadius = 200f);
+    void AddEntity(Type assistanceServiceType, Entity entity, Vector3 serviceLocation, float maxRadius = SquaredDistances._200);
 
     /// <summary>
     /// Adds multiple entities to the sync service for a specific assistance service type and location.
@@ -25,7 +26,7 @@ public interface IGeneralAssistanceServiceSyncService
     /// <param name="entities">The entities to add.</param>
     /// <param name="serviceLocation">The location of the assistance service instance.</param>
     /// <param name="maxRadius">The maximum radius for this service instance (optional, defaults to 200).</param>
-    void AddEntities(Type assistanceServiceType, IEnumerable<Entity> entities, Vector3 serviceLocation, float maxRadius = 200f);
+    void AddEntities(Type assistanceServiceType, IEnumerable<Entity> entities, Vector3 serviceLocation, float maxRadius = SquaredDistances._200);
 
     /// <summary>
     /// Marks an entity as having work started on it.
@@ -41,7 +42,7 @@ public interface IGeneralAssistanceServiceSyncService
     /// <param name="serviceLocation">The location of the assistance service instance.</param>
     /// <param name="maxRadius">The maximum radius to search for entities (optional, defaults to 200).</param>
     /// <returns>The first available entity, or null if none available.</returns>
-    Entity GetFirstEntityOnWhichWorkHasNotStartedYet(Type assistanceServiceType, Vector3 serviceLocation, float maxRadius = 200f);
+    Entity GetFirstEntityOnWhichWorkHasNotStartedYet(Type assistanceServiceType, Vector3 serviceLocation, float maxRadius = SquaredDistances._200);
 
     /// <summary>
     /// Removes an entity from the sync service (e.g., when work is completed or entity is no longer valid).
@@ -57,7 +58,7 @@ public interface IGeneralAssistanceServiceSyncService
     /// <param name="serviceLocation">The location of the assistance service instance.</param>
     /// <param name="maxRadius">The maximum radius to search for entities (optional, defaults to 200).</param>
     /// <returns>A list of entities with their work status.</returns>
-    List<(Entity Entity, bool WorkStarted)> GetEntitiesInRadius(Type assistanceServiceType, Vector3 serviceLocation, float maxRadius = 200f);
+    List<(Entity Entity, bool WorkStarted)> GetEntitiesInRadius(Type assistanceServiceType, Vector3 serviceLocation, float maxRadius = SquaredDistances._200);
 
     /// <summary>
     /// Checks if an entity is already being worked on by any assistance service.

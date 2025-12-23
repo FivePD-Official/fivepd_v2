@@ -89,7 +89,7 @@ public sealed class VehicleSelectorMenu : Menu
         }
 
         var locations = this._locationService.GetAll(LocationType.VehicleSelector);
-        var isInRangeOfMarkedLocation = locations.Any(x => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(x.Position) <= 3f);
+        var isInRangeOfMarkedLocation = locations.Any(x => player.GetUnderlyingPlayer().Character.Position.DistanceToSquared(x.Position) <= SquaredDistances._5);
         if (config.AccessOnlySpecificLocations() && isInRangeOfMarkedLocation)
         {
             return true;

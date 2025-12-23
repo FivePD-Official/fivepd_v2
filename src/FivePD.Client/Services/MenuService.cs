@@ -13,12 +13,17 @@ using Newtonsoft.Json;
 namespace FivePD.Client.Services;
 
 /// <inheritdoc cref="IMenuService" />
-internal class MenuService : IMenuService, IOnInit
+internal class MenuService : IMenuService, IOnInit, IOnServerBootstrapped
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IControlService _controlService;
     private readonly IUIManagerService _uiService;
     private readonly INetworkEventService _networkEventService;
+
+    private bool _serverBootstrapped;
+    private bool _uiReady;
+    private bool _getAllTriggered;
+    private string _getAllResponse;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MenuService"/> class.
@@ -44,13 +49,33 @@ internal class MenuService : IMenuService, IOnInit
     {
         this._eventHandlerDictionary.AddUIToServerEvent(Events.UI.Menu.GetAll, data =>
         {
-            var response = JsonConvert.DeserializeObject<MenuDTO.GetAllMenu>(data);
-            this.RegisterMenuKeybinds(response);
+            this._uiReady = true;
+            this._getAllResponse = data;
+            this.CheckAndRegisterMenuKeybinds();
         });
         this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
         this._eventHandlerDictionary[Events.UI.Menu.UpdateMenuListOption] += new Action<string>(data => this._uiService.SendMessage(data));
         this._eventHandlerDictionary[Events.UI.Menu.AddMenuItem] += new Action<string>(this.AddMenuItem);
         this._eventHandlerDictionary[Events.UI.Menu.RemoveMenuItem] += new Action<string>(data => this._uiService.SendMessage(data));
+    }
+
+    /// <inheritdoc/>
+    public void OnServerBootstrapped()
+    {
+        this._serverBootstrapped = true;
+        this.CheckAndRegisterMenuKeybinds();
+    }
+
+    private void CheckAndRegisterMenuKeybinds()
+    {
+        if (this._getAllTriggered || !this._uiReady || !this._serverBootstrapped)
+        {
+            return;
+        }
+
+        this._getAllTriggered = true;
+        var response = JsonConvert.DeserializeObject<MenuDTO.GetAllMenu>(this._getAllResponse);
+        this.RegisterMenuKeybinds(response);
     }
 
     private void AddMenuItem(string serializedData)

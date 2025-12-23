@@ -15,7 +15,7 @@ namespace FivePD.Client.Services;
 
 #pragma warning disable
 
-internal class UIManagerService : IUIManagerService, IOnInit
+internal class UIManagerService : IUIManagerService, IOnInit, IOnServerBootstrapped
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly ILoggerService _loggerService;
@@ -25,6 +25,9 @@ internal class UIManagerService : IUIManagerService, IOnInit
     private bool _hasFocus;
     private bool _mdtOpen;
     private bool _informationOpen;
+    private bool _serverBootstrapped;
+    private bool _uiReady;
+    private bool _welcomeModalTriggered;
 
     /// <summary>Initializes a new instance of the <see cref="UIService"/> class.</summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
@@ -59,20 +62,39 @@ internal class UIManagerService : IUIManagerService, IOnInit
                 this._informationOpen = false;
                 this.WelcomeModalOpen = false;
                 this.MenuOpen = false;
-                
-                // Show welcome modal for first login
-                this._networkEventService.TriggerServerEvent(Events.Player.GetDismissedWelcomeModal, new Action<bool>(dismissedWelcomeModal =>
-                {
-                    if (dismissedWelcomeModal)
-                    {
-                        return;
-                    }
 
-                    this.ToggleView(Events.UIEvent.WelcomeModal);
-                }));
+                this._uiReady = true;
+                this.CheckAndTriggerWelcomeModal();
 
                 cb.Invoke(true);
             }));
+    }
+
+    /// <inheritdoc />
+    public void OnServerBootstrapped()
+    {
+        this._serverBootstrapped = true;
+        this.CheckAndTriggerWelcomeModal();
+    }
+
+    private void CheckAndTriggerWelcomeModal()
+    {
+        if (this._welcomeModalTriggered || !this._uiReady || !this._serverBootstrapped)
+        {
+            return;
+        }
+
+        this._welcomeModalTriggered = true;
+
+        this._networkEventService.TriggerServerEvent(Events.Player.GetDismissedWelcomeModal, new Action<bool>(dismissedWelcomeModal =>
+        {
+            if (dismissedWelcomeModal)
+            {
+                return;
+            }
+
+            this.ToggleView(Events.UIEvent.WelcomeModal);
+        }));
     }
 
     /// <inheritdoc />
