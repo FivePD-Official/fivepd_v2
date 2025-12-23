@@ -80,7 +80,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// <summary>
     /// Gets a value indicating whether the player is on duty.
     /// </summary>
-    public bool IsOnDuty => this.DutyStatus.Value != FDutyStatus.OffDuty;
+    public bool IsOnDuty => this.DutyStatus.Value == FDutyStatus.OnDuty;
 
     /// <summary>
     /// Gets the player's observable with a value indicating if the player is in dispatcher mode.
