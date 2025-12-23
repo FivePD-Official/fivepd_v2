@@ -50,8 +50,6 @@ Callout:
 
 Mdt:
   Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE, ONLY_SPECIFIC_LOCATIONS, ONLY_VEHICLE_AND_SPECIFIC_LOCATIONS - admins can access the MDT anywhere and can add locations in the settings
-  MustBeOnDuty: false
-  MustBeInDepartment: false
 
 Menu:
   VehicleSelector:
@@ -67,7 +65,6 @@ Menu:
   Dispatch:
     Enabled: true
     Access: EVERYWHERE # EVERYWHERE, ONLY_VEHICLE 
-    MustBeOnDuty: true
     MustBeInDepartment: true
     Items:
       - Title: Request ID check from dispatch
