@@ -1,12 +1,14 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { EventService } from '@services/event/event.service';
-import { BaseNuiEvent, MenuShowEvent, TimerBarEvent } from '@models';
-import { Router } from '@angular/router';
-import { UserService } from '@services/user/user.service';
-import { Store } from '@ngrx/store';
-import { GlobalState } from '@store';
-import { BehaviorSubject } from "rxjs";
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {EventService} from '@services/event/event.service';
+import {BaseNuiEvent, MenuShowEvent, TimerBarEvent} from '@models';
+import {Router} from '@angular/router';
+import {UserService} from '@services/user/user.service';
+import {Store} from '@ngrx/store';
+import {GlobalState} from '@store';
+import {BehaviorSubject} from "rxjs";
+import {ModalService} from "@services/modals/modal/modal.service";
+import {DebugViewComponent} from "../../pages/mdt/debug/debug-view.component";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +20,7 @@ export class WindowService {
   private readonly _router = inject(Router);
   private readonly _userService = inject(UserService);
   private readonly _store = inject<Store<GlobalState>>(Store);
+  private readonly _modalService = inject(ModalService);
 
   private _listening = false;
   private previousMdtPath: string[] = ['mdt', 'dashboard'];
@@ -85,6 +88,12 @@ export class WindowService {
     this._router.navigate(['']);
     this.visibleMdt$.next(false);
     this.triggerCloseEvent();
+  }
+
+  openDebugView(): void {
+    this._modalService.open(DebugViewComponent, {
+      title: 'Debug View',
+    });
   }
 
   private onMdtOpen(): void {
