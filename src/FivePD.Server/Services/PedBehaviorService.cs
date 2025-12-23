@@ -55,14 +55,14 @@ public class PedBehaviorService : IPedBehaviorService
     }
 
     /// <inheritdoc />
-    public void StopBehavior(FPed ped)
+    public void StopBehavior(FPed fPed)
     {
-        if (!this._peds.ContainsKey(ped.NetworkId))
+        if (!this._peds.ContainsKey(fPed.NetworkId))
         {
             return;
         }
 
-        ped.ChangeState(null);
+        fPed.ChangeState(null);
 
 #pragma warning disable
         // ped.Properties.SetAlwaysKeepTask(false);
@@ -70,13 +70,27 @@ public class PedBehaviorService : IPedBehaviorService
         // Cfx.API.SetEntityDistanceCullingRadius(ped.GetUnderlyingPed.Handle, 500f);
 #pragma warning restore
 
-        this.StopBehavior(ped.NetworkId);
+        this.StopBehavior(fPed.NetworkId);
     }
 
     /// <inheritdoc />
     public void StopBehavior(int networkId)
     {
         this._peds.Remove(networkId);
+    }
+
+    /// <inheritdoc />
+    public void MakeCompliant(FPed fPed)
+    {
+        this._cfxService.SetPedFleeAttributes(fPed.NetworkId, 0, false);
+        this._cfxService.SetPedCombatAttributes(fPed.NetworkId, 46, true);
+    }
+
+    /// <inheritdoc />
+    public void MakeNonCompliant(FPed fPed)
+    {
+        this._cfxService.SetPedFleeAttributes(fPed.NetworkId, 0, true);
+        this._cfxService.SetPedCombatAttributes(fPed.NetworkId, 46, false);
     }
 
     /// <summary>

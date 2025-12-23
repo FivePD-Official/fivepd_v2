@@ -129,4 +129,14 @@ public interface ICfxService
     /// Please refer to the FiveM API documentation. This method invokes the same method on the client side.
     /// </summary>
     public void TaskShootAtEntity(int entity, int target, int duration, uint firingPattern);
+    
+    /// <summary>
+    /// Please refer to the FiveM API documentation. This method invokes the same method on the client side.
+    /// </summary>
+    public void SetPedFleeAttributes(int entity, int attributeFlags, bool enable);
+    
+    /// <summary>
+    /// Please refer to the FiveM API documentation. This method invokes the same method on the client side.
+    /// </summary>
+    public void SetPedCombatAttributes(int entity, int attributeIndex, bool enabled);
 }

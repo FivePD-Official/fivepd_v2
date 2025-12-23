@@ -18,12 +18,24 @@ public interface IPedBehaviorService
     /// <summary>
     /// Stops the behavior logic for a specific ped and resets its state.
     /// </summary>
-    /// <param name="ped">The ped to stop the behavior for.</param>
-    public void StopBehavior(FPed ped);
+    /// <param name="fPed">The ped to stop the behavior for.</param>
+    public void StopBehavior(FPed fPed);
 
     /// <summary>
     /// Stops the behavior logic for a specific ped and resets its state.
     /// </summary>
     /// <param name="networkId">The network id of the ped to stop the behavior for.</param>
     public void StopBehavior(int networkId);
+
+    /// <summary>
+    /// Adjusts the behavior of the specified ped to make it compliant, such as disabling fleeing and enabling certain combat limitations.
+    /// </summary>
+    /// <param name="fPed">The ped to modify, ensuring compliance behavior adjustments are applied.</param>
+    public void MakeCompliant(FPed fPed);
+
+    /// <summary>
+    /// Forces a ped to become non-compliant, overriding any existing compliant behavior.
+    /// </summary>
+    /// <param name="fPed">The ped to make non-compliant.</param>
+    public void MakeNonCompliant(FPed fPed);
 }

@@ -669,5 +669,11 @@ internal readonly record struct Events
         
         // void TaskShootAtEntity(int entity,int target,int duration,uint firingPattern);
         public const string TaskShootAtEntity = "fivepd:cfx:TaskShootAtEntity";
+        
+        // void SetPedFleeAttributes(int entity, int attributeFlags, bool enable);
+        public const string SetPedFleeAttributes = "fivepd:cfx:SetPedFleeAttributes";
+
+        // void SetPedCombatAttributes(int entity, int attributeIndex, bool enabled);
+        public const string SetPedCombatAttributes = "fivepd:cfx:SetPedCombatAttributes";
     }
 }

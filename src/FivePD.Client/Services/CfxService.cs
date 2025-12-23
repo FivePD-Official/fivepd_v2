@@ -250,6 +250,28 @@ internal class CfxService : ICfxService, IOnInit
 
             this._queueService.Queue(() => Cfx.API.TaskShootAtEntity(entity.Handle, target.Handle, duration, firingPattern));
         });
+
+        this._eventHandlerDictionary[Events.Cfx.SetPedFleeAttributes] += new Action<int, int, bool>((entityNetId, attributeFlags, enable) =>
+        {
+            var entity = this.GetEntity(entityNetId);
+            if (entity is null)
+            {
+                return;
+            }
+
+            this._queueService.Queue(() => Cfx.API.SetPedFleeAttributes(entity.Handle, attributeFlags, enable));
+        });
+        
+        this._eventHandlerDictionary[Events.Cfx.SetPedCombatAttributes] += new Action<int, int, bool>((entityNetId, attributeIndex, enabled) =>
+        {
+            var entity = this.GetEntity(entityNetId);
+            if (entity is null)
+            {
+                return;
+            }
+
+            this._queueService.Queue(() => Cfx.API.SetPedCombatAttributes(entity.Handle, attributeIndex, enabled));
+        });
     }
 
     private Entity GetEntity(int networkId)

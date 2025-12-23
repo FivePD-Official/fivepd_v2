@@ -6,6 +6,7 @@ using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FivePD.Server.Services;
 
@@ -51,6 +52,8 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
         }
         
         using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        return databaseContext.PedData.FirstOrDefault(x => x.Id == ped.PedDataId);
+        return databaseContext.PedData
+            .Include(x => x.Licenses)
+            .FirstOrDefault(x => x.Id == ped.PedDataId);
     }
 }

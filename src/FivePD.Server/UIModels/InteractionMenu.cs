@@ -461,8 +461,20 @@ public sealed class InteractionMenu : Menu
         this.LetGo.OnSelect += async player =>
         {
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
-            if (fPed is null || fPed.Properties.IsDead || fPed.Detained.Value)
+            if (fPed is null || fPed.Properties.IsDead)
             {
+                return;
+            }
+
+            if (fPed.Detained.Value)
+            {
+                this._gameNotificationService.Notify(
+                    player,
+                    new GameNotificationOptions
+                    {
+                        Title = "FivePD",
+                        Message = "You cannot let go of a ped that is detained.",
+                    });
                 return;
             }
 
@@ -479,6 +491,7 @@ public sealed class InteractionMenu : Menu
             Cfx.API.SetEntityDistanceCullingRadius(fPed.GetUnderlyingPed.Handle, 500f);
             fPed.Properties.SetAlwaysKeepTask(false);
             fPed.Properties.SetBlockPermanentEvents(false);
+            this._pedBehaviorService.MakeNonCompliant(fPed);
             fPed.Properties.RemoveBlips();
             if (fPed.Properties.IsInVehicle)
             {
@@ -517,13 +530,13 @@ public sealed class InteractionMenu : Menu
 
             var fPed = await pedTask;
             var fVehicle = await vehicleTask;
-
             if (fPed is null || fPed.Properties.IsDead || fPed.Properties.IsInVehicle || fVehicle is null)
             {
                 return;
             }
 
             this._pedBehaviorService.StopBehavior(fPed);
+            this._pedBehaviorService.MakeCompliant(fPed);
             fPed.ChangeState(new FPedEnterVehicleAsPassengerState(fPed, fVehicle));
         };
         items.Add(this.EnterVehicleAsPassenger);

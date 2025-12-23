@@ -52,7 +52,7 @@ internal class TaskService : ITaskService
 
         if (preferredSeat != VehicleSeat.Any)
         {
-            Game.PlayerPed.Task.EnterVehicle(vehicle, preferredSeat);
+            ped.Task.EnterVehicle(vehicle, preferredSeat);
             return 1;
         }
 

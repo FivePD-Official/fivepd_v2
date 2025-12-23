@@ -145,4 +145,14 @@ public class CfxService : ICfxService
     {
         this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.TaskShootAtEntity, entity, target, duration, firingPattern);
     }
+    
+    public void SetPedFleeAttributes(int entity, int attributeFlags, bool enable)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.SetPedFleeAttributes, entity, attributeFlags, enable);
+    }
+    
+    public void SetPedCombatAttributes(int entity, int attributeIndex, bool enabled)
+    {
+        this._eventService.TriggerEventWithoutCallback(Entity.FromNetworkId(entity).Owner, Events.Cfx.SetPedCombatAttributes, entity, attributeIndex, enabled);
+    }
 }

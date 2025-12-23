@@ -492,7 +492,7 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.FivePD.FEnterVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.EnterVehicle>(request.Args);
-                if (Entity.FromHandle(args.VehicleNetworkId) is not Vehicle vehicle)
+                if (Entity.FromNetworkId(args.VehicleNetworkId) is not Vehicle vehicle)
                 {
                     return;
                 }
@@ -647,7 +647,7 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.EnterVehicle:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.EnterVehicle>(request.Args);
-                var vehicle = Entity.FromHandle(args.VehicleNetworkId) as Vehicle;
+                var vehicle = Entity.FromNetworkId(args.VehicleNetworkId) as Vehicle;
                 if (vehicle == null)
                 {
                     return;
@@ -662,7 +662,7 @@ internal class PedService : IPedService, IOnInit
             case FPedTasksDTO.Events.FightAgainst:
             {
                 var args = JsonConvert.DeserializeObject<FPedTasksDTO.FightAgainst>(request.Args);
-                var targetPed = Entity.FromHandle(args.PedNetworkId) as Ped;
+                var targetPed = Entity.FromNetworkId(args.PedNetworkId) as Ped;
                 if (targetPed == null)
                 {
                     return;
