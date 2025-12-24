@@ -87,7 +87,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy, IO
     {
         this.Player.DutyStatus.Subscribe(this.ListenForDutyStatusChanges);
 
-        BaseScript.TriggerServerEvent(Events.Player.OnConnected);
+        BaseScript.TriggerServerEvent(Events.Player.OnConnected, true);
         this._tickService.OnTick += this.OnTickAsync;
         this._eventHandlerDictionary[Events.Player.UpdateUnitAvailability] += new Action<int>(availability => this.ListenForAvailabilityStatusChanges((FUnitAvailability)availability));
         this._eventHandlerDictionary[Events.Player.UpdateUnitStatus] += new Action<string>(this.ListenForStatusChanges);
@@ -108,6 +108,7 @@ internal class LocalPlayerService : ILocalPlayerService, IOnInit, IOnDestroy, IO
     /// <inheritdoc/>
     public void OnServerBootstrapped()
     {
+        BaseScript.TriggerServerEvent(Events.Player.OnConnected, false);
 #pragma warning disable CS4014
         this.GetGeneralConfigAsync();
 #pragma warning restore CS4014

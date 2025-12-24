@@ -91,7 +91,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <inheritdoc />
     void IOnInit.OnInit()
     {
-        this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player>(this.OnPlayerConnected);
+        this._eventHandlerDictionary[Events.Player.OnConnected] += new Action<Player, bool>(this.OnPlayerConnected);
         this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, string>(this.GetDismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.DismissedWelcomeModal] += new Action<Player>(this.DismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.GetRole] += new Action<Player, string>(this.GetRole);
@@ -253,9 +253,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         });
     }
 
-    private void OnPlayerConnected([FromSource] Player player)
+    private void OnPlayerConnected([FromSource] Player player, bool invokeServerBootstrappedEvent)
     {
-        player.TriggerEvent(Events.Lifecycle.ServerBootstrapped);
+        if (invokeServerBootstrappedEvent)
+        {
+            player.TriggerEvent(Events.Lifecycle.ServerBootstrapped);
+            return;
+        }
+
         this.CreatePlayerData(player);
         this.SubscribeToOnDutyStatusChange(player);
         this._internalPedStorageService.InternalPeds[player.Character.NetworkId] = new FPed(new FPedBuilder(new CommonFPedBuilder(player.Character.NetworkId)));
