@@ -335,12 +335,20 @@ public class FPedBuilder : CommonFPedBuilder
             if (expired)
             {
                 issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year - 1);
-                expirationDate = issueDate.AddYears(Random.Next(1, Math.Max(Random.Next(1, 6), DateTime.Now.Year - issueDate.Year)));
+                expirationDate = issueDate.AddYears(Random.Next(1, Math.Max(2, now.Year - issueDate.Year)));
+                if (expirationDate >= now)
+                {
+                    expirationDate = now.AddDays(-Random.Next(1, 365));
+                }
             }
             else
             {
                 issueDate = DateGenerator.GetRandomDate(now.Year - 5, now.Year);
-                expirationDate = issueDate.AddYears(Random.Next(Math.Min(DateTime.Now.Year - issueDate.Year, 10), 11));
+                expirationDate = issueDate.AddYears(Random.Next(1, 11));
+                if (expirationDate <= now)
+                {
+                    expirationDate = now.AddYears(Random.Next(1, 11));
+                }
             }
 
             licenses.Add(new PedLicense

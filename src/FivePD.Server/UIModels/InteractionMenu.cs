@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,10 +93,10 @@ public sealed class InteractionMenu : Menu
                     Title = "FivePD",
                     Message = "ERROR.USER.NOT_IN_DEPARTMENT"
                 });
-            
+
             return false;
         }
-        
+
         if (config.AccessEverywhere())
         {
             return true;
@@ -115,12 +115,12 @@ public sealed class InteractionMenu : Menu
     {
         var items = new List<MenuItem>();
 
-        this.AskForLicense = new MenuListItem("Ask for license", "", new List<MenuListOption>
+        this.AskForLicense = new MenuListItem("LABEL.MENU.INTERACTION.ASK_FOR_LICENSE.TITLE", "", new List<MenuListOption>
         {
-            new("Driving"),
-            new("Fishing"),
-            new("Hunting"),
-            new("Ccw"),
+            new("LABEL.PED_LICENSE.DRIVING.SHORT"),
+            new("LABEL.PED_LICENSE.FISHING.SHORT"),
+            new("LABEL.PED_LICENSE.HUNTING.SHORT"),
+            new("LABEL.PED_LICENSE.CCW.SHORT"),
         });
         this.AskForLicense.OnSelect += async (player, index) =>
         {
@@ -131,32 +131,32 @@ public sealed class InteractionMenu : Menu
             }
 
             PedLicenseType licenseType;
-            string licenseTypeLabel;
+            string licenseTypeKey;
 
             switch (index)
             {
                 case 0:
                 {
                     licenseType = PedLicenseType.Driving;
-                    licenseTypeLabel = "Driving license";
+                    licenseTypeKey = "LABEL.PED_LICENSE.DRIVING.LONG";
                     break;
                 }
                 case 1:
                 {
                     licenseType = PedLicenseType.Fishing;
-                    licenseTypeLabel = "Fishing license";
+                    licenseTypeKey = "LABEL.PED_LICENSE.FISHING.LONG";
                     break;
                 }
                 case 2:
                 {
                     licenseType = PedLicenseType.Hunting;
-                    licenseTypeLabel = "Hunting license";
+                    licenseTypeKey = "LABEL.PED_LICENSE.HUNTING.LONG";
                     break;
                 }
                 case 3:
                 {
                     licenseType = PedLicenseType.Ccw;
-                    licenseTypeLabel = "CCW permit";
+                    licenseTypeKey = "LABEL.PED_LICENSE.CCW.LONG";
                     break;
                 }
                 default: return;
@@ -183,35 +183,13 @@ public sealed class InteractionMenu : Menu
                     new GameNotificationOptions
                     {
                         Title = "FivePD",
-                        Message = $"No {licenseTypeLabel} available.",
+                        Message = "LABEL.MENU.INTERACTION.ASK_FOR_LICENSE.RESULT.NO_LICENSE_AVAILABLE",
+                        MessageParams = new Dictionary<string, string>
+                        {
+                            { "type", licenseTypeKey }
+                        }
                     });
                 return;
-            }
-
-            var text = new StringBuilder()
-                .Append($"[{licenseTypeLabel}]")
-                .Append("{{NEW_LINE}}")
-                .Append(pedData.Firstname + " " + pedData.Lastname)
-                .Append("{{NEW_LINE}}")
-                .Append($"Issue date: {license.IssueDate:MM-dd-yyyy}")
-                .Append("{{NEW_LINE}}")
-                .Append($"Expiration date: {license.ExpirationDate:MM-dd-yyyy}")
-                .Append("{{NEW_LINE}}")
-                .Append("Status: ");
-
-            if (license.Status == PedLicenseStatus.Valid)
-            {
-                text.Append("Valid");
-            }
-            else
-            {
-                text.Append(license.Status switch
-                {
-                    PedLicenseStatus.Expired => "Expired",
-                    PedLicenseStatus.Suspended => "Suspended",
-                    PedLicenseStatus.Revoked => "Revoked",
-                    _ => "Unknown",
-                });
             }
 
             this._gameNotificationService.Notify(
@@ -219,12 +197,32 @@ public sealed class InteractionMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = text.ToString(),
+                    Message = "LABEL.MENU.INTERACTION.ASK_FOR_LICENSE.RESULT.OK",
+                    MessageParams = new Dictionary<string, string>
+                    {
+                        { "type", licenseTypeKey },
+                        { "name", pedData.Firstname + " " + pedData.Lastname },
+                        { "issue_date_label", "LABEL.DATE.ISSUE" },
+                        { "issue_date", license.IssueDate.ToString("MM-dd-yyyy") },
+                        { "expiration_date_label", "LABEL.DATE.EXPIRATION" },
+                        { "expiration_date", license.ExpirationDate.ToString("MM-dd-yyyy") },
+                        { "status_label", "LABEL.STATUS.SINGULAR" },
+                        {
+                            "status", license.Status switch
+                            {
+                                PedLicenseStatus.Valid => "LABEL.VALID",
+                                PedLicenseStatus.Expired => "LABEL.EXPIRED",
+                                PedLicenseStatus.Suspended => "LABEL.SUSPENDED",
+                                PedLicenseStatus.Revoked => "LABEL.REVOKED",
+                                _ => "LABEL.UNKNOWN",
+                            }
+                        },
+                    }
                 });
         };
         items.Add(this.AskForLicense);
 
-        this.SearchPed = new MenuButtonItem("Search ped", "");
+        this.SearchPed = new MenuButtonItem("LABEL.MENU.INTERACTION.SEARCH_PED.TITLE", "");
         this.SearchPed.OnSelect += async player =>
         {
             var playerPed = FPed.FromFPlayer(player);
@@ -251,7 +249,7 @@ public sealed class InteractionMenu : Menu
                 return;
             }
 
-            var itemList = new StringBuilder().Append("Items: ");
+            var itemList = new StringBuilder();
             if (pedData.Items.Count > 0)
             {
                 for (var i = 0; i < pedData.Items.Count; i++)
@@ -282,12 +280,16 @@ public sealed class InteractionMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = itemList.ToString(),
+                    Message = "LABEL.MENU.INTERACTION.SEARCH_PED.RESULT",
+                    MessageParams = new Dictionary<string, string>
+                    {
+                        { "items", itemList.ToString() }
+                    }
                 });
         };
         items.Add(this.SearchPed);
 
-        this.DrugSwabTest = new MenuButtonItem("Drug swab test", "");
+        this.DrugSwabTest = new MenuButtonItem("LABEL.MENU.INTERACTION.DRUG_SWAB_TEST.TITLE", "");
         this.DrugSwabTest.OnSelect += async player =>
         {
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
@@ -314,21 +316,27 @@ public sealed class InteractionMenu : Menu
                 return;
             }
 
-            var text = new StringBuilder()
-                .Append("Drug swab test")
-                .Append("{{NEW_LINE}}")
-                .Append(pedData.Drugs.Count == 0 ? "Result: -" : $"Result: {string.Join(", ", pedData.Drugs.Select(x => x.Name))}");
             this._gameNotificationService.Notify(
                 player,
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = text.ToString(),
+                    Message = pedData.Drugs.Count == 0
+                        ? "LABEL.MENU.INTERACTION.DRUG_SWAB_TEST.RESULT.NEGATIVE"
+                        : "LABEL.MENU.INTERACTION.DRUG_SWAB_TEST.RESULT.POSITION",
+                    MessageParams = new Dictionary<string, string>
+                    {
+                        {
+                            "result", pedData.Drugs.Count == 0
+                                ? ""
+                                : string.Join(", ", pedData.Drugs.Select(x => x.Name))
+                        }
+                    }
                 });
         };
         items.Add(this.DrugSwabTest);
 
-        this.BreathalyzerTest = new MenuButtonItem("Breathalyzer test", "");
+        this.BreathalyzerTest = new MenuButtonItem("LABEL.MENU.INTERACTION.BREATHALYZER_TEST.TITLE", "");
         this.BreathalyzerTest.OnSelect += async player =>
         {
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
@@ -355,36 +363,28 @@ public sealed class InteractionMenu : Menu
                 return;
             }
 
-            var text = new StringBuilder()
-                .Append("Breathalyzer test")
-                .Append("{{NEW_LINE}}")
-                .Append($"Legal limit: {this._configService.GeneralConfig.Peds.Alcohol.LegalLimit:0.00}")
-                .Append("{{NEW_LINE}}")
-                .Append("Result: ");
-            if (pedData.AlcoholOverLegalLimit())
-            {
-                text.Append(pedData.AlcoholLevel.ToString("0.00"));
-            }
-            else
-            {
-                text.Append(pedData.AlcoholLevel.ToString("0.00"));
-            }
-
             this._gameNotificationService.Notify(
                 player,
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = text.ToString(),
+                    Message = "LABEL.MENU.INTERACTION.BREATHALYZER_TEST.RESULT.MAIN",
+                    MessageParams = new Dictionary<string, string>
+                    {
+                        { "legal_limit_label", "LABEL.MENU.INTERACTION.BREATHALYZER_TEST.RESULT.LEGAL_LIMIT" },
+                        { "legal_limit", this._configService.GeneralConfig.Peds.Alcohol.LegalLimit.ToString("0.00") },
+                        { "result_label", "LABEL.MENU.INTERACTION.BREATHALYZER_TEST.RESULT.RESULT" },
+                        { "result", pedData.AlcoholLevel.ToString("0.00") },
+                    }
                 });
         };
         items.Add(this.BreathalyzerTest);
 
-        this.Movement = new MenuListItem("Movement", "", new List<MenuListOption>
+        this.Movement = new MenuListItem("LABEL.MENU.INTERACTION.MOVEMENT.TITLE", "", new List<MenuListOption>
         {
-            new("Stand still"),
-            new("Grab"),
-            new("Follow me"),
+            new("LABEL.MENU.INTERACTION.MOVEMENT.TYPE.STAND_STILL"),
+            new("LABEL.MENU.INTERACTION.MOVEMENT.TYPE.GRAB"),
+            new("LABEL.MENU.INTERACTION.MOVEMENT.TYPE.FOLLOW_ME"),
         });
         this.Movement.OnSelect += async (player, index) =>
         {
@@ -418,7 +418,7 @@ public sealed class InteractionMenu : Menu
         };
         items.Add(this.Movement);
 
-        this.DetainOrRelease = new MenuButtonItem("Detain/Release the ped", "");
+        this.DetainOrRelease = new MenuButtonItem("LABEL.MENU.INTERACTION.DETAIN_RELEASE.TITLE", "");
         this.DetainOrRelease.OnSelect += async player =>
         {
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
@@ -437,7 +437,7 @@ public sealed class InteractionMenu : Menu
                     new GameNotificationOptions
                     {
                         Title = "FivePD",
-                        Message = "The ped is being released.",
+                        Message = "LABEL.MENU.INTERACTION.DETAIN_RELEASE.RELEASING",
                     });
                 this._cfxService.SetEnableHandcuffs(fPed.GetUnderlyingPed.NetworkId, false);
             }
@@ -449,7 +449,7 @@ public sealed class InteractionMenu : Menu
                     new GameNotificationOptions
                     {
                         Title = "FivePD",
-                        Message = "The ped is being detained.",
+                        Message = "LABEL.MENU.INTERACTION.DETAIN_RELEASE.DETAINING",
                     });
                 this._cfxService.SetEnableHandcuffs(fPed.GetUnderlyingPed.NetworkId, true);
                 this._pedBehaviorService.StopBehavior(fPed);
@@ -457,7 +457,7 @@ public sealed class InteractionMenu : Menu
         };
         items.Add(this.DetainOrRelease);
 
-        this.LetGo = new MenuButtonItem("Let go of the ped", "");
+        this.LetGo = new MenuButtonItem("LABEL.MENU.INTERACTION.LET_GO.TITLE", "");
         this.LetGo.OnSelect += async player =>
         {
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
@@ -473,7 +473,7 @@ public sealed class InteractionMenu : Menu
                     new GameNotificationOptions
                     {
                         Title = "FivePD",
-                        Message = "You cannot let go of a ped that is detained.",
+                        Message = "LABEL.MENU.INTERACTION.LET_GO.CANNOT_LET_GO_DETAINED",
                     });
                 return;
             }
@@ -483,7 +483,7 @@ public sealed class InteractionMenu : Menu
                 new GameNotificationOptions
                 {
                     Title = "FivePD",
-                    Message = "The ped has been let go.",
+                    Message = "LABEL.MENU.INTERACTION.LET_GO.SUCCESS",
                 });
 
             this._pedBehaviorService.StopBehavior(fPed);
@@ -506,7 +506,7 @@ public sealed class InteractionMenu : Menu
         };
         items.Add(this.LetGo);
 
-        this.StepOutOfVehicle = new MenuButtonItem("Step out of vehicle", "");
+        this.StepOutOfVehicle = new MenuButtonItem("LABEL.MENU.INTERACTION.STEP_OUT_VEHICLE.TITLE", "");
         this.StepOutOfVehicle.OnSelect += async player =>
         {
             var fPed = await this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());
@@ -520,7 +520,7 @@ public sealed class InteractionMenu : Menu
         };
         items.Add(this.StepOutOfVehicle);
 
-        this.EnterVehicleAsPassenger = new MenuButtonItem("Order ped to enter vehicle", "");
+        this.EnterVehicleAsPassenger = new MenuButtonItem("LABEL.MENU.INTERACTION.ENTER_VEHICLE.TITLE", "");
         this.EnterVehicleAsPassenger.OnSelect += async player =>
         {
             var pedTask = this._entityService.GetClosestEntityToPlayerAsync<FPed>(player.GetUnderlyingPlayer());

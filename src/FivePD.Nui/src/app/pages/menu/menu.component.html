@@ -59,7 +59,7 @@
                     'text-zinc-400': !(item | as: MenuListItem).Options[(item | as: MenuListItem).currentIndex].Enabled
                     }"
                           >
-                            {{ (item | as: MenuListItem).Options[(item | as: MenuListItem).currentIndex].Title }}
+                            {{ (item | as: MenuListItem).Options[(item | as: MenuListItem).currentIndex].Title | translate }}
                           </p>
                         </div>
                       </div>
