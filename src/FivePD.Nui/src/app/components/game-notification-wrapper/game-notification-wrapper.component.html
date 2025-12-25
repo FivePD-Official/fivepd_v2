@@ -1,6 +1,6 @@
 <div class="w-[400px] flex flex-col gap-1">
 
-  @for (notificationWrapper of notifications; track notificationWrapper) {
+  @for (notificationWrapper of notifications$ | async; track notificationWrapper.notification) {
     <div class="p-4 bg-zinc-900 border border-zinc-800 rounded-lg flex flex-col gap-4 notification-item"
          [class.exiting]="notificationWrapper.isExiting">
       <div class="flex flex-col gap-0.5">

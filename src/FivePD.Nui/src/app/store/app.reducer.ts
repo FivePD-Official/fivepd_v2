@@ -3,6 +3,7 @@ import { createReducer, on } from '@ngrx/store';
 import {
   AppActions,
 } from '@store/app.actions';
+import { GameNotificationOptions } from '../models/game-notification';
 
 export interface WithDate {
   date: Date;
@@ -14,6 +15,13 @@ export interface DevToolsState {
   coordinates: Page<CoordinateWithDate>;
 }
 
+export interface GameNotification {
+  notification: GameNotificationOptions;
+  notificationKeysToDisplay: { key: string; value: string }[];
+  isExiting: boolean;
+  remainingTime: number;
+}
+
 export interface AppStateModel {
   previousMdtPath: string[];
   devTools: DevToolsState;
@@ -22,6 +30,7 @@ export interface AppStateModel {
   windowMaximized: boolean;
   recentlyViewedPeds: PedData[];
   recentlyViewedVehicles: VehicleData[];
+  notifications: GameNotification[];
 }
 
 const devToolsDefaultState: DevToolsState = {
@@ -42,6 +51,7 @@ const initialState: AppStateModel = {
   windowMaximized: false,
   recentlyViewedPeds: [],
   recentlyViewedVehicles: [],
+  notifications: [],
 };
 
 export const appReducer = createReducer(
@@ -93,4 +103,16 @@ export const appReducer = createReducer(
 
     return {...state, recentlyViewedVehicles};
   }),
+  on(AppActions.addNotification, (state, {notification}) => ({
+    ...state,
+    notifications: [...state.notifications, notification]
+  })),
+  on(AppActions.removeNotification, (state, {notification}) => ({
+    ...state,
+    notifications: state.notifications.filter(n => n.notification !== notification)
+  })),
+  on(AppActions.updateNotification, (state, {notification, changes}) => ({
+    ...state,
+    notifications: state.notifications.map(n => n.notification === notification ? {...n, ...changes} : n)
+  })),
 );

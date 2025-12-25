@@ -3,7 +3,7 @@ import { EventService } from '@services/event/event.service';
 import { WindowService } from '@services/window/window.service';
 import { LocalizationService } from '@services/localization/localization.service';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, takeUntil } from 'rxjs';
+import { concatWith, delay, filter, mergeMap, of, switchMap, takeUntil, tap, timer } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { AppActions } from '@store/app.actions';
@@ -15,6 +15,7 @@ import { BaseNuiEvent, InformationUpdateDTO } from "@models";
 import { UserService } from "@services/user/user.service";
 import { environment } from "../environments/environment";
 import { UserActions } from "@store/user.actions";
+import { GameNotificationOptions } from './models/game-notification';
 
 @Component({
     selector: 'app-root',
@@ -62,6 +63,53 @@ export class AppComponent implements OnInit {
       .subscribe(information => {
         this._store.dispatch(UserActions.setInformation({information}));
       });
+
+    this._eventService.onEvent<GameNotificationOptions>('fivepd:gameNotification:notify')
+      .pipe(
+        mergeMap(notification => {
+          const gameNotification = {
+            notification,
+            notificationKeysToDisplay: Object.entries(notification.Keys ?? {}).map(x => ({key: x[0], value: x[1]})),
+            isExiting: false,
+            remainingTime: notification.Timeout / 1000
+          };
+
+          this._store.dispatch(AppActions.addNotification({
+            notification: gameNotification
+          }));
+
+          if (notification.PlayAudio) {
+            this._soundService.playSound(notification.PlayAudio);
+          }
+
+          let remainingTime = notification.Timeout / 1000;
+
+          return timer(1000, 1000).pipe(
+            takeUntil(timer(notification.Timeout)),
+            tap(() => {
+              remainingTime--;
+              this._store.dispatch(AppActions.updateNotification({
+                notification,
+                changes: {remainingTime}
+              }));
+            }),
+            concatWith(
+              of(null).pipe(
+                tap(() => {
+                  this._store.dispatch(AppActions.updateNotification({
+                    notification,
+                    changes: {isExiting: true}
+                  }));
+                }),
+                delay(400),
+                tap(() => {
+                  this._store.dispatch(AppActions.removeNotification({notification}));
+                })
+              )
+            )
+          );
+        }),
+      ).subscribe();
 
     this._configService.getSafeZoneSize().subscribe(safeZoneSize => {
       const safeZone = safeZoneSize * 0.5;
