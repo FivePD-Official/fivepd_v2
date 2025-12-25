@@ -79,6 +79,16 @@ public sealed class DispatchMenu : Menu
                         player.DutyStatus.Value = FDutyStatus.OnDuty;
                         this.DutyNotification(player, "LABEL.MENU.DISPATCH.ON_DUTY.NOTIFICATION");
                     }
+                    else
+                    {
+                        this._gameNotificationService.Notify(
+                            player,
+                            new GameNotificationOptions
+                            {
+                                Title = "FivePD",
+                                Message = "You must be assigned to a department to go on duty."
+                            });
+                    }
                 });
             }
 
@@ -90,6 +100,16 @@ public sealed class DispatchMenu : Menu
                     {
                         player.DutyStatus.Value = FDutyStatus.OffDuty;
                         this.DutyNotification(player, "LABEL.MENU.DISPATCH.OFF_DUTY.NOTIFICATION");
+                    }
+                    else
+                    {
+                        this._gameNotificationService.Notify(
+                            player,
+                            new GameNotificationOptions
+                            {
+                                Title = "FivePD",
+                                Message = "You must be assigned to a department to go off duty."
+                            });
                     }
                 });
             }
