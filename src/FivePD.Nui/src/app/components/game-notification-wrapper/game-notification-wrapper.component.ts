@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { GameNotificationOptions } from "../../models/game-notification";
+import { GameNotification, GameNotificationOptions } from "../../models/game-notification";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { LocalizationService } from "@services/localization/localization.service";
 import { DomSanitizer } from "@angular/platform-browser";
 import { Store } from '@ngrx/store';
 import { GlobalState } from '@store';
 import { Observable } from 'rxjs';
-import { GameNotification } from '@store/app.reducer';
 import { AsyncPipe } from '@angular/common';
 
 @Component({

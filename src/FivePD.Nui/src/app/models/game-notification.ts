@@ -8,3 +8,10 @@
   Keys?: Record<string, string>;
   PlayAudio?: string;
 }
+
+export interface GameNotification {
+  notification: GameNotificationOptions;
+  notificationKeysToDisplay: { key: string; value: string }[];
+  isExiting: boolean;
+  remainingTime: number;
+}

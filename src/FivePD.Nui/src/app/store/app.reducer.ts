@@ -3,7 +3,7 @@ import { createReducer, on } from '@ngrx/store';
 import {
   AppActions,
 } from '@store/app.actions';
-import { GameNotificationOptions } from '../models/game-notification';
+import { GameNotification } from "../models/game-notification";
 
 export interface WithDate {
   date: Date;
@@ -13,13 +13,6 @@ export type CoordinateWithDate = Vector3 & WithDate;
 
 export interface DevToolsState {
   coordinates: Page<CoordinateWithDate>;
-}
-
-export interface GameNotification {
-  notification: GameNotificationOptions;
-  notificationKeysToDisplay: { key: string; value: string }[];
-  isExiting: boolean;
-  remainingTime: number;
 }
 
 export interface AppStateModel {

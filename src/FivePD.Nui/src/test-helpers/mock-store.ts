@@ -1,5 +1,4 @@
-﻿import { User } from '@models';
-import FunctionPropertyNames = jest.FunctionPropertyNames;
+﻿import FunctionPropertyNames = jest.FunctionPropertyNames;
 import { UserStateModel } from '@store/user.reducer';
 import { AppStateModel } from "@store/app.reducer";
 import { of } from "rxjs";
@@ -34,6 +33,7 @@ const defaultState: GlobalStateModel = {
         Items: [],
       },
     },
+    notifications: [],
   },
   user: {
     details: {} as any,

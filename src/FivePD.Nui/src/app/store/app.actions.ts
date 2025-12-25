@@ -1,7 +1,7 @@
 ﻿import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { CoordinateWithDate, GameNotification } from '@store/app.reducer';
+import { CoordinateWithDate } from '@store/app.reducer';
 import { PedData, VehicleData } from "@models";
-import { GameNotificationOptions } from '../models/game-notification';
+import { GameNotificationOptions, GameNotification } from '../models/game-notification';
 
 export const AppActions = createActionGroup({
   source: 'app',
