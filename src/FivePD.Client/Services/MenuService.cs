@@ -22,7 +22,6 @@ internal class MenuService : IMenuService, IOnInit, IOnServerBootstrapped
 
     private bool _serverBootstrapped;
     private bool _uiReady;
-    private bool _getAllTriggered;
     private string _getAllResponse;
 
     /// <summary>
@@ -68,12 +67,11 @@ internal class MenuService : IMenuService, IOnInit, IOnServerBootstrapped
 
     private void CheckAndRegisterMenuKeybinds()
     {
-        if (this._getAllTriggered || !this._uiReady || !this._serverBootstrapped)
+        if (!this._uiReady || !this._serverBootstrapped)
         {
             return;
         }
 
-        this._getAllTriggered = true;
         var response = JsonConvert.DeserializeObject<MenuDTO.GetAllMenu>(this._getAllResponse);
         this.RegisterMenuKeybinds(response);
     }
