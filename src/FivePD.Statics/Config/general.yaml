@@ -182,18 +182,40 @@ Peds:
     - Name: Heroin
       ChanceToHave: 100 # 0-100
   Licenses:
+    # IMPORTANT: ChanceToHave is NOT cumulative - it's a separate check to determine if the ped has the license at all.
+    # The status chances (ChanceForExpired, ChanceForSuspended, ChanceForRevoked) ARE cumulative and work together.
+    #
+    # Status chances are calculated cumulatively from 0 to 100.
+    # Logic: The system picks a random number (0-100).
+    # It checks each status chance in order. If the number is LESS than the current total, that status is assigned.
+    # To make a status MORE likely, increase its chance. To DISABLE it, set it to 0.
+    #
+    # IMPORTANT: The total of all status chances should ideally be 100.
+    # - If the total is LESS than 100, the "missing" percentage becomes an extra chance for Valid status.
+    # - If the total is MORE than 100, the statuses at the bottom of the list will never happen.
+    # - Setting a status to 0 removes it from the pool entirely.
+    # - "Valid" is the remainder. If you want a 20% chance for Valid, make sure the 
+    #   other statuses add up to 80%.
     Driving:
       ChanceToHave: 100 # 0-100. Higher values increase the likelihood that a ped has a driving license
-      ChanceForExpired: 10 # 0-100. Higher values increase the likelihood that a ped has an expired driving license
+      ChanceForExpired: 10
+      ChanceForSuspended: 10
+      ChanceForRevoked: 10
     Fishing:
-      ChanceToHave: 100
-      ChanceForExpired: 100
+      ChanceToHave: 50
+      ChanceForExpired: 10
+      ChanceForSuspended: 10
+      ChanceForRevoked: 10
     Hunting:
-      ChanceToHave: 100
-      ChanceForExpired: 50
+      ChanceToHave: 50
+      ChanceForExpired: 10
+      ChanceForSuspended: 10
+      ChanceForRevoked: 10
     Ccw:
       ChanceToHave: 50
-      ChanceForExpired: 0
+      ChanceForExpired: 10
+      ChanceForSuspended: 10
+      ChanceForRevoked: 10
   Warrants:
     ChanceToHaveAny: 10 # 0-100. Higher values increase the likelihood that a ped has a warrant
     MaxAmount: 2 # Maximum amount of warrants a ped can have
@@ -210,12 +232,30 @@ Peds:
 
 Vehicles:
   Documents:
+    # IMPORTANT: ChanceToHave is NOT cumulative - it's a separate check to determine if the vehicle has the document at all.
+    # The status chances (ChanceForExpired, ChanceForSuspended, ChanceForRevoked) ARE cumulative and work together.
+    #
+    # Status chances are calculated cumulatively from 0 to 100.
+    # Logic: The system picks a random number (0-100).
+    # It checks each status chance in order. If the number is LESS than the current total, that status is assigned.
+    # To make a status MORE likely, increase its chance. To DISABLE it, set it to 0.
+    #
+    # IMPORTANT: The total of all status chances should ideally be 100.
+    # - If the total is LESS than 100, the "missing" percentage becomes an extra chance for Valid status.
+    # - If the total is MORE than 100, the statuses at the bottom of the list will never happen.
+    # - Setting a status to 0 removes it from the pool entirely.
+    # - "Valid" is the remainder. If you want a 20% chance for Valid, make sure the 
+    #   other statuses add up to 80%.
     Insurance:
       ChanceToHave: 100 # 0-100. Higher values increase the likelihood that a vehicle is insured
-      ChanceForExpired: 10 # 0-100. Higher values increase the likelihood that a vehicle's insurance is expired
+      ChanceForExpired: 10
+      ChanceForSuspended: 10
+      ChanceForRevoked: 10
     Registration:
       ChanceToHave: 100
-      ChanceForExpired: 100
+      ChanceForExpired: 10
+      ChanceForSuspended: 10
+      ChanceForRevoked: 10
 
 ProgressionSystem:
   ExperiencePoints:

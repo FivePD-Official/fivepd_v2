@@ -17,5 +17,9 @@ public sealed record PedLicensesConfig
         public int ChanceToHave { get; init; }
 
         public int ChanceForExpired { get; init; }
+
+        public int ChanceForSuspended { get; init; }
+
+        public int ChanceForRevoked { get; init; }
     }
 }

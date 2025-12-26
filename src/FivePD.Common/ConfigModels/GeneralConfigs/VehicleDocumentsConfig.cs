@@ -1,4 +1,4 @@
-﻿namespace FivePD.Common.ConfigModels.GeneralConfigs;
+﻿using FivePD.Common.ConfigModels.GeneralConfigs;
 
 #pragma warning disable
 
@@ -13,5 +13,9 @@ public sealed record VehicleDocumentsConfig
         public int ChanceToHave { get; init; }
 
         public int ChanceForExpired { get; init; }
+
+        public int ChanceForSuspended { get; init; }
+
+        public int ChanceForRevoked { get; init; }
     }
 }
