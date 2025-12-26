@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CitizenFX.Core;
 using FivePD.Server.Database;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Interfaces.Addons;
@@ -72,6 +71,7 @@ internal static class DatabaseHandler
     public static void SeedData()
     {
         SeedCallouts();
+        SeedSampleRanks();
         SeedSampleDepartment();
         SeedVehicleConfigs();
         SeedLoadoutConfigs();
@@ -79,16 +79,21 @@ internal static class DatabaseHandler
 
     private static void SeedCallouts()
     {
+        _logger?.Debug("Seeding callout detail entities from addons...");
         var addonMetadataService = _provider.GetService<IInternalAddonMetadataService>();
         addonMetadataService.CreateCalloutDetailsEntities();
+        _logger?.Debug("Seeding of callout detail entities completed.");
     }
 
     private static void SeedSampleDepartment()
     {
         if (_databaseContext.Departments.Any())
         {
+            _logger?.Debug("Departments already exist, skipping department seeding.");
             return;
         }
+
+        _logger?.Debug("Creating sample department with divisions...");
 
         var department = new Department
         {
@@ -117,18 +122,28 @@ internal static class DatabaseHandler
                     Type = CallsignFormatItemType.RandomNumber,
                 },
             },
+            Divisions = new List<Division>
+            {
+                new() { Name = "Patrol division" },
+                new() { Name = "Detective division" },
+                new() { Name = "SWAT division" },
+                new() { Name = "Traffic division" },
+            },
         };
         _databaseContext.Departments.Add(department);
         _databaseContext.SaveChanges();
-        _logger?.Information("Created sample department.");
+        _logger?.Information("Created sample department with divisions.");
     }
 
     private static void SeedSampleRanks()
     {
         if (_databaseContext.Ranks.Any())
         {
+            _logger?.Debug("Ranks already exist, skipping rank seeding.");
             return;
         }
+
+        _logger?.Debug("Creating sample ranks...");
 
         _databaseContext.Ranks.AddRange(
             new()
@@ -178,8 +193,11 @@ internal static class DatabaseHandler
     {
         if (_databaseContext.VehicleConfigs.Any())
         {
+            _logger?.Debug("Vehicle configs already exist, skipping vehicle config seeding.");
             return;
         }
+
+        _logger?.Debug("Creating sample vehicle configs...");
 
         var ambulance = DefaultVehicleConfigs.Ambulance;
         var police = DefaultVehicleConfigs.Police;
@@ -198,8 +216,11 @@ internal static class DatabaseHandler
     {
         if (_databaseContext.LoadoutConfigs.Any())
         {
+            _logger?.Debug("Loadout configs already exist, skipping loadout config seeding.");
             return;
         }
+
+        _logger?.Debug("Creating sample loadout configs...");
 
         var pistol = new Weapon
         {
