@@ -25,6 +25,7 @@ using FivePD.Server.Services.VariableData;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Cfx = CitizenFX.Core.Native;
+using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
 
@@ -36,7 +37,7 @@ namespace FivePD.Server;
 [Obfuscate]
 internal class Bootstrapper : BaseScript
 {
-    private readonly Dictionary<Action, bool> _phases = new();
+    private readonly Dictionary<Phase, bool> _phases = new();
     private readonly Stopwatch _stopwatch = new();
     private readonly ILogger _bootstrapLogger;
     private readonly ILogger _addonLocatorLogger;
@@ -73,65 +74,37 @@ internal class Bootstrapper : BaseScript
             .MinimumLevel.Verbose()
             .CreateLogger();
 
-        // Creates log context for bootstrapping.
         this._bootstrapLogger = Log.Logger.ForContext("SourceIdentifier", "Bootstrapper");
         this._bootstrapLogger.Information("Starting FivePD...");
 
         this._addonLocatorLogger = Log.Logger.ForContext("SourceIdentifier", "AddonLocator");
 
-        // Enqueue service location phase.
-        this._phases.Add(this.PerformServiceLocationPhase, false);
+        this._phases.Add(new Phase("Register services", this.PerformRegisterServicesPhase), false);
 
-        // Enqueue addon location phase.
-        this._phases.Add(this.PerformAddonLocationPhase, false);
+        this._phases.Add(new Phase("Locate addons", this.PerformLocateAddonsPhase), false);
 
-        // // Enqueue post-bootstrap phase.
-        this._phases.Add(this.PerformPostBootstrapPhase, false);
+        this._phases.Add(new Phase("Initialize system", this.PerformInitializeSystemPhase), false);
 
-        this._phases.Add(() => DatabaseHandler.SetParameters(this._provider, this._bootstrapLogger), false);
-
-        this._phases.Add(DatabaseHandler.EnsureCorrectState, false);
-
-        this._phases.Add(this.PerformServiceInitialization, false);
-
-        // Enqueue addon startup phase.
-        this._phases.Add(this.PerformAddonEnqueuePhase, false);
-
-        this._phases.Add(DatabaseHandler.SeedData, false);
-
-        this._phases.Add(this.PerformSafeToRunCheckAfterBootstrapping, false);
-
-        // Register menus after addons are loaded.
         this._phases.Add(
-            () =>
-            {
-                var menuService = this._provider.GetService<IInternalMenuService>();
-                menuService.RegisterMenus();
-            },
+            new Phase("Database set parameters", () => DatabaseHandler.SetParameters(this._provider, this._bootstrapLogger)),
             false);
 
-        // Notify all players that bootstrapping is complete.
-        this._phases.Add(
-            () =>
-            {
-                var playerList = this._provider.GetService<PlayerList>();
-                foreach (var player in playerList)
-                {
-                    player.TriggerEvent(Events.Lifecycle.ServerBootstrapped);
-                }
-            },
-            false);
+        this._phases.Add(new Phase("Database ensure state", DatabaseHandler.EnsureCorrectState), false);
 
-        // Register the feedback handler.
-        this._phases.Add(
-            () =>
-            {
-                var eventHandlerDictionary = this._provider.GetService<EventHandlerDictionary>();
-                eventHandlerDictionary[Events.Feedback.Send] += FeedbackHandler.SendFeedback;
-            },
-            false);
+        this._phases.Add(new Phase("Database seed data", DatabaseHandler.SeedData), false);
 
-        // Begin running phases.
+        this._phases.Add(new Phase("Service initialization", this.PerformServiceInitialization), false);
+
+        this._phases.Add(new Phase("Enqueue addon startup", this.PerformAddonEnqueuePhase), false);
+
+        this._phases.Add(new Phase("Safe to run check", this.PerformSafeToRunCheckAfterBootstrapping), false);
+
+        this._phases.Add(new Phase("Register menus", this.PerformMenuRegistration), false);
+
+        this._phases.Add(new Phase("Notify players", this.PerformPlayerNotifications), false);
+
+        this._phases.Add(new Phase("Feedback handler", this.PerformFeedbackHandler), false);
+
         this.Tick += this.RunNextPhaseAsync;
     }
 
@@ -176,10 +149,20 @@ internal class Bootstrapper : BaseScript
         // Begin timing the phase
         this._stopwatch.Restart();
 
+        // Log phase start
+        this._bootstrapLogger.Debug("Starting bootstrap phase: {PhaseName}", phase.Key.Name);
+
         // Run the phase
         try
         {
-            phase.Key();
+            phase.Key.Action();
+
+            // Log phase completion
+            this._stopwatch.Stop();
+            this._bootstrapLogger.Debug(
+                "Completed bootstrap phase: {PhaseName} in {ElapsedMilliseconds}ms",
+                phase.Key.Name,
+                this._stopwatch.ElapsedMilliseconds);
         }
         catch (Exception e)
         {
@@ -197,9 +180,6 @@ internal class Bootstrapper : BaseScript
             return Task.CompletedTask;
         }
 
-        // Once completed, log the phase duration
-        this._stopwatch.Stop();
-
         // Mark the phase as completed
         this._phases[phase.Key] = true;
 
@@ -207,9 +187,9 @@ internal class Bootstrapper : BaseScript
     }
 
     /// <summary>
-    /// Locates and registers services.
+    /// Registers services and initializes the DI container.
     /// </summary>
-    private void PerformServiceLocationPhase()
+    private void PerformRegisterServicesPhase()
     {
         this._bootstrapLogger.Debug("Bootstrapping server version {@Version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
@@ -472,7 +452,7 @@ internal class Bootstrapper : BaseScript
     /// <summary>
     /// Locates addons and their definitions.
     /// </summary>
-    private void PerformAddonLocationPhase()
+    private void PerformLocateAddonsPhase()
     {
         if (this._provider is null)
         {
@@ -489,9 +469,9 @@ internal class Bootstrapper : BaseScript
     }
 
     /// <summary>
-    /// Performs post-startup tasks.
+    /// Initializes system components and handlers.
     /// </summary>
-    private void PerformPostBootstrapPhase()
+    private void PerformInitializeSystemPhase()
     {
         this.LogDiagnostics();
 
@@ -532,6 +512,36 @@ internal class Bootstrapper : BaseScript
             // Lazy load it
             tickQueueService.EnqueueAsync(() => extension.OnStartedAsync());
         }
+    }
+
+    /// <summary>
+    /// Registers menus after addons are loaded.
+    /// </summary>
+    private void PerformMenuRegistration()
+    {
+        var menuService = this._provider.GetService<IInternalMenuService>();
+        menuService.RegisterMenus();
+    }
+
+    /// <summary>
+    /// Notifies all players that bootstrapping is complete.
+    /// </summary>
+    private void PerformPlayerNotifications()
+    {
+        var playerList = this._provider.GetService<PlayerList>();
+        foreach (var player in playerList)
+        {
+            player.TriggerEvent(Events.Lifecycle.ServerBootstrapped);
+        }
+    }
+
+    /// <summary>
+    /// Registers the feedback handler.
+    /// </summary>
+    private void PerformFeedbackHandler()
+    {
+        var eventHandlerDictionary = this._provider.GetService<EventHandlerDictionary>();
+        eventHandlerDictionary[Events.Feedback.Send] += FeedbackHandler.SendFeedback;
     }
 
     private void PerformSafeToRunCheckAfterBootstrapping()
@@ -634,4 +644,9 @@ internal class Bootstrapper : BaseScript
     {
         this._bootstrapLogger?.Debug("Running Cfx version {@Version}", Cfx.API.GetConvar("version", "Unknown"));
     }
+
+    /// <summary>
+    /// Represents a bootstrap phase with a name and action.
+    /// </summary>
+    private sealed record Phase(string Name, Action Action);
 }
