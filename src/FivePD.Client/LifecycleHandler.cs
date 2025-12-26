@@ -58,6 +58,9 @@ internal static class LifecycleHandler
                 .Blue("[FivePD]")
                 .NewLine()
                 .Red(message));
+
+            var loggerService = ServiceLocator.Resolve<ILoggerService>();
+            loggerService.Error(message);
         }
 
         ServiceLocator.Dispose();
