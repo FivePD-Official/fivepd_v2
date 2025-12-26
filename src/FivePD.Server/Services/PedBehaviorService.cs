@@ -17,6 +17,7 @@ public class PedBehaviorService : IPedBehaviorService
 {
     private readonly ICfxService _cfxService;
     private readonly IRandomService _randomService;
+    private readonly IProbabilityService _probabilityService;
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
 
@@ -27,12 +28,19 @@ public class PedBehaviorService : IPedBehaviorService
     /// </summary>
     /// <param name="cfxService">The CFX service for native API calls.</param>
     /// <param name="randomService">The random service for chance-based decisions.</param>
+    /// <param name="probabilityService">The probability service for outcome selection.</param>
     /// <param name="configService">The configuration service to retrieve behavior settings.</param>
     /// <param name="logger">The logger for error reporting.</param>
-    public PedBehaviorService(ICfxService cfxService, IRandomService randomService, IConfigService configService, ILogger logger)
+    public PedBehaviorService(
+        ICfxService cfxService,
+        IRandomService randomService,
+        IProbabilityService probabilityService,
+        IConfigService configService,
+        ILogger logger)
     {
         this._cfxService = cfxService;
         this._randomService = randomService;
+        this._probabilityService = probabilityService;
         this._configService = configService;
         this._logger = logger;
     }
@@ -119,46 +127,34 @@ public class PedBehaviorService : IPedBehaviorService
                         Cfx.API.SetEntityDistanceCullingRadius(fVehicle.GetUnderlyingVehicle.Handle, 10000f);
 
                         var config = this._configService.GeneralConfig.Peds.Behavior.Chances.InVehicle;
-                        var chance = this._randomService.GetRandomChance;
 
-                        if (chance < config.DriveVehiclePullOver)
+                        var probabilities = new List<(int Probability, Action Outcome)>
                         {
-                            ped.ChangeState(new FPedDriveVehiclePullOverState(ped, fVehicle));
-                        }
-                        else if (chance < config.DriveVehiclePullOver + config.LeaveVehicle)
-                        {
-                            ped.ChangeState(new FPedLeaveVehicleState(ped, fVehicle));
-                            await Task.Delay(2000);
-                        }
-                        else if (chance < config.DriveVehiclePullOver + config.LeaveVehicle + config.DriveVehicleFlee)
-                        {
-                            ped.ChangeState(new FPedDriveVehicleFleeState(ped, fVehicle));
-                        }
+                            (config.DriveVehiclePullOver, () => ped.ChangeState(new FPedDriveVehiclePullOverState(ped, fVehicle))),
+                            (config.LeaveVehicle, () => ped.ChangeState(new FPedLeaveVehicleState(ped, fVehicle))),
+                            (config.DriveVehicleFlee, () => ped.ChangeState(new FPedDriveVehicleFleeState(ped, fVehicle))),
+                        };
+
+                        var selectedAction = this._probabilityService.SelectOutcomeBasedOnCumulativeChance(probabilities);
+                        selectedAction?.Invoke();
                     }
                 }
                 else
                 {
                     var config = this._configService.GeneralConfig.Peds.Behavior.Chances.OnFoot;
-                    var chance = this._randomService.GetRandomChance;
 
-                    if (chance < config.StandStill)
+                    var onFootProbabilities = new List<(int Probability, Action Outcome)>
                     {
-                        ped.ChangeState(new FPedStandStillState(ped));
-                    }
-                    else if (chance < config.StandStill + config.Flee)
-                    {
-                        ped.ChangeState(new FPedFleeState(ped, player.FPed));
-                    }
-                    else if (chance < config.StandStill + config.Flee + config.FindVehicleAndFlee)
-                    {
-                        ped.ChangeState(new FPedFindVehicleAndFleeState(ped));
-                    }
-                    else if (chance < config.StandStill + config.Flee + config.FindVehicleAndFlee + config.ShootAtTargets)
-                    {
-                        ped.ChangeState(new FPedShootAtTargetsState(
+                        (config.StandStill, () => ped.ChangeState(new FPedStandStillState(ped))),
+                        (config.Flee, () => ped.ChangeState(new FPedFleeState(ped, player.FPed))),
+                        (config.FindVehicleAndFlee, () => ped.ChangeState(new FPedFindVehicleAndFleeState(ped))),
+                        (config.ShootAtTargets, () => ped.ChangeState(new FPedShootAtTargetsState(
                             ped,
-                            new List<FPed> { player.FPed })); // TODO: all players from the player's unit, maybe use PlayerList?
-                    }
+                            new List<FPed> { player.FPed }))),
+                    };
+
+                    var selectedOnFootAction = this._probabilityService.SelectOutcomeBasedOnCumulativeChance(onFootProbabilities);
+                    selectedOnFootAction?.Invoke();
                 }
             }
             catch (Exception exception)

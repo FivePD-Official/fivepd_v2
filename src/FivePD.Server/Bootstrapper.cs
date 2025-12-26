@@ -266,6 +266,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<RandomService>();
         services.AddSingleton<IRandomService>(provider => provider.GetRequiredService<RandomService>());
 
+        services.AddSingleton<ProbabilityService>();
+        services.AddSingleton<IProbabilityService>(provider => provider.GetRequiredService<ProbabilityService>());
+
         services.AddSingleton<IDatabaseContextFactory, DatabaseContextScopeFactory>();
 
         services.AddSingleton<AssistanceServiceManagerService>();

@@ -4,6 +4,7 @@ using System.Linq;
 using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.ConfigModels.GeneralConfigs;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Utilities;
@@ -17,6 +18,7 @@ namespace FivePD.Server.EntityWrappers.PedWrapper;
 public class FPedBuilder : CommonFPedBuilder
 {
     private readonly IRandomService _randomService = ServiceLocator.GetService<IRandomService>();
+    private readonly IProbabilityService _probabilityService = ServiceLocator.GetService<IProbabilityService>();
 
 #pragma warning disable
     /// <summary>
@@ -156,15 +158,8 @@ public class FPedBuilder : CommonFPedBuilder
     public FPedBuilder WithItems(IEnumerable<Item> items, bool includeAll = false)
     {
         var filteredItems = items.Where(item => item.Location.ToUpper() == "PED" || item.Location.ToUpper() == "ALL");
-
-        if (!includeAll)
-        {
-            filteredItems = filteredItems
-                .OrderBy(_ => Guid.NewGuid())
-                .Take(this._randomService.Next(0, 6));
-        }
-
-        this.Items.AddRange(filteredItems);
+        var selectedItems = filteredItems.TakeRandomSubset(includeAll, 5).ToList();
+        this.Items.AddRange(selectedItems);
         return this;
     }
 
@@ -183,7 +178,7 @@ public class FPedBuilder : CommonFPedBuilder
             return this;
         }
 
-        if (this._randomService.Next(0, 100) > options.ChanceForAnyWarrant)
+        if (this._randomService.GetRandomChance > options.ChanceForAnyWarrant)
         {
             return this;
         }
@@ -254,12 +249,12 @@ public class FPedBuilder : CommonFPedBuilder
     /// <returns>The current builder instance for method chaining.</returns>
     public FPedBuilder WithAlcoholLevel(AlcoholConfig alcoholConfig)
     {
-        if (this._randomService.Next(0, 100) > alcoholConfig.ChanceToHave)
+        if (this._randomService.GetRandomChance > alcoholConfig.ChanceToHave)
         {
             return this;
         }
 
-        if (this._randomService.Next(0, 100) <= alcoholConfig.ChanceForOverLegalLimit)
+        if (this._randomService.GetRandomChance <= alcoholConfig.ChanceForOverLegalLimit)
         {
             var minValue = alcoholConfig.LegalLimit;
             const double maxValue = 0.2;
@@ -291,7 +286,7 @@ public class FPedBuilder : CommonFPedBuilder
     {
         this.Drugs ??= new();
 
-        foreach (var drug in drugsConfig.Where(drug => this._randomService.Next(0, 100) <= drug.ChanceToHave))
+        foreach (var drug in drugsConfig.Where(drug => this._randomService.GetRandomChance <= drug.ChanceToHave))
         {
             this.Drugs.Add(new Drug
             {
@@ -328,53 +323,22 @@ public class FPedBuilder : CommonFPedBuilder
 
         foreach (var config in licenseConfigs)
         {
-            if (this._randomService.Next(0, 100) >= config.Value.ChanceToHave)
+            if (this._randomService.GetRandomChance >= config.Value.ChanceToHave)
             {
                 continue;
             }
 
-            var now = DateTime.Now;
-            var randomValue = this._randomService.Next(0, 100);
+            var probabilities = new List<(int Probability, PedLicenseStatus Outcome)>
+            {
+                (config.Value.ChanceForExpired, PedLicenseStatus.Expired),
+                (config.Value.ChanceForSuspended, PedLicenseStatus.Suspended),
+                (config.Value.ChanceForRevoked, PedLicenseStatus.Revoked),
+                (100 - config.Value.ChanceForExpired - config.Value.ChanceForSuspended - config.Value.ChanceForRevoked, PedLicenseStatus.Valid),
+            };
+            var status = this._probabilityService.SelectOutcomeBasedOnCumulativeChance(probabilities);
 
-            PedLicenseStatus status;
-            if (randomValue < config.Value.ChanceForExpired)
-            {
-                status = PedLicenseStatus.Expired;
-            }
-            else if (randomValue < config.Value.ChanceForExpired + config.Value.ChanceForSuspended)
-            {
-                status = PedLicenseStatus.Suspended;
-            }
-            else if (randomValue < config.Value.ChanceForExpired + config.Value.ChanceForSuspended + config.Value.ChanceForRevoked)
-            {
-                status = PedLicenseStatus.Revoked;
-            }
-            else
-            {
-                status = PedLicenseStatus.Valid;
-            }
-
-            DateTime issueDate;
-            DateTime expirationDate;
-
-            if (status == PedLicenseStatus.Expired)
-            {
-                issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year - 1);
-                expirationDate = issueDate.AddYears(this._randomService.Next(1, Math.Max(2, now.Year - issueDate.Year)));
-                if (expirationDate >= now)
-                {
-                    expirationDate = now.AddDays(-this._randomService.Next(1, 365));
-                }
-            }
-            else
-            {
-                issueDate = DateGenerator.GetRandomDate(now.Year - 5, now.Year);
-                expirationDate = issueDate.AddYears(this._randomService.Next(1, 11));
-                if (expirationDate <= now)
-                {
-                    expirationDate = now.AddYears(this._randomService.Next(1, 11));
-                }
-            }
+            var isExpired = status == PedLicenseStatus.Expired;
+            var (issueDate, expirationDate) = DateGenerator.GeneratePedLicenseAndVehicleDocumentDates(isExpired);
 
             licenses.Add(new PedLicense
             {

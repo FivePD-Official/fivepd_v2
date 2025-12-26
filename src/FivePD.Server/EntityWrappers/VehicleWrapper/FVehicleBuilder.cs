@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FivePD.Common.Builders;
 using FivePD.Common.ConfigModels;
+using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Utilities;
@@ -16,6 +17,7 @@ namespace FivePD.Server.EntityWrappers.VehicleWrapper;
 public class FVehicleBuilder : CommonFVehicleBuilder
 {
     private readonly IRandomService _randomService = ServiceLocator.GetService<IRandomService>();
+    private readonly IProbabilityService _probabilityService = ServiceLocator.GetService<IProbabilityService>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FVehicleBuilder"/> class.
@@ -76,11 +78,8 @@ public class FVehicleBuilder : CommonFVehicleBuilder
     /// <returns>The current builder instance for method chaining.</returns>
     public FVehicleBuilder WithItems(IEnumerable<Item> items)
     {
-        this.Items = items
-            .Where(item => item.Location.ToUpper() == "VEHICLE" || item.Location.ToUpper() == "ALL")
-            .OrderBy(_ => Guid.NewGuid())
-            .Take(this._randomService.Next(0, 6))
-            .ToList();
+        var filteredItems = items.Where(item => item.Location.ToUpper() == "VEHICLE" || item.Location.ToUpper() == "ALL");
+        this.Items = filteredItems.TakeRandomSubset(false, 5).ToList();
         return this;
     }
 
@@ -139,53 +138,22 @@ public class FVehicleBuilder : CommonFVehicleBuilder
 
         foreach (var config in documentConfigs)
         {
-            if (this._randomService.Next(0, 100) >= config.Value.ChanceToHave)
+            if (this._randomService.GetRandomChance >= config.Value.ChanceToHave)
             {
                 continue;
             }
 
-            var now = DateTime.Now;
-            var randomValue = this._randomService.Next(0, 100);
+            var probabilities = new List<(int Probability, VehicleDocumentStatus Outcome)>
+            {
+                (config.Value.ChanceForExpired, VehicleDocumentStatus.Expired),
+                (config.Value.ChanceForSuspended, VehicleDocumentStatus.Suspended),
+                (config.Value.ChanceForRevoked, VehicleDocumentStatus.Revoked),
+                (100 - config.Value.ChanceForExpired - config.Value.ChanceForSuspended - config.Value.ChanceForRevoked, VehicleDocumentStatus.Valid),
+            };
+            var status = this._probabilityService.SelectOutcomeBasedOnCumulativeChance(probabilities);
 
-            VehicleDocumentStatus status;
-            if (randomValue < config.Value.ChanceForExpired)
-            {
-                status = VehicleDocumentStatus.Expired;
-            }
-            else if (randomValue < config.Value.ChanceForExpired + config.Value.ChanceForSuspended)
-            {
-                status = VehicleDocumentStatus.Suspended;
-            }
-            else if (randomValue < config.Value.ChanceForExpired + config.Value.ChanceForSuspended + config.Value.ChanceForRevoked)
-            {
-                status = VehicleDocumentStatus.Revoked;
-            }
-            else
-            {
-                status = VehicleDocumentStatus.Valid;
-            }
-
-            DateTime issueDate;
-            DateTime expirationDate;
-
-            if (status == VehicleDocumentStatus.Expired)
-            {
-                issueDate = DateGenerator.GetRandomDate(now.Year - 10, now.Year - 1);
-                expirationDate = issueDate.AddYears(this._randomService.Next(1, Math.Max(2, now.Year - issueDate.Year)));
-                if (expirationDate >= now)
-                {
-                    expirationDate = now.AddDays(-this._randomService.Next(1, 365));
-                }
-            }
-            else
-            {
-                issueDate = DateGenerator.GetRandomDate(now.Year - 5, now.Year);
-                expirationDate = issueDate.AddYears(this._randomService.Next(1, 11));
-                if (expirationDate <= now)
-                {
-                    expirationDate = now.AddYears(this._randomService.Next(1, 11));
-                }
-            }
+            var isExpired = status == VehicleDocumentStatus.Expired;
+            var (issueDate, expirationDate) = DateGenerator.GeneratePedLicenseAndVehicleDocumentDates(isExpired);
 
             documents.Add(new VehicleDocument
             {
