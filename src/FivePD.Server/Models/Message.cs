@@ -1,12 +1,10 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents a message sent by a player or an addon.
 /// </summary>
-[Table("fivepd_messages")]
 public class Message
 {
     /// <summary>
