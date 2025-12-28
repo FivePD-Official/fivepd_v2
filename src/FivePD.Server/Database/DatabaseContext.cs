@@ -8,8 +8,10 @@ using FivePD.Server.Models.LoadoutModels.JoinTables;
 using FivePD.Server.Models.VariableData;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using Pomelo.EntityFrameworkCore.MySql.Storage;
+
+#pragma warning disable
+// using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+// using Pomelo.EntityFrameworkCore.MySql.Storage;
 
 namespace FivePD.Server.Database;
 
@@ -184,11 +186,11 @@ public class DatabaseContext : DbContext
         var config = this._configService?.GeneralConfig?.Database;
         if (config is not null)
         {
-            optionsBuilder.UseMySql(config.ToString(), options =>
-            {
-                var serverVersion = ServerVersion.AutoDetect(config.ToString());
-                options.ServerVersion(serverVersion.Version, config.IsMariaDb() ? ServerType.MariaDb : ServerType.MySql);
-            });
+            // optionsBuilder.UseMySql(config.ToString(), options =>
+            // {
+            //     var serverVersion = ServerVersion.AutoDetect(config.ToString());
+            //     options.ServerVersion(serverVersion.Version, config.IsMariaDb() ? ServerType.MariaDb : ServerType.MySql);
+            // });
         }
     }
 

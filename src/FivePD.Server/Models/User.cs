@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Common.Enums;
 using FivePD.Server.Interfaces;
 
@@ -8,7 +7,6 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents the 'users' table.
 /// </summary>
-[Table("fivepd_users")]
 public class User
 {
     /// <summary>

@@ -39,6 +39,11 @@ public class Message
     public bool Read { get; set; }
 
     /// <summary>
+    /// Gets or sets the user identifier.
+    /// </summary>
+    public int UserId { get; set; }
+
+    /// <summary>
     /// Gets or sets the user the message was sent to.
     /// </summary>
     public User User { get; set; }

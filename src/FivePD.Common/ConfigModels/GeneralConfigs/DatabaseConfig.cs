@@ -17,7 +17,7 @@ public sealed record DatabaseConfig
     /// <summary>
     /// Gets the port of the database.
     /// </summary>
-    public string Port { get; init; }
+    public uint Port { get; init; }
 
     /// <summary>
     /// Gets the name of the database.

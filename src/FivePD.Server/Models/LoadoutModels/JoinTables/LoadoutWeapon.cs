@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FivePD.Server.Models.LoadoutModels.JoinTables;
+﻿namespace FivePD.Server.Models.LoadoutModels.JoinTables;
 
 /// <summary>
 /// Many-to-Many joining table for LoadoutConfig and Weapon.
 /// </summary>
-[Table("fivepd_loadout_weapon")]
 public class LoadoutWeapon
 {
     /// <summary>

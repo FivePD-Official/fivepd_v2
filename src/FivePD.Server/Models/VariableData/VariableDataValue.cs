@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FivePD.Server.Models.VariableData;
+﻿namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Represents an entity's attribute value.
 /// </summary>
-[Table("fivepd_variable_data_values")]
 public class VariableDataValue
 {
     /// <summary>

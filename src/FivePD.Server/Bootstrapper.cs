@@ -29,6 +29,8 @@ using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
 
+#pragma warning disable
+
 /// <summary>
 /// The server entrypoint. Handles the
 /// creation and management of all tasks on the server.
@@ -81,29 +83,33 @@ internal class Bootstrapper : BaseScript
 
         this._phases.Add(new Phase("Register services", this.PerformRegisterServicesPhase), false);
 
-        this._phases.Add(new Phase("Locate addons", this.PerformLocateAddonsPhase), false);
+        // this._phases.Add(new Phase("Locate addons", this.PerformLocateAddonsPhase), false);
 
-        this._phases.Add(new Phase("Initialize system", this.PerformInitializeSystemPhase), false);
+        // this._phases.Add(new Phase("Initialize system", this.PerformInitializeSystemPhase), false);
 
         this._phases.Add(
-            new Phase("Database set parameters", () => DatabaseHandler.SetParameters(this._provider, this._bootstrapLogger)),
+            new Phase("Database set parameters", () => DapperDatabaseHandler.SetParameters(this._provider, this._bootstrapLogger)),
             false);
 
-        this._phases.Add(new Phase("Database ensure state", DatabaseHandler.EnsureCorrectState), false);
+        this._phases.Add(new Phase("Database ensure database exists", DapperDatabaseHandler.EnsureDatabaseExists), false);
 
-        this._phases.Add(new Phase("Database seed data", DatabaseHandler.SeedData), false);
+        this._phases.Add(new Phase("Database ensure connection", DapperDatabaseHandler.EnsureConnection), false);
 
-        this._phases.Add(new Phase("Service initialization", this.PerformServiceInitialization), false);
+        this._phases.Add(new Phase("Database ensure schema", DapperDatabaseHandler.EnsureSchema), false);
+        
+        this._phases.Add(new Phase("Database seed data", DapperDatabaseHandler.SeedData), false);
 
-        this._phases.Add(new Phase("Enqueue addon startup", this.PerformAddonEnqueuePhase), false);
-
-        this._phases.Add(new Phase("Safe to run check", this.PerformSafeToRunCheckAfterBootstrapping), false);
-
-        this._phases.Add(new Phase("Register menus", this.PerformMenuRegistration), false);
-
-        this._phases.Add(new Phase("Notify players", this.PerformPlayerNotifications), false);
-
-        this._phases.Add(new Phase("Feedback handler", this.PerformFeedbackHandler), false);
+        // this._phases.Add(new Phase("Service initialization", this.PerformServiceInitialization), false);
+        //
+        // this._phases.Add(new Phase("Enqueue addon startup", this.PerformAddonEnqueuePhase), false);
+        //
+        // this._phases.Add(new Phase("Safe to run check", this.PerformSafeToRunCheckAfterBootstrapping), false);
+        //
+        // this._phases.Add(new Phase("Register menus", this.PerformMenuRegistration), false);
+        //
+        // this._phases.Add(new Phase("Notify players", this.PerformPlayerNotifications), false);
+        //
+        // this._phases.Add(new Phase("Feedback handler", this.PerformFeedbackHandler), false);
 
         this.Tick += this.RunNextPhaseAsync;
     }
@@ -199,252 +205,253 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton(Log.Logger);
         services.AddSingleton(this.EventHandlers);
         services.AddSingleton(this.Players);
-        services.AddDbContext<DatabaseContext>(ServiceLifetime.Scoped);
+        // services.AddDbContext<DatabaseContext>(ServiceLifetime.Scoped);
 
         services.AddTransient<NetworkEventService>();
         services.AddTransient<INetworkEventService>(provider => provider.GetRequiredService<NetworkEventService>());
 
         // Addons
-        services.AddTransient<AddonLoggerService>();
-        services.AddTransient<IAddonLoggerService>(provider => provider.GetRequiredService<AddonLoggerService>());
+        // services.AddTransient<AddonLoggerService>();
+        // services.AddTransient<IAddonLoggerService>(provider => provider.GetRequiredService<AddonLoggerService>());
 
-        services.AddSingleton<AddonAssemblyLoader>();
-        services.AddTransient<IAddonAssemblyLoader>(provider => provider.GetRequiredService<AddonAssemblyLoader>());
+        // services.AddSingleton<AddonAssemblyLoader>();
+        // services.AddTransient<IAddonAssemblyLoader>(provider => provider.GetRequiredService<AddonAssemblyLoader>());
 
-        services.AddSingleton<AddonFileHandlerService>();
-        services.AddTransient<IAddonFileHandlerService>(provider => provider.GetRequiredService<AddonFileHandlerService>());
+        // services.AddSingleton<AddonFileHandlerService>();
+        // services.AddTransient<IAddonFileHandlerService>(provider => provider.GetRequiredService<AddonFileHandlerService>());
 
-        services.AddSingleton<AddonMetadataService>();
-        services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
-        services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        // services.AddSingleton<AddonMetadataService>();
+        // services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        // services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
 
         // Loose data repositories
-        services.AddSingleton<ArrestReportService>();
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
-        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
+        // services.AddSingleton<ArrestReportService>();
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
+        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
 
-        services.AddSingleton<IncidentReportService>();
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<IncidentReportService>());
-        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<IncidentReportService>());
+        // services.AddSingleton<IncidentReportService>();
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<IncidentReportService>());
+        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<IncidentReportService>());
 
-        services.AddSingleton<PedTicketService>();
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedTicketService>());
-        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedTicketService>());
+        // services.AddSingleton<PedTicketService>();
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedTicketService>());
+        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedTicketService>());
 
-        services.AddSingleton<PedWarningService>();
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedWarningService>());
-        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedWarningService>());
+        // services.AddSingleton<PedWarningService>();
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedWarningService>());
+        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedWarningService>());
 
         // Other
         services.AddSingleton<FileHandlerService>();
         services.AddSingleton<IFileHandlerService>(provider => provider.GetRequiredService<FileHandlerService>());
 
-        services.AddSingleton<CommandService>();
-        services.AddSingleton<ICommandService>(provider => provider.GetRequiredService<CommandService>());
+        // services.AddSingleton<CommandService>();
+        // services.AddSingleton<ICommandService>(provider => provider.GetRequiredService<CommandService>());
 
-        services.AddSingleton<DevToolsService>();
-        services.AddSingleton<IDevToolsService>(provider => provider.GetRequiredService<DevToolsService>());
+        // services.AddSingleton<DevToolsService>();
+        // services.AddSingleton<IDevToolsService>(provider => provider.GetRequiredService<DevToolsService>());
 
-        services.AddSingleton<DebugService>();
-        services.AddSingleton<IDebugService>(provider => provider.GetRequiredService<DebugService>());
+        // services.AddSingleton<DebugService>();
+        // services.AddSingleton<IDebugService>(provider => provider.GetRequiredService<DebugService>());
 
-        services.AddSingleton<DepartmentService>();
-        services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
+        // services.AddSingleton<DepartmentService>();
+        // services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
 
-        services.AddSingleton<NotificationService>();
-        services.AddSingleton<INotificationService>(provider => provider.GetRequiredService<NotificationService>());
+        // services.AddSingleton<NotificationService>();
+        // services.AddSingleton<INotificationService>(provider => provider.GetRequiredService<NotificationService>());
 
-        services.AddSingleton<EntityService>();
-        services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
+        // services.AddSingleton<EntityService>();
+        // services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
 
-        services.AddSingleton<MarkerService>();
-        services.AddSingleton<IMarkerService>(provider => provider.GetRequiredService<MarkerService>());
+        // services.AddSingleton<MarkerService>();
+        // services.AddSingleton<IMarkerService>(provider => provider.GetRequiredService<MarkerService>());
 
-        services.AddSingleton<ConfirmationService>();
-        services.AddSingleton<IConfirmationService>(provider => provider.GetRequiredService<ConfirmationService>());
+        // services.AddSingleton<ConfirmationService>();
+        // services.AddSingleton<IConfirmationService>(provider => provider.GetRequiredService<ConfirmationService>());
 
-        services.AddSingleton<RandomService>();
-        services.AddSingleton<IRandomService>(provider => provider.GetRequiredService<RandomService>());
+        // services.AddSingleton<RandomService>();
+        // services.AddSingleton<IRandomService>(provider => provider.GetRequiredService<RandomService>());
 
-        services.AddSingleton<ProbabilityService>();
-        services.AddSingleton<IProbabilityService>(provider => provider.GetRequiredService<ProbabilityService>());
+        // services.AddSingleton<ProbabilityService>();
+        // services.AddSingleton<IProbabilityService>(provider => provider.GetRequiredService<ProbabilityService>());
 
-        services.AddSingleton<IDatabaseContextFactory, DatabaseContextScopeFactory>();
+        // services.AddSingleton<IDatabaseContextFactory, DatabaseContextScopeFactory>();
+        services.AddSingleton<IDapperDatabaseConnectionFactory, DapperConnectionFactory>();
 
-        services.AddSingleton<AssistanceServiceManagerService>();
-        services.AddSingleton<IAssistanceServiceManagerService>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
+        // services.AddSingleton<AssistanceServiceManagerService>();
+        // services.AddSingleton<IAssistanceServiceManagerService>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
 
-        services.AddSingleton<AssistanceServiceConfigService>();
-        services.AddSingleton<IAssistanceServiceConfigService>(provider => provider.GetRequiredService<AssistanceServiceConfigService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AssistanceServiceConfigService>());
+        // services.AddSingleton<AssistanceServiceConfigService>();
+        // services.AddSingleton<IAssistanceServiceConfigService>(provider => provider.GetRequiredService<AssistanceServiceConfigService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AssistanceServiceConfigService>());
 
-        services.AddSingleton<CfxService>();
-        services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
+        // services.AddSingleton<CfxService>();
+        // services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
 
-        services.AddSingleton<ProgressionSystemService>();
-        services.AddSingleton<IProgressionSystemService>(provider => provider.GetRequiredService<ProgressionSystemService>());
+        // services.AddSingleton<ProgressionSystemService>();
+        // services.AddSingleton<IProgressionSystemService>(provider => provider.GetRequiredService<ProgressionSystemService>());
 
-        services.AddSingleton<MessageService>();
-        services.AddSingleton<IMessageService>(provider => provider.GetRequiredService<MessageService>());
+        // services.AddSingleton<MessageService>();
+        // services.AddSingleton<IMessageService>(provider => provider.GetRequiredService<MessageService>());
 
-        services.AddSingleton<UnitManagerService>();
-        services.AddSingleton<IUnitManagerService>(provider => provider.GetRequiredService<UnitManagerService>());
-        services.AddSingleton<IInternalUnitManagerService>(provider => provider.GetRequiredService<UnitManagerService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UnitManagerService>());
+        // services.AddSingleton<UnitManagerService>();
+        // services.AddSingleton<IUnitManagerService>(provider => provider.GetRequiredService<UnitManagerService>());
+        // services.AddSingleton<IInternalUnitManagerService>(provider => provider.GetRequiredService<UnitManagerService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UnitManagerService>());
 
-        services.AddSingleton<UnitService>();
-        services.AddSingleton<IUnitService>(provider => provider.GetRequiredService<UnitService>());
+        // services.AddSingleton<UnitService>();
+        // services.AddSingleton<IUnitService>(provider => provider.GetRequiredService<UnitService>());
 
-        services.AddSingleton<BackupManagerService>();
-        services.AddSingleton<IBackupManagerService>(provider => provider.GetRequiredService<BackupManagerService>());
+        // services.AddSingleton<BackupManagerService>();
+        // services.AddSingleton<IBackupManagerService>(provider => provider.GetRequiredService<BackupManagerService>());
 
-        services.AddSingleton<VariableDataService>();
-        services.AddSingleton<IVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
-        services.AddSingleton<IInternalVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
+        // services.AddSingleton<VariableDataService>();
+        // services.AddSingleton<IVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
+        // services.AddSingleton<IInternalVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
 
         services.AddSingleton<ConfigService>();
         services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ConfigService>());
 
-        services.AddSingleton<ConcurrentTickQueueService>();
-        services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
-        services.AddSingleton<IInternalTickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
+        // services.AddSingleton<ConcurrentTickQueueService>();
+        // services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
+        // services.AddSingleton<IInternalTickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
 
-        services.AddSingleton<UIService>();
-        services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UIService>());
+        // services.AddSingleton<UIService>();
+        // services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UIService>());
 
-        services.AddSingleton<ControlService>();
-        services.AddSingleton<IControlService>(provider => provider.GetRequiredService<ControlService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ControlService>());
+        // services.AddSingleton<ControlService>();
+        // services.AddSingleton<IControlService>(provider => provider.GetRequiredService<ControlService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ControlService>());
 
-        services.AddSingleton<LocalizationService>();
-        services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocalizationService>());
+        // services.AddSingleton<LocalizationService>();
+        // services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocalizationService>());
 
-        services.AddSingleton<EventService>();
-        services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<EventService>());
+        // services.AddSingleton<EventService>();
+        // services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<EventService>());
 
-        services.AddSingleton<PedBehaviorService>();
-        services.AddSingleton<IPedBehaviorService>(provider => provider.GetRequiredService<PedBehaviorService>());
+        // services.AddSingleton<PedBehaviorService>();
+        // services.AddSingleton<IPedBehaviorService>(provider => provider.GetRequiredService<PedBehaviorService>());
 
-        services.AddSingleton<InteractionService>();
-        services.AddSingleton<IInteractionService>(provider => provider.GetRequiredService<InteractionService>());
-        services.AddSingleton<IInternalInteractionService>(provider => provider.GetRequiredService<InteractionService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<InteractionService>());
+        // services.AddSingleton<InteractionService>();
+        // services.AddSingleton<IInteractionService>(provider => provider.GetRequiredService<InteractionService>());
+        // services.AddSingleton<IInternalInteractionService>(provider => provider.GetRequiredService<InteractionService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<InteractionService>());
 
-        services.AddSingleton<PedStorageService>();
-        services.AddSingleton<IPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
-        services.AddSingleton<IInternalPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
+        // services.AddSingleton<PedStorageService>();
+        // services.AddSingleton<IPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
+        // services.AddSingleton<IInternalPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
 
-        services.AddSingleton<VehicleStorageService>();
-        services.AddSingleton<IVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
-        services.AddSingleton<IInternalVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
+        // services.AddSingleton<VehicleStorageService>();
+        // services.AddSingleton<IVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
+        // services.AddSingleton<IInternalVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
 
-        services.AddSingleton<PedService>();
-        services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedService>());
-        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedService>());
+        // services.AddSingleton<PedService>();
+        // services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedService>());
+        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedService>());
 
-        services.AddSingleton<VehicleService>();
-        services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleService>());
+        // services.AddSingleton<VehicleService>();
+        // services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleService>());
 
-        services.AddSingleton<PlayerDataService>();
-        services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PlayerDataService>());
+        // services.AddSingleton<PlayerDataService>();
+        // services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PlayerDataService>());
 
-        services.AddSingleton<PlayerHandlerService>();
-        services.AddSingleton<IPlayerHandlerService>(provider => provider.GetRequiredService<PlayerHandlerService>());
+        // services.AddSingleton<PlayerHandlerService>();
+        // services.AddSingleton<IPlayerHandlerService>(provider => provider.GetRequiredService<PlayerHandlerService>());
 
-        services.AddSingleton<MenuService>();
-        services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
-        services.AddSingleton<IInternalMenuService>(provider => provider.GetRequiredService<MenuService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<MenuService>());
+        // services.AddSingleton<MenuService>();
+        // services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
+        // services.AddSingleton<IInternalMenuService>(provider => provider.GetRequiredService<MenuService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<MenuService>());
 
-        services.AddSingleton<CalloutManagerService>();
-        services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<CalloutManagerService>());
+        // services.AddSingleton<CalloutManagerService>();
+        // services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<CalloutManagerService>());
 
-        services.AddSingleton<IncidentService>();
-        services.AddSingleton<IIncidentService>(provider => provider.GetRequiredService<IncidentService>());
-        services.AddSingleton<IInternalIncidentService>(provider => provider.GetRequiredService<IncidentService>());
+        // services.AddSingleton<IncidentService>();
+        // services.AddSingleton<IIncidentService>(provider => provider.GetRequiredService<IncidentService>());
+        // services.AddSingleton<IInternalIncidentService>(provider => provider.GetRequiredService<IncidentService>());
 
-        services.AddSingleton<CalloutDistributionService>();
-        services.AddSingleton<ICalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
-        services.AddSingleton<IInternalCalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
+        // services.AddSingleton<CalloutDistributionService>();
+        // services.AddSingleton<ICalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
+        // services.AddSingleton<IInternalCalloutDistributionService>(provider => provider.GetRequiredService<CalloutDistributionService>());
 
-        services.AddSingleton<CalloutGenerationService>();
-        services.AddSingleton<ICalloutGenerationService>(provider => provider.GetRequiredService<CalloutGenerationService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<CalloutGenerationService>());
-        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<CalloutGenerationService>());
+        // services.AddSingleton<CalloutGenerationService>();
+        // services.AddSingleton<ICalloutGenerationService>(provider => provider.GetRequiredService<CalloutGenerationService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<CalloutGenerationService>());
+        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<CalloutGenerationService>());
 
-        services.AddSingleton<DispatcherUiService>();
-        services.AddSingleton<IDispatcherUiService>(provider => provider.GetRequiredService<DispatcherUiService>());
+        // services.AddSingleton<DispatcherUiService>();
+        // services.AddSingleton<IDispatcherUiService>(provider => provider.GetRequiredService<DispatcherUiService>());
 
-        services.AddSingleton<DispatcherStorageService>();
-        services.AddSingleton<IDispatcherStorageService>(provider => provider.GetRequiredService<DispatcherStorageService>());
+        // services.AddSingleton<DispatcherStorageService>();
+        // services.AddSingleton<IDispatcherStorageService>(provider => provider.GetRequiredService<DispatcherStorageService>());
 
-        services.AddSingleton<DispatcherManagerService>();
-        services.AddSingleton<IDispatcherManagerService>(provider => provider.GetRequiredService<DispatcherManagerService>());
-        services.AddSingleton<IInternalDispatcherManagerService>(provider => provider.GetRequiredService<DispatcherManagerService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<DispatcherManagerService>());
+        // services.AddSingleton<DispatcherManagerService>();
+        // services.AddSingleton<IDispatcherManagerService>(provider => provider.GetRequiredService<DispatcherManagerService>());
+        // services.AddSingleton<IInternalDispatcherManagerService>(provider => provider.GetRequiredService<DispatcherManagerService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<DispatcherManagerService>());
 
-        services.AddSingleton<IncidentHistoryService>();
-        services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
-        services.AddSingleton<IInternalIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
+        // services.AddSingleton<IncidentHistoryService>();
+        // services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
+        // services.AddSingleton<IInternalIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
 
-        services.AddSingleton<TrafficStopService>();
-        services.AddSingleton<ITrafficStopService>(provider => provider.GetRequiredService<TrafficStopService>());
+        // services.AddSingleton<TrafficStopService>();
+        // services.AddSingleton<ITrafficStopService>(provider => provider.GetRequiredService<TrafficStopService>());
 
-        services.AddSingleton<CalloutDetailService>();
-        services.AddSingleton<ICalloutDetailService>(provider => provider.GetRequiredService<CalloutDetailService>());
+        // services.AddSingleton<CalloutDetailService>();
+        // services.AddSingleton<ICalloutDetailService>(provider => provider.GetRequiredService<CalloutDetailService>());
 
-        services.AddSingleton<VehicleConfigService>();
-        services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleConfigService>());
+        // services.AddSingleton<VehicleConfigService>();
+        // services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleConfigService>());
 
-        services.AddSingleton<LoadoutConfigService>();
-        services.AddSingleton<ILoadoutConfigService>(provider => provider.GetRequiredService<LoadoutConfigService>());
+        // services.AddSingleton<LoadoutConfigService>();
+        // services.AddSingleton<ILoadoutConfigService>(provider => provider.GetRequiredService<LoadoutConfigService>());
 
-        services.AddSingleton<WeaponService>();
-        services.AddSingleton<IWeaponService>(provider => provider.GetRequiredService<WeaponService>());
+        // services.AddSingleton<WeaponService>();
+        // services.AddSingleton<IWeaponService>(provider => provider.GetRequiredService<WeaponService>());
 
-        services.AddSingleton<WeaponComponentService>();
-        services.AddSingleton<IWeaponComponentService>(provider => provider.GetRequiredService<WeaponComponentService>());
+        // services.AddSingleton<WeaponComponentService>();
+        // services.AddSingleton<IWeaponComponentService>(provider => provider.GetRequiredService<WeaponComponentService>());
 
-        services.AddSingleton<LocationService>();
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocationService>());
-        services.AddSingleton<ILocationService>(provider => provider.GetRequiredService<LocationService>());
+        // services.AddSingleton<LocationService>();
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocationService>());
+        // services.AddSingleton<ILocationService>(provider => provider.GetRequiredService<LocationService>());
 
-        services.AddSingleton<Vector3Service>();
-        services.AddSingleton<IVector3Service>(provider => provider.GetRequiredService<Vector3Service>());
+        // services.AddSingleton<Vector3Service>();
+        // services.AddSingleton<IVector3Service>(provider => provider.GetRequiredService<Vector3Service>());
 
-        services.AddSingleton<AlprService>();
-        services.AddSingleton<IAlprService>(provider => provider.GetRequiredService<AlprService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AlprService>());
+        // services.AddSingleton<AlprService>();
+        // services.AddSingleton<IAlprService>(provider => provider.GetRequiredService<AlprService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AlprService>());
 
-        services.AddSingleton<SceneManagementService>();
-        services.AddSingleton<ISceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
-        services.AddSingleton<IInternalSceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
+        // services.AddSingleton<SceneManagementService>();
+        // services.AddSingleton<ISceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
+        // services.AddSingleton<IInternalSceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
 
-        services.AddSingleton<AudioService>();
-        services.AddSingleton<IAudioService>(provider => provider.GetRequiredService<AudioService>());
+        // services.AddSingleton<AudioService>();
+        // services.AddSingleton<IAudioService>(provider => provider.GetRequiredService<AudioService>());
 
-        services.AddSingleton<AccessControlService>();
-        services.AddSingleton<IAccessControlService>(provider => provider.GetRequiredService<AccessControlService>());
-        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AccessControlService>());
+        // services.AddSingleton<AccessControlService>();
+        // services.AddSingleton<IAccessControlService>(provider => provider.GetRequiredService<AccessControlService>());
+        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AccessControlService>());
 
-        services.AddSingleton<RankService>();
-        services.AddSingleton<IRankService>(provider => provider.GetRequiredService<RankService>());
+        // services.AddSingleton<RankService>();
+        // services.AddSingleton<IRankService>(provider => provider.GetRequiredService<RankService>());
 
-        services.AddSingleton<GameNotificationService>();
-        services.AddSingleton<IGameNotificationService>(provider => provider.GetRequiredService<GameNotificationService>());
+        // services.AddSingleton<GameNotificationService>();
+        // services.AddSingleton<IGameNotificationService>(provider => provider.GetRequiredService<GameNotificationService>());
 
-        services.AddSingleton<GeneralAssistanceServiceSyncService>();
-        services.AddSingleton<IGeneralAssistanceServiceSyncService>(provider => provider.GetRequiredService<GeneralAssistanceServiceSyncService>());
+        // services.AddSingleton<GeneralAssistanceServiceSyncService>();
+        // services.AddSingleton<IGeneralAssistanceServiceSyncService>(provider => provider.GetRequiredService<GeneralAssistanceServiceSyncService>());
 
         this._provider = services.BuildServiceProvider();
 

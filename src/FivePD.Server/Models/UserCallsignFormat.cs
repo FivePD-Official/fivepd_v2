@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models;
 
@@ -7,7 +6,6 @@ namespace FivePD.Server.Models;
 /// Represents the table containing the callsign format items
 /// which are used for generating the callsign of users.
 /// </summary>
-[Table("fivepd_user_callsigns")]
 public class UserCallsignFormat
 {
     /// <summary>

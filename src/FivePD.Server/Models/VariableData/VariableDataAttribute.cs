@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Represents a <see cref="VariableDataSet"/> attribute.
 /// </summary>
-[Table("fivepd_variable_data_attributes")]
 public class VariableDataAttribute
 {
     /// <summary>

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Models.LoadoutModels.JoinTables;
 
 namespace FivePD.Server.Models.LoadoutModels;
@@ -7,7 +6,6 @@ namespace FivePD.Server.Models.LoadoutModels;
 /// <summary>
 /// Used to get/set weapon config.
 /// </summary>
-[Table("fivepd_loadout_configs")]
 public class LoadoutConfig
 {
     /// <summary>

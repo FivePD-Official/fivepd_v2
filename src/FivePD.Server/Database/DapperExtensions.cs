@@ -8,6 +8,8 @@ using FivePD.Server.QueryHelpers;
 
 namespace FivePD.Server.Database;
 
+#pragma warning disable
+
 /// <summary>
 /// Dapper extensions to support QueryHelpers functionality.
 /// </summary>
@@ -35,7 +37,7 @@ public static class DapperExtensions
         string orderBy = "Id")
     {
         pageNumber = pageNumber < 1 ? 1 : pageNumber;
-        
+
         // Build count query
         var countQuery = $"{baseQuery}";
         if (!string.IsNullOrEmpty(whereClause))
@@ -98,7 +100,7 @@ public static class DapperExtensions
             // For Dapper, we need to handle filters differently
             // Since Expression<Func<T, bool>> can't be directly translated to SQL,
             // we'll need to handle this at the repository level or use a different approach
-            
+
             // For now, we'll skip complex expression-based filters and rely on the repository
             // to handle specific filtering needs
             filterIndex++;
@@ -135,7 +137,7 @@ public static class DapperExtensions
     {
         // For Dapper, we'll handle basic pagination
         // Complex filtering and sorting would need custom SQL per use case
-        
+
         return connection.Paginate<T>(
             baseQuery,
             string.Empty, // WHERE clause handled by repository

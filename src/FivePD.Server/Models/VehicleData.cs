@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using FivePD.Common.ConfigModels;
 
@@ -8,7 +7,6 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a vehicle history.
 /// </summary>
-[Table("fivepd_vehicle_data")]
 public class VehicleData
 {
     /// <summary>

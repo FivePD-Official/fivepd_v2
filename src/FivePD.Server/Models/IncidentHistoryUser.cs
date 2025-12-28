@@ -1,17 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FivePD.Server.Models;
+﻿namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents an incident (callout or traffic stop) history.
 /// </summary>
-[Table("fivepd_incident_history_users")]
 public class IncidentHistoryUser
 {
     /// <summary>
     /// Gets or sets the identifier.
     /// </summary>
     public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user identifier.
+    /// </summary>
+    public int UserId { get; set; }
 
     /// <summary>
     /// Gets or sets the user.

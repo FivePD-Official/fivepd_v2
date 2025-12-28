@@ -2,7 +2,7 @@ Database:
   Type: mariadb # mysql or mariadb
   Name: fivepd
   Address: 127.0.0.1
-  Port: 3307 # MySQL: 3306, MariaDB: 3307
+  Port: 3307
   User: root
   Password: root
 

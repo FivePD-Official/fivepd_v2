@@ -1,12 +1,10 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents the details of a callout.
 /// </summary>
-[Table("fivepd_callout_details")]
 public class CalloutDetails
 {
     /// <summary>

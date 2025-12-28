@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using FivePD.Server.Attributes;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using Serilog;
 
 namespace FivePD.Server;

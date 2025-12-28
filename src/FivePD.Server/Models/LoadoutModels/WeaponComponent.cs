@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Models.LoadoutModels.JoinTables;
 
 namespace FivePD.Server.Models.LoadoutModels;
@@ -7,7 +6,6 @@ namespace FivePD.Server.Models.LoadoutModels;
 /// <summary>
 /// Value type for weapon component.
 /// </summary>
-[Table("fivepd_weapon_components")]
 public class WeaponComponent
 {
     /// <summary>

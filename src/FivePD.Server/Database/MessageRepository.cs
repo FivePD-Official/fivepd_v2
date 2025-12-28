@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.QueryHelpers;
 
 namespace FivePD.Server.Database;
+
+#pragma warning disable
 
 /// <summary>
 /// Dapper-based repository for Message CRUD operations.
@@ -14,15 +17,15 @@ namespace FivePD.Server.Database;
 /// </summary>
 public class MessageRepository
 {
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageRepository"/> class.
     /// </summary>
-    /// <param name="dbContextFactory">The database context factory.</param>
-    public MessageRepository(IDatabaseContextFactory dbContextFactory)
+    /// <param name="dbConnectionFactory">The database context factory.</param>
+    public MessageRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
     {
-        _dbContextFactory = dbContextFactory;
+        this._dbConnectionFactory = dbConnectionFactory;
     }
 
     /// <summary>
@@ -32,7 +35,7 @@ public class MessageRepository
     /// <returns>The added message with generated ID.</returns>
     public Message Add(Message message)
     {
-        using var scope = _dbContextFactory.CreateScope();
+        using var scope = this._dbConnectionFactory.CreateScope();
         var connection = scope.Connection;
 
         const string sql = @"
@@ -47,7 +50,7 @@ public class MessageRepository
             message.Content,
             message.SentAt,
             message.Read,
-            message.UserId
+            // message.UserId
         });
 
         message.Id = id;
@@ -61,7 +64,7 @@ public class MessageRepository
     /// <returns>The message if found, null otherwise.</returns>
     public Message FindById(int id)
     {
-        using var scope = _dbContextFactory.CreateScope();
+        using var scope = this._dbConnectionFactory.CreateScope();
         var connection = scope.Connection;
 
         const string sql = @"
@@ -94,7 +97,7 @@ public class MessageRepository
     /// <returns>A page of messages for the user.</returns>
     public Page<Message> GetByUserId(int userId, int page, int pageSize = 6, Filters<Message> filters = null)
     {
-        using var scope = _dbContextFactory.CreateScope();
+        using var scope = this._dbConnectionFactory.CreateScope();
         var connection = scope.Connection;
 
         // Base query
@@ -160,7 +163,7 @@ public class MessageRepository
     /// <param name="message">The message to update.</param>
     public void Update(Message message)
     {
-        using var scope = _dbContextFactory.CreateScope();
+        using var scope = this._dbConnectionFactory.CreateScope();
         var connection = scope.Connection;
 
         const string sql = @"
@@ -181,7 +184,7 @@ public class MessageRepository
             message.Content,
             message.SentAt,
             message.Read,
-            message.UserId
+            // message.UserId
         });
     }
 
@@ -191,7 +194,7 @@ public class MessageRepository
     /// <param name="id">The message ID.</param>
     public void Delete(int id)
     {
-        using var scope = _dbContextFactory.CreateScope();
+        using var scope = this._dbConnectionFactory.CreateScope();
         var connection = scope.Connection;
 
         const string sql = "DELETE FROM fivepd_messages WHERE Id = @Id";
@@ -206,7 +209,7 @@ public class MessageRepository
     /// <returns>The message if found and owned by user, null otherwise.</returns>
     public Message GetForUser(int messageId, int userId)
     {
-        using var scope = _dbContextFactory.CreateScope();
+        using var scope = this._dbConnectionFactory.CreateScope();
         var connection = scope.Connection;
 
         const string sql = @"

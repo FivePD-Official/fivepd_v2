@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents the 'divisions' table.
 /// </summary>
-[Table("fivepd_divisions")]
 public class Division
 {
     /// <summary>
@@ -18,6 +16,11 @@ public class Division
     /// Gets or sets the name.
     /// </summary>
     public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the department identifier.
+    /// </summary>
+    public int? DepartmentId { get; set; }
 
     /// <summary>
     /// Gets or sets the department of this division.

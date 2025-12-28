@@ -1,11 +1,8 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents the relationship between a callout and a department.
 /// </summary>
-[Table("fivepd_callout_details_departments")]
 public class CalloutDetailsDepartment
 {
     /// <summary>

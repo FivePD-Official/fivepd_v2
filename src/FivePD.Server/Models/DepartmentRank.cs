@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FivePD.Server.Models;
+﻿namespace FivePD.Server.Models;
 
 /// <summary>
 /// Many-to-Many joining table for Department and Rank.
 /// </summary>
-[Table("fivepd_department_rank")]
 public class DepartmentRank
 {
     /// <summary>

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Data;
+using FivePD.Server.Database;
 
 namespace FivePD.Server.Interfaces;
+
+#pragma warning disable
 
 /// <summary>
 /// Represents a scope for database operations.
@@ -9,8 +12,5 @@ namespace FivePD.Server.Interfaces;
 /// </summary>
 public interface IDatabaseContextScope : IDisposable
 {
-    /// <summary>
-    /// Gets the database connection for Dapper operations.
-    /// </summary>
-    IDbConnection Connection { get; }
+    DatabaseContext Context { get; }
 }

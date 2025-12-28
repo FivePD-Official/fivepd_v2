@@ -7,7 +7,6 @@ namespace FivePD.Server.Models.VariableData;
 /// <summary>
 /// Represents a dynamic entity.
 /// </summary>
-[Table("fivepd_variable_data_entities")]
 public class VariableDataEntity
 {
     /// <summary>

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using CitizenFX.Core;
 
 namespace FivePD.Server.Models;
 
+#pragma warning disable
+
 /// <summary>
 /// Represents an assistance service station.
 /// </summary>
-[Table("fivepd_assistance_service_stations")]
 public class AssistanceServiceStation
 {
     /// <summary>
@@ -19,6 +19,12 @@ public class AssistanceServiceStation
     /// Gets or sets the name of the assistance service station.
     /// </summary>
     public string Name { get; set; }
+
+    public float X { get; set; }
+
+    public float Y { get; set; }
+
+    public float Z { get; set; }
 
     /// <summary>
     /// Gets or sets the position of the assistance service station.

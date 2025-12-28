@@ -18,12 +18,14 @@ public interface IMigration
     string Description { get; }
 
     /// <summary>
-    /// Applies the migration.
+    /// Applies the migration to bring the database schema to the desired state.
     /// </summary>
+    /// <param name="connection">The database connection used to execute the migration.</param>
     void Up(IDbConnection connection);
 
     /// <summary>
-    /// Reverts the migration.
+    /// Reverts the applied migration for the database schema to its previous state.
     /// </summary>
+    /// <param name="connection">The database connection used to execute the rollback.</param>
     void Down(IDbConnection connection);
 }

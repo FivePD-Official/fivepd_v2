@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
@@ -11,7 +10,6 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a ped history.
 /// </summary>
-[Table("fivepd_ped_data")]
 public class PedData
 {
     /// <summary>

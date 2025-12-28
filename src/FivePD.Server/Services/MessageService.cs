@@ -17,11 +17,13 @@ using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
 
+#pragma warning disable
+
 /// <inheritdoc />
 [Obfuscate]
 public class MessageService : IMessageService
 {
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
     private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly IGameNotificationService _gameNotificationService;
@@ -31,24 +33,24 @@ public class MessageService : IMessageService
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageService"/> class.
     /// </summary>
-    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
+    /// <param name="dbConnectionFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
     public MessageService(
-        IDatabaseContextFactory dbContextFactory,
+        IDapperDatabaseConnectionFactory dbConnectionFactory,
         IAddonMetadataService addonMetadataService,
         IPlayerHandlerService playerHandlerService,
         IGameNotificationService gameNotificationService,
         INetworkEventService networkEventService)
     {
-        this._dbContextFactory = dbContextFactory;
+        this._dbConnectionFactory = dbConnectionFactory;
         this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
         this._playerHandlerService = playerHandlerService;
         this._gameNotificationService = gameNotificationService;
         this._networkEventService = networkEventService;
-        this._messageRepository = new MessageRepository(dbContextFactory);
+        this._messageRepository = new MessageRepository(dbConnectionFactory);
     }
 
     /// <inheritdoc />
@@ -82,7 +84,7 @@ public class MessageService : IMessageService
             Content = content,
             Sender = sender,
             SentAt = DateTime.Now,
-            UserId = to.Id,
+            // UserId = to.Id,
             Read = false
         };
 
@@ -162,14 +164,14 @@ public class MessageService : IMessageService
         }
 
         // Get all users from database
-        using var scope = this._dbContextFactory.CreateScope();
+        using var scope = this._dbConnectionFactory.CreateScope();
         var connection = scope.Connection;
         var users = connection.Query<User>("SELECT * FROM fivepd_users").ToList();
 
         var to = request.SendToEveryone
             ? users.Where(x => x.Id != sender.Id)
             : users.Where(x => request.To.Contains(x.Id));
-            
+
         foreach (var user in to.ToList())
         {
             this.Send(user, request.Subject, request.Content, sender.Name);
