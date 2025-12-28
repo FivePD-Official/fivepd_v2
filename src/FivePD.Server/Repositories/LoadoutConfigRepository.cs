@@ -1,0 +1,121 @@
+using System.Collections.Generic;
+using Dapper;
+using FivePD.Server.Database;
+using FivePD.Server.Interfaces;
+using FivePD.Server.Models;
+using FivePD.Server.Models.LoadoutModels;
+
+namespace FivePD.Server.Repositories;
+
+/// <summary>
+/// Repository for LoadoutConfig CRUD operations.
+/// </summary>
+public class LoadoutConfigRepository : BaseRepository<Rank, int>
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoadoutConfigRepository"/> class.
+    /// </summary>
+    /// <param name="dbConnectionFactory">The database connection factory.</param>
+    public LoadoutConfigRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+        : base(dbConnectionFactory, TableNames.LoadoutConfigs)
+    {
+    }
+
+    /// <summary>
+    /// Adds a new loadout config to the database.
+    /// </summary>
+    /// <param name="loadoutConfig">The loadout config entity to be added.</param>
+    /// <returns>The ID of the newly created loadout config.</returns>
+    public LoadoutConfig Add(LoadoutConfig loadoutConfig)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        var id = connection.ExecuteScalar<int>(
+            $@"
+            INSERT INTO {this.TableName} (Name)
+            VALUES (@Name);
+            SELECT LAST_INSERT_ID();",
+            new
+            {
+                Name = loadoutConfig.Name,
+            });
+        loadoutConfig.Id = id;
+        return loadoutConfig;
+    }
+
+    /// <summary>
+    /// Adds a weapon to a loadout config.
+    /// </summary>
+    /// <param name="loadoutConfig">The loadout config.</param>
+    /// <param name="weapon">The weapon.</param>
+    public void AddWeapon(LoadoutConfig loadoutConfig, Weapon weapon)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            INSERT INTO {TableNames.LoadoutWeapon} (LoadoutConfigId, WeaponId)
+            VALUES (@LoadoutConfigId, @WeaponId)
+            ON DUPLICATE KEY UPDATE LoadoutConfigId = @LoadoutConfigId";
+        connection.Execute(sql, new { LoadoutConfigId = loadoutConfig.Id, WeaponId = weapon.Id });
+    }
+
+    /// <summary>
+    /// Removes a weapon from a loadout config.
+    /// </summary>
+    /// <param name="loadoutConfig">The loadout config.</param>
+    /// <param name="weapon">The weapon.</param>
+    public void RemoveWeapon(LoadoutConfig loadoutConfig, Weapon weapon)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            DELETE FROM {TableNames.LoadoutWeapon}
+            WHERE LoadoutConfigId = @LoadoutConfigId AND WeaponId = @WeaponId";
+        connection.Execute(sql, new { LoadoutConfigId = loadoutConfig.Id, WeaponId = weapon.Id });
+    }
+
+    /// <summary>
+    /// Gets all weapons in a loadout config.
+    /// </summary>
+    /// <param name="loadoutConfig">The loadout config.</param>
+    /// <returns>List of weapons.</returns>
+    public IEnumerable<Weapon> GetWeapons(LoadoutConfig loadoutConfig)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            SELECT w.* 
+            FROM {TableNames.Weapons} w
+            INNER JOIN {TableNames.LoadoutWeapon} lw ON w.Id = lw.WeaponId
+            WHERE lw.LoadoutConfigId = @LoadoutConfigId";
+        return connection.Query<Weapon>(sql, new { LoadoutConfigId = loadoutConfig.Id });
+    }
+
+    /// <summary>
+    /// Gets all loadout configs that contain a specific weapon.
+    /// </summary>
+    /// <param name="weapon">The weapon.</param>
+    /// <returns>List of loadout configs.</returns>
+    public IEnumerable<LoadoutConfig> GetLoadoutConfigsByWeapon(Weapon weapon)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            SELECT lc.* 
+            FROM {TableNames.LoadoutConfigs} lc
+            INNER JOIN {TableNames.LoadoutWeapon} lw ON lc.Id = lw.LoadoutConfigId
+            WHERE lw.WeaponId = @WeaponId";
+        return connection.Query<LoadoutConfig>(sql, new { WeaponId = weapon.Id });
+    }
+
+    /// <summary>
+    /// Checks if a weapon is in a loadout config.
+    /// </summary>
+    /// <param name="loadoutConfig">The loadout config ID.</param>
+    /// <param name="weapon">The weapon ID.</param>
+    /// <returns>True if the weapon is in the loadout config, false otherwise.</returns>
+    public bool HasWeapon(LoadoutConfig loadoutConfig, Weapon weapon)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            SELECT COUNT(*) 
+            FROM {TableNames.LoadoutWeapon}
+            WHERE LoadoutConfigId = @LoadoutConfigId AND WeaponId = @WeaponId";
+        return connection.ExecuteScalar<int>(sql, new { LoadoutConfigId = loadoutConfig.Id, WeaponId = weapon.Id }) > 0;
+    }
+}

@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using Dapper;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Interfaces;
-using FivePD.Server.Interfaces.Addons;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using Serilog;
@@ -39,6 +37,9 @@ internal static class DapperDatabaseHandler
         }
 
         _migrationManager = new DatabaseMigrationManager(_dbConnectionFactory, logger);
+
+        DapperTypeHandlers.Register();
+        _logger.Information("Dapper type handlers registered successfully");
     }
 
     /// <summary>
@@ -51,7 +52,7 @@ internal static class DapperDatabaseHandler
             var factory = _dbConnectionFactory;
             if (factory is null)
             {
-                _logger?.Warning("Unable to determine database factory type, skipping database creation check");
+                _logger.Warning("Unable to determine database factory type, skipping database creation check");
                 return;
             }
 
@@ -60,7 +61,7 @@ internal static class DapperDatabaseHandler
 
             if (string.IsNullOrEmpty(databaseName))
             {
-                _logger?.Warning("Database name not specified in configuration");
+                _logger.Warning("Database name not specified in configuration");
                 return;
             }
 
@@ -75,19 +76,19 @@ internal static class DapperDatabaseHandler
                 new { DatabaseName = databaseName }) > 0;
             if (dbExists)
             {
-                _logger?.Information("Database \"{databaseName}\" already exists", databaseName);
+                _logger.Information("Database \"{databaseName}\" already exists", databaseName);
             }
             else
             {
-                _logger?.Information("Database \"{databaseName}\" does not exist. Creating...", databaseName);
+                _logger.Information("Database \"{databaseName}\" does not exist. Creating...", databaseName);
                 var createDbSql = $"CREATE DATABASE IF NOT EXISTS `{databaseName}`";
                 connection.Execute(createDbSql);
-                _logger?.Information("Database \"{databaseName}\" created successfully", databaseName);
+                _logger.Information("Database \"{databaseName}\" created successfully", databaseName);
             }
         }
         catch (Exception)
         {
-            _logger?.Error("Failed to ensure database exists. Verify the connection settings in the /Config/general file and try again.");
+            _logger.Error("Failed to ensure database exists. Verify the connection settings in the /Config/general file and try again.");
         }
     }
 
@@ -107,11 +108,11 @@ internal static class DapperDatabaseHandler
                 scope.Connection.Open();
             }
 
-            _logger?.Information("Database is ready");
+            _logger.Information("Database is ready");
         }
         catch (Exception)
         {
-            _logger?.Error("The configured database is invalid or offline. Verify the connection settings in the /Config/general file and try again.");
+            _logger.Error("The configured database is invalid or offline. Verify the connection settings in the /Config/general file and try again.");
         }
     }
 
@@ -127,11 +128,11 @@ internal static class DapperDatabaseHandler
         try
         {
             _migrationManager.ApplyMigrations();
-            _logger?.Information("Database schema is up to date");
+            _logger.Information("Database schema is up to date");
         }
         catch (Exception)
         {
-            _logger?.Error("Failed to apply database migrations. Verify your database configuration.");
+            _logger.Error("Failed to apply database migrations. Verify your database configuration.");
         }
     }
 

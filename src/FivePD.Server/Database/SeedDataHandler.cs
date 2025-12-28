@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Models.AssistanceServiceModels;
+using FivePD.Server.Models.LoadoutModels;
+using FivePD.Server.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -55,9 +58,8 @@ internal class SeedDataHandler
     private void SeedSampleDepartment()
     {
         using var connection = this._connectionFactory.CreateScope().Connection;
-
-        var existingCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM fivepd_departments");
-        if (existingCount > 0)
+        var departmentRepository = this._serviceProvider.GetService<DepartmentRepository>();
+        if (departmentRepository.Count() > 0)
         {
             this._logger.Debug("Departments already exist, skipping department seeding.");
             return;
@@ -65,33 +67,56 @@ internal class SeedDataHandler
 
         this._logger.Debug("Creating sample department with divisions...");
 
-        var departmentId = connection.ExecuteScalar<int>(
-            @"
-            INSERT INTO fivepd_departments (Name, Callsign, MaxUsers, UseGlobalRanks, CallsignFormat)
-            VALUES (@Name, @Callsign, @MaxUsers, @UseGlobalRanks, @CallsignFormat);
-            SELECT LAST_INSERT_ID();",
-            new
-            {
-                Name = "Los Santos Police Department",
-                Callsign = "LSPD",
-                MaxUsers = 0,
-                UseGlobalRanks = true,
-                CallsignFormat = "[{\"Type\":0,\"Value\":\"L\"},{\"Type\":0,\"Value\":\"S\"},{\"Type\":2},{\"Type\":3}]",
-            });
-
-        var divisions = new[]
+        var departmentId = departmentRepository.Add(new Department
         {
-            new { Name = "Patrol division", DepartmentId = departmentId },
-            new { Name = "Detective division", DepartmentId = departmentId },
-            new { Name = "SWAT division", DepartmentId = departmentId },
-            new { Name = "Traffic division", DepartmentId = departmentId },
-        };
+            Name = "Los Santos Police Department",
+            Callsign = "LSPD",
+            MaxUsers = 0,
+            UseGlobalRanks = true,
+            CallsignFormat = new List<CallsignFormatItem>
+            {
+                new()
+                {
+                    Type = CallsignFormatItemType.FixedCharacter,
+                    Value = "L",
+                },
+                new()
+                {
+                    Type = CallsignFormatItemType.FixedCharacter,
+                    Value = "S",
+                },
+                new()
+                {
+                    Type = CallsignFormatItemType.Dash,
+                },
+                new()
+                {
+                    Type = CallsignFormatItemType.RandomNumber,
+                },
+            },
+        });
 
-        connection.Execute(
-            @"
-            INSERT INTO fivepd_divisions (Name, DepartmentId)
-            VALUES (@Name, @DepartmentId)",
-            divisions);
+        var divisionRepository = this._serviceProvider.GetService<DivisionRepository>();
+        divisionRepository.Add(new Division
+        {
+            Name = "Patrol division",
+            DepartmentId = departmentId,
+        });
+        divisionRepository.Add(new Division
+        {
+            Name = "Detective division",
+            DepartmentId = departmentId,
+        });
+        divisionRepository.Add(new Division
+        {
+            Name = "SWAT division",
+            DepartmentId = departmentId,
+        });
+        divisionRepository.Add(new Division
+        {
+            Name = "Traffic division",
+            DepartmentId = departmentId,
+        });
 
         this._logger.Information("Created sample department with divisions.");
     }
@@ -99,9 +124,8 @@ internal class SeedDataHandler
     private void SeedSampleRanks()
     {
         using var connection = this._connectionFactory.CreateScope().Connection;
-
-        var existingCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM fivepd_ranks");
-        if (existingCount > 0)
+        var rankRepository = this._serviceProvider.GetService<RankRepository>();
+        if (rankRepository.Count() > 0)
         {
             this._logger.Debug("Ranks already exist, skipping rank seeding.");
             return;
@@ -109,46 +133,53 @@ internal class SeedDataHandler
 
         this._logger.Debug("Creating sample ranks...");
 
-        var ranks = new[]
+        rankRepository.Add(new()
         {
-            new
+            Name = "Officer I",
+            RequiredXp = 0,
+            Global = true,
+            Permission = new Rank.Permissions
             {
-                Name = "Officer I",
-                RequiredXp = 0,
-                Global = true,
-                Permission = "{\"Kick\":false,\"SetRank\":false,\"SetDivision\":false,\"DepartmentManager\":false}",
+                Kick = false,
+                SetRank = false,
+                SetDivision = false,
+                DepartmentManager = false,
             },
-            new
+        });
+        rankRepository.Add(new()
+        {
+            Name = "Officer II",
+            RequiredXp = 0,
+            Global = true,
+            Permission = new Rank.Permissions
             {
-                Name = "Officer II",
-                RequiredXp = 0,
-                Global = true,
-                Permission = "{\"Kick\":false,\"SetRank\":false,\"SetDivision\":false,\"DepartmentManager\":false}",
+                Kick = false,
+                SetRank = false,
+                SetDivision = false,
+                DepartmentManager = false,
             },
-            new
+        });
+        rankRepository.Add(new()
+        {
+            Name = "Sergeant",
+            RequiredXp = 0,
+            Global = true,
+            Permission = new Rank.Permissions
             {
-                Name = "Sergeant",
-                RequiredXp = 0,
-                Global = true,
-                Permission = "{\"Kick\":false,\"SetRank\":false,\"SetDivision\":false,\"DepartmentManager\":false}",
+                Kick = false,
+                SetRank = false,
+                SetDivision = false,
+                DepartmentManager = false,
             },
-        };
-
-        connection.Execute(
-            @"
-            INSERT INTO fivepd_ranks (Name, RequiredXp, Global, Permission)
-            VALUES (@Name, @RequiredXp, @Global, @Permission)",
-            ranks);
-
+        });
         this._logger.Information("Created sample ranks.");
     }
 
     private void SeedVehicleConfigs()
     {
         using var connection = this._connectionFactory.CreateScope().Connection;
-
-        var existingCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM fivepd_vehicle_configs");
-        if (existingCount > 0)
+        var vehicleConfigRepository = this._serviceProvider.GetService<VehicleConfigRepository>();
+        if (vehicleConfigRepository.Count() > 0)
         {
             this._logger.Debug("Vehicle configs already exist, skipping vehicle config seeding.");
             return;
@@ -156,55 +187,17 @@ internal class SeedDataHandler
 
         this._logger.Debug("Creating sample vehicle configs...");
 
-        var vehicleConfigs = new[]
-        {
-            new
-            {
-                Name = "Ambulance",
-                Type = VehicleConfigType.Ambulance,
-                Model = "ambulance",
-                Options = "{\"siren\":true,\"lights\":true,\"medical\":true}",
-                Extras = "[0,1,2,3]",
-            },
-            new
-            {
-                Name = "Police Cruiser",
-                Type = VehicleConfigType.Police,
-                Model = "police",
-                Options = "{\"siren\":true,\"lights\":true,\"weapons\":true}",
-                Extras = "[0,1,2]",
-            },
-            new
-            {
-                Name = "Tow Truck",
-                Type = VehicleConfigType.TowTruck,
-                Model = "towtruck",
-                Options = "{\"tow\":true}",
-                Extras = "[0]",
-            },
-            new
-            {
-                Name = "Rideshare",
-                Type = VehicleConfigType.RideShare,
-                Model = "taxi",
-                Options = "{\"meter\":true}",
-                Extras = "[0]",
-            },
-            new
-            {
-                Name = "Coroner",
-                Type = VehicleConfigType.Coroner,
-                Model = "hearse",
-                Options = "{\"medical\":true}",
-                Extras = "[0]",
-            },
-        };
+        var ambulance = DefaultVehicleConfigs.Ambulance;
+        var police = DefaultVehicleConfigs.Police;
+        var towTruck = DefaultVehicleConfigs.TowTruck;
+        var rideShare = DefaultVehicleConfigs.RideShare;
+        var coroner = DefaultVehicleConfigs.Coroner;
 
-        connection.Execute(
-            @"
-            INSERT INTO fivepd_vehicle_configs (Name, Type, Model, Options, Extras)
-            VALUES (@Name, @Type, @Model, @Options, @Extras)",
-            vehicleConfigs);
+        vehicleConfigRepository.Add(ambulance);
+        vehicleConfigRepository.Add(police);
+        vehicleConfigRepository.Add(towTruck);
+        vehicleConfigRepository.Add(rideShare);
+        vehicleConfigRepository.Add(coroner);
 
         this._logger.Information("Created sample vehicle configs.");
     }
@@ -212,9 +205,11 @@ internal class SeedDataHandler
     private void SeedLoadoutConfigs()
     {
         using var connection = this._connectionFactory.CreateScope().Connection;
+        var loadoutConfigRepository = this._serviceProvider.GetService<LoadoutConfigRepository>();
+        var weaponRepository = this._serviceProvider.GetService<WeaponRepository>();
+        var weaponComponentRepository = this._serviceProvider.GetService<WeaponComponentRepository>();
 
-        var existingCount = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM fivepd_loadout_configs");
-        if (existingCount > 0)
+        if (loadoutConfigRepository.Count() > 0)
         {
             this._logger.Debug("Loadout configs already exist, skipping loadout config seeding.");
             return;
@@ -222,74 +217,24 @@ internal class SeedDataHandler
 
         this._logger.Debug("Creating sample loadout configs...");
 
-        var weapons = new[]
-        {
-            new { Name = "Pistol", Model = "WEAPON_PISTOL" },
-            new { Name = "Carbine Rifle", Model = "WEAPON_CARBINERIFLE" },
-            new { Name = "Taser", Model = "WEAPON_STUNGUN" },
-        };
+        var pistolId = weaponRepository.Add(new Weapon { Name = "Pistol", Model = "WEAPON_PISTOL", });
+        var carbineRifleId = weaponRepository.Add(new Weapon { Name = "Carbine Rifle", Model = "WEAPON_CARBINERIFLE", });
+        var taserId = weaponRepository.Add(new Weapon { Name = "Taser", Model = "WEAPON_STUNGUN", });
 
-        var weaponIds = new Dictionary<string, int>();
-        foreach (var weapon in weapons)
-        {
-            var id = connection.ExecuteScalar<int>(
-                @"
-                INSERT INTO fivepd_weapons (Name, Model)
-                VALUES (@Name, @Model);
-                SELECT LAST_INSERT_ID();",
-                weapon);
-            weaponIds[weapon.Name] = id;
-        }
+        var suppressorId = weaponComponentRepository.Add(new WeaponComponent { Name = "Suppressor", HashKey = "COMPONENT_AT_PI_SUPP_02", });
+        var scopeId = weaponComponentRepository.Add(new WeaponComponent { Name = "Scope", HashKey = "COMPONENT_AT_SCOPE_MEDIUM", });
 
-        var components = new[]
-        {
-            new { Name = "Suppressor", HashKey = "COMPONENT_AT_PI_SUPP_02" },
-            new { Name = "Scope", HashKey = "COMPONENT_AT_SCOPE_MEDIUM" },
-        };
+        weaponRepository.AttachComponent(pistolId, suppressorId);
+        weaponRepository.AttachComponent(carbineRifleId, scopeId);
 
-        var componentIds = new Dictionary<string, int>();
-        foreach (var component in components)
-        {
-            var id = connection.ExecuteScalar<int>(
-                @"
-                INSERT INTO fivepd_weapon_components (Name, HashKey)
-                VALUES (@Name, @HashKey);
-                SELECT LAST_INSERT_ID();",
-                component);
-            componentIds[component.Name] = id;
-        }
+        var patrolLoadoutId = loadoutConfigRepository.Add(new LoadoutConfig { Name = "Patrol loadout" });
+        var swatLoadoutId = loadoutConfigRepository.Add(new LoadoutConfig { Name = "SWAT loadout" });
 
-        var patrolLoadoutId = connection.ExecuteScalar<int>(@"
-            INSERT INTO fivepd_loadout_configs (Name)
-            VALUES ('Patrol Loadout');
-            SELECT LAST_INSERT_ID();");
+        loadoutConfigRepository.AddWeapon(patrolLoadoutId, pistolId);
+        loadoutConfigRepository.AddWeapon(patrolLoadoutId, taserId);
 
-        var swatLoadoutId = connection.ExecuteScalar<int>(@"
-            INSERT INTO fivepd_loadout_configs (Name)
-            VALUES ('SWAT Loadout');
-            SELECT LAST_INSERT_ID();");
-
-        connection.Execute(
-            @"
-            INSERT INTO fivepd_loadout_weapon (LoadoutConfigId, WeaponId)
-            VALUES (@LoadoutId, @WeaponId)",
-            new[]
-            {
-                new { LoadoutId = patrolLoadoutId, WeaponId = weaponIds["Pistol"] },
-                new { LoadoutId = patrolLoadoutId, WeaponId = weaponIds["Taser"] },
-                new { LoadoutId = swatLoadoutId, WeaponId = weaponIds["Carbine Rifle"] },
-                new { LoadoutId = swatLoadoutId, WeaponId = weaponIds["Pistol"] },
-            });
-
-        connection.Execute(
-            @"
-            INSERT INTO fivepd_weapon_weaponComponent (WeaponId, WeaponComponentId)
-            VALUES (@WeaponId, @ComponentId)",
-            new[]
-            {
-                new { WeaponId = weaponIds["Pistol"], ComponentId = componentIds["Suppressor"] },
-                new { WeaponId = weaponIds["Carbine Rifle"], ComponentId = componentIds["Scope"] },
-            });
+        loadoutConfigRepository.AddWeapon(swatLoadoutId, carbineRifleId);
+        loadoutConfigRepository.AddWeapon(swatLoadoutId, taserId);
 
         this._logger.Information("Created sample loadout configs.");
     }

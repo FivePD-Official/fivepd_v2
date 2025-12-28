@@ -16,6 +16,7 @@ using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Interfaces.TrafficStopInterfaces;
 using FivePD.Server.Interfaces.VariableData;
+using FivePD.Server.Repositories;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
@@ -209,6 +210,14 @@ internal class Bootstrapper : BaseScript
 
         services.AddTransient<NetworkEventService>();
         services.AddTransient<INetworkEventService>(provider => provider.GetRequiredService<NetworkEventService>());
+
+        services.AddSingleton<DepartmentRepository>();
+        services.AddSingleton<DivisionRepository>();
+        services.AddSingleton<RankRepository>();
+        services.AddSingleton<VehicleConfigRepository>();
+        services.AddSingleton<LoadoutConfigRepository>();
+        services.AddSingleton<WeaponRepository>();
+        services.AddSingleton<WeaponComponentRepository>();
 
         // Addons
         // services.AddTransient<AddonLoggerService>();
