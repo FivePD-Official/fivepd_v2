@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using CitizenFX.Core;
 using FivePD.Common;
@@ -10,10 +9,8 @@ using FivePD.Common.Builders;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
@@ -21,32 +18,41 @@ using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Events;
 using FivePD.Server.Models.Requests;
 using FivePD.Server.QueryHelpers;
-using Microsoft.EntityFrameworkCore;
+using FivePD.Server.Repositories;
 using Newtonsoft.Json;
 using Serilog;
 
 namespace FivePD.Server.Services;
+
+#pragma warning disable
 
 /// <inheritdoc cref="FivePD.Server.Interfaces.IPlayerDataService" />
 [Obfuscate]
 public class PlayerDataService : IPlayerDataService, IOnInit
 {
     private readonly EventHandlerDictionary _eventHandlerDictionary;
-    private readonly IDatabaseContextFactory _dbContextFactory;
+
     private readonly PlayerList _playerList;
+
     private readonly IGameNotificationService _notificationService;
     private readonly IConfigService _configService;
+
     private readonly ILogger _logger;
+
     private readonly ILocalizationService _localizationService;
     private readonly IPlayerHandlerService _playerHandlerService;
-    private readonly IInternalPedStorageService _internalPedStorageService;
+
+    // private readonly IInternalPedStorageService _internalPedStorageService;
     private readonly INetworkEventService _networkEventService;
+    private readonly UserRepository _userRepository;
+    private readonly RankRepository _rankRepository;
+    private readonly DepartmentRepository _departmentRepository;
+    private readonly DivisionRepository _divisionRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
     /// </summary>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
-    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="notificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
@@ -55,28 +61,38 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="pedStorageService">The <see cref="IPedStorageService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
+    /// <param name="userRepository">The <see cref="UserRepository"/> to use.</param>
+    /// <param name="rankRepository">The <see cref="RankRepository"/> to use.</param>
+    /// <param name="departmentRepository">The <see cref="DepartmentRepository"/> to use.</param>
+    /// <param name="divisionRepository">The <see cref="DivisionRepository"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
-        IDatabaseContextFactory dbContextFactory,
         PlayerList playerList,
         IGameNotificationService notificationService,
         IConfigService configService,
         ILogger logger,
         ILocalizationService localizationService,
         IPlayerHandlerService playerHandlerService,
-        IPedStorageService pedStorageService,
-        INetworkEventService networkEventService)
+        // IPedStorageService pedStorageService,
+        INetworkEventService networkEventService,
+        UserRepository userRepository,
+        RankRepository rankRepository,
+        DepartmentRepository departmentRepository,
+        DivisionRepository divisionRepository)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
-        this._dbContextFactory = dbContextFactory;
         this._playerList = playerList;
         this._notificationService = notificationService;
         this._configService = configService;
         this._logger = logger;
         this._localizationService = localizationService;
         this._playerHandlerService = playerHandlerService;
-        this._internalPedStorageService = (IInternalPedStorageService)pedStorageService;
+        // this._internalPedStorageService = (IInternalPedStorageService)pedStorageService;
         this._networkEventService = networkEventService;
+        this._userRepository = userRepository;
+        this._rankRepository = rankRepository;
+        this._departmentRepository = departmentRepository;
+        this._divisionRepository = divisionRepository;
     }
 
     /// <inheritdoc/>
@@ -100,17 +116,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <inheritdoc/>
     public User FindUserByLicense(Player player, bool withChangeTracking = true)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var query = databaseContext.Users.AsQueryable();
-        if (!withChangeTracking)
-        {
-            query = query.AsNoTracking();
-        }
-
-        return query
-            .Include(user => user.Department)
-            .WhereAnyIdMatches(player)
-            .FirstOrDefault();
+        return this._userRepository.FindByLicense(player);
     }
 
     /// <inheritdoc />
@@ -148,27 +154,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             return;
         }
 
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-
-        databaseContext
-            .Entry(user)
-            .Reference(x => x.Rank)
-            .Load();
-
-        List<Rank> ranksToUse;
-        if (user.Department.UseGlobalRanks)
-        {
-            ranksToUse = databaseContext.Ranks.Where(x => x.Global).ToList();
-        }
-        else
-        {
-            databaseContext
-                .Entry(user.Department)
-                .Collection(x => x.DepartmentRanks)
-                .Load();
-            ranksToUse = user.Department.DepartmentRanks.Select(x => x.Rank).ToList();
-        }
-
+        var ranksToUse = user.Department.UseGlobalRanks ? this._rankRepository.GetAllGlobal() : this._departmentRepository.GetRanks(user.Department);
         var ranks = ranksToUse.OrderBy(x => x.RequiredXp).ToList();
         var currentRankRequiredXp = user.Rank?.RequiredXp ?? user.Xp;
         var nextRank = ranks.FirstOrDefault(x => x.RequiredXp > currentRankRequiredXp);
@@ -182,8 +168,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             return;
         }
 
-        user.RankId = nextRank.Id;
-        databaseContext.SaveChanges();
+        this._userRepository.Update(user, x => { x.RankId = nextRank.Id; });
         this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
         {
             Rank = nextRank,
@@ -210,27 +195,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             return;
         }
 
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-
-        databaseContext
-            .Entry(user)
-            .Reference(x => x.Rank)
-            .Load();
-
-        List<Rank> ranksToUse;
-        if (user.Department.UseGlobalRanks)
-        {
-            ranksToUse = databaseContext.Ranks.Where(x => x.Global).ToList();
-        }
-        else
-        {
-            databaseContext
-                .Entry(user.Department)
-                .Collection(x => x.DepartmentRanks)
-                .Load();
-            ranksToUse = user.Department.DepartmentRanks.Select(x => x.Rank).ToList();
-        }
-
+        var ranksToUse = user.Department.UseGlobalRanks ? this._rankRepository.GetAllGlobal() : this._departmentRepository.GetRanks(user.Department);
         var ranks = ranksToUse.OrderBy(x => x.RequiredXp).ToList();
         var currentRankRequiredXp = user.Rank?.RequiredXp ?? user.Xp;
         var previousRank = ranks.LastOrDefault(x => x.RequiredXp < currentRankRequiredXp);
@@ -244,8 +209,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             return;
         }
 
-        user.RankId = previousRank.Id;
-        databaseContext.SaveChanges();
+        this._userRepository.Update(user, x => { x.RankId = previousRank.Id; });
         this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
         {
             Rank = previousRank,
@@ -263,7 +227,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
         this.CreatePlayerData(player);
         this.SubscribeToOnDutyStatusChange(player);
-        this._internalPedStorageService.InternalPeds[player.Character.NetworkId] = new FPed(new FPedBuilder(new CommonFPedBuilder(player.Character.NetworkId)));
+        // this._internalPedStorageService.InternalPeds[player.Character.NetworkId] = new FPed(new FPedBuilder(new CommonFPedBuilder(player.Character.NetworkId)));
     }
 
     private void SubscribeToOnDutyStatusChange(Player player)
@@ -333,9 +297,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             return;
         }
 
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var userCount = databaseContext.Users.Count();
-        var existingUser = databaseContext.Users.WhereAnyIdMatches(player).FirstOrDefault();
+        var userCount = this._userRepository.Count();
+        var existingUser = this._userRepository.FindByLicense(player);
         if (existingUser is null)
         {
             var user = new User
@@ -355,8 +318,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 user.Role = (int)UserRole.Admin;
             }
 
-            databaseContext.Users.Add(user);
-            databaseContext.SaveChanges();
+            this._userRepository.Add(user);
         }
         else
         {
@@ -365,8 +327,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 return;
             }
 
-            existingUser.FirstLogin = false;
-            databaseContext.SaveChanges();
+            this._userRepository.Update(existingUser, x => { x.FirstLogin = false; });
         }
     }
 
@@ -379,15 +340,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     [UIEvent(Events.UI.Player.GetDetails)]
     private void GetPlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var user = databaseContext.Users
-            .AsNoTracking()
-            .Include(user => user.Department)
-            .Include(user => user.Division)
-            .Include(user => user.Rank)
-            .Include(user => user.CallsignFormat)
-            .WhereAnyIdMatches(player)
-            .FirstOrDefault();
+        var u = this._userRepository.FindByLicense(player);
+        var user = this._userRepository.FindByIdWithDynamicRelated(u.Id, new UserRepository.UserLoadOptions
+        {
+            IncludeCallsignFormat = true,
+            IncludeDepartment = true,
+            IncludeDivision = true,
+            IncludeRank = true,
+        });
 
         if (user is null)
         {
@@ -411,11 +371,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
     private void GetDismissedWelcomeModal([FromSource] Player player, string guid)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var user = databaseContext.Users
-            .AsNoTracking()
-            .WhereAnyIdMatches(player)
-            .FirstOrDefault();
+        var user = this._userRepository.FindByLicense(player);
         if (user is null)
         {
             this._networkEventService.TriggerEvent(player, guid, false);
@@ -427,25 +383,20 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
     private void DismissedWelcomeModal([FromSource] Player player)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var user = databaseContext.Users
-            .WhereAnyIdMatches(player)
-            .FirstOrDefault();
+        var user = this._userRepository.FindByLicense(player);
         if (user is null)
         {
             return;
         }
 
-        user.DismissedWelcomeMessage = true;
-        databaseContext.SaveChanges();
+        this._userRepository.Update(user, x => { x.DismissedWelcomeMessage = true; });
     }
 
     [UIEvent(Events.UI.Player.ChangeDivision)]
     private void ChangePlayerDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var playerChangeRequest = JsonConvert.DeserializeObject<PlayerChangeRequest>(serializedRequest);
-        var user = databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
+        var request = JsonConvert.DeserializeObject<PlayerChangeRequest>(serializedRequest);
+        var user = this._userRepository.FindById(request.UserId);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -453,24 +404,23 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         Division division;
-        if (playerChangeRequest.IdToChange == -1)
+        if (request.IdToChange == -1)
         {
-            user.DivisionId = null;
             division = null;
+            this._userRepository.Update(user, x => { x.DivisionId = 0; });
         }
         else
         {
-            division = databaseContext.Divisions.FirstOrDefault(x => x.Id == playerChangeRequest.IdToChange);
+            division = this._divisionRepository.FindById(request.IdToChange);
             if (division is null)
             {
                 this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
-            user.DivisionId = playerChangeRequest.IdToChange;
+            this._userRepository.Update(user, x => { x.DivisionId = request.IdToChange; });
         }
 
-        databaseContext.SaveChanges();
         this.PlayerDivisionChanged?.Invoke(this, new PlayerDivisionChangeEventArgs
         {
             Division = division,
@@ -491,9 +441,8 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     [UIEvent(Events.UI.Player.ChangeRank)]
     private void ChangePlayerRankFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var playerChangeRequest = JsonConvert.DeserializeObject<PlayerChangeRequest>(serializedRequest);
-        var user = databaseContext.Users.FirstOrDefault(user => user.Id == playerChangeRequest.UserId);
+        var request = JsonConvert.DeserializeObject<PlayerChangeRequest>(serializedRequest);
+        var user = this._userRepository.FindById(request.UserId);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -501,24 +450,23 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         Rank rank;
-        if (playerChangeRequest.IdToChange == -1)
+        if (request.IdToChange == -1)
         {
-            user.RankId = null;
             rank = null;
+            this._userRepository.Update(user, x => { x.RankId = 0; });
         }
         else
         {
-            rank = databaseContext.Ranks.FirstOrDefault(division => division.Id == playerChangeRequest.IdToChange);
+            rank = this._rankRepository.FindById(request.IdToChange);
             if (rank is null)
             {
                 this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
-            user.RankId = playerChangeRequest.IdToChange;
+            this._userRepository.Update(user, x => { x.RankId = request.IdToChange; });
         }
 
-        databaseContext.SaveChanges();
         this.PlayerRankChanged?.Invoke(this, new PlayerRankChangeEventArgs
         {
             Rank = rank,
@@ -539,17 +487,15 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     [UIEvent(Events.UI.Player.ChangeFixedRank)]
     private void ChangePlayerFixedRankFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<PlayerChangeFixedRankRequest>(serializedRequest);
-        var user = databaseContext.Users.FirstOrDefault(user => user.Id == request.UserId);
+        var user = this._userRepository.FindById(request.UserId);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        user.FixedRank = request.FixedRank;
-        databaseContext.SaveChanges();
+        this._userRepository.Update(user, x => { x.FixedRank = request.FixedRank; });
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -565,29 +511,23 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     [UIEvent(Events.UI.Player.GetAllPageable)]
     private void GetAllPageable([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<GetSetRequest>(serializedRequest);
-        var page = databaseContext.Users
-            .AsNoTracking()
-            .Paginate(request.Page, new Filters<User>());
-
+        var page = this._userRepository.Paginate(request.Page);
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Player.ChangeRole)]
     private void ChangeRole([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<ChangePlayerRoleRequest>(serializedRequest);
-        var user = databaseContext.Users.FirstOrDefault(x => x.Id == request.UserId);
+        var user = this._userRepository.FindById(request.UserId);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        user.Role = request.Roles.Sum();
-        databaseContext.SaveChanges();
+        this._userRepository.Update(user, x => { user.Role = request.Roles.Sum(); });
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -606,29 +546,28 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     [UIEvent(Events.User.GetAllSimple)]
     private void GetAllSimple([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        this._networkEventService.TriggerEventSerialized(player, guid, databaseContext.Users.Select(x => new SimpleUserDTO
-        {
-            Id = x.Id,
-            Name = x.Name,
-        }));
+        var users = this._userRepository
+            .GetAll()
+            .Select(x => new SimpleUserDTO
+            {
+                Id = x.Id,
+                Name = x.Name,
+            });
+        this._networkEventService.TriggerEventSerialized(player, guid, users);
     }
 
     [UIEvent(Events.UI.Player.UpdateDetails)]
     private void UpdatePlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<UpdatePlayerDetailsRequest>(serializedRequest);
-        var user = databaseContext.Users
-            .Include(x => x.CallsignFormat)
-            .Include(x => x.Department)
-            .ThenInclude(department => department.Users)
-            .FirstOrDefault(user => user.Id == request.Id);
+        var user = this._userRepository.FindByIdWithRelated(request.Id);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
+
+        var departmentUsers = user.DepartmentId is null ? [] : this._departmentRepository.GetUsersById(user.DepartmentId ?? 0);
 
         if (request.CallsignFormatValues is not null && request.CallsignFormatValues.Count > 0)
         {
@@ -640,40 +579,41 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 return;
             }
 
-            if (user.Department.Users.Any(x => x.Callsign == callsign))
+            if (departmentUsers.Any(x => x.Callsign == callsign))
             {
-                this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.USER.CALLSIGN.EDIT.TITLE", "ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
+                this._networkEventService.TriggerEventWithResponse(
+                    player,
+                    guid,
+                    false,
+                    "ERROR.USER.CALLSIGN.EDIT.TITLE",
+                    "ERROR.USER.CALLSIGN.EDIT.DESCRIPTION");
                 return;
             }
 
-            user.Callsign = callsign;
+            this._userRepository.Update(user, x => {x.Callsign = callsign; });
             if (user.CallsignFormat is not null)
             {
-                user.CallsignFormat.Values = request.CallsignFormatValues;
+                var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
+                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.Values = request.CallsignFormatValues;});
             }
             else
             {
-                var entry = databaseContext.UserCallsigns.Add(new UserCallsignFormat
-                {
-                    Values = request.CallsignFormatValues,
-                });
-                databaseContext.SaveChanges();
-                user.UserCallsignFormatId = entry.Entity.Id;
+                var userCallsignFormat = this._userRepository.AddCallsignFormat(user, new UserCallsignFormat { Values = request.CallsignFormatValues });
+                this._userRepository.Update(user, x => { x.UserCallsignFormatId = userCallsignFormat.Id; });
             }
         }
 
         if (request.PreferredLanguage is not null)
         {
-            user.PreferredLanguage = request.PreferredLanguage;
+            this._userRepository.Update(user, x => { x.PreferredLanguage = request.PreferredLanguage; });
             player.TriggerEvent(Events.UI.Player.LocalizationChange, this._localizationService.GetLocalization(request.PreferredLanguage));
         }
 
         if (request.AudioVolume is not null)
         {
-            user.AudioVolume = request.AudioVolume ?? 0;
+            this._userRepository.Update(user, x => { x.AudioVolume = request.AudioVolume ?? 0; });
         }
 
-        databaseContext.SaveChanges();
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.CHANGE", "LABEL.PLAYER.SUCCESS.CHANGE_DETAILS");
     }
 }

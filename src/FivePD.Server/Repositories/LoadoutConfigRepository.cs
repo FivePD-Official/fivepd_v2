@@ -1,16 +1,17 @@
+using System;
 using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
-using FivePD.Server.Models;
 using FivePD.Server.Models.LoadoutModels;
+using FivePD.Server.Models.UpdateModels;
 
 namespace FivePD.Server.Repositories;
 
 /// <summary>
 /// Repository for LoadoutConfig CRUD operations.
 /// </summary>
-public class LoadoutConfigRepository : BaseRepository<Rank, int>
+public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConfigUpdate, int>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadoutConfigRepository"/> class.
@@ -21,17 +22,12 @@ public class LoadoutConfigRepository : BaseRepository<Rank, int>
     {
     }
 
-    /// <summary>
-    /// Adds a new loadout config to the database.
-    /// </summary>
-    /// <param name="loadoutConfig">The loadout config entity to be added.</param>
-    /// <returns>The ID of the newly created loadout config.</returns>
-    public LoadoutConfig Add(LoadoutConfig loadoutConfig)
+    /// <inheritdoc/>
+    public override LoadoutConfig Add(LoadoutConfig loadoutConfig)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         var id = connection.ExecuteScalar<int>(
-            $@"
-            INSERT INTO {this.TableName} (Name)
+            $@"INSERT INTO {this.TableName} (Name)
             VALUES (@Name);
             SELECT LAST_INSERT_ID();",
             new
@@ -40,6 +36,24 @@ public class LoadoutConfigRepository : BaseRepository<Rank, int>
             });
         loadoutConfig.Id = id;
         return loadoutConfig;
+    }
+
+    /// <inheritdoc />
+    public override void Update(LoadoutConfig loadoutConfig, Action<LoadoutConfigUpdate> updateAction)
+    {
+        var update = new LoadoutConfigUpdate();
+        updateAction(update);
+        if (!update.HasChanges())
+        {
+            return;
+        }
+
+        var builder = new UpdateQueryBuilder(update);
+        builder.Add(nameof(update.Name), update.Name);
+
+        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, loadoutConfig.Id);
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Execute(sql, parameters);
     }
 
     /// <summary>

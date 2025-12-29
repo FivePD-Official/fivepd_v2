@@ -4,6 +4,8 @@ namespace FivePD.Server.Database;
 
 public static class TableNames
 {
+    public const string FivePdMigrations = "__fivepd_migrations";
+
     public const string Users = "fivepd_users";
 
     public const string Departments = "fivepd_departments";

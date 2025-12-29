@@ -1,8 +1,9 @@
+using System;
 using Dapper;
-using FivePD.Common;
 using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Models.UpdateModels;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Repositories;
@@ -10,7 +11,7 @@ namespace FivePD.Server.Repositories;
 /// <summary>
 /// Repository for VehicleConfig CRUD operations.
 /// </summary>
-public class VehicleConfigRepository : BaseRepository<VehicleConfig<object>, int>
+public class VehicleConfigRepository : BaseRepository<VehicleConfig<string>, VehicleConfigUpdate<string>, int>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleConfigRepository"/> class.
@@ -19,6 +20,89 @@ public class VehicleConfigRepository : BaseRepository<VehicleConfig<object>, int
     public VehicleConfigRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.VehicleConfigs)
     {
+    }
+
+    /// <inheritdoc/>
+    public override VehicleConfig<string> Add(VehicleConfig<string> entity)
+    {
+        return this.AddCore(entity);
+    }
+
+    /// <summary>
+    /// Adds a new vehicle configuration to the repository.
+    /// </summary>
+    /// <typeparam name="TOptions">The type of the options field in the vehicle configuration.</typeparam>
+    /// <param name="vehicleConfig">The vehicle configuration to add.</param>
+    /// <returns>The added vehicle configuration, including its assigned ID after persistence.</returns>
+    public VehicleConfig<TOptions> Add<TOptions>(VehicleConfig<TOptions> vehicleConfig)
+    {
+        var rawEntity = new VehicleConfig<string>
+        {
+            Name = vehicleConfig.Name,
+            Type = vehicleConfig.Type,
+            Model = vehicleConfig.Model,
+            Livery = vehicleConfig.Livery,
+            Extras = vehicleConfig.Extras,
+            Options = JsonConvert.SerializeObject(vehicleConfig.Options),
+        };
+        var savedRawEntity = this.AddCore(rawEntity);
+        vehicleConfig.Id = savedRawEntity.Id;
+        return vehicleConfig;
+    }
+
+    /// <inheritdoc />
+    public override void Update(VehicleConfig<string> entity, Action<VehicleConfigUpdate<string>> updateAction)
+    {
+        var update = new VehicleConfigUpdate<string>();
+        updateAction(update);
+        if (!update.HasChanges())
+        {
+            return;
+        }
+
+        var builder = new UpdateQueryBuilder(update);
+        builder.Add(nameof(update.Type), update.Type);
+        builder.Add(nameof(update.Name), update.Name);
+        builder.Add(nameof(update.Model), update.Model);
+        builder.Add(nameof(update.Livery), update.Livery);
+        builder.Add(nameof(update.Extras), update.Extras);
+        builder.Add(nameof(update.Options), update.Options);
+
+        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, entity.Id);
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Execute(sql, parameters);
+    }
+
+    /// <summary>
+    /// Updates a vehicle configuration with generic options.
+    /// </summary>
+    /// <typeparam name="TOptions">The type of the options field in the vehicle configuration.</typeparam>
+    /// <param name="vehicleConfig">The vehicle configuration to update.</param>
+    /// <param name="updateAction">The action to perform on the update model.</param>
+    public void Update<TOptions>(VehicleConfig<TOptions> vehicleConfig, Action<VehicleConfigUpdate<TOptions>> updateAction)
+    {
+        var update = new VehicleConfigUpdate<TOptions>();
+        updateAction(update);
+        if (!update.HasChanges())
+        {
+            return;
+        }
+
+        var builder = new UpdateQueryBuilder(update);
+        builder.Add(nameof(update.Type), update.Type);
+        builder.Add(nameof(update.Name), update.Name);
+        builder.Add(nameof(update.Model), update.Model);
+        builder.Add(nameof(update.Livery), update.Livery);
+        builder.Add(nameof(update.Extras), update.Extras);
+
+        if (update.Options is not null)
+        {
+            builder.Add(nameof(update.Options), JsonConvert.SerializeObject(update.Options));
+        }
+
+        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, vehicleConfig.Id);
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Execute(sql, parameters);
     }
 
     /// <summary>
@@ -32,51 +116,38 @@ public class VehicleConfigRepository : BaseRepository<VehicleConfig<object>, int
     /// </returns>
     public VehicleConfig<TOptions> FindById<TOptions>(int id)
     {
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"SELECT * FROM {this.TableName} WHERE {this.IdColumn} = @Id";
-        var a = connection.QueryFirstOrDefault<VehicleConfig<string>>(sql, new { Id = id });
-        if (a is null)
-        {
-            return null;
-        }
-
+        var entity = this.FindById(id);
         return new VehicleConfig<TOptions>
         {
-            Id = a.Id,
-            Type = a.Type,
-            Name = a.Name,
-            Model = a.Model,
-            Livery = a.Livery,
-            Extras = a.Extras,
-            Options = a.Options is null
+            Id = entity.Id,
+            Type = entity.Type,
+            Name = entity.Name,
+            Model = entity.Model,
+            Livery = entity.Livery,
+            Extras = entity.Extras,
+            Options = entity.Options is null
                 ? default
-                : JsonConvert.DeserializeObject<TOptions>(a.Options),
+                : JsonConvert.DeserializeObject<TOptions>(entity.Options),
         };
     }
 
-    /// <summary>
-    /// Adds a new vehicle configuration to the database.
-    /// </summary>
-    /// <typeparam name="TOptions">The type of the Options field.</typeparam>
-    /// <param name="vehicleConfig">The vehicle configuration entity to be added.</param>
-    /// <returns>The ID of the newly created vehicle configuration.</returns>
-    public int Add<TOptions>(VehicleConfig<TOptions> vehicleConfig)
+    private VehicleConfig<string> AddCore(VehicleConfig<string> entity)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         var id = connection.ExecuteScalar<int>(
-            $@"
-            INSERT INTO {this.TableName} (Name, Type, Model, Livery, Extras, Options)
+            $@"INSERT INTO {this.TableName} (Name, Type, Model, Livery, Extras, Options)
             VALUES (@Name, @Type, @Model, @Livery, @Extras, @Options);
             SELECT LAST_INSERT_ID();",
             new
             {
-                Name = vehicleConfig.Name,
-                Type = vehicleConfig.Type,
-                Model = vehicleConfig.Model,
-                Livery = vehicleConfig.Livery,
-                Extras = vehicleConfig.Extras,
-                Options = JsonConvert.SerializeObject(vehicleConfig.Options),
+                Name = entity.Name,
+                Type = entity.Type,
+                Model = entity.Model,
+                Livery = entity.Livery,
+                Extras = entity.Extras,
+                Options = entity.Options,
             });
-        return id;
+        entity.Id = id;
+        return entity;
     }
 }

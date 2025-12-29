@@ -1,17 +1,17 @@
+using System;
 using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
-using FivePD.Server.Models;
 using FivePD.Server.Models.LoadoutModels;
-using FivePD.Server.Models.LoadoutModels.JoinTables;
+using FivePD.Server.Models.UpdateModels;
 
 namespace FivePD.Server.Repositories;
 
 /// <summary>
 /// Repository for WeaponComponent CRUD operations.
 /// </summary>
-public class WeaponComponentRepository : BaseRepository<Rank, int>
+public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponComponentUpdate, int>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaponComponentRepository"/> class.
@@ -22,17 +22,12 @@ public class WeaponComponentRepository : BaseRepository<Rank, int>
     {
     }
 
-    /// <summary>
-    /// Adds a new weapon component to the database.
-    /// </summary>
-    /// <param name="weaponComponent">The weapon component entity to be added.</param>
-    /// <returns>The ID of the newly created weapon component.</returns>
-    public WeaponComponent Add(WeaponComponent weaponComponent)
+    /// <inheritdoc />
+    public override WeaponComponent Add(WeaponComponent weaponComponent)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         var id = connection.ExecuteScalar<int>(
-            $@"
-            INSERT INTO {this.TableName} (Name, HashKey)
+            $@"INSERT INTO {this.TableName} (Name, HashKey)
             VALUES (@Name, @HashKey);
             SELECT LAST_INSERT_ID();",
             new
@@ -42,6 +37,25 @@ public class WeaponComponentRepository : BaseRepository<Rank, int>
             });
         weaponComponent.Id = id;
         return weaponComponent;
+    }
+
+    /// <inheritdoc />
+    public override void Update(WeaponComponent weaponComponent, Action<WeaponComponentUpdate> updateAction)
+    {
+        var update = new WeaponComponentUpdate();
+        updateAction(update);
+        if (!update.HasChanges())
+        {
+            return;
+        }
+
+        var builder = new UpdateQueryBuilder(update);
+        builder.Add(nameof(update.Name), update.Name);
+        builder.Add(nameof(update.HashKey), update.HashKey);
+
+        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, weaponComponent.Id);
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Execute(sql, parameters);
     }
 
     /// <summary>

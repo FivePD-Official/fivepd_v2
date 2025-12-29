@@ -100,16 +100,16 @@ internal class Bootstrapper : BaseScript
         
         this._phases.Add(new Phase("Database seed data", DapperDatabaseHandler.SeedData), false);
 
-        // this._phases.Add(new Phase("Service initialization", this.PerformServiceInitialization), false);
-        //
+        this._phases.Add(new Phase("Service initialization", this.PerformServiceInitialization), false);
+
         // this._phases.Add(new Phase("Enqueue addon startup", this.PerformAddonEnqueuePhase), false);
         //
         // this._phases.Add(new Phase("Safe to run check", this.PerformSafeToRunCheckAfterBootstrapping), false);
         //
         // this._phases.Add(new Phase("Register menus", this.PerformMenuRegistration), false);
         //
-        // this._phases.Add(new Phase("Notify players", this.PerformPlayerNotifications), false);
-        //
+        this._phases.Add(new Phase("Notify players", this.PerformPlayerNotifications), false);
+
         // this._phases.Add(new Phase("Feedback handler", this.PerformFeedbackHandler), false);
 
         this.Tick += this.RunNextPhaseAsync;
@@ -206,7 +206,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton(Log.Logger);
         services.AddSingleton(this.EventHandlers);
         services.AddSingleton(this.Players);
-        // services.AddDbContext<DatabaseContext>(ServiceLifetime.Scoped);
+        services.AddSingleton<IDapperDatabaseConnectionFactory, DapperConnectionFactory>();
 
         services.AddTransient<NetworkEventService>();
         services.AddTransient<INetworkEventService>(provider => provider.GetRequiredService<NetworkEventService>());
@@ -218,14 +218,15 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<LoadoutConfigRepository>();
         services.AddSingleton<WeaponRepository>();
         services.AddSingleton<WeaponComponentRepository>();
+        services.AddSingleton<UserRepository>();
 
         // Addons
-        // services.AddTransient<AddonLoggerService>();
-        // services.AddTransient<IAddonLoggerService>(provider => provider.GetRequiredService<AddonLoggerService>());
+        services.AddTransient<AddonLoggerService>();
+        services.AddTransient<IAddonLoggerService>(provider => provider.GetRequiredService<AddonLoggerService>());
 
         // services.AddSingleton<AddonAssemblyLoader>();
         // services.AddTransient<IAddonAssemblyLoader>(provider => provider.GetRequiredService<AddonAssemblyLoader>());
-
+        //
         // services.AddSingleton<AddonFileHandlerService>();
         // services.AddTransient<IAddonFileHandlerService>(provider => provider.GetRequiredService<AddonFileHandlerService>());
 
@@ -233,7 +234,7 @@ internal class Bootstrapper : BaseScript
         // services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
         // services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
 
-        // Loose data repositories
+        // Variable data repositories
         // services.AddSingleton<ArrestReportService>();
         // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
         // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
@@ -254,38 +255,35 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<FileHandlerService>();
         services.AddSingleton<IFileHandlerService>(provider => provider.GetRequiredService<FileHandlerService>());
 
-        // services.AddSingleton<CommandService>();
-        // services.AddSingleton<ICommandService>(provider => provider.GetRequiredService<CommandService>());
+        services.AddSingleton<CommandService>();
+        services.AddSingleton<ICommandService>(provider => provider.GetRequiredService<CommandService>());
 
-        // services.AddSingleton<DevToolsService>();
-        // services.AddSingleton<IDevToolsService>(provider => provider.GetRequiredService<DevToolsService>());
+        services.AddSingleton<DevToolsService>();
+        services.AddSingleton<IDevToolsService>(provider => provider.GetRequiredService<DevToolsService>());
 
-        // services.AddSingleton<DebugService>();
-        // services.AddSingleton<IDebugService>(provider => provider.GetRequiredService<DebugService>());
+        services.AddSingleton<DebugService>();
+        services.AddSingleton<IDebugService>(provider => provider.GetRequiredService<DebugService>());
 
         // services.AddSingleton<DepartmentService>();
         // services.AddSingleton<IDepartmentService>(provider => provider.GetRequiredService<DepartmentService>());
 
-        // services.AddSingleton<NotificationService>();
-        // services.AddSingleton<INotificationService>(provider => provider.GetRequiredService<NotificationService>());
+        services.AddSingleton<NotificationService>();
+        services.AddSingleton<INotificationService>(provider => provider.GetRequiredService<NotificationService>());
 
-        // services.AddSingleton<EntityService>();
-        // services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
+        services.AddSingleton<EntityService>();
+        services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
 
-        // services.AddSingleton<MarkerService>();
-        // services.AddSingleton<IMarkerService>(provider => provider.GetRequiredService<MarkerService>());
+        services.AddSingleton<MarkerService>();
+        services.AddSingleton<IMarkerService>(provider => provider.GetRequiredService<MarkerService>());
 
-        // services.AddSingleton<ConfirmationService>();
-        // services.AddSingleton<IConfirmationService>(provider => provider.GetRequiredService<ConfirmationService>());
+        services.AddSingleton<ConfirmationService>();
+        services.AddSingleton<IConfirmationService>(provider => provider.GetRequiredService<ConfirmationService>());
 
-        // services.AddSingleton<RandomService>();
-        // services.AddSingleton<IRandomService>(provider => provider.GetRequiredService<RandomService>());
+        services.AddSingleton<RandomService>();
+        services.AddSingleton<IRandomService>(provider => provider.GetRequiredService<RandomService>());
 
-        // services.AddSingleton<ProbabilityService>();
-        // services.AddSingleton<IProbabilityService>(provider => provider.GetRequiredService<ProbabilityService>());
-
-        // services.AddSingleton<IDatabaseContextFactory, DatabaseContextScopeFactory>();
-        services.AddSingleton<IDapperDatabaseConnectionFactory, DapperConnectionFactory>();
+        services.AddSingleton<ProbabilityService>();
+        services.AddSingleton<IProbabilityService>(provider => provider.GetRequiredService<ProbabilityService>());
 
         // services.AddSingleton<AssistanceServiceManagerService>();
         // services.AddSingleton<IAssistanceServiceManagerService>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());
@@ -295,8 +293,8 @@ internal class Bootstrapper : BaseScript
         // services.AddSingleton<IAssistanceServiceConfigService>(provider => provider.GetRequiredService<AssistanceServiceConfigService>());
         // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AssistanceServiceConfigService>());
 
-        // services.AddSingleton<CfxService>();
-        // services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
+        services.AddSingleton<CfxService>();
+        services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
 
         // services.AddSingleton<ProgressionSystemService>();
         // services.AddSingleton<IProgressionSystemService>(provider => provider.GetRequiredService<ProgressionSystemService>());
@@ -323,41 +321,41 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ConfigService>());
 
-        // services.AddSingleton<ConcurrentTickQueueService>();
-        // services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
-        // services.AddSingleton<IInternalTickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
+        services.AddSingleton<ConcurrentTickQueueService>();
+        services.AddSingleton<ITickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
+        services.AddSingleton<IInternalTickQueueService>(provider => provider.GetRequiredService<ConcurrentTickQueueService>());
 
-        // services.AddSingleton<UIService>();
-        // services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UIService>());
+        services.AddSingleton<UIService>();
+        services.AddSingleton<IUIService>(provider => provider.GetRequiredService<UIService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<UIService>());
 
-        // services.AddSingleton<ControlService>();
-        // services.AddSingleton<IControlService>(provider => provider.GetRequiredService<ControlService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ControlService>());
+        services.AddSingleton<ControlService>();
+        services.AddSingleton<IControlService>(provider => provider.GetRequiredService<ControlService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ControlService>());
 
-        // services.AddSingleton<LocalizationService>();
-        // services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocalizationService>());
+        services.AddSingleton<LocalizationService>();
+        services.AddSingleton<ILocalizationService>(provider => provider.GetRequiredService<LocalizationService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocalizationService>());
 
-        // services.AddSingleton<EventService>();
-        // services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<EventService>());
+        services.AddSingleton<EventService>();
+        services.AddSingleton<IEventService>(provider => provider.GetRequiredService<EventService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<EventService>());
 
-        // services.AddSingleton<PedBehaviorService>();
-        // services.AddSingleton<IPedBehaviorService>(provider => provider.GetRequiredService<PedBehaviorService>());
+        services.AddSingleton<PedBehaviorService>();
+        services.AddSingleton<IPedBehaviorService>(provider => provider.GetRequiredService<PedBehaviorService>());
 
         // services.AddSingleton<InteractionService>();
         // services.AddSingleton<IInteractionService>(provider => provider.GetRequiredService<InteractionService>());
         // services.AddSingleton<IInternalInteractionService>(provider => provider.GetRequiredService<InteractionService>());
         // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<InteractionService>());
 
-        // services.AddSingleton<PedStorageService>();
-        // services.AddSingleton<IPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
-        // services.AddSingleton<IInternalPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
+        services.AddSingleton<PedStorageService>();
+        services.AddSingleton<IPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
+        services.AddSingleton<IInternalPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
 
-        // services.AddSingleton<VehicleStorageService>();
-        // services.AddSingleton<IVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
-        // services.AddSingleton<IInternalVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
+        services.AddSingleton<VehicleStorageService>();
+        services.AddSingleton<IVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
+        services.AddSingleton<IInternalVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
 
         // services.AddSingleton<PedService>();
         // services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
@@ -368,12 +366,12 @@ internal class Bootstrapper : BaseScript
         // services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
         // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleService>());
 
-        // services.AddSingleton<PlayerDataService>();
-        // services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PlayerDataService>());
+        services.AddSingleton<PlayerDataService>();
+        services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PlayerDataService>());
 
-        // services.AddSingleton<PlayerHandlerService>();
-        // services.AddSingleton<IPlayerHandlerService>(provider => provider.GetRequiredService<PlayerHandlerService>());
+        services.AddSingleton<PlayerHandlerService>();
+        services.AddSingleton<IPlayerHandlerService>(provider => provider.GetRequiredService<PlayerHandlerService>());
 
         // services.AddSingleton<MenuService>();
         // services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
@@ -435,32 +433,32 @@ internal class Bootstrapper : BaseScript
         // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<LocationService>());
         // services.AddSingleton<ILocationService>(provider => provider.GetRequiredService<LocationService>());
 
-        // services.AddSingleton<Vector3Service>();
-        // services.AddSingleton<IVector3Service>(provider => provider.GetRequiredService<Vector3Service>());
+        services.AddSingleton<Vector3Service>();
+        services.AddSingleton<IVector3Service>(provider => provider.GetRequiredService<Vector3Service>());
 
         // services.AddSingleton<AlprService>();
         // services.AddSingleton<IAlprService>(provider => provider.GetRequiredService<AlprService>());
         // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AlprService>());
 
-        // services.AddSingleton<SceneManagementService>();
-        // services.AddSingleton<ISceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
-        // services.AddSingleton<IInternalSceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
+        services.AddSingleton<SceneManagementService>();
+        services.AddSingleton<ISceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
+        services.AddSingleton<IInternalSceneManagementService>(provider => provider.GetRequiredService<SceneManagementService>());
 
-        // services.AddSingleton<AudioService>();
-        // services.AddSingleton<IAudioService>(provider => provider.GetRequiredService<AudioService>());
+        services.AddSingleton<AudioService>();
+        services.AddSingleton<IAudioService>(provider => provider.GetRequiredService<AudioService>());
 
-        // services.AddSingleton<AccessControlService>();
-        // services.AddSingleton<IAccessControlService>(provider => provider.GetRequiredService<AccessControlService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AccessControlService>());
+        services.AddSingleton<AccessControlService>();
+        services.AddSingleton<IAccessControlService>(provider => provider.GetRequiredService<AccessControlService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AccessControlService>());
 
-        // services.AddSingleton<RankService>();
-        // services.AddSingleton<IRankService>(provider => provider.GetRequiredService<RankService>());
+        services.AddSingleton<RankService>();
+        services.AddSingleton<IRankService>(provider => provider.GetRequiredService<RankService>());
 
-        // services.AddSingleton<GameNotificationService>();
-        // services.AddSingleton<IGameNotificationService>(provider => provider.GetRequiredService<GameNotificationService>());
+        services.AddSingleton<GameNotificationService>();
+        services.AddSingleton<IGameNotificationService>(provider => provider.GetRequiredService<GameNotificationService>());
 
-        // services.AddSingleton<GeneralAssistanceServiceSyncService>();
-        // services.AddSingleton<IGeneralAssistanceServiceSyncService>(provider => provider.GetRequiredService<GeneralAssistanceServiceSyncService>());
+        services.AddSingleton<GeneralAssistanceServiceSyncService>();
+        services.AddSingleton<IGeneralAssistanceServiceSyncService>(provider => provider.GetRequiredService<GeneralAssistanceServiceSyncService>());
 
         this._provider = services.BuildServiceProvider();
 

@@ -1,16 +1,17 @@
+using System;
 using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
-using FivePD.Server.Models;
 using FivePD.Server.Models.LoadoutModels;
+using FivePD.Server.Models.UpdateModels;
 
 namespace FivePD.Server.Repositories;
 
 /// <summary>
 /// Repository for Weapon CRUD operations.
 /// </summary>
-public class WeaponRepository : BaseRepository<Rank, int>
+public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaponRepository"/> class.
@@ -21,17 +22,12 @@ public class WeaponRepository : BaseRepository<Rank, int>
     {
     }
 
-    /// <summary>
-    /// Adds a new weapon to the database.
-    /// </summary>
-    /// <param name="weapon">The weapon entity to be added.</param>
-    /// <returns>The ID of the newly created weapon.</returns>
-    public Weapon Add(Weapon weapon)
+    /// <inheritdoc />
+    public override Weapon Add(Weapon weapon)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         var id = connection.ExecuteScalar<int>(
-            $@"
-            INSERT INTO {this.TableName} (Name, Model)
+            $@"INSERT INTO {this.TableName} (Name, Model)
             VALUES (@Name, @Model);
             SELECT LAST_INSERT_ID();",
             new
@@ -41,6 +37,25 @@ public class WeaponRepository : BaseRepository<Rank, int>
             });
         weapon.Id = id;
         return weapon;
+    }
+
+    /// <inheritdoc />
+    public override void Update(Weapon weapon, Action<WeaponUpdate> updateAction)
+    {
+        var update = new WeaponUpdate();
+        updateAction(update);
+        if (!update.HasChanges())
+        {
+            return;
+        }
+
+        var builder = new UpdateQueryBuilder(update);
+        builder.Add(nameof(update.Name), update.Name);
+        builder.Add(nameof(update.Model), update.Model);
+
+        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, weapon.Id);
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Execute(sql, parameters);
     }
 
     /// <summary>

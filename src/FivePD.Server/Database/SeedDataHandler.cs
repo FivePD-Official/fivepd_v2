@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Dapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.AssistanceServiceModels;
@@ -67,7 +66,7 @@ internal class SeedDataHandler
 
         this._logger.Debug("Creating sample department with divisions...");
 
-        var departmentId = departmentRepository.Add(new Department
+        var department = departmentRepository.Add(new Department
         {
             Name = "Los Santos Police Department",
             Callsign = "LSPD",
@@ -100,22 +99,22 @@ internal class SeedDataHandler
         divisionRepository.Add(new Division
         {
             Name = "Patrol division",
-            DepartmentId = departmentId,
+            DepartmentId = department.Id,
         });
         divisionRepository.Add(new Division
         {
             Name = "Detective division",
-            DepartmentId = departmentId,
+            DepartmentId = department.Id,
         });
         divisionRepository.Add(new Division
         {
             Name = "SWAT division",
-            DepartmentId = departmentId,
+            DepartmentId = department.Id,
         });
         divisionRepository.Add(new Division
         {
             Name = "Traffic division",
-            DepartmentId = departmentId,
+            DepartmentId = department.Id,
         });
 
         this._logger.Information("Created sample department with divisions.");
@@ -133,7 +132,7 @@ internal class SeedDataHandler
 
         this._logger.Debug("Creating sample ranks...");
 
-        rankRepository.Add(new()
+        rankRepository.Add(new Rank
         {
             Name = "Officer I",
             RequiredXp = 0,
@@ -146,7 +145,7 @@ internal class SeedDataHandler
                 DepartmentManager = false,
             },
         });
-        rankRepository.Add(new()
+        rankRepository.Add(new Rank
         {
             Name = "Officer II",
             RequiredXp = 0,
@@ -159,7 +158,7 @@ internal class SeedDataHandler
                 DepartmentManager = false,
             },
         });
-        rankRepository.Add(new()
+        rankRepository.Add(new Rank
         {
             Name = "Sergeant",
             RequiredXp = 0,

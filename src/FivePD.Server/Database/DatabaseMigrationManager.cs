@@ -48,7 +48,7 @@ public class DatabaseMigrationManager
             return;
         }
 
-        this._logger.Information("Found {migrationsCount} migrations", migrations.Count);
+        this._logger.Information("Found {migrationsCount} migration(s)", migrations.Count);
 
         using var connection = this._dbConnectionFactory.CreateScope().Connection;
         foreach (var migration in migrations)
@@ -136,9 +136,9 @@ public class DatabaseMigrationManager
 #pragma warning restore
 
         // MySQL/MariaDB
-        checkSql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = '__fivepd_migrations'";
-        createSql = @"
-            CREATE TABLE IF NOT EXISTS __fivepd_migrations (
+        checkSql = $"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = '{TableNames.FivePdMigrations}'";
+        createSql = $@"
+            CREATE TABLE IF NOT EXISTS {TableNames.FivePdMigrations} (
                 Id VARCHAR(100) PRIMARY KEY,
                 Description VARCHAR(255) NOT NULL,
                 AppliedAt DATETIME NOT NULL
@@ -169,21 +169,21 @@ public class DatabaseMigrationManager
     private bool IsMigrationApplied(IDbConnection connection, string migrationId)
     {
         var count = connection.ExecuteScalar<int>(
-            "SELECT COUNT(*) FROM __fivepd_migrations WHERE Id = @Id",
-            new { Id = migrationId });
+            "SELECT COUNT(*) FROM @TableName WHERE Id = @Id",
+            new { TableName = TableNames.FivePdMigrations, Id = migrationId });
         return count > 0;
     }
 
     private void MarkMigrationAsApplied(IDbConnection connection, string migrationId, string description)
     {
         connection.Execute(
-            "INSERT INTO __fivepd_migrations (Id, Description, AppliedAt) VALUES (@Id, @Description, @AppliedAt)",
-            new { Id = migrationId, Description = description, AppliedAt = DateTime.UtcNow });
+            "INSERT INTO @TableName (Id, Description, AppliedAt) VALUES (@Id, @Description, @AppliedAt)",
+            new { TableName = TableNames.FivePdMigrations, Id = migrationId, Description = description, AppliedAt = DateTime.UtcNow });
     }
 
     private void UnmarkMigration(IDbConnection connection, string migrationId)
     {
-        connection.Execute("DELETE FROM __fivepd_migrations WHERE Id = @Id", new { Id = migrationId });
+        connection.Execute("DELETE FROM @TableName WHERE Id = @Id", new { TableName = TableNames.FivePdMigrations, Id = migrationId });
     }
 }
 
