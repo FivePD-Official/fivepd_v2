@@ -79,14 +79,14 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
     /// <returns>A collection of <see cref="Rank"/> objects matching the provided criteria.</returns>
     public IEnumerable<Rank> GetRanksByDepartment(string rankName, int departmentId, int? rankId = null)
     {
-        var join = $"INNER JOIN {TableNames.DepartmentRanks} dr ON {this.TableName}.Id = dr.RankId";
-        var condition = $"{this.TableName}.Name = @Name AND {this.TableName}.Global = 0 AND dr.DepartmentId = @DepartmentId";
+        var where = $"{this.TableName}.Name = @Name AND {this.TableName}.Global = 0 AND dr.DepartmentId = @DepartmentId";
         if (rankId is not null)
         {
-            condition += $" AND {this.TableName}.Id != @RankId";
+            where += $" AND {this.TableName}.Id != @RankId";
         }
 
-        return this.GetAllWithJoin(join, condition, new { Name = rankName, DepartmentId = departmentId, RankId = rankId });
+        var sql = $"SELECT {this.TableName}.* FROM {this.TableName} INNER JOIN {TableNames.DepartmentRanks} dr ON {this.TableName}.Id = dr.RankId WHERE {where}";
+        return this.Query<Rank>(sql, new { Name = rankName, DepartmentId = departmentId, RankId = rankId });
     }
 
     /// <summary>

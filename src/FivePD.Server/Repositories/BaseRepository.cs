@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
@@ -22,7 +24,7 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     protected readonly string TableName;
     protected readonly string IdColumn = "Id";
 #pragma warning restore
-
+#pragma warning disable
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseRepository{TEntity, TEntityUpdate, TId}"/> class.
     /// </summary>
@@ -121,23 +123,10 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
         return connection.Query<TEntity>(sql, parameters);
     }
 
-    /// <summary>
-    /// Retrieves all entities from the database, including any additional data specified by a join clause.
-    /// </summary>
-    /// <param name="joinClause">The SQL join clause to include related data from other tables.</param>
-    /// <param name="condition">The SQL condition to filter the results.</param>
-    /// <param name="parameters">The parameters to be used with the SQL condition.</param>
-    /// <returns>A collection of entities from the database with the specified join and filter applied.</returns>
-    public virtual IEnumerable<TEntity> GetAllWithJoin(string joinClause, string condition, object parameters = null)
+    public virtual IEnumerable<T> Query<T>(string sql, object parameters = null)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"SELECT {this.TableName}.* FROM {this.TableName} {joinClause}";
-        if (!string.IsNullOrWhiteSpace(condition))
-        {
-            sql += $" WHERE {condition}";
-        }
-
-        return connection.Query<TEntity>(sql, parameters);
+        return connection.Query<T>(sql, parameters);
     }
 
     /// <summary>
@@ -178,53 +167,28 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
         return connection.ExecuteScalar<int>(sql, parameters) > 0;
     }
 
-    /// <summary>
-    /// Gets a paginated list of entities with optional filters.
-    /// </summary>
-    /// <param name="pageNumber">The current page number (1-based).</param>
-    /// <param name="filters">The filters to apply to the query.</param>
-    /// <param name="pageSize">The number of entities per page.</param>
-    /// <returns>A Page object containing the paginated results.</returns>
-    public virtual Page<TEntity> Paginate(int pageNumber, DapperFilters filters = null, int pageSize = 10)
+    public virtual Page<TEntity> Paginate(int page, SqlBuilder builder)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
 
-        var sql = $"SELECT * FROM {this.TableName}";
-        var parameters = new DynamicParameters();
-
-        var whereClause = filters?.BuildWhereClause(parameters);
-        if (!string.IsNullOrWhiteSpace(whereClause))
+        if (string.IsNullOrEmpty(builder.Table))
         {
-            sql += $" WHERE {whereClause}";
+            builder.SetTable(this.TableName);
         }
 
-        var countSql = $"SELECT COUNT(*) FROM {this.TableName}";
-        if (!string.IsNullOrWhiteSpace(whereClause))
-        {
-            countSql += $" WHERE {whereClause}";
-        }
-
+        var (countSql, parameters) = builder.Build(isCount: true);
         var totalCount = connection.ExecuteScalar<int>(countSql, parameters);
 
-        pageNumber = pageNumber < 1 ? 1 : pageNumber;
-        var offset = (pageNumber - 1) * pageSize;
-
-        sql += $" LIMIT {pageSize} OFFSET {offset}";
-
-        var items = connection.Query<TEntity>(sql, parameters);
-        var pageCount = (int)Math.Ceiling((double)totalCount / pageSize);
-        if (pageCount == 0)
-        {
-            pageCount = 1;
-        }
+        var (dataSql, _) = builder.ApplyPagination(page).Build();
+        var items = connection.Query<TEntity>(dataSql, parameters).ToList();
 
         return new Page<TEntity>
         {
             Items = items,
-            CurrentPage = pageNumber,
-            PageCount = pageCount,
-            PageSize = pageSize,
+            CurrentPage = page,
             ItemCount = totalCount,
+            PageSize = 10,
+            PageCount = (int)Math.Ceiling((double)totalCount / 10),
         };
     }
 }

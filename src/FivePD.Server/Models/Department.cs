@@ -73,13 +73,4 @@ public class Department
     /// Gets or sets the DepartmentRanks.
     /// </summary>
     public IList<DepartmentRank> DepartmentRanks { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="DepartmentResponse"/>.
-    /// </summary>
-    /// <returns>The created response object.</returns>
-    internal DepartmentResponse ToResponse()
-    {
-        return new DepartmentResponse(this);
-    }
 }

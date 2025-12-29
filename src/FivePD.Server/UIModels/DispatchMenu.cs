@@ -74,7 +74,7 @@ public sealed class DispatchMenu : Menu
             {
                 actions.Add(async player =>
                 {
-                    if (player.Department is not null)
+                    if (player.Department() is not null)
                     {
                         player.DutyStatus.Value = FDutyStatus.OnDuty;
                         this.DutyNotification(player, "LABEL.MENU.DISPATCH.ON_DUTY.NOTIFICATION");
@@ -96,7 +96,7 @@ public sealed class DispatchMenu : Menu
             {
                 actions.Add(async player =>
                 {
-                    if (player.Department is not null)
+                    if (player.Department() is not null)
                     {
                         player.DutyStatus.Value = FDutyStatus.OffDuty;
                         this.DutyNotification(player, "LABEL.MENU.DISPATCH.OFF_DUTY.NOTIFICATION");
@@ -293,7 +293,7 @@ public sealed class DispatchMenu : Menu
     {
         var config = this._configService.GeneralConfig.Menu.Dispatch;
 
-        if (config.MustBeInDepartment && !player.IsInDepartment)
+        if (config.MustBeInDepartment && !player.IsInDepartment())
         {
             this._gameNotificationService.Notify(
                 player,

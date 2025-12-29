@@ -9,6 +9,7 @@ using FivePD.Common.Builders;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
+using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
@@ -340,32 +341,24 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     [UIEvent(Events.UI.Player.GetDetails)]
     private void GetPlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        var u = this._userRepository.FindByLicense(player);
-        var user = this._userRepository.FindByIdWithDynamicRelated(u.Id, new UserRepository.UserLoadOptions
-        {
-            IncludeCallsignFormat = true,
-            IncludeDepartment = true,
-            IncludeDivision = true,
-            IncludeRank = true,
-        });
-
+        var user = this._userRepository.FindByLicense(player);
         if (user is null)
         {
             this._networkEventService.TriggerEventSerialized(player, guid, null);
             return;
         }
-
+        
         var fPlayer = FPlayer.FromNetId(player.Handle);
-        var unit = fPlayer.Unit;
-
+        // var unit = fPlayer.Unit;
+        
         var playerDetails = new PlayerDetailsDTO
         {
             NetworkId = player.Handle,
             User = user,
             DutyStatus = fPlayer.DutyStatus.Value,
-            UnitCallsign = unit is null ? string.Empty : unit.Callsign,
+            // UnitCallsign = unit is null ? string.Empty : unit.Callsign,
+            UnitCallsign =  null,
         };
-
         this._networkEventService.TriggerEventSerialized(player, guid, playerDetails);
     }
 
@@ -512,7 +505,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private void GetAllPageable([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<GetSetRequest>(serializedRequest);
-        var page = this._userRepository.Paginate(request.Page);
+        var page = this._userRepository.Paginate(request.Page, new SqlBuilder());
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
@@ -560,7 +553,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private void UpdatePlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<UpdatePlayerDetailsRequest>(serializedRequest);
-        var user = this._userRepository.FindByIdWithRelated(request.Id);
+        var user = this._userRepository.FindById(request.Id);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -590,11 +583,11 @@ public class PlayerDataService : IPlayerDataService, IOnInit
                 return;
             }
 
-            this._userRepository.Update(user, x => {x.Callsign = callsign; });
+            this._userRepository.Update(user, x => { x.Callsign = callsign; });
             if (user.CallsignFormat is not null)
             {
                 var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
-                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.Values = request.CallsignFormatValues;});
+                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.Values = request.CallsignFormatValues; });
             }
             else
             {

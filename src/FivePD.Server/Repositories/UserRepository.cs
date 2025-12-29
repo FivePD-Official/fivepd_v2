@@ -7,6 +7,7 @@ using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
+using FivePD.Server.QueryHelpers;
 
 namespace FivePD.Server.Repositories;
 
@@ -302,8 +303,8 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     public UserCallsignFormat AddCallsignFormat(User user, UserCallsignFormat callsignFormat)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $"INSERT INTO {TableNames.UserCallsigns} (Values) VALUES (@Values); SELECT LAST_INSERT_ID();";
-        var id = connection.ExecuteScalar<int>(sql, new { Values = string.Join(",", callsignFormat.Values) });
+        const string sql = $"INSERT INTO {TableNames.UserCallsigns} (`Values`) VALUES (@Values); SELECT LAST_INSERT_ID();";
+        var id = connection.ExecuteScalar<int>(sql, new { Values = callsignFormat.Values });
         callsignFormat.Id = id;
         return callsignFormat;
     }
@@ -356,6 +357,18 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         const string sql = $"SELECT * FROM {TableNames.UserCallsigns} WHERE Id = @Id";
         return connection.QueryFirstOrDefault<UserCallsignFormat>(sql, new { Id = user.UserCallsignFormatId });
+    }
+
+    public Department GetDepartment(User user)
+    {
+        if (user is null)
+        {
+            return null;
+        }
+
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        var (sql, parameters) = new SqlBuilder(TableNames.Departments).Where("Id = @Id", user.DepartmentId).Build();
+        return connection.QueryFirstOrDefault<Department>(sql, parameters);
     }
 
     private object GetPlayerIdentifiers(Player player)

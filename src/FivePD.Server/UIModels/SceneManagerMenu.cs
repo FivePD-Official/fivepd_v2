@@ -81,7 +81,7 @@ public class SceneManagerMenu : Menu
             return false;
         }
 
-        if (config.MustBeInDepartment && !player.IsInDepartment)
+        if (config.MustBeInDepartment && !player.IsInDepartment())
         {
             this._gameNotificationService.Notify(
                 player,

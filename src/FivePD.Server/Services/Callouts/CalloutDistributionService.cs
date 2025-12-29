@@ -191,7 +191,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
 
         if (this._configService.GeneralConfig.Callout.AreaBasedDispatch)
         {
-            var valueTuples = filteredUnits.Select(unit => (unit, unit.Players[0].Department)).ToList();
+            var valueTuples = filteredUnits.Select(unit => (unit, unit.Players[0].Department())).ToList();
             foreach (var (_, department) in valueTuples)
             {
                 databaseContext
@@ -201,8 +201,8 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             }
 
             filteredUnits = valueTuples
-                .Where(x => x.Department.AreaCoordinates.Count >= 3)
-                .Where(x => internalCallout.Callout.Location.IsInsidePolygon(x.Department.AreaCoordinates.Select(c => new Vector3(c.X, c.Y, 0f))))
+                .Where(x => x.Item2.AreaCoordinates.Count >= 3)
+                .Where(x => internalCallout.Callout.Location.IsInsidePolygon(x.Item2.AreaCoordinates.Select(c => new Vector3(c.X, c.Y, 0f))))
                 .Select(x => x.unit)
                 .ToList();
         }

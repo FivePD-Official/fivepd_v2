@@ -169,21 +169,21 @@ public class DatabaseMigrationManager
     private bool IsMigrationApplied(IDbConnection connection, string migrationId)
     {
         var count = connection.ExecuteScalar<int>(
-            "SELECT COUNT(*) FROM @TableName WHERE Id = @Id",
-            new { TableName = TableNames.FivePdMigrations, Id = migrationId });
+            $"SELECT COUNT(*) FROM {TableNames.FivePdMigrations} WHERE Id = @Id",
+            new { Id = migrationId });
         return count > 0;
     }
 
     private void MarkMigrationAsApplied(IDbConnection connection, string migrationId, string description)
     {
         connection.Execute(
-            "INSERT INTO @TableName (Id, Description, AppliedAt) VALUES (@Id, @Description, @AppliedAt)",
-            new { TableName = TableNames.FivePdMigrations, Id = migrationId, Description = description, AppliedAt = DateTime.UtcNow });
+            $"INSERT INTO {TableNames.FivePdMigrations} (Id, Description, AppliedAt) VALUES (@Id, @Description, @AppliedAt)",
+            new { Id = migrationId, Description = description, AppliedAt = DateTime.UtcNow });
     }
 
     private void UnmarkMigration(IDbConnection connection, string migrationId)
     {
-        connection.Execute("DELETE FROM @TableName WHERE Id = @Id", new { TableName = TableNames.FivePdMigrations, Id = migrationId });
+        connection.Execute($"DELETE FROM {TableNames.FivePdMigrations} WHERE Id = @Id", new { Id = migrationId });
     }
 }
 

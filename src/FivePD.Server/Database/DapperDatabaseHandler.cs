@@ -130,9 +130,9 @@ internal static class DapperDatabaseHandler
             _migrationManager.ApplyMigrations();
             _logger.Information("Database schema is up to date");
         }
-        catch (Exception)
+        catch (Exception exception)
         {
-            _logger.Error("Failed to apply database migrations. Verify your database configuration.");
+            _logger.Error("Failed to apply database migrations. Verify your database configuration. {e}", exception);
         }
     }
 
