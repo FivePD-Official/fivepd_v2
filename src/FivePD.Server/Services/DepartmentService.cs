@@ -126,7 +126,9 @@ public class DepartmentService : IDepartmentService
             .Build();
         using var connection = this._dbConnectionFactory.CreateScope().Connection;
         var departmentUsersCount = connection.Query<DepartmentUserCountDto>(sql, parameters).ToDictionary(c => c.DepartmentId);
-        page.Items = page.Items.Select(item => new DepartmentResponse(item, departmentUsersCount[item.Id]?.UserCount ?? 0)).ToList();
+        page.Items = page.Items
+            .Select(item => departmentUsersCount.TryGetValue(item.Id, out var x) ? new DepartmentResponse(item, x.UserCount) : null)
+            .ToList();
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
@@ -160,9 +162,9 @@ public class DepartmentService : IDepartmentService
         var callsigns = connection.Query<UserCallsignFormat>(sql, parameters).ToDictionary(c => c.Id);
         foreach (var user in page.Items)
         {
-            if (user.UserCallsignFormatId is not null)
+            if (user.UserCallsignFormatId.HasValue)
             {
-                user.CallsignFormat = callsigns[user.UserCallsignFormatId ?? 0];
+                user.CallsignFormat = callsigns[user.UserCallsignFormatId.Value];
             }
         }
 
@@ -408,115 +410,93 @@ public class DepartmentService : IDepartmentService
     [UIEvent(Events.UI.Department.EditCallsignFormat)]
     private void EditDepartmentCallsignFormatUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        // using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        // var request = JsonConvert.DeserializeObject<EditDepartmentCallsignFormatRequest>(serializedRequest);
-        // var department = databaseContext.Departments
-        //     .Include(x => x.Users)
-        //     .ThenInclude(u => u.CallsignFormat)
-        //     .FirstOrDefault(department => department.Id == request.DepartmentId);
-        // if (department is null)
-        // {
-        //     this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
-        //     return;
-        // }
-        //
-        // department.CallsignFormat = request.CallsignFormat;
-        //
-        // foreach (var user in department.Users)
-        // {
-        //     var callsignGenerator = new CallsignGenerator(department.CallsignFormat);
-        //     string callsign;
-        //     do
-        //     {
-        //         callsign = callsignGenerator.GenerateCallsign().BuildCallsign();
-        //     }
-        //     while (department.Users.Any(x => x.Callsign == callsign));
-        //
-        //     user.Callsign = callsign;
-        //     if (user.CallsignFormat is not null)
-        //     {
-        //         user.CallsignFormat.Values = callsignGenerator.GetGeneratedItemValues();
-        //     }
-        //     else
-        //     {
-        //         var entry = databaseContext.UserCallsigns.Add(new UserCallsignFormat
-        //         {
-        //             Values = callsignGenerator.GetGeneratedItemValues(),
-        //         });
-        //         databaseContext.SaveChanges();
-        //         user.UserCallsignFormatId = entry.Entity.Id;
-        //     }
-        // }
-        //
-        // databaseContext.SaveChanges();
-        // this.DepartmentUpdated?.Invoke(this, department);
-        // this._networkEventService.TriggerEventWithResponse(
-        //     player,
-        //     guid,
-        //     true,
-        //     "LABEL.SUCCESS.EDIT",
-        //     "LABEL.DEPARTMENT.SUCCESS.EDIT",
-        //     new Dictionary<string, string>
-        //     {
-        //         { "department", department.Name },
-        //     });
+        var request = JsonConvert.DeserializeObject<EditDepartmentCallsignFormatRequest>(serializedRequest);
+        var department = this._departmentRepository.FindById(request.DepartmentId);
+        if (department is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        this._departmentRepository.Update(department, x => { x.CallsignFormat = request.CallsignFormat; });
+
+        var departmentUsers = this._departmentRepository.GetUsers(department).ToList();
+        foreach (var user in departmentUsers)
+        {
+            var callsignGenerator = new CallsignGenerator(department.CallsignFormat);
+            string callsign;
+            do
+            {
+                callsign = callsignGenerator.GenerateCallsign().BuildCallsign();
+            }
+            while (departmentUsers.Any(x => x.Callsign == callsign));
+
+            user.Callsign = callsign;
+            this._userRepository.Update(user, x => { x.Callsign = callsign; });
+
+            var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
+            if (userCallsignFormat is not null)
+            {
+                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.Values = callsignGenerator.GetGeneratedItemValues(); });
+            }
+            else
+            {
+                var callsignFormat = this._userRepository.AddCallsignFormat(user, new UserCallsignFormat
+                {
+                    Values = callsignGenerator.GetGeneratedItemValues(),
+                });
+                this._userRepository.Update(user, x => { x.UserCallsignFormatId = callsignFormat.Id; });
+            }
+        }
+
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "LABEL.SUCCESS.EDIT",
+            "LABEL.DEPARTMENT.SUCCESS.EDIT",
+            new Dictionary<string, string>
+            {
+                { "department", department.Name },
+            });
     }
 
     [UIEvent(Events.UI.Department.CheckIfDepartmentNameTaken)]
     private void CheckIfDepartmentNameTaken([FromSource] Player player, string guid, string serializedRequest)
     {
-        // using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        // var request = JsonConvert.DeserializeObject<NameTakenRequest>(serializedRequest);
-        // Department departmentExists;
-        // if (request.CheckForDepartmentId)
-        // {
-        //     departmentExists =
-        //         databaseContext.Departments.FirstOrDefault(department =>
-        //             department.Name == request.Name && department.Id != request.DepartmentId);
-        // }
-        // else
-        // {
-        //     departmentExists = databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
-        // }
-        //
-        // this._networkEventService.TriggerEventSerialized(player, guid, new NameTakenResponse(departmentExists != null));
+        var request = JsonConvert.DeserializeObject<NameTakenRequest>(serializedRequest);
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var (sql, parameters) = new SqlBuilder(TableNames.Departments)
+            .Where("Name = @Name", new { Name = request.Name })
+            .If(request.CheckForDepartmentId, b => b.Where("DepartmentId != @DepartmentId", new { DepartmentId = request.DepartmentId }))
+            .Build(isCount: true);
+        var count = connection.ExecuteScalar<int>(sql, parameters);
+        this._networkEventService.TriggerEventSerialized(player, guid, new NameTakenResponse(count > 0));
     }
 
     [UIEvent(Events.UI.Department.Delete)]
     private void DeleteDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        // using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        // var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        // var department = databaseContext.Departments
-        //     .Include(department => department.Users)
-        //     .FirstOrDefault(department => department.Id == request.Id);
-        // if (department is null)
-        // {
-        //     this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
-        //     return;
-        // }
-        //
-        // foreach (var user in department.Users)
-        // {
-        //     user.DepartmentId = null;
-        //     user.DivisionId = null;
-        //     user.RankId = null;
-        // }
-        //
-        // var departmentOldName = department.Name;
-        // databaseContext.Departments.Remove(department);
-        // databaseContext.SaveChanges();
-        // this.DepartmentDeleted?.Invoke(this, department);
-        // this._networkEventService.TriggerEventWithResponse(
-        //     player,
-        //     guid,
-        //     true,
-        //     "LABEL.SUCCESS.DELETE",
-        //     "LABEL.DEPARTMENT.SUCCESS.DELETE",
-        //     new Dictionary<string, string>
-        //     {
-        //         { "department", departmentOldName },
-        //     });
+        var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
+        var department = this._departmentRepository.FindById(request.Id);
+        if (department is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        this._departmentRepository.Delete(request.Id);
+        this.DepartmentDeleted?.Invoke(this, department);
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "LABEL.SUCCESS.DELETE",
+            "LABEL.DEPARTMENT.SUCCESS.DELETE",
+            new Dictionary<string, string>
+            {
+                { "department", department.Name },
+            });
     }
 
     [UIEvent(Events.UI.Department.Join)]
@@ -555,9 +535,10 @@ public class DepartmentService : IDepartmentService
                 user = this._playerDataService.FindUserByLicense(player);
                 this._userRepository.Update(user, x => { x.Callsign = newCallsign; });
 
-                if (user.CallsignFormat is not null)
+                var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
+                if (userCallsignFormat is not null)
                 {
-                    user.CallsignFormat.Values = callsignGenerator.GetGeneratedItemValues();
+                    this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.Values = callsignGenerator.GetGeneratedItemValues(); });
                 }
                 else
                 {
@@ -589,52 +570,82 @@ public class DepartmentService : IDepartmentService
     [UIEvent(Events.UI.Department.Leave)]
     private void PlayerLeaveDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        // var playerDepartment = this._playerDataService.FindUserByLicense(player).Department;
-        // this.RemovePlayerFromDepartment(player);
-        // this._networkEventService.TriggerEventWithResponse(
-        //     player,
-        //     guid,
-        //     true,
-        //     "LABEL.SUCCESS.LEAVE",
-        //     "LABEL.DEPARTMENT.SUCCESS.LEAVE",
-        //     new Dictionary<string, string>
-        //     {
-        //         { "department", playerDepartment!.Name },
-        //     });
+        var user = this._playerDataService.FindUserByLicense(player);
+        if (user is null || !user.DepartmentId.HasValue)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        var department = this._departmentRepository.FindById(user.DepartmentId.Value);
+        if (department is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        this._userRepository.Update(user, x =>
+        {
+            x.DepartmentId = null;
+            x.DivisionId = null;
+            x.RankId = null;
+        });
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "LABEL.SUCCESS.LEAVE",
+            "LABEL.DEPARTMENT.SUCCESS.LEAVE",
+            new Dictionary<string, string>
+            {
+                { "department", user.Department!.Name },
+            });
+        this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 
     [UIEvent(Events.UI.Department.RemoveUser)]
     private void KickPlayerFromDepartmentNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        // using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        // var idRequest = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        // var user = databaseContext.Users.FirstOrDefault(x => x.Id == idRequest.Id);
-        // if (user is null)
-        // {
-        //     this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
-        //     return;
-        // }
-        //
-        // this.RemovePlayerFromDepartment(user);
-        //
-        // this._networkEventService.TriggerEventWithResponse(player, guid, true, "Kick", "Kicking player");
+        var idRequest = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
+        var user = this._userRepository.FindById(idRequest.Id);
+        if (user is null || !user.DepartmentId.HasValue)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        var department = this._departmentRepository.FindById(user.DepartmentId.Value);
+        if (department is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        this._userRepository.Update(user, x =>
+        {
+            x.DepartmentId = null;
+            x.DivisionId = null;
+            x.RankId = null;
+        });
+        this._networkEventService.TriggerEventWithResponse(player, guid, true, "Kick", "Kicking player");
+        this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 
     [UIEvent(Events.UI.Department.GetAllSimpleWithArea)]
     private void GetAllSimpleWithAreaCoordinatesUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        // using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        // var departments = databaseContext.Departments
-        //     .Include(x => x.AreaCoordinates)
-        //     .Select(department => new SimpleDepartmentWithAreaDTO
-        //     {
-        //         Id = department.Id,
-        //         Name = department.Name,
-        //         Callsign = department.Callsign,
-        //         Coordinates = department.AreaCoordinates.ToList(),
-        //     })
-        //     .ToList();
-        // this._networkEventService.TriggerEventSerialized(player, guid, departments);
+        var departments = this._departmentRepository.GetAll().ToList();
+        var (sql, parameters) = new SqlBuilder(TableNames.DepartmentAreaCoordinates).Build();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var departmentAreaCoordinates = connection.Query<DepartmentAreaCoordinate>(sql, parameters).ToList();
+        var list = departments.Select(department => new SimpleDepartmentWithAreaDTO
+        {
+            Id = department.Id,
+            Name = department.Name,
+            Callsign = department.Callsign,
+            Coordinates = departmentAreaCoordinates.FindAll(x => x.DepartmentId == department.Id),
+        });
+        this._networkEventService.TriggerEventSerialized(player, guid, list);
     }
 
     [UIEvent(Events.UI.Department.UpdateAreas)]

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FivePD.Server.Database;
 
 namespace FivePD.Server.Models.UpdateModels;
@@ -11,6 +12,7 @@ public class DepartmentUpdate : ChangeTracker
     private bool _useGlobalRanks;
     private int _maxUsers;
     private int? _defaultRankId;
+    private List<CallsignFormatItem> _callsignFormat;
 
     public string Name
     {
@@ -40,5 +42,11 @@ public class DepartmentUpdate : ChangeTracker
     {
         get => _defaultRankId;
         set => SetField(ref _defaultRankId, value, nameof(DefaultRankId));
+    }
+    
+    public List<CallsignFormatItem> CallsignFormat
+    {
+        get => _callsignFormat;
+        set => SetField(ref _callsignFormat, value, nameof(CallsignFormat));
     }
 }

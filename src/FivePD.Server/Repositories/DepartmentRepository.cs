@@ -60,6 +60,7 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
         builder.Add(nameof(update.UseGlobalRanks), update.UseGlobalRanks);
         builder.Add(nameof(update.MaxUsers), update.MaxUsers);
         builder.Add(nameof(update.DefaultRankId), update.DefaultRankId);
+        builder.Add(nameof(update.CallsignFormat), update.CallsignFormat);
 
         var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, department.Id);
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
