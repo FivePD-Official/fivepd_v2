@@ -233,7 +233,7 @@ public class DepartmentService : IDepartmentService
         var builderResult = SqlBuilder
             .From(TableNames.Departments)
             .Where("Name = @Name", new { Name = request.Name })
-            .Build(isCount: true);
+            .BuildCount();
         using var connection = this._dbConnectionFactory.CreateScope().Connection;
         var departmentWithSameName = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         if (departmentWithSameName > 0)
@@ -307,7 +307,7 @@ public class DepartmentService : IDepartmentService
             .From(TableNames.Divisions)
             .Where("Name = @Name", new { Name = request.Name })
             .Where("DepartmentId = @DepartmentId", new { DepartmentId = request.DepartmentId })
-            .Build(isCount: true);
+            .BuildCount();
         using var connection = this._dbConnectionFactory.CreateScope().Connection;
         var divisionWithSameName = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         if (divisionWithSameName > 0)
@@ -343,7 +343,7 @@ public class DepartmentService : IDepartmentService
             .From(TableNames.Divisions)
             .Where("Name = @Name", new { Name = request.Name })
             .Where("DepartmentId = @DepartmentId", new { DepartmentId = request.DepartmentId })
-            .Build(isCount: true);
+            .BuildCount();
         using var connection = this._dbConnectionFactory.CreateScope().Connection;
         var divisionWithSameName = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         if (divisionWithSameName > 0)
@@ -396,7 +396,7 @@ public class DepartmentService : IDepartmentService
             .From(TableNames.Departments)
             .Where("Name = @Name", new { Name = request.Name })
             .Where("Id != @Id", new { Id = request.DepartmentId })
-            .Build(isCount: true);
+            .BuildCount();
         using var connection = this._dbConnectionFactory.CreateScope().Connection;
         var departmentWithSameName = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         if (departmentWithSameName > 0)
@@ -513,7 +513,7 @@ public class DepartmentService : IDepartmentService
             .From(TableNames.Departments)
             .Where("Name = @Name", new { Name = request.Name })
             .If(request.CheckForDepartmentId, b => b.Where("Id != @Id", new { Id = request.DepartmentId }))
-            .Build(isCount: true);
+            .BuildCount();
         var count = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         this._networkEventService.TriggerEventSerialized(player, guid, new NameTakenResponse(count > 0));
     }

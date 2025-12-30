@@ -204,11 +204,12 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
 
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
 
-        var countBuilderResult = builder.Build(isCount: true);
+        var countBuilderResult = builder.BuildCount();
         var totalCount = connection.ExecuteScalar<int>(countBuilderResult.Sql, countBuilderResult.Parameters);
 
-        var dataBuilderResult = ((SqlBuilder)builder).ApplyPagination(page).Build();
-        var items = connection.Query<TEntity>(dataBuilderResult.Sql, dataBuilderResult.Parameters).ToList();
+        var paginatedSqlBuilder = ((SqlBuilder)builder).ApplyPagination(page);
+        var builderResult = ((ISelectBuilder)paginatedSqlBuilder).Build();
+        var items = connection.Query<TEntity>(builderResult.Sql, builderResult.Parameters).ToList();
 
         return new Page<TEntity>
         {

@@ -35,24 +35,18 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
         return new SqlBuilder(table);
     }
 
-    IQueryBuilder IFilterable<IQueryBuilder>.If(bool condition, Action<IQueryBuilder> action) 
-        => InternalIf(condition, action);
+    IQueryBuilder IFilterable<IQueryBuilder>.If(bool condition, Action<IQueryBuilder> action) => InternalIf(condition, action);
 
-    ISelectBuilder IFilterable<ISelectBuilder>.If(bool condition, Action<ISelectBuilder> action) 
-        => InternalIf(condition, action);
+    ISelectBuilder IFilterable<ISelectBuilder>.If(bool condition, Action<ISelectBuilder> action) => InternalIf(condition, action);
 
-    IDeleteBuilder IFilterable<IDeleteBuilder>.If(bool condition, Action<IDeleteBuilder> action) 
-        => InternalIf(condition, action);
+    IDeleteBuilder IFilterable<IDeleteBuilder>.If(bool condition, Action<IDeleteBuilder> action) => InternalIf(condition, action);
 
-    public T InternalIf<T>(bool condition, Action<T> action) where T : class
-    {
-        if (condition)
-        {
-            action(this as T);
-        }
-
-        return this as T;
-    }
+    SqlBuilderResult IQueryBuilder.Build() => InternalBuild();
+    SqlBuilderResult ISelectBuilder.Build() => InternalBuild();
+    SqlBuilderResult IDeleteBuilder.Build() => InternalBuild();
+    SqlBuilderResult IQueryBuilder.BuildCount() => InternalBuildCount();
+    SqlBuilderResult ISelectBuilder.BuildCount() => InternalBuildCount();
+    SqlBuilderResult IDeleteBuilder.BuildCount() => InternalBuildCount();
 
     public ISelectBuilder Select(string select, Type type = null)
     {
@@ -108,7 +102,7 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
 
     public IQueryBuilder Where(string condition, object param = null)
     {
-        this.WhereInternal(condition, param);
+        this.InternalWhere(condition, param);
         return this;
     }
 
@@ -119,7 +113,7 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
             return this;
         }
 
-        this.WhereInternal(
+        this.InternalWhere(
             "IdentifierLicense = @License OR IdentifierDiscord = @Discord OR IdentifierSteam = @Steam OR IdentifierXbl = @Xbl OR IdentifierLive = @Live",
             new
             {
@@ -175,17 +169,16 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
         return this;
     }
 
-    public SqlBuilderResult Build(bool isCount = false)
+    private SqlBuilderResult InternalBuild()
     {
         var sb = new StringBuilder();
-
         if (_isDelete)
         {
             sb.Append($"DELETE FROM {this._from}");
         }
         else
         {
-            var select = _selectOverride ?? (isCount ? "COUNT(*)" : $"{this._from}.*");
+            var select = _selectOverride ?? $"{this._from}.*";
             sb.Append($"SELECT {select} FROM {this._from} {string.Join(" ", this._joinMetadata.Select(x => x.JoinSql))}");
         }
 
@@ -199,7 +192,7 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
             sb.Append($" GROUP BY {_groupBy}");
         }
 
-        if (!this._isDelete && !isCount)
+        if (!this._isDelete)
         {
             if (!string.IsNullOrEmpty(_orderBy))
             {
@@ -218,7 +211,6 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
         }
 
         var sql = sb.ToString();
-        Debug.WriteLine($"{sql}");
         var joinMetadata = this._joinMetadata.ToList();
         var splitColumns = joinMetadata.Select(x => x.SplitColumn).ToList();
         var splitOn = splitColumns.Count > 0 ? string.Join(",", splitColumns) : "Id";
@@ -229,12 +221,44 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
         return new SqlBuilderResult(sql, _params, allTypes.ToArray(), splitOn);
     }
 
-    private void WhereInternal(string condition, object param = null)
+    private SqlBuilderResult InternalBuildCount()
+    {
+        var sb = new StringBuilder();
+        sb.Append($"SELECT 1 FROM {_from} {string.Join(" ", _joinMetadata.Select(x => x.JoinSql))}");
+
+        if (_wheres.Any())
+        {
+            sb.Append($" WHERE {string.Join(" AND ", _wheres)}");
+        }
+
+        if (!string.IsNullOrEmpty(_groupBy))
+        {
+            var subquerySql = $"{sb} GROUP BY {_groupBy}";
+            var finalSql = $"SELECT COUNT(*) FROM ({subquerySql}) AS countTable";
+
+            return new SqlBuilderResult(finalSql, _params, null, null);
+        }
+
+        var countSql = sb.Replace("SELECT 1", "SELECT COUNT(*)").ToString();
+        return new SqlBuilderResult(countSql, _params, null, null);
+    }
+
+    private void InternalWhere(string condition, object param = null)
     {
         _wheres.Add(condition);
         if (param is not null)
         {
             _params.AddDynamicParams(param);
         }
+    }
+
+    private T InternalIf<T>(bool condition, Action<T> action) where T : class
+    {
+        if (condition)
+        {
+            action(this as T);
+        }
+
+        return this as T;
     }
 }

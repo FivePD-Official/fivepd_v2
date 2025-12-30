@@ -10,11 +10,12 @@ public interface IQueryBuilder : IFilterable<IQueryBuilder>
 {
     ISelectBuilder Select(string select, Type type = null);
     IDeleteBuilder Delete();
+    SqlBuilderResult Build();
+    SqlBuilderResult BuildCount();
 }
 
 public interface IFilterable<out T>
 {
-    // IQueryBuilder If(bool condition, Action<ISelectBuilder> action);
     T If(bool condition, Action<T> action);
     IQueryBuilder Where(string condition, object param = null);
     IQueryBuilder WhereIn<T>(string column, IEnumerable<T> values);
@@ -24,15 +25,18 @@ public interface IFilterable<out T>
     IQueryBuilder InnerJoin(string table, string alias, string on, Type type = null, string splitColumn = "Id");
     IQueryBuilder LeftJoin(string table, string alias, string on, Type type = null, string splitColumn = "Id");
     IQueryBuilder RightJoin(string table, string alias, string on, Type type = null, string splitColumn = "Id");
-    SqlBuilderResult Build(bool isCount = false);
 }
 
 public interface ISelectBuilder : IFilterable<ISelectBuilder>
 {
     ISelectBuilder GroupBy(string clause);
     ISelectBuilder OrderBy(string clause);
+    SqlBuilderResult Build();
+    SqlBuilderResult BuildCount();
 }
 
-public interface IDeleteBuilder : IFilterable<IDeleteBuilder> 
-{ 
+public interface IDeleteBuilder : IFilterable<IDeleteBuilder>
+{
+    SqlBuilderResult Build();
+    SqlBuilderResult BuildCount();
 }
