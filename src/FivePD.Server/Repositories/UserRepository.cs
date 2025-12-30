@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
-using FivePD.Server.QueryHelpers;
 
 namespace FivePD.Server.Repositories;
 
@@ -104,109 +103,15 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     /// <returns>The user if found, null otherwise.</returns>
     public User FindByLicense(Player player)
     {
-        var parameters = GetPlayerIdentifiers(player);
-
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $@"SELECT * FROM {this.TableName}
-            WHERE IdentifierLicense = @License
-               OR IdentifierDiscord = @Discord
-               OR IdentifierSteam = @Steam
-               OR IdentifierXbl = @Xbl
-               OR IdentifierLive = @Live
-            LIMIT 1";
-        return connection.QueryFirstOrDefault<User>(sql, parameters);
+        var builderResult = SqlBuilder.From(this.TableName).WhereAnyLicenseMatches(player).Build();
+        return connection.QueryFirstOrDefault<User>(builderResult.Sql, builderResult.Parameters);
     }
 
-    /// <summary>
-    /// Finds a user by matching any identifier with the specified player's identifiers,
-    /// including related entities (Department, Division, Rank, CallsignFormat).
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <returns>The user with related entities if found, null otherwise.</returns>
-    public User FindByLicenseWithRelated(Player player)
+    public User FindByLicenseWithDynamicRelated(Player player, UserLoadOptions options)
     {
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var parameters = GetPlayerIdentifiers(player);
-        var sql = $@"SELECT u.*, d.*, div.*, r.*, cf.*
-            FROM {this.TableName} u
-            LEFT JOIN {TableNames.Departments} d ON u.DepartmentId = d.Id
-            LEFT JOIN {TableNames.Divisions} div ON u.DivisionId = div.Id
-            LEFT JOIN {TableNames.Ranks} r ON u.RankId = r.Id
-            LEFT JOIN {TableNames.UserCallsigns} cf ON u.UserCallsignFormatId = cf.Id
-            WHERE u.IdentifierLicense = @License
-               OR u.IdentifierDiscord = @Discord
-               OR u.IdentifierSteam = @Steam
-               OR u.IdentifierXbl = @Xbl
-               OR u.IdentifierLive = @Live
-            LIMIT 1";
-
-        return connection.Query<User, Department, Division, Rank, UserCallsignFormat, User>(
-            sql,
-            (user, department, division, rank, callsignFormat) =>
-            {
-                user.Department = department;
-                user.Division = division;
-                user.Rank = rank;
-                user.CallsignFormat = callsignFormat;
-                return user;
-            },
-            parameters,
-            splitOn: "Id,Id,Id,Id").FirstOrDefault();
-    }
-
-    /// <summary>
-    /// Finds a user by its ID, including related entities (CallsignFormat, Department and its Users).
-    /// </summary>
-    /// <param name="id">The user ID.</param>
-    /// <returns>The user with related entities if found, null otherwise.</returns>
-    public User FindByIdWithRelated(int id)
-    {
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $@"SELECT u.*, cf.*, d.*, du.*
-            FROM {this.TableName} u
-            LEFT JOIN {TableNames.UserCallsigns} cf ON u.UserCallsignFormatId = cf.Id
-            LEFT JOIN {TableNames.Departments} d ON u.DepartmentId = d.Id
-            LEFT JOIN {this.TableName} du ON d.Id = du.DepartmentId
-            WHERE u.{this.IdColumn} = @Id";
-
-        User user = null;
-        connection.Query<User, UserCallsignFormat, Department, User, User>(
-            sql,
-            (u, cf, d, du) =>
-            {
-                if (user == null)
-                {
-                    user = u;
-                    user.CallsignFormat = cf;
-                    user.Department = d;
-                    if (user.Department != null)
-                    {
-                        user.Department.Users = new List<User>();
-                    }
-                }
-
-                if (du != null && user.Department != null)
-                {
-                    user.Department.Users.Add(du);
-                }
-
-                return u;
-            },
-            new { Id = id },
-            splitOn: "Id,Id,Id");
-
-        return user;
-    }
-
-    /// <summary>
-    /// Options for loading related entities for a user.
-    /// </summary>
-    public class UserLoadOptions
-    {
-        public bool IncludeDepartment { get; set; }
-        public bool IncludeDivision { get; set; }
-        public bool IncludeRank { get; set; }
-        public bool IncludeCallsignFormat { get; set; }
+        var builder = this.CreateBaseUserBuilder(options).WhereAnyLicenseMatches(player);
+        return this.ExecuteUserQuery(builder, options);
     }
 
     /// <summary>
@@ -217,81 +122,58 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     /// <returns>The user with requested related entities if found, null otherwise.</returns>
     public User FindByIdWithDynamicRelated(int id, UserLoadOptions options)
     {
+        var builder = this.CreateBaseUserBuilder(options).Where("u.Id = @Id", new { Id = id });
+        return this.ExecuteUserQuery(builder, options);
+    }
+
+    private User ExecuteUserQuery(IQueryBuilder builder, UserLoadOptions options)
+    {
+        var result = builder.Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var selects = new List<string> { "u.*" };
-        var joins = new List<string>();
-        var types = new List<Type> { typeof(User) };
-        var splitOn = new List<string>();
-
-        if (options.IncludeDepartment)
-        {
-            selects.Add("d.*");
-            joins.Add($"LEFT JOIN {TableNames.Departments} d ON u.DepartmentId = d.Id");
-            types.Add(typeof(Department));
-            splitOn.Add("Id");
-        }
-
-        if (options.IncludeDivision)
-        {
-            selects.Add("div.*");
-            joins.Add($"LEFT JOIN {TableNames.Divisions} div ON u.DivisionId = div.Id");
-            types.Add(typeof(Division));
-            splitOn.Add("Id");
-        }
-
-        if (options.IncludeRank)
-        {
-            selects.Add("r.*");
-            joins.Add($"LEFT JOIN {TableNames.Ranks} r ON u.RankId = r.Id");
-            types.Add(typeof(Rank));
-            splitOn.Add("Id");
-        }
-
-        if (options.IncludeCallsignFormat)
-        {
-            selects.Add("cf.*");
-            joins.Add($"LEFT JOIN {TableNames.UserCallsigns} cf ON u.UserCallsignFormatId = cf.Id");
-            types.Add(typeof(UserCallsignFormat));
-            splitOn.Add("Id");
-        }
-
-        var sql = $@"SELECT {string.Join(", ", selects)}
-            FROM {this.TableName} u
-            {string.Join("\n", joins)}
-            WHERE u.{this.IdColumn} = @Id
-            LIMIT 1";
 
         return connection.Query(
-            sql,
-            types.ToArray(),
+            result.Sql,
+            result.Types,
             objArray =>
             {
                 var user = (User)objArray[0];
                 var index = 1;
                 if (options.IncludeDepartment)
                 {
-                    user.Department = (Department)objArray[index++];
+                    user.Department = objArray[index++] as Department;
                 }
 
                 if (options.IncludeDivision)
                 {
-                    user.Division = (Division)objArray[index++];
+                    user.Division = objArray[index++] as Division;
                 }
 
                 if (options.IncludeRank)
                 {
-                    user.Rank = (Rank)objArray[index++];
+                    user.Rank = objArray[index++] as Rank;
                 }
 
                 if (options.IncludeCallsignFormat)
                 {
-                    user.CallsignFormat = (UserCallsignFormat)objArray[index];
+                    user.CallsignFormat = objArray[index] as UserCallsignFormat;
                 }
 
                 return user;
             },
-            new { Id = id },
-            splitOn: splitOn.Count > 0 ? string.Join(",", splitOn) : "Id").FirstOrDefault();
+            result.Parameters,
+            splitOn: result.SplitOn
+        ).FirstOrDefault();
+    }
+
+    private ISelectBuilder CreateBaseUserBuilder(UserLoadOptions options)
+    {
+        return SqlBuilder
+            .From($"{TableNames.Users} u")
+            .Select("u.*, d.*, di.*, r.*, cf.*", typeof(User))
+            .If(options.IncludeDepartment, b => b.LeftJoin(TableNames.Departments, "d", "u.DepartmentId = d.Id", typeof(Department)))
+            .If(options.IncludeDivision, b => b.LeftJoin(TableNames.Divisions, "di", "u.DivisionId = di.Id", typeof(Division)))
+            .If(options.IncludeRank, b => b.LeftJoin(TableNames.Ranks, "r", "u.RankId = r.Id", typeof(Rank)))
+            .If(options.IncludeCallsignFormat, b => b.LeftJoin(TableNames.UserCallsigns, "cf", "u.UserCallsignFormatId = cf.Id", typeof(UserCallsignFormat)));
     }
 
     /// <summary>
@@ -312,9 +194,9 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     /// <summary>
     /// Updates an existing UserCallsignFormat.
     /// </summary>
-    /// <param name="callsignFormatId">The ID of the callsign format to update.</param>
+    /// <param name="callsignFormat">The callsign format to update.</param>
     /// <param name="updateAction">The action that applies the necessary updates.</param>
-    public void UpdateCallsignFormat(UserCallsignFormat callsignFormatId, Action<UserCallsignFormatUpdate> updateAction)
+    public void UpdateCallsignFormat(UserCallsignFormat callsignFormat, Action<UserCallsignFormatUpdate> updateAction)
     {
         var update = new UserCallsignFormatUpdate();
         updateAction(update);
@@ -326,7 +208,7 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
         var builder = new UpdateQueryBuilder(update);
         builder.Add(nameof(update.Values), update.Values);
 
-        var (sql, parameters) = builder.Build(TableNames.UserCallsigns, this.IdColumn, callsignFormatId);
+        var (sql, parameters) = builder.Build(TableNames.UserCallsigns, this.IdColumn, callsignFormat.Id);
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         connection.Execute(sql, parameters);
     }
@@ -339,9 +221,6 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     public void DeleteCallsignFormat(User user, int callsignFormatId)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-
-        var updateSql = $"UPDATE {this.TableName} SET UserCallsignFormatId = NULL WHERE {this.IdColumn} = @UserId";
-        connection.Execute(updateSql, new { UserId = user.Id });
 
         const string deleteSql = $"DELETE FROM {TableNames.UserCallsigns} WHERE Id = @Id";
         connection.Execute(deleteSql, new { Id = callsignFormatId });
@@ -367,8 +246,8 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
         }
 
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var (sql, parameters) = new SqlBuilder(TableNames.Departments).Where("Id = @Id", user.DepartmentId).Build();
-        return connection.QueryFirstOrDefault<Department>(sql, parameters);
+        var builderResult = SqlBuilder.From(TableNames.Departments).Where("Id = @Id", user.DepartmentId).Build();
+        return connection.QueryFirstOrDefault<Department>(builderResult.Sql, builderResult.Parameters);
     }
 
     private object GetPlayerIdentifiers(Player player)
@@ -381,5 +260,16 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
             Xbl = player.Identifiers["xbl"] ?? string.Empty,
             Live = player.Identifiers["live"] ?? string.Empty,
         };
+    }
+    
+    /// <summary>
+    /// Options for loading related entities for a user.
+    /// </summary>
+    public class UserLoadOptions
+    {
+        public bool IncludeDepartment { get; set; }
+        public bool IncludeDivision { get; set; }
+        public bool IncludeRank { get; set; }
+        public bool IncludeCallsignFormat { get; set; }
     }
 }

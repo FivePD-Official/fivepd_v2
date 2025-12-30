@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.QueryHelpers;
 
@@ -69,8 +69,38 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     public virtual void Delete(TId id)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"DELETE FROM {this.TableName} WHERE {this.IdColumn} = @Id";
-        connection.Execute(sql, new { Id = id });
+        var builderResult = SqlBuilder
+            .From(this.TableName)
+            .Delete()
+            .Where($"{this.IdColumn} = @Id", new { Id = id })
+            .Build();
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
+    }
+
+    /// <summary>
+    /// Deletes multiple entities by their IDs.
+    /// </summary>
+    /// <param name="ids">The entity IDs to delete.</param>
+    public virtual void DeleteRange(IEnumerable<TId> ids)
+    {
+        if (ids is null)
+        {
+            return;
+        }
+
+        var idList = ids.ToList();
+        if (!idList.Any())
+        {
+            return;
+        }
+
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        var builderResult = SqlBuilder
+            .From(this.TableName)
+            .Delete()
+            .WhereIn(this.IdColumn, idList)
+            .Build();
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -167,20 +197,18 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
         return connection.ExecuteScalar<int>(sql, parameters) > 0;
     }
 
-    public virtual Page<TEntity> Paginate(int page, SqlBuilder builder)
+    public virtual Page<TEntity> Paginate(int page, Action<ISelectBuilder> configure = null)
     {
+        var builder = SqlBuilder.From(this.TableName);
+        configure?.Invoke((ISelectBuilder)builder);
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
 
-        if (string.IsNullOrEmpty(builder.Table))
-        {
-            builder.SetTable(this.TableName);
-        }
+        var countBuilderResult = builder.Build(isCount: true);
+        var totalCount = connection.ExecuteScalar<int>(countBuilderResult.Sql, countBuilderResult.Parameters);
 
-        var (countSql, parameters) = builder.Build(isCount: true);
-        var totalCount = connection.ExecuteScalar<int>(countSql, parameters);
-
-        var (dataSql, _) = builder.ApplyPagination(page).Build();
-        var items = connection.Query<TEntity>(dataSql, parameters).ToList();
+        var dataBuilderResult = ((SqlBuilder)builder).ApplyPagination(page).Build();
+        var items = connection.Query<TEntity>(dataBuilderResult.Sql, dataBuilderResult.Parameters).ToList();
 
         return new Page<TEntity>
         {

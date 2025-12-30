@@ -63,15 +63,16 @@ public class RankService : IRankService
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<GetRanksPageRequest>(serializedRequest);
-        var sqlBuilder = new SqlBuilder()
-            .If(true, b => b.Where("Global = @Global", new { Global = request.Filters.Global }))
-            .If(
-                !request.Filters.Global,
-                b => b.Where(
-                    $"Id IN (SELECT RankId FROM {TableNames.DepartmentRanks} WHERE DepartmentId = @DepartmentId)",
-                    new { DepartmentId = request.Filters.DepartmentId }))
-            .If(!string.IsNullOrEmpty(request.Filters.Name), b => b.WhereContains("Name", request.Filters.Name));
-        var page = this._rankRepository.Paginate(request.Page, sqlBuilder);
+        var page = this._rankRepository.Paginate(
+            request.Page,
+            b => b
+                .If(true, x => x.Where("Global = @Global", new { Global = request.Filters.Global }))
+                .If(
+                    !request.Filters.Global,
+                    x => x.Where(
+                        $"Id IN (SELECT RankId FROM {TableNames.DepartmentRanks} WHERE DepartmentId = @DepartmentId)",
+                        new { DepartmentId = request.Filters.DepartmentId }))
+                .If(!string.IsNullOrEmpty(request.Filters.Name), x => x.WhereContains("Name", request.Filters.Name)));
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 

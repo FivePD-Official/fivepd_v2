@@ -53,6 +53,7 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
 
         var builder = new UpdateQueryBuilder(update);
         builder.Add(nameof(update.Global), update.Global);
+        builder.Add(nameof(update.Permission), update.Permission);
         builder.Add(nameof(update.RequiredXp), update.RequiredXp);
         builder.Add(nameof(update.Name), update.Name);
 

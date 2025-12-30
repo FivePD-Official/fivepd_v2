@@ -212,6 +212,7 @@ internal class Bootstrapper : BaseScript
         services.AddTransient<INetworkEventService>(provider => provider.GetRequiredService<NetworkEventService>());
 
         services.AddSingleton<DepartmentRepository>();
+        services.AddSingleton<DepartmentAreaCoordinateRepository>();
         services.AddSingleton<DivisionRepository>();
         services.AddSingleton<RankRepository>();
         services.AddSingleton<VehicleConfigRepository>();
