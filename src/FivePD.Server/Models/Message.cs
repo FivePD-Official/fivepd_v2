@@ -36,7 +36,7 @@ public class Message
     /// <summary>
     /// Gets or sets a value indicating whether the message has been read.
     /// </summary>
-    public bool Read { get; set; }
+    public bool HasRead { get; set; }
 
     /// <summary>
     /// Gets or sets the user identifier.

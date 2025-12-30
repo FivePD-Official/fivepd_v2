@@ -84,9 +84,9 @@ internal class Bootstrapper : BaseScript
 
         this._phases.Add(new Phase("Register services", this.PerformRegisterServicesPhase), false);
 
-        // this._phases.Add(new Phase("Locate addons", this.PerformLocateAddonsPhase), false);
+        this._phases.Add(new Phase("Locate addons", this.PerformLocateAddonsPhase), false);
 
-        // this._phases.Add(new Phase("Initialize system", this.PerformInitializeSystemPhase), false);
+        this._phases.Add(new Phase("Initialize system", this.PerformInitializeSystemPhase), false);
 
         this._phases.Add(
             new Phase("Database set parameters", () => DapperDatabaseHandler.SetParameters(this._provider, this._bootstrapLogger)),
@@ -97,20 +97,20 @@ internal class Bootstrapper : BaseScript
         this._phases.Add(new Phase("Database ensure connection", DapperDatabaseHandler.EnsureConnection), false);
 
         this._phases.Add(new Phase("Database ensure schema", DapperDatabaseHandler.EnsureSchema), false);
-        
+
         this._phases.Add(new Phase("Database seed data", DapperDatabaseHandler.SeedData), false);
 
         this._phases.Add(new Phase("Service initialization", this.PerformServiceInitialization), false);
 
-        // this._phases.Add(new Phase("Enqueue addon startup", this.PerformAddonEnqueuePhase), false);
-        //
-        // this._phases.Add(new Phase("Safe to run check", this.PerformSafeToRunCheckAfterBootstrapping), false);
-        //
-        // this._phases.Add(new Phase("Register menus", this.PerformMenuRegistration), false);
-        //
+        this._phases.Add(new Phase("Enqueue addon startup", this.PerformAddonEnqueuePhase), false);
+
+        this._phases.Add(new Phase("Safe to run check", this.PerformSafeToRunCheckAfterBootstrapping), false);
+
+        this._phases.Add(new Phase("Register menus", this.PerformMenuRegistration), false);
+
         this._phases.Add(new Phase("Notify players", this.PerformPlayerNotifications), false);
 
-        // this._phases.Add(new Phase("Feedback handler", this.PerformFeedbackHandler), false);
+        this._phases.Add(new Phase("Feedback handler", this.PerformFeedbackHandler), false);
 
         this.Tick += this.RunNextPhaseAsync;
     }
@@ -222,20 +222,23 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<UserRepository>();
         services.AddSingleton<PedDataRepository>();
         services.AddSingleton<VehicleDataRepository>();
+        services.AddSingleton<MessageRepository>();
+        services.AddSingleton<CalloutDetailsRepository>();
 
         // Addons
         services.AddTransient<AddonLoggerService>();
         services.AddTransient<IAddonLoggerService>(provider => provider.GetRequiredService<AddonLoggerService>());
 
-        // services.AddSingleton<AddonAssemblyLoader>();
-        // services.AddTransient<IAddonAssemblyLoader>(provider => provider.GetRequiredService<AddonAssemblyLoader>());
-        //
-        // services.AddSingleton<AddonFileHandlerService>();
-        // services.AddTransient<IAddonFileHandlerService>(provider => provider.GetRequiredService<AddonFileHandlerService>());
+        services.AddSingleton<AddonAssemblyLoader>();
+        services.AddTransient<IAddonAssemblyLoader>(provider => provider.GetRequiredService<AddonAssemblyLoader>());
 
-        // services.AddSingleton<AddonMetadataService>();
-        // services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
-        // services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        services.AddSingleton<AddonFileHandlerService>();
+        services.AddTransient<IAddonFileHandlerService>(provider => provider.GetRequiredService<AddonFileHandlerService>());
+
+        services.AddSingleton<AddonMetadataService>();
+        services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AddonMetadataService>());
 
         // Variable data repositories
         // services.AddSingleton<ArrestReportService>();
@@ -302,8 +305,8 @@ internal class Bootstrapper : BaseScript
         // services.AddSingleton<ProgressionSystemService>();
         // services.AddSingleton<IProgressionSystemService>(provider => provider.GetRequiredService<ProgressionSystemService>());
 
-        // services.AddSingleton<MessageService>();
-        // services.AddSingleton<IMessageService>(provider => provider.GetRequiredService<MessageService>());
+        services.AddSingleton<MessageService>();
+        services.AddSingleton<IMessageService>(provider => provider.GetRequiredService<MessageService>());
 
         // services.AddSingleton<UnitManagerService>();
         // services.AddSingleton<IUnitManagerService>(provider => provider.GetRequiredService<UnitManagerService>());
@@ -376,10 +379,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<PlayerHandlerService>();
         services.AddSingleton<IPlayerHandlerService>(provider => provider.GetRequiredService<PlayerHandlerService>());
 
-        // services.AddSingleton<MenuService>();
-        // services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
-        // services.AddSingleton<IInternalMenuService>(provider => provider.GetRequiredService<MenuService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<MenuService>());
+        services.AddSingleton<MenuService>();
+        services.AddSingleton<IMenuService>(provider => provider.GetRequiredService<MenuService>());
+        services.AddSingleton<IInternalMenuService>(provider => provider.GetRequiredService<MenuService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<MenuService>());
 
         // services.AddSingleton<CalloutManagerService>();
         // services.AddSingleton<ICalloutManagerService>(provider => provider.GetRequiredService<CalloutManagerService>());
@@ -419,12 +422,12 @@ internal class Bootstrapper : BaseScript
         // services.AddSingleton<CalloutDetailService>();
         // services.AddSingleton<ICalloutDetailService>(provider => provider.GetRequiredService<CalloutDetailService>());
 
-        // services.AddSingleton<VehicleConfigService>();
-        // services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleConfigService>());
+        services.AddSingleton<VehicleConfigService>();
+        services.AddSingleton<IVehicleConfigService>(provider => provider.GetRequiredService<VehicleConfigService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleConfigService>());
 
-        // services.AddSingleton<LoadoutConfigService>();
-        // services.AddSingleton<ILoadoutConfigService>(provider => provider.GetRequiredService<LoadoutConfigService>());
+        services.AddSingleton<LoadoutConfigService>();
+        services.AddSingleton<ILoadoutConfigService>(provider => provider.GetRequiredService<LoadoutConfigService>());
 
         // services.AddSingleton<WeaponService>();
         // services.AddSingleton<IWeaponService>(provider => provider.GetRequiredService<WeaponService>());

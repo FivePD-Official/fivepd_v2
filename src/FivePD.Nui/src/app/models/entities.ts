@@ -249,7 +249,7 @@ export interface Message {
   Content: string;
   Sender: string;
   SentAt: string;
-  Read: boolean;
+  HasRead: boolean;
 }
 
 export enum CalloutDetailsRulesetType {

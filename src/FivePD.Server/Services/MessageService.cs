@@ -7,12 +7,12 @@ using FivePD.Common;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
-using FivePD.Server.Extensions;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
-using FivePD.Server.QueryHelpers;
+using FivePD.Server.Repositories;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
@@ -23,34 +23,35 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class MessageService : IMessageService
 {
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
     private readonly IInternalAddonMetadataService _addonMetadataService;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly IGameNotificationService _gameNotificationService;
     private readonly INetworkEventService _networkEventService;
     private readonly MessageRepository _messageRepository;
+    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageService"/> class.
     /// </summary>
-    /// <param name="dbConnectionFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="addonMetadataService">The <see cref="IAddonMetadataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
+    /// <param name="dbDatabaseConnectionFactory">The <see cref="IDapperDatabaseConnectionFactory"/> to use.</param>
     public MessageService(
-        IDapperDatabaseConnectionFactory dbConnectionFactory,
         IAddonMetadataService addonMetadataService,
         IPlayerHandlerService playerHandlerService,
         IGameNotificationService gameNotificationService,
-        INetworkEventService networkEventService)
+        INetworkEventService networkEventService,
+        MessageRepository messageRepository,
+        IDapperDatabaseConnectionFactory dbDatabaseConnectionFactory)
     {
-        this._dbConnectionFactory = dbConnectionFactory;
         this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
         this._playerHandlerService = playerHandlerService;
         this._gameNotificationService = gameNotificationService;
         this._networkEventService = networkEventService;
-        this._messageRepository = new MessageRepository(dbConnectionFactory);
+        this._messageRepository = messageRepository;
+        this._dbConnectionFactory = dbDatabaseConnectionFactory;
     }
 
     /// <inheritdoc />
@@ -79,13 +80,12 @@ public class MessageService : IMessageService
 
         var message = new Message
         {
-            User = to,
+            Sender = sender,
             Subject = subject,
             Content = content,
-            Sender = sender,
             SentAt = DateTime.Now,
-            // UserId = to.Id,
-            Read = false
+            HasRead = false,
+            UserId = to.Id,
         };
 
         var savedMessage = this._messageRepository.Add(message);
@@ -126,14 +126,7 @@ public class MessageService : IMessageService
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-
-        var user = this._playerHandlerService.FindUserOfPlayer(player);
-        if (user is null)
-        {
-            return;
-        }
-
-        var message = this._messageRepository.GetForUser(request.Id, user.Id);
+        var message = this._messageRepository.FindById(request.Id);
         this._networkEventService.TriggerEventSerialized(player, guid, message);
     }
 
@@ -141,15 +134,7 @@ public class MessageService : IMessageService
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<MessageGetAllPageableRequest>(serializedRequest);
-
-        var user = this._playerHandlerService.FindUserOfPlayer(player);
-        if (user is null)
-        {
-            return;
-        }
-
-        var filters = new Filters<Message>();
-        var page = this._messageRepository.GetByUserId(user.Id, request.Page, 6, filters);
+        var page = this._messageRepository.Paginate(request.Page);
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
@@ -163,16 +148,14 @@ public class MessageService : IMessageService
             return;
         }
 
-        // Get all users from database
-        using var scope = this._dbConnectionFactory.CreateScope();
-        var connection = scope.Connection;
-        var users = connection.Query<User>("SELECT * FROM fivepd_users").ToList();
-
-        var to = request.SendToEveryone
-            ? users.Where(x => x.Id != sender.Id)
-            : users.Where(x => request.To.Contains(x.Id));
-
-        foreach (var user in to.ToList())
+        var builderResult = SqlBuilder
+            .From(TableNames.Users)
+            .If(request.SendToEveryone, b => b.Where("Id != @Id", new { Id = sender.Id }))
+            .If(!request.SendToEveryone, b => b.WhereIn("Id", request.To.Select(x => x)))
+            .Build();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var users = connection.Query<User>(builderResult.Sql, builderResult.Parameters);
+        foreach (var user in users)
         {
             this.Send(user, request.Subject, request.Content, sender.Name);
         }
@@ -184,18 +167,10 @@ public class MessageService : IMessageService
     private void ReadUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-
-        var user = this._playerHandlerService.FindUserOfPlayer(player);
-        if (user is null)
-        {
-            return;
-        }
-
-        var message = this._messageRepository.GetForUser(request.Id, user.Id);
+        var message = this._messageRepository.FindById(request.Id);
         if (message is not null)
         {
-            message.Read = true;
-            this._messageRepository.Update(message);
+            this._messageRepository.Update(message, x => { x.HasRead = true; });
         }
 
         this._networkEventService.TriggerEventSerialized(player, guid, message);

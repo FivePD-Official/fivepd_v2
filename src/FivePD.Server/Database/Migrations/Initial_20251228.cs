@@ -123,7 +123,7 @@ public class CreateUsersTable_20251228 : IMigration
                 Subject VARCHAR(255) NOT NULL,
                 Content TEXT NOT NULL,
                 SentAt DATETIME NOT NULL,
-                `Read` TINYINT(1) NOT NULL DEFAULT 0,
+                HasRead TINYINT(1) NOT NULL DEFAULT 0,
                 UserId INT,
                 INDEX idx_messages_user (UserId),
                 FOREIGN KEY (UserId) REFERENCES {TableNames.Users}(Id) ON DELETE SET NULL

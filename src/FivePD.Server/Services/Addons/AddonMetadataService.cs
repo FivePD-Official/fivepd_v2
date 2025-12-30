@@ -6,10 +6,10 @@ using System.Linq;
 using System.Reflection;
 using FivePD.Server.API;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
-using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Addons;
+using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
+using FivePD.Server.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -17,7 +17,7 @@ namespace FivePD.Server.Services.Addons;
 
 /// <inheritdoc cref="IAddonMetadataService" />
 [Obfuscate]
-public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadataService
+public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadataService, IOnInit
 {
     private readonly Dictionary<Assembly, AddonDefinition> _definitions = new();
     private readonly List<IExtension> _extensions = new();
@@ -25,22 +25,22 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly CalloutDetailsRepository _calloutDetailsRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AddonMetadataService"/> class.
     /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="serviceProvider">The <see cref="ServiceProvider"/> to use.</param>
-    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
+    /// <param name="calloutDetailsRepository">The <see cref="CalloutDetailsRepository"/> to use.</param>
     public AddonMetadataService(
         IServiceProvider serviceProvider,
         ILogger logger,
-        IDatabaseContextFactory dbContextFactory)
+        CalloutDetailsRepository calloutDetailsRepository)
     {
         this._serviceProvider = serviceProvider;
         this._logger = logger;
-        this._dbContextFactory = dbContextFactory;
+        this._calloutDetailsRepository = calloutDetailsRepository;
     }
 
     /// <inheritdoc />
@@ -54,6 +54,12 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
 
     /// <inheritdoc/>
     ReadOnlyCollection<IExtension> IInternalAddonMetadataService.Extensions => this._extensions.AsReadOnly();
+
+    /// <inheritdoc />
+    void IOnInit.OnInit()
+    {
+        ((IInternalAddonMetadataService)this).CreateCalloutDetailsEntities();
+    }
 
     /// <inheritdoc/>
     Callout IInternalAddonMetadataService.InstantiateCallout(Type type)
@@ -162,26 +168,19 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
     /// <inheritdoc />
     void IInternalAddonMetadataService.CreateCalloutDetailsEntities()
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        if (databaseContext is null)
-        {
-            return;
-        }
-
-        // Update callout detail entities for existing callouts
-        var calloutDetailsList = databaseContext.CalloutDetails.ToList();
+        var calloutDetailsList = this._calloutDetailsRepository.GetAll().ToList();
         foreach (var calloutDetails in calloutDetailsList)
         {
-            calloutDetails.Active = this._calloutTypes.Any(x => x.Type.Name == calloutDetails.TypeName && x.AssemblyName == calloutDetails.AssemblyName);
+            var active = this._calloutTypes.Any(x => x.Type.Name == calloutDetails.TypeName && x.AssemblyName == calloutDetails.AssemblyName);
+            this._calloutDetailsRepository.Update(calloutDetails, x => { x.Active = active; });
         }
 
-        // Create callout detail entities for new callouts
         foreach (var type in this._calloutTypes)
         {
             var calloutDetails = calloutDetailsList.FirstOrDefault(x => x.TypeName == type.Type.Name && x.AssemblyName == type.AssemblyName);
             if (calloutDetails is null)
             {
-                databaseContext.CalloutDetails.Add(new CalloutDetails
+                this._calloutDetailsRepository.Add(new CalloutDetails
                 {
                     TypeName = type.Type.Name,
                     AssemblyName = type.AssemblyName,
@@ -190,7 +189,5 @@ public class AddonMetadataService : IAddonMetadataService, IInternalAddonMetadat
                 });
             }
         }
-
-        databaseContext.SaveChanges();
     }
 }

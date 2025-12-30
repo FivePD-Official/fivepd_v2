@@ -114,7 +114,7 @@ export class SidebarComponent {
     protected readonly routeHelper: RouteHelper
   ) {
     _store.dispatch(SidebarActions.setRoutes({routes: this.defaultRoutes}));
-    _store.pipe(takeUntilDestroyed()).subscribe(state => {
+    _store.subscribe(state => {
       this.isSidebarCollapsed = state.sidebar.collapsed;
       this.routes = state.sidebar.routes;
       this.user = state.user.details.User;

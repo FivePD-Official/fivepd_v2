@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Database.Sql;
@@ -130,6 +132,40 @@ public class VehicleConfigRepository : BaseRepository<VehicleConfig<string>, Veh
                 ? default
                 : JsonConvert.DeserializeObject<TOptions>(entity.Options),
         };
+    }
+
+    /// <summary>
+    /// Retrieves all vehicle configurations with the specified options type.
+    /// </summary>
+    /// <typeparam name="TOptions">The type of the options field in the vehicle configuration.</typeparam>
+    /// <returns>An enumerable collection of <see cref="VehicleConfig{TOptions}"/> objects.</returns>
+    public IEnumerable<VehicleConfig<TOptions>> GetAll<TOptions>()
+    {
+        return this.GetAllWhere<TOptions>();
+    }
+
+    /// <summary>
+    /// Retrieves all vehicle configurations that match the specified condition.
+    /// </summary>
+    /// <typeparam name="TOptions">The type of options associated with the vehicle configuration.</typeparam>
+    /// <param name="condition">The SQL condition to filter results. Pass null to retrieve all records.</param>
+    /// <param name="parameters">The parameters associated with the SQL condition. Pass null if no parameters are required.</param>
+    /// <returns>A collection of <see cref="VehicleConfig{TOptions}"/> objects that match the specified condition.</returns>
+    public IEnumerable<VehicleConfig<TOptions>> GetAllWhere<TOptions>(string condition = null, object parameters = null)
+    {
+        var a = this.GetAllWhere(condition, parameters);
+        return a.Select(entity => new VehicleConfig<TOptions>
+        {
+            Id = entity.Id,
+            Type = entity.Type,
+            Name = entity.Name,
+            Model = entity.Model,
+            Livery = entity.Livery,
+            Extras = entity.Extras,
+            Options = entity.Options is null
+                ? default
+                : JsonConvert.DeserializeObject<TOptions>(entity.Options),
+        });
     }
 
     private VehicleConfig<string> AddCore(VehicleConfig<string> entity)

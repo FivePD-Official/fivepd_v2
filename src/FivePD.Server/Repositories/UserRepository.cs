@@ -7,6 +7,7 @@ using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Repositories;
 
@@ -130,7 +131,6 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     {
         var result = builder.Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-
         return connection.Query(
             result.Sql,
             result.Types,
