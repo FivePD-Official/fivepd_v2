@@ -220,6 +220,8 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<WeaponRepository>();
         services.AddSingleton<WeaponComponentRepository>();
         services.AddSingleton<UserRepository>();
+        services.AddSingleton<PedDataRepository>();
+        services.AddSingleton<VehicleDataRepository>();
 
         // Addons
         services.AddTransient<AddonLoggerService>();
@@ -271,8 +273,8 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<NotificationService>();
         services.AddSingleton<INotificationService>(provider => provider.GetRequiredService<NotificationService>());
 
-        // services.AddSingleton<EntityService>();
-        // services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
+        services.AddSingleton<EntityService>();
+        services.AddSingleton<IEntityService>(provider => provider.GetRequiredService<EntityService>());
 
         services.AddSingleton<MarkerService>();
         services.AddSingleton<IMarkerService>(provider => provider.GetRequiredService<MarkerService>());
@@ -350,13 +352,13 @@ internal class Bootstrapper : BaseScript
         // services.AddSingleton<IInternalInteractionService>(provider => provider.GetRequiredService<InteractionService>());
         // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<InteractionService>());
 
-        // services.AddSingleton<PedStorageService>();
-        // services.AddSingleton<IPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
-        // services.AddSingleton<IInternalPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
+        services.AddSingleton<PedStorageService>();
+        services.AddSingleton<IPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
+        services.AddSingleton<IInternalPedStorageService>(provider => provider.GetRequiredService<PedStorageService>());
 
-        // services.AddSingleton<VehicleStorageService>();
-        // services.AddSingleton<IVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
-        // services.AddSingleton<IInternalVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
+        services.AddSingleton<VehicleStorageService>();
+        services.AddSingleton<IVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
+        services.AddSingleton<IInternalVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
 
         // services.AddSingleton<PedService>();
         // services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());

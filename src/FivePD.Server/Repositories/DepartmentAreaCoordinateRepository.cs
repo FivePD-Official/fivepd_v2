@@ -1,6 +1,7 @@
 using System;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
@@ -25,16 +26,16 @@ public class DepartmentAreaCoordinateRepository : BaseRepository<DepartmentAreaC
     public override DepartmentAreaCoordinate Add(DepartmentAreaCoordinate coordinate)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var id = connection.ExecuteScalar<int>(
-            $@"INSERT INTO {this.TableName} (DepartmentId, X, Y)
-            VALUES (@DepartmentId, @X, @Y);
-            SELECT LAST_INSERT_ID();",
-            new
+        var builderResult = SqlBuilder
+            .Into(this.TableName)
+            .Insert(new
             {
-                DepartmentId = coordinate.DepartmentId,
-                X = coordinate.X,
-                Y = coordinate.Y,
-            });
+                coordinate.DepartmentId,
+                coordinate.X,
+                coordinate.Y,
+            })
+            .Build();
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         coordinate.Id = id;
         return coordinate;
     }

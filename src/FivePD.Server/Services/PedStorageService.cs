@@ -1,12 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using System.Linq;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using FivePD.Server.Repositories;
 
 namespace FivePD.Server.Services;
 
@@ -17,15 +15,15 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
 {
     private readonly ConcurrentDictionary<int, FPed> _peds = new();
 
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly PedDataRepository _pedDataRepository;
 
     public ReadOnlyDictionary<int, FPed> Peds => new(this._peds);
 
     ConcurrentDictionary<int, FPed> IInternalPedStorageService.InternalPeds => this._peds;
 
-    public PedStorageService(IDatabaseContextFactory dbContextFactory)
+    public PedStorageService(PedDataRepository pedDataRepository)
     {
-        this._dbContextFactory = dbContextFactory;
+        this._pedDataRepository = pedDataRepository;
     }
 
     /// <inheritdoc/>
@@ -50,10 +48,7 @@ public class PedStorageService : IPedStorageService, IInternalPedStorageService
         {
             return null;
         }
-        
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        return databaseContext.PedData
-            .Include(x => x.Licenses)
-            .FirstOrDefault(x => x.Id == ped.PedDataId);
+
+        return this._pedDataRepository.FindByIdWithDynamicRelated(ped.PedDataId, new PedDataRepository.PedDataLoadOptions { IncludeLicenses = true });
     }
 }

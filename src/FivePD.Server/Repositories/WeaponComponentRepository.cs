@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.LoadoutModels;
 using FivePD.Server.Models.UpdateModels;
@@ -26,15 +27,11 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
     public override WeaponComponent Add(WeaponComponent weaponComponent)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var id = connection.ExecuteScalar<int>(
-            $@"INSERT INTO {this.TableName} (Name, HashKey)
-            VALUES (@Name, @HashKey);
-            SELECT LAST_INSERT_ID();",
-            new
-            {
-                Name = weaponComponent.Name,
-                HashKey = weaponComponent.HashKey,
-            });
+        var builderResult = SqlBuilder
+            .Into(this.TableName)
+            .Insert(new { weaponComponent.Name, weaponComponent.HashKey, })
+            .Build();
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         weaponComponent.Id = id;
         return weaponComponent;
     }

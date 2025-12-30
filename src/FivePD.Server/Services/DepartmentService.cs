@@ -365,8 +365,8 @@ public class DepartmentService : IDepartmentService
 
         var division = this._divisionRepository.Add(new Division
         {
-            DepartmentId = request.DepartmentId,
             Name = request.Name,
+            DepartmentId = request.DepartmentId,
         });
         this._networkEventService.TriggerEventWithResponse(
             player,

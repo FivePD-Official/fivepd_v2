@@ -14,6 +14,11 @@ public class PedLicense
     public string Id { get; set; } = IdGenerator.Generate();
 
     /// <summary>
+    /// Gets or sets the identifier of the owner ped history.
+    /// </summary>
+    public int? PedDataId { get; set; }
+
+    /// <summary>
     /// Gets or sets the entity which this value belongs to.
     /// </summary>
     public PedData PedData { get; set; }

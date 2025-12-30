@@ -1,6 +1,7 @@
 using System;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
@@ -25,15 +26,11 @@ public class DivisionRepository : BaseRepository<Division, DivisionUpdate, int>
     public override Division Add(Division division)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var id = connection.ExecuteScalar<int>(
-            $@"INSERT INTO {this.TableName} (Name, DepartmentId)
-            VALUES (@Name, @DepartmentId);
-            SELECT LAST_INSERT_ID();",
-            new
-            {
-                Name = division.Name,
-                DepartmentId = division.DepartmentId,
-            });
+        var builderResult = SqlBuilder
+            .Into(this.TableName)
+            .Insert(new { division.Name, division.DepartmentId, })
+            .Build();
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         division.Id = id;
         return division;
     }

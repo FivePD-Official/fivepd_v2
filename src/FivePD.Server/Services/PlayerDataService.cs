@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CitizenFX.Core;
-using Dapper;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Enums;
 using FivePD.Common.Models;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
@@ -19,7 +16,6 @@ using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Events;
 using FivePD.Server.Models.Requests;
-using FivePD.Server.QueryHelpers;
 using FivePD.Server.Repositories;
 using Newtonsoft.Json;
 using Serilog;
@@ -41,13 +37,12 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
     private readonly IPlayerHandlerService _playerHandlerService;
 
-    // private readonly IInternalPedStorageService _internalPedStorageService;
+    private readonly IInternalPedStorageService _internalPedStorageService;
     private readonly INetworkEventService _networkEventService;
     private readonly UserRepository _userRepository;
     private readonly RankRepository _rankRepository;
     private readonly DepartmentRepository _departmentRepository;
     private readonly DivisionRepository _divisionRepository;
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerDataService"/> class.
@@ -65,7 +60,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     /// <param name="rankRepository">The <see cref="RankRepository"/> to use.</param>
     /// <param name="departmentRepository">The <see cref="DepartmentRepository"/> to use.</param>
     /// <param name="divisionRepository">The <see cref="DivisionRepository"/> to use.</param>
-    /// <param name="dbConnectionFactory">The <see cref="IDapperDatabaseConnectionFactory"/> to use.</param>
     public PlayerDataService(
         EventHandlerDictionary eventHandlerDictionary,
         PlayerList playerList,
@@ -74,13 +68,12 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         ILogger logger,
         ILocalizationService localizationService,
         IPlayerHandlerService playerHandlerService,
-        // IPedStorageService pedStorageService,
+        IPedStorageService pedStorageService,
         INetworkEventService networkEventService,
         UserRepository userRepository,
         RankRepository rankRepository,
         DepartmentRepository departmentRepository,
-        DivisionRepository divisionRepository,
-        IDapperDatabaseConnectionFactory dbConnectionFactory)
+        DivisionRepository divisionRepository)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerList = playerList;
@@ -89,13 +82,12 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._logger = logger;
         this._localizationService = localizationService;
         this._playerHandlerService = playerHandlerService;
-        // this._internalPedStorageService = (IInternalPedStorageService)pedStorageService;
+        this._internalPedStorageService = (IInternalPedStorageService)pedStorageService;
         this._networkEventService = networkEventService;
         this._userRepository = userRepository;
         this._rankRepository = rankRepository;
         this._departmentRepository = departmentRepository;
         this._divisionRepository = divisionRepository;
-        this._dbConnectionFactory = dbConnectionFactory;
     }
 
     /// <inheritdoc/>
@@ -230,7 +222,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
 
         this.CreatePlayerData(player);
         this.SubscribeToOnDutyStatusChange(player);
-        // this._internalPedStorageService.InternalPeds[player.Character.NetworkId] = new FPed(new FPedBuilder(new CommonFPedBuilder(player.Character.NetworkId)));
+        this._internalPedStorageService.InternalPeds[player.Character.NetworkId] = new FPed(new FPedBuilder(new CommonFPedBuilder(player.Character.NetworkId)));
     }
 
     private void SubscribeToOnDutyStatusChange(Player player)
@@ -343,29 +335,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     [UIEvent(Events.UI.Player.GetDetails)]
     private void GetPlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        // var builderResult = new SqlBuilder()
-        //     .SetTable($"{TableNames.Users} u")
-        //     .Select("u.*, d.*, di.*, r.*, cf.*")
-        //     .LeftJoin(TableNames.Departments, "d", "u.DepartmentId = d.Id", typeof(Department))
-        //     .LeftJoin(TableNames.Divisions, "di", "u.DivisionId = di.Id", typeof(Di))
-        //     .LeftJoin(TableNames.Ranks, "r", "u.RankId = r.Id")
-        //     .LeftJoin(TableNames.UserCallsigns, "cf", "u.UserCallsignFormatId = cf.Id")
-        //     .WhereAnyLicenseMatches(player)
-        //     .Build();
-        // using var connection = this._dbConnectionFactory.CreateScope().Connection;
-        // var user = connection.Query<User, Department, Division, Rank, UserCallsignFormat, User>(
-        //     sql,
-        //     (u, d, div, r, cf) =>
-        //     {
-        //         u.Department = d;
-        //         u.Division = div;
-        //         u.Rank = r;
-        //         u.CallsignFormat = cf;
-        //         return u;
-        //     },
-        //     parameters,
-        //     splitOn: "Id,Id,Id,Id"
-        // ).FirstOrDefault();
         var user = this._userRepository.FindByLicenseWithDynamicRelated(player, new UserRepository.UserLoadOptions
         {
             IncludeCallsignFormat = true,

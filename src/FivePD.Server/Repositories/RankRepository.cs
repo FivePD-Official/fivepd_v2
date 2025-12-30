@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
@@ -26,17 +27,17 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
     public override Rank Add(Rank rank)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var id = connection.ExecuteScalar<int>(
-            $@"INSERT INTO {this.TableName} (Global, RequiredXp, Name, Permission)
-            VALUES (@Global, @RequiredXp, @Name, @Permission);
-            SELECT LAST_INSERT_ID();",
-            new
+        var builderResult = SqlBuilder
+            .Into(this.TableName)
+            .Insert(new
             {
-                Global = rank.Global,
-                RequiredXp = rank.RequiredXp,
-                Name = rank.Name,
-                Permission = rank.Permission,
-            });
+                rank.Global,
+                rank.RequiredXp,
+                rank.Name,
+                rank.Permission,
+            })
+            .Build();
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         rank.Id = id;
         return rank;
     }
@@ -86,7 +87,8 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
             where += $" AND {this.TableName}.Id != @RankId";
         }
 
-        var sql = $"SELECT {this.TableName}.* FROM {this.TableName} INNER JOIN {TableNames.DepartmentRanks} dr ON {this.TableName}.Id = dr.RankId WHERE {where}";
+        var sql =
+            $"SELECT {this.TableName}.* FROM {this.TableName} INNER JOIN {TableNames.DepartmentRanks} dr ON {this.TableName}.Id = dr.RankId WHERE {where}";
         return this.Query<Rank>(sql, new { Name = rankName, DepartmentId = departmentId, RankId = rankId });
     }
 

@@ -30,32 +30,32 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     public override User Add(User user)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var id = connection.ExecuteScalar<int>(
-            $@"INSERT INTO {this.TableName} (Name, AccessFivePD, PreferredLanguage, FirstLogin, DismissedWelcomeMessage, IdentifierLicense, IdentifierDiscord, IdentifierSteam, IdentifierXbl, IdentifierLive, Xp, AudioVolume, Role, Callsign, UserCallsignFormatId, DepartmentId, DivisionId, RankId, FixedRank)
-            VALUES (@Name, @AccessFivePD, @PreferredLanguage, @FirstLogin, @DismissedWelcomeMessage, @IdentifierLicense, @IdentifierDiscord, @IdentifierSteam, @IdentifierXbl, @IdentifierLive, @Xp, @AudioVolume, @Role, @Callsign, @UserCallsignFormatId, @DepartmentId, @DivisionId, @RankId, @FixedRank);
-            SELECT LAST_INSERT_ID();",
-            new
+        var builderResult = SqlBuilder
+            .Into(this.TableName)
+            .Insert(new
             {
-                Name = user.Name,
-                AccessFivePD = user.AccessFivePD,
-                PreferredLanguage = user.PreferredLanguage,
-                FirstLogin = user.FirstLogin,
-                DismissedWelcomeMessage = user.DismissedWelcomeMessage,
-                IdentifierLicense = user.IdentifierLicense,
-                IdentifierDiscord = user.IdentifierDiscord,
-                IdentifierSteam = user.IdentifierSteam,
-                IdentifierXbl = user.IdentifierXbl,
-                IdentifierLive = user.IdentifierLive,
-                Xp = user.Xp,
-                AudioVolume = user.AudioVolume,
-                Role = user.Role,
-                Callsign = user.Callsign,
-                UserCallsignFormatId = user.UserCallsignFormatId,
-                DepartmentId = user.DepartmentId,
-                DivisionId = user.DivisionId,
-                RankId = user.RankId,
-                FixedRank = user.FixedRank,
-            });
+                user.Name,
+                user.AccessFivePD,
+                user.PreferredLanguage,
+                user.FirstLogin,
+                user.DismissedWelcomeMessage,
+                user.IdentifierLicense,
+                user.IdentifierDiscord,
+                user.IdentifierSteam,
+                user.IdentifierXbl,
+                user.IdentifierLive,
+                user.Xp,
+                user.AudioVolume,
+                user.Role,
+                user.Callsign,
+                user.UserCallsignFormatId,
+                user.DepartmentId,
+                user.DivisionId,
+                user.RankId,
+                user.FixedRank,
+            })
+            .Build();
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         user.Id = id;
         return user;
     }
@@ -169,11 +169,12 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     {
         return SqlBuilder
             .From($"{TableNames.Users} u")
-            .Select("u.*, d.*, di.*, r.*, cf.*", typeof(User))
-            .If(options.IncludeDepartment, b => b.LeftJoin(TableNames.Departments, "d", "u.DepartmentId = d.Id", typeof(Department)))
-            .If(options.IncludeDivision, b => b.LeftJoin(TableNames.Divisions, "di", "u.DivisionId = di.Id", typeof(Division)))
-            .If(options.IncludeRank, b => b.LeftJoin(TableNames.Ranks, "r", "u.RankId = r.Id", typeof(Rank)))
-            .If(options.IncludeCallsignFormat, b => b.LeftJoin(TableNames.UserCallsigns, "cf", "u.UserCallsignFormatId = cf.Id", typeof(UserCallsignFormat)));
+            .Select("u.*", typeof(User))
+            .If(options.IncludeDepartment, b => b.Select("d.*", typeof(Department)).LeftJoin(TableNames.Departments, "d", "u.DepartmentId = d.Id"))
+            .If(options.IncludeDivision, b => b.Select("di.*", typeof(Division)).LeftJoin(TableNames.Divisions, "di", "u.DivisionId = di.Id"))
+            .If(options.IncludeRank, b => b.Select("r.*", typeof(Rank)).LeftJoin(TableNames.Ranks, "r", "u.RankId = r.Id"))
+            .If(options.IncludeCallsignFormat,
+                b => b.Select("cf.*", typeof(UserCallsignFormat)).LeftJoin(TableNames.UserCallsigns, "cf", "u.UserCallsignFormatId = cf.Id"));
     }
 
     /// <summary>
@@ -261,7 +262,7 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
             Live = player.Identifiers["live"] ?? string.Empty,
         };
     }
-    
+
     /// <summary>
     /// Options for loading related entities for a user.
     /// </summary>

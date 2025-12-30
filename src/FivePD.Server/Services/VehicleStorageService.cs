@@ -1,11 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using System.Linq;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Repositories;
 
 namespace FivePD.Server.Services;
 
@@ -15,16 +14,16 @@ namespace FivePD.Server.Services;
 public class VehicleStorageService : IVehicleStorageService, IInternalVehicleStorageService
 {
     private readonly ConcurrentDictionary<int, FVehicle> _vehicles = new();
-    
-    private readonly IDatabaseContextFactory _dbContextFactory;
-    
+
+    private readonly VehicleDataRepository _vehicleDataRepository;
+
     public ReadOnlyDictionary<int, FVehicle> Vehicles => new(this._vehicles);
 
     ConcurrentDictionary<int, FVehicle> IInternalVehicleStorageService.InternalVehicles => this._vehicles;
 
-    public VehicleStorageService(IDatabaseContextFactory dbContextFactory)
+    public VehicleStorageService(VehicleDataRepository vehicleDataRepository)
     {
-        this._dbContextFactory = dbContextFactory;
+        this._vehicleDataRepository = vehicleDataRepository;
     }
 
     public FVehicle TryGetVehicle(int networkId)
@@ -40,15 +39,16 @@ public class VehicleStorageService : IVehicleStorageService, IInternalVehicleSto
 
         return vehicle;
     }
-    
+
     public VehicleData GetVehicleData(FVehicle vehicle)
     {
         if (vehicle is null)
         {
             return null;
         }
-        
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        return databaseContext.VehicleData.FirstOrDefault(x => x.Id == vehicle.VehicleDataId);
+
+        return this._vehicleDataRepository.FindByIdWithDynamicRelated(
+            vehicle.VehicleDataId,
+            new VehicleDataRepository.VehicleDataLoadOptions { IncludeDocuments = true });
     }
 }

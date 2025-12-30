@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
@@ -26,20 +27,19 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
     public override Department Add(Department department)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var id = connection.ExecuteScalar<int>(
-            $@"
-            INSERT INTO {this.TableName} (Name, Callsign, MaxUsers, UseGlobalRanks, CallsignFormat)
-            VALUES (@Name, @Callsign, @MaxUsers, @UseGlobalRanks, @CallsignFormat);
-            SELECT LAST_INSERT_ID();",
-            new
+        var builderResult = SqlBuilder
+            .Into(this.TableName)
+            .Insert(new
             {
-                Name = department.Name,
-                Callsign = department.Callsign,
-                MaxUsers = department.MaxUsers,
-                UseGlobalRanks = department.UseGlobalRanks,
-                CallsignFormat = department.CallsignFormat,
-                DefaultRankId = department.DefaultRankId,
-            });
+                department.Name,
+                department.Callsign,
+                department.MaxUsers,
+                department.UseGlobalRanks,
+                department.CallsignFormat,
+                department.DefaultRankId,
+            })
+            .Build();
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         department.Id = id;
         return department;
     }

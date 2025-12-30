@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.LoadoutModels;
 using FivePD.Server.Models.UpdateModels;
@@ -26,14 +27,11 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
     public override LoadoutConfig Add(LoadoutConfig loadoutConfig)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var id = connection.ExecuteScalar<int>(
-            $@"INSERT INTO {this.TableName} (Name)
-            VALUES (@Name);
-            SELECT LAST_INSERT_ID();",
-            new
-            {
-                Name = loadoutConfig.Name,
-            });
+        var builderResult = SqlBuilder
+            .Into(this.TableName)
+            .Insert(new { loadoutConfig.Name, })
+            .Build();
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         loadoutConfig.Id = id;
         return loadoutConfig;
     }

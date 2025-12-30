@@ -1,6 +1,7 @@
 using System;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
@@ -134,19 +135,19 @@ public class VehicleConfigRepository : BaseRepository<VehicleConfig<string>, Veh
     private VehicleConfig<string> AddCore(VehicleConfig<string> entity)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var id = connection.ExecuteScalar<int>(
-            $@"INSERT INTO {this.TableName} (Name, Type, Model, Livery, Extras, Options)
-            VALUES (@Name, @Type, @Model, @Livery, @Extras, @Options);
-            SELECT LAST_INSERT_ID();",
-            new
+        var builderResult = SqlBuilder
+            .Into(this.TableName)
+            .Insert(new
             {
-                Name = entity.Name,
-                Type = entity.Type,
-                Model = entity.Model,
-                Livery = entity.Livery,
-                Extras = entity.Extras,
-                Options = entity.Options,
-            });
+                entity.Name,
+                entity.Type,
+                entity.Model,
+                entity.Livery,
+                entity.Extras,
+                entity.Options,
+            })
+            .Build();
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         entity.Id = id;
         return entity;
     }

@@ -9,16 +9,18 @@ namespace FivePD.Server.Database.Sql;
 
 #pragma warning disable
 
-public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
+public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsertTableBuilder, IDeleteBuilder
 {
     private readonly DbType _dialect = DbType.MySql;
     private readonly List<JoinMetadata> _joinMetadata = new();
+    private readonly List<string> _selects = new();
+    private readonly List<Type> _types = new();
     private readonly List<string> _wheres = new();
+    private readonly List<string> _insertColumns = new();
     private readonly DynamicParameters _params = new();
 
-    private Type _baseType;
+    private bool _isInsert;
     private bool _isDelete;
-    private string _selectOverride;
     private string _groupBy;
     private string _from;
     private string _orderBy;
@@ -35,23 +37,54 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
         return new SqlBuilder(table);
     }
 
-    IQueryBuilder IFilterable<IQueryBuilder>.If(bool condition, Action<IQueryBuilder> action) => InternalIf(condition, action);
+    public static IInsertTableBuilder Into(string table)
+    {
+        return new SqlBuilder(table);
+    }
 
-    ISelectBuilder IFilterable<ISelectBuilder>.If(bool condition, Action<ISelectBuilder> action) => InternalIf(condition, action);
+    public IInsertBuilder Insert(object entity)
+    {
+        _isInsert = true;
+        _params.AddDynamicParams(entity);
 
-    IDeleteBuilder IFilterable<IDeleteBuilder>.If(bool condition, Action<IDeleteBuilder> action) => InternalIf(condition, action);
+        if (entity is not null)
+        {
+            var properties = entity.GetType().GetProperties();
+            foreach (var prop in properties)
+            {
+                _insertColumns.Add(prop.Name);
+            }
+        }
 
-    SqlBuilderResult IQueryBuilder.Build() => InternalBuild();
-    SqlBuilderResult ISelectBuilder.Build() => InternalBuild();
-    SqlBuilderResult IDeleteBuilder.Build() => InternalBuild();
-    SqlBuilderResult IQueryBuilder.BuildCount() => InternalBuildCount();
-    SqlBuilderResult ISelectBuilder.BuildCount() => InternalBuildCount();
-    SqlBuilderResult IDeleteBuilder.BuildCount() => InternalBuildCount();
+        return this;
+    }
+
+    IQueryBuilder IFilterable<IQueryBuilder>.If(bool condition, Action<IQueryBuilder> action) => this.InternalIf(condition, action);
+
+    ISelectBuilder IFilterable<ISelectBuilder>.If(bool condition, Action<ISelectBuilder> action) => this.InternalIf(condition, action);
+
+    IDeleteBuilder IFilterable<IDeleteBuilder>.If(bool condition, Action<IDeleteBuilder> action) => this.InternalIf(condition, action);
+
+    SqlBuilderResult IQueryBuilder.Build() => this.InternalBuild();
+    SqlBuilderResult ISelectBuilder.Build() => this.InternalBuild();
+    SqlBuilderResult IInsertBuilder.Build() => this.InternalBuild();
+    SqlBuilderResult IDeleteBuilder.Build() => this.InternalBuild();
+    SqlBuilderResult IQueryBuilder.BuildCount() => this.InternalBuildCount();
+    SqlBuilderResult ISelectBuilder.BuildCount() => this.InternalBuildCount();
+    SqlBuilderResult IDeleteBuilder.BuildCount() => this.InternalBuildCount();
 
     public ISelectBuilder Select(string select, Type type = null)
     {
-        _selectOverride = select;
-        this._baseType = type;
+        if (!string.IsNullOrWhiteSpace(select))
+        {
+            _selects.Add(select);
+        }
+
+        if (type != null)
+        {
+            this._types.Add(type);
+        }
+
         return this;
     }
 
@@ -79,24 +112,24 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
         return this;
     }
 
-    public IQueryBuilder InnerJoin(string table, string alias, string on, Type type = null, string splitColumn = "Id")
+    public IQueryBuilder InnerJoin(string table, string alias, string on, string splitColumn = "Id")
     {
         var sql = $"INNER JOIN {table} {alias} ON {on}";
-        _joinMetadata.Add(new JoinMetadata(sql, type, splitColumn));
+        _joinMetadata.Add(new JoinMetadata(sql, splitColumn));
         return this;
     }
 
-    public IQueryBuilder LeftJoin(string table, string alias, string on, Type type = null, string splitColumn = "Id")
+    public IQueryBuilder LeftJoin(string table, string alias, string on, string splitColumn = "Id")
     {
         var sql = $"LEFT JOIN {table} {alias} ON {on}";
-        _joinMetadata.Add(new JoinMetadata(sql, type, splitColumn));
+        _joinMetadata.Add(new JoinMetadata(sql, splitColumn));
         return this;
     }
 
-    public IQueryBuilder RightJoin(string table, string alias, string on, Type type = null, string splitColumn = "Id")
+    public IQueryBuilder RightJoin(string table, string alias, string on, string splitColumn = "Id")
     {
         var sql = $"RIGHT JOIN {table} {alias} ON {on}";
-        _joinMetadata.Add(new JoinMetadata(sql, type, splitColumn));
+        _joinMetadata.Add(new JoinMetadata(sql, splitColumn));
         return this;
     }
 
@@ -172,14 +205,20 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
     private SqlBuilderResult InternalBuild()
     {
         var sb = new StringBuilder();
+
+        if (_isInsert)
+        {
+            return this.BuildInsertStatement();
+        }
+
         if (_isDelete)
         {
             sb.Append($"DELETE FROM {this._from}");
         }
         else
         {
-            var select = _selectOverride ?? $"{this._from}.*";
-            sb.Append($"SELECT {select} FROM {this._from} {string.Join(" ", this._joinMetadata.Select(x => x.JoinSql))}");
+            var selectClause = this._selects.Any() ? string.Join(", ", this._selects) : $"{_from}.*";
+            sb.Append($"SELECT {selectClause} FROM {_from} {string.Join(" ", _joinMetadata.Select(x => x.JoinSql))}");
         }
 
         if (_wheres.Any())
@@ -215,10 +254,8 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
         var splitColumns = joinMetadata.Select(x => x.SplitColumn).ToList();
         var splitOn = splitColumns.Count > 0 ? string.Join(",", splitColumns) : "Id";
 
-        var allTypes = new List<Type> { this._baseType };
-        allTypes.AddRange(_joinMetadata.Select(x => x.Type));
 
-        return new SqlBuilderResult(sql, _params, allTypes.ToArray(), splitOn);
+        return new SqlBuilderResult(sql, _params, this._types.ToArray(), splitOn);
     }
 
     private SqlBuilderResult InternalBuildCount()
@@ -241,6 +278,23 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IDeleteBuilder
 
         var countSql = sb.Replace("SELECT 1", "SELECT COUNT(*)").ToString();
         return new SqlBuilderResult(countSql, _params, null, null);
+    }
+
+    private SqlBuilderResult BuildInsertStatement()
+    {
+        var columns = string.Join(", ", _insertColumns);
+        var values = string.Join(", ", _insertColumns.Select(p => $"@{p}"));
+
+        var sb = new StringBuilder();
+        sb.Append($"INSERT INTO {_from} ({columns}) VALUES ({values});");
+        sb.Append(_dialect switch
+        {
+            DbType.MySql => " SELECT LAST_INSERT_ID();",
+            DbType.PostgreSql => " RETURNING Id;",
+            _ => " SELECT SCOPE_IDENTITY();"
+        });
+
+        return new SqlBuilderResult(sb.ToString(), _params, null, null);
     }
 
     private void InternalWhere(string condition, object param = null)
