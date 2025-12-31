@@ -18,10 +18,10 @@ public class WeaponWeaponComponent
     /// <summary>
     /// Gets or sets the weapons.
     /// </summary>
-    public virtual Weapon Weapon { get; set; }
+    public Weapon Weapon { get; set; }
 
     /// <summary>
     /// Gets or sets the weapons.
     /// </summary>
-    public virtual WeaponComponent WeaponComponent { get; set; }
+    public WeaponComponent WeaponComponent { get; set; }
 }

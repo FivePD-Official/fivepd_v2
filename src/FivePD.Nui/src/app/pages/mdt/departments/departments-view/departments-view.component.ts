@@ -466,9 +466,6 @@ export class DepartmentsViewComponent implements OnInit {
       return [];
     }
 
-    console.log(this.department)
-    console.log(this.globalRanks)
-
     if (this.department.UseGlobalRanks) {
       return this.globalRanks.map(rank => {
         return {

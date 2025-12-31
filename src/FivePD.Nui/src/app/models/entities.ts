@@ -99,6 +99,7 @@ export interface LoadoutConfig extends WithId {
   Name: string;
   LoadoutWeapons: [];
   WeaponIds: number[];
+  LoadoutWeaponCount?: number;
   // Department: User["DepartmentId"]; TODO
   // Division: Division["Name"]; TODO
 }
@@ -108,6 +109,7 @@ export interface Weapon extends WithId {
   Model: string;
   WeaponWeaponComponents: [];
   WeaponComponentHashes: [];
+  WeaponWeaponComponentCount?: number;
   // Department: User["DepartmentId"]; TODO
   // Division: Division["Name"]; TODO
 }

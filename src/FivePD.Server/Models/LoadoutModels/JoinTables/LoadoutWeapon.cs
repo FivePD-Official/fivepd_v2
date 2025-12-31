@@ -18,10 +18,10 @@ public class LoadoutWeapon
     /// <summary>
     /// Gets or sets the weapons.
     /// </summary>
-    public virtual LoadoutConfig LoadoutConfig { get; set; }
+    public LoadoutConfig LoadoutConfig { get; set; }
 
     /// <summary>
     /// Gets or sets the weapons.
     /// </summary>
-    public virtual Weapon Weapon { get; set; }
+    public Weapon Weapon { get; set; }
 }

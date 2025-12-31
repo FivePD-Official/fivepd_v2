@@ -56,6 +56,24 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
     }
 
     /// <summary>
+    /// Finds a weapon component by its unique hash key.
+    /// </summary>
+    /// <param name="hashKey">The unique hash key identifying the weapon component.</param>
+    /// <returns>
+    /// The <see cref="WeaponComponent"/> corresponding to the provided hash key,
+    /// or <c>null</c> if no matching component is found.
+    /// </returns>
+    public WeaponComponent FindByHashKey(string hashKey)
+    {
+        var builderResult = SqlBuilder
+            .From(this.TableName)
+            .Where("HashKey = @HashKey", new { HashKey = hashKey })
+            .Build();
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        return connection.QueryFirstOrDefault<WeaponComponent>(builderResult.Sql, builderResult.Parameters);
+    }
+
+    /// <summary>
     /// Attaches a weapon to this component.
     /// </summary>
     /// <param name="component">The weapon component.</param>

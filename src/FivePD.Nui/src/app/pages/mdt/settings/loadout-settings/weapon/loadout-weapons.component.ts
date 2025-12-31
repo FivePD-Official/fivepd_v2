@@ -62,7 +62,7 @@ export class LoadoutWeaponsComponent {
   });
   readonly attachmentCountColumn = new Column<Weapon>({
     header: 'LABEL.LOADOUT_CONFIG.WEAPON.COLUMN.ATTACHMENT.COUNT.SINGULAR',
-    valueResolver: item => item.WeaponWeaponComponents.length.toString(),
+    valueResolver: item => item.WeaponWeaponComponentCount ? item.WeaponWeaponComponentCount.toString() : '0',
   });
 
   readonly weaponColumns: Column<Weapon>[] = [

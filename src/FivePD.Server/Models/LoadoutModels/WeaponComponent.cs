@@ -26,5 +26,5 @@ public class WeaponComponent
     /// <summary>
     /// Gets or sets the Components.
     /// </summary>
-    public IList<WeaponWeaponComponent> WeaponWeaponComponents { get; set; } = new List<WeaponWeaponComponent>();
+    public List<WeaponWeaponComponent> WeaponWeaponComponents { get; set; }
 }

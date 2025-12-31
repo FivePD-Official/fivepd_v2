@@ -15,6 +15,8 @@ using Serilog;
 
 namespace FivePD.Server;
 
+#pragma warning disable
+
 /// <summary>
 /// Handles database operations and ensures the correct setup and migration of the database.
 /// </summary>
@@ -262,15 +264,15 @@ internal static class DatabaseHandler
         {
             Name = "Patrol Loadout",
         };
-        patrolLoadout.AddWeapon(pistol);
-        patrolLoadout.AddWeapon(taser);
+        // patrolLoadout.AddWeapon(pistol);
+        // patrolLoadout.AddWeapon(taser);
 
         var swatLoadout = new LoadoutConfig
         {
             Name = "SWAT Loadout",
         };
-        swatLoadout.AddWeapon(rifle);
-        swatLoadout.AddWeapon(pistol);
+        // swatLoadout.AddWeapon(rifle);
+        // swatLoadout.AddWeapon(pistol);
 
         var loadouts = new List<LoadoutConfig> { patrolLoadout, swatLoadout };
         var weapons = new List<Weapon> { pistol, rifle, taser };
