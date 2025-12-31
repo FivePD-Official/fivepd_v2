@@ -1,9 +1,12 @@
 using System;
 using System.Data;
+using System.Data.SQLite;
 using FivePD.Server.Interfaces;
 using MySqlConnector;
 
 namespace FivePD.Server.Database;
+
+#pragma warning disable
 
 /// <summary>
 /// Represents a scope for database operations using Dapper.
@@ -15,6 +18,7 @@ public class DapperConnectionScope : IDapperDatabaseConnectionScope
 {
     private readonly string _connectionString;
     private readonly DatabaseType _databaseType;
+
     private IDbConnection _connection;
     private bool _disposed;
 
@@ -42,17 +46,15 @@ public class DapperConnectionScope : IDapperDatabaseConnectionScope
                 throw new ObjectDisposedException(nameof(DapperConnectionScope));
             }
 
-            if (this._connection == null)
+            if (this._connection is null)
             {
                 switch (this._databaseType)
                 {
-#pragma warning disable
-                    // case DapperConnectionFactory.DatabaseType.SQLite:
-                    //     _connection = new SQLiteConnection(_connectionString);
-                    //     break;
+                    case DatabaseType.SQLite:
+                        this._connection = new SQLiteConnection(_connectionString);
+                        break;
                     case DatabaseType.MySql:
                     case DatabaseType.MariaDb:
-#pragma warning restore
                     default:
                         this._connection = new MySqlConnection(this._connectionString);
                         break;

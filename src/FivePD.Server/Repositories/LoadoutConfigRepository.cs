@@ -63,12 +63,17 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
     /// <param name="weapon">The weapon.</param>
     public void AddWeapon(LoadoutConfig loadoutConfig, Weapon weapon)
     {
+        var builderResult = SqlBuilder
+            .Into(TableNames.LoadoutWeapon)
+            .Insert(new
+            {
+                LoadoutConfigId = loadoutConfig.Id,
+                WeaponId = weapon.Id,
+            })
+            .OnDuplicateKeyUpdate("WeaponId", "LoadoutConfigId")
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            INSERT INTO {TableNames.LoadoutWeapon} (LoadoutConfigId, WeaponId)
-            VALUES (@LoadoutConfigId, @WeaponId)
-            ON DUPLICATE KEY UPDATE LoadoutConfigId = @LoadoutConfigId";
-        connection.Execute(sql, new { LoadoutConfigId = loadoutConfig.Id, WeaponId = weapon.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -78,11 +83,14 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
     /// <param name="weapon">The weapon.</param>
     public void RemoveWeapon(LoadoutConfig loadoutConfig, Weapon weapon)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.LoadoutWeapon)
+            .Where("LoadoutConfigId = @LoadoutConfigId", new { LoadoutConfigId = loadoutConfig.Id })
+            .Where("WeaponId = @WeaponId", new { WeaponId = weapon.Id })
+            .Delete()
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            DELETE FROM {TableNames.LoadoutWeapon}
-            WHERE LoadoutConfigId = @LoadoutConfigId AND WeaponId = @WeaponId";
-        connection.Execute(sql, new { LoadoutConfigId = loadoutConfig.Id, WeaponId = weapon.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -92,13 +100,14 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
     /// <returns>List of weapons.</returns>
     public IEnumerable<Weapon> GetWeapons(LoadoutConfig loadoutConfig)
     {
+        var builderResult = SqlBuilder
+            .From($"{TableNames.Weapons} w")
+            .Select("w.*")
+            .InnerJoin(TableNames.LoadoutWeapon, "lw", "w.Id = lw.WeaponId")
+            .Where("lw.LoadoutConfigId = @LoadoutConfigId", new { LoadoutConfigId = loadoutConfig.Id })
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT w.* 
-            FROM {TableNames.Weapons} w
-            INNER JOIN {TableNames.LoadoutWeapon} lw ON w.Id = lw.WeaponId
-            WHERE lw.LoadoutConfigId = @LoadoutConfigId";
-        return connection.Query<Weapon>(sql, new { LoadoutConfigId = loadoutConfig.Id });
+        return connection.Query<Weapon>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -109,12 +118,13 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
     /// <returns>True if the weapon is in the loadout config, false otherwise.</returns>
     public bool HasWeapon(LoadoutConfig loadoutConfig, int weaponId)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.LoadoutWeapon)
+            .Where("LoadoutConfigId = @LoadoutConfigId", new { LoadoutConfigId = loadoutConfig.Id })
+            .Where("WeaponId = @WeaponId", new { WeaponId = weaponId })
+            .BuildCount();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT COUNT(*) 
-            FROM {TableNames.LoadoutWeapon}
-            WHERE LoadoutConfigId = @LoadoutConfigId AND WeaponId = @WeaponId";
-        return connection.ExecuteScalar<int>(sql, new { LoadoutConfigId = loadoutConfig.Id, WeaponId = weaponId }) > 0;
+        return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
     }
 
     /// <summary>

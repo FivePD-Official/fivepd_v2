@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CitizenFX.Core;
 using Dapper;
+using FivePD.Server.Database.Sql.Dialect;
 
 namespace FivePD.Server.Database.Sql;
 
@@ -11,15 +12,17 @@ namespace FivePD.Server.Database.Sql;
 
 public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsertTableBuilder, IDeleteBuilder
 {
-    private readonly DbType _dialect = DbType.MySql;
+    private readonly ISqlDialect _dialect = SqlDialectRegistry.Current;
     private readonly List<JoinMetadata> _joinMetadata = new();
     private readonly List<string> _selects = new();
     private readonly List<Type> _types = new();
     private readonly List<string> _wheres = new();
     private readonly List<string> _insertColumns = new();
     private readonly DynamicParameters _params = new();
+    private readonly List<string> _keyColumns = new();
 
     private bool _isInsert;
+    private bool _isUpsert;
     private bool _isDelete;
     private string _groupBy;
     private string _from;
@@ -54,6 +57,18 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
             {
                 _insertColumns.Add(prop.Name);
             }
+        }
+
+        return this;
+    }
+
+    public IInsertBuilder OnDuplicateKeyUpdate(params string[] customKeys)
+    {
+        this._isUpsert = true;
+        if (customKeys.Length > 0)
+        {
+            _keyColumns.Clear();
+            _keyColumns.AddRange(customKeys);
         }
 
         return this;
@@ -241,11 +256,7 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
             if (this._page.HasValue)
             {
                 var offset = (Math.Max(1, this._page.Value) - 1) * PageSize;
-                sb.Append(_dialect switch
-                {
-                    DbType.PostgreSql => $" LIMIT {PageSize} OFFSET {offset}",
-                    _ => $" LIMIT {offset}, {PageSize}" // MySQL / SQLite
-                });
+                sb.Append(_dialect.GetPaginationSql(PageSize, offset));
             }
         }
 
@@ -253,7 +264,6 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
         var joinMetadata = this._joinMetadata.ToList();
         var splitColumns = joinMetadata.Select(x => x.SplitColumn).ToList();
         var splitOn = splitColumns.Count > 0 ? string.Join(",", splitColumns) : "Id";
-
 
         return new SqlBuilderResult(sql, _params, this._types.ToArray(), splitOn);
     }
@@ -286,13 +296,16 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
         var values = string.Join(", ", _insertColumns.Select(p => $"@{p}"));
 
         var sb = new StringBuilder();
-        sb.Append($"INSERT INTO {_from} ({columns}) VALUES ({values});");
-        sb.Append(_dialect switch
+        sb.Append($"INSERT INTO {this._from} ({columns}) VALUES ({values})");
+
+        if (_isUpsert)
         {
-            DbType.MySql => " SELECT LAST_INSERT_ID();",
-            DbType.PostgreSql => " RETURNING Id;",
-            _ => " SELECT SCOPE_IDENTITY();"
-        });
+            sb.Append(_dialect.GetUpsertSql(_from, _insertColumns, _keyColumns));
+        }
+
+        sb.Append(";");
+
+        sb.Append(_dialect.GetIdentitySql());
 
         return new SqlBuilderResult(sb.ToString(), _params, null, null);
     }

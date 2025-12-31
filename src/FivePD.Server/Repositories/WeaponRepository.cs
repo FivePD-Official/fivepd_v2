@@ -64,12 +64,17 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
     /// <param name="component">The weapon component.</param>
     public void AttachComponent(Weapon weapon, WeaponComponent component)
     {
+        var builderResult = SqlBuilder
+            .Into(TableNames.WeaponWeaponComponent)
+            .Insert(new
+            {
+                WeaponId = weapon.Id,
+                WeaponComponentId = component.Id,
+            })
+            .OnDuplicateKeyUpdate("WeaponId", "WeaponComponentId")
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            INSERT INTO {TableNames.WeaponWeaponComponent} (WeaponId, WeaponComponentId)
-            VALUES (@WeaponId, @ComponentId)
-            ON DUPLICATE KEY UPDATE WeaponId = @WeaponId";
-        connection.Execute(sql, new { WeaponId = weapon.Id, ComponentId = component.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -79,11 +84,14 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
     /// <param name="component">The weapon component.</param>
     public void RemoveComponent(Weapon weapon, WeaponComponent component)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.WeaponWeaponComponent)
+            .Where("WeaponId = @WeaponId", new { WeaponId = weapon.Id })
+            .Where("WeaponComponentId = @WeaponComponentId", new { WeaponComponentId = component.Id })
+            .Delete()
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            DELETE FROM {TableNames.WeaponWeaponComponent}
-            WHERE WeaponId = @WeaponId AND WeaponComponentId = @ComponentId";
-        connection.Execute(sql, new { WeaponId = weapon.Id, ComponentId = component.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -93,13 +101,14 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
     /// <returns>List of weapon components.</returns>
     public IEnumerable<WeaponComponent> GetComponents(Weapon weapon)
     {
+        var builderResult = SqlBuilder
+            .From($"{TableNames.WeaponComponents} wc")
+            .Select("wc.*")
+            .InnerJoin(TableNames.WeaponWeaponComponent, "wwc", "wc.Id = wwc.WeaponComponentId")
+            .Where("wwc.WeaponId = @WeaponId", new { WeaponId = weapon.Id })
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT wc.* 
-            FROM {TableNames.WeaponComponents} wc
-            INNER JOIN {TableNames.WeaponWeaponComponent} wwc ON wc.Id = wwc.WeaponComponentId
-            WHERE wwc.WeaponId = @WeaponId";
-        return connection.Query<WeaponComponent>(sql, new { WeaponId = weapon.Id });
+        return connection.Query<WeaponComponent>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -109,13 +118,14 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
     /// <returns>List of loadout configs.</returns>
     public IEnumerable<LoadoutConfig> GetLoadoutConfigsByWeapon(Weapon weapon)
     {
+        var builderResult = SqlBuilder
+            .From($"{TableNames.LoadoutConfigs} lc")
+            .Select("lc.*")
+            .InnerJoin(TableNames.LoadoutWeapon, "lw", "lc.Id = lw.LoadoutConfigId")
+            .Where("lw.WeaponId = @WeaponId", new { WeaponId = weapon.Id })
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT lc.* 
-            FROM {TableNames.LoadoutConfigs} lc
-            INNER JOIN {TableNames.LoadoutWeapon} lw ON lc.Id = lw.LoadoutConfigId
-            WHERE lw.WeaponId = @WeaponId";
-        return connection.Query<LoadoutConfig>(sql, new { WeaponId = weapon.Id });
+        return connection.Query<LoadoutConfig>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -126,12 +136,13 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
     /// <returns>True if the component is attached, false otherwise.</returns>
     public bool HasComponent(Weapon weapon, WeaponComponent component)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.WeaponWeaponComponent)
+            .Where("WeaponId = @WeaponId", new { WeaponId = weapon.Id })
+            .Where("WeaponComponentId = @WeaponComponentId", new { WeaponComponentId = component.Id })
+            .BuildCount();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT COUNT(*) 
-            FROM {TableNames.WeaponWeaponComponent}
-            WHERE WeaponId = @WeaponId AND WeaponComponentId = @ComponentId";
-        return connection.ExecuteScalar<int>(sql, new { WeaponId = weapon.Id, ComponentId = component.Id }) > 0;
+        return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
     }
 
     /// <summary>

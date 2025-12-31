@@ -92,6 +92,8 @@ internal class Bootstrapper : BaseScript
             new Phase("Database set parameters", () => DapperDatabaseHandler.SetParameters(this._provider, this._bootstrapLogger)),
             false);
 
+        this._phases.Add(new Phase("Database ensure database config", DapperDatabaseHandler.EnsureDatabaseConfig), false);
+
         this._phases.Add(new Phase("Database ensure database exists", DapperDatabaseHandler.EnsureDatabaseExists), false);
 
         this._phases.Add(new Phase("Database ensure connection", DapperDatabaseHandler.EnsureConnection), false);

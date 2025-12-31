@@ -1,8 +1,32 @@
+using System;
+using System.Data.SQLite;
+using System.IO;
+using System.Runtime.InteropServices;
 using FivePD.Server.Interfaces;
 using MySqlConnector;
 using Serilog;
+using SQLitePCL;
+using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.Database;
+
+#pragma warning disable
+public static class SqliteNativeLoader
+{
+    [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern IntPtr LoadLibrary(string libname);
+
+    public static void ForceLoad(string dllPath)
+    {
+        IntPtr handle = LoadLibrary(dllPath);
+        if (handle == IntPtr.Zero)
+        {
+            int errorCode = Marshal.GetLastWin32Error();
+            throw new Exception($"Failed to load e_sqlite3.dll from {dllPath}. Win32 Error: {errorCode}");
+        }
+    }
+}
+#pragma warning restore
 
 /// <summary>
 /// Factory for creating database connections using Dapper.
@@ -25,6 +49,8 @@ public class DapperConnectionFactory : IDapperDatabaseConnectionFactory
     {
         this._logger = logger;
         this._configService = configService;
+
+        this.LoadSqliteDll();
         (this._connectionString, this._databaseType) = this.BuildConnectionString();
     }
 
@@ -37,52 +63,38 @@ public class DapperConnectionFactory : IDapperDatabaseConnectionFactory
         return new DapperConnectionScope(this._connectionString, this._databaseType);
     }
 
+    private void LoadSqliteDll()
+    {
+        if (this._configService.DatabaseType != DatabaseType.SQLite)
+        {
+            return;
+        }
+
+        var dir = Cfx.API.GetResourcePath(Cfx.API.GetCurrentResourceName());
+        var path = Path.Combine(dir, "Libraries", "FivePD.Server", "runtimes", "win-x64", "native", "e_sqlite3.dll");
+        SqliteNativeLoader.ForceLoad(path);
+        Batteries_V2.Init();
+    }
+
     /// <summary>
     /// Builds the connection string from the configuration.
     /// </summary>
     /// <returns>Tuple containing connection string and database type.</returns>
-    private (string ConnectionString, DatabaseType DbType) BuildConnectionString()
+    private (string ConnectionString, DatabaseType DatabaseType) BuildConnectionString()
     {
-        var config = this._configService?.GeneralConfig?.Database;
-        if (config is null)
+        if (this._configService.DatabaseType == DatabaseType.SQLite)
         {
-            this._logger.Fatal("Database configuration is not available.");
-            LifecycleHandler.Stop();
-            return (null, DatabaseType.MySql);
+            var dir = Cfx.API.GetResourcePath(Cfx.API.GetCurrentResourceName());
+            var sqliteBuilder = new SQLiteConnectionStringBuilder
+            {
+                DataSource = Path.Combine(dir, $"{this._configService.GeneralConfig.Database.Name}.db"),
+                Pooling = true,
+            };
+
+            return (sqliteBuilder.ToString(), DatabaseType.SQLite);
         }
 
-#pragma warning disable
-        var type = config.Type?.ToLower() ?? "mysql";
-        // if (provider.Contains("sqlite"))
-        // {
-        //     // SQLite connection
-        //     var dbPath = config.DatabaseName ?? "fivepd.db";
-        //     if (!System.IO.Path.IsPathRooted(dbPath))
-        //     {
-        //         // Make path relative to server data directory
-        //         dbPath = System.IO.Path.Combine("data", dbPath);
-        //     }
-        //     
-        //     // Ensure directory exists
-        //     var directory = System.IO.Path.GetDirectoryName(dbPath);
-        //     if (!string.IsNullOrEmpty(directory) && !System.IO.Directory.Exists(directory))
-        //     {
-        //         System.IO.Directory.CreateDirectory(directory);
-        //     }
-        //
-        //     var sqliteBuilder = new SQLiteConnectionStringBuilder
-        //     {
-        //         DataSource = dbPath,
-        //         Pooling = true,
-        //         MaxPoolSize = 100,
-        //         DefaultTimeout = 30
-        //     };
-        //
-        //     return (sqliteBuilder.ToString(), DatabaseType.SQLite);
-        // }
-#pragma warning restore
-
-        // MySQL/MariaDB connection
+        var config = this._configService.GeneralConfig.Database;
         var builder = new MySqlConnectionStringBuilder
         {
             Server = config.Address,
@@ -97,6 +109,6 @@ public class DapperConnectionFactory : IDapperDatabaseConnectionFactory
             AllowUserVariables = true,
         };
 
-        return (builder.ToString(), type.Contains("mariadb") ? DatabaseType.MariaDb : DatabaseType.MySql);
+        return (builder.ToString(), this._configService.DatabaseType);
     }
 }

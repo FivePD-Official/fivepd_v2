@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FivePD.Common.ConfigModels;
+using FivePD.Server.Database;
 
 namespace FivePD.Server.Interfaces;
 
@@ -36,4 +37,10 @@ public interface IConfigService
     /// Gets the "general-settings.json" file's content.
     /// </summary>
     public GeneralConfig GeneralConfig { get; }
+
+    /// <summary>
+    /// Gets the database type used for the configuration.
+    /// </summary>
+    /// <returns>Returns the database type, which can be MySql, MariaDb, or SqLite.</returns>
+    public DatabaseType DatabaseType { get; }
 }

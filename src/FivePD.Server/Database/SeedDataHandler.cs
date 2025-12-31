@@ -9,6 +9,8 @@ using Serilog;
 
 namespace FivePD.Server.Database;
 
+#pragma warning disable
+
 /// <summary>
 /// Handles database seeding operations for initial data setup.
 /// </summary>
@@ -36,22 +38,10 @@ internal class SeedDataHandler
     /// </summary>
     public void SeedData()
     {
-        this.SeedCallouts();
         this.SeedSampleRanks();
         this.SeedSampleDepartment();
         this.SeedVehicleConfigs();
         this.SeedLoadoutConfigs();
-    }
-
-// TODO: might want to move to a service
-    private void SeedCallouts()
-    {
-        this._logger.Debug("Seeding callout detail entities from addons...");
-#pragma warning disable
-        // var addonMetadataService = this._serviceProvider.GetService<IInternalAddonMetadataService>();
-        // addonMetadataService.CreateCalloutDetailsEntities();
-#pragma warning restore
-        this._logger.Debug("Seeding of callout detail entities completed.");
     }
 
     private void SeedSampleDepartment()

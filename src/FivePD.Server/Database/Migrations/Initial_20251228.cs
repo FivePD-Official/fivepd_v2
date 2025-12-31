@@ -1,6 +1,11 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database;
+using FivePD.Server.Database.Sql;
+using FivePD.Server.Database.Sql.Migration;
 
 namespace FivePD.Server.Database.Migrations;
 
@@ -11,337 +16,307 @@ public class CreateUsersTable_20251228 : IMigration
     public string Id => "20251228_001";
     public string Description => "Create user-related tables";
 
-    public void Up(IDbConnection connection)
+    public void Up(IDbConnection connection, DatabaseType databaseType)
     {
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.UserCallsigns} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                `Values` TEXT
-            )");
+        new TableBuilder(connection, databaseType, TableNames.UserCallsigns)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Values", x => x.Text())
+            .Execute();
+        
+        new TableBuilder(connection, databaseType, TableNames.Departments)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("Callsign", x => x.Varchar(50).NotNull())
+            .Column("UseGlobalRanks", x => x.Boolean().NotNull().Default(1))
+            .Column("CallsignFormat", x => x.Text())
+            .Column("MaxUsers", x => x.Integer().NotNull().Default(0))
+            .Column("DefaultRankId", x => x.Integer())
+            .Index("idx_departments_name", "Name")
+            .Execute();
+  
+        new TableBuilder(connection, databaseType, TableNames.Ranks)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Global", x => x.Boolean().NotNull().Default(0))
+            .Column("RequiredXp", x => x.Integer().NotNull().Default(0))
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("Permission", x => x.Text())
+            .Execute();
+             
+        new TableBuilder(connection, databaseType, TableNames.Divisions)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("DepartmentId", x => x.Integer())
+            .Index("idx_divisions_dept", "DepartmentId")
+            .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.Departments} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Name VARCHAR(255) NOT NULL,
-                Callsign VARCHAR(50) NOT NULL,
-                UseGlobalRanks TINYINT(1) NOT NULL DEFAULT 1,
-                CallsignFormat TEXT,
-                MaxUsers INT NOT NULL DEFAULT 0,
-                DefaultRankId INT,
-                INDEX idx_departments_name (Name)
-            )");
+        new TableBuilder(connection, databaseType, TableNames.DepartmentRanks)
+            .Column("DepartmentId", x => x.Integer().NotNull())
+            .Column("RankId", x => x.Integer().NotNull())
+            .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteCascade())
+            .ForeignKey("RankId", x => x.References(TableNames.Ranks, "Id").OnDeleteCascade())
+            .PrimaryKey("DepartmentId", "RankId")
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.Ranks} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Global TINYINT(1) NOT NULL DEFAULT 0,
-                RequiredXp INT NOT NULL DEFAULT 0,
-                Name VARCHAR(255) NOT NULL,
-                Permission TEXT
-            )");
+        new TableBuilder(connection, databaseType, TableNames.DepartmentAreaCoordinates)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("DepartmentId", x => x.Integer())
+            .Column("X", x => x.Float().NotNull())
+            .Column("Y", x => x.Float().NotNull())
+            .Index("idx_dept_area_coords_dept", "DepartmentId")
+            .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.Divisions} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Name VARCHAR(255) NOT NULL,
-                DepartmentId INT,
-                INDEX idx_divisions_dept (DepartmentId),
-                FOREIGN KEY (DepartmentId) REFERENCES {TableNames.Departments}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.IncidentHistories)
+            .Column("Id", x => x.Varchar(255).PrimaryKey())
+            .Column("IncidentId", x => x.Varchar(255).NotNull())
+            .Column("Title", x => x.Varchar(255).NotNull())
+            .Column("Description", x => x.Text())
+            .Column("Location", x => x.Varchar(255))
+            .Column("Priority", x => x.Integer().NotNull())
+            .Column("Type", x => x.Integer().NotNull())
+            .Column("GeneratedAt", x => x.DateTime().NotNull())
+            .Index("idx_incident_histories_incident_id", "IncidentId")
+            .Index("idx_incident_histories_generated_at", "GeneratedAt")
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.DepartmentRanks} (
-                DepartmentId INT NOT NULL,
-                RankId INT NOT NULL,
-                PRIMARY KEY (DepartmentId, RankId),
-                FOREIGN KEY (DepartmentId) REFERENCES {TableNames.Departments}(Id) ON DELETE CASCADE,
-                FOREIGN KEY (RankId) REFERENCES {TableNames.Ranks}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.Users)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("AccessFivePD", x => x.Boolean().NotNull().Default(1))
+            .Column("PreferredLanguage", x => x.Varchar(10))
+            .Column("FirstLogin", x => x.Boolean().NotNull().Default(1))
+            .Column("DismissedWelcomeMessage", x => x.Boolean().NotNull().Default(0))
+            .Column("Name", x => x.Varchar(255))
+            .Column("IdentifierLicense", x => x.Varchar(255))
+            .Column("IdentifierDiscord", x => x.Varchar(255))
+            .Column("IdentifierSteam", x => x.Varchar(255))
+            .Column("IdentifierXbl", x => x.Varchar(255))
+            .Column("IdentifierLive", x => x.Varchar(255))
+            .Column("Xp", x => x.Integer().NotNull().Default(0))
+            .Column("AudioVolume", x => x.Double().NotNull().Default(0.5))
+            .Column("Role", x => x.Integer().NotNull().Default(0))
+            .Column("Callsign", x => x.Varchar(50))
+            .Column("UserCallsignFormatId", x => x.Integer())
+            .Column("DepartmentId", x => x.Integer())
+            .Column("DivisionId", x => x.Integer())
+            .Column("RankId", x => x.Integer())
+            .Column("FixedRank", x => x.Boolean().NotNull().Default(0))
+            .Index("idx_users_license", "IdentifierLicense")
+            .Index("idx_users_discord", "IdentifierDiscord")
+            .Index("idx_users_steam", "IdentifierSteam")
+            .Index("idx_users_dept", "DepartmentId")
+            .Index("idx_users_division", "DivisionId")
+            .Index("idx_users_rank", "RankId")
+            .ForeignKey("UserCallsignFormatId", x => x.References(TableNames.UserCallsigns, "Id").OnDeleteSetNull())
+            .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteSetNull())
+            .ForeignKey("DivisionId", x => x.References(TableNames.Divisions, "Id").OnDeleteSetNull())
+            .ForeignKey("RankId", x => x.References(TableNames.Ranks, "Id").OnDeleteSetNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.DepartmentAreaCoordinates} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                DepartmentId INT,
-                X FLOAT NOT NULL,
-                Y FLOAT NOT NULL,
-                INDEX idx_dept_area_coords_dept (DepartmentId),
-                FOREIGN KEY (DepartmentId) REFERENCES {TableNames.Departments}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.Messages)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Sender", x => x.Varchar(255).NotNull())
+            .Column("Subject", x => x.Varchar(255).NotNull())
+            .Column("Content", x => x.Text().NotNull())
+            .Column("SentAt", x => x.DateTime().NotNull())
+            .Column("HasRead", x => x.Boolean().NotNull().Default(0))
+            .Column("UserId", x => x.Integer())
+            .Index("idx_messages_user", "UserId")
+            .ForeignKey("UserId", x => x.References(TableNames.Users, "Id").OnDeleteSetNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.IncidentHistories} (
-                Id VARCHAR(255) PRIMARY KEY,
-                IncidentId VARCHAR(255) NOT NULL,
-                Title VARCHAR(255) NOT NULL,
-                Description TEXT,
-                Location VARCHAR(255),
-                Priority INT NOT NULL,
-                Type INT NOT NULL,
-                GeneratedAt DATETIME NOT NULL,
-                INDEX idx_incident_histories_incident_id (IncidentId),
-                INDEX idx_incident_histories_generated_at (GeneratedAt)
-            )");
+        new TableBuilder(connection, databaseType, TableNames.IncidentHistoryUsers)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("UserId", x => x.Integer().NotNull())
+            .Column("IncidentHistoryId", x => x.Varchar(255).NotNull())
+            .Index("idx_incident_history_users_user", "UserId")
+            .Index("idx_incident_history_users_incident", "IncidentHistoryId")
+            .ForeignKey("UserId", x => x.References(TableNames.Users, "Id").OnDeleteCascade())
+            .ForeignKey("IncidentHistoryId", x => x.References(TableNames.IncidentHistories, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.Users} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                AccessFivePD TINYINT(1) NOT NULL DEFAULT 1,
-                PreferredLanguage VARCHAR(10),
-                FirstLogin TINYINT(1) NOT NULL DEFAULT 1,
-                DismissedWelcomeMessage TINYINT(1) NOT NULL DEFAULT 0,
-                Name VARCHAR(255),
-                IdentifierLicense VARCHAR(255),
-                IdentifierDiscord VARCHAR(255),
-                IdentifierSteam VARCHAR(255),
-                IdentifierXbl VARCHAR(255),
-                IdentifierLive VARCHAR(255),
-                Xp INT NOT NULL DEFAULT 0,
-                AudioVolume DOUBLE NOT NULL DEFAULT 0.5,
-                Role INT NOT NULL DEFAULT 0,
-                Callsign VARCHAR(50),
-                UserCallsignFormatId INT,
-                DepartmentId INT,
-                DivisionId INT,
-                RankId INT,
-                FixedRank TINYINT(1) NOT NULL DEFAULT 0,
-                INDEX idx_users_license (IdentifierLicense),
-                INDEX idx_users_discord (IdentifierDiscord),
-                INDEX idx_users_steam (IdentifierSteam),
-                INDEX idx_users_dept (DepartmentId),
-                INDEX idx_users_division (DivisionId),
-                INDEX idx_users_rank (RankId),
-                FOREIGN KEY (UserCallsignFormatId) REFERENCES {TableNames.UserCallsigns}(Id) ON DELETE SET NULL,
-                FOREIGN KEY (DepartmentId) REFERENCES {TableNames.Departments}(Id) ON DELETE SET NULL,
-                FOREIGN KEY (DivisionId) REFERENCES {TableNames.Divisions}(Id) ON DELETE SET NULL,
-                FOREIGN KEY (RankId) REFERENCES {TableNames.Ranks}(Id) ON DELETE SET NULL
-            )");
+        new TableBuilder(connection, databaseType, TableNames.PedData)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Gender", x => x.Integer().NotNull())
+            .Column("Firstname", x => x.Varchar(255).NotNull())
+            .Column("Lastname", x => x.Varchar(255).NotNull())
+            .Column("Birthdate", x => x.DateTime().NotNull())
+            .Column("Items", x => x.Text())
+            .Column("Warrants", x => x.Text())
+            .Column("AlcoholLevel", x => x.Double().NotNull())
+            .Column("Drugs", x => x.Text())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.Messages} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Sender VARCHAR(255) NOT NULL,
-                Subject VARCHAR(255) NOT NULL,
-                Content TEXT NOT NULL,
-                SentAt DATETIME NOT NULL,
-                HasRead TINYINT(1) NOT NULL DEFAULT 0,
-                UserId INT,
-                INDEX idx_messages_user (UserId),
-                FOREIGN KEY (UserId) REFERENCES {TableNames.Users}(Id) ON DELETE SET NULL
-            )");
+        new TableBuilder(connection, databaseType, TableNames.PedLicenses)
+            .Column("Id", x => x.Varchar(255).PrimaryKey())
+            .Column("PedDataId", x => x.Integer().NotNull())
+            .Column("Type", x => x.Integer().NotNull())
+            .Column("Status", x => x.Integer().NotNull())
+            .Column("IssueDate", x => x.DateTime().NotNull())
+            .Column("ExpirationDate", x => x.DateTime().NotNull())
+            .Index("idx_ped_licenses_ped", "PedDataId")
+            .ForeignKey("PedDataId", x => x.References(TableNames.PedData, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.IncidentHistoryUsers} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                UserId INT NOT NULL,
-                IncidentHistoryId VARCHAR(255) NOT NULL,
-                INDEX idx_incident_history_users_user (UserId),
-                INDEX idx_incident_history_users_incident (IncidentHistoryId),
-                FOREIGN KEY (UserId) REFERENCES {TableNames.Users}(Id) ON DELETE CASCADE,
-                FOREIGN KEY (IncidentHistoryId) REFERENCES {TableNames.IncidentHistories}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.VehicleData)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("PedDataId", x => x.Integer())
+            .Column("LicensePlate", x => x.Varchar(50).NotNull())
+            .Column("Color", x => x.Varchar(50))
+            .Column("Brand", x => x.Varchar(255))
+            .Column("Items", x => x.Text())
+            .Index("idx_vehicle_data_ped", "PedDataId")
+            .ForeignKey("PedDataId", x => x.References(TableNames.PedData, "Id").OnDeleteSetNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.PedData} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Gender INT NOT NULL,
-                Firstname VARCHAR(255) NOT NULL,
-                Lastname VARCHAR(255) NOT NULL,
-                Birthdate DATETIME NOT NULL,
-                Items TEXT,
-                Warrants TEXT,
-                AlcoholLevel DOUBLE NOT NULL,
-                Drugs TEXT
-            )");
+        new TableBuilder(connection, databaseType, TableNames.VehicleDocuments)
+            .Column("Id", x => x.Varchar(255).PrimaryKey())
+            .Column("VehicleDataId", x => x.Integer().NotNull())
+            .Column("Type", x => x.Integer().NotNull())
+            .Column("Status", x => x.Integer().NotNull())
+            .Column("IssueDate", x => x.DateTime().NotNull())
+            .Column("ExpirationDate", x => x.DateTime().NotNull())
+            .Index("idx_vehicle_documents_vehicle", "VehicleDataId")
+            .ForeignKey("VehicleDataId", x => x.References(TableNames.VehicleData, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.PedLicenses} (
-                Id VARCHAR(255) PRIMARY KEY,
-                PedDataId INT NOT NULL,
-                Type INT NOT NULL,
-                Status INT NOT NULL,
-                IssueDate DATETIME NOT NULL,
-                ExpirationDate DATETIME NOT NULL,
-                INDEX idx_ped_licenses_ped (PedDataId),
-                FOREIGN KEY (PedDataId) REFERENCES {TableNames.PedData}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.VehicleConfigs)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Type", x => x.Integer().NotNull())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("Model", x => x.Varchar(255).NotNull())
+            .Column("Livery", x => x.Integer().NotNull().Default(0))
+            .Column("Extras", x => x.Text())
+            .Column("Options", x => x.Text())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.VehicleData} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                PedDataId INT,
-                LicensePlate VARCHAR(50) NOT NULL,
-                Color VARCHAR(50),
-                Brand VARCHAR(255),
-                Items TEXT,
-                INDEX idx_vehicle_data_ped (PedDataId),
-                FOREIGN KEY (PedDataId) REFERENCES {TableNames.PedData}(Id) ON DELETE SET NULL
-            )");
+        new TableBuilder(connection, databaseType, TableNames.CalloutDetails)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Active", x => x.Boolean().NotNull().Default(0))
+            .Column("TypeName", x => x.Varchar(255).NotNull())
+            .Column("AssemblyName", x => x.Varchar(255).NotNull())
+            .Column("RulesetType", x => x.Integer().NotNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.VehicleDocuments} (
-                Id VARCHAR(255) PRIMARY KEY,
-                VehicleDataId INT NOT NULL,
-                Type INT NOT NULL,
-                Status INT NOT NULL,
-                IssueDate DATETIME NOT NULL,
-                ExpirationDate DATETIME NOT NULL,
-                INDEX idx_vehicle_documents_vehicle (VehicleDataId),
-                FOREIGN KEY (VehicleDataId) REFERENCES {TableNames.VehicleData}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.CalloutDetailsDepartments)
+            .Column("CalloutDetailsId", x => x.Integer().NotNull())
+            .Column("DepartmentId", x => x.Integer().NotNull())
+            .PrimaryKey("CalloutDetailsId", "DepartmentId")
+            .ForeignKey("CalloutDetailsId", x => x.References(TableNames.CalloutDetails, "Id").OnDeleteCascade())
+            .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.VehicleConfigs} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Type INT NOT NULL,
-                Name VARCHAR(255) NOT NULL,
-                Model VARCHAR(255) NOT NULL,
-                Livery INT NOT NULL DEFAULT 0,
-                Extras TEXT,
-                Options TEXT
-            )");
+        new TableBuilder(connection, databaseType, TableNames.VariableDataSets)
+            .Column("Id", x => x.Varchar(255).PrimaryKey())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.CalloutDetails} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Active TINYINT(1) NOT NULL DEFAULT 0,
-                TypeName VARCHAR(255) NOT NULL,
-                AssemblyName VARCHAR(255) NOT NULL,
-                RulesetType INT NOT NULL
-            )");
+        new TableBuilder(connection, databaseType, TableNames.VariableDataEntities)
+            .Column("Id", x => x.Varchar(255).PrimaryKey())
+            .Column("SetId", x => x.Varchar(255).NotNull())
+            .Index("idx_variable_data_entities_set", "SetId")
+            .ForeignKey("SetId", x => x.References(TableNames.VariableDataSets, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.CalloutDetailsDepartments} (
-                CalloutDetailsId INT NOT NULL,
-                DepartmentId INT NOT NULL,
-                PRIMARY KEY (CalloutDetailsId, DepartmentId),
-                FOREIGN KEY (CalloutDetailsId) REFERENCES {TableNames.CalloutDetails}(Id) ON DELETE CASCADE,
-                FOREIGN KEY (DepartmentId) REFERENCES {TableNames.Departments}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.VariableDataAttributes)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("SetId", x => x.Varchar(255).NotNull())
+            .Column("DataType", x => x.Integer().NotNull())
+            .Column("AddonId", x => x.Varchar(255).NotNull())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("Order", x => x.Integer().NotNull())
+            .Column("Required", x => x.Boolean().NotNull().Default(0))
+            .Column("Hidden", x => x.Boolean().NotNull().Default(0))
+            .Column("Readonly", x => x.Boolean().NotNull().Default(0))
+            .Column("ShowInGrid", x => x.Boolean().NotNull().Default(0))
+            .Column("Placeholder", x => x.Varchar(255))
+            .Column("Label", x => x.Varchar(255))
+            .Column("HelpLabel", x => x.Varchar(255))
+            .Column("Options", x => x.Text())
+            .Index("idx_variable_data_attributes_set", "SetId")
+            .ForeignKey("SetId", x => x.References(TableNames.VariableDataSets, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.VariableDataSets} (
-                Id VARCHAR(255) PRIMARY KEY
-            )");
+        new TableBuilder(connection, databaseType, TableNames.VariableDataValues)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("AttributeId", x => x.Integer().NotNull())
+            .Column("EntityId", x => x.Varchar(255).NotNull())
+            .Column("Value", x => x.Text())
+            .Index("idx_variable_data_values_attribute", "AttributeId")
+            .Index("idx_variable_data_values_entity", "EntityId")
+            .ForeignKey("AttributeId", x => x.References(TableNames.VariableDataAttributes, "Id").OnDeleteCascade())
+            .ForeignKey("EntityId", x => x.References(TableNames.VariableDataEntities, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.VariableDataEntities} (
-                Id VARCHAR(255) PRIMARY KEY,
-                SetId VARCHAR(255) NOT NULL,
-                INDEX idx_variable_data_entities_set (SetId),
-                FOREIGN KEY (SetId) REFERENCES {TableNames.VariableDataSets}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.Locations)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("Type", x => x.Integer().NotNull())
+            .Column("Position", x => x.Text().NotNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.VariableDataAttributes} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                SetId VARCHAR(255) NOT NULL,
-                DataType INT NOT NULL,
-                AddonId VARCHAR(255) NOT NULL,
-                Name VARCHAR(255) NOT NULL,
-                `Order` INT NOT NULL,
-                Required TINYINT(1) NOT NULL DEFAULT 0,
-                Hidden TINYINT(1) NOT NULL DEFAULT 0,
-                Readonly TINYINT(1) NOT NULL DEFAULT 0,
-                ShowInGrid TINYINT(1) NOT NULL DEFAULT 0,
-                Placeholder VARCHAR(255),
-                Label VARCHAR(255),
-                HelpLabel VARCHAR(255),
-                Options TEXT,
-                INDEX idx_variable_data_attributes_set (SetId),
-                FOREIGN KEY (SetId) REFERENCES {TableNames.VariableDataSets}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.AssistanceServiceTypeConfigs)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("TypeName", x => x.Varchar(255).NotNull())
+            .Column("AssemblyName", x => x.Varchar(255).NotNull())
+            .Column("Active", x => x.Boolean().NotNull().Default(0))
+            .Column("Enabled", x => x.Boolean().NotNull().Default(0))
+            .Column("SpawnType", x => x.Varchar(50).NotNull().Default("AUTO"))
+            .Column("ManualSpawnLocations", x => x.Text())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.VariableDataValues} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                AttributeId INT NOT NULL,
-                EntityId VARCHAR(255) NOT NULL,
-                Value TEXT,
-                INDEX idx_variable_data_values_attribute (AttributeId),
-                INDEX idx_variable_data_values_entity (EntityId),
-                FOREIGN KEY (AttributeId) REFERENCES {TableNames.VariableDataAttributes}(Id) ON DELETE CASCADE,
-                FOREIGN KEY (EntityId) REFERENCES {TableNames.VariableDataEntities}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.AssistanceServiceStations)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("Position", x => x.Text().NotNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.Locations} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Name VARCHAR(255) NOT NULL,
-                Type INT NOT NULL,
-                Position TEXT NOT NULL
-            )");
+        new TableBuilder(connection, databaseType, TableNames.AssistanceServiceStationTypeConfigs)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("AssistanceServiceStationId", x => x.Integer().NotNull())
+            .Column("TypeConfigId", x => x.Integer().NotNull())
+            .Column("Capacity", x => x.Integer().NotNull())
+            .Column("ActiveCapacity", x => x.Integer().NotNull())
+            .Index("idx_assistance_station_type_configs_type", "TypeConfigId")
+            .Index("idx_assistance_station", "AssistanceServiceStationId")
+            .ForeignKey("TypeConfigId", x => x.References(TableNames.AssistanceServiceTypeConfigs, "Id").OnDeleteCascade())
+            .ForeignKey("AssistanceServiceStationId", x => x.References(TableNames.AssistanceServiceStations, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.AssistanceServiceTypeConfigs} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                TypeName VARCHAR(255) NOT NULL,
-                AssemblyName VARCHAR(255) NOT NULL,
-                Active TINYINT(1) NOT NULL DEFAULT 0,
-                Enabled TINYINT(1) NOT NULL DEFAULT 0,
-                SpawnType VARCHAR(50) NOT NULL DEFAULT 'AUTO',
-                ManualSpawnLocations TEXT
-            )");
+        new TableBuilder(connection, databaseType, TableNames.Weapons)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("Model", x => x.Varchar(255).NotNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.AssistanceServiceStations} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Name VARCHAR(255) NOT NULL,
-                Position TEXT NOT NULL
-            )");
+        new TableBuilder(connection, databaseType, TableNames.WeaponComponents)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Column("HashKey", x => x.Varchar(255).NotNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.AssistanceServiceStationTypeConfigs} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                AssistanceServiceStationId INT NOT NULL,
-                TypeConfigId INT NOT NULL,
-                Capacity INT NOT NULL,
-                ActiveCapacity INT NOT NULL,
-                INDEX idx_assistance_station_type_configs_type (TypeConfigId),
-                FOREIGN KEY (TypeConfigId) REFERENCES {TableNames.AssistanceServiceTypeConfigs}(Id) ON DELETE CASCADE,
-                INDEX idx_assistance_station (AssistanceServiceStationId),
-                FOREIGN KEY (AssistanceServiceStationId) REFERENCES {TableNames.AssistanceServiceStations}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.LoadoutConfigs)
+            .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
+            .Column("Name", x => x.Varchar(255).NotNull())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.Weapons} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Name VARCHAR(255) NOT NULL,
-                Model VARCHAR(255) NOT NULL
-            )");
+        new TableBuilder(connection, databaseType, TableNames.LoadoutWeapon)
+            .Column("LoadoutConfigId", x => x.Integer().NotNull())
+            .Column("WeaponId", x => x.Integer().NotNull())
+            .PrimaryKey("LoadoutConfigId", "WeaponId")
+            .ForeignKey("LoadoutConfigId", x => x.References(TableNames.LoadoutConfigs, "Id").OnDeleteCascade())
+            .ForeignKey("WeaponId", x => x.References(TableNames.Weapons, "Id").OnDeleteCascade())
+            .Execute();
 
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.WeaponComponents} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Name VARCHAR(255) NOT NULL,
-                HashKey VARCHAR(255) NOT NULL
-            )");
-
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.LoadoutConfigs} (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                Name VARCHAR(255) NOT NULL
-            )");
-
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.LoadoutWeapon} (
-                LoadoutConfigId INT NOT NULL,
-                WeaponId INT NOT NULL,
-                PRIMARY KEY (LoadoutConfigId, WeaponId),
-                FOREIGN KEY (LoadoutConfigId) REFERENCES {TableNames.LoadoutConfigs}(Id) ON DELETE CASCADE,
-                FOREIGN KEY (WeaponId) REFERENCES {TableNames.Weapons}(Id) ON DELETE CASCADE
-            )");
-
-        connection.Execute($@"
-            CREATE TABLE IF NOT EXISTS {TableNames.WeaponWeaponComponent} (
-                WeaponId INT NOT NULL,
-                WeaponComponentId INT NOT NULL,
-                PRIMARY KEY (WeaponId, WeaponComponentId),
-                FOREIGN KEY (WeaponId) REFERENCES {TableNames.Weapons}(Id) ON DELETE CASCADE,
-                FOREIGN KEY (WeaponComponentId) REFERENCES {TableNames.WeaponComponents}(Id) ON DELETE CASCADE
-            )");
+        new TableBuilder(connection, databaseType, TableNames.WeaponWeaponComponent)
+            .Column("WeaponId", x => x.Integer().NotNull())
+            .Column("WeaponComponentId", x => x.Integer().NotNull())
+            .PrimaryKey("WeaponId", "WeaponComponentId")
+            .ForeignKey("WeaponId", x => x.References(TableNames.Weapons, "Id").OnDeleteCascade())
+            .ForeignKey("WeaponComponentId", x => x.References(TableNames.WeaponComponents, "Id").OnDeleteCascade())
+            .Execute();
     }
 
-    public void Down(IDbConnection connection)
+    public void Down(IDbConnection connection, DatabaseType databaseType)
     {
         connection.Execute($"DROP TABLE IF EXISTS {TableNames.WeaponWeaponComponent}");
         connection.Execute($"DROP TABLE IF EXISTS {TableNames.LoadoutWeapon}");

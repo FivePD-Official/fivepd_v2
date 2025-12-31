@@ -2,6 +2,8 @@ using System.Data;
 
 namespace FivePD.Server.Database.Migrations;
 
+#pragma warning disable
+
 /// <summary>
 /// Interface for database migrations.
 /// </summary>
@@ -21,11 +23,11 @@ public interface IMigration
     /// Applies the migration to bring the database schema to the desired state.
     /// </summary>
     /// <param name="connection">The database connection used to execute the migration.</param>
-    void Up(IDbConnection connection);
+    void Up(IDbConnection connection, DatabaseType databaseType);
 
     /// <summary>
     /// Reverts the applied migration for the database schema to its previous state.
     /// </summary>
     /// <param name="connection">The database connection used to execute the rollback.</param>
-    void Down(IDbConnection connection);
+    void Down(IDbConnection connection, DatabaseType databaseType);
 }

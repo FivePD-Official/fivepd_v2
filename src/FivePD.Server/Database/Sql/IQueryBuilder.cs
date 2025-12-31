@@ -42,6 +42,7 @@ public interface IInsertTableBuilder
 
 public interface IInsertBuilder
 {
+    IInsertBuilder OnDuplicateKeyUpdate(params string[] customKeys);
     SqlBuilderResult Build();
 }
 

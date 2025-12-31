@@ -6,6 +6,7 @@ using FivePD.Common.ConfigModels;
 using FivePD.Common.Exceptions;
 using FivePD.Common.Extensions;
 using FivePD.Server.Attributes;
+using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using Newtonsoft.Json;
@@ -51,6 +52,15 @@ public class ConfigService : IConfigService, IOnInit
 
     /// <inheritdoc />
     public List<string> Lastnames => this._fileHandlerService.LoadStringList("/Config/last-names.txt");
+
+    /// <inheritdoc />
+    public DatabaseType DatabaseType => this.GeneralConfig.Database.Type.ToLower() switch
+    {
+        "mysql" => DatabaseType.MySql,
+        "mariadb" => DatabaseType.MariaDb,
+        "sqlite" => DatabaseType.SQLite,
+        _ => DatabaseType.MySql,
+    };
 
     /// <inheritdoc />
     void IOnInit.OnInit()

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database.Migrations;
 using FivePD.Server.Interfaces;
 using Serilog;
 
 namespace FivePD.Server.Database;
+
+#pragma warning disable
 
 /// <summary>
 /// Handles database schema creation and migrations for Dapper.
@@ -18,6 +21,7 @@ public class DatabaseMigrationManager
 {
     private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
     private readonly ILogger _logger;
+    private readonly DatabaseType _databaseType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DatabaseMigrationManager"/> class.
@@ -26,10 +30,12 @@ public class DatabaseMigrationManager
     /// </summary>
     /// <param name="dbConnectionFactory">The <see cref="IDapperDatabaseConnectionFactory"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
-    public DatabaseMigrationManager(IDapperDatabaseConnectionFactory dbConnectionFactory, ILogger logger)
+    public DatabaseMigrationManager(IDapperDatabaseConnectionFactory dbConnectionFactory, ILogger logger, DatabaseType databaseType)
     {
         this._dbConnectionFactory = dbConnectionFactory;
         this._logger = logger;
+
+        this._databaseType = databaseType;
     }
 
     /// <summary>
@@ -62,14 +68,15 @@ public class DatabaseMigrationManager
             try
             {
                 this._logger.Information("Applying migration: {migrationId} - {migrationDescription}", migration.Id, migration.Description);
-                migration.Up(connection);
+                migration.Up(connection, this._databaseType);
                 this.MarkMigrationAsApplied(connection, migration.Id, migration.Description);
                 this._logger.Information("Applied migration: {migrationId}", migration.Id);
             }
             catch (Exception ex)
             {
-                this._logger.Error("Failed to apply migration {migrationId}: {exMessage}", migration.Id, ex.Message);
+                this._logger.Fatal("Failed to apply migration {migrationId}: {exMessage}", migration.Id, ex.Message);
                 this.RevertMigration(migration.Id, true);
+                LifecycleHandler.Stop();
             }
         }
 
@@ -105,13 +112,14 @@ public class DatabaseMigrationManager
 
         try
         {
-            migration.Down(connection);
+            migration.Down(connection, this._databaseType);
             this.UnmarkMigration(connection, migrationId);
             this._logger.Information("Reverted migration: {migrationId}", migrationId);
         }
         catch (Exception ex)
         {
-            this._logger.Error("Failed to revert migration {migrationId}: {exMessage}", migrationId, ex.Message);
+            this._logger.Fatal("Failed to revert migration {migrationId}: {exMessage}", migrationId, ex.Message);
+            LifecycleHandler.Stop();
         }
     }
 
@@ -122,20 +130,28 @@ public class DatabaseMigrationManager
         string checkSql;
         string createSql;
 
-#pragma warning disable
-        // if (connection is System.Data.SQLite.SQLiteConnection)
-        // {
-        //     checkSql = "SELECT name FROM sqlite_master WHERE type='table' AND name='__Migrations'";
-        //     createSql = @"
-        //         CREATE TABLE IF NOT EXISTS __Migrations (
-        //             Id TEXT PRIMARY KEY,
-        //             Description TEXT NOT NULL,
-        //             AppliedAt DATETIME NOT NULL
-        //         )";
-        // }
-#pragma warning restore
+        if (this._databaseType == DatabaseType.SQLite)
+        {
+            checkSql = $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{TableNames.FivePdMigrations}'";
+            createSql = $@"
+                CREATE TABLE IF NOT EXISTS {TableNames.FivePdMigrations} (
+                    Id TEXT PRIMARY KEY,
+                    Description TEXT NOT NULL,
+                    AppliedAt DATETIME NOT NULL
+                )";
+            var e = connection.ExecuteScalar<int>(checkSql) > 0;
+            if (e)
+            {
+                return;
+            }
+            Debug.WriteLine("Aaaa");
 
-        // MySQL/MariaDB
+            connection.Execute(createSql);
+            this._logger.Information("Created __fivepd_migrations table");
+
+            return;
+        }
+
         checkSql = $"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = '{TableNames.FivePdMigrations}'";
         createSql = $@"
             CREATE TABLE IF NOT EXISTS {TableNames.FivePdMigrations} (

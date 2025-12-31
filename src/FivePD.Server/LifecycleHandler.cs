@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SQLite;
 using FivePD.Server.Attributes;
 using MySqlConnector;
 using Serilog;
@@ -32,6 +33,13 @@ internal static class LifecycleHandler
         if (exception is MySqlException || exception.InnerException is MySqlException)
         {
             logger.Fatal("Database connection error. Make sure your database is running and configured correctly.");
+            logger.Fatal("Exception: {exception}", exception.InnerException ?? exception);
+            OnStopped?.Invoke(null, EventArgs.Empty);
+            IsStopped = true;
+        }
+        else if (exception is SQLiteException || exception.InnerException is SQLiteException)
+        {
+            logger.Fatal("SQLite database error. Make sure the database file is accessible and not corrupted.");
             logger.Fatal("Exception: {exception}", exception.InnerException ?? exception);
             OnStopped?.Invoke(null, EventArgs.Empty);
             IsStopped = true;

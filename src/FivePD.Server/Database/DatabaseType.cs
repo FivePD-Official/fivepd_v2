@@ -6,5 +6,5 @@ public enum DatabaseType
 {
     MySql,
     MariaDb,
-    SqLite
+    SQLite
 }

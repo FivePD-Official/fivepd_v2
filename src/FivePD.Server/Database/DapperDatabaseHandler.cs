@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using Dapper;
+using FivePD.Server.Database.Sql.Dialect;
 using FivePD.Server.Exceptions;
 using FivePD.Server.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,8 @@ using MySqlConnector;
 using Serilog;
 
 namespace FivePD.Server.Database;
+
+#pragma warning disable
 
 /// <summary>
 /// Handles database operations and ensures the correct setup and migration of the database using Dapper.
@@ -19,6 +22,7 @@ internal static class DapperDatabaseHandler
     private static ILogger _logger;
     private static IDapperDatabaseConnectionFactory _dbConnectionFactory;
     private static DatabaseMigrationManager _migrationManager;
+    private static IConfigService _configService;
 
     /// <summary>
     /// Sets the parameters of the current instance.
@@ -30,16 +34,79 @@ internal static class DapperDatabaseHandler
         _provider = serviceProvider;
         _logger = logger;
         _dbConnectionFactory = serviceProvider.GetService<IDapperDatabaseConnectionFactory>();
+        _configService = serviceProvider.GetService<IConfigService>();
 
         if (_dbConnectionFactory is null)
         {
             throw new DatabaseUsageException("No database context factory is available for usage.");
         }
 
-        _migrationManager = new DatabaseMigrationManager(_dbConnectionFactory, logger);
+        _migrationManager = new DatabaseMigrationManager(_dbConnectionFactory, logger, _configService.DatabaseType);
 
         DapperTypeHandlers.Register();
         _logger.Information("Dapper type handlers registered successfully");
+    }
+
+    public static void EnsureDatabaseConfig()
+    {
+        var config = _configService.GeneralConfig.Database;
+        if (config is null)
+        {
+            Shutdown("Database configuration is not available.");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(config.Type))
+        {
+            Shutdown("Database type is not specified.");
+            return;
+        }
+
+        var type = config.Type.ToLower();
+        if (type != "sqlite" && type != "mysql" && type != "mariadb")
+        {
+            Shutdown("Unsupported database type \"{configType}\" specified in configuration.", config.Type);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(config.Name))
+        {
+            Shutdown("Database name is not specified.");
+            return;
+        }
+
+        if (_configService.DatabaseType is DatabaseType.MySql or DatabaseType.MariaDb)
+        {
+            if (string.IsNullOrWhiteSpace(config.Address))
+            {
+                Shutdown("Database address is missing.");
+            }
+
+            if (config.Port <= 0)
+            {
+                Shutdown("Invalid database port.");
+            }
+
+            if (string.IsNullOrWhiteSpace(config.User))
+            {
+                Shutdown("Database user is missing.");
+            }
+
+            if (string.IsNullOrWhiteSpace(config.Password))
+            {
+                Shutdown("Database password is missing.");
+            }
+        }
+
+        _logger.Information("Database configuration is valid. Selected database type: {DatabaseType}", _configService.DatabaseType);
+        SqlDialectRegistry.SetDialect(_configService.DatabaseType);
+        return;
+
+        void Shutdown(string message, params object[] parameters)
+        {
+            _logger.Fatal(message, parameters);
+            LifecycleHandler.Stop();
+        }
     }
 
     /// <summary>
@@ -53,6 +120,12 @@ internal static class DapperDatabaseHandler
             if (factory is null)
             {
                 _logger.Warning("Unable to determine database factory type, skipping database creation check");
+                return;
+            }
+
+            if (_configService.DatabaseType == DatabaseType.SQLite)
+            {
+                _logger.Information("SQLite database will be created automatically when needed");
                 return;
             }
 
