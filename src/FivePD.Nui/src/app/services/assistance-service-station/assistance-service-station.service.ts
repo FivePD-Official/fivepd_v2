@@ -38,8 +38,14 @@ export class AssistanceServiceStationService extends CrudApiService<AssistanceSe
     return this._edit('NOT IMPLEMENTED', request);
   }
 
-  getTypeConfigsPage(collation?: Collation) {
-    return this._getPage<Page<AssistanceServiceStationTypeConfig>>('getStationTypeConfigsPage', collation);
+  getTypeConfigsPage(stationId: number, collation?: Collation) {
+    return this._getPage<Page<AssistanceServiceStationTypeConfig>>('getStationTypeConfigsPage', {
+      Page: collation?.Page ?? 0,
+      Filters: {
+        ...collation,
+        AssistanceServiceStationId: stationId,
+      }
+    });
   }
 
   getTypeConfig(id: Id) {

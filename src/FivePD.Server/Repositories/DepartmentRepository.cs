@@ -113,13 +113,14 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
     /// <returns>A list of ranks.</returns>
     public IEnumerable<Rank> GetRanksById(int departmentId)
     {
+        var builderResult = SqlBuilder.From($"{TableNames.Ranks} r")
+            .Select("r.*", typeof(Rank))
+            .InnerJoin(TableNames.DepartmentRanks, "dr", "r.Id = dr.RankId", splitColumn: "RankId")
+            .Where("dr.DepartmentId = @DepartmentId", new { DepartmentId = departmentId })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT r.*
-            FROM {TableNames.DepartmentRanks} dr
-            INNER JOIN {TableNames.Ranks} r ON dr.RankId = r.Id
-            WHERE dr.DepartmentId = @DepartmentId";
-        return connection.Query<Rank>(sql, new { DepartmentId = departmentId });
+        return connection.Query<Rank>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

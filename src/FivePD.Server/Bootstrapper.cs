@@ -225,6 +225,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<MessageRepository>();
         services.AddSingleton<CalloutDetailsRepository>();
         services.AddSingleton<LocationRepository>();
+        services.AddSingleton<AssistanceServiceStationRepository>();
+        services.AddSingleton<AssistanceServiceStationTypeConfigRepository>();
+        services.AddSingleton<AssistanceServiceTypeConfigRepository>();
 
         // Addons
         services.AddTransient<AddonLoggerService>();

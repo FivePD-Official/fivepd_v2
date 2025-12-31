@@ -286,19 +286,20 @@ public class CreateUsersTable_20251228 : IMigration
             CREATE TABLE IF NOT EXISTS {TableNames.AssistanceServiceStations} (
                 Id INT AUTO_INCREMENT PRIMARY KEY,
                 Name VARCHAR(255) NOT NULL,
-                X FLOAT NOT NULL,
-                Y FLOAT NOT NULL,
-                Z FLOAT NOT NULL
+                Position TEXT NOT NULL
             )");
 
         connection.Execute($@"
             CREATE TABLE IF NOT EXISTS {TableNames.AssistanceServiceStationTypeConfigs} (
                 Id INT AUTO_INCREMENT PRIMARY KEY,
+                AssistanceServiceStationId INT NOT NULL,
                 TypeConfigId INT NOT NULL,
                 Capacity INT NOT NULL,
                 ActiveCapacity INT NOT NULL,
                 INDEX idx_assistance_station_type_configs_type (TypeConfigId),
-                FOREIGN KEY (TypeConfigId) REFERENCES {TableNames.AssistanceServiceTypeConfigs}(Id) ON DELETE CASCADE
+                FOREIGN KEY (TypeConfigId) REFERENCES {TableNames.AssistanceServiceTypeConfigs}(Id) ON DELETE CASCADE,
+                INDEX idx_assistance_station (AssistanceServiceStationId),
+                FOREIGN KEY (AssistanceServiceStationId) REFERENCES {TableNames.AssistanceServiceStations}(Id) ON DELETE CASCADE
             )");
 
         connection.Execute($@"

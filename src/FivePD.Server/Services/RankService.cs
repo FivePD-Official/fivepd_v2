@@ -109,7 +109,9 @@ public class RankService : IRankService
     private void CreateGlobalUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<CreateGlobalRankRequest>(serializedRequest);
-        var ranks = this._rankRepository.GetAllWhere("Name = @Name AND Global = @Global", new { Name = request.Name, Global = true });
+        var ranks = this._rankRepository.GetAll(b => b
+            .Where("Name = @Name", new { Name = request.Name })
+            .Where("Global = @Global", new { Global = true }));
         if (ranks.Any())
         {
             this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.RANK.CREATE.TITLE", "ERROR.RANK.NAME_CONFLICT.DESCRIPTION");
@@ -186,9 +188,10 @@ public class RankService : IRankService
             return;
         }
 
-        var ranksExistsWithName = this._rankRepository.GetAllWhere(
-            "Name = @Name AND Global = @Global AND Id != @Id",
-            new { Name = request.Name, Global = true, Id = request.RankId });
+        var ranksExistsWithName = this._rankRepository.GetAll(b => b
+            .Where("Name = @Name", new { Name = request.Name })
+            .Where("Global = @Global", new { Global = true })
+            .Where("Id != @Id", new { Id = request.RankId }));
         if (ranksExistsWithName.Any())
         {
             this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.RANK.EDIT.TITLE", "ERROR.RANK.NAME_CONFLICT.DESCRIPTION");

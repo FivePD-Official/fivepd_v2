@@ -101,12 +101,6 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
             },
             result.Parameters,
             splitOn: result.SplitOn).FirstOrDefault();
-        // var b = SqlBuilder
-        //     .From(TableNames.VehicleData)
-        //     .Where("PedDataId = @PedDataId", new {PedDataId = id })
-        //     .Build();
-        // var vehicleDatas = connection.Query<VehicleData>(b.Sql, b.Parameters).ToList();
-        // pedData.VehicleData = vehicleDatas;
         return pedData;
     }
 
@@ -118,19 +112,20 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
     /// <returns>The added license with updated ID.</returns>
     public PedLicense AddLicense(PedData pedData, PedLicense license)
     {
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(
-            $@"INSERT INTO {TableNames.PedLicenses} (Id, PedDataId, Type, Status, IssueDate, ExpirationDate)
-            VALUES (@Id, @PedDataId, @Type, @Status, @IssueDate, @ExpirationDate);",
-            new
+        var builderResult = SqlBuilder.Into(TableNames.PedLicenses)
+            .Insert(new
             {
-                Id = license.Id,
+                license.Id,
                 PedDataId = pedData.Id,
-                Type = license.Type,
-                Status = license.Status,
-                IssueDate = license.IssueDate,
-                ExpirationDate = license.ExpirationDate
-            });
+                license.Type,
+                license.Status,
+                license.IssueDate,
+                license.ExpirationDate
+            })
+            .Build();
+
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
         return license;
     }
 
@@ -141,11 +136,14 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
     /// <param name="licenseId">The ID of the license to remove.</param>
     public void RemoveLicense(PedData pedData, string licenseId)
     {
+        var builderResult = SqlBuilder.From(TableNames.PedLicenses)
+            .Delete()
+            .Where("Id = @LicenseId", new { LicenseId = licenseId })
+            .Where("PedDataId = @PedDataId", new { PedDataId = pedData.Id })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(
-            $@"DELETE FROM {TableNames.PedLicenses} 
-            WHERE Id = @LicenseId AND PedDataId = @PedDataId",
-            new { LicenseId = licenseId, PedDataId = pedData.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -155,10 +153,12 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
     /// <returns>The license if found, null otherwise.</returns>
     public PedLicense GetLicense(string licenseId)
     {
+        var builderResult = SqlBuilder.From(TableNames.PedLicenses)
+            .Where("Id = @Id", new { Id = licenseId })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        return connection.QueryFirstOrDefault<PedLicense>(
-            $@"SELECT * FROM {TableNames.PedLicenses} WHERE Id = @Id",
-            new { Id = licenseId });
+        return connection.QueryFirstOrDefault<PedLicense>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -168,10 +168,12 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
     /// <returns>All licenses for the ped data.</returns>
     public IEnumerable<PedLicense> GetLicenses(PedData pedData)
     {
+        var builderResult = SqlBuilder.From(TableNames.PedLicenses)
+            .Where("PedDataId = @PedDataId", new { PedDataId = pedData.Id })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        return connection.Query<PedLicense>(
-            $@"SELECT * FROM {TableNames.PedLicenses} WHERE PedDataId = @PedDataId",
-            new { PedDataId = pedData.Id });
+        return connection.Query<PedLicense>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

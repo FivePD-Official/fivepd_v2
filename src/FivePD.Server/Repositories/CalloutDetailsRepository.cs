@@ -102,13 +102,14 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
     /// <returns>List of departments.</returns>
     public IEnumerable<Department> GetDepartments(CalloutDetails calloutDetails)
     {
+        var builderResult = SqlBuilder.From($"{TableNames.Departments} d")
+            .Select("d.*", typeof(Department))
+            .InnerJoin(TableNames.CalloutDetailsDepartments, "cdd", "d.Id = cdd.DepartmentId", splitColumn: "DepartmentId")
+            .Where("cdd.CalloutDetailsId = @CalloutDetailsId", new { CalloutDetailsId = calloutDetails.Id })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT d.* 
-            FROM {TableNames.Departments} d
-            INNER JOIN {TableNames.CalloutDetailsDepartments} cdd ON d.Id = cdd.DepartmentId
-            WHERE cdd.CalloutDetailsId = @CalloutDetailsId";
-        return connection.Query<Department>(sql, new { CalloutDetailsId = calloutDetails.Id });
+        return connection.Query<Department>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

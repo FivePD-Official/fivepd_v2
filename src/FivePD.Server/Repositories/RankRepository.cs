@@ -69,7 +69,7 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
     /// <returns>A list of global ranks.</returns>
     public IEnumerable<Rank> GetAllGlobal()
     {
-        return this.GetAllWhere("Global = @Global", new { Global = true });
+        return this.GetAll(b => b.Where("Global = @Global", new { Global = true }));
     }
 
     /// <summary>
@@ -81,15 +81,17 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
     /// <returns>A collection of <see cref="Rank"/> objects matching the provided criteria.</returns>
     public IEnumerable<Rank> GetRanksByDepartment(string rankName, int departmentId, int? rankId = null)
     {
-        var where = $"{this.TableName}.Name = @Name AND {this.TableName}.Global = 0 AND dr.DepartmentId = @DepartmentId";
-        if (rankId is not null)
-        {
-            where += $" AND {this.TableName}.Id != @RankId";
-        }
+        var builderResult = SqlBuilder.From($"{this.TableName} r")
+            .Select("r.*", typeof(Rank))
+            .InnerJoin(TableNames.DepartmentRanks, "dr", "r.Id = dr.RankId", splitColumn: "RankId")
+            .Where("r.Name = @Name", new { Name = rankName })
+            .Where("r.Global = 0")
+            .Where("dr.DepartmentId = @DepartmentId", new { DepartmentId = departmentId })
+            .If(rankId is not null, b => b.Where("r.Id != @RankId", new { RankId = rankId }))
+            .Build();
 
-        var sql =
-            $"SELECT {this.TableName}.* FROM {this.TableName} INNER JOIN {TableNames.DepartmentRanks} dr ON {this.TableName}.Id = dr.RankId WHERE {where}";
-        return this.Query<Rank>(sql, new { Name = rankName, DepartmentId = departmentId, RankId = rankId });
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        return connection.Query<Rank>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -138,12 +140,13 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
     /// <returns>A list of departments.</returns>
     public IEnumerable<Department> GetDepartmentsById(int rankId)
     {
+        var builderResult = SqlBuilder.From($"{TableNames.Departments} d")
+            .Select("d.*", typeof(Department))
+            .InnerJoin(TableNames.DepartmentRanks, "dr", "d.Id = dr.DepartmentId", splitColumn: "DepartmentId")
+            .Where("dr.RankId = @RankId", new { RankId = rankId })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT d.*
-            FROM {TableNames.DepartmentRanks} dr
-            INNER JOIN {TableNames.Departments} d ON dr.DepartmentId = d.Id
-            WHERE dr.RankId = @RankId";
-        return connection.Query<Department>(sql, new { RankId = rankId });
+        return connection.Query<Department>(builderResult.Sql, builderResult.Parameters);
     }
 }

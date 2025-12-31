@@ -116,19 +116,20 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     /// <returns>The added document with updated ID.</returns>
     public VehicleDocument AddDocument(VehicleData vehicleData, VehicleDocument document)
     {
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(
-            $@"INSERT INTO {TableNames.VehicleDocuments} (Id, VehicleDataId, Type, Status, IssueDate, ExpirationDate)
-            VALUES (@Id, @VehicleDataId, @Type, @Status, @IssueDate, @ExpirationDate);",
-            new
+        var builderResult = SqlBuilder.Into(TableNames.VehicleDocuments)
+            .Insert(new
             {
-                Id = document.Id,
+                document.Id,
                 VehicleDataId = vehicleData.Id,
-                Type = document.Type,
-                Status = document.Status,
-                IssueDate = document.IssueDate,
-                ExpirationDate = document.ExpirationDate
-            });
+                document.Type,
+                document.Status,
+                document.IssueDate,
+                document.ExpirationDate
+            })
+            .Build();
+
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
         return document;
     }
 
@@ -139,11 +140,14 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     /// <param name="documentId">The ID of the document to remove.</param>
     public void RemoveDocument(VehicleData vehicleData, string documentId)
     {
+        var builderResult = SqlBuilder.From(TableNames.VehicleDocuments)
+            .Delete()
+            .Where("Id = @DocumentId", new { DocumentId = documentId })
+            .Where("VehicleDataId = @VehicleDataId", new { VehicleDataId = vehicleData.Id })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(
-            $@"DELETE FROM {TableNames.VehicleDocuments} 
-            WHERE Id = @DocumentId AND VehicleDataId = @VehicleDataId",
-            new { DocumentId = documentId, VehicleDataId = vehicleData.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -153,10 +157,12 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     /// <returns>The document if found, null otherwise.</returns>
     public VehicleDocument GetDocument(string documentId)
     {
+        var builderResult = SqlBuilder.From(TableNames.VehicleDocuments)
+            .Where("Id = @Id", new { Id = documentId })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        return connection.QueryFirstOrDefault<VehicleDocument>(
-            $@"SELECT * FROM {TableNames.VehicleDocuments} WHERE Id = @Id",
-            new { Id = documentId });
+        return connection.QueryFirstOrDefault<VehicleDocument>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -166,10 +172,12 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     /// <returns>All documents for the vehicle data.</returns>
     public IEnumerable<VehicleDocument> GetDocuments(VehicleData vehicleData)
     {
+        var builderResult = SqlBuilder.From(TableNames.VehicleDocuments)
+            .Where("VehicleDataId = @VehicleDataId", new { VehicleDataId = vehicleData.Id })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        return connection.Query<VehicleDocument>(
-            $@"SELECT * FROM {TableNames.VehicleDocuments} WHERE VehicleDataId = @VehicleDataId",
-            new { VehicleDataId = vehicleData.Id });
+        return connection.Query<VehicleDocument>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

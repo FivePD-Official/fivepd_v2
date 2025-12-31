@@ -70,7 +70,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     /// <inheritdoc />
     public List<VehicleConfig<TOptions>> GetAll<TOptions>(VehicleConfigType type)
     {
-        return this._vehicleConfigRepository.GetAllWhere<TOptions>("Type = @Type", new { Type = type }).ToList();
+        return this._vehicleConfigRepository.GetAll<TOptions>(b => b.Where("Type = @Type", new { Type = type })).ToList();
     }
 
     [UIEvent(Events.UI.VehicleConfig.Get)]
@@ -192,7 +192,7 @@ public class VehicleConfigService : IVehicleConfigService, IOnInit
     private List<string> GetAllPoliceVehicleModelNames()
     {
         return this._vehicleConfigRepository
-            .GetAllWhere("Type = @Type", new { Type = VehicleConfigType.Police })
+            .GetAll(b => b.Where("Type = @Type", new { Type = VehicleConfigType.Police }))
             .Select(x => x.Model)
             .ToList();
     }

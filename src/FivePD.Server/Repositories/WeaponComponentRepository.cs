@@ -109,13 +109,14 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
     /// <returns>List of weapons.</returns>
     public IEnumerable<Weapon> GetWeapons(WeaponComponent component)
     {
+        var builderResult = SqlBuilder.From($"{TableNames.Weapons} w")
+            .Select("w.*", typeof(Weapon))
+            .InnerJoin(TableNames.WeaponWeaponComponent, "wwc", "w.Id = wwc.WeaponId", splitColumn: "WeaponId")
+            .Where("wwc.WeaponComponentId = @ComponentId", new { ComponentId = component.Id })
+            .Build();
+
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT w.* 
-            FROM {TableNames.Weapons} w
-            INNER JOIN {TableNames.WeaponWeaponComponent} wwc ON w.Id = wwc.WeaponId
-            WHERE wwc.WeaponComponentId = @ComponentId";
-        return connection.Query<Weapon>(sql, new { ComponentId = component.Id });
+        return connection.Query<Weapon>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

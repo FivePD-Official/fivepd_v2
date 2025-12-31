@@ -104,15 +104,32 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     }
 
     /// <summary>
-    /// Checks if an entity exists by its ID.
+    /// Checks whether an entity with the specified identifier exists in the database.
     /// </summary>
-    /// <param name="id">The entity ID.</param>
-    /// <returns>True if the entity exists, false otherwise.</returns>
+    /// <param name="id">The unique identifier of the entity to check for existence.</param>
+    /// <returns>True if the entity exists, otherwise false.</returns>
     public virtual bool Exists(TId id)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"SELECT COUNT(*) FROM {this.TableName} WHERE {this.IdColumn} = @Id";
-        return connection.ExecuteScalar<int>(sql, new { Id = id }) > 0;
+        var builderResult = SqlBuilder
+            .From(this.TableName)
+            .Where($"{this.IdColumn} = @Id", new { Id = id })
+            .BuildCount();
+        return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
+    }
+
+    /// <summary>
+    /// Determines whether any record exists in the database table based on the specified query builder configuration.
+    /// </summary>
+    /// <param name="queryBuilder">The query builder used to configure the query for checking existence.</param>
+    /// <returns>True if at least one record exists based on the configured query, otherwise false.</returns>
+    public virtual bool Exists(Action<IQueryBuilder> queryBuilder)
+    {
+        var builder = SqlBuilder.From(this.TableName);
+        queryBuilder?.Invoke(builder);
+        var builderResult = builder.BuildCount();
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
     }
 
     /// <summary>
@@ -130,71 +147,19 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     /// Gets all entities.
     /// </summary>
     /// <returns>All entities.</returns>
-    public virtual IEnumerable<TEntity> GetAll()
+    public virtual IEnumerable<TEntity> GetAll(Action<IQueryBuilder> queryBuilder = null)
     {
-        return this.GetAllWhere();
-    }
-
-    /// <summary>
-    /// Gets all entities that satisfy the specified condition.
-    /// </summary>
-    /// <param name="condition">The SQL condition (without WHERE). If null or empty, returns all entities.</param>
-    /// <param name="parameters">The parameters for the condition.</param>
-    /// <returns>All entities matching the condition.</returns>
-    public virtual IEnumerable<TEntity> GetAllWhere(string condition = null, object parameters = null)
-    {
+        var builder = SqlBuilder.From(this.TableName);
+        queryBuilder?.Invoke(builder);
+        var builderResult = builder.Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"SELECT * FROM {this.TableName}";
-        if (!string.IsNullOrWhiteSpace(condition))
-        {
-            sql += $" WHERE {condition}";
-        }
-
-        return connection.Query<TEntity>(sql, parameters);
+        return connection.Query<TEntity>(builderResult.Sql, builderResult.Parameters);
     }
 
     public virtual IEnumerable<T> Query<T>(string sql, object parameters = null)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.Query<T>(sql, parameters);
-    }
-
-    /// <summary>
-    /// Gets a single entity that satisfies the specified condition.
-    /// </summary>
-    /// <param name="condition">The SQL condition (without WHERE).</param>
-    /// <param name="parameters">The parameters for the condition.</param>
-    /// <returns>The entity if found, null otherwise.</returns>
-    public virtual TEntity GetFirstOrDefault(string condition = null, object parameters = null)
-    {
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"SELECT * FROM {this.TableName}";
-        if (!string.IsNullOrWhiteSpace(condition))
-        {
-            sql += $" WHERE {condition}";
-        }
-
-        sql += " LIMIT 1";
-
-        return connection.QueryFirstOrDefault<TEntity>(sql, parameters);
-    }
-
-    /// <summary>
-    /// Checks if any entity exists that satisfies the specified condition.
-    /// </summary>
-    /// <param name="condition">The SQL condition (without WHERE).</param>
-    /// <param name="parameters">The parameters for the condition.</param>
-    /// <returns>True if any entity exists, false otherwise.</returns>
-    public virtual bool ExistsWhere(string condition = null, object parameters = null)
-    {
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"SELECT COUNT(*) FROM {this.TableName}";
-        if (!string.IsNullOrWhiteSpace(condition))
-        {
-            sql += $" WHERE {condition}";
-        }
-
-        return connection.ExecuteScalar<int>(sql, parameters) > 0;
     }
 
     public virtual Page<TEntity> Paginate(int page, Action<ISelectBuilder> configure = null)

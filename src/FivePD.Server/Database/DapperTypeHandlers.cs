@@ -23,6 +23,40 @@ public static class DapperTypeHandlers
         SqlMapper.AddTypeHandler(new ListIntTypeHandler());
         SqlMapper.AddTypeHandler(new Vector3TypeHandler());
         SqlMapper.AddTypeHandler(new RankPermissionsTypeHandler());
+        SqlMapper.AddTypeHandler(new ListVector3TypeHandler());
+    }
+
+    /// <summary>
+    /// Type handler for processing and mapping List of Vector3 objects in database operations using Dapper.
+    /// </summary>
+    private sealed class ListVector3TypeHandler : SqlMapper.TypeHandler<List<Vector3>>
+    {
+        public override List<Vector3> Parse(object value)
+        {
+            if (value == DBNull.Value)
+            {
+                return new List<Vector3>();
+            }
+
+            var json = value.ToString();
+            if (string.IsNullOrEmpty(json))
+            {
+                return new List<Vector3>();
+            }
+
+            return JsonConvert.DeserializeObject<List<Vector3>>(
+                json,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
+
+        public override void SetValue(IDbDataParameter parameter, List<Vector3> value)
+        {
+            parameter.Value = value is null
+                ? DBNull.Value
+                : JsonConvert.SerializeObject(
+                    value,
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
     }
 
     /// <summary>

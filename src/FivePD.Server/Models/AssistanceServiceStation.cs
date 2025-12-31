@@ -20,12 +20,6 @@ public class AssistanceServiceStation
     /// </summary>
     public string Name { get; set; }
 
-    public float X { get; set; }
-
-    public float Y { get; set; }
-
-    public float Z { get; set; }
-
     /// <summary>
     /// Gets or sets the position of the assistance service station.
     /// </summary>
@@ -34,5 +28,5 @@ public class AssistanceServiceStation
     /// <summary>
     /// Gets or sets the type configurations for the assistance service station.
     /// </summary>
-    public IList<AssistanceServiceStationTypeConfig> TypeConfigs { get; set; }
+    public List<AssistanceServiceStationTypeConfig> TypeConfigs { get; set; }
 }

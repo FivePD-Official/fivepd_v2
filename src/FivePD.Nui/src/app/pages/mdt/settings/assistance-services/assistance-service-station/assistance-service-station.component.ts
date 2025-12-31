@@ -59,7 +59,7 @@ export class AssistanceServiceStationComponent {
 
   readonly typeConfigsCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});
   readonly typeConfigsPage$ = this.typeConfigsCollation$.pipe(
-    switchMap(collation => this._assistanceServiceStationService.getTypeConfigsPage(collation))
+    switchMap(collation => this._assistanceServiceStationService.getTypeConfigsPage(this.stationId$.value, collation)),
   );
   readonly typeConfigsColumn: Column<AssistanceServiceStationTypeConfig>[] = [
     new Column({

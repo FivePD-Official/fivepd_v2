@@ -135,26 +135,15 @@ public class VehicleConfigRepository : BaseRepository<VehicleConfig<string>, Veh
     }
 
     /// <summary>
-    /// Retrieves all vehicle configurations with the specified options type.
-    /// </summary>
-    /// <typeparam name="TOptions">The type of the options field in the vehicle configuration.</typeparam>
-    /// <returns>An enumerable collection of <see cref="VehicleConfig{TOptions}"/> objects.</returns>
-    public IEnumerable<VehicleConfig<TOptions>> GetAll<TOptions>()
-    {
-        return this.GetAllWhere<TOptions>();
-    }
-
-    /// <summary>
     /// Retrieves all vehicle configurations that match the specified condition.
     /// </summary>
     /// <typeparam name="TOptions">The type of options associated with the vehicle configuration.</typeparam>
-    /// <param name="condition">The SQL condition to filter results. Pass null to retrieve all records.</param>
-    /// <param name="parameters">The parameters associated with the SQL condition. Pass null if no parameters are required.</param>
+    /// <param name="queryBuilder">The query builder action to define the condition and parameters.</param>
     /// <returns>A collection of <see cref="VehicleConfig{TOptions}"/> objects that match the specified condition.</returns>
-    public IEnumerable<VehicleConfig<TOptions>> GetAllWhere<TOptions>(string condition = null, object parameters = null)
+    public IEnumerable<VehicleConfig<TOptions>> GetAll<TOptions>(Action<IQueryBuilder> queryBuilder = null)
     {
-        var a = this.GetAllWhere(condition, parameters);
-        return a.Select(entity => new VehicleConfig<TOptions>
+        var vehicleConfigs = this.GetAll(queryBuilder).ToList();
+        return vehicleConfigs.Select(entity => new VehicleConfig<TOptions>
         {
             Id = entity.Id,
             Type = entity.Type,
