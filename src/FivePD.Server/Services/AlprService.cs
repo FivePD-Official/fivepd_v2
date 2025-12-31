@@ -8,6 +8,7 @@ using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
+using FivePD.Server.Repositories;
 
 namespace FivePD.Server.Services;
 
@@ -22,7 +23,6 @@ public class AlprService : IAlprService, IOnInit
     private readonly IPedStorageService _pedStorageService;
     private readonly IGameNotificationService _gameNotificationService;
     private readonly IConfigService _configService;
-    private readonly IDatabaseContextFactory _dbContextFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AlprService"/> class.
@@ -32,21 +32,18 @@ public class AlprService : IAlprService, IOnInit
     /// <param name="pedStorageService">The <see cref="IPedService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
-    /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     public AlprService(
         EventHandlerDictionary eventHandlerDictionary,
         IVehicleStorageService vehicleStorageService,
         IPedStorageService pedStorageService,
         IGameNotificationService gameNotificationService,
-        IConfigService configService,
-        IDatabaseContextFactory dbContextFactory)
+        IConfigService configService)
     {
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._vehicleStorageService = vehicleStorageService;
         this._pedStorageService = pedStorageService;
         this._gameNotificationService = gameNotificationService;
         this._configService = configService;
-        this._dbContextFactory = dbContextFactory;
     }
 
     /// <inheritdoc/>
@@ -106,11 +103,6 @@ public class AlprService : IAlprService, IOnInit
         {
             return;
         }
-
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        databaseContext.Entry(ownerPed)
-            .Collection(x => x.Licenses)
-            .Load();
 
         var insuranceStatus = this.GetVehicleDocumentStatus(fVehicle, VehicleDocumentType.Insurance);
         var registrationStatus = this.GetVehicleDocumentStatus(fVehicle, VehicleDocumentType.Registration);

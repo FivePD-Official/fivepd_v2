@@ -24,12 +24,6 @@ public class Location
     /// </summary>
     public LocationType Type { get; set; }
 
-    public float X { get; set; }
-
-    public float Y { get; set; }
-
-    public float Z { get; set; }
-
     /// <summary>
     /// Gets or sets the position of the location.
     /// </summary>

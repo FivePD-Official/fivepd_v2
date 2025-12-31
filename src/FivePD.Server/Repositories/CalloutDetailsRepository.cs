@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
+using Newtonsoft.Json;
 
 namespace FivePD.Server.Repositories;
 
@@ -61,4 +65,148 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         connection.Execute(sql, parameters);
     }
+
+    /// <summary>
+    /// Attaches a department to a callout details.
+    /// </summary>
+    /// <param name="calloutDetails">The callout details.</param>
+    /// <param name="department">The department.</param>
+    public void AttachDepartment(CalloutDetails calloutDetails, Department department)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            INSERT INTO {TableNames.CalloutDetailsDepartments} (CalloutDetailsId, DepartmentId)
+            VALUES (@CalloutDetailsId, @DepartmentId)
+            ON DUPLICATE KEY UPDATE CalloutDetailsId = @CalloutDetailsId";
+        connection.Execute(sql, new { CalloutDetailsId = calloutDetails.Id, DepartmentId = department.Id });
+    }
+
+    /// <summary>
+    /// Removes a department from a callout details.
+    /// </summary>
+    /// <param name="calloutDetails">The callout details.</param>
+    /// <param name="department">The department.</param>
+    public void RemoveDepartment(CalloutDetails calloutDetails, Department department)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            DELETE FROM {TableNames.CalloutDetailsDepartments}
+            WHERE CalloutDetailsId = @CalloutDetailsId AND DepartmentId = @DepartmentId";
+        connection.Execute(sql, new { CalloutDetailsId = calloutDetails.Id, DepartmentId = department.Id });
+    }
+
+    /// <summary>
+    /// Gets all departments attached to a callout details.
+    /// </summary>
+    /// <param name="calloutDetails">The callout details.</param>
+    /// <returns>List of departments.</returns>
+    public IEnumerable<Department> GetDepartments(CalloutDetails calloutDetails)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            SELECT d.* 
+            FROM {TableNames.Departments} d
+            INNER JOIN {TableNames.CalloutDetailsDepartments} cdd ON d.Id = cdd.DepartmentId
+            WHERE cdd.CalloutDetailsId = @CalloutDetailsId";
+        return connection.Query<Department>(sql, new { CalloutDetailsId = calloutDetails.Id });
+    }
+
+    /// <summary>
+    /// Checks if a callout details has a specific department attached.
+    /// </summary>
+    /// <param name="calloutDetails">The callout details.</param>
+    /// <param name="department">The department.</param>
+    /// <returns>True if the department is attached, false otherwise.</returns>
+    public bool HasDepartment(CalloutDetails calloutDetails, Department department)
+    {
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        const string sql = $@"
+            SELECT COUNT(*) 
+            FROM {TableNames.CalloutDetailsDepartments}
+            WHERE CalloutDetailsId = @CalloutDetailsId AND DepartmentId = @DepartmentId";
+        return connection.ExecuteScalar<int>(sql, new { CalloutDetailsId = calloutDetails.Id, DepartmentId = department.Id }) > 0;
+    }
+
+    /// <summary>
+    /// Finds a callout detail by its ID and loads related data dynamically based on the specified options.
+    /// </summary>
+    /// <param name="id">The unique identifier of the callout detail to find.</param>
+    /// <param name="options">The load options specifying which related data to include.</param>
+    /// <returns>The callout detail with the specified ID, including related data based on the provided options, or null if not found.</returns>
+    public CalloutDetails FindByIdWithDynamicRelated(int id, CalloutDetailsLoadOptions options)
+    {
+        return this.GetAllWithDynamicRelated(options, id).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Retrieves all <see cref="CalloutDetails"/> objects with optional related entities based on the specified load options.
+    /// </summary>
+    /// <param name="options">The load options that determine which related entities to include.</param>
+    /// <returns>A list of <see cref="CalloutDetails"/> objects, optionally including related entities based on the load options.</returns>
+    public List<CalloutDetails> GetAllWithDynamicRelated(CalloutDetailsLoadOptions options)
+    {
+        return this.GetAllWithDynamicRelated(options, 0);
+    }
+
+    private List<CalloutDetails> GetAllWithDynamicRelated(CalloutDetailsLoadOptions options, int id)
+    {
+        var result = SqlBuilder.From($"{this.TableName} c")
+            .Select("c.*", typeof(CalloutDetails))
+            .If(options.IncludeCalloutDetailsDepartments, wb => wb
+                .Select("cd.*", typeof(CalloutDetailsDepartment))
+                .LeftJoin(TableNames.CalloutDetailsDepartments, "cd", "c.Id = cd.DepartmentId", "DepartmentId"))
+            .If(id > 0, b => b.Where("c.Id = @Id", new { Id = id }))
+            .Build();
+
+        var lookup = new Dictionary<int, CalloutDetails>();
+
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Query(
+            result.Sql,
+            result.Types,
+            objArray =>
+            {
+                var calloutDetails = objArray[0] as CalloutDetails;
+                var index = 1;
+
+                if (calloutDetails is null)
+                {
+                    return null;
+                }
+
+                if (!lookup.TryGetValue(calloutDetails.Id, out var currentCalloutDetails))
+                {
+                    currentCalloutDetails = calloutDetails;
+                    if (options.IncludeCalloutDetailsDepartments)
+                    {
+                        currentCalloutDetails.CalloutDetailsDepartments = new List<CalloutDetailsDepartment>();
+                    }
+
+                    lookup.Add(currentCalloutDetails.Id, currentCalloutDetails);
+                }
+
+                if (options.IncludeCalloutDetailsDepartments)
+                {
+                    var detailsDepartment = objArray[index] as CalloutDetailsDepartment;
+                    if (detailsDepartment is not null &&
+                        currentCalloutDetails.CalloutDetailsDepartments.All(x => x.DepartmentId != detailsDepartment.DepartmentId))
+                    {
+                        currentCalloutDetails.CalloutDetailsDepartments.Add(detailsDepartment);
+                    }
+                }
+
+                return calloutDetails;
+            },
+            result.Parameters,
+            splitOn: result.SplitOn);
+
+        return lookup.Values.ToList();
+    }
+
+#pragma warning disable
+    public class CalloutDetailsLoadOptions
+    {
+        public bool IncludeCalloutDetailsDepartments { get; set; }
+    }
+#pragma warning restore
 }

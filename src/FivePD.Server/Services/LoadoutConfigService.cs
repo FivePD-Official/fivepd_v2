@@ -23,7 +23,7 @@ namespace FivePD.Server.Services;
 #pragma warning disable
 
 [Obfuscate]
-public class LoadoutConfigService : ILoadoutConfigService, IOnInit
+public class LoadoutConfigService : ILoadoutConfigService
 {
     private readonly ILogger _logger;
     private readonly LoadoutConfigRepository _loadoutConfigRepository;
@@ -49,12 +49,6 @@ public class LoadoutConfigService : ILoadoutConfigService, IOnInit
         this._menuService = menuService;
         this._playerList = playerList;
         this._networkEventService = networkEventService;
-    }
-
-    void IOnInit.OnInit()
-    {
-        // var a = this._loadoutConfigRepository.GetAllWithDynamicRelated(new LoadoutConfigRepository.LoadoutConfigLoadOptions { IncludeWeapons = false });
-        // Debug.WriteLine(JsonConvert.SerializeObject(a, Formatting.Indented));
     }
 
     public List<LoadoutConfig> GetAll()

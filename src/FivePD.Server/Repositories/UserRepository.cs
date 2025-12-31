@@ -7,11 +7,8 @@ using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
-using Newtonsoft.Json;
 
 namespace FivePD.Server.Repositories;
-
-#pragma warning disable
 
 /// <summary>
 /// Repository for User CRUD operations.
@@ -109,6 +106,12 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
         return connection.QueryFirstOrDefault<User>(builderResult.Sql, builderResult.Parameters);
     }
 
+    /// <summary>
+    /// Finds a user by their game license and dynamically includes related data based on the specified options.
+    /// </summary>
+    /// <param name="player">The player whose license should be used to find the user.</param>
+    /// <param name="options">The options specifying which related user data to load.</param>
+    /// <returns>The user associated with the specified license, including the related data as defined by the options.</returns>
     public User FindByLicenseWithDynamicRelated(Player player, UserLoadOptions options)
     {
         var builder = this.CreateBaseUserBuilder(options).WhereAnyLicenseMatches(player);
@@ -125,56 +128,6 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     {
         var builder = this.CreateBaseUserBuilder(options).Where("u.Id = @Id", new { Id = id });
         return this.ExecuteUserQuery(builder, options);
-    }
-
-    private User ExecuteUserQuery(IQueryBuilder builder, UserLoadOptions options)
-    {
-        var result = builder.Build();
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        return connection.Query(
-            result.Sql,
-            result.Types,
-            objArray =>
-            {
-                var user = (User)objArray[0];
-                var index = 1;
-                if (options.IncludeDepartment)
-                {
-                    user.Department = objArray[index++] as Department;
-                }
-
-                if (options.IncludeDivision)
-                {
-                    user.Division = objArray[index++] as Division;
-                }
-
-                if (options.IncludeRank)
-                {
-                    user.Rank = objArray[index++] as Rank;
-                }
-
-                if (options.IncludeCallsignFormat)
-                {
-                    user.CallsignFormat = objArray[index] as UserCallsignFormat;
-                }
-
-                return user;
-            },
-            result.Parameters,
-            splitOn: result.SplitOn
-        ).FirstOrDefault();
-    }
-
-    private ISelectBuilder CreateBaseUserBuilder(UserLoadOptions options)
-    {
-        return SqlBuilder
-            .From($"{TableNames.Users} u")
-            .Select("u.*", typeof(User))
-            .If(options.IncludeDepartment, b => b.Select("d.*", typeof(Department)).LeftJoin(TableNames.Departments, "d", "u.DepartmentId = d.Id"))
-            .If(options.IncludeDivision, b => b.Select("di.*", typeof(Division)).LeftJoin(TableNames.Divisions, "di", "u.DivisionId = di.Id"))
-            .If(options.IncludeRank, b => b.Select("r.*", typeof(Rank)).LeftJoin(TableNames.Ranks, "r", "u.RankId = r.Id"))
-            .If(options.IncludeCallsignFormat,
-                b => b.Select("cf.*", typeof(UserCallsignFormat)).LeftJoin(TableNames.UserCallsigns, "cf", "u.UserCallsignFormatId = cf.Id"));
     }
 
     /// <summary>
@@ -239,6 +192,11 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
         return connection.QueryFirstOrDefault<UserCallsignFormat>(sql, new { Id = user.UserCallsignFormatId });
     }
 
+    /// <summary>
+    /// Retrieves the department associated with the specified user.
+    /// </summary>
+    /// <param name="user">The user whose department is to be retrieved.</param>
+    /// <returns>The department associated with the given user, or null if the user is null or no department is found.</returns>
     public Department GetDepartment(User user)
     {
         if (user is null)
@@ -251,21 +209,57 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
         return connection.QueryFirstOrDefault<Department>(builderResult.Sql, builderResult.Parameters);
     }
 
-    private object GetPlayerIdentifiers(Player player)
+    private User ExecuteUserQuery(IQueryBuilder builder, UserLoadOptions options)
     {
-        return new
-        {
-            License = player.Identifiers["license"] ?? string.Empty,
-            Discord = player.Identifiers["discord"] ?? string.Empty,
-            Steam = player.Identifiers["steam"] ?? string.Empty,
-            Xbl = player.Identifiers["xbl"] ?? string.Empty,
-            Live = player.Identifiers["live"] ?? string.Empty,
-        };
+        var result = builder.Build();
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        return connection.Query(
+            result.Sql,
+            result.Types,
+            objArray =>
+            {
+                var user = (User)objArray[0];
+                var index = 1;
+                if (options.IncludeDepartment)
+                {
+                    user.Department = objArray[index++] as Department;
+                }
+
+                if (options.IncludeDivision)
+                {
+                    user.Division = objArray[index++] as Division;
+                }
+
+                if (options.IncludeRank)
+                {
+                    user.Rank = objArray[index++] as Rank;
+                }
+
+                if (options.IncludeCallsignFormat)
+                {
+                    user.CallsignFormat = objArray[index] as UserCallsignFormat;
+                }
+
+                return user;
+            },
+            result.Parameters,
+            splitOn: result.SplitOn).FirstOrDefault();
     }
 
-    /// <summary>
-    /// Options for loading related entities for a user.
-    /// </summary>
+    private ISelectBuilder CreateBaseUserBuilder(UserLoadOptions options)
+    {
+        return SqlBuilder
+            .From($"{TableNames.Users} u")
+            .Select("u.*", typeof(User))
+            .If(options.IncludeDepartment, b => b.Select("d.*", typeof(Department)).LeftJoin(TableNames.Departments, "d", "u.DepartmentId = d.Id"))
+            .If(options.IncludeDivision, b => b.Select("di.*", typeof(Division)).LeftJoin(TableNames.Divisions, "di", "u.DivisionId = di.Id"))
+            .If(options.IncludeRank, b => b.Select("r.*", typeof(Rank)).LeftJoin(TableNames.Ranks, "r", "u.RankId = r.Id"))
+            .If(
+                options.IncludeCallsignFormat,
+                b => b.Select("cf.*", typeof(UserCallsignFormat)).LeftJoin(TableNames.UserCallsigns, "cf", "u.UserCallsignFormatId = cf.Id"));
+    }
+
+#pragma warning disable
     public class UserLoadOptions
     {
         public bool IncludeDepartment { get; set; }
@@ -273,4 +267,5 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
         public bool IncludeRank { get; set; }
         public bool IncludeCallsignFormat { get; set; }
     }
+#pragma warning restore
 }

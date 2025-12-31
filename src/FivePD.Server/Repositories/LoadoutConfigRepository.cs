@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Database.Sql;
@@ -9,11 +8,8 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Models.LoadoutModels;
 using FivePD.Server.Models.LoadoutModels.JoinTables;
 using FivePD.Server.Models.UpdateModels;
-using Newtonsoft.Json;
 
 namespace FivePD.Server.Repositories;
-
-#pragma warning disable
 
 /// <summary>
 /// Repository for LoadoutConfig CRUD operations.
@@ -121,11 +117,22 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
         return connection.ExecuteScalar<int>(sql, new { LoadoutConfigId = loadoutConfig.Id, WeaponId = weaponId }) > 0;
     }
 
+    /// <summary>
+    /// Finds a LoadoutConfig by its identifier and retrieves related data dynamically based on the specified options.
+    /// </summary>
+    /// <param name="id">The unique identifier of the LoadoutConfig to retrieve.</param>
+    /// <param name="options">The options specifying which related data to include.</param>
+    /// <returns>The LoadoutConfig associated with the given identifier and related data, or null if not found.</returns>
     public LoadoutConfig FindByIdWithDynamicRelated(int id, LoadoutConfigLoadOptions options)
     {
         return this.GetAllWithDynamicRelated(options, id).FirstOrDefault();
     }
 
+    /// <summary>
+    /// Retrieves a list of all LoadoutConfig entities with related dynamic data based on the specified load options.
+    /// </summary>
+    /// <param name="options">Options specifying which related data to include in the result.</param>
+    /// <returns>A list of LoadoutConfig entities including the related dynamic data as specified in the options.</returns>
     public List<LoadoutConfig> GetAllWithDynamicRelated(LoadoutConfigLoadOptions options)
     {
         return this.GetAllWithDynamicRelated(options, 0);
@@ -212,14 +219,15 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
                 return loadoutConfig;
             },
             result.Parameters,
-            splitOn: result.SplitOn
-        );
+            splitOn: result.SplitOn);
 
         return lookup.Values.ToList();
     }
 
+#pragma warning disable
     public class LoadoutConfigLoadOptions
     {
         public bool IncludeWeapons { get; set; }
     }
+#pragma warning restore
 }

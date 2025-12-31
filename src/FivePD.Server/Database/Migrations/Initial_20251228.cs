@@ -268,9 +268,7 @@ public class CreateUsersTable_20251228 : IMigration
                 Id INT AUTO_INCREMENT PRIMARY KEY,
                 Name VARCHAR(255) NOT NULL,
                 Type INT NOT NULL,
-                X FLOAT NOT NULL,
-                Y FLOAT NOT NULL,
-                Z FLOAT NOT NULL
+                Position TEXT NOT NULL
             )");
 
         connection.Execute($@"
