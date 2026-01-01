@@ -98,7 +98,7 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
                 document.Type,
                 document.Status,
                 document.IssueDate,
-                document.ExpirationDate
+                document.ExpirationDate,
             })
             .Build();
 

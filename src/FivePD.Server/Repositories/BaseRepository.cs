@@ -267,7 +267,7 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
                 return null;
             }
 
-            return this._ptr < this.Row.Length ? this.Row[_ptr++] as T : null;
+            return this._ptr < this.Row.Length ? this.Row[this._ptr++] as T : null;
         }
     }
 }

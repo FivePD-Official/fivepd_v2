@@ -139,7 +139,19 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
     /// <returns>The callout detail with the specified ID, including related data based on the provided options, or null if not found.</returns>
     public CalloutDetails FindByIdWithDynamicRelated(int id, CalloutDetailsLoadOptions options)
     {
-        return this.GetAllWithDynamicRelated(options, id).FirstOrDefault();
+        return this.GetAllWithDynamicRelated(options, id, null, null).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Finds a <see cref="CalloutDetails"/> entity by its type name and assembly name.
+    /// </summary>
+    /// <param name="typeName">The type name of the callout to locate.</param>
+    /// <param name="assemblyName">The assembly name of the callout to locate.</param>
+    /// <param name="options">The load options specifying related entities to include.</param>
+    /// <returns>Returns the corresponding <see cref="CalloutDetails"/> if found; otherwise, null.</returns>
+    public CalloutDetails FindByTypeNameAndAssembly(string typeName, string assemblyName, CalloutDetailsLoadOptions options)
+    {
+        return this.GetAllWithDynamicRelated(options, 0, typeName, assemblyName).FirstOrDefault();
     }
 
     /// <summary>
@@ -149,17 +161,22 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
     /// <returns>A list of <see cref="CalloutDetails"/> objects, optionally including related entities based on the load options.</returns>
     public List<CalloutDetails> GetAllWithDynamicRelated(CalloutDetailsLoadOptions options)
     {
-        return this.GetAllWithDynamicRelated(options, 0);
+        return this.GetAllWithDynamicRelated(options, 0, null, null);
     }
 
-    private List<CalloutDetails> GetAllWithDynamicRelated(CalloutDetailsLoadOptions options, int id)
+    private List<CalloutDetails> GetAllWithDynamicRelated(CalloutDetailsLoadOptions options, int id, string typeName, string assemblyName)
     {
         var result = SqlBuilder.From($"{this.TableName} c")
             .Select("c.*", typeof(CalloutDetails))
             .If(options.IncludeCalloutDetailsDepartments, wb => wb
                 .Select("cd.*", typeof(CalloutDetailsDepartment))
                 .LeftJoin(TableNames.CalloutDetailsDepartments, "cd", "c.Id = cd.DepartmentId", "DepartmentId"))
-            .If(id > 0, b => b.Where("c.Id = @Id", new { Id = id }))
+            .If(id > 0, b => b.WhereEquals("c.Id", id))
+            .If(
+                !string.IsNullOrEmpty(typeName) && !string.IsNullOrEmpty(assemblyName),
+                b => b
+                    .WhereEquals("c.TypeName", typeName)
+                    .WhereEquals("c.AssemblyName", assemblyName))
             .Build();
 
         var lookup = new Dictionary<int, CalloutDetails>();

@@ -116,7 +116,7 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
                 license.Type,
                 license.Status,
                 license.IssueDate,
-                license.ExpirationDate
+                license.ExpirationDate,
             })
             .Build();
 

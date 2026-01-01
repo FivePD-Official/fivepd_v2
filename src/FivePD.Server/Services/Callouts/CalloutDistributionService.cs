@@ -8,13 +8,12 @@ using FivePD.Common.Models;
 using FivePD.Server.API;
 using FivePD.Server.API.CalloutEvents;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Callouts;
 using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using FivePD.Server.Repositories;
 using Serilog;
 
 namespace FivePD.Server.Services.Callouts;
@@ -30,10 +29,10 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     private readonly IConfigService _configService;
     private readonly IConfirmationService _confirmationService;
     private readonly IUnitService _unitService;
-    private readonly PlayerList _playerList;
     private readonly IIncidentService _incidentService;
-    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IInternalDispatcherManagerService _dispatcherManagerService;
+    private readonly CalloutDetailsRepository _calloutDetailsRepository;
+    private readonly DepartmentAreaCoordinateRepository _departmentAreaCoordinateRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CalloutDistributionService"/> class.
@@ -42,28 +41,28 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
     /// <param name="configService">The <see cref="IConfigService"/> to use.</param>
     /// <param name="confirmationService">The <see cref="IConfirmationService"/> to use.</param>
     /// <param name="unitService">The <see cref="IUnitService"/> to use.</param>
-    /// <param name="playerList">The <see cref="PlayerList"/> to use.</param>
     /// <param name="incidentService">The <see cref="IIncidentService"/> to use.</param>
-    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
     /// <param name="dispatcherManagerService">The <see cref="IDispatcherManagerService"/> to use.</param>
+    /// <param name="calloutDetailsRepository">The <see cref="CalloutDetailsRepository"/> to use.</param>
+    /// <param name="departmentAreaCoordinateRepository">The <see cref="DepartmentAreaCoordinateRepository"/> to use.</param>
     public CalloutDistributionService(
         ILogger logger,
         IConfigService configService,
         IConfirmationService confirmationService,
         IUnitService unitService,
-        PlayerList playerList,
         IIncidentService incidentService,
-        IDatabaseContextFactory dbContextFactory,
-        IDispatcherManagerService dispatcherManagerService)
+        IDispatcherManagerService dispatcherManagerService,
+        CalloutDetailsRepository calloutDetailsRepository,
+        DepartmentAreaCoordinateRepository departmentAreaCoordinateRepository)
     {
         this._logger = logger;
         this._configService = configService;
         this._confirmationService = confirmationService;
         this._unitService = unitService;
-        this._playerList = playerList;
         this._incidentService = incidentService;
-        this._dbContextFactory = dbContextFactory;
         this._dispatcherManagerService = (IInternalDispatcherManagerService)dispatcherManagerService;
+        this._calloutDetailsRepository = calloutDetailsRepository;
+        this._departmentAreaCoordinateRepository = departmentAreaCoordinateRepository;
     }
 
     /// <inheritdoc/>
@@ -167,10 +166,10 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             .Where(unit => unit.Availability.Value == FUnitAvailability.Receiving)
             .ToList();
 
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var calloutDetails = databaseContext.CalloutDetails
-            .Include(x => x.CalloutDetailsDepartments)
-            .FirstOrDefault(x => x.TypeName == internalCallout.Type.Name && x.AssemblyName == internalCallout.Type.Assembly.GetName().Name);
+        var calloutDetails = this._calloutDetailsRepository.FindByTypeNameAndAssembly(
+            internalCallout.Type.Name,
+            internalCallout.Type.Assembly.GetName().Name,
+            new CalloutDetailsRepository.CalloutDetailsLoadOptions { IncludeCalloutDetailsDepartments = true });
         if (calloutDetails is not null)
         {
             filteredUnits = calloutDetails.RulesetType == CalloutDetailsRulesetType.Allow
@@ -194,10 +193,7 @@ public class CalloutDistributionService : ICalloutDistributionService, IInternal
             var valueTuples = filteredUnits.Select(unit => (unit, unit.Players[0].Department())).ToList();
             foreach (var (_, department) in valueTuples)
             {
-                databaseContext
-                    .Entry(department)
-                    .Collection(x => x.AreaCoordinates)
-                    .Load();
+                department.AreaCoordinates = this._departmentAreaCoordinateRepository.GetAllByDepartmentId(department.Id).ToList();
             }
 
             filteredUnits = valueTuples

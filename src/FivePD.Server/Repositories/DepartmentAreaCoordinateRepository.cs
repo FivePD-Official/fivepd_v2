@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Database.Sql;
@@ -56,5 +57,20 @@ public class DepartmentAreaCoordinateRepository : BaseRepository<DepartmentAreaC
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         connection.Execute(builderResult.Sql, builderResult.Parameters);
+    }
+
+    /// <summary>
+    /// Retrieves all area coordinates for a specific department.
+    /// </summary>
+    /// <param name="departmentId">The unique identifier of the department.</param>
+    /// <returns>A collection of area coordinates associated with the specified department.</returns>
+    public IEnumerable<DepartmentAreaCoordinate> GetAllByDepartmentId(int departmentId)
+    {
+        var builderResult = SqlBuilder
+            .From(this.TableName)
+            .WhereEquals("DepartmentId", departmentId)
+            .Build();
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        return connection.Query<DepartmentAreaCoordinate>(builderResult.Sql, builderResult.Parameters);
     }
 }
