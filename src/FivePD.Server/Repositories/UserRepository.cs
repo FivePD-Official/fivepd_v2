@@ -138,9 +138,12 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     /// <returns>The added UserCallsignFormat with its ID.</returns>
     public UserCallsignFormat AddCallsignFormat(User user, UserCallsignFormat callsignFormat)
     {
+        var builderResult = SqlBuilder
+            .Into(TableNames.UserCallsigns)
+            .Insert(new { callsignFormat.Values })
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $"INSERT INTO {TableNames.UserCallsigns} (`Values`) VALUES (@Values); SELECT LAST_INSERT_ID();";
-        var id = connection.ExecuteScalar<int>(sql, new { Values = callsignFormat.Values });
+        var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
         callsignFormat.Id = id;
         return callsignFormat;
     }
@@ -174,10 +177,13 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     /// <param name="callsignFormatId">The ID of the callsign format to delete.</param>
     public void DeleteCallsignFormat(User user, int callsignFormatId)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.UserCallsigns)
+            .Delete()
+            .WhereEquals("Id", callsignFormatId)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-
-        const string deleteSql = $"DELETE FROM {TableNames.UserCallsigns} WHERE Id = @Id";
-        connection.Execute(deleteSql, new { Id = callsignFormatId });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -187,9 +193,12 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     /// <returns>The UserCallsignFormat if found, null otherwise.</returns>
     public UserCallsignFormat GetCallsignFormat(User user)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.UserCallsigns)
+            .WhereEquals("Id", user.UserCallsignFormatId)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $"SELECT * FROM {TableNames.UserCallsigns} WHERE Id = @Id";
-        return connection.QueryFirstOrDefault<UserCallsignFormat>(sql, new { Id = user.UserCallsignFormatId });
+        return connection.QueryFirstOrDefault<UserCallsignFormat>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -204,8 +213,11 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
             return null;
         }
 
+        var builderResult = SqlBuilder
+            .From(TableNames.Departments)
+            .WhereEquals("Id", user.DepartmentId)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var builderResult = SqlBuilder.From(TableNames.Departments).Where("Id = @Id", user.DepartmentId).Build();
         return connection.QueryFirstOrDefault<Department>(builderResult.Sql, builderResult.Parameters);
     }
 

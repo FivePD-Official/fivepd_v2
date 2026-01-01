@@ -11,6 +11,8 @@ public interface IFilterable<out T>
     ISelectBuilder Select(string select, Type type = null);
     T If(bool condition, Action<T> action);
     IQueryBuilder Where(string condition, object param = null);
+    IQueryBuilder WhereEquals(string column, object param);
+    IQueryBuilder WhereNotEquals(string column, object param);
     IQueryBuilder WhereIn<T>(string column, IEnumerable<T> values);
     IQueryBuilder WhereNotIn<T>(string column, IEnumerable<T> values);
     IQueryBuilder WhereContains(string column, string value);

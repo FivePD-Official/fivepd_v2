@@ -154,6 +154,16 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
         return this;
     }
 
+    public IQueryBuilder WhereEquals(string column, object value)
+    {
+        return AddComparison(column, "=", value);
+    }
+
+    public IQueryBuilder WhereNotEquals(string column, object value)
+    {
+        return AddComparison(column, "!=", value);
+    }
+
     public IQueryBuilder WhereAnyLicenseMatches(Player player)
     {
         if (player is null)
@@ -317,6 +327,23 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
         {
             _params.AddDynamicParams(param);
         }
+    }
+
+    private IQueryBuilder AddComparison(string column, string operatorSymbol, object value)
+    {
+        if (value is null)
+        {
+            var nullOp = operatorSymbol == "=" ? "IS NULL" : "IS NOT NULL";
+            _wheres.Add($"{column} {nullOp}");
+            return this;
+        }
+
+        var paramName = column.Replace(".", "_");
+
+        _wheres.Add($"{column} {operatorSymbol} @{paramName}");
+        _params.Add(paramName, value);
+
+        return this;
     }
 
     private T InternalIf<T>(bool condition, Action<T> action) where T : class

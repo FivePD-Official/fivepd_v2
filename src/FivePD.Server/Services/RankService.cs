@@ -66,7 +66,7 @@ public class RankService : IRankService
         var page = this._rankRepository.Paginate(
             request.Page,
             b => b
-                .If(true, x => x.Where("Global = @Global", new { Global = request.Filters.Global }))
+                .If(true, x => x.WhereEquals("Global", request.Filters.Global))
                 .If(
                     !request.Filters.Global,
                     x => x.Where(

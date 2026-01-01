@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
-using Newtonsoft.Json;
 
 namespace FivePD.Server.Repositories;
 
@@ -73,12 +71,17 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
     /// <param name="department">The department.</param>
     public void AttachDepartment(CalloutDetails calloutDetails, Department department)
     {
+        var builderResult = SqlBuilder
+            .Into(TableNames.CalloutDetailsDepartments)
+            .Insert(new
+            {
+                CalloutDetailsId = calloutDetails.Id,
+                DepartmentId = department.Id,
+            })
+            .OnDuplicateKeyUpdate("CalloutDetailsId", "DepartmentId")
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            INSERT INTO {TableNames.CalloutDetailsDepartments} (CalloutDetailsId, DepartmentId)
-            VALUES (@CalloutDetailsId, @DepartmentId)
-            ON DUPLICATE KEY UPDATE CalloutDetailsId = @CalloutDetailsId";
-        connection.Execute(sql, new { CalloutDetailsId = calloutDetails.Id, DepartmentId = department.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -88,11 +91,14 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
     /// <param name="department">The department.</param>
     public void RemoveDepartment(CalloutDetails calloutDetails, Department department)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.CalloutDetailsDepartments)
+            .Delete()
+            .WhereEquals("CalloutDetailsId", calloutDetails.Id)
+            .WhereEquals("DepartmentId", department.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            DELETE FROM {TableNames.CalloutDetailsDepartments}
-            WHERE CalloutDetailsId = @CalloutDetailsId AND DepartmentId = @DepartmentId";
-        connection.Execute(sql, new { CalloutDetailsId = calloutDetails.Id, DepartmentId = department.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -104,10 +110,9 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
     {
         var builderResult = SqlBuilder.From($"{TableNames.Departments} d")
             .Select("d.*", typeof(Department))
-            .InnerJoin(TableNames.CalloutDetailsDepartments, "cdd", "d.Id = cdd.DepartmentId", splitColumn: "DepartmentId")
-            .Where("cdd.CalloutDetailsId = @CalloutDetailsId", new { CalloutDetailsId = calloutDetails.Id })
+            .InnerJoin(TableNames.CalloutDetailsDepartments, "cdd", "d.Id = cdd.DepartmentId", "DepartmentId")
+            .WhereEquals("cdd.CalloutDetailsId", calloutDetails.Id)
             .Build();
-
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.Query<Department>(builderResult.Sql, builderResult.Parameters);
     }
@@ -120,12 +125,13 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
     /// <returns>True if the department is attached, false otherwise.</returns>
     public bool HasDepartment(CalloutDetails calloutDetails, Department department)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.CalloutDetailsDepartments)
+            .WhereEquals("CalloutDetailsId", calloutDetails.Id)
+            .WhereEquals("DepartmentId", department.Id)
+            .BuildCount();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT COUNT(*) 
-            FROM {TableNames.CalloutDetailsDepartments}
-            WHERE CalloutDetailsId = @CalloutDetailsId AND DepartmentId = @DepartmentId";
-        return connection.ExecuteScalar<int>(sql, new { CalloutDetailsId = calloutDetails.Id, DepartmentId = department.Id }) > 0;
+        return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
     }
 
     /// <summary>

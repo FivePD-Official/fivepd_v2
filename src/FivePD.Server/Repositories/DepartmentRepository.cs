@@ -74,12 +74,17 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
     /// <param name="rank">The rank.</param>
     public void AttachRank(Department department, Rank rank)
     {
+        var builderResult = SqlBuilder
+            .Into(TableNames.DepartmentRanks)
+            .Insert(new
+            {
+                DepartmentId = department.Id,
+                RankId = rank.Id,
+            })
+            .OnDuplicateKeyUpdate("DepartmentId", "RankId")
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            INSERT INTO {TableNames.DepartmentRanks} (DepartmentId, RankId)
-            VALUES (@DepartmentId, @RankId)
-            ON DUPLICATE KEY UPDATE DepartmentId = @DepartmentId";
-        connection.Execute(sql, new { DepartmentId = department.Id, RankId = rank.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -89,11 +94,14 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
     /// <param name="rank">The rank.</param>
     public void RemoveRank(Department department, Rank rank)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.DepartmentRanks)
+            .Delete()
+            .WhereEquals("DepartmentId", department.Id)
+            .WhereEquals("RankId", rank.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            DELETE FROM {TableNames.DepartmentRanks}
-            WHERE DepartmentId = @DepartmentId AND RankId = @RankId";
-        connection.Execute(sql, new { DepartmentId = department.Id, RankId = rank.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -116,9 +124,8 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
         var builderResult = SqlBuilder.From($"{TableNames.Ranks} r")
             .Select("r.*", typeof(Rank))
             .InnerJoin(TableNames.DepartmentRanks, "dr", "r.Id = dr.RankId", splitColumn: "RankId")
-            .Where("dr.DepartmentId = @DepartmentId", new { DepartmentId = departmentId })
+            .WhereEquals("dr.DepartmentId", departmentId)
             .Build();
-
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.Query<Rank>(builderResult.Sql, builderResult.Parameters);
     }
@@ -140,8 +147,11 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
     /// <returns>A collection of users assigned to the specified department.</returns>
     public IEnumerable<User> GetUsersById(int departmentId)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.Users)
+            .WhereEquals("DepartmentId", departmentId)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $"SELECT * FROM {TableNames.Users} WHERE DepartmentId = @Id";
-        return connection.Query<User>(sql, new { Id = departmentId });
+        return connection.Query<User>(builderResult.Sql, builderResult.Parameters);
     }
 }

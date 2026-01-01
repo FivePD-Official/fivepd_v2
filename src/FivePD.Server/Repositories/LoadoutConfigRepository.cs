@@ -85,8 +85,8 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
     {
         var builderResult = SqlBuilder
             .From(TableNames.LoadoutWeapon)
-            .Where("LoadoutConfigId = @LoadoutConfigId", new { LoadoutConfigId = loadoutConfig.Id })
-            .Where("WeaponId = @WeaponId", new { WeaponId = weapon.Id })
+            .WhereEquals("LoadoutConfigId", loadoutConfig.Id)
+            .WhereEquals("WeaponId", weapon.Id)
             .Delete()
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
@@ -104,7 +104,7 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
             .From($"{TableNames.Weapons} w")
             .Select("w.*")
             .InnerJoin(TableNames.LoadoutWeapon, "lw", "w.Id = lw.WeaponId")
-            .Where("lw.LoadoutConfigId = @LoadoutConfigId", new { LoadoutConfigId = loadoutConfig.Id })
+            .WhereEquals("lw.LoadoutConfigId", loadoutConfig.Id)
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.Query<Weapon>(builderResult.Sql, builderResult.Parameters);
@@ -120,8 +120,8 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
     {
         var builderResult = SqlBuilder
             .From(TableNames.LoadoutWeapon)
-            .Where("LoadoutConfigId = @LoadoutConfigId", new { LoadoutConfigId = loadoutConfig.Id })
-            .Where("WeaponId = @WeaponId", new { WeaponId = weaponId })
+            .WhereEquals("LoadoutConfigId", loadoutConfig.Id)
+            .WhereEquals("WeaponId", weaponId)
             .BuildCount();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
@@ -153,15 +153,15 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
         var result = SqlBuilder.From($"{this.TableName} lc")
             .Select("lc.*", typeof(LoadoutConfig))
             .Select("lw.*", typeof(LoadoutWeapon))
-            .InnerJoin(TableNames.LoadoutWeapon, "lw", "lw.LoadoutConfigId = lc.Id", splitColumn: "LoadoutConfigId")
+            .InnerJoin(TableNames.LoadoutWeapon, "lw", "lw.LoadoutConfigId = lc.Id", "LoadoutConfigId")
             .If(options.IncludeWeapons, wb => wb
                 .Select("w.*", typeof(Weapon))
-                .InnerJoin(TableNames.Weapons, "w", "w.Id = lw.WeaponId", splitColumn: "Id")
+                .InnerJoin(TableNames.Weapons, "w", "w.Id = lw.WeaponId")
                 .Select("wwc.*", typeof(WeaponWeaponComponent))
-                .LeftJoin(TableNames.WeaponWeaponComponent, "wwc", "wwc.WeaponId = w.Id", splitColumn: "WeaponId")
+                .LeftJoin(TableNames.WeaponWeaponComponent, "wwc", "wwc.WeaponId = w.Id", "WeaponId")
                 .Select("wc.*", typeof(WeaponComponent))
-                .LeftJoin(TableNames.WeaponComponents, "wc", "wc.Id = wwc.WeaponComponentId", splitColumn: "Id"))
-            .If(id > 0, b => b.Where("lc.Id = @Id", new { Id = id }))
+                .LeftJoin(TableNames.WeaponComponents, "wc", "wc.Id = wwc.WeaponComponentId"))
+            .If(id > 0, b => b.WhereEquals("lc.Id", id))
             .Build();
 
         var lookup = new Dictionary<int, LoadoutConfig>();

@@ -106,7 +106,7 @@ public class AssistanceServiceStationTypeConfigRepository : BaseRepository<Assis
             .If(options.IncludeStation, b => b
                 .Select("s.*", typeof(AssistanceServiceStation))
                 .LeftJoin(TableNames.AssistanceServiceStations, "s", "tc.StationId = t.Id"))
-            .If(id > 0, b => b.Where("tc.Id = @Id", new { Id = id }))
+            .If(id > 0, b => b.WhereEquals("tc.Id", id))
             .Build();
 
         var lookup = new Dictionary<int, AssistanceServiceStationTypeConfig>();

@@ -80,7 +80,7 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
             .From($"{TableNames.PedData} pd")
             .Select("pd.*", typeof(PedData))
             .If(options.IncludeLicenses, b => b.Select("pl.*", typeof(PedLicense)).LeftJoin(TableNames.PedLicenses, "pl", "pd.Id = pl.PedDataId"))
-            .Where("pd.Id = @Id", new { Id = id });
+            .WhereEquals("pd.Id", id);
 
         var result = builder.Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
@@ -138,8 +138,8 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
     {
         var builderResult = SqlBuilder.From(TableNames.PedLicenses)
             .Delete()
-            .Where("Id = @LicenseId", new { LicenseId = licenseId })
-            .Where("PedDataId = @PedDataId", new { PedDataId = pedData.Id })
+            .WhereEquals("Id", licenseId)
+            .WhereEquals("PedDataId", pedData.Id)
             .Build();
 
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
@@ -154,7 +154,7 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
     public PedLicense GetLicense(string licenseId)
     {
         var builderResult = SqlBuilder.From(TableNames.PedLicenses)
-            .Where("Id = @Id", new { Id = licenseId })
+            .WhereEquals("Id", licenseId)
             .Build();
 
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
@@ -169,7 +169,7 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
     public IEnumerable<PedLicense> GetLicenses(PedData pedData)
     {
         var builderResult = SqlBuilder.From(TableNames.PedLicenses)
-            .Where("PedDataId = @PedDataId", new { PedDataId = pedData.Id })
+            .WhereEquals("PedDataId", pedData.Id)
             .Build();
 
         using var connection = this.DbConnectionFactory.CreateScope().Connection;

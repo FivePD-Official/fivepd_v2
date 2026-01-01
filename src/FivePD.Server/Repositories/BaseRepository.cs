@@ -57,9 +57,12 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     /// <returns>The entity if found, null otherwise.</returns>
     public virtual TEntity FindById(TId id)
     {
+        var builderResult = SqlBuilder
+            .From(this.TableName)
+            .WhereEquals(this.IdColumn, id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"SELECT * FROM {this.TableName} WHERE {this.IdColumn} = @Id";
-        return connection.QueryFirstOrDefault<TEntity>(sql, new { Id = id });
+        return connection.QueryFirstOrDefault<TEntity>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -72,7 +75,7 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
         var builderResult = SqlBuilder
             .From(this.TableName)
             .Delete()
-            .Where($"{this.IdColumn} = @Id", new { Id = id })
+            .WhereEquals(this.IdColumn, id)
             .Build();
         connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
@@ -113,7 +116,7 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         var builderResult = SqlBuilder
             .From(this.TableName)
-            .Where($"{this.IdColumn} = @Id", new { Id = id })
+            .WhereEquals(this.IdColumn, id)
             .BuildCount();
         return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
     }
@@ -138,9 +141,11 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     /// <returns>The total count of entities.</returns>
     public virtual int Count()
     {
+        var builderResult = SqlBuilder
+            .From(this.TableName)
+            .BuildCount();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"SELECT COUNT(*) FROM {this.TableName}";
-        return connection.ExecuteScalar<int>(sql);
+        return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

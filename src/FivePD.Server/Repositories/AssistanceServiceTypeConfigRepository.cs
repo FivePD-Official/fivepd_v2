@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Database.Sql;
@@ -77,8 +76,8 @@ public class AssistanceServiceTypeConfigRepository : BaseRepository<AssistanceSe
     {
         var builderResult = SqlBuilder
             .From(this.TableName)
-            .Where("TypeName = @TypeName", new { TypeName = typeName })
-            .Where("AssemblyName = @AssemblyName", new { AssemblyName = assemblyName })
+            .WhereEquals("TypeName", typeName)
+            .WhereEquals("AssemblyName", assemblyName)
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.QueryFirstOrDefault<AssistanceServiceTypeConfig>(builderResult.Sql, builderResult.Parameters);

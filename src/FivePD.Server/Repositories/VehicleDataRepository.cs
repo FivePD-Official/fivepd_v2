@@ -80,7 +80,7 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
             .If(options.IncludeDocuments,
                 b => b.Select("doc.*", typeof(VehicleDocument)).LeftJoin(TableNames.VehicleDocuments, "doc", "vd.Id = doc.VehicleDataId"))
             .If(options.IncludePedData, b => b.Select("pd.*", typeof(PedData)).LeftJoin(TableNames.PedData, "pd", "vd.PedDataId = pd.Id"))
-            .Where("vd.Id = @Id", new { Id = id });
+            .WhereEquals("vd.Id", id);
 
         var result = builder.Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
@@ -142,8 +142,8 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     {
         var builderResult = SqlBuilder.From(TableNames.VehicleDocuments)
             .Delete()
-            .Where("Id = @DocumentId", new { DocumentId = documentId })
-            .Where("VehicleDataId = @VehicleDataId", new { VehicleDataId = vehicleData.Id })
+            .WhereEquals("Id", documentId)
+            .WhereEquals("VehicleDataId", vehicleData.Id)
             .Build();
 
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
@@ -158,9 +158,8 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     public VehicleDocument GetDocument(string documentId)
     {
         var builderResult = SqlBuilder.From(TableNames.VehicleDocuments)
-            .Where("Id = @Id", new { Id = documentId })
+            .WhereEquals("Id", documentId)
             .Build();
-
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.QueryFirstOrDefault<VehicleDocument>(builderResult.Sql, builderResult.Parameters);
     }
@@ -173,7 +172,7 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     public IEnumerable<VehicleDocument> GetDocuments(VehicleData vehicleData)
     {
         var builderResult = SqlBuilder.From(TableNames.VehicleDocuments)
-            .Where("VehicleDataId = @VehicleDataId", new { VehicleDataId = vehicleData.Id })
+            .WhereEquals("VehicleDataId", vehicleData.Id)
             .Build();
 
         using var connection = this.DbConnectionFactory.CreateScope().Connection;

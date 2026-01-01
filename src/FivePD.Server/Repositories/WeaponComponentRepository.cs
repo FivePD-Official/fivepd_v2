@@ -67,7 +67,7 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
     {
         var builderResult = SqlBuilder
             .From(this.TableName)
-            .Where("HashKey = @HashKey", new { HashKey = hashKey })
+            .WhereEquals("HashKey", hashKey)
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.QueryFirstOrDefault<WeaponComponent>(builderResult.Sql, builderResult.Parameters);
@@ -80,12 +80,17 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
     /// <param name="weapon">The weapon.</param>
     public void AttachWeapon(WeaponComponent component, Weapon weapon)
     {
+        var builderResult = SqlBuilder
+            .Into(TableNames.WeaponWeaponComponent)
+            .Insert(new
+            {
+                WeaponId = weapon.Id,
+                ComponentId = component.Id,
+            })
+            .OnDuplicateKeyUpdate("WeaponId", "WeaponComponentId")
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            INSERT INTO {TableNames.WeaponWeaponComponent} (WeaponId, WeaponComponentId)
-            VALUES (@WeaponId, @ComponentId)
-            ON DUPLICATE KEY UPDATE WeaponId = @WeaponId";
-        connection.Execute(sql, new { WeaponId = weapon.Id, ComponentId = component.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -95,11 +100,14 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
     /// <param name="weapon">The weapon.</param>
     public void RemoveWeapon(WeaponComponent component, Weapon weapon)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.WeaponWeaponComponent)
+            .Delete()
+            .WhereEquals("WeaponId", weapon.Id)
+            .WhereEquals("WeaponComponentId", component.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            DELETE FROM {TableNames.WeaponWeaponComponent}
-            WHERE WeaponId = @WeaponId AND WeaponComponentId = @ComponentId";
-        connection.Execute(sql, new { WeaponId = weapon.Id, ComponentId = component.Id });
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -112,9 +120,8 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
         var builderResult = SqlBuilder.From($"{TableNames.Weapons} w")
             .Select("w.*", typeof(Weapon))
             .InnerJoin(TableNames.WeaponWeaponComponent, "wwc", "w.Id = wwc.WeaponId", splitColumn: "WeaponId")
-            .Where("wwc.WeaponComponentId = @ComponentId", new { ComponentId = component.Id })
+            .WhereEquals("wwc.WeaponComponentId", component.Id)
             .Build();
-
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.Query<Weapon>(builderResult.Sql, builderResult.Parameters);
     }
@@ -127,11 +134,12 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
     /// <returns>True if the component is attached to the weapon, false otherwise.</returns>
     public bool IsAttachedToWeapon(WeaponComponent component, Weapon weapon)
     {
+        var builderResult = SqlBuilder
+            .From(TableNames.WeaponWeaponComponent)
+            .WhereEquals("WeaponId", weapon.Id)
+            .WhereEquals("WeaponComponentId", component.Id)
+            .BuildCount();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        const string sql = $@"
-            SELECT COUNT(*) 
-            FROM {TableNames.WeaponWeaponComponent}
-            WHERE WeaponId = @WeaponId AND WeaponComponentId = @ComponentId";
-        return connection.ExecuteScalar<int>(sql, new { WeaponId = weapon.Id, ComponentId = component.Id }) > 0;
+        return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
     }
 }

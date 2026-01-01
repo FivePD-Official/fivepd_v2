@@ -86,8 +86,8 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
     {
         var builderResult = SqlBuilder
             .From(TableNames.WeaponWeaponComponent)
-            .Where("WeaponId = @WeaponId", new { WeaponId = weapon.Id })
-            .Where("WeaponComponentId = @WeaponComponentId", new { WeaponComponentId = component.Id })
+            .WhereEquals("WeaponId", weapon.Id)
+            .WhereEquals("WeaponComponentId", component.Id)
             .Delete()
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
@@ -105,7 +105,7 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
             .From($"{TableNames.WeaponComponents} wc")
             .Select("wc.*")
             .InnerJoin(TableNames.WeaponWeaponComponent, "wwc", "wc.Id = wwc.WeaponComponentId")
-            .Where("wwc.WeaponId = @WeaponId", new { WeaponId = weapon.Id })
+            .WhereEquals("wwc.WeaponId", weapon.Id)
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.Query<WeaponComponent>(builderResult.Sql, builderResult.Parameters);
@@ -122,7 +122,7 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
             .From($"{TableNames.LoadoutConfigs} lc")
             .Select("lc.*")
             .InnerJoin(TableNames.LoadoutWeapon, "lw", "lc.Id = lw.LoadoutConfigId")
-            .Where("lw.WeaponId = @WeaponId", new { WeaponId = weapon.Id })
+            .WhereEquals("lw.WeaponId", weapon.Id)
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.Query<LoadoutConfig>(builderResult.Sql, builderResult.Parameters);
@@ -138,8 +138,8 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
     {
         var builderResult = SqlBuilder
             .From(TableNames.WeaponWeaponComponent)
-            .Where("WeaponId = @WeaponId", new { WeaponId = weapon.Id })
-            .Where("WeaponComponentId = @WeaponComponentId", new { WeaponComponentId = component.Id })
+            .WhereEquals("WeaponId", weapon.Id)
+            .WhereEquals("WeaponComponentId", component.Id)
             .BuildCount();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters) > 0;
@@ -178,7 +178,7 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
             .If(options.IncludeLoadoutWeapons, b => b
                 .Select("lw.*", typeof(LoadoutWeapon))
                 .LeftJoin(TableNames.LoadoutWeapon, "lw", "lw.WeaponId = w.Id", splitColumn: "WeaponId"))
-            .If(id > 0, b => b.Where("w.Id = @Id", new { Id = id }))
+            .If(id > 0, b => b.WhereEquals("w.Id", id))
             .Build();
 
         var lookup = new Dictionary<int, Weapon>();
