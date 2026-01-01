@@ -48,12 +48,12 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Name), update.Name);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, loadoutConfig.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, loadoutConfig.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

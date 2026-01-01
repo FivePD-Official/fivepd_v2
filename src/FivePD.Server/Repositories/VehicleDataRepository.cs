@@ -55,15 +55,12 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.PedDataId), update.PedDataId);
-        builder.Add(nameof(update.LicensePlate), update.LicensePlate);
-        builder.Add(nameof(update.Color), update.Color);
-        builder.Add(nameof(update.Brand), update.Brand);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, vehicleData.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, vehicleData.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

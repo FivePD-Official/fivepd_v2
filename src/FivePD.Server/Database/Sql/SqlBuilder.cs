@@ -10,7 +10,7 @@ namespace FivePD.Server.Database.Sql;
 
 #pragma warning disable
 
-public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsertTableBuilder, IDeleteBuilder
+public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsertTableBuilder, IDeleteBuilder, IUpdateBuilder
 {
     private readonly ISqlDialect _dialect = SqlDialectRegistry.Current;
     private readonly List<JoinMetadata> _joinMetadata = new();
@@ -20,7 +20,9 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
     private readonly List<string> _insertColumns = new();
     private readonly DynamicParameters _params = new();
     private readonly List<string> _keyColumns = new();
+    private readonly List<string> _updates = new();
 
+    private bool _isUpdate;
     private bool _isInsert;
     private bool _isUpsert;
     private bool _isDelete;
@@ -38,6 +40,50 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
     public static IQueryBuilder From(string table)
     {
         return new SqlBuilder(table);
+    }
+
+    public static IUpdateBuilder Update(string table)
+    {
+        return new SqlBuilder(table)
+        {
+            _isUpdate = true
+        };
+    }
+
+    public IUpdateBuilder Set(string column, object value)
+    {
+        var paramName = "set_" + column.Replace(".", "_");
+        _updates.Add($"{column} = @{paramName}");
+        _params.Add(paramName, value);
+        return this;
+    }
+
+    public IUpdateBuilder SetTracked<T>(T entity, string idColumn = null, object id = null)
+        where T : ChangeTracker
+    {
+        if (entity is null)
+        {
+            return this;
+        }
+
+        var properties = entity.GetType().GetProperties();
+        foreach (var prop in properties)
+        {
+            if (!entity.IsChanged(prop.Name))
+            {
+                continue;
+            }
+
+            var value = prop.GetValue(entity);
+            this.Set(prop.Name, value);
+        }
+
+        if (!string.IsNullOrEmpty(idColumn) && id is not null)
+        {
+            this.WhereEquals(idColumn, id);
+        }
+
+        return this;
     }
 
     public static IInsertTableBuilder Into(string table)
@@ -79,11 +125,13 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
     ISelectBuilder IFilterable<ISelectBuilder>.If(bool condition, Action<ISelectBuilder> action) => this.InternalIf(condition, action);
 
     IDeleteBuilder IFilterable<IDeleteBuilder>.If(bool condition, Action<IDeleteBuilder> action) => this.InternalIf(condition, action);
+    IUpdateBuilder IFilterable<IUpdateBuilder>.If(bool condition, Action<IUpdateBuilder> action) => this.InternalIf(condition, action);
 
     SqlBuilderResult IQueryBuilder.Build() => this.InternalBuild();
     SqlBuilderResult ISelectBuilder.Build() => this.InternalBuild();
     SqlBuilderResult IInsertBuilder.Build() => this.InternalBuild();
     SqlBuilderResult IDeleteBuilder.Build() => this.InternalBuild();
+    SqlBuilderResult IUpdateBuilder.Build() => this.InternalBuild();
     SqlBuilderResult IQueryBuilder.BuildCount() => this.InternalBuildCount();
     SqlBuilderResult ISelectBuilder.BuildCount() => this.InternalBuildCount();
     SqlBuilderResult IDeleteBuilder.BuildCount() => this.InternalBuildCount();
@@ -231,12 +279,15 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
     {
         var sb = new StringBuilder();
 
-        if (_isInsert)
+        if (_isUpdate)
+        {
+            sb.Append($"UPDATE {this._from} SET {string.Join(", ", _updates)}");
+        }
+        else if (_isInsert)
         {
             return this.BuildInsertStatement();
         }
-
-        if (_isDelete)
+        else if (_isDelete)
         {
             sb.Append($"DELETE FROM {this._from}");
         }

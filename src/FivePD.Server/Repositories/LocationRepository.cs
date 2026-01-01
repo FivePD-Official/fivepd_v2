@@ -45,15 +45,11 @@ public class LocationRepository : BaseRepository<Location, LocationUpdate, int>
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Name), update.Name);
-        builder.Add(nameof(update.Type), update.Type);
-        builder.Add(nameof(update.X), update.X);
-        builder.Add(nameof(update.Y), update.Y);
-        builder.Add(nameof(update.Z), update.Z);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, location.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, location.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 }

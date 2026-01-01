@@ -68,30 +68,12 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.AccessFivePD), update.AccessFivePD);
-        builder.Add(nameof(update.PreferredLanguage), update.PreferredLanguage);
-        builder.Add(nameof(update.FirstLogin), update.FirstLogin);
-        builder.Add(nameof(update.DismissedWelcomeMessage), update.DismissedWelcomeMessage);
-        builder.Add(nameof(update.Name), update.Name);
-        builder.Add(nameof(update.IdentifierLicense), update.IdentifierLicense);
-        builder.Add(nameof(update.IdentifierDiscord), update.IdentifierDiscord);
-        builder.Add(nameof(update.IdentifierSteam), update.IdentifierSteam);
-        builder.Add(nameof(update.IdentifierXbl), update.IdentifierXbl);
-        builder.Add(nameof(update.IdentifierLive), update.IdentifierLive);
-        builder.Add(nameof(update.Xp), update.Xp);
-        builder.Add(nameof(update.AudioVolume), update.AudioVolume);
-        builder.Add(nameof(update.Role), update.Role);
-        builder.Add(nameof(update.Callsign), update.Callsign);
-        builder.Add(nameof(update.UserCallsignFormatId), update.UserCallsignFormatId);
-        builder.Add(nameof(update.DepartmentId), update.DepartmentId);
-        builder.Add(nameof(update.DivisionId), update.DivisionId);
-        builder.Add(nameof(update.RankId), update.RankId);
-        builder.Add(nameof(update.FixedRank), update.FixedRank);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, user.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, user.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -162,12 +144,12 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Values), update.Values);
-
-        var (sql, parameters) = builder.Build(TableNames.UserCallsigns, this.IdColumn, callsignFormat.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, callsignFormat.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

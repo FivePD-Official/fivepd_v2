@@ -1,4 +1,5 @@
 ﻿using System;
+using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database;
 using FivePD.Server.Database.Sql;
@@ -53,17 +54,12 @@ public class AssistanceServiceTypeConfigRepository : BaseRepository<AssistanceSe
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.TypeName), update.TypeName);
-        builder.Add(nameof(update.AssemblyName), update.AssemblyName);
-        builder.Add(nameof(update.Active), update.Active);
-        builder.Add(nameof(update.Enabled), update.Enabled);
-        builder.Add(nameof(update.SpawnType), update.SpawnType);
-        builder.Add(nameof(update.ManualSpawnLocations), update.ManualSpawnLocations);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, entity.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, entity.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

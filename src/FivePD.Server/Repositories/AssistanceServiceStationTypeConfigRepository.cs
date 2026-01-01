@@ -54,15 +54,12 @@ public class AssistanceServiceStationTypeConfigRepository : BaseRepository<Assis
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.AssistanceServiceStationId), update.AssistanceServiceStationId);
-        builder.Add(nameof(update.TypeConfigId), update.TypeConfigId);
-        builder.Add(nameof(update.Capacity), update.Capacity);
-        builder.Add(nameof(update.ActiveCapacity), update.ActiveCapacity);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, entity.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, entity.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -70,9 +67,12 @@ public class AssistanceServiceStationTypeConfigRepository : BaseRepository<Assis
     /// </summary>
     public void ResetActiveCapacity()
     {
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .Set("ActiveCapacity", 0)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        var sql = $"UPDATE {this.TableName} SET ActiveCapacity = 0";
-        connection.Execute(sql);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

@@ -56,16 +56,12 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Gender), update.Gender);
-        builder.Add(nameof(update.Firstname), update.Firstname);
-        builder.Add(nameof(update.Lastname), update.Lastname);
-        builder.Add(nameof(update.Birthdate), update.Birthdate);
-        builder.Add(nameof(update.AlcoholLevel), update.AlcoholLevel);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, pedData.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, pedData.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

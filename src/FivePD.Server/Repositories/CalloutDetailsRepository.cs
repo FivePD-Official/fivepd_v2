@@ -53,15 +53,12 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Active), update.Active);
-        builder.Add(nameof(update.TypeName), update.TypeName);
-        builder.Add(nameof(update.AssemblyName), update.AssemblyName);
-        builder.Add(nameof(update.RulesetType), update.RulesetType);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, calloutDetails.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, calloutDetails.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

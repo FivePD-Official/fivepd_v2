@@ -41,6 +41,7 @@ public class AssistanceServiceStationRepository : BaseRepository<AssistanceServi
         return entity;
     }
 
+#pragma warning disable
     /// <inheritdoc />
     public override void Update(AssistanceServiceStation entity, Action<AssistanceServiceStationUpdate> updateAction)
     {
@@ -51,13 +52,12 @@ public class AssistanceServiceStationRepository : BaseRepository<AssistanceServi
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Name), update.Name);
-        builder.Add(nameof(update.Position), update.Position);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, entity.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, entity.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

@@ -53,3 +53,10 @@ public interface IDeleteBuilder : IFilterable<IDeleteBuilder>
     SqlBuilderResult Build();
     SqlBuilderResult BuildCount();
 }
+
+public interface IUpdateBuilder : IFilterable<IUpdateBuilder>
+{
+    IUpdateBuilder Set(string column, object value);
+    IUpdateBuilder SetTracked<T>(T tracker, string idColumn = null, object id = null) where T : ChangeTracker;
+    SqlBuilderResult Build();
+}

@@ -54,17 +54,12 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Name), update.Name);
-        builder.Add(nameof(update.Callsign), update.Callsign);
-        builder.Add(nameof(update.UseGlobalRanks), update.UseGlobalRanks);
-        builder.Add(nameof(update.MaxUsers), update.MaxUsers);
-        builder.Add(nameof(update.DefaultRankId), update.DefaultRankId);
-        builder.Add(nameof(update.CallsignFormat), update.CallsignFormat);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, department.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, department.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

@@ -52,15 +52,12 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Global), update.Global);
-        builder.Add(nameof(update.Permission), update.Permission);
-        builder.Add(nameof(update.RequiredXp), update.RequiredXp);
-        builder.Add(nameof(update.Name), update.Name);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, rank.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, rank.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

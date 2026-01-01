@@ -48,13 +48,12 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Name), update.Name);
-        builder.Add(nameof(update.Model), update.Model);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, weapon.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, weapon.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

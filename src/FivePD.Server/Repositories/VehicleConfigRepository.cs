@@ -63,17 +63,12 @@ public class VehicleConfigRepository : BaseRepository<VehicleConfig<string>, Veh
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Type), update.Type);
-        builder.Add(nameof(update.Name), update.Name);
-        builder.Add(nameof(update.Model), update.Model);
-        builder.Add(nameof(update.Livery), update.Livery);
-        builder.Add(nameof(update.Extras), update.Extras);
-        builder.Add(nameof(update.Options), update.Options);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, entity.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, entity.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>
@@ -91,21 +86,22 @@ public class VehicleConfigRepository : BaseRepository<VehicleConfig<string>, Veh
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Type), update.Type);
-        builder.Add(nameof(update.Name), update.Name);
-        builder.Add(nameof(update.Model), update.Model);
-        builder.Add(nameof(update.Livery), update.Livery);
-        builder.Add(nameof(update.Extras), update.Extras);
-
-        if (update.Options is not null)
+        var vehicleConfigStringUpdate = new VehicleConfigUpdate<string>
         {
-            builder.Add(nameof(update.Options), JsonConvert.SerializeObject(update.Options));
-        }
+            Type = vehicleConfig.Type,
+            Name = vehicleConfig.Name,
+            Model = vehicleConfig.Model,
+            Livery = vehicleConfig.Livery,
+            Extras = vehicleConfig.Extras,
+            Options = JsonConvert.SerializeObject(vehicleConfig.Options),
+        };
 
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, vehicleConfig.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(vehicleConfigStringUpdate, this.IdColumn, vehicleConfig.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 
     /// <summary>

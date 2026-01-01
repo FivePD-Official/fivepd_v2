@@ -45,12 +45,11 @@ public class DivisionRepository : BaseRepository<Division, DivisionUpdate, int>
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Name), update.Name);
-        builder.Add(nameof(update.DepartmentId), update.DepartmentId);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, division.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, division.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 }

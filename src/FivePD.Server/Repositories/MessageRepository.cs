@@ -53,16 +53,11 @@ public class MessageRepository : BaseRepository<Message, MessageUpdate, int>
             return;
         }
 
-        var builder = new UpdateQueryBuilder(update);
-        builder.Add(nameof(update.Sender), update.Sender);
-        builder.Add(nameof(update.Subject), update.Subject);
-        builder.Add(nameof(update.Content), update.Content);
-        builder.Add(nameof(update.SentAt), update.SentAt);
-        builder.Add(nameof(update.HasRead), update.HasRead);
-        builder.Add(nameof(update.UserId), update.UserId);
-
-        var (sql, parameters) = builder.Build(this.TableName, this.IdColumn, message.Id);
+        var builderResult = SqlBuilder
+            .Update(this.TableName)
+            .SetTracked(update, this.IdColumn, message.Id)
+            .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
-        connection.Execute(sql, parameters);
+        connection.Execute(builderResult.Sql, builderResult.Parameters);
     }
 }
