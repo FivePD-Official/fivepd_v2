@@ -21,6 +21,11 @@ public class IncidentHistoryUser
     public User User { get; set; }
 
     /// <summary>
+    /// Gets or sets the incident history identifier.
+    /// </summary>
+    public int IncidentHistoryId { get; set; }
+
+    /// <summary>
     /// Gets or sets the entity which this value belongs to.
     /// </summary>
     public IncidentHistory IncidentHistory { get; set; }

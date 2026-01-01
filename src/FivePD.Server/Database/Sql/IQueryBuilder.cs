@@ -8,7 +8,7 @@ namespace FivePD.Server.Database.Sql;
 
 public interface IFilterable<out T>
 {
-    ISelectBuilder Select(string select, Type type = null);
+    IQueryBuilder Select(string select, Type type = null);
     T If(bool condition, Action<T> action);
     IQueryBuilder Where(string condition, object param = null);
     IQueryBuilder WhereEquals(string column, object param);
@@ -20,6 +20,9 @@ public interface IFilterable<out T>
     IQueryBuilder InnerJoin(string table, string alias, string on, string splitColumn = "Id");
     IQueryBuilder LeftJoin(string table, string alias, string on, string splitColumn = "Id");
     IQueryBuilder RightJoin(string table, string alias, string on, string splitColumn = "Id");
+    IQueryBuilder OrderBy(string clause);
+    IQueryBuilder OrderByRandom();
+    IQueryBuilder GroupBy(string clause);
 }
 
 public interface IQueryBuilder : IFilterable<IQueryBuilder>
@@ -31,8 +34,6 @@ public interface IQueryBuilder : IFilterable<IQueryBuilder>
 
 public interface ISelectBuilder : IFilterable<ISelectBuilder>
 {
-    ISelectBuilder GroupBy(string clause);
-    ISelectBuilder OrderBy(string clause);
     SqlBuilderResult Build();
     SqlBuilderResult BuildCount();
 }
@@ -51,7 +52,6 @@ public interface IInsertBuilder
 public interface IDeleteBuilder : IFilterable<IDeleteBuilder>
 {
     SqlBuilderResult Build();
-    SqlBuilderResult BuildCount();
 }
 
 public interface IUpdateBuilder : IFilterable<IUpdateBuilder>

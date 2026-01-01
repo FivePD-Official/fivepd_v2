@@ -1,6 +1,6 @@
 Database:
   Type: mysql # mysql or mariadb or sqlite
-  Name: fivepd
+  Name: fivepd # when using sqlite it will be used as the file name
   Address: 127.0.0.1
   Port: 3307
   User: root

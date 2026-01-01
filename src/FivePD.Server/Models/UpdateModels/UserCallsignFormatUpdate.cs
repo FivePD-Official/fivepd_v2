@@ -7,11 +7,11 @@ namespace FivePD.Server.Models.UpdateModels;
 #nullable enable
 public class UserCallsignFormatUpdate : ChangeTracker
 {
-    private List<string>? _values;
+    private List<string>? _formatValues;
 
-    public List<string>? Values
+    public List<string>? FormatValues
     {
-        get => this._values;
-        set => this.SetField(ref this._values, value, nameof(Values));
+        get => this._formatValues;
+        set => this.SetField(ref this._formatValues, value, nameof(FormatValues));
     }
 }

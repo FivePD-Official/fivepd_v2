@@ -16,5 +16,5 @@ public class UserCallsignFormat
     /// <summary>
     /// Gets or sets the callsign.
     /// </summary>
-    public List<string> Values { get; set; }
+    public List<string> FormatValues { get; set; }
 }

@@ -28,5 +28,5 @@ public class AssistanceServiceStation
     /// <summary>
     /// Gets or sets the type configurations for the assistance service station.
     /// </summary>
-    public List<AssistanceServiceStationTypeConfig> TypeConfigs { get; set; }
+    public List<AssistanceServiceStationTypeConfig> TypeConfigs { get; set; } = new();
 }

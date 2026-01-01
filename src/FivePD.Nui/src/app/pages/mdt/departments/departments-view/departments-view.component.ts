@@ -332,7 +332,7 @@ export class DepartmentsViewComponent implements OnInit {
                 title: 'Edit callsign',
               }, new Map()
                 .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
-                .set(CALLSIGN_FORMAT_VALUES, user.CallsignFormat.Values)
+                .set(CALLSIGN_FORMAT_VALUES, user.CallsignFormat.FormatValues)
             ).result
               .pipe(
                 filter((res) => res.success),

@@ -9,6 +9,7 @@ public class SqliteDialect : BaseDialect
 {
     public override char QuoteOpen => '"';
     public override char QuoteClose => '"';
+    public override string RandomFunction => "RANDOM()";
 
     public override string GetPaginationSql(int pageSize, int offset)
         => $" LIMIT {pageSize} OFFSET {offset}";

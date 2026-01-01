@@ -133,7 +133,7 @@ public class User
     /// <summary>
     /// Gets or sets the messages sent to the user.
     /// </summary>
-    public List<Message> Messages { get; set; }
+    public List<Message> Messages { get; set; } = new();
 
     /// <summary>
     /// Gets whether the user has the specified role.

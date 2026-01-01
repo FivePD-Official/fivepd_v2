@@ -35,12 +35,12 @@ public class Rank
     /// <summary>
     /// Gets or sets the users of this ranks.
     /// </summary>
-    public IList<User> Users { get; set; }
+    public List<User> Users { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the DepartmentRanks.
     /// </summary>
-    public IList<DepartmentRank> DepartmentRanks { get; set; }
+    public List<DepartmentRank> DepartmentRanks { get; set; } = new();
 
     /// <summary>
     /// Defines the actions a given <see cref="Rank"/> can do.

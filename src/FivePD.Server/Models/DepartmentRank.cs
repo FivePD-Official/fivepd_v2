@@ -18,10 +18,10 @@ public class DepartmentRank
     /// <summary>
     /// Gets or sets the department.
     /// </summary>
-    public virtual Department Department { get; set; }
+    public Department Department { get; set; }
 
     /// <summary>
     /// Gets or sets the rank.
     /// </summary>
-    public virtual Rank Rank { get; set; }
+    public Rank Rank { get; set; }
 }

@@ -10,8 +10,6 @@ using FivePD.Server.Models.UpdateModels;
 
 namespace FivePD.Server.Repositories;
 
-#pragma warning disable
-
 /// <summary>
 /// Repository for VehicleData CRUD operations.
 /// </summary>
@@ -64,45 +62,24 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     }
 
     /// <summary>
-    /// Finds a vehicle data by its ID, including related documents based on the specified options.
+    /// Retrieves a single <see cref="VehicleData"/> record by its identifier, including dynamically loaded related data based on specified options.
     /// </summary>
-    /// <param name="id">The vehicle data ID.</param>
-    /// <param name="options">The options for loading related entities.</param>
-    /// <returns>The vehicle data with requested related entities if found, null otherwise.</returns>
+    /// <param name="id">The unique identifier of the vehicle data to retrieve.</param>
+    /// <param name="options">Specifies the dynamic load options for related data.</param>
+    /// <returns>A <see cref="VehicleData"/> instance if found; otherwise, null.</returns>
     public VehicleData FindByIdWithDynamicRelated(int id, VehicleDataLoadOptions options)
     {
-        var builder = SqlBuilder
-            .From($"{TableNames.VehicleData} vd")
-            .Select("vd.*", typeof(VehicleData))
-            .If(options.IncludeDocuments,
-                b => b.Select("doc.*", typeof(VehicleDocument)).LeftJoin(TableNames.VehicleDocuments, "doc", "vd.Id = doc.VehicleDataId"))
-            .If(options.IncludePedData, b => b.Select("pd.*", typeof(PedData)).LeftJoin(TableNames.PedData, "pd", "vd.PedDataId = pd.Id"))
-            .WhereEquals("vd.Id", id);
+        return this.GetAllWithDynamicRelated(options, id).FirstOrDefault();
+    }
 
-        var result = builder.Build();
-        using var connection = this.DbConnectionFactory.CreateScope().Connection;
-
-        return connection.Query(
-            result.Sql,
-            result.Types,
-            objArray =>
-            {
-                var vehicleData = (VehicleData)objArray[0];
-                var index = 1;
-                if (options.IncludeDocuments)
-                {
-                    vehicleData.Documents = objArray[index++] as List<VehicleDocument>;
-                }
-
-                if (options.IncludePedData)
-                {
-                    vehicleData.PedData = objArray[index] as PedData;
-                }
-
-                return vehicleData;
-            },
-            result.Parameters,
-            splitOn: result.SplitOn).FirstOrDefault();
+    /// <summary>
+    /// Retrieves all vehicle data records with dynamically loaded related data based on the specified options.
+    /// </summary>
+    /// <param name="options">The options for loading related data, such as including documents and/or associated pedestrian data.</param>
+    /// <returns>A list of <see cref="VehicleData"/> instances with related data included as specified by the options.</returns>
+    public List<VehicleData> GetAllWithDynamicRelated(VehicleDataLoadOptions options)
+    {
+        return this.GetAllWithDynamicRelated(options, 0);
     }
 
     /// <summary>
@@ -177,12 +154,50 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     }
 
     /// <summary>
-    /// Options for loading related entities for a vehicle data.
+    /// Retrieves a list of vehicle data with optionally included related dynamic data.
     /// </summary>
+    /// <param name="options">Specifies the related data to include, such as documents or pedestrian data.</param>
+    /// <param name="id">The ID of the vehicle to filter the results. If 0 or less, no filtering by ID is applied.</param>
+    /// <returns>A list of vehicle data with the related dynamic data included as specified in the options.</returns>
+    private List<VehicleData> GetAllWithDynamicRelated(VehicleDataLoadOptions options, int id)
+    {
+        var builderResult = SqlBuilder
+            .From($"{TableNames.VehicleData} vd")
+            .Select("vd.*", typeof(VehicleData))
+            .If(
+                options.IncludeDocuments,
+                b => b.Select("doc.*", typeof(VehicleDocument)).LeftJoin(TableNames.VehicleDocuments, "doc", "vd.Id = doc.VehicleDataId"))
+            .If(options.IncludePedData, b => b.Select("pd.*", typeof(PedData)).LeftJoin(TableNames.PedData, "pd", "vd.PedDataId = pd.Id"))
+            .If(id > 0, b => b.WhereEquals("vd.Id", id))
+            .Build();
+
+        return this.QueryMultiMap<VehicleData, int>(
+            builderResult,
+            (entity, rowReader) =>
+            {
+                var document = rowReader.Read<VehicleDocument>(options.IncludeDocuments);
+                if (document is not null && !entity.HasDocument(document.Type))
+                {
+                    entity.Documents.Add(document);
+                }
+
+                var pedData = rowReader.Read<PedData>(options.IncludePedData);
+                if (pedData is not null && entity.PedData is null)
+                {
+                    entity.PedData = pedData;
+                }
+
+                return entity;
+            },
+            x => x.Id);
+    }
+
+#pragma warning disable
     public class VehicleDataLoadOptions
     {
         public bool IncludeDocuments { get; set; }
 
         public bool IncludePedData { get; set; }
     }
+#pragma warning restore
 }

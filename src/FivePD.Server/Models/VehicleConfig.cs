@@ -36,7 +36,7 @@ public class VehicleConfig<TOptions>
     /// <summary>
     /// Gets or sets the extras.
     /// </summary>
-    public List<int> Extras { get; set; }
+    public List<int> Extras { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the options by type.

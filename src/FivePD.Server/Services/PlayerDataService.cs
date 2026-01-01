@@ -553,7 +553,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private void UpdatePlayerDetailsUI([FromSource] Player player, string guid, string serializedRequest)
     {
         var request = JsonConvert.DeserializeObject<UpdatePlayerDetailsRequest>(serializedRequest);
-        var user = this._userRepository.FindById(request.Id);
+        var user = this._userRepository.FindByIdWithDynamicRelated(request.Id, new UserRepository.UserLoadOptions{IncludeCallsignFormat = true});
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -587,11 +587,11 @@ public class PlayerDataService : IPlayerDataService, IOnInit
             if (user.CallsignFormat is not null)
             {
                 var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
-                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.Values = request.CallsignFormatValues; });
+                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.FormatValues = request.CallsignFormatValues; });
             }
             else
             {
-                var userCallsignFormat = this._userRepository.AddCallsignFormat(user, new UserCallsignFormat { Values = request.CallsignFormatValues });
+                var userCallsignFormat = this._userRepository.AddCallsignFormat(user, new UserCallsignFormat { FormatValues = request.CallsignFormatValues });
                 this._userRepository.Update(user, x => { x.UserCallsignFormatId = userCallsignFormat.Id; });
             }
         }

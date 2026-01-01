@@ -108,7 +108,7 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     /// <returns>The user with requested related entities if found, null otherwise.</returns>
     public User FindByIdWithDynamicRelated(int id, UserLoadOptions options)
     {
-        var builder = this.CreateBaseUserBuilder(options).Where("u.Id = @Id", new { Id = id });
+        var builder = this.CreateBaseUserBuilder(options).WhereEquals("u.Id", id);
         return this.ExecuteUserQuery(builder, options);
     }
 
@@ -122,7 +122,7 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     {
         var builderResult = SqlBuilder
             .Into(TableNames.UserCallsigns)
-            .Insert(new { callsignFormat.Values })
+            .Insert(new { callsignFormat.FormatValues })
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         var id = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
@@ -145,7 +145,7 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
         }
 
         var builderResult = SqlBuilder
-            .Update(this.TableName)
+            .Update(TableNames.UserCallsigns)
             .SetTracked(update, this.IdColumn, callsignFormat.Id)
             .Build();
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
@@ -240,7 +240,7 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
             splitOn: result.SplitOn).FirstOrDefault();
     }
 
-    private ISelectBuilder CreateBaseUserBuilder(UserLoadOptions options)
+    private IQueryBuilder CreateBaseUserBuilder(UserLoadOptions options)
     {
         return SqlBuilder
             .From($"{TableNames.Users} u")

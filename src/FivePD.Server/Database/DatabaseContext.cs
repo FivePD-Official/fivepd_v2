@@ -258,7 +258,7 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<UserCallsignFormat>(type =>
         {
-            type.Property(t => t.Values)
+            type.Property(t => t.FormatValues)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
                     v => JsonConvert.DeserializeObject<List<string>>(
@@ -321,10 +321,10 @@ public class DatabaseContext : DbContext
             type.HasIndex(t => t.Lastname);
             type.HasIndex(t => t.Birthdate);
 
-            type.HasOne(t => t.VehicleData)
-                .WithOne(e => e.PedData)
-                .HasForeignKey<VehicleData>(v => v.PedDataId)
-                .IsRequired(false);
+            // type.HasOne(t => t.VehicleData)
+            //     .WithOne(e => e.PedData)
+            //     .HasForeignKey<VehicleData>(v => v.PedDataId)
+            //     .IsRequired(false);
 
             type.Property(t => t.Items)
                 .HasConversion(

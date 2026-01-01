@@ -480,13 +480,13 @@ public class DepartmentService : IDepartmentService
             var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
             if (userCallsignFormat is not null)
             {
-                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.Values = callsignGenerator.GetGeneratedItemValues(); });
+                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.FormatValues = callsignGenerator.GetGeneratedItemValues(); });
             }
             else
             {
                 var callsignFormat = this._userRepository.AddCallsignFormat(user, new UserCallsignFormat
                 {
-                    Values = callsignGenerator.GetGeneratedItemValues(),
+                    FormatValues = callsignGenerator.GetGeneratedItemValues(),
                 });
                 this._userRepository.Update(user, x => { x.UserCallsignFormatId = callsignFormat.Id; });
             }
@@ -587,13 +587,13 @@ public class DepartmentService : IDepartmentService
             var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
             if (userCallsignFormat is not null)
             {
-                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.Values = callsignGenerator.GetGeneratedItemValues(); });
+                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.FormatValues = callsignGenerator.GetGeneratedItemValues(); });
             }
             else
             {
                 var callsignFormat = this._userRepository.AddCallsignFormat(user, new UserCallsignFormat
                 {
-                    Values = callsignGenerator.GetGeneratedItemValues(),
+                    FormatValues = callsignGenerator.GetGeneratedItemValues(),
                 });
                 this._userRepository.Update(user, x => { x.UserCallsignFormatId = callsignFormat.Id; });
             }

@@ -12,7 +12,7 @@ export interface WithStringId {
 }
 
 export interface UserCallsignFormat extends WithId {
-  Values: string[];
+  FormatValues: string[];
 }
 
 export interface User extends WithId {
@@ -226,7 +226,7 @@ export interface PedData extends WithId {
   Birthdate: string;
   Warrants: string[];
   Licenses: PedLicense[];
-  VehicleData?: VehicleData;
+  VehicleData: VehicleData[];
 }
 
 export enum PedLicenseStatus {

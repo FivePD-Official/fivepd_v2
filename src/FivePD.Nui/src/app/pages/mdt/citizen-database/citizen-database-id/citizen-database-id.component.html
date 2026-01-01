@@ -42,17 +42,21 @@
               <p>{{ 'LABEL.GENDER.TITLE' | translate }}</p>
               <p>{{ (ped.Gender === FGender.Male ? 'LABEL.GENDER.MALE' : 'LABEL.GENDER.FEMALE') | translate }}</p>
             </li>
-            @if (ped.VehicleData) {
-              <li>
-                <p>{{ 'Owning vehicle' | translate }}</p>
-                <a [routerLink]="'/mdt/vehicle-database/' + ped.VehicleData.Id"
+            <li>
+              <p>{{ 'Owning vehicles' | translate }}</p>
+              @for (vehicle of ped.VehicleData; track vehicle.Id) {
+                <a [routerLink]="'/mdt/vehicle-database/' + vehicle.Id"
                    class="group flex flex-row items-center text-zinc-300 hover:text-white">
-                  {{ ped.VehicleData.LicensePlate }}
+                  {{ vehicle.LicensePlate }}
                   <div app-icon name="Link"
                        className="ml-2.5 h-[20px] text-zinc-300 group-hover:text-white"></div>
                 </a>
-              </li>
-            }
+              } @empty {
+                <p class="relative text-lg font-medium text-zinc-400 text-center">
+                  -
+                </p>
+              }
+            </li>
           </ul>
         </div>
       </div>

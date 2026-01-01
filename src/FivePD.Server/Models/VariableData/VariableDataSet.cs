@@ -15,10 +15,10 @@ public class VariableDataSet
     /// <summary>
     /// Gets or sets the entities of this set.
     /// </summary>
-    public IList<VariableDataEntity> Entities { get; set; }
+    public List<VariableDataEntity> Entities { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the attributes of this set.
     /// </summary>
-    public IList<VariableDataAttribute> Attributes { get; set; }
+    public List<VariableDataAttribute> Attributes { get; set; } = new();
 }

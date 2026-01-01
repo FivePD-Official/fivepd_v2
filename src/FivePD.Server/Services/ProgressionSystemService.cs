@@ -1,8 +1,8 @@
 ﻿using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Repositories;
 
 namespace FivePD.Server.Services;
 
@@ -10,17 +10,17 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class ProgressionSystemService : IProgressionSystemService
 {
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly UserRepository _userRepository;
     private readonly IPlayerDataService _playerDataService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProgressionSystemService"/> class.
     /// </summary>
-    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
+    /// <param name="userRepository">The <see cref="UserRepository"/> to use.</param>
     /// <param name="playerDataService">The <see cref="IPlayerDataService"/> to use.</param>
-    public ProgressionSystemService(IDatabaseContextFactory dbContextFactory, IPlayerDataService playerDataService)
+    public ProgressionSystemService(UserRepository userRepository, IPlayerDataService playerDataService)
     {
-        this._dbContextFactory = dbContextFactory;
+        this._userRepository = userRepository;
         this._playerDataService = playerDataService;
     }
 
@@ -36,11 +36,9 @@ public class ProgressionSystemService : IProgressionSystemService
     /// <inheritdoc />
     public void AddExperiencePoints(FPlayer player, int experiencePoints)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var user = player.User;
         var previousXp = user.Xp;
-        user.Xp += experiencePoints;
-        databaseContext.SaveChanges();
+        this._userRepository.Update(user, x => { x.Xp = previousXp + experiencePoints; });
 
         if (user.Xp >= previousXp)
         {

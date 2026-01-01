@@ -53,5 +53,5 @@ public class IncidentHistory
     /// <summary>
     /// Gets or sets the users who were involved in this incident.
     /// </summary>
-    public IList<IncidentHistoryUser> Users { get; set; }
+    public List<IncidentHistoryUser> Users { get; set; } = new();
 }

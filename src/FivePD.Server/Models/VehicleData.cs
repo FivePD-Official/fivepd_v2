@@ -42,12 +42,12 @@ public class VehicleData
     /// <summary>
     /// Gets or sets the items of the vehicle.
     /// </summary>
-    public List<Item> Items { get; set; }
+    public List<Item> Items { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the documents of the vehicle.
     /// </summary>
-    public IList<VehicleDocument> Documents { get; set; }
+    public List<VehicleDocument> Documents { get; set; } = new();
 
     /// <summary>
     /// Checks if the vehicle has a document.

@@ -9,6 +9,7 @@ public class MySqlDialect : BaseDialect
 {
     public override char QuoteOpen => '`';
     public override char QuoteClose => '`';
+    public override string RandomFunction  => "RAND()";
     public override string GetPaginationSql(int pageSize, int offset) => $" LIMIT {offset}, {pageSize}";
     public override string GetIdentitySql() => " SELECT LAST_INSERT_ID();";
 

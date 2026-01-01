@@ -20,7 +20,7 @@ public class CreateUsersTable_20251228 : IMigration
     {
         new TableBuilder(connection, databaseType, TableNames.UserCallsigns)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
-            .Column("Values", x => x.Text())
+            .Column("FormatValues", x => x.Text())
             .Execute();
         
         new TableBuilder(connection, databaseType, TableNames.Departments)

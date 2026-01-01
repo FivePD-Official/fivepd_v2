@@ -134,9 +134,8 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
     SqlBuilderResult IUpdateBuilder.Build() => this.InternalBuild();
     SqlBuilderResult IQueryBuilder.BuildCount() => this.InternalBuildCount();
     SqlBuilderResult ISelectBuilder.BuildCount() => this.InternalBuildCount();
-    SqlBuilderResult IDeleteBuilder.BuildCount() => this.InternalBuildCount();
 
-    public ISelectBuilder Select(string select, Type type = null)
+    public IQueryBuilder Select(string select, Type type = null)
     {
         if (!string.IsNullOrWhiteSpace(select))
         {
@@ -151,15 +150,21 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
         return this;
     }
 
-    public ISelectBuilder GroupBy(string clause)
+    public IQueryBuilder GroupBy(string clause)
     {
         _groupBy = clause;
         return this;
     }
 
-    public ISelectBuilder OrderBy(string clause)
+    public IQueryBuilder OrderBy(string clause)
     {
         _orderBy = clause;
+        return this;
+    }
+
+    public IQueryBuilder OrderByRandom()
+    {
+        _orderBy = _dialect.RandomFunction;
         return this;
     }
 
@@ -325,7 +330,7 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
         var joinMetadata = this._joinMetadata.ToList();
         var splitColumns = joinMetadata.Select(x => x.SplitColumn).ToList();
         var splitOn = splitColumns.Count > 0 ? string.Join(",", splitColumns) : "Id";
-
+        Debug.WriteLine(sql);
         return new SqlBuilderResult(sql, _params, this._types.ToArray(), splitOn);
     }
 
@@ -368,6 +373,7 @@ public class SqlBuilder : IQueryBuilder, ISelectBuilder, IInsertBuilder, IInsert
 
         sb.Append(_dialect.GetIdentitySql());
 
+        Debug.WriteLine(sb.ToString());
         return new SqlBuilderResult(sb.ToString(), _params, null, null);
     }
 

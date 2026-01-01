@@ -30,5 +30,5 @@ public class Division
     /// <summary>
     /// Gets or sets the users of this division.
     /// </summary>
-    public IList<User> Users { get; set; }
+    public List<User> Users { get; set; } = new();
 }

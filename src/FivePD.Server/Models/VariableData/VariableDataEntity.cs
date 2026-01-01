@@ -27,7 +27,7 @@ public class VariableDataEntity
     /// <summary>
     /// Gets or sets the values of this entity.
     /// </summary>
-    public IList<VariableDataValue> Values { get; set; }
+    public List<VariableDataValue> Values { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the values of this entity.

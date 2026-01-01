@@ -41,7 +41,7 @@ public class AssistanceServiceTypeConfig
     /// <summary>
     /// Gets or sets the manual spawn locations.
     /// </summary>
-    public List<Vector3> ManualSpawnLocations { get; set; }
+    public List<Vector3> ManualSpawnLocations { get; set; } = new();
 
     /// <summary>
     /// Determines whether the spawn type is set to "AUTO".

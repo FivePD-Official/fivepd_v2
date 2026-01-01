@@ -250,5 +250,5 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
 
         public bool IncludeLoadoutWeapons { get; set; }
     }
-#pragma warning restore 1591
+#pragma warning restore
 }

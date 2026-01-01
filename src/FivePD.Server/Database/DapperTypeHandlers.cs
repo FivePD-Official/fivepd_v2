@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using CitizenFX.Core;
 using Dapper;
+using FivePD.Common.ConfigModels;
 using FivePD.Server.Models;
 using Newtonsoft.Json;
 
@@ -24,6 +25,8 @@ public static class DapperTypeHandlers
         SqlMapper.AddTypeHandler(new Vector3TypeHandler());
         SqlMapper.AddTypeHandler(new RankPermissionsTypeHandler());
         SqlMapper.AddTypeHandler(new ListVector3TypeHandler());
+        SqlMapper.AddTypeHandler(new ListItemTypeHandler());
+        SqlMapper.AddTypeHandler(new ListDrugTypeHandler());
     }
 
     /// <summary>
@@ -50,6 +53,66 @@ public static class DapperTypeHandlers
         }
 
         public override void SetValue(IDbDataParameter parameter, List<Vector3> value)
+        {
+            parameter.Value = value is null
+                ? DBNull.Value
+                : JsonConvert.SerializeObject(
+                    value,
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
+    }
+
+    private sealed class ListItemTypeHandler : SqlMapper.TypeHandler<List<Item>>
+    {
+        public override List<Item> Parse(object value)
+        {
+            if (value == DBNull.Value)
+            {
+                return new List<Item>();
+            }
+
+            var json = value.ToString();
+            if (string.IsNullOrEmpty(json))
+            {
+                return new List<Item>();
+            }
+
+            return JsonConvert.DeserializeObject<List<Item>>(
+                json,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
+
+        public override void SetValue(IDbDataParameter parameter, List<Item> value)
+        {
+            parameter.Value = value is null
+                ? DBNull.Value
+                : JsonConvert.SerializeObject(
+                    value,
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
+    }
+
+    private sealed class ListDrugTypeHandler : SqlMapper.TypeHandler<List<Drug>>
+    {
+        public override List<Drug> Parse(object value)
+        {
+            if (value == DBNull.Value)
+            {
+                return new List<Drug>();
+            }
+
+            var json = value.ToString();
+            if (string.IsNullOrEmpty(json))
+            {
+                return new List<Drug>();
+            }
+
+            return JsonConvert.DeserializeObject<List<Drug>>(
+                json,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
+
+        public override void SetValue(IDbDataParameter parameter, List<Drug> value)
         {
             parameter.Value = value is null
                 ? DBNull.Value

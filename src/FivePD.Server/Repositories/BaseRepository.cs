@@ -24,7 +24,6 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     protected readonly string TableName;
     protected readonly string IdColumn = "Id";
 #pragma warning restore
-#pragma warning disable
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseRepository{TEntity, TEntityUpdate, TId}"/> class.
     /// </summary>
@@ -149,9 +148,10 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     }
 
     /// <summary>
-    /// Gets all entities.
+    /// Retrieves all entities from the database table represented by the repository.
     /// </summary>
-    /// <returns>All entities.</returns>
+    /// <param name="queryBuilder">An optional delegate to apply additional query conditions using the query builder.</param>
+    /// <returns>A collection of entities of type <typeparamref name="TEntity"/>.</returns>
     public virtual IEnumerable<TEntity> GetAll(Action<IQueryBuilder> queryBuilder = null)
     {
         var builder = SqlBuilder.From(this.TableName);
@@ -161,12 +161,25 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
         return connection.Query<TEntity>(builderResult.Sql, builderResult.Parameters);
     }
 
+    /// <summary>
+    /// Executes a SQL query and maps the result to a sequence of objects of the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type of the objects to map the query results to.</typeparam>
+    /// <param name="sql">The SQL query to be executed.</param>
+    /// <param name="parameters">Optional parameters for the SQL query.</param>
+    /// <returns>A sequence of objects of the specified type.</returns>
     public virtual IEnumerable<T> Query<T>(string sql, object parameters = null)
     {
         using var connection = this.DbConnectionFactory.CreateScope().Connection;
         return connection.Query<T>(sql, parameters);
     }
 
+    /// <summary>
+    /// Retrieves a paginated list of entities from the database.
+    /// </summary>
+    /// <param name="page">The current page number.</param>
+    /// <param name="configure">An optional action to configure the SQL query builder.</param>
+    /// <returns>A <see cref="Page{TEntity}"/> containing the paginated results, including items, total count, and pagination details.</returns>
     public virtual Page<TEntity> Paginate(int page, Action<ISelectBuilder> configure = null)
     {
         var builder = SqlBuilder.From(this.TableName);
@@ -189,5 +202,72 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
             PageSize = 10,
             PageCount = (int)Math.Ceiling((double)totalCount / 10),
         };
+    }
+
+    /// <summary>
+    /// Executes a multi-mapping query and retrieves a list of primary entities by stitching
+    /// related data from multiple result sets.
+    /// </summary>
+    /// <typeparam name="TPrimary">The type of the primary entity being queried.</typeparam>
+    /// <typeparam name="TPrimaryId">The type of the identifier for the primary entity.</typeparam>
+    /// <param name="buildResult">The result of building the SQL query, including SQL text, parameters, types, and split configuration.</param>
+    /// <param name="stitcher">A function to stitch related data by mapping rows to the primary entity.</param>
+    /// <param name="idSelector">A function to extract the identifier from the primary entity.</param>
+    /// <returns>A list of the primary entity type with related data stitched in.</returns>
+    public List<TPrimary> QueryMultiMap<TPrimary, TPrimaryId>(
+        SqlBuilderResult buildResult,
+        Func<TPrimary, RowReader, TPrimary> stitcher,
+        Func<TPrimary, TPrimaryId> idSelector)
+    {
+        var lookup = new Dictionary<TPrimaryId, TPrimary>();
+
+        using var connection = this.DbConnectionFactory.CreateScope().Connection;
+        connection.Query(
+            buildResult.Sql,
+            buildResult.Types,
+            objArray =>
+            {
+                var entity = (TPrimary)objArray[0];
+
+                var id = idSelector(entity);
+                if (!lookup.TryGetValue(id, out var current))
+                {
+                    current = entity;
+                    lookup.Add(id, current);
+                }
+
+                var reader = new RowReader(objArray);
+                return stitcher(current, reader);
+            },
+            buildResult.Parameters,
+            splitOn: buildResult.SplitOn);
+
+        return lookup.Values.ToList();
+    }
+
+    /// <summary>
+    /// Provides functionality to read and process elements from a row of data.
+    /// </summary>
+    public record RowReader(object[] Row)
+    {
+        private int _ptr = 1;
+
+        /// <summary>
+        /// Reads and returns an element of type <typeparamref name="T"/> from the row if the specified condition is true.
+        /// If the condition is false or no more elements are available, returns null.
+        /// </summary>
+        /// <typeparam name="T">The type of the element to be read.</typeparam>
+        /// <param name="condition">A boolean value indicating whether to proceed with reading the element.</param>
+        /// <returns>The element of type <typeparamref name="T"/> if the condition is true and the element exists; otherwise, null.</returns>
+        public T Read<T>(bool condition)
+            where T : class
+        {
+            if (!condition)
+            {
+                return null;
+            }
+
+            return this._ptr < this.Row.Length ? this.Row[_ptr++] as T : null;
+        }
     }
 }

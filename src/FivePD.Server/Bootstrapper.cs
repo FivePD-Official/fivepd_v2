@@ -230,6 +230,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<AssistanceServiceStationRepository>();
         services.AddSingleton<AssistanceServiceStationTypeConfigRepository>();
         services.AddSingleton<AssistanceServiceTypeConfigRepository>();
+        services.AddSingleton<IncidentHistoryRepository>();
 
         // Addons
         services.AddTransient<AddonLoggerService>();
@@ -308,8 +309,8 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<CfxService>();
         services.AddSingleton<ICfxService>(provider => provider.GetRequiredService<CfxService>());
 
-        // services.AddSingleton<ProgressionSystemService>();
-        // services.AddSingleton<IProgressionSystemService>(provider => provider.GetRequiredService<ProgressionSystemService>());
+        services.AddSingleton<ProgressionSystemService>();
+        services.AddSingleton<IProgressionSystemService>(provider => provider.GetRequiredService<ProgressionSystemService>());
 
         services.AddSingleton<MessageService>();
         services.AddSingleton<IMessageService>(provider => provider.GetRequiredService<MessageService>());
@@ -369,14 +370,14 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
         services.AddSingleton<IInternalVehicleStorageService>(provider => provider.GetRequiredService<VehicleStorageService>());
 
-        // services.AddSingleton<PedService>();
-        // services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedService>());
-        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedService>());
+        services.AddSingleton<PedService>();
+        services.AddSingleton<IPedService>(provider => provider.GetRequiredService<PedService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedService>());
 
-        // services.AddSingleton<VehicleService>();
-        // services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleService>());
+        services.AddSingleton<VehicleService>();
+        services.AddSingleton<IVehicleService>(provider => provider.GetRequiredService<VehicleService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<VehicleService>());
 
         services.AddSingleton<PlayerDataService>();
         services.AddSingleton<IPlayerDataService>(provider => provider.GetRequiredService<PlayerDataService>());
@@ -418,9 +419,9 @@ internal class Bootstrapper : BaseScript
         // services.AddSingleton<IInternalDispatcherManagerService>(provider => provider.GetRequiredService<DispatcherManagerService>());
         // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<DispatcherManagerService>());
 
-        // services.AddSingleton<IncidentHistoryService>();
-        // services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
-        // services.AddSingleton<IInternalIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
+        services.AddSingleton<IncidentHistoryService>();
+        services.AddSingleton<IIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
+        services.AddSingleton<IInternalIncidentHistoryService>(provider => provider.GetRequiredService<IncidentHistoryService>());
 
         // services.AddSingleton<TrafficStopService>();
         // services.AddSingleton<ITrafficStopService>(provider => provider.GetRequiredService<TrafficStopService>());
